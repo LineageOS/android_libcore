@@ -1525,7 +1525,28 @@ public final class Formatter implements Closeable, Flushable {
      * by digits appropriate to this formatter's locale. Other characters remain unchanged.
      */
     private CharSequence localizeDigits(CharSequence s) {
-        int length = s.length();
+
+        return s;
+
+        /*
+         * The code below for the localizeDigits() method was added by Google as an enhancement
+         * to localize numbers when used by the String.format fuction
+         * See http://code.google.com/p/android/issues/detail?can=2&q=11065&id=11065
+         * While this method is perfectly correct, it actually introduced many problems for locales that use other numeral systems
+         * for example, Arabic locale uses these numbers: (٠.١.٢.٣.٤.٥.٦.٧.٨.٩)
+         * Take for instance an SQL query statement that is constructed using this approach:
+         * String.format('SELECT * FROM TABLE WHERE FIELD_ID=%d', myID)
+         * because of the %d, the localizeDigits() function will trigger automatically and the output will then be:
+         * SELECT * FROM TABLE WHERE FIELD_ID=٨   (٨ being the number 8 in Arabic) if the user had chosen to use an Arab-region locale
+         * The digit should not change based on the current system locale in cases like this. Unfortenately, there are many
+         * instances in the code where the String.format doesn't specify a Locale like Locale.US which would prevent this problem.
+         * This fix is not really a fix, just a temporarily workaround. The proper 
+         * An alternative fix is to lookup everywhere that the String.format() method is used along with the %d and see
+         * if it's going to potentially be problematic. Doing the latter yielded many potentinal problematic lines of code that use
+         * this method. This is a temporarily fix as I have reported this to Google as an issue.
+        */
+
+        /*int length = s.length();
         int offsetToLocalizedDigits = localeData.zeroDigit - '0';
         StringBuilder result = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
@@ -1535,7 +1556,7 @@ public final class Formatter implements Closeable, Flushable {
             }
             result.append(ch);
         }
-        return result;
+        return result;*/
     }
 
     /**
