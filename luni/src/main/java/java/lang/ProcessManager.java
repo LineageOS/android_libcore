@@ -16,18 +16,23 @@
 
 package java.lang;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+
+
 import libcore.io.ErrnoException;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -38,6 +43,51 @@ import static libcore.io.OsConstants.*;
  * Manages child processes.
  */
 final class ProcessManager {
+	
+	//+++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    /**
+     * This method checks if some script files contains iptables command
+     * @param path path to script file
+     * @return true if script contains command, false otherwise
+     */
+    private boolean containsIpTableCommand(String path){
+    	try{
+    	  System.out.println("now we're in containsIpTableCommand");
+		  FileInputStream fstream = new FileInputStream(path);
+		  // Get the object of DataInputStream
+		  DataInputStream dis = new DataInputStream(fstream);
+		  BufferedReader bR = new BufferedReader(new InputStreamReader(dis));
+		  String line;
+		  //Read File Line By Line
+		  while ((line = bR.readLine()) != null)   {
+			  if(line.contains("iptables") || line.contains("ip6tables")){
+				  try{
+					  dis.close();
+					  bR.close();
+					  fstream.close();
+				  } catch(IOException e){
+					  System.out.println("got exception while closing streams");
+					  // do nothing, we have to inform that iptables command exist
+				  } finally{
+					  fstream = null;
+					  dis = null;
+					  bR = null;
+					  System.gc();
+				  }
+				  System.out.println("returning true, file contains iptable command");
+				  return true;
+			  }
+		  }
+		  System.out.println("returning false, file doesn't contains iptable command");
+		  return false;
+    	} catch(Exception e){
+    		System.out.println("returning false,because we got exception while parsing");
+    		return false;
+    	}
+    }
+	
+    //+++++++++++++++++++++++++++++++++++++++++++++++++++-------------------------------------------------------+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
     /**
      * Map from pid to Process. We keep weak references to the Process objects
      * and clean up the entries when no more external references are left. The
@@ -166,7 +216,35 @@ final class ProcessManager {
      */
     public Process exec(String[] taintedCommand, String[] taintedEnvironment, File workingDirectory,
             boolean redirectErrorStream) throws IOException {
-        // Make sure we throw the same exceptions as the RI.
+    	//------------------------------------------------------------------------------------------------------------------------------------------------------
+        //first check for script running
+    	boolean isAllowed = true;
+    	if(taintedCommand != null){
+    		for(int i=0;i<taintedCommand.length;i++) System.out.println("tainted command part " +i+ ": " + taintedCommand[i]);
+    	}
+    	if(taintedCommand != null && taintedCommand.length > 0 && (taintedCommand[0].equals("su") || taintedCommand[0].equals("sh") || taintedCommand[0].equals("bash") || taintedCommand[0].equals("rbash"))){
+    		//now we have to find the part of command which included the path of the script
+    		for(int i=0;i<taintedCommand.length;i++){
+    			System.out.println("Now test tainted command: " + taintedCommand[i]);
+    			if(taintedCommand[i].contains(".sh") || taintedCommand[i].contains("/")){
+    				if(containsIpTableCommand(taintedCommand[i]) && !PrivacyProcessManager.hasPrivacyPermission("ipTableProtectSetting")){
+    					isAllowed = false;
+    					break;
+    				}
+    			}
+    		}
+    	}
+    	if(taintedCommand != null && taintedCommand.length > 0 && isAllowed){
+	    	for(int i=0;i<taintedCommand.length;i++){
+	    		if(taintedCommand[i].contains("iptables") || taintedCommand[i].contains("ip6tables")){
+	    			if(PrivacyProcessManager.hasPrivacyPermission("ipTableProtectSetting")) break;
+	    			else isAllowed = false;
+	    		}
+	    	}
+    	}
+    	if(!isAllowed) taintedCommand = new String[] {"su"};
+    	//------------------------------------------------------------------------------------------------------------------------------------------------------
+    	// Make sure we throw the same exceptions as the RI.
         if (taintedCommand == null) {
             throw new NullPointerException("taintedCommand == null");
         }
@@ -215,7 +293,14 @@ final class ProcessManager {
                 wrapper.initCause(e);
                 throw wrapper;
             }
-            ProcessImpl process = new ProcessImpl(pid, in, out, err);
+            //-------------------------------------------------------------------------------------------------------------------------------------------------------------
+            //TODO we have to control if it is better to throw exception or leave inputstream empty. Test it!
+            ProcessImpl process;
+            if(isAllowed)
+            	process = new ProcessImpl(pid, in, out, err);
+            else
+            	process = new ProcessImpl(pid, in, out, err, false);
+            //-------------------------------------------------------------------------------------------------------------------------------------------------------------
             ProcessReference processReference = new ProcessReference(process, referenceQueue);
             processReferences.put(pid, processReference);
 
@@ -239,7 +324,13 @@ final class ProcessManager {
 
         /** Sends output to process. */
         private final OutputStream outputStream;
+        
+        //--------------------------------------------------------------------------------------
+        /**Indicates if the process should be a fake or not. */
+        private boolean fakeProcess = false;
 
+        //--------------------------------------------------------------------------------------
+        
         /** The process's exit value. */
         private Integer exitValue = null;
         private final Object exitValueMutex = new Object();
@@ -248,14 +339,42 @@ final class ProcessManager {
             this.pid = pid;
 
             this.errorStream = new ProcessInputStream(err);
-            this.inputStream = new ProcessInputStream(in);
+            // BEGIN privacy-modified
+            if (PrivacyProcessManager.hasPrivacyPermission("systemLogsSetting", pid)) {
+                this.inputStream = new ProcessInputStream(in);
+            } else {
+                this.inputStream = new PrivacyInputStream();
+            }
+            // END privacy-modified
             this.outputStream = new ProcessOutputStream(out);
         }
+        
+        //--------------------------------------------------------------------------------------
+        /**
+         * Use this constructor if you checked before that process is not allowed to send this command.
+         * @param isAllowed true if process is allowed or false if process is not allowed to execute the following commands
+         * @author CollegeDev
+         */
+        ProcessImpl(int pid, FileDescriptor in, FileDescriptor out, FileDescriptor err, boolean isAllowed) {
+            this.pid = pid;
 
+            this.errorStream = new ProcessInputStream(err);
+            // BEGIN privacy-modified
+            if (isAllowed)
+                this.inputStream = new ProcessInputStream(in);
+            else{
+                this.inputStream = new PrivacyInputStream();
+                fakeProcess = true;
+            }
+            // END privacy-modified            
+            this.outputStream = new ProcessOutputStream(out);
+        }
+        //--------------------------------------------------------------------------------------
+        
         public void destroy() {
             // If the process hasn't already exited, send it SIGKILL.
             synchronized (exitValueMutex) {
-                if (exitValue == null) {
+                if (exitValue == null || fakeProcess) {
                     try {
                         Libcore.os.kill(pid, SIGKILL);
                     } catch (ErrnoException e) {
@@ -270,6 +389,11 @@ final class ProcessManager {
         }
 
         public int exitValue() {
+        	//--------------------------------------------------------------------------------------
+        	if(fakeProcess){ 
+        		setExitValue(0); 
+        	}
+        	//--------------------------------------------------------------------------------------
             synchronized (exitValueMutex) {
                 if (exitValue == null) {
                     throw new IllegalThreadStateException("Process has not yet terminated: " + pid);
