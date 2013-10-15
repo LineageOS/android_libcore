@@ -586,10 +586,8 @@ public final class NativeCrypto {
 
     static {
         // Note these are added in priority order
-        add("SSL_RSA_WITH_RC4_128_MD5",              "RC4-MD5");
-        add("SSL_RSA_WITH_RC4_128_SHA",              "RC4-SHA");
-        add("TLS_RSA_WITH_AES_128_CBC_SHA",          "AES128-SHA");
         add("TLS_RSA_WITH_AES_256_CBC_SHA",          "AES256-SHA");
+        add("TLS_RSA_WITH_AES_128_CBC_SHA",          "AES128-SHA");
         add("TLS_ECDH_ECDSA_WITH_RC4_128_SHA",       "ECDH-ECDSA-RC4-SHA");
         add("TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",   "ECDH-ECDSA-AES128-SHA");
         add("TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",   "ECDH-ECDSA-AES256-SHA");
@@ -620,6 +618,8 @@ public final class NativeCrypto {
         add("SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",     "EXP-DES-CBC-SHA");
         add("SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA", "EXP-EDH-RSA-DES-CBC-SHA");
         add("SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA", "EXP-EDH-DSS-DES-CBC-SHA");
+        add("SSL_RSA_WITH_RC4_128_MD5",              "RC4-MD5");
+        add("SSL_RSA_WITH_RC4_128_SHA",              "RC4-SHA");
         add("SSL_RSA_WITH_NULL_MD5",                 "NULL-MD5");
         add("SSL_RSA_WITH_NULL_SHA",                 "NULL-SHA");
         add("TLS_ECDH_ECDSA_WITH_NULL_SHA",          "ECDH-ECDSA-NULL-SHA");
@@ -710,10 +710,8 @@ public final class NativeCrypto {
 
     public static String[] getDefaultCipherSuites() {
         return new String[] {
-            "SSL_RSA_WITH_RC4_128_MD5",
-            "SSL_RSA_WITH_RC4_128_SHA",
-            "TLS_RSA_WITH_AES_128_CBC_SHA",
             "TLS_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_RSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDH_ECDSA_WITH_RC4_128_SHA",
             "TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA",
@@ -744,6 +742,8 @@ public final class NativeCrypto {
             "SSL_RSA_EXPORT_WITH_DES40_CBC_SHA",
             "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA",
             "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
+            "SSL_RSA_WITH_RC4_128_MD5",
+            "SSL_RSA_WITH_RC4_128_SHA",
             TLS_EMPTY_RENEGOTIATION_INFO_SCSV
         };
     }
