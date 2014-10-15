@@ -234,11 +234,7 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
                             fatalAlert(AlertProtocol.HANDSHAKE_FAILURE,
                                        "Bad server hello cipher suite");
                         }
-                        if (serverHello.server_version[1] == 1) {
-                            computerReferenceVerifyDataTLS("server finished");
-                        } else {
-                            computerReferenceVerifyDataSSLv3(SSLv3Constants.server);
-                        }
+                        computerReferenceVerifyDataTLS("server finished");
                     }
                     session.protocol = servProt;
                     recordProtocol.setVersion(session.protocol.version);
@@ -335,25 +331,15 @@ public class ClientHandshakeImpl extends HandshakeProtocol {
      */
     @Override
     protected void makeFinished() {
-        byte[] verify_data;
-        if (serverHello.server_version[1] == 1) {
-            verify_data = new byte[12];
-            computerVerifyDataTLS("client finished", verify_data);
-        } else {
-            verify_data = new byte[36];
-            computerVerifyDataSSLv3(SSLv3Constants.client, verify_data);
-        }
+        byte[] verify_data = new byte[12];
+        computerVerifyDataTLS("client finished", verify_data);
         clientFinished = new Finished(verify_data);
         send(clientFinished);
         if (isResuming) {
             session.lastAccessedTime = System.currentTimeMillis();
             status = FINISHED;
         } else {
-            if (serverHello.server_version[1] == 1) {
-                computerReferenceVerifyDataTLS("server finished");
-            } else {
-                computerReferenceVerifyDataSSLv3(SSLv3Constants.server);
-            }
+            computerReferenceVerifyDataTLS("server finished");
             status = NEED_UNWRAP;
         }
     }

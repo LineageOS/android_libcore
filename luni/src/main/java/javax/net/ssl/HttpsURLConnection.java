@@ -100,8 +100,7 @@ import java.security.cert.X509Certificate;
  * <h3>TLS Intolerance Support</h3>
  *
  * This class attempts to create secure connections using common TLS
- * extensions and SSL deflate compression. Should that fail, the
- * connection will be retried with SSLv3 only.
+ * extensions and SSL deflate compression. 
  */
 public abstract class HttpsURLConnection extends HttpURLConnection {
     /*

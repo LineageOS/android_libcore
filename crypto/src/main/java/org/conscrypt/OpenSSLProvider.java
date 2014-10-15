@@ -43,8 +43,6 @@ public final class OpenSSLProvider extends Provider {
 
         /* === SSL Contexts === */
         final String classOpenSSLContextImpl = prefix + "OpenSSLContextImpl";
-        put("SSLContext.SSL", classOpenSSLContextImpl);
-        put("SSLContext.SSLv3", classOpenSSLContextImpl);
         put("SSLContext.TLS", classOpenSSLContextImpl);
         put("SSLContext.TLSv1", classOpenSSLContextImpl);
         put("SSLContext.TLSv1.1", classOpenSSLContextImpl);

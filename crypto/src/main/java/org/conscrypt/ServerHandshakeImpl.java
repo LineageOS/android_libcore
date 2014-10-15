@@ -578,22 +578,14 @@ public class ServerHandshakeImpl extends HandshakeProtocol {
     @Override
     protected void makeFinished() {
         byte[] verify_data;
-        boolean isTLS = (serverHello.server_version[1] == 1); // TLS 1.0 protocol
-        if (isTLS) {
-            verify_data = new byte[12];
-            computerVerifyDataTLS("server finished", verify_data);
-        } else { // SSL 3.0 protocol (http://wp.netscape.com/eng/ssl3)
-            verify_data = new byte[36];
-            computerVerifyDataSSLv3(SSLv3Constants.server, verify_data);
-        }
+
+	// only TLS is now supported due to POODLE
+        verify_data = new byte[12];
+        computerVerifyDataTLS("server finished", verify_data);
         serverFinished = new Finished(verify_data);
         send(serverFinished);
         if (isResuming) {
-            if (isTLS) {
-                computerReferenceVerifyDataTLS("client finished");
-            } else {
-                computerReferenceVerifyDataSSLv3(SSLv3Constants.client);
-            }
+            computerReferenceVerifyDataTLS("client finished");
             status = NEED_UNWRAP;
         } else {
             session.lastAccessedTime = System.currentTimeMillis();
@@ -642,11 +634,7 @@ public class ServerHandshakeImpl extends HandshakeProtocol {
             } else {
                 changeCipherSpecReceived = true;
             }
-            if (serverHello.server_version[1] == 1) {
-                computerReferenceVerifyDataTLS("client finished");
-            } else {
-                computerReferenceVerifyDataSSLv3(SSLv3Constants.client);
-            }
+            computerReferenceVerifyDataTLS("client finished");
         }
     }
 

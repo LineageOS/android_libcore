@@ -254,9 +254,8 @@ public class SSLRecordProtocol {
             }
             this.session = session;
             // create new connection state
-            pendingConnectionState = ((version == null) || (version[1] == 1))
-                ? (ConnectionState) new ConnectionStateTLS(getSession())
-                : (ConnectionState) new ConnectionStateSSLv3(getSession());
+            pendingConnectionState = 
+                  (ConnectionState) new ConnectionStateTLS(getSession());
             sessionWasChanged = true;
         } else {
             // wait for rehandshaking's session
