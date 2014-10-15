@@ -202,7 +202,6 @@ public final class StandardNames extends Assert {
         provide("MessageDigest", "SHA-384");
         provide("MessageDigest", "SHA-512");
         provide("Policy", "JavaPolicy");
-        provide("SSLContext", "SSLv3");
         provide("SSLContext", "TLSv1");
         provide("SSLContext", "TLSv1.1");
         provide("SSLContext", "TLSv1.2");
@@ -504,7 +503,7 @@ public final class StandardNames extends Assert {
         SSL_CONTEXT_PROTOCOLS_DEFAULT,
         "SSL",
         // "SSLv2",
-        "SSLv3",
+        // "SSLv3",
         "TLS",
         "TLSv1",
         "TLSv1.1",
@@ -523,7 +522,7 @@ public final class StandardNames extends Assert {
 
     public static final Set<String> SSL_SOCKET_PROTOCOLS = new HashSet<String>(Arrays.asList(
         // "SSLv2",
-        "SSLv3",
+        // "SSLv3",
         "TLSv1",
         "TLSv1.1",
         "TLSv1.2"));
