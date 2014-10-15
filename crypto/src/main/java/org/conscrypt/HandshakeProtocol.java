@@ -358,57 +358,6 @@ public abstract class HandshakeProtocol {
     }
 
     /**
-     * Computer reference SSLv3 verify_data that is used to verify finished message
-     * @see "SSLv3 spec. 7.6.9. Finished"
-     * @param label
-     */
-    protected void computerReferenceVerifyDataSSLv3(byte[] sender) {
-        verify_data = new byte[36];
-        computerVerifyDataSSLv3(sender, verify_data);
-    }
-
-    /**
-     * Computer SSLv3 verify_data
-     * @see "SSLv3 spec. 7.6.9. Finished"
-     * @param label
-     * @param buf
-     */
-    protected void computerVerifyDataSSLv3(byte[] sender, byte[] buf) {
-        MessageDigest md5;
-        MessageDigest sha;
-        try {
-            md5 = MessageDigest.getInstance("MD5");
-            sha = MessageDigest.getInstance("SHA-1");
-        } catch (Exception e) {
-            fatalAlert(AlertProtocol.INTERNAL_ERROR,
-                       "Could not initialize the Digest Algorithms.",
-                       e);
-            return;
-        }
-        try {
-            byte[] handshake_messages = io_stream.getMessages();
-            md5.update(handshake_messages);
-            md5.update(sender);
-            md5.update(session.master_secret);
-            byte[] b = md5.digest(SSLv3Constants.MD5pad1);
-            md5.update(session.master_secret);
-            md5.update(SSLv3Constants.MD5pad2);
-            System.arraycopy(md5.digest(b), 0, buf, 0, 16);
-
-            sha.update(handshake_messages);
-            sha.update(sender);
-            sha.update(session.master_secret);
-            b = sha.digest(SSLv3Constants.SHApad1);
-            sha.update(session.master_secret);
-            sha.update(SSLv3Constants.SHApad2);
-            System.arraycopy(sha.digest(b), 0, buf, 16, 20);
-        } catch (Exception e) {
-            fatalAlert(AlertProtocol.INTERNAL_ERROR, "INTERNAL ERROR", e);
-
-        }
-    }
-
-    /**
      * Verifies finished data
      *
      * @param data
@@ -448,15 +397,11 @@ public abstract class HandshakeProtocol {
         System.arraycopy(clientHello.getRandom(), 0, seed, 0, 32);
         System.arraycopy(serverHello.getRandom(), 0, seed, 32, 32);
         session.master_secret = new byte[48];
-        if (serverHello.server_version[1] == 1) { // TLSv1
-            try {
-                PRF.computePRF(session.master_secret, preMasterSecret,
-                        master_secret_bytes, seed);
-            } catch (GeneralSecurityException e) {
-                fatalAlert(AlertProtocol.INTERNAL_ERROR, "PRF error", e);
-            }
-        } else { // SSL3.0
-            PRF.computePRF_SSLv3(session.master_secret, preMasterSecret, seed);
+        try {
+            PRF.computePRF(session.master_secret, preMasterSecret,
+                    master_secret_bytes, seed);
+        } catch (GeneralSecurityException e) {
+            fatalAlert(AlertProtocol.INTERNAL_ERROR, "PRF error", e);
         }
 
         //delete preMasterSecret from memory

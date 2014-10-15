@@ -22,12 +22,10 @@ import java.security.Provider;
 /**
  * JSSE Provider implementation.
  *
- * This implementation is based on TLS v 1.0 and SSL v3 protocol specifications.
+ * This implementation is based on TLS v 1.0 protocol specifications.
  *
  * <ul>
  * <li><a href="http://www.ietf.org/rfc/rfc2246.txt">TLS v 1.0 Protocol
- * specification</a></li>
- * <li><a href="http://wp.netscape.com/eng/ssl3">SSL v3 Protocol
  * specification</a></li>
  * </ul>
  *
@@ -107,8 +105,6 @@ public final class JSSEProvider extends Provider {
     public JSSEProvider() {
         super("HarmonyJSSE", 1.0, "Harmony JSSE Provider");
 
-        put("SSLContext.SSL", SSLContextImpl.class.getName());
-        put("SSLContext.SSLv3", SSLContextImpl.class.getName());
         put("SSLContext.TLS", SSLContextImpl.class.getName());
         put("SSLContext.TLSv1", SSLContextImpl.class.getName());
 
