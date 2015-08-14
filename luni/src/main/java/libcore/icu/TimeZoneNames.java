@@ -134,6 +134,13 @@ public final class TimeZoneNames {
         return cachedZoneStrings.get(locale);
     }
 
+    public static void clearLocaleCache(Locale locale) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+        cachedZoneStrings.put(locale, null);
+    }
+
     /**
      * Returns an array containing the time zone ids in use in the country corresponding to
      * the given locale. This is not necessary for Java API, but is used by telephony as a
