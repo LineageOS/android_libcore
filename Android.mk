@@ -30,12 +30,6 @@ include $(LOCAL_PATH)/JavaLibrary.mk
 include $(LOCAL_PATH)/NativeCode.mk
 
 #
-# Include the definitions for the Certificate Authority (CA) certificates
-#
-
-include $(LOCAL_PATH)/CaCerts.mk
-
-#
 # Include the definitions to build the caliper benchmarks.
 #
 include $(LOCAL_PATH)/benchmarks/Android.mk
