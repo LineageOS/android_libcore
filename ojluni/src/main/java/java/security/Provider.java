@@ -38,8 +38,6 @@ import java.security.Security;
 import java.security.cert.CertStoreParameters;
 import java.util.function.BiConsumer;
 
-import javax.security.auth.login.Configuration;
-
 /**
  * This class represents a "provider" for the
  * Java Security API, where a provider implements some or all parts of
