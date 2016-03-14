@@ -2906,6 +2906,14 @@ public class Arrays {
         }
 
         @Override
+        public void forEach(Consumer<? super E> action) {
+            Objects.requireNonNull(action);
+            for (E e : a) {
+                action.accept(e);
+            }
+        }
+
+        @Override
         public Spliterator<E> spliterator() {
             return Spliterators.spliterator(a, Spliterator.ORDERED);
         }
