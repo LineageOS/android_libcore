@@ -88,10 +88,7 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/java/util/concurrent/BrokenBarrierException.java \
   luni/src/main/java/java/util/concurrent/Callable.java \
   luni/src/main/java/java/util/concurrent/CancellationException.java \
-  luni/src/main/java/java/util/concurrent/CompletableFuture.java \
-  luni/src/main/java/java/util/concurrent/CompletionException.java \
   luni/src/main/java/java/util/concurrent/CompletionService.java \
-  luni/src/main/java/java/util/concurrent/CompletionStage.java \
   luni/src/main/java/java/util/concurrent/ConcurrentHashMap.java \
   luni/src/main/java/java/util/concurrent/ConcurrentLinkedDeque.java \
   luni/src/main/java/java/util/concurrent/ConcurrentLinkedQueue.java \
@@ -117,7 +114,6 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/java/util/concurrent/ForkJoinWorkerThread.java \
   luni/src/main/java/java/util/concurrent/Future.java \
   luni/src/main/java/java/util/concurrent/FutureTask.java \
-  luni/src/main/java/java/util/concurrent/Helpers.java \
   luni/src/main/java/java/util/concurrent/LinkedBlockingDeque.java \
   luni/src/main/java/java/util/concurrent/LinkedBlockingQueue.java \
   luni/src/main/java/java/util/concurrent/LinkedTransferQueue.java \
@@ -152,11 +148,7 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/java/util/concurrent/atomic/AtomicReferenceArray.java \
   luni/src/main/java/java/util/concurrent/atomic/AtomicReferenceFieldUpdater.java \
   luni/src/main/java/java/util/concurrent/atomic/AtomicStampedReference.java \
-  luni/src/main/java/java/util/concurrent/atomic/DoubleAccumulator.java \
-  luni/src/main/java/java/util/concurrent/atomic/DoubleAdder.java \
-  luni/src/main/java/java/util/concurrent/atomic/LongAccumulator.java \
-  luni/src/main/java/java/util/concurrent/atomic/LongAdder.java \
-  luni/src/main/java/java/util/concurrent/atomic/Striped64.java \
+  luni/src/main/java/java/util/concurrent/atomic/Fences.java \
   luni/src/main/java/java/util/concurrent/atomic/package-info.java \
   luni/src/main/java/java/util/concurrent/locks/AbstractOwnableSynchronizer.java \
   luni/src/main/java/java/util/concurrent/locks/AbstractQueuedLongSynchronizer.java \
@@ -167,7 +159,6 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/java/util/concurrent/locks/ReadWriteLock.java \
   luni/src/main/java/java/util/concurrent/locks/ReentrantLock.java \
   luni/src/main/java/java/util/concurrent/locks/ReentrantReadWriteLock.java \
-  luni/src/main/java/java/util/concurrent/locks/StampedLock.java \
   luni/src/main/java/java/util/concurrent/locks/package-info.java \
   luni/src/main/java/java/util/concurrent/package-info.java \
   luni/src/main/java/javax/xml/XMLConstants.java \

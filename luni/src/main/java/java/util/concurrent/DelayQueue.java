@@ -7,14 +7,9 @@
 package java.util.concurrent;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
-
-import java.util.AbstractQueue;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.PriorityQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
 
 // BEGIN android-note
 // removed link to collections framework docs
@@ -42,7 +37,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @since 1.5
  * @author Doug Lea
- * @param <E> the type of elements held in this queue
+ * @param <E> the type of elements held in this collection
  */
 public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
     implements BlockingQueue<E> {
@@ -162,9 +157,10 @@ public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
         lock.lock();
         try {
             E first = q.peek();
-            return (first == null || first.getDelay(NANOSECONDS) > 0)
-                ? null
-                : q.poll();
+            if (first == null || first.getDelay(NANOSECONDS) > 0)
+                return null;
+            else
+                return q.poll();
         } finally {
             lock.unlock();
         }
@@ -187,7 +183,7 @@ public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
                     available.await();
                 else {
                     long delay = first.getDelay(NANOSECONDS);
-                    if (delay <= 0L)
+                    if (delay <= 0)
                         return q.poll();
                     first = null; // don't retain ref while waiting
                     if (leader != null)
@@ -229,15 +225,15 @@ public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
             for (;;) {
                 E first = q.peek();
                 if (first == null) {
-                    if (nanos <= 0L)
+                    if (nanos <= 0)
                         return null;
                     else
                         nanos = available.awaitNanos(nanos);
                 } else {
                     long delay = first.getDelay(NANOSECONDS);
-                    if (delay <= 0L)
+                    if (delay <= 0)
                         return q.poll();
-                    if (nanos <= 0L)
+                    if (nanos <= 0)
                         return null;
                     first = null; // don't retain ref while waiting
                     if (nanos < delay || leader != null)
@@ -466,7 +462,7 @@ public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
     }
 
     /**
-     * Identity-based version for use in Itr.remove.
+     * Identity-based version for use in Itr.remove
      */
     void removeEQ(Object o) {
         final ReentrantLock lock = this.lock;
@@ -488,8 +484,12 @@ public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
      * unexpired) in this queue. The iterator does not return the
      * elements in any particular order.
      *
-     * <p>The returned iterator is
-     * <a href="package-summary.html#Weakly"><i>weakly consistent</i></a>.
+     * <p>The returned iterator is a "weakly consistent" iterator that
+     * will never throw {@link java.util.ConcurrentModificationException
+     * ConcurrentModificationException}, and guarantees to traverse
+     * elements as they existed upon construction of the iterator, and
+     * may (but is not guaranteed to) reflect any modifications
+     * subsequent to construction.
      *
      * @return an iterator over the elements in this queue
      */
