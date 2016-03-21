@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1997, 2014, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -3582,6 +3582,7 @@ public class Collections {
      * Returns an immutable set containing only the specified object.
      * The returned set is serializable.
      *
+     * @param  <E> the class of the objects in the set
      * @param o the sole object to be stored in the returned set.
      * @return an immutable set containing only the specified object.
      */
@@ -3617,6 +3618,52 @@ public class Collections {
     }
 
     /**
+     * Creates a {@code Spliterator} with only the specified element
+     *
+     * @param <T> Type of elements
+     * @return A singleton {@code Spliterator}
+     */
+    static <T> Spliterator<T> singletonSpliterator(final T element) {
+        return new Spliterator<T>() {
+            long est = 1;
+
+            @Override
+            public Spliterator<T> trySplit() {
+                return null;
+            }
+
+            @Override
+            public boolean tryAdvance(Consumer<? super T> consumer) {
+                Objects.requireNonNull(consumer);
+                if (est > 0) {
+                    est--;
+                    consumer.accept(element);
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
+            public void forEachRemaining(Consumer<? super T> consumer) {
+                tryAdvance(consumer);
+            }
+
+            @Override
+            public long estimateSize() {
+                return est;
+            }
+
+            @Override
+            public int characteristics() {
+                int value = (element != null) ? Spliterator.NONNULL : 0;
+
+                return value | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE |
+                       Spliterator.DISTINCT | Spliterator.ORDERED;
+            }
+        };
+    }
+
+    /**
      * @serial include
      */
     private static class SingletonSet<E>
@@ -3643,6 +3690,10 @@ public class Collections {
             action.accept(element);
         }
         @Override
+        public Spliterator<E> spliterator() {
+            return singletonSpliterator(element);
+        }
+        @Override
         public boolean removeIf(Predicate<? super E> filter) {
             throw new UnsupportedOperationException();
         }
@@ -3652,6 +3703,7 @@ public class Collections {
      * Returns an immutable list containing only the specified object.
      * The returned list is serializable.
      *
+     * @param  <E> the class of the objects in the list
      * @param o the sole object to be stored in the returned list.
      * @return an immutable list containing only the specified object.
      * @since 1.3
@@ -3696,12 +3748,18 @@ public class Collections {
         public boolean removeIf(Predicate<? super E> filter) {
             throw new UnsupportedOperationException();
         }
+        @Override
+        public Spliterator<E> spliterator() {
+            return singletonSpliterator(element);
+        }
     }
 
     /**
      * Returns an immutable map, mapping only the specified key to the
      * specified value.  The returned map is serializable.
      *
+     * @param <K> the class of the map keys
+     * @param <V> the class of the map values
      * @param key the sole key to be stored in the returned map.
      * @param value the value to which the returned map maps <tt>key</tt>.
      * @return an immutable map containing only the specified key-value
@@ -3778,6 +3836,8 @@ public class Collections {
      * combination with the <tt>List.addAll</tt> method to grow lists.
      * The returned list is serializable.
      *
+     * @param  <T> the class of the object to copy and of the objects
+     *         in the returned list.
      * @param  n the number of elements in the returned list.
      * @param  o the element to appear repeatedly in the returned list.
      * @return an immutable list consisting of <tt>n</tt> copies of the
@@ -3840,6 +3900,7 @@ public class Collections {
             return a;
         }
 
+        @SuppressWarnings("unchecked")
         public <T> T[] toArray(T[] a) {
             final int n = this.n;
             if (a.length < n) {
@@ -3897,11 +3958,13 @@ public class Collections {
      *
      * The returned comparator is serializable.
      *
+     * @param  <T> the class of the objects compared by the comparator
      * @return A comparator that imposes the reverse of the <i>natural
      *         ordering</i> on a collection of objects that implement
      *         the <tt>Comparable</tt> interface.
      * @see Comparable
      */
+    @SuppressWarnings("unchecked")
     public static <T> Comparator<T> reverseOrder() {
         return (Comparator<T>) ReverseComparator.REVERSE_ORDER;
     }
@@ -3921,7 +3984,7 @@ public class Collections {
             return c2.compareTo(c1);
         }
 
-        private Object readResolve() { return reverseOrder(); }
+        private Object readResolve() { return Collections.reverseOrder(); }
 
         @Override
         public Comparator<Comparable<Object>> reversed() {
@@ -3939,6 +4002,7 @@ public class Collections {
      * <p>The returned comparator is serializable (assuming the specified
      * comparator is also serializable or {@code null}).
      *
+     * @param <T> the class of the objects compared by the comparator
      * @param cmp a comparator who's ordering is to be reversed by the returned
      * comparator or {@code null}
      * @return A comparator that imposes the reverse ordering of the
@@ -4002,6 +4066,7 @@ public class Collections {
      * interoperability with legacy APIs that require an enumeration
      * as input.
      *
+     * @param  <T> the class of the objects in the collection
      * @param c the collection for which an enumeration is to be returned.
      * @return an enumeration over the specified collection.
      * @see Enumeration
@@ -4027,6 +4092,7 @@ public class Collections {
      * legacy APIs that return enumerations and new APIs that require
      * collections.
      *
+     * @param <T> the class of the objects returned by the enumeration
      * @param e enumeration providing elements for the returned
      *          array list
      * @return an array list containing the elements returned
@@ -4044,6 +4110,8 @@ public class Collections {
 
     /**
      * Returns true if the specified arguments are equal, or both null.
+     *
+     * NB: Do not replace with Object.equals until JDK-8015417 is resolved.
      */
     static boolean eq(Object o1, Object o2) {
         return o1==null ? o2==null : o1.equals(o2);
@@ -4058,6 +4126,7 @@ public class Collections {
      * @param c the collection in which to determine the frequency
      *     of <tt>o</tt>
      * @param o the object whose frequency is to be determined
+     * @return the number of elements in {@code c} equal to {@code o}
      * @throws NullPointerException if <tt>c</tt> is null
      * @since 1.5
      */
@@ -4178,6 +4247,7 @@ public class Collections {
      *     Collections.addAll(flavors, "Peaches 'n Plutonium", "Rocky Racoon");
      * </pre>
      *
+     * @param  <T> the class of the elements to add and of the collection
      * @param c the collection into which <tt>elements</tt> are to be inserted
      * @param elements the elements to insert into <tt>c</tt>
      * @return <tt>true</tt> if the collection changed as a result of the call
@@ -4223,6 +4293,8 @@ public class Collections {
      *        new WeakHashMap&lt;Object, Boolean&gt;());
      * </pre>
      *
+     * @param <E> the class of the map keys and of the objects in the
+     *        returned set
      * @param map the backing map
      * @return the set backed by the map
      * @throws IllegalArgumentException if <tt>map</tt> is not empty
@@ -4305,6 +4377,7 @@ public class Collections {
      * implemented as a sequence of {@link Deque#addFirst addFirst}
      * invocations on the backing deque.
      *
+     * @param  <T> the class of the objects in the deque
      * @param deque the deque
      * @return the queue
      * @since  1.6
@@ -4344,6 +4417,7 @@ public class Collections {
         // Override default methods in Collection
         @Override
         public void forEach(Consumer<? super E> action) {q.forEach(action);}
+        @Override
         public boolean removeIf(Predicate<? super E> filter) {
             return q.removeIf(filter);
         }
