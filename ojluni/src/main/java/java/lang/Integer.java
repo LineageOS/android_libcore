@@ -480,7 +480,7 @@ public final class Integer extends Number implements Comparable<Integer> {
          */
 
         if (s == null) {
-            throw new NumberFormatException("null");
+            throw new NumberFormatException("s == null");
         }
 
         if (radix < Character.MIN_RADIX) {
