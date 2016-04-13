@@ -258,8 +258,8 @@ public class OldSystemTest extends junit.framework.TestCase {
     public void test_gc() {
         Runtime rt =  Runtime.getRuntime();
         Vector<StringBuffer> vec = new Vector<StringBuffer>();
-        long beforeTest = rt.freeMemory();
-        while(rt.freeMemory() < beforeTest * 2/3) {
+        long beforeTest = rt.totalMemory() - rt.freeMemory();
+        while (rt.totalMemory() - rt.freeMemory() < beforeTest * 2) {
              vec.add(new StringBuffer(1000));
         }
         long beforeGC = rt.totalMemory() - rt.freeMemory();
