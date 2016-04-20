@@ -151,13 +151,13 @@ public class DateFormatSymbolsTest extends junit.framework.TestCase {
         String[][] array = DateFormatSymbols.getInstance(Locale.US).getZoneStrings();
         for (int i = 0; i < array.length; ++i) {
             String[] row = array[i];
-            // America/Santiago is somewhat arbitrary; we just want a zone we have to generate
+            // Asia/Seoul is somewhat arbitrary; we just want a zone we have to generate
             // "GMT" strings for the short names.
-            if (row[0].equals("America/Santiago")) {
-                assertEquals("Chile Standard Time", row[1]);
-                assertEquals("GMT-03:00", row[2]);
-                assertEquals("Chile Summer Time", row[3]);
-                assertEquals("GMT-03:00", row[4]);
+            if (row[0].equals("Asia/Seoul")) {
+                assertEquals("Korean Standard Time", row[1]);
+                assertEquals("GMT+09:00", row[2]);
+                assertEquals("Korean Daylight Time", row[3]);
+                assertEquals("GMT+09:00", row[4]);
             }
         }
     }

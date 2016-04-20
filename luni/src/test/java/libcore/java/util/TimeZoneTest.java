@@ -257,11 +257,11 @@ public class TimeZoneTest extends TestCase {
 
     // http://b/7955614
     public void test_getDisplayName_GMT_short_names() throws Exception {
-        TimeZone tz = TimeZone.getTimeZone("America/Santiago");
-        assertEquals("Chile Summer Time", tz.getDisplayName(true, TimeZone.LONG, Locale.US));
-        assertEquals("Chile Standard Time", tz.getDisplayName(false, TimeZone.LONG, Locale.US));
-        assertEquals("GMT-03:00", tz.getDisplayName(true, TimeZone.SHORT, Locale.US));
-        assertEquals("GMT-03:00", tz.getDisplayName(false, TimeZone.SHORT, Locale.US));
+        TimeZone tz = TimeZone.getTimeZone("Asia/Seoul");
+        assertEquals("Korean Daylight Time", tz.getDisplayName(true, TimeZone.LONG, Locale.US));
+        assertEquals("Korean Standard Time", tz.getDisplayName(false, TimeZone.LONG, Locale.US));
+        assertEquals("GMT+09:00", tz.getDisplayName(true, TimeZone.SHORT, Locale.US));
+        assertEquals("GMT+09:00", tz.getDisplayName(false, TimeZone.SHORT, Locale.US));
     }
 
     private static boolean isGmtString(String s) {
