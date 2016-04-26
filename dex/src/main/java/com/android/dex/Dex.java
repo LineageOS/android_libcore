@@ -93,7 +93,11 @@ public final class Dex {
      * Creates a new dex buffer of the dex in {@code in}, and closes {@code in}.
      */
     public Dex(InputStream in) throws IOException {
-        loadFrom(in);
+        try {
+            loadFrom(in);
+        } finally {
+            in.close();
+        }
     }
 
     /**
@@ -104,13 +108,17 @@ public final class Dex {
             ZipFile zipFile = new ZipFile(file);
             ZipEntry entry = zipFile.getEntry(DexFormat.DEX_IN_JAR_NAME);
             if (entry != null) {
-                loadFrom(zipFile.getInputStream(entry));
+                try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                    loadFrom(inputStream);
+                }
                 zipFile.close();
             } else {
                 throw new DexException("Expected " + DexFormat.DEX_IN_JAR_NAME + " in " + file);
             }
         } else if (file.getName().endsWith(".dex")) {
-            loadFrom(new FileInputStream(file));
+            try (InputStream inputStream = new FileInputStream(file)) {
+                loadFrom(inputStream);
+            }
         } else {
             throw new DexException("unknown output extension: " + file);
         }
@@ -141,6 +149,9 @@ public final class Dex {
         return new Dex(data);
     }
 
+    /**
+     * It is the caller's responsibility to close {@code in}.
+     */
     private void loadFrom(InputStream in) throws IOException {
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
         byte[] buffer = new byte[8192];
@@ -149,7 +160,6 @@ public final class Dex {
         while ((count = in.read(buffer)) != -1) {
             bytesOut.write(buffer, 0, count);
         }
-        in.close();
 
         this.data = ByteBuffer.wrap(bytesOut.toByteArray());
         this.data.order(ByteOrder.LITTLE_ENDIAN);
@@ -174,9 +184,9 @@ public final class Dex {
     }
 
     public void writeTo(File dexOut) throws IOException {
-        OutputStream out = new FileOutputStream(dexOut);
-        writeTo(out);
-        out.close();
+        try (OutputStream out = new FileOutputStream(dexOut)) {
+            writeTo(out);
+        }
     }
 
     public TableOfContents getTableOfContents() {
