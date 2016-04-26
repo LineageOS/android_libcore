@@ -21,6 +21,7 @@ import java.text.ChoiceFormat;
 import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.text.ParsePosition;
+import java.util.Arrays;
 import java.util.Locale;
 
 import junit.framework.TestCase;
@@ -300,9 +301,11 @@ public class ChoiceFormatTest extends TestCase {
         // java.text.ChoiceFormat.getFormats()
         String[] orgFormats = (String[]) formats.clone();
         String[] f = (String[]) f1.getFormats();
-        assertTrue("Wrong formats", f.equals(formats));
+        // getFormats() documentation says "Get the formats passed in the constructor",
+        // which can be interpreted as object identity.
+        assertTrue("Wrong formats", f == formats);
         f[0] = "Modified";
-        assertTrue("Formats copied", !f.equals(orgFormats));
+        assertTrue("Formats copied", f != orgFormats);
     }
 
     /**
@@ -312,9 +315,11 @@ public class ChoiceFormatTest extends TestCase {
         // Test for method double [] java.text.ChoiceFormat.getLimits()
         double[] orgLimits = (double[]) limits.clone();
         double[] l = f1.getLimits();
-        assertTrue("Wrong limits", l.equals(limits));
+        // getLimits() documentation says "Get the limits passed in the constructor",
+        // which can be interpreted as object identity.
+        assertTrue("Wrong limits", l == limits);
         l[0] = 3.14527;
-        assertTrue("Limits copied", !l.equals(orgLimits));
+        assertTrue("Limits copied", l != orgLimits);
     }
 
     /**
