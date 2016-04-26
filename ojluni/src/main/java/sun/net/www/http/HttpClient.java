@@ -150,13 +150,13 @@ public class HttpClient extends NetworkClient {
             new sun.security.action.GetPropertyAction("sun.net.http.retryPost"));
 
         if (keepAlive != null) {
-            keepAliveProp = Boolean.valueOf(keepAlive).booleanValue();
+            keepAliveProp = Boolean.parseBoolean(keepAlive);
         } else {
             keepAliveProp = true;
         }
 
         if (retryPost != null) {
-            retryPostProp = Boolean.valueOf(retryPost).booleanValue();
+            retryPostProp = Boolean.parseBoolean(retryPost);
         } else
             retryPostProp = true;
 
