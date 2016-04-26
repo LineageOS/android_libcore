@@ -71,7 +71,7 @@ public class MulticastSocketTest extends junit.framework.TestCase {
 
         // Determine if the device is marked to support multicast or not. If this propery is not
         // set we assume the device has an interface capable of supporting multicast.
-        supportsMulticast = Boolean.valueOf(
+        supportsMulticast = Boolean.parseBoolean(
                 System.getProperty("android.cts.device.multicast", "true"));
         if (!supportsMulticast) {
             return;
