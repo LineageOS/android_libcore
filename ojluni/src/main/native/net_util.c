@@ -182,23 +182,29 @@ NET_SockaddrToInetAddress(JNIEnv *env, struct sockaddr *him, int *port) {
         *port = ntohs(him6->sin6_port);
     } else
 #endif /* AF_INET6 */
-        {
-            struct sockaddr_in *him4 = (struct sockaddr_in *)him;
-            static jclass inet4Cls = 0;
+    if (him->sa_family == AF_INET) {
+        struct sockaddr_in *him4 = (struct sockaddr_in *)him;
+        static jclass inet4Cls = 0;
 
-            if (inet4Cls == 0) {
-                jclass c = (*env)->FindClass(env, "java/net/Inet4Address");
-                CHECK_NULL_RETURN(c, NULL);
-                inet4Cls = (*env)->NewGlobalRef(env, c);
-                CHECK_NULL_RETURN(inet4Cls, NULL);
-                (*env)->DeleteLocalRef(env, c);
-            }
-            iaObj = (*env)->NewObject(env, inet4Cls, ia4_ctrID);
-            CHECK_NULL_RETURN(iaObj, NULL);
-            setInetAddress_family(env, iaObj, IPv4);
-            setInetAddress_addr(env, iaObj, ntohl(him4->sin_addr.s_addr));
-            *port = ntohs(him4->sin_port);
+        if (inet4Cls == 0) {
+            jclass c = (*env)->FindClass(env, "java/net/Inet4Address");
+            CHECK_NULL_RETURN(c, NULL);
+            inet4Cls = (*env)->NewGlobalRef(env, c);
+            CHECK_NULL_RETURN(inet4Cls, NULL);
+            (*env)->DeleteLocalRef(env, c);
         }
+        iaObj = (*env)->NewObject(env, inet4Cls, ia4_ctrID);
+        CHECK_NULL_RETURN(iaObj, NULL);
+        setInetAddress_family(env, iaObj, IPv4);
+        setInetAddress_addr(env, iaObj, ntohl(him4->sin_addr.s_addr));
+        *port = ntohs(him4->sin_port);
+    } else {
+        // Unknown family
+        char errmsg[255];
+        snprintf(errmsg, sizeof(errmsg), "Unknown socket family: %d", him->sa_family);
+        JNU_ThrowByName(env, "java/net/SocketException", errmsg);
+        return NULL;
+    }
     return iaObj;
 }
 
