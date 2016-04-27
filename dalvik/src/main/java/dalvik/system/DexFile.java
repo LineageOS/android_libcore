@@ -322,13 +322,13 @@ public final class DexFile {
     /*
      * Helper class.
      */
-    private class DFEnum implements Enumeration<String> {
+    private static class DFEnum implements Enumeration<String> {
         private int mIndex;
         private String[] mNameList;
 
         DFEnum(DexFile df) {
             mIndex = 0;
-            mNameList = getClassNameList(mCookie);
+            mNameList = getClassNameList(df.mCookie);
         }
 
         public boolean hasMoreElements() {
