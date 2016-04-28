@@ -1035,10 +1035,13 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
 
         if(this.bitLength < 64 && divisor.bitLength < 64 ) {
             if(diffScale == 0) {
-                return dividePrimitiveLongs(this.smallValue,
-                        divisor.smallValue,
-                        scale,
-                        roundingMode );
+                // http://b/26105053 - corner case: Long.MIN_VALUE / (-1) overflows a long
+                if (this.smallValue != Long.MIN_VALUE || divisor.smallValue != -1) {
+                    return dividePrimitiveLongs(this.smallValue,
+                            divisor.smallValue,
+                            scale,
+                            roundingMode);
+                }
             } else if(diffScale > 0) {
                 if(diffScale < MathUtils.LONG_POWERS_OF_TEN.length &&
                         divisor.bitLength + LONG_POWERS_OF_TEN_BIT_LENGTH[(int)diffScale] < 64) {
