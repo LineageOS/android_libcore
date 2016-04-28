@@ -1088,7 +1088,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
         if(scaledDivisor.bitLength() < 63) { // 63 in order to avoid out of long after *2
             long rem = remainder.longValue();
             long divisor = scaledDivisor.longValue();
-            compRem = longCompareTo(Math.abs(rem) * 2,Math.abs(divisor));
+            compRem = compareForRounding(rem, divisor);
             // To look if there is a carry
             compRem = roundingBehavior(quotient.testBit(0) ? 1 : 0,
                     sign * (5 + compRem), roundingMode);
@@ -1116,8 +1116,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
         int sign = Long.signum( scaledDividend ) * Long.signum( scaledDivisor );
         if (remainder != 0) {
             // Checking if:  remainder * 2 >= scaledDivisor
-            int compRem;                                      // 'compare to remainder'
-            compRem = longCompareTo(Math.abs(remainder) * 2,Math.abs(scaledDivisor));
+            int compRem = compareForRounding(remainder, scaledDivisor); // 'compare to remainder'
             // To look if there is a carry
             quotient += roundingBehavior(((int)quotient) & 1,
                     sign * (5 + compRem),
@@ -2703,9 +2702,36 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
         setUnscaledValue(integerAndFraction[0]);
     }
 
-    private static int longCompareTo(long value1, long value2) {
+    /**
+     * Returns -1, 0, and 1, respectively, if {@code value1 <, ==, > value2},
+     * respectively, when comparing without regard to the values' sign.
+     * This corresponds to the partial order where {@code 0L} is the smallest
+     * possible value and {@link Long#MIN_VALUE} is the largest because its
+     * absolute value is larger than any possible long value.
+     */
+    private static int compareAbsoluteValues(long value1, long value2) {
+        // Because Math.abs(Long.MIN_VALUE) == Long.MIN_VALUE,
+        // -1 <= Math.abs(v) - 1 <= Long.MAX_VALUE with correct ordering
+        // for v == Long.MIN_VALUE.
+        value1 = Math.abs(value1) - 1;
+        value2 = Math.abs(value2) - 1;
+        // Unlike Long.compare(), we guarantee to return specifically -1 and +1
         return value1 > value2 ? 1 : (value1 < value2 ? -1 : 0);
     }
+
+    /**
+     * Returns {@code -1, 0, +1} respectively for {@code abs(n/d) <, ==, > 0.5},
+     * respectively, using overflow and rounding safe arithmetics.
+     */
+    private static int compareForRounding(long n, long d) {
+        long halfD = d / 2;
+        if (n == halfD || n == -halfD) {
+            return (int) (d & 1);
+        } else {
+            return compareAbsoluteValues(n, halfD);
+        }
+    }
+
     /**
      * This method implements an efficient rounding for numbers which unscaled
      * value fits in the type {@code long}.
@@ -2727,7 +2753,7 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
         // If the discarded fraction is non-zero perform rounding
         if (fraction != 0) {
             // To check if the discarded fraction >= 0.5
-            compRem = longCompareTo(Math.abs(fraction) * 2, sizeOfFraction);
+            compRem = compareForRounding(fraction, sizeOfFraction);
             // To look if there is a carry
             integer += roundingBehavior( ((int)integer) & 1,
                     Long.signum(fraction) * (5 + compRem),
