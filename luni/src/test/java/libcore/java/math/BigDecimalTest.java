@@ -17,6 +17,7 @@
 package libcore.java.math;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import junit.framework.TestCase;
@@ -67,26 +68,36 @@ public final class BigDecimalTest extends TestCase {
 
     // https://code.google.com/p/android/issues/detail?id=43480
     public void testPrecisionFromString() {
-      BigDecimal a = new BigDecimal("-0.011111111111111111111");
-      BigDecimal b = a.multiply(BigDecimal.ONE);
+        BigDecimal a = new BigDecimal("-0.011111111111111111111");
+        BigDecimal b = a.multiply(BigDecimal.ONE);
 
-      assertEquals("-0.011111111111111111111", a.toString());
-      assertEquals("-0.011111111111111111111", b.toString());
+        assertEquals("-0.011111111111111111111", a.toString());
+        assertEquals("-0.011111111111111111111", b.toString());
 
-      assertEquals(20, a.precision());
-      assertEquals(20, b.precision());
+        assertEquals(20, a.precision());
+        assertEquals(20, b.precision());
 
-      assertEquals(21, a.scale());
-      assertEquals(21, b.scale());
+        assertEquals(21, a.scale());
+        assertEquals(21, b.scale());
 
-      assertEquals("-11111111111111111111", a.unscaledValue().toString());
-      assertEquals("-11111111111111111111", b.unscaledValue().toString());
+        assertEquals("-11111111111111111111", a.unscaledValue().toString());
+        assertEquals("-11111111111111111111", b.unscaledValue().toString());
 
-      assertEquals(a, b);
-      assertEquals(b, a);
+        assertEquals(a, b);
+        assertEquals(b, a);
 
-      assertEquals(0, a.subtract(b).signum());
-      assertEquals(0, a.compareTo(b));
+        assertEquals(0, a.subtract(b).signum());
+        assertEquals(0, a.compareTo(b));
+    }
+
+    public void testPrecisionFromString_simplePowersOfTen() {
+        assertEquals(new BigDecimal(BigInteger.valueOf(-10), 1), new BigDecimal("-1.0"));
+        assertEquals(new BigDecimal(BigInteger.valueOf(-1), 1), new BigDecimal("-0.1"));
+        assertEquals(new BigDecimal(BigInteger.valueOf(-1), -1), new BigDecimal("-1E+1"));
+
+        assertEquals(new BigDecimal(BigInteger.valueOf(10), 1), new BigDecimal("1.0"));
+        assertEquals(new BigDecimal(BigInteger.valueOf(1), 0), new BigDecimal("1"));
+        assertFalse(new BigDecimal("1.0").equals(new BigDecimal("1")));
     }
 
     // https://code.google.com/p/android/issues/detail?id=54580
@@ -108,4 +119,53 @@ public final class BigDecimalTest extends TestCase {
         assertFalse(zero.equals(other));
         assertFalse(other.equals(zero));
     }
+
+    /**
+     * Tests that Long.MIN_VALUE / -1 doesn't overflow back to Long.MIN_VALUE,
+     * like it would in long arithmetic.
+     */
+    // https://code.google.com/p/android/issues/detail?id=196555
+    public void testDivideAvoids64bitOverflow() throws Exception {
+        BigDecimal minLong = new BigDecimal("-9223372036854775808");
+        assertEquals("9223372036854775808/(-1)",
+                new BigDecimal("9223372036854775808"),
+                minLong.divide(new BigDecimal("-1"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+
+        assertEquals("922337203685477580.8/(-0.1)",
+                new BigDecimal("9223372036854775808"),
+                new BigDecimal("-922337203685477580.8")
+                        .divide(new BigDecimal("-0.1"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+
+        assertEquals("92233720368547758080/(-1E+1)",
+                new BigDecimal("9223372036854775808"),
+                new BigDecimal("-92233720368547758080")
+                        .divide(new BigDecimal("-1E+1"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+
+        assertEquals("9223372036854775808/(-10) with one decimal of precision",
+                new BigDecimal("922337203685477580.8"),
+                minLong.divide(new BigDecimal("-1E+1"), /* scale = */ 1, RoundingMode.UNNECESSARY));
+
+        // cases that request adjustment of the result scale, i.e. (diffScale != 0)
+        // i.e. result scale != (numerator.scale - divisor.scale)
+        assertEquals("9223372036854775808/(-1) with one decimal of precision",//
+                new BigDecimal("9223372036854775808.0"),
+                minLong.divide(new BigDecimal("-1"), /* scale = */ 1, RoundingMode.UNNECESSARY));
+
+        assertEquals("9223372036854775808/(-1.0)",//
+                new BigDecimal("9223372036854775808"),
+                minLong.divide(new BigDecimal("-1.0"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+
+        assertEquals("9223372036854775808/(-1.0) with one decimal of precision",//
+                new BigDecimal("9223372036854775808.0"),
+                minLong.divide(new BigDecimal("-1.0"), /* scale = */ 1, RoundingMode.UNNECESSARY));
+
+        // another arbitrary calculation that results in Long.MAX_VALUE + 1
+        // via a different route
+        assertEquals("4611686018427387904/(-5E-1)",//
+                new BigDecimal("9223372036854775808"),
+                new BigDecimal("-4611686018427387904").divide(
+                        new BigDecimal("-5E-1"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+
+    }
+
 }
