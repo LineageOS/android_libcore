@@ -67,7 +67,7 @@
 
 class ScopedResourceBundle {
  public:
-  ScopedResourceBundle(UResourceBundle* bundle) : bundle_(bundle) {
+  explicit ScopedResourceBundle(UResourceBundle* bundle) : bundle_(bundle) {
   }
 
   ~ScopedResourceBundle() {
