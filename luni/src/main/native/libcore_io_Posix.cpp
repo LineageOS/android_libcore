@@ -688,7 +688,7 @@ static jobject doGetSockName(JNIEnv* env, jobject javaFd, bool is_sockname) {
 
 class Passwd {
 public:
-    Passwd(JNIEnv* env) : mEnv(env), mResult(NULL) {
+    explicit Passwd(JNIEnv* env) : mEnv(env), mResult(NULL) {
         mBufferSize = sysconf(_SC_GETPW_R_SIZE_MAX);
         mBuffer.reset(new char[mBufferSize]);
     }
