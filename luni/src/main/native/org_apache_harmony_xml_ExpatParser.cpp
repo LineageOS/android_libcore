@@ -102,7 +102,8 @@ private:
  * Data passed to parser handler method by the parser.
  */
 struct ParsingContext {
-    ParsingContext(jobject object) : env(NULL), object(object), buffer(NULL), bufferSize(-1) {
+    explicit ParsingContext(jobject object)
+        : env(NULL), object(object), buffer(NULL), bufferSize(-1) {
         for (int i = 0; i < BUCKET_COUNT; i++) {
             internedStrings[i] = NULL;
         }
