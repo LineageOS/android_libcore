@@ -2703,16 +2703,21 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
     }
 
     /**
-     * Returns -1, 0, and 1, respectively, if {@code value1 <, ==, > value2},
-     * respectively, when comparing without regard to the values' sign.
-     * This corresponds to the partial order where {@code 0L} is the smallest
-     * possible value and {@link Long#MIN_VALUE} is the largest because its
-     * absolute value is larger than any possible long value.
+     * Returns -1, 0, and 1 if {@code value1 < value2}, {@code value1 == value2},
+     * and {@code value1 > value2}, respectively, when comparing without regard
+     * to the values' sign.
+     *
+     * <p>Note that this implementation deals correctly with Long.MIN_VALUE,
+     * whose absolute magnitude is larger than any other {@code long} value.
      */
     private static int compareAbsoluteValues(long value1, long value2) {
-        // Because Math.abs(Long.MIN_VALUE) == Long.MIN_VALUE,
-        // -1 <= Math.abs(v) - 1 <= Long.MAX_VALUE with correct ordering
-        // for v == Long.MIN_VALUE.
+        // Map long values to the range -1 .. Long.MAX_VALUE so that comparison
+        // of absolute magnitude can be done using regular long arithmetics.
+        // This deals correctly with Long.MIN_VALUE, whose absolute magnitude
+        // is larger than any other long value, and which is mapped to
+        // Long.MAX_VALUE here.
+        // Values that only differ by sign get mapped to the same value, for
+        // example both +3 and -3 get mapped to +2.
         value1 = Math.abs(value1) - 1;
         value2 = Math.abs(value2) - 1;
         // Unlike Long.compare(), we guarantee to return specifically -1 and +1
@@ -2720,14 +2725,29 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
     }
 
     /**
-     * Returns {@code -1, 0, +1} respectively for {@code abs(n/d) <, ==, > 0.5},
-     * respectively, using overflow and rounding safe arithmetics.
+     * Compares {@code n} against {@code 0.5 * d} in absolute terms (ignoring sign)
+     * and with arithmetics that are safe against overflow or loss of precision.
+     * Returns -1 if {@code n} is less than {@code 0.5 * d}, 0 if {@code n == 0.5 * d},
+     * or +1 if {@code n > 0.5 * d} when comparing the absolute values under such
+     * arithmetics.
      */
     private static int compareForRounding(long n, long d) {
-        long halfD = d / 2;
+        long halfD = d / 2; //  rounds towards 0
         if (n == halfD || n == -halfD) {
-            return (int) (d & 1);
+            // In absolute terms: Because n == halfD, we know that 2 * n + lsb == d
+            // for some lsb value 0 or 1. This means that n == d/2 (result 0) if
+            // lsb is 0, or n < d/2 (result -1) if lsb is 1. In either case, the
+            // result is -lsb.
+            // Since we're calculating in absolute terms, we need the absolute lsb
+            // (d & 1) as opposed to the signed lsb (d % 2) which would be -1 for
+            // negative odd values of d.
+            int lsb = (int) d & 1;
+            return -lsb; // returns 0 or -1
         } else {
+            // In absolute terms, either 2 * n + 1 < d (in the case of n < halfD),
+            // or 2 * n > d (in the case of n > halfD).
+            // In either case, comparing n against halfD gets the right result
+            // -1 or +1, respectively.
             return compareAbsoluteValues(n, halfD);
         }
     }
