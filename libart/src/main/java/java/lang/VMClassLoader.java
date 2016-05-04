@@ -37,7 +37,6 @@ class VMClassLoader {
      */
     private static ClassPathURLStreamHandler[] createBootClassPathUrlHandlers() {
         String[] bootClassPathEntries = getBootClassPathEntries();
-        ArrayList<String> zipFileUris = new ArrayList<String>(bootClassPathEntries.length);
         ArrayList<URLStreamHandler> urlStreamHandlers =
                 new ArrayList<URLStreamHandler>(bootClassPathEntries.length);
         for (String bootClassPathEntry : bootClassPathEntries) {
@@ -47,7 +46,6 @@ class VMClassLoader {
                 // We assume all entries are zip or jar files.
                 URLStreamHandler urlStreamHandler =
                         new ClassPathURLStreamHandler(bootClassPathEntry);
-                zipFileUris.add(entryUri);
                 urlStreamHandlers.add(urlStreamHandler);
             } catch (IOException e) {
                 // Skip it
