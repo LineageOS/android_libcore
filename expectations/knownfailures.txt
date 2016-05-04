@@ -1526,5 +1526,13 @@
   names: [
     "libcore.java.util.concurrent.CopyOnWriteArrayListTest#testSubListAtomicAdds"
   ]
+},
+{
+  description: "Tests must be run as root",
+  bug: 28536847,
+  result: EXEC_FAILED,
+  names: [
+    "com.android.org.apache.harmony.luni.tests.java.net.UnixNetworkInterfaceTest"
+  ]
 }
 ]
