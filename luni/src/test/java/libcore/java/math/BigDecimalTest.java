@@ -129,6 +129,7 @@ public final class BigDecimalTest extends TestCase {
     }
 
     public void testDivideRounding() {
+        // checkDivide(expected, dividend, divisor, scale, roundingMode)
         checkDivide("0", 1, Long.MIN_VALUE, 0, RoundingMode.DOWN);
         checkDivide("-1", 1, Long.MIN_VALUE, 0, RoundingMode.UP);
         checkDivide("-1", 1, Long.MIN_VALUE, 0, RoundingMode.FLOOR);
@@ -148,6 +149,58 @@ public final class BigDecimalTest extends TestCase {
         checkDivide("0", Long.MIN_VALUE / 2, Long.MIN_VALUE, 0, RoundingMode.HALF_DOWN);
         // (-2^62 - 1) / (-2^63) = (2^62 + 1) / 2^63 = 0.5 + 2^-63
         checkDivide("1", Long.MIN_VALUE / 2 - 1, Long.MIN_VALUE, 0, RoundingMode.HALF_DOWN);
+    }
+
+    /**
+     * Test a bunch of pairings with even/odd dividend and divisor whose
+     * result is near +/- 0.5.
+     */
+    public void testDivideRounding_sign() {
+        // checkDivide(expected, dividend, divisor, scale, roundingMode)
+        // positive dividend and divisor, even/odd values
+        checkDivide("0", 49, 100, 0, RoundingMode.HALF_UP);
+        checkDivide("1", 50, 100, 0, RoundingMode.HALF_UP);
+        checkDivide("1", 51, 101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", 50, 101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", Long.MAX_VALUE / 2, Long.MAX_VALUE, 0, RoundingMode.HALF_UP);
+
+        // Same with negative dividend and divisor
+        checkDivide("0", -49, -100, 0, RoundingMode.HALF_UP);
+        checkDivide("1", -50, -100, 0, RoundingMode.HALF_UP);
+        checkDivide("1", -51, -101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", -50, -101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", -(Long.MAX_VALUE / 2), -Long.MAX_VALUE, 0, RoundingMode.HALF_UP);
+
+        // Same with negative dividend
+        checkDivide("0", -49, 100, 0, RoundingMode.HALF_UP);
+        checkDivide("-1", -50, 100, 0, RoundingMode.HALF_UP);
+        checkDivide("-1", -51, 101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", -50, 101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", -(Long.MAX_VALUE / 2), Long.MAX_VALUE, 0, RoundingMode.HALF_UP);
+
+        // Same with negative divisor
+        checkDivide("0", 49, -100, 0, RoundingMode.HALF_UP);
+        checkDivide("-1", 50, -100, 0, RoundingMode.HALF_UP);
+        checkDivide("-1", 51, -101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", 50, -101, 0, RoundingMode.HALF_UP);
+        checkDivide("0", Long.MAX_VALUE / 2, -Long.MAX_VALUE, 0, RoundingMode.HALF_UP);
+    }
+
+    public void testDivideByOne() {
+        long[] dividends = new long[] {
+                Long.MIN_VALUE,
+                Long.MIN_VALUE + 1,
+                Long.MAX_VALUE,
+                Long.MAX_VALUE - 1,
+                0,
+                -1,
+                1,
+                10, 43, 314159265358979323L, // arbitrary values
+        };
+        for (long dividend : dividends) {
+            String expected = Long.toString(dividend);
+            checkDivide(expected, dividend, 1, 0, RoundingMode.UNNECESSARY);
+        }
     }
 
     /**
@@ -176,7 +229,7 @@ public final class BigDecimalTest extends TestCase {
                 minLong.divide(new BigDecimal("-1E+1"), /* scale = */ 1, RoundingMode.UNNECESSARY));
 
         // cases that request adjustment of the result scale, i.e. (diffScale != 0)
-        // i.e. result scale != (numerator.scale - divisor.scale)
+        // i.e. result scale != (dividend.scale - divisor.scale)
         assertEquals("9223372036854775808/(-1) with one decimal of precision",//
                 new BigDecimal("9223372036854775808.0"),
                 minLong.divide(new BigDecimal("-1"), /* scale = */ 1, RoundingMode.UNNECESSARY));
