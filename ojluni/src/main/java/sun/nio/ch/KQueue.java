@@ -113,4 +113,8 @@ class KQueue {
 
     static native int keventPoll(int kqpfd, long pollAddress, int nevents)
         throws IOException;
+
+    static {
+        Util.load();
+    }
 }
