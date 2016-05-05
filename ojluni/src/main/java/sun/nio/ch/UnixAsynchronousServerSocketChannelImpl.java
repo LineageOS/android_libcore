@@ -345,7 +345,6 @@ class UnixAsynchronousServerSocketChannelImpl
         throws IOException;
 
     static {
-        Util.load();
         initIDs();
     }
 }
