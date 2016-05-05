@@ -324,4 +324,8 @@ final class KQueuePort
     private static native void drain1(int fd) throws IOException;
 
     private static native void close0(int fd);
+
+    static {
+        Util.load();
+    }
 }
