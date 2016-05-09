@@ -453,6 +453,47 @@ public final class Byte extends Number implements Comparable<Byte> {
     }
 
     /**
+     * Converts the argument to an {@code int} by an unsigned
+     * conversion.  In an unsigned conversion to an {@code int}, the
+     * high-order 24 bits of the {@code int} are zero and the
+     * low-order 8 bits are equal to the bits of the {@code byte} argument.
+     *
+     * Consequently, zero and positive {@code byte} values are mapped
+     * to a numerically equal {@code int} value and negative {@code
+     * byte} values are mapped to an {@code int} value equal to the
+     * input plus 2<sup>8</sup>.
+     *
+     * @param  x the value to convert to an unsigned {@code int}
+     * @return the argument converted to {@code int} by an unsigned
+     *         conversion
+     * @since 1.8
+     */
+    public static int toUnsignedInt(byte x) {
+        return ((int) x) & 0xff;
+    }
+
+    /**
+     * Converts the argument to a {@code long} by an unsigned
+     * conversion.  In an unsigned conversion to a {@code long}, the
+     * high-order 56 bits of the {@code long} are zero and the
+     * low-order 8 bits are equal to the bits of the {@code byte} argument.
+     *
+     * Consequently, zero and positive {@code byte} values are mapped
+     * to a numerically equal {@code long} value and negative {@code
+     * byte} values are mapped to a {@code long} value equal to the
+     * input plus 2<sup>8</sup>.
+     *
+     * @param  x the value to convert to an unsigned {@code long}
+     * @return the argument converted to {@code long} by an unsigned
+     *         conversion
+     * @since 1.8
+     */
+    public static long toUnsignedLong(byte x) {
+        return ((long) x) & 0xffL;
+    }
+
+
+    /**
      * The number of bits used to represent a {@code byte} value in two's
      * complement binary form.
      *
