@@ -77,7 +77,7 @@ void android_get_LD_LIBRARY_PATH(char*, size_t);
 #define GETPROP(props, key, jret) \
     if (1) { \
         jstring jkey = JNU_NewStringPlatform(env, key); \
-        jret = (*env)->CallObjectMethod(env, props, getPropID, jkey); \
+        (jret) = (*env)->CallObjectMethod(env, props, getPropID, jkey); \
         if ((*env)->ExceptionOccurred(env)) return NULL; \
         (*env)->DeleteLocalRef(env, jkey); \
     } else ((void) 0)
