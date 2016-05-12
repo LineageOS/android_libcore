@@ -92,7 +92,7 @@ struct my_group_source_req {
 
 
 #define COPY_INET6_ADDRESS(env, source, target) \
-    (*env)->GetByteArrayRegion(env, source, 0, 16, target)
+    (*(env))->GetByteArrayRegion(env, source, 0, 16, target)
 
 /*
  * Copy IPv6 group, interface index, and IPv6 source address

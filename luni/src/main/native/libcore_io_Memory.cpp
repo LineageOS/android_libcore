@@ -124,7 +124,7 @@ static void Memory_peekByteArray(JNIEnv* env, jclass, jlong srcAddress, jbyteArr
             return; \
         } \
         const SWAP_TYPE* src = cast<const SWAP_TYPE*>(srcAddress); \
-        SWAP_FN(reinterpret_cast<SWAP_TYPE*>(elements.get()) + dstOffset, src, count); \
+        SWAP_FN(reinterpret_cast<SWAP_TYPE*>(elements.get()) + dstOffset, src, count); /*NOLINT*/ \
     } else { \
         const SCALAR_TYPE* src = cast<const SCALAR_TYPE*>(srcAddress); \
         env->Set ## JNI_NAME ## ArrayRegion(dst, dstOffset, count, src); \
@@ -177,9 +177,9 @@ static void Memory_pokeByteArray(JNIEnv* env, jclass, jlong dstAddress, jbyteArr
             return; \
         } \
         const SWAP_TYPE* src = reinterpret_cast<const SWAP_TYPE*>(elements.get()) + srcOffset; \
-        SWAP_FN(cast<SWAP_TYPE*>(dstAddress), src, count); \
+        SWAP_FN(cast<SWAP_TYPE*>(dstAddress), src, count); /*NOLINT*/ \
     } else { \
-        env->Get ## JNI_NAME ## ArrayRegion(src, srcOffset, count, cast<SCALAR_TYPE*>(dstAddress)); \
+        env->Get ## JNI_NAME ## ArrayRegion(src, srcOffset, count, cast<SCALAR_TYPE*>(dstAddress)); /*NOLINT*/ \
     } \
 }
 
