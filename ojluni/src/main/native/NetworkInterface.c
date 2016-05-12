@@ -715,8 +715,8 @@ static netif *enumInterfaces(JNIEnv *env) {
 
 #define CHECKED_MALLOC3(_pointer,_type,_size) \
     do{ \
-      _pointer = (_type)malloc( _size ); \
-      if (_pointer == NULL) { \
+      (_pointer) = (_type)malloc( _size ); \
+      if ((_pointer) == NULL) { \
         JNU_ThrowOutOfMemoryError(env, "Native heap allocation failed"); \
         return ifs; /* return untouched list */ \
       } \

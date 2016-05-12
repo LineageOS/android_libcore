@@ -66,7 +66,7 @@
 
 #define TO_JAVA_STRING(NAME, EXP) \
         jstring NAME = env->NewStringUTF(EXP); \
-        if (NAME == NULL) return NULL;
+        if ((NAME) == NULL) return NULL;
 
 struct addrinfo_deleter {
     void operator()(addrinfo* p) const {
@@ -98,7 +98,7 @@ static bool isIPv4MappedAddress(const sockaddr *sa) {
     do { \
         sockaddr_storage _ss; \
         socklen_t _salen; \
-        if (java_addr == NULL && null_addr_ok) { \
+        if ((java_addr) == NULL && (null_addr_ok)) { \
             /* No IP address specified (e.g., sendto() on a connected socket). */ \
             _salen = 0; \
         } else if (!inetAddressToSockaddr(jni_env, java_addr, port, _ss, _salen)) { \
@@ -112,7 +112,7 @@ static bool isIPv4MappedAddress(const sockaddr *sa) {
         if (_rc == -1 && errno == EAFNOSUPPORT && _salen && isIPv4MappedAddress(_sa)) { \
             /* We passed in an IPv4 address in an IPv6 sockaddr and the kernel told us that we got \
              * the address family wrong. Pass in the same address in an IPv4 sockaddr. */ \
-            jni_env->ExceptionClear(); \
+            (jni_env)->ExceptionClear(); \
             if (!inetAddressToSockaddrVerbatim(jni_env, java_addr, port, _ss, _salen)) { \
                 break; \
             } \

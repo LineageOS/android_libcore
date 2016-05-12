@@ -249,11 +249,11 @@ static void NativeBN_litEndInts2bn(JNIEnv* env, jclass, jintArray arr, int len, 
 
 #ifdef __LP64__
 #define BYTES2ULONG(bytes, k) \
-    ((bytes[k + 7] & 0xffULL)       | (bytes[k + 6] & 0xffULL) <<  8 | (bytes[k + 5] & 0xffULL) << 16 | (bytes[k + 4] & 0xffULL) << 24 | \
-     (bytes[k + 3] & 0xffULL) << 32 | (bytes[k + 2] & 0xffULL) << 40 | (bytes[k + 1] & 0xffULL) << 48 | (bytes[k + 0] & 0xffULL) << 56)
+    (((bytes)[(k) + 7] & 0xffULL)       | ((bytes)[(k) + 6] & 0xffULL) <<  8 | ((bytes)[(k) + 5] & 0xffULL) << 16 | ((bytes)[(k) + 4] & 0xffULL) << 24 | \
+     ((bytes)[(k) + 3] & 0xffULL) << 32 | ((bytes)[(k) + 2] & 0xffULL) << 40 | ((bytes)[(k) + 1] & 0xffULL) << 48 | ((bytes)[(k) + 0] & 0xffULL) << 56)
 #else
 #define BYTES2ULONG(bytes, k) \
-    ((bytes[k + 3] & 0xff) | (bytes[k + 2] & 0xff) << 8 | (bytes[k + 1] & 0xff) << 16 | (bytes[k + 0] & 0xff) << 24)
+    (((bytes)[(k) + 3] & 0xff) | ((bytes)[(k) + 2] & 0xff) << 8 | ((bytes)[(k) + 1] & 0xff) << 16 | ((bytes)[(k) + 0] & 0xff) << 24)
 #endif
 static void negBigEndianBytes2bn(JNIEnv*, jclass, const unsigned char* bytes, int bytesLen, jlong ret0) {
   BIGNUM* ret = toBigNum(ret0);
