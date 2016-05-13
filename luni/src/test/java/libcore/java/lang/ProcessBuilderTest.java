@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.lang.ProcessBuilder.Redirect;
+import java.lang.ProcessBuilder.Redirect.Type;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -271,18 +272,22 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
     }
 
     /**
-     * Tests the {@link Redirect#type() type} of various redirects.
+     * Tests the {@link Redirect#type() type} and {@link Redirect#file() file} of
+     * various Redirects. These guarantees are made in the respective javadocs,
+     * so we're testing them together here.
      */
-    public void testRedirect_type() {
+    public void testRedirect_fileAndType() {
         File file = new File("/tmp/fake-file-for/java.lang.ProcessBuilderTest");
-        assertRedirectType(Redirect.Type.INHERIT, INHERIT);
-        assertRedirectType(Redirect.Type.PIPE, PIPE);
-        assertRedirectType(Redirect.Type.APPEND, Redirect.appendTo(file));
-        assertRedirectType(Redirect.Type.READ, Redirect.from(file));
-        assertRedirectType(Redirect.Type.WRITE, Redirect.to(file));
+        assertRedirectFileAndType(null, Type.INHERIT, INHERIT);
+        assertRedirectFileAndType(null, Type.PIPE, PIPE);
+        assertRedirectFileAndType(file, Type.APPEND, Redirect.appendTo(file));
+        assertRedirectFileAndType(file, Type.READ, Redirect.from(file));
+        assertRedirectFileAndType(file, Type.WRITE, Redirect.to(file));
     }
 
-    private static void assertRedirectType(Redirect.Type expectedType, Redirect redirect) {
+    private static void assertRedirectFileAndType(File expectedFile, Type expectedType,
+            Redirect redirect) {
+        assertEquals(redirect.toString(), expectedFile, redirect.file());
         assertEquals(redirect.toString(), expectedType, redirect.type());
     }
 
