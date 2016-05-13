@@ -28,19 +28,14 @@ package java.util.jar;
 
 import java.io.*;
 import java.lang.ref.SoftReference;
-import java.net.URL;
 import java.util.*;
 import java.util.zip.*;
 import java.security.CodeSigner;
 import java.security.cert.Certificate;
 import java.security.AccessController;
-import java.security.CodeSource;
 import sun.misc.IOUtils;
 import sun.security.action.GetPropertyAction;
 import sun.security.util.ManifestEntryVerifier;
-/* ----- BEGIN android -----
-import sun.misc.SharedSecrets;
------ END android ----- */
 
 /**
  * The <code>JarFile</code> class is used to read the contents of a jar file
@@ -62,23 +57,14 @@ import sun.misc.SharedSecrets;
  */
 public
 class JarFile extends ZipFile {
-    // ----- BEGIN android -----
     static final String META_DIR = "META-INF/";
-    // ----- END android -----
-    private SoftReference<Manifest> manRef;
+    private Manifest manifest;
     private JarEntry manEntry;
     private JarVerifier jv;
     private boolean jvInitialized;
     private boolean verify;
     private boolean computedHasClassPathAttribute;
     private boolean hasClassPathAttribute;
-
-    // Set up JavaUtilJarAccess in SharedSecrets
-    /* ----- BEGIN android -----
-    static {
-        SharedSecrets.setJavaUtilJarAccess(new JavaUtilJarAccessImpl());
-    }
-    ----- END android ----- */
 
     /**
      * The JAR manifest file name.
@@ -175,9 +161,7 @@ class JarFile extends ZipFile {
     }
 
     private synchronized Manifest getManifestFromReference() throws IOException {
-        Manifest man = manRef != null ? manRef.get() : null;
-
-        if (man == null) {
+        if (manifest == null) {
 
             JarEntry manEntry = getManEntry();
 
@@ -185,21 +169,17 @@ class JarFile extends ZipFile {
             if (manEntry != null) {
                 if (verify) {
                     byte[] b = getBytes(manEntry);
-                    man = new Manifest(new ByteArrayInputStream(b));
+                    manifest = new Manifest(new ByteArrayInputStream(b));
                     if (!jvInitialized) {
                         jv = new JarVerifier(b);
                     }
                 } else {
-                    man = new Manifest(super.getInputStream(manEntry));
+                    manifest = new Manifest(super.getInputStream(manEntry));
                 }
-                manRef = new SoftReference(man);
             }
         }
-        return man;
+        return manifest;
     }
-
-    /* ----- BEGIN android -----
-    private native String[] getMetaInfEntryNames();*/
 
     private String[] getMetaInfEntryNames() {
         List<String> list = new ArrayList<String>(8);
@@ -214,7 +194,6 @@ class JarFile extends ZipFile {
         }
         return list.toArray(new String[list.size()]);
     }
-    // ----- END android -----
 
     /**
      * Returns the <code>JarEntry</code> for the given entry name or
@@ -575,57 +554,7 @@ class JarFile extends ZipFile {
         return false;
     }
 
-    private synchronized void ensureInitialization() {
-        try {
-            maybeInstantiateVerifier();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        if (jv != null && !jvInitialized) {
-            initializeVerifier();
-            jvInitialized = true;
-        }
-    }
-
     JarEntry newEntry(ZipEntry ze) {
         return new JarFileEntry(ze);
-    }
-
-    private Enumeration<String> unsignedEntryNames() {
-        final Enumeration entries = entries();
-        return new Enumeration<String>() {
-
-            String name;
-
-            /*
-             * Grab entries from ZIP directory but screen out
-             * metadata.
-             */
-            public boolean hasMoreElements() {
-                if (name != null) {
-                    return true;
-                }
-                while (entries.hasMoreElements()) {
-                    String value;
-                    ZipEntry e = (ZipEntry) entries.nextElement();
-                    value = e.getName();
-                    if (e.isDirectory() || JarVerifier.isSigningRelated(value)) {
-                        continue;
-                    }
-                    name = value;
-                    return true;
-                }
-                return false;
-            }
-
-            public String nextElement() {
-                if (hasMoreElements()) {
-                    String value = name;
-                    name = null;
-                    return value;
-                }
-                throw new NoSuchElementException();
-            }
-        };
     }
 }
