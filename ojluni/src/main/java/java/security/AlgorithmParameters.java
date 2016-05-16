@@ -46,21 +46,23 @@ import java.security.spec.InvalidParameterSpecException;
  * <code>getParameterSpec</code>, and a byte encoding of the parameters is
  * obtained via a call to <code>getEncoded</code>.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard <code>AlgorithmParameters</code> algorithms:
+ * <p> Latest Android version provides the following <code>AlgorithmParameters</code> algorithms:
  * <ul>
  * <li><tt>AES</tt></li>
+ * <li><tt>BLOWFISH</tt></li>
  * <li><tt>DES</tt></li>
- * <li><tt>DESede</tt></li>
- * <li><tt>DiffieHellman</tt></li>
+ * <li><tt>DESEDE</tt></li>
+ * <li><tt>DH</tt></li>
  * <li><tt>DSA</tt></li>
+ * <li><tt>GCM</tt></li>
+ * <li><tt>OAEP</tt></li>
+ * <li><tt>PKCS12PBE</tt></li>
+ * <li><tt>PSS</tt></li>
  * </ul>
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#AlgorithmParameters">
  * AlgorithmParameters section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @author Jan Luehe
  *
