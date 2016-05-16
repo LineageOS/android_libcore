@@ -99,19 +99,35 @@ import sun.security.jca.GetInstance.Instance;
  * the superclass are intended for cryptographic service providers who wish to
  * supply their own implementations of digital signature algorithms.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard <code>Signature</code> algorithms:
+ * <p> Latest Android version provides the following <code>Signature</code> algorithms:
  * <ul>
+ * <li><tt>MD5withRSA</tt></li>
+ * <li><tt>NONEwithDSA</tt></li>
+ * <li><tt>NONEwithECDSA</tt></li>
+ * <li><tt>NONEwithRSA</tt></li>
  * <li><tt>SHA1withDSA</tt></li>
+ * <li><tt>SHA1withECDSA</tt></li>
  * <li><tt>SHA1withRSA</tt></li>
+ * <li><tt>SHA1withRSA/PSS</tt></li>
+ * <li><tt>SHA224withDSA</tt></li>
+ * <li><tt>SHA224withECDSA</tt></li>
+ * <li><tt>SHA224withRSA</tt></li>
+ * <li><tt>SHA224withRSA/PSS</tt></li>
+ * <li><tt>SHA256withDSA</tt></li>
+ * <li><tt>SHA256withECDSA</tt></li>
  * <li><tt>SHA256withRSA</tt></li>
+ * <li><tt>SHA256withRSA/PSS</tt></li>
+ * <li><tt>SHA384withECDSA</tt></li>
+ * <li><tt>SHA384withRSA</tt></li>
+ * <li><tt>SHA384withRSA/PSS</tt></li>
+ * <li><tt>SHA512withECDSA</tt></li>
+ * <li><tt>SHA512withRSA</tt></li>
+ * <li><tt>SHA512withRSA/PSS</tt></li>
  * </ul>
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#Signature">
  * Signature section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @author Benjamin Renaud
  *
