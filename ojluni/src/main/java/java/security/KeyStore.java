@@ -164,17 +164,17 @@ import javax.security.auth.callback.*;
  * different passwords or other protection parameters
  * may also be used.
  *
- * <p> Every implementation of the Java platform is required to support
- * the following standard <code>KeyStore</code> type:
+ * <p> Latest Android version provides the following <code>KeyStore</code> type:
  * <ul>
+ * <li><tt>ANDROIDCASTORE</tt></li>
+ * <li><tt>BKS</tt></li>
+ * <li><tt>BOUNCYCASTLE</tt></li>
  * <li><tt>PKCS12</tt></li>
  * </ul>
  * This type is described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#KeyStore">
  * KeyStore section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other types are supported.
  *
  * @author Jan Luehe
  *
