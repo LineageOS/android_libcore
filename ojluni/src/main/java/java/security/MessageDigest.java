@@ -81,19 +81,19 @@ import java.nio.ByteBuffer;
  * the superclass are intended for cryptographic service providers who wish to
  * supply their own implementations of message digest algorithms.
  *
- * <p> Every implementation of the Java platform is required to support
- * the following standard <code>MessageDigest</code> algorithms:
+ * <p> Latest Android version provides the following <code>MessageDigest</code> algorithms:
  * <ul>
- * <li><tt>MD5</tt></li>
- * <li><tt>SHA-1</tt></li>
- * <li><tt>SHA-256</tt></li>
+ *   <li><tt>MD5</tt></li>
+ *   <li><tt>SHA-1</tt></li>
+ *   <li><tt>SHA-224</tt></li>
+ *   <li><tt>SHA-256</tt></li>
+ *   <li><tt>SHA-384</tt></li>
+ *   <li><tt>SHA-512</tt></li>
  * </ul>
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#MessageDigest">
  * MessageDigest section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @author Benjamin Renaud
  *

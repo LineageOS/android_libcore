@@ -55,17 +55,15 @@ import sun.security.jca.GetInstance.Instance;
  * <code>false</code>, and the second time setting it to <code>true</code>.
  * There may be any number of parties involved in a key exchange.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard <code>KeyAgreement</code> algorithm:
+ * <p> Latest Android version provides the following <code>KeyAgreement</code> algorithm:
  * <ul>
- * <li><tt>DiffieHellman</tt></li>
+ * <li><tt>DH</tt></li>
+ * <li><tt>ECDH</tt></li>
  * </ul>
  * This algorithm is described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#KeyAgreement">
  * KeyAgreement section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @author Jan Luehe
  *

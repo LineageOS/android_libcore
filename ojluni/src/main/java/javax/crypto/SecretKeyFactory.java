@@ -58,18 +58,44 @@ import sun.security.jca.GetInstance.Instance;
  * <code>DESedeKeySpec</code> as a transparent representation of Triple DES
  * keys.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard <code>SecretKeyFactory</code> algorithms:
+ * <p> Latest Android version provides the following <code>SecretKeyFactory</code> algorithms:
  * <ul>
+ * <li><tt>AES</tt></li>
  * <li><tt>DES</tt></li>
  * <li><tt>DESede</tt></li>
+ * <li><tt>HMACSHA1</tt></li>
+ * <li><tt>HMACSHA224</tt></li>
+ * <li><tt>HMACSHA256</tt></li>
+ * <li><tt>HMACSHA384</tt></li>
+ * <li><tt>HMACSHA512</tt></li>
+ * <li><tt>PBEWITHHMACSHA1</tt></li>
+ * <li><tt>PBEWITHMD5AND128BITAES-CBC-OPENSSL</tt></li>
+ * <li><tt>PBEWITHMD5AND192BITAES-CBC-OPENSSL</tt></li>
+ * <li><tt>PBEWITHMD5AND256BITAES-CBC-OPENSSL</tt></li>
+ * <li><tt>PBEWITHMD5ANDDES</tt></li>
+ * <li><tt>PBEWITHMD5ANDRC2</tt></li>
+ * <li><tt>PBEWITHSHA1ANDDES</tt></li>
+ * <li><tt>PBEWITHSHA1ANDRC2</tt></li>
+ * <li><tt>PBEWITHSHA256AND128BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHA256AND192BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHA256AND256BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHAAND128BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHAAND128BITRC2-CBC</tt></li>
+ * <li><tt>PBEWITHSHAAND128BITRC4</tt></li>
+ * <li><tt>PBEWITHSHAAND192BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHAAND2-KEYTRIPLEDES-CBC</tt></li>
+ * <li><tt>PBEWITHSHAAND256BITAES-CBC-BC</tt></li>
+ * <li><tt>PBEWITHSHAAND3-KEYTRIPLEDES-CBC</tt></li>
+ * <li><tt>PBEWITHSHAAND40BITRC2-CBC</tt></li>
+ * <li><tt>PBEWITHSHAAND40BITRC4</tt></li>
+ * <li><tt>PBEWITHSHAANDTWOFISH-CBC</tt></li>
+ * <li><tt>PBKDF2WITHHMACSHA1</tt></li>
+ * <li><tt>PBKDF2WITHHMACSHA1AND8BIT</tt></li>
  * </ul>
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#SecretKeyFactory">
  * SecretKeyFactory section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @author Jan Luehe
  *

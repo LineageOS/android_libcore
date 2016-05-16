@@ -37,17 +37,20 @@ import sun.security.jca.GetInstance;
  * with an optional set of key and trust managers and source of
  * secure random bytes.
  *
- * <p> Every implementation of the Java platform is required to support the
- * following standard <code>SSLContext</code> protocol:
+ * <p> Latest Android version provides the following <code>SSLContext</code> protocol:
  * <ul>
- * <li><tt>TLSv1</tt></li>
+ * <li><tt>DEFAULT</tt></li>
+ * <li><tt>SSL</tt></li>
+ * <li><tt>SSLV3</tt></li>
+ * <li><tt>TLS</tt></li>
+ * <li><tt>TLSV1</tt></li>
+ * <li><tt>TLSV1.1</tt></li>
+ * <li><tt>TLSV1.2</tt></li>
  * </ul>
  * This protocol is described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#SSLContext">
  * SSLContext section</a> of the
  * Java Cryptography Architecture Standard Algorithm Name Documentation.
- * Consult the release documentation for your implementation to see if any
- * other algorithms are supported.
  *
  * @since 1.4
  */
