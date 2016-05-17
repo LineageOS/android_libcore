@@ -29,7 +29,6 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.PublicKey;
@@ -3338,6 +3337,76 @@ public final class CipherTest extends TestCase {
         }
     }
 
+    public void testCipher_DoFinal_wrapMode_Failure() throws Exception {
+        checkCipher_DoFinal_invalidMode_Failure(Cipher.WRAP_MODE);
+    }
+
+    public void testCipher_DoFinal_unwrapMode_Failure() throws Exception {
+        checkCipher_DoFinal_invalidMode_Failure(Cipher.UNWRAP_MODE);
+    }
+
+    /**
+     * Helper for testing that Cipher.doFinal() throws IllegalStateException when
+     * initialized in modes other than DECRYPT or ENCRYPT.
+     */
+    private static void checkCipher_DoFinal_invalidMode_Failure(int opmode) throws Exception {
+        String msg = String.format(Locale.US,
+                "doFinal() should throw IllegalStateException [mode=%d]", opmode);
+        int bs = createAesCipher(opmode).getBlockSize();
+        assertEquals(16, bs); // check test is set up correctly
+        try {
+            createAesCipher(opmode).doFinal();
+            fail(msg);
+        } catch (IllegalStateException expected) {
+        }
+
+        try {
+            createAesCipher(opmode).doFinal(new byte[0]);
+            fail(msg);
+        } catch (IllegalStateException expected) {
+        }
+
+        try {
+            createAesCipher(opmode).doFinal(new byte[2 * bs], 0, bs);
+            fail(msg);
+        } catch (IllegalStateException expected) {
+        }
+
+        try {
+            createAesCipher(opmode).doFinal(new byte[2 * bs], 0, bs, new byte[2 * bs], 0);
+            fail(msg);
+        } catch (IllegalStateException expected) {
+        }
+    }
+
+    public void testCipher_Update_wrapMode_Failure() throws Exception {
+        checkCipher_Update_invalidMode_Failure(Cipher.WRAP_MODE);
+    }
+
+    public void testCipher_Update_unwrapMode_Failure() throws Exception {
+        checkCipher_Update_invalidMode_Failure(Cipher.UNWRAP_MODE);
+    }
+
+    /**
+     * Helper for testing that Cipher.update() throws IllegalStateException when
+     * initialized in modes other than DECRYPT or ENCRYPT.
+     */
+    private static void checkCipher_Update_invalidMode_Failure(int opmode) throws Exception {
+        String msg = "update() should throw IllegalStateException [mode=" + opmode + "]";
+        int bs = createAesCipher(opmode).getBlockSize();
+        assertEquals(16, bs); // check test is set up correctly
+        assertIllegalStateException(msg, () -> createAesCipher(opmode).update(new byte[0]));
+        assertIllegalStateException(msg, () -> createAesCipher(opmode).update(new byte[2 * bs]));
+        assertIllegalStateException(msg, () -> createAesCipher(opmode).update(
+                new byte[2 * bs] /* input */, bs  /* inputOffset */, 0 /* inputLen */));
+        try {
+            createAesCipher(opmode).update(new byte[2*bs] /* input */, 0 /* inputOffset */,
+                    2 * bs /* inputLen */, new byte[2 * bs] /* output */, 0 /* outputOffset */);
+            fail(msg);
+        } catch (IllegalStateException expected) {
+        }
+    }
+
     public void testCipher_Update_WithZeroLengthInput_ReturnsNull() throws Exception {
         SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
         Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
@@ -3347,6 +3416,63 @@ public final class CipherTest extends TestCase {
 
         // Try with non-zero offset just in case the implementation mixes up offset and inputLen
         assertNull(c.update(new byte[c.getBlockSize() * 2], 16, 0));
+    }
+
+    public void testCipher_Wrap_decryptMode_Failure() throws Exception {
+        checkCipher_Wrap_invalidMode_Failure(Cipher.DECRYPT_MODE);
+    }
+
+    public void testCipher_Wrap_encryptMode_Failure() throws Exception {
+        checkCipher_Wrap_invalidMode_Failure(Cipher.ENCRYPT_MODE);
+    }
+
+    public void testCipher_Wrap_unwrapMode_Failure() throws Exception {
+        checkCipher_Wrap_invalidMode_Failure(Cipher.UNWRAP_MODE);
+    }
+
+    /**
+     * Helper for testing that Cipher.wrap() throws IllegalStateException when
+     * initialized in modes other than WRAP.
+     */
+    private static void checkCipher_Wrap_invalidMode_Failure(int opmode) throws Exception {
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128);
+        SecretKey key = kg.generateKey();
+        Cipher cipher = createAesCipher(opmode);
+        try {
+            cipher.wrap(key);
+            fail("wrap() should throw IllegalStateException [mode=" + opmode + "]");
+        } catch (IllegalStateException expected) {
+        }
+    }
+
+    public void testCipher_Unwrap_decryptMode_Failure() throws Exception {
+        checkCipher_Unwrap_invalidMode_Failure(Cipher.DECRYPT_MODE);
+    }
+
+    public void testCipher_Unwrap_encryptMode_Failure() throws Exception {
+        checkCipher_Unwrap_invalidMode_Failure(Cipher.ENCRYPT_MODE);
+    }
+
+    public void testCipher_Unwrap_wrapMode_Failure() throws Exception {
+        checkCipher_Unwrap_invalidMode_Failure(Cipher.WRAP_MODE);
+    }
+
+    /**
+     * Helper for testing that Cipher.unwrap() throws IllegalStateException when
+     * initialized in modes other than UNWRAP.
+     */
+    private static void checkCipher_Unwrap_invalidMode_Failure(int opmode) throws Exception {
+        KeyGenerator kg = KeyGenerator.getInstance("AES");
+        kg.init(128);
+        SecretKey key = kg.generateKey();
+        Cipher cipher = createAesCipher(opmode);
+        byte[] wrappedKey = createAesCipher(Cipher.WRAP_MODE).wrap(key);
+        try {
+            cipher.unwrap(wrappedKey, key.getAlgorithm(), Cipher.PRIVATE_KEY);
+            fail("unwrap() should throw IllegalStateException [mode=" + opmode + "]");
+        } catch (IllegalStateException expected) {
+        }
     }
 
     private void checkCipher_ShortBlock_Failure(CipherTestParam p, String provider) throws Exception {
@@ -3844,4 +3970,29 @@ public final class CipherTest extends TestCase {
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(iv));
         assertEquals(Arrays.toString(plaintext), Arrays.toString(cipher.doFinal(ciphertext)));
     }
+
+    private static Cipher createAesCipher(int opmode) {
+        try {
+            SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
+            final Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
+            c.init(opmode, key);
+            return c;
+        } catch (Exception e) {
+            fail("Unexpected Exception: " + e.getMessage());
+            return null; // unreachable
+        }
+    }
+
+    /**
+     * Asserts that running the given runnable results in an IllegalStateException
+     */
+    private static void assertIllegalStateException(String failureMessage, Runnable runnable) {
+        try {
+            runnable.run();
+            fail(failureMessage);
+        } catch (IllegalStateException expected) {
+            // expected
+        }
+    }
+
 }
