@@ -105,13 +105,34 @@ import sun.security.jca.GetInstance.Instance;
  * the superclass are intended for cryptographic service providers who wish to
  * supply their own implementations of key pair generators.
  *
- * <p> Latest Android version provides the following <code>KeyPairGenerator</code> algorithms:
- * <ul>
- * <li><tt>DH</tt></li>
- * <li><tt>DSA</tt></li>
- * <li><tt>EC</tt></li>
- * <li><tt>RSA</tt></li>
- * </ul>
+ * <p> Android provides the following <code>KeyPairGenerator</code> algorithms:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>DH</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DSA</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>EC</td>
+ *             <td>11+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>RSA</td>
+ *             <td>1+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#KeyPairGenerator">
  * KeyPairGenerator section</a> of the

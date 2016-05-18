@@ -91,16 +91,41 @@ import sun.security.jca.GetInstance.Instance;
  * }
  * </pre>
  *
- * <p> Latest Android version provides the following <code>CertificateFactory</code> type:
- * <ul>
- * <li><tt>X.509</tt></li>
- * <li><tt>X509</tt></li>
- * </ul>
+ * <p> Android provides the following <code>CertificateFactory</code> types:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>X.509</td>
+ *             <td>1+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
  * and the following <code>CertPath</code> encodings:
- * <ul>
- * <li><tt>PKCS7</tt></li>
- * <li><tt>PkiPath</tt></li>
- * </ul>
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>PKCS7</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>PkiPath</td>
+ *             <td>1+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * The type and encodings are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#CertificateFactory">
  * CertificateFactory section</a> and the <a href=
