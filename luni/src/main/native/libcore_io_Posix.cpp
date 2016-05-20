@@ -1210,6 +1210,16 @@ static jobject Posix_inet_pton(JNIEnv* env, jobject, jint family, jstring javaNa
     return sockaddrToInetAddress(env, ss, NULL);
 }
 
+static jint Posix_ioctlFlags(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
+     struct ifreq req;
+     if (!fillIfreq(env, javaInterfaceName, req)) {
+        return 0;
+     }
+     int fd = jniGetFDFromFileDescriptor(env, javaFd);
+     throwIfMinusOne(env, "ioctl", TEMP_FAILURE_RETRY(ioctl(fd, SIOCGIFFLAGS, &req)));
+     return req.ifr_flags;
+}
+
 static jobject Posix_ioctlInetAddress(JNIEnv* env, jobject, jobject javaFd, jint cmd, jstring javaInterfaceName) {
     struct ifreq req;
     if (!fillIfreq(env, javaInterfaceName, req)) {
@@ -1234,6 +1244,16 @@ static jint Posix_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobje
         env->SetIntField(javaArg, valueFid, arg);
     }
     return rc;
+}
+
+static jint Posix_ioctlMTU(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
+     struct ifreq req;
+     if (!fillIfreq(env, javaInterfaceName, req)) {
+        return 0;
+     }
+     int fd = jniGetFDFromFileDescriptor(env, javaFd);
+     throwIfMinusOne(env, "ioctl", TEMP_FAILURE_RETRY(ioctl(fd, SIOCGIFMTU, &req)));
+     return req.ifr_mtu;
 }
 
 static jboolean Posix_isatty(JNIEnv* env, jobject, jobject javaFd) {
@@ -2010,8 +2030,10 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Posix, getxattr, "(Ljava/lang/String;Ljava/lang/String;[B)I"),
     NATIVE_METHOD(Posix, if_indextoname, "(I)Ljava/lang/String;"),
     NATIVE_METHOD(Posix, inet_pton, "(ILjava/lang/String;)Ljava/net/InetAddress;"),
+    NATIVE_METHOD(Posix, ioctlFlags, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
     NATIVE_METHOD(Posix, ioctlInetAddress, "(Ljava/io/FileDescriptor;ILjava/lang/String;)Ljava/net/InetAddress;"),
     NATIVE_METHOD(Posix, ioctlInt, "(Ljava/io/FileDescriptor;ILandroid/util/MutableInt;)I"),
+    NATIVE_METHOD(Posix, ioctlMTU, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
     NATIVE_METHOD(Posix, isatty, "(Ljava/io/FileDescriptor;)Z"),
     NATIVE_METHOD(Posix, kill, "(II)V"),
     NATIVE_METHOD(Posix, lchown, "(Ljava/lang/String;II)V"),

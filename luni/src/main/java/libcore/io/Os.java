@@ -91,8 +91,10 @@ public interface Os {
     public int getxattr(String path, String name, byte[] outValue) throws ErrnoException;
     public String if_indextoname(int index);
     public InetAddress inet_pton(int family, String address);
+    public int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException;
     public int ioctlInt(FileDescriptor fd, int cmd, MutableInt arg) throws ErrnoException;
+    public int ioctlMTU(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public boolean isatty(FileDescriptor fd);
     public void kill(int pid, int signal) throws ErrnoException;
     public void lchown(String path, int uid, int gid) throws ErrnoException;
