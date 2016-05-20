@@ -99,8 +99,10 @@ public class ForwardingOs implements Os {
     public int getxattr(String path, String name, byte[] outValue) throws ErrnoException { return os.getxattr(path, name, outValue); }
     public String if_indextoname(int index) { return os.if_indextoname(index); }
     public InetAddress inet_pton(int family, String address) { return os.inet_pton(family, address); }
+    public int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException { return os.ioctlFlags(fd, interfaceName); };
     public InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException { return os.ioctlInetAddress(fd, cmd, interfaceName); }
     public int ioctlInt(FileDescriptor fd, int cmd, MutableInt arg) throws ErrnoException { return os.ioctlInt(fd, cmd, arg); }
+    public int ioctlMTU(FileDescriptor fd, String interfaceName) throws ErrnoException { return os.ioctlMTU(fd, interfaceName); };
     public boolean isatty(FileDescriptor fd) { return os.isatty(fd); }
     public void kill(int pid, int signal) throws ErrnoException { os.kill(pid, signal); }
     public void lchown(String path, int uid, int gid) throws ErrnoException { os.lchown(path, uid, gid); }
