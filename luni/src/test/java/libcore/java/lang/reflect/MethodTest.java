@@ -535,7 +535,11 @@ public final class MethodTest extends TestCase {
         }
     }
 
-    private static String identifyCaller() {
+    /**
+     * Keep this package-protected or public to avoid the introduction of synthetic methods that
+     * throw off the offset.
+     */
+    static String identifyCaller() {
         StackTraceElement[] stack = Thread.currentThread().getStackTrace();
         int i = 0;
         while (!stack[i++].getMethodName().equals("identifyCaller")) {}
