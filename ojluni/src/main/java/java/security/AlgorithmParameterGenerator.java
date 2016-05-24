@@ -66,11 +66,38 @@ import java.security.spec.AlgorithmParameterSpec;
  * default modulus prime size of 1024 bits for the generation of DSA
  * parameters.
  *
- * <p> Latest Android version provides the following <code>AlgorithmParameterGenerator</code> algorithms:
- * <ul>
- * <li><tt>DH</tt></li>
- * <li><tt>DSA</tt></li>
- * </ul>
+ * <p> Android provides the following <code>AlgorithmParameterGenerator</code> algorithms:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>AES</td>
+ *             <td>1&ndash;8</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DES</td>
+ *             <td>1&ndash;8</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DESede</td>
+ *             <td>1&ndash;8</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DH</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DSA</td>
+ *             <td>1+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#AlgorithmParameterGenerator">
  * AlgorithmParameterGenerator section</a> of the
