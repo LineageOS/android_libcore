@@ -46,19 +46,62 @@ import java.security.spec.InvalidParameterSpecException;
  * <code>getParameterSpec</code>, and a byte encoding of the parameters is
  * obtained via a call to <code>getEncoded</code>.
  *
- * <p> Latest Android version provides the following <code>AlgorithmParameters</code> algorithms:
- * <ul>
- * <li><tt>AES</tt></li>
- * <li><tt>BLOWFISH</tt></li>
- * <li><tt>DES</tt></li>
- * <li><tt>DESEDE</tt></li>
- * <li><tt>DH</tt></li>
- * <li><tt>DSA</tt></li>
- * <li><tt>GCM</tt></li>
- * <li><tt>OAEP</tt></li>
- * <li><tt>PKCS12PBE</tt></li>
- * <li><tt>PSS</tt></li>
- * </ul>
+ * <p> Android provides the following <code>AlgorithmParameters</code> algorithms:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>AES</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>Blowfish</td>
+ *             <td>10+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DES</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DESede</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DH</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>DSA</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>GCM</td>
+ *             <td>22+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>IES</td>
+ *             <td>1&ndash;8</td>
+ *         </tr>
+ *         <tr>
+ *             <td>OAEP</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>PKCS12PBE</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>PSS</td>
+ *             <td>1&ndash;8, 24+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * These algorithms are described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#AlgorithmParameters">
  * AlgorithmParameters section</a> of the

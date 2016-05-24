@@ -55,11 +55,26 @@ import sun.security.jca.GetInstance.Instance;
  * <code>false</code>, and the second time setting it to <code>true</code>.
  * There may be any number of parties involved in a key exchange.
  *
- * <p> Latest Android version provides the following <code>KeyAgreement</code> algorithm:
- * <ul>
- * <li><tt>DH</tt></li>
- * <li><tt>ECDH</tt></li>
- * </ul>
+ * <p> Android provides the following <code>KeyAgreement</code> algorithms:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>DH</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>ECDH</td>
+ *             <td>11+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * This algorithm is described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#KeyAgreement">
  * KeyAgreement section</a> of the
