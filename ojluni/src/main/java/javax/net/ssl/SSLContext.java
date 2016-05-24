@@ -37,16 +37,46 @@ import sun.security.jca.GetInstance;
  * with an optional set of key and trust managers and source of
  * secure random bytes.
  *
- * <p> Latest Android version provides the following <code>SSLContext</code> protocol:
- * <ul>
- * <li><tt>DEFAULT</tt></li>
- * <li><tt>SSL</tt></li>
- * <li><tt>SSLV3</tt></li>
- * <li><tt>TLS</tt></li>
- * <li><tt>TLSV1</tt></li>
- * <li><tt>TLSV1.1</tt></li>
- * <li><tt>TLSV1.2</tt></li>
- * </ul>
+ * <p> Android provides the following <code>SSLContext</code> protocols:
+ * <table>
+ *     <thead>
+ *         <tr>
+ *             <th>Name</th>
+ *             <th>Supported (API Levels)</th>
+ *         </tr>
+ *     </thead>
+ *     <tbody>
+ *         <tr>
+ *             <td>Default</td>
+ *             <td>10+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>SSL</td>
+ *             <td>10+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>SSLv3</td>
+ *             <td>10+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>TLS</td>
+ *             <td>1+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>TLSv1</td>
+ *             <td>10+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>TLSv1.1</td>
+ *             <td>16+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>TLSv1.2</td>
+ *             <td>16+</td>
+ *         </tr>
+ *     </tbody>
+ * </table>
+ *
  * This protocol is described in the <a href=
  * "{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/security/StandardNames.html#SSLContext">
  * SSLContext section</a> of the
