@@ -21,6 +21,7 @@ LOCAL_SRC_FILES := \
     Console_md.c \
     IOUtil.c \
     EPollArrayWrapper.c \
+    PollArrayWrapper.c \
     InheritedChannel.c \
     SocketChannelImpl.c \
     FileChannelImpl.c \
