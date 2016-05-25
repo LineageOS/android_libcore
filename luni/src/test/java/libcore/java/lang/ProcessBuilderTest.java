@@ -29,6 +29,7 @@ import java.lang.ProcessBuilder.Redirect;
 import java.lang.ProcessBuilder.Redirect.Type;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -183,16 +184,6 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
                 errorString.contains(missingFilePath) && !errorString.equals(missingFilePath));
     }
 
-    /**
-     * Writes Base64 encoded bytes, followed by the raw bytes, to the given {@code outputStream}.
-     */
-    private static void writeBase64AndRawBytesTo(byte[] bytes, OutputStream outputStream)
-            throws IOException {
-        String base64OfBytes = Base64.encode(bytes);
-        outputStream.write(base64OfBytes.getBytes(Charset.defaultCharset()));
-        outputStream.write(bytes); // trailing garbage
-    }
-
     public void testEnvironment() throws Exception {
         ProcessBuilder pb = new ProcessBuilder(shell(), "-c", "echo $A");
         pb.environment().put("A", "android");
@@ -330,20 +321,36 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
     }
 
     public void testRedirect_defaultsToPipe() {
-        checkSetAndGet(PIPE, PIPE, PIPE, new ProcessBuilder());
+        assertRedirects(PIPE, PIPE, PIPE, new ProcessBuilder());
     }
 
     public void testRedirect_setAndGet() {
         File file = new File("/tmp/fake-file-for/java.lang.ProcessBuilderTest");
-        checkSetAndGet(Redirect.from(file), PIPE, PIPE, new ProcessBuilder().redirectInput(file));
-        checkSetAndGet(PIPE, Redirect.to(file), PIPE, new ProcessBuilder().redirectOutput(file));
-        checkSetAndGet(PIPE, PIPE, Redirect.to(file), new ProcessBuilder().redirectError(file));
-        checkSetAndGet(Redirect.from(file), INHERIT, Redirect.to(file),
+        assertRedirects(Redirect.from(file), PIPE, PIPE, new ProcessBuilder().redirectInput(file));
+        assertRedirects(PIPE, Redirect.to(file), PIPE, new ProcessBuilder().redirectOutput(file));
+        assertRedirects(PIPE, PIPE, Redirect.to(file), new ProcessBuilder().redirectError(file));
+        assertRedirects(Redirect.from(file), INHERIT, Redirect.to(file),
                 new ProcessBuilder()
                         .redirectInput(PIPE)
                         .redirectOutput(INHERIT)
                         .redirectError(file)
                         .redirectInput(file));
+
+        assertRedirects(Redirect.INHERIT, Redirect.INHERIT, Redirect.INHERIT,
+                new ProcessBuilder().inheritIO());
+    }
+
+    public void testCommand_setAndGet() {
+        List<String> expected = Collections.unmodifiableList(
+                Arrays.asList("echo", "fake", "command", "for", TAG));
+        assertEquals(expected, new ProcessBuilder().command(expected).command());
+        assertEquals(expected, new ProcessBuilder().command("echo", "fake", "command", "for", TAG)
+                .command());
+    }
+
+    public void testDirectory_setAndGet() {
+        File directory = new File("/tmp/fake/directory/for/" + TAG);
+        assertEquals(directory, new ProcessBuilder().directory(directory).directory());
     }
 
     /**
@@ -383,7 +390,7 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
         assertEquals(expectedError, processError.get());
     }
 
-    private static void checkSetAndGet(Redirect in, Redirect out, Redirect err, ProcessBuilder pb) {
+    private static void assertRedirects(Redirect in, Redirect out, Redirect err, ProcessBuilder pb) {
         List<Redirect> expected = Arrays.asList(in, out, err);
         List<Redirect> actual = Arrays.asList(
                 pb.redirectInput(), pb.redirectOutput(), pb.redirectError());
