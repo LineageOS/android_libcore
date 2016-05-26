@@ -16,8 +16,6 @@
 
 package libcore.java.lang;
 
-import android.system.Os;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -31,12 +29,9 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import libcore.io.Base64;
 import libcore.io.IoUtils;
 import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
@@ -67,39 +62,6 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
 
     public void test_redirectErrorStream_false() throws Exception {
         assertRedirectErrorStream(false, "out\n", "err\n");
-    }
-
-    /**
-     * Tests that a child process can INHERIT this parent process's
-     * stdin / stdout / stderr file descriptors.
-     */
-    public void testRedirectInherit() throws Exception {
-        Process process = new ProcessBuilder()
-                .command(shell())
-                .redirectInput(Redirect.INHERIT)
-                .redirectOutput(Redirect.INHERIT)
-                .redirectError(Redirect.INHERIT)
-                .start();
-        try {
-            int parentPid = android.system.Os.getpid();
-
-            // Hack: UNIXProcess.pid is private; parse toString() instead of reflection
-            Matcher matcher = Pattern.compile("pid=(\\d+)").matcher(process.toString());
-            assertTrue("Can't find PID in: " + process, matcher.find());
-            int childPid = Integer.parseInt(matcher.group(1));
-
-            assertEquals(getFdInode(parentPid, 0), getFdInode(childPid, 0)); // stdin
-            assertEquals(getFdInode(parentPid, 1), getFdInode(childPid, 1)); // stdout
-            assertEquals(getFdInode(parentPid, 2), getFdInode(childPid, 2)); // stderr
-        } finally {
-            process.destroy();
-        }
-    }
-
-    private long getFdInode(int processId, int fd) throws Exception {
-        // Get the inode number of the end of the symlink chain
-        String path = String.format(Locale.US, "/proc/%d/fd/%d", processId, fd);
-        return Os.stat(path).st_ino;
     }
 
     public void testRedirectFile_input() throws Exception {
