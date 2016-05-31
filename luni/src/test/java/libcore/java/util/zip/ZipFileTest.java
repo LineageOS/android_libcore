@@ -16,13 +16,7 @@
 
 package libcore.java.util.zip;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.InputStream;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public final class ZipFileTest extends AbstractZipFileTest {
@@ -30,29 +24,5 @@ public final class ZipFileTest extends AbstractZipFileTest {
     @Override
     protected ZipOutputStream createZipOutputStream(OutputStream wrapped) {
         return new ZipOutputStream(wrapped);
-    }
-
-    // b/28901232
-    // Test for OPEN_DELETE throwing an exception when used in
-    // /storage/emulated (fuse fs).
-    public void testOpenDeleteOnExternalStorage() throws Exception {
-        File file = new File("/storage/emulated/0/Download/foo.zip");
-
-        try {
-            ZipOutputStream test = new ZipOutputStream(new FileOutputStream(file));
-            test.putNextEntry(new ZipEntry("somefile.txt"));
-            test.write(1);
-            test.close();
-
-            ZipFile z = new ZipFile(file, ZipFile.OPEN_READ | ZipFile.OPEN_DELETE);
-            InputStream inputStream = z.getInputStream(z.getEntry("somefile.txt"));
-            assertEquals(1, inputStream.read());
-            inputStream.close();
-            z.close();
-
-            assertFalse(file.exists());
-        } finally {
-            file.delete();
-        }
     }
 }
