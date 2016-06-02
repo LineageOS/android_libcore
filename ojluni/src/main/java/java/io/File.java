@@ -32,6 +32,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
+import java.nio.file.Path;
+import java.nio.file.FileSystems;
 
 /**
  * An abstract representation of file and directory pathnames.
@@ -124,6 +126,19 @@ import java.util.ArrayList;
  * <p> Instances of the <code>File</code> class are immutable; that is, once
  * created, the abstract pathname represented by a <code>File</code> object
  * will never change.
+ *
+ * <h4>Interoperability with {@code java.nio.file} package</h4>
+ *
+ * <p> The <a href="../../java/nio/file/package-summary.html">{@code java.nio.file}</a>
+ * package defines interfaces and classes for the Java virtual machine to access
+ * files, file attributes, and file systems. This API may be used to overcome
+ * many of the limitations of the {@code java.io.File} class.
+ * The {@link #toPath toPath} method may be used to obtain a {@link
+ * Path} that uses the abstract path represented by a {@code File} object to
+ * locate a file. The resulting {@code Path} may be used with the {@link
+ * java.nio.file.Files} class to provide more efficient and extensive access to
+ * additional file operations, file attributes, and I/O exceptions to help
+ * diagnose errors when an operation on a file fails.
  *
  * <p>On Android strings are converted to UTF-8 byte sequences when sending filenames to
  * the operating system, and byte sequences returned by the operating system (from the
@@ -682,7 +697,10 @@ public class File
      * <p> Note that when this abstract pathname represents a UNC pathname then
      * all components of the UNC (including the server name component) are encoded
      * in the {@code URI} path. The authority component is undefined, meaning
-     * that it is represented as {@code null}.
+     * that it is represented as {@code null}. The {@link Path} class defines the
+     * {@link Path#toUri toUri} method to encode the server name in the authority
+     * component of the resulting {@code URI}. The {@link #toPath toPath} method
+     * may be used to obtain a {@code Path} representing this abstract pathname.
      *
      * @return  An absolute, hierarchical URI with a scheme equal to
      *          <tt>"file"</tt>, a path representing this abstract pathname,
@@ -787,6 +805,12 @@ public class File
      * Tests whether the file denoted by this abstract pathname is a
      * directory.
      *
+     * <p> Where it is required to distinguish an I/O exception from the case
+     * that the file is not a directory, or where several attributes of the
+     * same file are required at the same time, then the {@link
+     * java.nio.file.Files#readAttributes(Path,Class,LinkOption[])
+     * Files.readAttributes} method may be used.
+     *
      * @return <code>true</code> if and only if the file denoted by this
      *          abstract pathname exists <em>and</em> is a directory;
      *          <code>false</code> otherwise
@@ -813,6 +837,12 @@ public class File
      * file.  A file is <em>normal</em> if it is not a directory and, in
      * addition, satisfies other system-dependent criteria.  Any non-directory
      * file created by a Java application is guaranteed to be a normal file.
+     *
+     * <p> Where it is required to distinguish an I/O exception from the case
+     * that the file is not a normal file, or where several attributes of the
+     * same file are required at the same time, then the {@link
+     * java.nio.file.Files#readAttributes(Path,Class,LinkOption[])
+     * Files.readAttributes} method may be used.
      *
      * @return  <code>true</code> if and only if the file denoted by this
      *          abstract pathname exists <em>and</em> is a normal file;
@@ -867,6 +897,13 @@ public class File
      * Returns the time that the file denoted by this abstract pathname was
      * last modified.
      *
+     * <p> Where it is required to distinguish an I/O exception from the case
+     * where {@code 0L} is returned, or where several attributes of the
+     * same file are required at the same time, or where the time of last
+     * access or the creation time are required, then the {@link
+     * java.nio.file.Files#readAttributes(Path,Class,LinkOption[])
+     * Files.readAttributes} method may be used.
+     *
      * @return  A <code>long</code> value representing the time the file was
      *          last modified, measured in milliseconds since the epoch
      *          (00:00:00 GMT, January 1, 1970), or <code>0L</code> if the
@@ -891,6 +928,12 @@ public class File
     /**
      * Returns the length of the file denoted by this abstract pathname.
      * The return value is unspecified if this pathname denotes a directory.
+     *
+     * <p> Where it is required to distinguish an I/O exception from the case
+     * that {@code 0L} is returned, or where several attributes of the same file
+     * are required at the same time, then the {@link
+     * java.nio.file.Files#readAttributes(Path,Class,LinkOption[])
+     * Files.readAttributes} method may be used.
      *
      * @return  The length, in bytes, of the file denoted by this abstract
      *          pathname, or <code>0L</code> if the file does not exist.  Some
@@ -955,6 +998,11 @@ public class File
      * Deletes the file or directory denoted by this abstract pathname.  If
      * this pathname denotes a directory, then the directory must be empty in
      * order to be deleted.
+     *
+     * <p> Note that the {@link java.nio.file.Files} class defines the {@link
+     * java.nio.file.Files#delete(Path) delete} method to throw an {@link IOException}
+     * when a file cannot be deleted. This is useful for error reporting and to
+     * diagnose why a file cannot be deleted.
      *
      * @return  <code>true</code> if and only if the file or directory is
      *          successfully deleted; <code>false</code> otherwise
@@ -1040,6 +1088,12 @@ public class File
      * will appear in any specific order; they are not, in particular,
      * guaranteed to appear in alphabetical order.
      *
+     * <p> Note that the {@link java.nio.file.Files} class defines the {@link
+     * java.nio.file.Files#newDirectoryStream(Path) newDirectoryStream} method to
+     * open a directory and iterate over the names of the files in the directory.
+     * This may use less resources when working with very large directories, and
+     * may be more responsive when working with remote directories.
+     *
      * @return  An array of strings naming the files and directories in the
      *          directory denoted by this abstract pathname.  The array will be
      *          empty if the directory is empty.  Returns {@code null} if
@@ -1089,6 +1143,7 @@ public class File
      *          SecurityManager#checkRead(String)} method denies read access to
      *          the directory
      *
+     * @see java.nio.file.Files#newDirectoryStream(Path,String)
      */
     public String[] list(FilenameFilter filter) {
         String names[] = list();
@@ -1122,6 +1177,12 @@ public class File
      * <p> There is no guarantee that the name strings in the resulting array
      * will appear in any specific order; they are not, in particular,
      * guaranteed to appear in alphabetical order.
+     *
+     * <p> Note that the {@link java.nio.file.Files} class defines the {@link
+     * java.nio.file.Files#newDirectoryStream(Path) newDirectoryStream} method
+     * to open a directory and iterate over the names of the files in the
+     * directory. This may use less resources when working with very large
+     * directories.
      *
      * @return  An array of abstract pathnames denoting the files and
      *          directories in the directory denoted by this abstract pathname.
@@ -1175,6 +1236,7 @@ public class File
      *          the directory
      *
      * @since  1.2
+     * @see java.nio.file.Files#newDirectoryStream(Path,String)
      */
     public File[] listFiles(FilenameFilter filter) {
         String ss[] = list();
@@ -1212,6 +1274,7 @@ public class File
      *          the directory
      *
      * @since  1.2
+     * @see java.nio.file.Files#newDirectoryStream(Path,java.nio.file.DirectoryStream.Filter)
      */
     public File[] listFiles(FileFilter filter) {
         String ss[] = list();
@@ -1300,6 +1363,10 @@ public class File
      *
      * <p>The return value should always be checked to make sure
      * that the rename operation was successful.
+     *
+     * <p> Note that the {@link java.nio.file.Files} class defines the {@link
+     * java.nio.file.Files#move move} method to move or rename a file in a
+     * platform independent manner.
      *
      * @param  dest  The new abstract pathname for the named file
      *
@@ -1399,6 +1466,10 @@ public class File
      * Sets the owner's or everybody's write permission for this abstract
      * pathname.
      *
+     * <p> The {@link java.nio.file.Files} class defines methods that operate on
+     * file attributes including file permissions. This may be used when finer
+     * manipulation of file permissions is required.
+     *
      * @param   writable
      *          If <code>true</code>, sets the access permission to allow write
      *          operations; if <code>false</code> to disallow write operations
@@ -1464,6 +1535,10 @@ public class File
     /**
      * Sets the owner's or everybody's read permission for this abstract
      * pathname.
+     *
+     * <p> The {@link java.nio.file.Files} class defines methods that operate on
+     * file attributes including file permissions. This may be used when finer
+     * manipulation of file permissions is required.
      *
      * @param   readable
      *          If <code>true</code>, sets the access permission to allow read
@@ -1536,6 +1611,10 @@ public class File
     /**
      * Sets the owner's or everybody's execute permission for this abstract
      * pathname.
+     *
+     * <p> The {@link java.nio.file.Files} class defines methods that operate on
+     * file attributes including file permissions. This may be used when finer
+     * manipulation of file permissions is required.
      *
      * @param   executable
      *          If <code>true</code>, sets the access permission to allow execute
@@ -1880,6 +1959,13 @@ public class File
      * java.lang.String, java.io.File)
      * createTempFile(prefix,&nbsp;suffix,&nbsp;null)}</code>.
      *
+     * <p> The {@link
+     * java.nio.file.Files#createTempFile(String,String,java.nio.file.attribute.FileAttribute[])
+     * Files.createTempFile} method provides an alternative method to create an
+     * empty file in the temporary-file directory. Files created by that method
+     * may have more restrictive access permissions to files created by this
+     * method and so may be more suited to security-sensitive applications.
+     *
      * @param  prefix     The prefix string to be used in generating the file's
      *                    name; must be at least three characters long
      *
@@ -1901,6 +1987,7 @@ public class File
      *          method does not allow a file to be created
      *
      * @since 1.2
+     * @see java.nio.file.Files#createTempDirectory(String,FileAttribute[])
      */
     public static File createTempFile(String prefix, String suffix)
         throws IOException
@@ -2014,4 +2101,48 @@ public class File
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     private static final long serialVersionUID = 301077366599181567L;
+
+    // -- Integration with java.nio.file --
+
+    private volatile transient Path filePath;
+
+    /**
+     * Returns a {@link Path java.nio.file.Path} object constructed from the
+     * this abstract path. The resulting {@code Path} is associated with the
+     * {@link java.nio.file.FileSystems#getDefault default-filesystem}.
+     *
+     * <p> The first invocation of this method works as if invoking it were
+     * equivalent to evaluating the expression:
+     * <blockquote><pre>
+     * {@link java.nio.file.FileSystems#getDefault FileSystems.getDefault}().{@link
+     * java.nio.file.FileSystem#getPath getPath}(this.{@link #getPath getPath}());
+     * </pre></blockquote>
+     * Subsequent invocations of this method return the same {@code Path}.
+     *
+     * <p> If this abstract pathname is the empty abstract pathname then this
+     * method returns a {@code Path} that may be used to access the current
+     * user directory.
+     *
+     * @return  a {@code Path} constructed from this abstract path
+     *
+     * @throws  java.nio.file.InvalidPathException
+     *          if a {@code Path} object cannot be constructed from the abstract
+     *          path (see {@link java.nio.file.FileSystem#getPath FileSystem.getPath})
+     *
+     * @since   1.7
+     * @see Path#toFile
+     */
+    public Path toPath() {
+        Path result = filePath;
+        if (result == null) {
+            synchronized (this) {
+                result = filePath;
+                if (result == null) {
+                    result = FileSystems.getDefault().getPath(path);
+                    filePath = result;
+                }
+            }
+        }
+        return result;
+    }
 }
