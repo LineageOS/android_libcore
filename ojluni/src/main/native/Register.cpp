@@ -78,7 +78,7 @@ extern void register_sun_nio_ch_FileKey(JNIEnv*);
 extern void register_sun_nio_ch_IOUtil(JNIEnv*);
 extern void register_sun_nio_ch_NativeThread(JNIEnv*);
 extern void register_sun_nio_ch_Net(JNIEnv*);
-extern void register_sun_nio_ch_ServerSocketChannelImpl(JNIEnv* env);
+extern void register_sun_nio_ch_ServerSocketChannelImpl(JNIEnv*);
 extern void register_sun_nio_ch_SocketChannelImpl(JNIEnv* env);
 extern void register_sun_nio_ch_InheritedChannel(JNIEnv* env);
 extern void register_sun_nio_ch_EPollArrayWrapper(JNIEnv* env);

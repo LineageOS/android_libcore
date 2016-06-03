@@ -29,6 +29,10 @@ LOCAL_SRC_FILES := \
     FileOutputStream_md.c \
     FileInputStream.c \
     FileSystemPreferences.c \
+    EPoll.c \
+    EPollPort.c \
+    UnixAsynchronousServerSocketChannelImpl.c \
+    UnixAsynchronousSocketChannelImpl.c \
     io_util_md.c \
     NativeThread.c \
     FileKey.c \
