@@ -47,6 +47,7 @@
 #include "unicode/udat.h"
 #include "unicode/uloc.h"
 #include "unicode/ulocdata.h"
+#include "unicode/ures.h"
 #include "unicode/ustring.h"
 #include "ureslocs.h"
 #include "valueOf.h"
@@ -357,7 +358,22 @@ static void setStringArrayField(JNIEnv* env, jobject obj, const char* fieldName,
 static void setStringField(JNIEnv* env, jobject obj, const char* fieldName, UResourceBundle* bundle, int index) {
   UErrorCode status = U_ZERO_ERROR;
   int charCount;
-  const UChar* chars = ures_getStringByIndex(bundle, index, &charCount, &status);
+  const UChar* chars;
+  UResourceBundle* currentBundle = ures_getByIndex(bundle, index, NULL, &status);
+  switch (ures_getType(currentBundle)) {
+      case URES_STRING:
+         chars = ures_getString(currentBundle, &charCount, &status);
+         break;
+      case URES_ARRAY:
+         // In case there is an array, Android currently only cares about the
+         // first string of that array, the rest of the array is used by ICU
+         // for additional data ignored by Android.
+         chars = ures_getStringByIndex(currentBundle, 0, &charCount, &status);
+         break;
+      default:
+         status = U_INVALID_FORMAT_ERROR;
+  }
+  ures_close(currentBundle);
   if (U_SUCCESS(status)) {
     setStringField(env, obj, fieldName, env->NewString(chars, charCount));
   } else {
