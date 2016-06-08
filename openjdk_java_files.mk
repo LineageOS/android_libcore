@@ -104,6 +104,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/annotation/Repeatable.java \
     ojluni/src/main/java/java/lang/annotation/RetentionPolicy.java \
     ojluni/src/main/java/java/lang/annotation/Target.java \
+    ojluni/src/main/java/java/lang/annotation/package-info.java \
     ojluni/src/main/java/java/lang/Appendable.java \
     ojluni/src/main/java/java/lang/ApplicationShutdownHooks.java \
     ojluni/src/main/java/java/lang/ArithmeticException.java \
@@ -171,6 +172,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/ProcessImpl.java \
     ojluni/src/main/java/java/lang/Process.java \
     ojluni/src/main/java/java/lang/Readable.java \
+    ojluni/src/main/java/java/lang/package-info.java \
     ojluni/src/main/java/java/lang/reflect/AccessibleObject.java \
     ojluni/src/main/java/java/lang/reflect/AnnotatedElement.java \
     ojluni/src/main/java/java/lang/reflect/Array.java \
@@ -193,11 +195,13 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/reflect/TypeVariable.java \
     ojluni/src/main/java/java/lang/reflect/UndeclaredThrowableException.java \
     ojluni/src/main/java/java/lang/reflect/WildcardType.java \
+    ojluni/src/main/java/java/lang/reflect/package-info.java \
     ojluni/src/main/java/java/lang/ref/PhantomReference.java \
     ojluni/src/main/java/java/lang/ref/Reference.java \
     ojluni/src/main/java/java/lang/ref/ReferenceQueue.java \
     ojluni/src/main/java/java/lang/ref/SoftReference.java \
     ojluni/src/main/java/java/lang/ref/WeakReference.java \
+    ojluni/src/main/java/java/lang/ref/package-info.java \
     ojluni/src/main/java/java/lang/Runnable.java \
     ojluni/src/main/java/java/lang/RuntimeException.java \
     ojluni/src/main/java/java/lang/Runtime.java \
@@ -348,6 +352,26 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/nio/channels/InterruptedByTimeoutException.java \
     ojluni/src/main/java/java/nio/channels/InterruptibleChannel.java \
     ojluni/src/main/java/java/nio/channels/MembershipKey.java \
+    ojluni/src/main/java/java/nio/channels/package-info.java \
+    ojluni/src/main/java/java/nio/CharBuffer.java \
+    ojluni/src/main/java/java/nio/CharBufferSpliterator.java \
+    ojluni/src/main/java/java/nio/DirectByteBuffer.java \
+    ojluni/src/main/java/java/nio/DoubleBuffer.java \
+    ojluni/src/main/java/java/nio/FloatBuffer.java \
+    ojluni/src/main/java/java/nio/HeapByteBuffer.java \
+    ojluni/src/main/java/java/nio/HeapCharBuffer.java \
+    ojluni/src/main/java/java/nio/HeapDoubleBuffer.java \
+    ojluni/src/main/java/java/nio/HeapFloatBuffer.java \
+    ojluni/src/main/java/java/nio/HeapIntBuffer.java \
+    ojluni/src/main/java/java/nio/HeapLongBuffer.java \
+    ojluni/src/main/java/java/nio/HeapShortBuffer.java \
+    ojluni/src/main/java/java/nio/IntBuffer.java \
+    ojluni/src/main/java/java/nio/InvalidMarkException.java \
+    ojluni/src/main/java/java/nio/LongBuffer.java \
+    ojluni/src/main/java/java/nio/MappedByteBuffer.java \
+    ojluni/src/main/java/java/nio/ReadOnlyBufferException.java \
+    ojluni/src/main/java/java/nio/ShortBuffer.java \
+    ojluni/src/main/java/java/nio/StringCharBuffer.java \
     ojluni/src/main/java/java/nio/channels/MulticastChannel.java \
     ojluni/src/main/java/java/nio/channels/NetworkChannel.java \
     ojluni/src/main/java/java/nio/channels/NoConnectionPendingException.java \
@@ -357,8 +381,8 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/nio/channels/NotYetConnectedException.java \
     ojluni/src/main/java/java/nio/channels/OverlappingFileLockException.java \
     ojluni/src/main/java/java/nio/channels/Pipe.java \
-    ojluni/src/main/java/java/nio/channels/ReadableByteChannel.java \
     ojluni/src/main/java/java/nio/channels/ReadPendingException.java \
+    ojluni/src/main/java/java/nio/channels/ReadableByteChannel.java \
     ojluni/src/main/java/java/nio/channels/ScatteringByteChannel.java \
     ojluni/src/main/java/java/nio/channels/SeekableByteChannel.java \
     ojluni/src/main/java/java/nio/channels/SelectableChannel.java \
@@ -367,31 +391,30 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/nio/channels/ServerSocketChannel.java \
     ojluni/src/main/java/java/nio/channels/ShutdownChannelGroupException.java \
     ojluni/src/main/java/java/nio/channels/SocketChannel.java \
+    ojluni/src/main/java/java/nio/channels/UnresolvedAddressException.java \
+    ojluni/src/main/java/java/nio/channels/UnsupportedAddressTypeException.java \
+    ojluni/src/main/java/java/nio/channels/WritableByteChannel.java \
+    ojluni/src/main/java/java/nio/channels/WritePendingException.java \
     ojluni/src/main/java/java/nio/channels/spi/AbstractInterruptibleChannel.java \
     ojluni/src/main/java/java/nio/channels/spi/AbstractSelectableChannel.java \
     ojluni/src/main/java/java/nio/channels/spi/AbstractSelectionKey.java \
     ojluni/src/main/java/java/nio/channels/spi/AbstractSelector.java \
     ojluni/src/main/java/java/nio/channels/spi/AsynchronousChannelProvider.java \
     ojluni/src/main/java/java/nio/channels/spi/SelectorProvider.java \
-    ojluni/src/main/java/java/nio/channels/UnresolvedAddressException.java \
-    ojluni/src/main/java/java/nio/channels/UnsupportedAddressTypeException.java \
-    ojluni/src/main/java/java/nio/channels/WritableByteChannel.java \
-    ojluni/src/main/java/java/nio/channels/WritePendingException.java \
-    ojluni/src/main/java/java/nio/CharBuffer.java \
-    ojluni/src/main/java/java/nio/CharBufferSpliterator.java \
     ojluni/src/main/java/java/nio/charset/CharacterCodingException.java \
+    ojluni/src/main/java/java/nio/charset/Charset.java \
     ojluni/src/main/java/java/nio/charset/CharsetDecoder.java \
     ojluni/src/main/java/java/nio/charset/CharsetEncoder.java \
-    ojluni/src/main/java/java/nio/charset/Charset.java \
     ojluni/src/main/java/java/nio/charset/CoderMalfunctionError.java \
     ojluni/src/main/java/java/nio/charset/CoderResult.java \
     ojluni/src/main/java/java/nio/charset/CodingErrorAction.java \
     ojluni/src/main/java/java/nio/charset/IllegalCharsetNameException.java \
     ojluni/src/main/java/java/nio/charset/MalformedInputException.java \
-    ojluni/src/main/java/java/nio/charset/spi/CharsetProvider.java \
     ojluni/src/main/java/java/nio/charset/StandardCharsets.java \
     ojluni/src/main/java/java/nio/charset/UnmappableCharacterException.java \
     ojluni/src/main/java/java/nio/charset/UnsupportedCharsetException.java \
+    ojluni/src/main/java/java/nio/charset/package-info.java \
+    ojluni/src/main/java/java/nio/charset/spi/CharsetProvider.java \
     ojluni/src/main/java/java/nio/file/AccessDeniedException.java \
     ojluni/src/main/java/java/nio/file/AccessMode.java \
     ojluni/src/main/java/java/nio/file/AtomicMoveNotSupportedException.java \
@@ -466,23 +489,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/nio/file/attribute/UserPrincipalNotFoundException.java \
     ojluni/src/main/java/java/nio/file/spi/FileSystemProvider.java \
     ojluni/src/main/java/java/nio/file/spi/FileTypeDetector.java \
-    ojluni/src/main/java/java/nio/DirectByteBuffer.java \
-    ojluni/src/main/java/java/nio/DoubleBuffer.java \
-    ojluni/src/main/java/java/nio/FloatBuffer.java \
-    ojluni/src/main/java/java/nio/HeapByteBuffer.java \
-    ojluni/src/main/java/java/nio/HeapCharBuffer.java \
-    ojluni/src/main/java/java/nio/HeapDoubleBuffer.java \
-    ojluni/src/main/java/java/nio/HeapFloatBuffer.java \
-    ojluni/src/main/java/java/nio/HeapIntBuffer.java \
-    ojluni/src/main/java/java/nio/HeapLongBuffer.java \
-    ojluni/src/main/java/java/nio/HeapShortBuffer.java \
-    ojluni/src/main/java/java/nio/IntBuffer.java \
-    ojluni/src/main/java/java/nio/InvalidMarkException.java \
-    ojluni/src/main/java/java/nio/LongBuffer.java \
-    ojluni/src/main/java/java/nio/MappedByteBuffer.java \
-    ojluni/src/main/java/java/nio/ReadOnlyBufferException.java \
-    ojluni/src/main/java/java/nio/ShortBuffer.java \
-    ojluni/src/main/java/java/nio/StringCharBuffer.java \
+    ojluni/src/main/java/java/nio/package-info.java \
     ojluni/src/main/java/java/security/AccessControlContext.java \
     ojluni/src/main/java/java/security/AccessControlException.java \
     ojluni/src/main/java/java/security/AccessController.java \
@@ -865,7 +872,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/util/stream/MatchOps.java \
     ojluni/src/main/java/java/util/stream/Node.java \
     ojluni/src/main/java/java/util/stream/Nodes.java \
-    ojluni/src/main/java/java/util/stream/package-info.java \
     ojluni/src/main/java/java/util/stream/PipelineHelper.java \
     ojluni/src/main/java/java/util/stream/ReduceOps.java \
     ojluni/src/main/java/java/util/stream/ReferencePipeline.java \
@@ -882,6 +888,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/util/stream/TerminalOp.java \
     ojluni/src/main/java/java/util/stream/TerminalSink.java \
     ojluni/src/main/java/java/util/stream/Tripwire.java \
+    ojluni/src/main/java/java/util/stream/package-info.java \
     ojluni/src/main/java/java/util/JumboEnumSet.java \
     ojluni/src/main/java/java/util/LinkedHashMap.java \
     ojluni/src/main/java/java/util/LinkedHashSet.java \
