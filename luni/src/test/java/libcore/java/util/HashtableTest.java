@@ -24,7 +24,7 @@ public class HashtableTest extends junit.framework.TestCase {
 
     public void test_getOrDefault() {
         MapDefaultMethodTester.test_getOrDefault(new Hashtable<>(), false /*doesNotAcceptNullKey*/,
-                false /*doesNotAcceptNullValue*/);
+                false /*doesNotAcceptNullValue*/, true /*getAcceptsAnyObject*/);
     }
 
     public void test_forEach() {
