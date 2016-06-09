@@ -36,7 +36,6 @@ import java.util.*;
 
 import dalvik.system.BlockGuard;
 import sun.net.NetHooks;
-import sun.misc.IoTrace;
 import sun.net.ExtendedOptionsImpl;
 
 /**
@@ -302,9 +301,6 @@ class SocketChannelImpl
             if (!ensureReadOpen())
                 return -1;
             Object traceContext = null;
-            if (isBlocking()) {
-                traceContext = IoTrace.socketReadBegin();
-            }
             int n = 0;
             try {
 
@@ -395,11 +391,6 @@ class SocketChannelImpl
             } finally {
                 readerCleanup();        // Clear reader thread
 
-                if (isBlocking()) {
-                    IoTrace.socketReadEnd(traceContext, remoteAddress.getAddress(),
-                                          remoteAddress.getPort(), 0, n > 0 ? n : 0);
-                }
-
                 // The end method, which is defined in our superclass
                 // AbstractInterruptibleChannel, resets the interruption
                 // machinery.  If its argument is true then it returns
@@ -441,9 +432,6 @@ class SocketChannelImpl
                 return -1;
             long n = 0;
             Object traceContext = null;
-            if (isBlocking()) {
-                traceContext = IoTrace.socketReadBegin();
-            }
             try {
                 begin();
                 synchronized (stateLock) {
@@ -460,10 +448,6 @@ class SocketChannelImpl
                 }
             } finally {
                 readerCleanup();
-                if (isBlocking()) {
-                    IoTrace.socketReadEnd(traceContext, remoteAddress.getAddress(),
-                                          remoteAddress.getPort(), 0, n > 0 ? n : 0);
-                }
                 end(n > 0 || (n == IOStatus.UNAVAILABLE));
                 synchronized (stateLock) {
                     if ((n <= 0) && (!isInputOpen))
@@ -480,8 +464,6 @@ class SocketChannelImpl
         synchronized (writeLock) {
             ensureWriteOpen();
             int n = 0;
-            Object traceContext =
-                IoTrace.socketWriteBegin();
 
             try {
                 begin();
@@ -498,8 +480,6 @@ class SocketChannelImpl
                 }
             } finally {
                 writerCleanup();
-                IoTrace.socketWriteEnd(traceContext, remoteAddress.getAddress(),
-                                       remoteAddress.getPort(), n > 0 ? n : 0);
                 end(n > 0 || (n == IOStatus.UNAVAILABLE));
                 synchronized (stateLock) {
                     if ((n <= 0) && (!isOutputOpen))
@@ -518,8 +498,6 @@ class SocketChannelImpl
         synchronized (writeLock) {
             ensureWriteOpen();
             long n = 0;
-            Object traceContext =
-                IoTrace.socketWriteBegin();
             try {
                 begin();
                 synchronized (stateLock) {
@@ -535,8 +513,6 @@ class SocketChannelImpl
                 }
             } finally {
                 writerCleanup();
-                IoTrace.socketWriteEnd(traceContext, remoteAddress.getAddress(),
-                                       remoteAddress.getPort(), n > 0 ? n : 0);
                 end((n > 0) || (n == IOStatus.UNAVAILABLE));
                 synchronized (stateLock) {
                     if ((n <= 0) && (!isOutputOpen))

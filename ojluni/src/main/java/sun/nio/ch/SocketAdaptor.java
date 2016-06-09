@@ -27,15 +27,12 @@
 package sun.nio.ch;
 
 import java.io.*;
-import java.lang.ref.*;
 import java.net.*;
 import java.nio.*;
 import java.nio.channels.*;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-import java.util.*;
 
-import sun.misc.IoTrace;
 
 
 // Make a socket channel look like a socket.
@@ -224,7 +221,6 @@ public class SocketAdaptor
                 Selector sel = null;
                 sc.configureBlocking(false);
                 int n = 0;
-                Object traceContext = IoTrace.socketReadBegin();
                 try {
                     if ((n = sc.read(bb)) != 0)
                         return n;
@@ -246,8 +242,6 @@ public class SocketAdaptor
                             throw new SocketTimeoutException();
                     }
                 } finally {
-                    IoTrace.socketReadEnd(traceContext, getInetAddress(),
-                                          getPort(), timeout, n > 0 ? n : 0);
                     if (sk != null)
                         sk.cancel();
                     if (sc.isOpen())
