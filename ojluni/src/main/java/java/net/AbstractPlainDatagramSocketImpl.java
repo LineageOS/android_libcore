@@ -53,11 +53,6 @@ abstract class AbstractPlainDatagramSocketImpl extends DatagramSocketImpl
     private InetAddress connectedAddress = null;
     private int connectedPort = -1;
 
-    /* cached socket options */
-    private int multicastInterface = 0;
-    private boolean loopbackMode = true;
-    private int ttl = -1;
-
     private final CloseGuard guard = CloseGuard.get();
 
     private static final String os = AccessController.doPrivileged(
