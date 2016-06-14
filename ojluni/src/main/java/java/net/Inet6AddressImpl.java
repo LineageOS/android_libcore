@@ -150,10 +150,10 @@ class Inet6AddressImpl implements InetAddressImpl {
              * be either an IPv6 address or an IPv4 address (case of a dual
              * stack system).
              */
-            java.util.Enumeration it = netif.getInetAddresses();
+            java.util.Enumeration<InetAddress> it = netif.getInetAddresses();
             InetAddress inetaddr = null;
             while (it.hasMoreElements()) {
-                inetaddr = (InetAddress) it.nextElement();
+                inetaddr = it.nextElement();
                 if (inetaddr.getClass().isInstance(addr)) {
                     ifaddr = inetaddr.getAddress();
                     if (inetaddr instanceof Inet6Address) {

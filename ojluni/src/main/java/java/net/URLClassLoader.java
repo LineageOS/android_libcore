@@ -91,6 +91,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * @exception  SecurityException  if a security manager exists and its
      *             {@code checkCreateClassLoader} method doesn't allow
      *             creation of a class loader.
+     * @exception  NullPointerException if {@code urls} is {@code null}.
      * @see SecurityManager#checkCreateClassLoader
      */
     public URLClassLoader(URL[] urls, ClassLoader parent) {
@@ -118,7 +119,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
 
     /**
      * Constructs a new URLClassLoader for the specified URLs using the
-     * default delegation parent <code>ClassLoader</code>. The URLs will
+     * default delegation parent {@code ClassLoader}. The URLs will
      * be searched in the order specified for classes and resources after
      * first searching in the parent class loader. Any URL that ends with
      * a '/' is assumed to refer to a directory. Otherwise, the URL is
@@ -126,14 +127,15 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * as needed.
      *
      * <p>If there is a security manager, this method first
-     * calls the security manager's <code>checkCreateClassLoader</code> method
+     * calls the security manager's {@code checkCreateClassLoader} method
      * to ensure creation of a class loader is allowed.
      *
      * @param urls the URLs from which to load classes and resources
      *
      * @exception  SecurityException  if a security manager exists and its
-     *             <code>checkCreateClassLoader</code> method doesn't allow
+     *             {@code checkCreateClassLoader} method doesn't allow
      *             creation of a class loader.
+     * @exception  NullPointerException if {@code urls} is {@code null}.
      * @see SecurityManager#checkCreateClassLoader
      */
     public URLClassLoader(URL[] urls) {
@@ -166,7 +168,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * obtain protocol handlers when creating new jar URLs.
      *
      * <p>If there is a security manager, this method first
-     * calls the security manager's <code>checkCreateClassLoader</code> method
+     * calls the security manager's {@code checkCreateClassLoader} method
      * to ensure creation of a class loader is allowed.
      *
      * @param urls the URLs from which to load classes and resources
@@ -174,7 +176,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * @param factory the URLStreamHandlerFactory to use when creating URLs
      *
      * @exception  SecurityException  if a security manager exists and its
-     *             <code>checkCreateClassLoader</code> method doesn't allow
+     *             {@code checkCreateClassLoader} method doesn't allow
      *             creation of a class loader.
      * @see SecurityManager#checkCreateClassLoader
      */
@@ -218,7 +220,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * @param  name
      *         The resource name
      *
-     * @return  An input stream for reading the resource, or <tt>null</tt>
+     * @return  An input stream for reading the resource, or {@code null}
      *          if the resource could not be found
      *
      * @since  1.7
@@ -274,7 +276,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
     * as suppressed exceptions of the first one caught, which is then re-thrown.
     *
     * @throws SecurityException if a security manager is set, and it denies
-    *   {@link RuntimePermission}<tt>("closeClassLoader")</tt>
+    *   {@link RuntimePermission}{@code ("closeClassLoader")}
     *
     * @since 1.7
     */
@@ -317,7 +319,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * Appends the specified URL to the list of URLs to search for
      * classes and resources.
      * <p>
-     * If the URL specified is <code>null</code> or is already in the
+     * If the URL specified is {@code null} or is already in the
      * list of URLs, or if this loader is closed, then invoking this
      * method has no effect.
      *
@@ -348,7 +350,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      *            or if the loader is closed.
      */
     protected Class<?> findClass(final String name)
-         throws ClassNotFoundException
+        throws ClassNotFoundException
     {
         try {
             return AccessController.doPrivileged(
@@ -536,7 +538,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * Finds the resource with the specified name on the URL search path.
      *
      * @param name the name of the resource
-     * @return a <code>URL</code> for the resource, or <code>null</code>
+     * @return a {@code URL} for the resource, or {@code null}
      * if the resource could not be found, or if the loader is closed.
      */
     public URL findResource(final String name) {
@@ -559,7 +561,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      *
      * @param name the resource name
      * @exception IOException if an I/O exception occurs
-     * @return an <code>Enumeration</code> of <code>URL</code>s
+     * @return an {@code Enumeration} of {@code URL}s
      *         If the loader is closed, the Enumeration will be empty.
      */
     public Enumeration<URL> findResources(final String name)
@@ -626,6 +628,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * If the protocol is not "file", then permission
      * to connect to and accept connections from the URL's host is granted.
      * @param codesource the codesource
+     * @exception NullPointerException if {@code codesource} is {@code null}.
      * @return the permissions granted to the codesource
      */
     protected PermissionCollection getPermissions(CodeSource codesource)
@@ -698,13 +701,14 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
     /**
      * Creates a new instance of URLClassLoader for the specified
      * URLs and parent class loader. If a security manager is
-     * installed, the <code>loadClass</code> method of the URLClassLoader
+     * installed, the {@code loadClass} method of the URLClassLoader
      * returned by this method will invoke the
-     * <code>SecurityManager.checkPackageAccess</code> method before
+     * {@code SecurityManager.checkPackageAccess} method before
      * loading the class.
      *
      * @param urls the URLs to search for classes and resources
      * @param parent the parent class loader for delegation
+     * @exception  NullPointerException if {@code urls} is {@code null}.
      * @return the resulting class loader
      */
     public static URLClassLoader newInstance(final URL[] urls,
@@ -724,12 +728,13 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
     /**
      * Creates a new instance of URLClassLoader for the specified
      * URLs and default parent class loader. If a security manager is
-     * installed, the <code>loadClass</code> method of the URLClassLoader
+     * installed, the {@code loadClass} method of the URLClassLoader
      * returned by this method will invoke the
-     * <code>SecurityManager.checkPackageAccess</code> before
+     * {@code SecurityManager.checkPackageAccess} before
      * loading the class.
      *
      * @param urls the URLs to search for classes and resources
+     * @exception  NullPointerException if {@code urls} is {@code null}.
      * @return the resulting class loader
      */
     public static URLClassLoader newInstance(final URL[] urls) {
