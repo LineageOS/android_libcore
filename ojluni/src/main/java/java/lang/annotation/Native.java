@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,39 +23,22 @@
  * questions.
  */
 
-package java.net;
+package java.lang.annotation;
 
-import java.io.IOException;
 
 /**
- * Thrown to indicate that there is an error in the underlying
- * protocol, such as a TCP error.
+ * Indicates that a field defining a constant value may be referenced
+ * from native code.
  *
- * @author  Chris Warth
- * @since   JDK1.0
+ * The annotation may be used as a hint by tools that generate native
+ * header files to determine whether a header file is required, and
+ * if so, what declarations it should contain.
+ *
+ * @since 1.8
+ * @hide  TODO unhide
  */
-public
-class ProtocolException extends IOException {
-    private static final long serialVersionUID = -6098449442062388080L;
-
-    /**
-     * Constructs a new {@code ProtocolException} with the
-     * specified detail message.
-     *
-     * @param   host   the detail message.
-     */
-    public ProtocolException(String host) {
-        super(host);
-    }
-
-    /**
-     * Constructs a new {@code ProtocolException} with no detail message.
-     */
-    public ProtocolException() {
-    }
-
-    /** @hide */
-    public ProtocolException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
+@Documented
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface Native {
 }
