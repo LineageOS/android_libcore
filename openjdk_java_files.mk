@@ -100,6 +100,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/annotation/ElementType.java \
     ojluni/src/main/java/java/lang/annotation/IncompleteAnnotationException.java \
     ojluni/src/main/java/java/lang/annotation/Inherited.java \
+    ojluni/src/main/java/java/lang/annotation/Native.java \
     ojluni/src/main/java/java/lang/annotation/Retention.java \
     ojluni/src/main/java/java/lang/annotation/Repeatable.java \
     ojluni/src/main/java/java/lang/annotation/RetentionPolicy.java \
@@ -310,6 +311,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/net/URL.java \
     ojluni/src/main/java/java/net/URLStreamHandlerFactory.java \
     ojluni/src/main/java/java/net/URLStreamHandler.java \
+    ojluni/src/main/java/java/net/package-info.java \
     ojluni/src/main/java/java/nio/Bits.java \
     ojluni/src/main/java/java/nio/Buffer.java \
     ojluni/src/main/java/java/nio/BufferOverflowException.java \

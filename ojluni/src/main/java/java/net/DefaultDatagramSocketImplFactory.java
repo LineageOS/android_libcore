@@ -53,10 +53,10 @@ class DefaultDatagramSocketImplFactory {
     }
 
     /**
-     * Creates a new <code>DatagramSocketImpl</code> instance.
+     * Creates a new {@code DatagramSocketImpl} instance.
      *
      * @param   isMulticast     true if this impl if for a MutlicastSocket
-     * @return  a new instance of a <code>DatagramSocketImpl</code>.
+     * @return  a new instance of a {@code DatagramSocketImpl}.
      */
     static DatagramSocketImpl createDatagramSocketImpl(boolean isMulticast /*unused on unix*/)
         throws SocketException {
