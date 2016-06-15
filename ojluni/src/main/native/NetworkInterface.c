@@ -724,7 +724,7 @@ netif *addif(JNIEnv *env, int sock, struct ifaddrs *ifa, netif *ifs)
   }
 
   /**
-   * Deal with virtual interface with colon notaion e.g. eth0:1
+   * Deal with virtual interface with colon notation e.g. eth0:1
    */
   name_colonP = strchr(name, ':');
   if (name_colonP != NULL) {
