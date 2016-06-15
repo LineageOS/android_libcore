@@ -167,7 +167,7 @@ getParam(char *driver, char *param)
  * for Solaris versions that do not support the ioctl() in getParam().
  * Ugly, but only called once (for each sotype).
  *
- * As an optimisation, we make a guess using the default values for Solaris
+ * As an optimization, we make a guess using the default values for Solaris
  * assuming they haven't been modified with ndd.
  */
 
@@ -215,22 +215,7 @@ static int findMaxBuf(int fd, int opt, int sotype) {
 #endif
 
 #ifdef __linux__
-static int kernelV22 = 0;
 static int vinit = 0;
-
-int kernelIsV22 () {
-    if (!vinit) {
-        struct utsname sysinfo;
-        if (uname(&sysinfo) == 0) {
-            sysinfo.release[3] = '\0';
-            if (strcmp(sysinfo.release, "2.2") == 0) {
-                kernelV22 = JNI_TRUE;
-            }
-        }
-        vinit = 1;
-    }
-    return kernelV22;
-}
 
 static int kernelV24 = 0;
 static int vinit24 = 0;
@@ -251,17 +236,11 @@ int kernelIsV24 () {
 
 int getScopeID (struct sockaddr *him) {
     struct sockaddr_in6 *hext = (struct sockaddr_in6 *)him;
-    if (kernelIsV22()) {
-        return 0;
-    }
     return hext->sin6_scope_id;
 }
 
 int cmpScopeID (unsigned int scope, struct sockaddr *him) {
     struct sockaddr_in6 *hext = (struct sockaddr_in6 *)him;
-    if (kernelIsV22()) {
-        return 1;       /* scope is ignored for comparison in 2.2 kernel */
-    }
     return hext->sin6_scope_id == scope;
 }
 
@@ -970,7 +949,7 @@ NET_MapSocketOption(jint cmd, int *level, int *optname) {
 
 /*
  * Wrapper for getsockopt system routine - does any necessary
- * pre/post processing to deal with OS specific oddies :-
+ * pre/post processing to deal with OS specific oddities :-
  *
  * IP_TOS is a no-op with IPv6 sockets as it's setup when
  * the connection is established.
@@ -1049,7 +1028,7 @@ NET_GetSockOpt(int fd, int level, int opt, void *result,
  *
  * For IP_TOS socket option need to mask off bits as this
  * aren't automatically masked by the kernel and results in
- * an error. In addition IP_TOS is a noop with IPv6 as it
+ * an error. In addition IP_TOS is a NOOP with IPv6 as it
  * should be setup as connection time.
  */
 int
@@ -1083,7 +1062,7 @@ NET_SetSockOpt(int fd, int level, int  opt, const void *arg,
 
     /*
      * IPPROTO/IP_TOS :-
-     * 1. IPv6 on Solaris/Mac OS: no-op and will be set
+     * 1. IPv6 on Solaris/Mac OS: NOOP and will be set
      *    in flowinfo field when connecting TCP socket,
      *    or sending UDP packet.
      * 2. IPv6 on Linux: By default Linux ignores flowinfo
