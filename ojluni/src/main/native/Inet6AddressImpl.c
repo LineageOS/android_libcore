@@ -204,8 +204,9 @@ ping6(JNIEnv *env, jint fd, struct sockaddr_in6* him, jint timeout,
 #ifdef __linux__
         if (errno != EINVAL && errno != EHOSTUNREACH)
           /*
-           * On some Linuxes, when bound to the loopback interface, sendto
-           * will fail and errno will be set to EINVAL or EHOSTUNREACH.
+           * On some Linux versions, when a socket is  bound to the
+           * loopback interface, sendto will fail and errno will be
+           * set to EINVAL or EHOSTUNREACH.
            * When that happens, don't throw an exception, just return false.
            */
 #endif /*__linux__ */
@@ -321,7 +322,7 @@ Inet6AddressImpl_isReachable0(JNIEnv *env, jobject this,
      * If we can create a RAW socket, then when can use the ICMP ECHO_REQUEST
      * otherwise we'll try a tcp socket to the Echo port (7).
      * Note that this is empiric, and not connecting could mean it's blocked
-     * or the echo servioe has been disabled.
+     * or the echo service has been disabled.
      */
 
     fd = JVM_Socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
@@ -384,8 +385,9 @@ Inet6AddressImpl_isReachable0(JNIEnv *env, jobject this,
         case EHOSTUNREACH:
           /*
            * On some Linuxes, when bound to the loopback interface, connect
-           * will fail and errno will be set to EINVAL or EHOSTUNREACH.
-           * When that happens, don't throw an exception, just return false.
+           * loopback interface, connect will fail and errno will
+           * be set to EINVAL or EHOSTUNREACH.  When that happens,
+           * don't throw an exception, just return false.
            */
 #endif /* __linux__ */
           untagSocket(env, fd);
