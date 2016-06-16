@@ -35,7 +35,6 @@ package java.lang.annotation;
  * if so, what declarations it should contain.
  *
  * @since 1.8
- * @hide  TODO unhide
  */
 @Documented
 @Target(ElementType.FIELD)
