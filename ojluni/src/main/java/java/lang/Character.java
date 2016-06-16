@@ -670,8 +670,14 @@ class Character implements java.io.Serializable, Comparable<Character> {
          * This name must be the same as the block identifier.
          */
         private UnicodeBlock(String idName) {
+            this(idName, true);
+        }
+
+        private UnicodeBlock(String idName, boolean isMap) {
             super(idName);
-            map.put(idName, this);
+            if (isMap) {
+                map.put(idName, this);
+            }
         }
 
         /**
@@ -1252,7 +1258,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
          */
         @Deprecated
         public static final UnicodeBlock SURROGATES_AREA =
-            new UnicodeBlock("SURROGATES_AREA");
+            new UnicodeBlock("SURROGATES_AREA", false);
 
         /**
          * Constant for the "Syriac" Unicode character block.
