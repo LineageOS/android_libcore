@@ -262,6 +262,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/net/Inet4Address.java \
     ojluni/src/main/java/java/net/Inet6AddressImpl.java \
     ojluni/src/main/java/java/net/Inet6Address.java \
+    ojluni/src/main/java/java/net/InetAddressContainer.java \
     ojluni/src/main/java/java/net/InetAddressImpl.java \
     ojluni/src/main/java/java/net/InetAddress.java \
     ojluni/src/main/java/java/net/InetSocketAddress.java \
