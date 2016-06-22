@@ -1,8 +1,13 @@
-package java.net;
+package libcore.java.net;
 
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.net.Socket;
+import java.net.SocketImpl;
+import java.net.SocketException;
+import java.net.SocketAddress;
+import java.net.ServerSocket;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
