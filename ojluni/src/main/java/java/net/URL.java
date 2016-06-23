@@ -1193,15 +1193,15 @@ public final class URL implements java.io.Serializable {
             // Makes okhttp the default http/https handler
             if (handler == null) {
                 try {
+                    // BEGIN android-changed
+                    // Use of okhttp for http and https
+                    // Removed unnecessary use of reflection for sun classes
                     if (protocol.equals("file")) {
-                        handler = (URLStreamHandler)Class.
-                            forName("sun.net.www.protocol.file.Handler").newInstance();
+                        handler = new sun.net.www.protocol.file.Handler();
                     } else if (protocol.equals("ftp")) {
-                        handler = (URLStreamHandler)Class.
-                            forName("sun.net.www.protocol.ftp.Handler").newInstance();
+                        handler = new sun.net.www.protocol.ftp.Handler();
                     } else if (protocol.equals("jar")) {
-                        handler = (URLStreamHandler)Class.
-                            forName("sun.net.www.protocol.jar.Handler").newInstance();
+                        handler = new sun.net.www.protocol.jar.Handler();
                     } else if (protocol.equals("http")) {
                         handler = (URLStreamHandler)Class.
                             forName("com.android.okhttp.HttpHandler").newInstance();
@@ -1209,6 +1209,7 @@ public final class URL implements java.io.Serializable {
                         handler = (URLStreamHandler)Class.
                             forName("com.android.okhttp.HttpsHandler").newInstance();
                     }
+                    // END android-changed
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }
