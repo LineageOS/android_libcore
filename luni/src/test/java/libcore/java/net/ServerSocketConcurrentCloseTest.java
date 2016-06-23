@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Tests for race conditions between {@link ServerSocket#close()} and
@@ -39,16 +40,33 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
         }
         final ExposedServerSocket serverSocket = new ExposedServerSocket();
         serverSocket.close();
-        try {
-            // Hack: Need to subclass to access the protected constructor without reflection
-            Socket socket = new Socket((SocketImpl) null) { };
-            serverSocket.implAcceptExposedForTest(socket);
-            fail("accepting on a closed socket should throw");
-        } catch (SocketException expected) {
-            // expected
-        } catch (IOException e) {
-            throw new AssertionError(e);
+        // implAccept() on background thread to prevent this test hanging
+        final AtomicReference<Exception> failure = new AtomicReference<>();
+        final CountDownLatch threadFinishedLatch = new CountDownLatch(1);
+        Thread thread = new Thread("implAccept() closed ServerSocket") {
+            public void run() {
+                try {
+                    // Hack: Need to subclass to access the protected constructor without reflection
+                    Socket socket = new Socket((SocketImpl) null) { };
+                    serverSocket.implAcceptExposedForTest(socket);
+                } catch (SocketException expected) {
+                    // pass
+                } catch (IOException|RuntimeException e) {
+                    failure.set(e);
+                } finally {
+                    threadFinishedLatch.countDown();
+                }
+            }
+        };
+        thread.start();
+
+        boolean completed = threadFinishedLatch.await(5, TimeUnit.SECONDS);
+        assertTrue("implAccept didn't throw or return within time limit", completed);
+        Exception e = failure.get();
+        if (e != null) {
+            throw new AssertionError("Unexpected exception", e);
         }
+        thread.join();
     }
 
     /**
