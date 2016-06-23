@@ -16,15 +16,19 @@
 
 package libcore.java.net;
 
-import com.android.okhttp.AndroidShimResponseCache;
-
 import com.google.mockwebserver.Dispatcher;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.google.mockwebserver.RecordedRequest;
 import com.google.mockwebserver.SocketPolicy;
+
+import com.android.okhttp.AndroidShimResponseCache;
+
+import junit.framework.TestCase;
+
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -81,8 +85,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import libcore.java.security.TestKeyStore;
-import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
 import libcore.javax.net.ssl.TestSSLContext;
+
 import tests.net.DelegatingSocketFactory;
 
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
@@ -95,7 +99,7 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.spy;
 
-public final class URLConnectionTest extends AbstractResourceLeakageDetectorTestCase {
+public final class URLConnectionTest extends TestCase {
 
     private MockWebServer server;
     private AndroidShimResponseCache cache;
