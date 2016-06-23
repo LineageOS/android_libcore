@@ -1244,7 +1244,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/www/http/PosterOutputStream.java \
     ojluni/src/main/java/sun/net/www/protocol/file/FileURLConnection.java \
     ojluni/src/main/java/sun/net/www/protocol/file/Handler.java \
-    ojluni/src/main/java/sun/net/www/protocol/file/Handler.java \
     ojluni/src/main/java/sun/net/www/protocol/ftp/FtpURLConnection.java \
     ojluni/src/main/java/sun/net/www/protocol/ftp/Handler.java \
     ojluni/src/main/java/sun/net/www/protocol/http/AuthCache.java \
