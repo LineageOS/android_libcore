@@ -1143,8 +1143,8 @@ openjdk_java_files := \
     ojluni/src/main/java/com/sun/nio/file/SensitivityWatchEventModifier.java \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
     ojluni/src/main/java/java/lang/Shutdown.java \
-    ojluni/src/main/java/sun/misc/FDBigInt.java \
-    ojluni/src/main/java/java/lang/FloatingDecimal.java \
+    ojluni/src/main/java/sun/misc/FDBigInteger.java \
+    ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/text/spi/BreakIteratorProvider.java \
     ojluni/src/main/java/java/text/spi/CollatorProvider.java \
     ojluni/src/main/java/java/text/spi/DateFormatProvider.java \
