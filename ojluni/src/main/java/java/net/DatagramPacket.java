@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -133,8 +133,7 @@ class DatagramPacket {
      *
      * @since 1.4
      */
-    public DatagramPacket(byte buf[], int offset, int length,
-                          SocketAddress address) throws SocketException {
+    public DatagramPacket(byte buf[], int offset, int length, SocketAddress address) {
         setData(buf, offset, length);
         setSocketAddress(address);
     }
@@ -169,8 +168,7 @@ class DatagramPacket {
      * @since 1.4
      * @see     java.net.InetAddress
      */
-    public DatagramPacket(byte buf[], int length,
-                          SocketAddress address) throws SocketException {
+    public DatagramPacket(byte buf[], int length, SocketAddress address) {
         this(buf, 0, length, address);
     }
 
