@@ -3299,13 +3299,10 @@ public final class Formatter implements Closeable, Flushable {
                 int prec = (precision == -1 ? 6 : precision);
 
                 FormattedFloatingDecimal fd
-                    = new FormattedFloatingDecimal(value, prec,
+                    = FormattedFloatingDecimal.valueOf(value, prec,
                         FormattedFloatingDecimal.Form.SCIENTIFIC);
 
-                char[] v = new char[MAX_FD_CHARS];
-                int len = fd.getChars(v);
-
-                char[] mant = addZeros(mantissa(v, len), prec);
+                char[] mant = addZeros(fd.getMantissa(), prec);
 
                 // If the precision is zero and the '#' flag is set, add the
                 // requested decimal point.
@@ -3313,7 +3310,7 @@ public final class Formatter implements Closeable, Flushable {
                     mant = addDot(mant);
 
                 char[] exp = (value == 0.0)
-                    ? new char[] {'+','0','0'} : exponent(v, len);
+                    ? new char[] {'+','0','0'} : fd.getExponent();
 
                 int newW = width;
                 if (width != -1)
@@ -3340,15 +3337,10 @@ public final class Formatter implements Closeable, Flushable {
                 int prec = (precision == -1 ? 6 : precision);
 
                 FormattedFloatingDecimal fd
-                    = new FormattedFloatingDecimal(value, prec,
-                        FormattedFloatingDecimal.Form.DECIMAL_FLOAT);
+                        = FormattedFloatingDecimal.valueOf(value, prec,
+                          FormattedFloatingDecimal.Form.DECIMAL_FLOAT);
 
-                // MAX_FD_CHARS + 1 (round?)
-                char[] v = new char[MAX_FD_CHARS + 1
-                                   + Math.abs(fd.getExponent())];
-                int len = fd.getChars(v);
-
-                char[] mant = addZeros(mantissa(v, len), prec);
+                char[] mant = addZeros(fd.getMantissa(), prec);
 
                 // If the precision is zero and the '#' flag is set, add the
                 // requested decimal point.
@@ -3366,23 +3358,29 @@ public final class Formatter implements Closeable, Flushable {
                 else if (precision == 0)
                     prec = 1;
 
-                FormattedFloatingDecimal fd
-                    = new FormattedFloatingDecimal(value, prec,
-                        FormattedFloatingDecimal.Form.GENERAL);
+                char[] exp;
+                char[] mant;
+                int expRounded;
+                if (value == 0.0) {
+                    exp = null;
+                    mant = new char[] {'0'};
+                    expRounded = 0;
+                } else {
+                    FormattedFloatingDecimal fd
+                        = FormattedFloatingDecimal.valueOf(value, prec,
+                          FormattedFloatingDecimal.Form.GENERAL);
+                    exp = fd.getExponent();
+                    mant = fd.getMantissa();
+                    expRounded = fd.getExponentRounded();
+                }
 
-                // MAX_FD_CHARS + 1 (round?)
-                char[] v = new char[MAX_FD_CHARS + 1
-                                   + Math.abs(fd.getExponent())];
-                int len = fd.getChars(v);
-
-                char[] exp = exponent(v, len);
                 if (exp != null) {
                     prec -= 1;
                 } else {
-                    prec = prec - (value == 0 ? 0 : fd.getExponentRounded()) - 1;
+                    prec -= expRounded + 1;
                 }
 
-                char[] mant = addZeros(mantissa(v, len), prec);
+                mant = addZeros(mant, prec);
                 // If the precision is zero and the '#' flag is set, add the
                 // requested decimal point.
                 if (f.contains(Flags.ALTERNATE) && (prec == 0))
