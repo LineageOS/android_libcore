@@ -1437,14 +1437,6 @@
   name: "org.apache.harmony.tests.java.util.GregorianCalendarTest#test_computeTime"
 },
 {
-  description: "OkHttp tests require SOCKS 5 support. Android PlainSocketImpl implements SOCKS 4",
-  bug: 96926,
-  names: [
-    "com.squareup.okhttp.SocksProxyTest#proxy",
-    "com.squareup.okhttp.SocksProxyTest#proxySelector"
-  ]
-},
-{
   description: "OkHttp tests that fail on Wear devices due to a lack of memory",
   bug: 20055487,
   names: [
