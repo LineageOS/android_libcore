@@ -1401,11 +1401,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/action/GetPropertyAction.java \
     ojluni/src/main/java/sun/security/action/LoadLibraryAction.java \
     ojluni/src/main/java/sun/security/action/PutAllAction.java \
-    ojluni/src/main/java/sun/security/ec/ECKeyFactory.java \
-    ojluni/src/main/java/sun/security/ec/ECParameters.java \
-    ojluni/src/main/java/sun/security/ec/ECPrivateKeyImpl.java \
-    ojluni/src/main/java/sun/security/ec/ECPublicKeyImpl.java \
-    ojluni/src/main/java/sun/security/ec/NamedCurve.java \
     ojluni/src/main/java/sun/security/internal/interfaces/TlsMasterSecret.java \
     ojluni/src/main/java/sun/security/internal/spec/TlsKeyMaterialParameterSpec.java \
     ojluni/src/main/java/sun/security/internal/spec/TlsKeyMaterialSpec.java \
