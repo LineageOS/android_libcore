@@ -847,6 +847,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/util/function/ToLongBiFunction.java \
     ojluni/src/main/java/java/util/function/ToLongFunction.java \
     ojluni/src/main/java/java/util/function/UnaryOperator.java \
+    ojluni/src/main/java/java/util/function/package-info.java \
     ojluni/src/main/java/java/util/jar/Attributes.java \
     ojluni/src/main/java/java/util/jar/JarEntry.java \
     ojluni/src/main/java/java/util/jar/JarException.java \
