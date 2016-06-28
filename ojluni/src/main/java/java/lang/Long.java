@@ -26,6 +26,7 @@
 
 package java.lang;
 
+import java.lang.annotation.Native;
 import java.math.*;
 
 
@@ -56,13 +57,13 @@ public final class Long extends Number implements Comparable<Long> {
      * A constant holding the minimum value a {@code long} can
      * have, -2<sup>63</sup>.
      */
-    public static final long MIN_VALUE = 0x8000000000000000L;
+    @Native public static final long MIN_VALUE = 0x8000000000000000L;
 
     /**
      * A constant holding the maximum value a {@code long} can
      * have, 2<sup>63</sup>-1.
      */
-    public static final long MAX_VALUE = 0x7fffffffffffffffL;
+    @Native public static final long MAX_VALUE = 0x7fffffffffffffffL;
 
     /**
      * The {@code Class} instance representing the primitive type
@@ -70,6 +71,7 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * @since   JDK1.1
      */
+    @SuppressWarnings("unchecked")
     public static final Class<Long>     TYPE = (Class<Long>) long[].class.getComponentType();
 
     /**
@@ -82,13 +84,13 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * <p>If the first argument is negative, the first element of the
      * result is the ASCII minus sign {@code '-'}
-     * (<code>'&#92;u002d'</code>). If the first argument is not
+     * ({@code '\u005Cu002d'}). If the first argument is not
      * negative, no sign character appears in the result.
      *
      * <p>The remaining characters of the result represent the magnitude
      * of the first argument. If the magnitude is zero, it is
      * represented by a single zero character {@code '0'}
-     * (<code>'&#92;u0030'</code>); otherwise, the first character of
+     * ({@code '\u005Cu0030'}); otherwise, the first character of
      * the representation of the magnitude will not be the zero
      * character.  The following ASCII characters are used as digits:
      *
@@ -96,9 +98,9 @@ public final class Long extends Number implements Comparable<Long> {
      *   {@code 0123456789abcdefghijklmnopqrstuvwxyz}
      * </blockquote>
      *
-     * These are <code>'&#92;u0030'</code> through
-     * <code>'&#92;u0039'</code> and <code>'&#92;u0061'</code> through
-     * <code>'&#92;u007a'</code>. If {@code radix} is
+     * These are {@code '\u005Cu0030'} through
+     * {@code '\u005Cu0039'} and {@code '\u005Cu0061'} through
+     * {@code '\u005Cu007a'}. If {@code radix} is
      * <var>N</var>, then the first <var>N</var> of these characters
      * are used as radix-<var>N</var> digits in the order shown. Thus,
      * the digits for hexadecimal (radix 16) are
@@ -232,20 +234,26 @@ public final class Long extends Number implements Comparable<Long> {
      * 2<sup>64</sup> if the argument is negative; otherwise, it is
      * equal to the argument.  This value is converted to a string of
      * ASCII digits in hexadecimal (base&nbsp;16) with no extra
-     * leading {@code 0}s.  If the unsigned magnitude is zero, it
-     * is represented by a single zero character {@code '0'}
-     * (<code>'&#92;u0030'</code>); otherwise, the first character of
-     * the representation of the unsigned magnitude will not be the
-     * zero character. The following characters are used as
-     * hexadecimal digits:
+     * leading {@code 0}s.
+     *
+     * <p>The value of the argument can be recovered from the returned
+     * string {@code s} by calling {@link
+     * Long#parseUnsignedLong(String, int) Long.parseUnsignedLong(s,
+     * 16)}.
+     *
+     * <p>If the unsigned magnitude is zero, it is represented by a
+     * single zero character {@code '0'} ({@code '\u005Cu0030'});
+     * otherwise, the first character of the representation of the
+     * unsigned magnitude will not be the zero character. The
+     * following characters are used as hexadecimal digits:
      *
      * <blockquote>
      *  {@code 0123456789abcdef}
      * </blockquote>
      *
-     * These are the characters <code>'&#92;u0030'</code> through
-     * <code>'&#92;u0039'</code> and  <code>'&#92;u0061'</code> through
-     * <code>'&#92;u0066'</code>.  If uppercase letters are desired,
+     * These are the characters {@code '\u005Cu0030'} through
+     * {@code '\u005Cu0039'} and  {@code '\u005Cu0061'} through
+     * {@code '\u005Cu0066'}.  If uppercase letters are desired,
      * the {@link java.lang.String#toUpperCase()} method may be called
      * on the result:
      *
@@ -257,6 +265,8 @@ public final class Long extends Number implements Comparable<Long> {
      * @return  the string representation of the unsigned {@code long}
      *          value represented by the argument in hexadecimal
      *          (base&nbsp;16).
+     * @see #parseUnsignedLong(String, int)
+     * @see #toUnsignedString(long, int)
      * @since   JDK 1.0.2
      */
     public static String toHexString(long i) {
@@ -273,23 +283,29 @@ public final class Long extends Number implements Comparable<Long> {
      * ASCII digits in octal (base&nbsp;8) with no extra leading
      * {@code 0}s.
      *
+     * <p>The value of the argument can be recovered from the returned
+     * string {@code s} by calling {@link
+     * Long#parseUnsignedLong(String, int) Long.parseUnsignedLong(s,
+     * 8)}.
+     *
      * <p>If the unsigned magnitude is zero, it is represented by a
-     * single zero character {@code '0'}
-     * (<code>'&#92;u0030'</code>); otherwise, the first character of
-     * the representation of the unsigned magnitude will not be the
-     * zero character. The following characters are used as octal
-     * digits:
+     * single zero character {@code '0'} ({@code '\u005Cu0030'});
+     * otherwise, the first character of the representation of the
+     * unsigned magnitude will not be the zero character. The
+     * following characters are used as octal digits:
      *
      * <blockquote>
      *  {@code 01234567}
      * </blockquote>
      *
-     * These are the characters <code>'&#92;u0030'</code> through
-     * <code>'&#92;u0037'</code>.
+     * These are the characters {@code '\u005Cu0030'} through
+     * {@code '\u005Cu0037'}.
      *
      * @param   i   a {@code long} to be converted to a string.
      * @return  the string representation of the unsigned {@code long}
      *          value represented by the argument in octal (base&nbsp;8).
+     * @see #parseUnsignedLong(String, int)
+     * @see #toUnsignedString(long, int)
      * @since   JDK 1.0.2
      */
     public static String toOctalString(long i) {
@@ -304,17 +320,25 @@ public final class Long extends Number implements Comparable<Long> {
      * 2<sup>64</sup> if the argument is negative; otherwise, it is
      * equal to the argument.  This value is converted to a string of
      * ASCII digits in binary (base&nbsp;2) with no extra leading
-     * {@code 0}s.  If the unsigned magnitude is zero, it is
-     * represented by a single zero character {@code '0'}
-     * (<code>'&#92;u0030'</code>); otherwise, the first character of
-     * the representation of the unsigned magnitude will not be the
-     * zero character. The characters {@code '0'}
-     * (<code>'&#92;u0030'</code>) and {@code '1'}
-     * (<code>'&#92;u0031'</code>) are used as binary digits.
+     * {@code 0}s.
+     *
+     * <p>The value of the argument can be recovered from the returned
+     * string {@code s} by calling {@link
+     * Long#parseUnsignedLong(String, int) Long.parseUnsignedLong(s,
+     * 2)}.
+     *
+     * <p>If the unsigned magnitude is zero, it is represented by a
+     * single zero character {@code '0'} ({@code '\u005Cu0030'});
+     * otherwise, the first character of the representation of the
+     * unsigned magnitude will not be the zero character. The
+     * characters {@code '0'} ({@code '\u005Cu0030'}) and {@code
+     * '1'} ({@code '\u005Cu0031'}) are used as binary digits.
      *
      * @param   i   a {@code long} to be converted to a string.
      * @return  the string representation of the unsigned {@code long}
      *          value represented by the argument in binary (base&nbsp;2).
+     * @see #parseUnsignedLong(String, int)
+     * @see #toUnsignedString(long, int)
      * @since   JDK 1.0.2
      */
     public static String toBinaryString(long i) {
@@ -322,18 +346,39 @@ public final class Long extends Number implements Comparable<Long> {
     }
 
     /**
-     * Convert the integer to an unsigned number.
+     * Format a long (treated as unsigned) into a String.
+     * @param val the value to format
+     * @param shift the log2 of the base to format in (4 for hex, 3 for octal, 1 for binary)
      */
-    private static String toUnsignedString0(long i, int shift) {
-        char[] buf = new char[64];
-        int charPos = 64;
+    static String toUnsignedString0(long val, int shift) {
+        // assert shift > 0 && shift <=5 : "Illegal shift value";
+        int mag = Long.SIZE - Long.numberOfLeadingZeros(val);
+        int chars = Math.max(((mag + (shift - 1)) / shift), 1);
+        char[] buf = new char[chars];
+
+        formatUnsignedLong(val, shift, buf, 0, chars);
+        return new String(buf);
+    }
+
+    /**
+     * Format a long (treated as unsigned) into a character buffer.
+     * @param val the unsigned long to format
+     * @param shift the log2 of the base to format in (4 for hex, 3 for octal, 1 for binary)
+     * @param buf the character buffer to write to
+     * @param offset the offset in the destination buffer to start at
+     * @param len the number of characters to write
+     * @return the lowest character location used
+     */
+     static int formatUnsignedLong(long val, int shift, char[] buf, int offset, int len) {
+        int charPos = len;
         int radix = 1 << shift;
-        long mask = radix - 1;
+        int mask = radix - 1;
         do {
-            buf[--charPos] = Integer.digits[(int)(i & mask)];
-            i >>>= shift;
-        } while (i != 0);
-        return new String(buf, charPos, (64 - charPos));
+            buf[offset + --charPos] = Integer.digits[((int) val) & mask];
+            val >>>= shift;
+        } while (val != 0 && charPos > 0);
+
+        return charPos;
     }
 
     /**
@@ -352,7 +397,6 @@ public final class Long extends Number implements Comparable<Long> {
         int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
         char[] buf = new char[size];
         getChars(i, size, buf);
-        // Android-changed: change string constructor.
         return new String(buf);
     }
 
@@ -447,18 +491,18 @@ public final class Long extends Number implements Comparable<Long> {
      * string must all be digits of the specified radix (as determined
      * by whether {@link java.lang.Character#digit(char, int)} returns
      * a nonnegative value), except that the first character may be an
-     * ASCII minus sign {@code '-'} (<code>'&#92;u002D'</code>) to
+     * ASCII minus sign {@code '-'} ({@code '\u005Cu002D'}) to
      * indicate a negative value or an ASCII plus sign {@code '+'}
-     * (<code>'&#92;u002B'</code>) to indicate a positive value. The
+     * ({@code '\u005Cu002B'}) to indicate a positive value. The
      * resulting {@code long} value is returned.
      *
      * <p>Note that neither the character {@code L}
-     * (<code>'&#92;u004C'</code>) nor {@code l}
-     * (<code>'&#92;u006C'</code>) is permitted to appear at the end
+     * ({@code '\u005Cu004C'}) nor {@code l}
+     * ({@code '\u005Cu006C'}) is permitted to appear at the end
      * of the string as a type indicator, as would be permitted in
      * Java programming language source code - except that either
      * {@code L} or {@code l} may appear as a digit for a
-     * radix greater than 22.
+     * radix greater than or equal to 22.
      *
      * <p>An exception of type {@code NumberFormatException} is
      * thrown if any of the following situations occurs:
@@ -473,8 +517,8 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * <li>Any character of the string is not a digit of the specified
      * radix, except that the first character may be a minus sign
-     * {@code '-'} (<code>'&#92;u002d'</code>) or plus sign {@code
-     * '+'} (<code>'&#92;u002B'</code>) provided that the string is
+     * {@code '-'} ({@code '\u005Cu002d'}) or plus sign {@code
+     * '+'} ({@code '\u005Cu002B'}) provided that the string is
      * longer than length 1.
      *
      * <li>The value represented by the string is not a value of type
@@ -564,16 +608,16 @@ public final class Long extends Number implements Comparable<Long> {
      * Parses the string argument as a signed decimal {@code long}.
      * The characters in the string must all be decimal digits, except
      * that the first character may be an ASCII minus sign {@code '-'}
-     * (<code>&#92;u002D'</code>) to indicate a negative value or an
-     * ASCII plus sign {@code '+'} (<code>'&#92;u002B'</code>) to
+     * ({@code \u005Cu002D'}) to indicate a negative value or an
+     * ASCII plus sign {@code '+'} ({@code '\u005Cu002B'}) to
      * indicate a positive value. The resulting {@code long} value is
      * returned, exactly as if the argument and the radix {@code 10}
      * were given as arguments to the {@link
      * #parseLong(java.lang.String, int)} method.
      *
      * <p>Note that neither the character {@code L}
-     * (<code>'&#92;u004C'</code>) nor {@code l}
-     * (<code>'&#92;u006C'</code>) is permitted to appear at the end
+     * ({@code '\u005Cu004C'}) nor {@code l}
+     * ({@code '\u005Cu006C'}) is permitted to appear at the end
      * of the string as a type indicator, as would be permitted in
      * Java programming language source code.
      *
@@ -810,7 +854,7 @@ public final class Long extends Number implements Comparable<Long> {
      * <dd><i>Sign<sub>opt</sub></i> {@code 0X} <i>HexDigits</i>
      * <dd><i>Sign<sub>opt</sub></i> {@code #} <i>HexDigits</i>
      * <dd><i>Sign<sub>opt</sub></i> {@code 0} <i>OctalDigits</i>
-     * <p>
+     *
      * <dt><i>Sign:</i>
      * <dd>{@code -}
      * <dd>{@code +}
@@ -923,24 +967,27 @@ public final class Long extends Number implements Comparable<Long> {
     }
 
     /**
-     * Returns the value of this {@code Long} as a
-     * {@code byte}.
+     * Returns the value of this {@code Long} as a {@code byte} after
+     * a narrowing primitive conversion.
+     * @jls 5.1.3 Narrowing Primitive Conversions
      */
     public byte byteValue() {
         return (byte)value;
     }
 
     /**
-     * Returns the value of this {@code Long} as a
-     * {@code short}.
+     * Returns the value of this {@code Long} as a {@code short} after
+     * a narrowing primitive conversion.
+     * @jls 5.1.3 Narrowing Primitive Conversions
      */
     public short shortValue() {
         return (short)value;
     }
 
     /**
-     * Returns the value of this {@code Long} as an
-     * {@code int}.
+     * Returns the value of this {@code Long} as an {@code int} after
+     * a narrowing primitive conversion.
+     * @jls 5.1.3 Narrowing Primitive Conversions
      */
     public int intValue() {
         return (int)value;
@@ -951,20 +998,22 @@ public final class Long extends Number implements Comparable<Long> {
      * {@code long} value.
      */
     public long longValue() {
-        return (long)value;
+        return value;
     }
 
     /**
-     * Returns the value of this {@code Long} as a
-     * {@code float}.
+     * Returns the value of this {@code Long} as a {@code float} after
+     * a widening primitive conversion.
+     * @jls 5.1.2 Widening Primitive Conversions
      */
     public float floatValue() {
         return (float)value;
     }
 
     /**
-     * Returns the value of this {@code Long} as a
-     * {@code double}.
+     * Returns the value of this {@code Long} as a {@code double}
+     * after a widening primitive conversion.
+     * @jls 5.1.2 Widening Primitive Conversions
      */
     public double doubleValue() {
         return (double)value;
@@ -996,6 +1045,7 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * @return  a hash code value for this object.
      */
+    @Override
     public int hashCode() {
         return Long.hashCode(value);
     }
@@ -1033,22 +1083,20 @@ public final class Long extends Number implements Comparable<Long> {
      * Determines the {@code long} value of the system property
      * with the specified name.
      *
-     * <p>The first argument is treated as the name of a system property.
-     * System properties are accessible through the {@link
+     * <p>The first argument is treated as the name of a system
+     * property.  System properties are accessible through the {@link
      * java.lang.System#getProperty(java.lang.String)} method. The
-     * string value of this property is then interpreted as a
-     * {@code long} value and a {@code Long} object
-     * representing this value is returned.  Details of possible
-     * numeric formats can be found with the definition of
-     * {@code getProperty}.
+     * string value of this property is then interpreted as a {@code
+     * long} value using the grammar supported by {@link Long#decode decode}
+     * and a {@code Long} object representing this value is returned.
      *
      * <p>If there is no property with the specified name, if the
-     * specified name is empty or {@code null}, or if the
-     * property does not have the correct numeric format, then
-     * {@code null} is returned.
+     * specified name is empty or {@code null}, or if the property
+     * does not have the correct numeric format, then {@code null} is
+     * returned.
      *
-     * <p>In other words, this method returns a {@code Long} object equal to
-     * the value of:
+     * <p>In other words, this method returns a {@code Long} object
+     * equal to the value of:
      *
      * <blockquote>
      *  {@code getLong(nm, null)}
@@ -1056,6 +1104,8 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * @param   nm   property name.
      * @return  the {@code Long} value of the property.
+     * @throws  SecurityException for the same reasons as
+     *          {@link System#getProperty(String) System.getProperty}
      * @see     java.lang.System#getProperty(java.lang.String)
      * @see     java.lang.System#getProperty(java.lang.String, java.lang.String)
      */
@@ -1067,14 +1117,12 @@ public final class Long extends Number implements Comparable<Long> {
      * Determines the {@code long} value of the system property
      * with the specified name.
      *
-     * <p>The first argument is treated as the name of a system property.
-     * System properties are accessible through the {@link
+     * <p>The first argument is treated as the name of a system
+     * property.  System properties are accessible through the {@link
      * java.lang.System#getProperty(java.lang.String)} method. The
-     * string value of this property is then interpreted as a
-     * {@code long} value and a {@code Long} object
-     * representing this value is returned.  Details of possible
-     * numeric formats can be found with the definition of
-     * {@code getProperty}.
+     * string value of this property is then interpreted as a {@code
+     * long} value using the grammar supported by {@link Long#decode decode}
+     * and a {@code Long} object representing this value is returned.
      *
      * <p>The second argument is the default value. A {@code Long} object
      * that represents the value of the second argument is returned if there
@@ -1101,6 +1149,8 @@ public final class Long extends Number implements Comparable<Long> {
      * @param   nm    property name.
      * @param   val   default value.
      * @return  the {@code Long} value of the property.
+     * @throws  SecurityException for the same reasons as
+     *          {@link System#getProperty(String) System.getProperty}
      * @see     java.lang.System#getProperty(java.lang.String)
      * @see     java.lang.System#getProperty(java.lang.String, java.lang.String)
      */
@@ -1116,8 +1166,8 @@ public final class Long extends Number implements Comparable<Long> {
      * the {@link java.lang.System#getProperty(java.lang.String)}
      * method. The string value of this property is then interpreted
      * as a {@code long} value, as per the
-     * {@code Long.decode} method, and a {@code Long} object
-     * representing this value is returned.
+     * {@link Long#decode decode} method, and a {@code Long} object
+     * representing this value is returned; in summary:
      *
      * <ul>
      * <li>If the property value begins with the two ASCII characters
@@ -1135,8 +1185,8 @@ public final class Long extends Number implements Comparable<Long> {
      * </ul>
      *
      * <p>Note that, in every case, neither {@code L}
-     * (<code>'&#92;u004C'</code>) nor {@code l}
-     * (<code>'&#92;u006C'</code>) is permitted to appear at the end
+     * ({@code '\u005Cu004C'}) nor {@code l}
+     * ({@code '\u005Cu006C'}) is permitted to appear at the end
      * of the property value as a type indicator, as would be
      * permitted in Java programming language source code.
      *
@@ -1148,16 +1198,16 @@ public final class Long extends Number implements Comparable<Long> {
      * @param   nm   property name.
      * @param   val   default value.
      * @return  the {@code Long} value of the property.
-     * @see     java.lang.System#getProperty(java.lang.String)
-     * @see java.lang.System#getProperty(java.lang.String, java.lang.String)
-     * @see java.lang.Long#decode
+     * @throws  SecurityException for the same reasons as
+     *          {@link System#getProperty(String) System.getProperty}
+     * @see     System#getProperty(java.lang.String)
+     * @see     System#getProperty(java.lang.String, java.lang.String)
      */
     public static Long getLong(String nm, Long val) {
         String v = null;
         try {
             v = System.getProperty(nm);
-        } catch (IllegalArgumentException e) {
-        } catch (NullPointerException e) {
+        } catch (IllegalArgumentException | NullPointerException e) {
         }
         if (v != null) {
             try {
@@ -1291,7 +1341,7 @@ public final class Long extends Number implements Comparable<Long> {
      *
      * @since 1.5
      */
-    public static final int SIZE = 64;
+    @Native public static final int SIZE = 64;
 
     /**
      * The number of bytes used to represent a {@code long} value in two's
@@ -1308,6 +1358,7 @@ public final class Long extends Number implements Comparable<Long> {
      * one-bits in its two's complement binary representation, that is, if it
      * is equal to zero.
      *
+     * @param i the value whose highest one bit is to be computed
      * @return a {@code long} value with a single one-bit, in the position
      *     of the highest-order one-bit in the specified value, or zero if
      *     the specified value is itself equal to zero.
@@ -1331,6 +1382,7 @@ public final class Long extends Number implements Comparable<Long> {
      * one-bits in its two's complement binary representation, that is, if it
      * is equal to zero.
      *
+     * @param i the value whose lowest one bit is to be computed
      * @return a {@code long} value with a single one-bit, in the position
      *     of the lowest-order one-bit in the specified value, or zero if
      *     the specified value is itself equal to zero.
@@ -1355,6 +1407,7 @@ public final class Long extends Number implements Comparable<Long> {
      * <li>ceil(log<sub>2</sub>(x)) = {@code 64 - numberOfLeadingZeros(x - 1)}
      * </ul>
      *
+     * @param i the value whose number of leading zeros is to be computed
      * @return the number of zero bits preceding the highest-order
      *     ("leftmost") one-bit in the two's complement binary representation
      *     of the specified {@code long} value, or 64 if the value
@@ -1383,6 +1436,7 @@ public final class Long extends Number implements Comparable<Long> {
      * one-bits in its two's complement representation, in other words if it is
      * equal to zero.
      *
+     * @param i the value whose number of trailing zeros is to be computed
      * @return the number of zero bits following the lowest-order ("rightmost")
      *     one-bit in the two's complement binary representation of the
      *     specified {@code long} value, or 64 if the value is equal
@@ -1407,6 +1461,7 @@ public final class Long extends Number implements Comparable<Long> {
      * representation of the specified {@code long} value.  This function is
      * sometimes referred to as the <i>population count</i>.
      *
+     * @param i the value whose bits are to be counted
      * @return the number of one-bits in the two's complement binary
      *     representation of the specified {@code long} value.
      * @since 1.5
@@ -1435,6 +1490,8 @@ public final class Long extends Number implements Comparable<Long> {
      * ignored, even if the distance is negative: {@code rotateLeft(val,
      * distance) == rotateLeft(val, distance & 0x3F)}.
      *
+     * @param i the value whose bits are to be rotated left
+     * @param distance the number of bit positions to rotate left
      * @return the value obtained by rotating the two's complement binary
      *     representation of the specified {@code long} value left by the
      *     specified number of bits.
@@ -1457,6 +1514,8 @@ public final class Long extends Number implements Comparable<Long> {
      * ignored, even if the distance is negative: {@code rotateRight(val,
      * distance) == rotateRight(val, distance & 0x3F)}.
      *
+     * @param i the value whose bits are to be rotated right
+     * @param distance the number of bit positions to rotate right
      * @return the value obtained by rotating the two's complement binary
      *     representation of the specified {@code long} value right by the
      *     specified number of bits.
@@ -1471,6 +1530,7 @@ public final class Long extends Number implements Comparable<Long> {
      * two's complement binary representation of the specified {@code long}
      * value.
      *
+     * @param i the value to be reversed
      * @return the value obtained by reversing order of the bits in the
      *     specified {@code long} value.
      * @since 1.5
@@ -1491,6 +1551,7 @@ public final class Long extends Number implements Comparable<Long> {
      * return value is -1 if the specified value is negative; 0 if the
      * specified value is zero; and 1 if the specified value is positive.)
      *
+     * @param i the value whose signum is to be computed
      * @return the signum function of the specified {@code long} value.
      * @since 1.5
      */
@@ -1503,6 +1564,7 @@ public final class Long extends Number implements Comparable<Long> {
      * Returns the value obtained by reversing the order of the bytes in the
      * two's complement representation of the specified {@code long} value.
      *
+     * @param i the value whose bytes are to be reversed
      * @return the value obtained by reversing the bytes in the specified
      *     {@code long} value.
      * @since 1.5
@@ -1555,5 +1617,5 @@ public final class Long extends Number implements Comparable<Long> {
     }
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
-    private static final long serialVersionUID = 4290774380558885855L;
+    @Native private static final long serialVersionUID = 4290774380558885855L;
 }
