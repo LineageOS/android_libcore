@@ -46,7 +46,6 @@ extern void register_java_lang_Double(JNIEnv*);
 extern void register_java_lang_Float(JNIEnv*);
 extern void register_java_lang_ProcessEnvironment(JNIEnv*);
 extern void register_java_lang_Runtime(JNIEnv*);
-extern void register_java_lang_Shutdown(JNIEnv*);
 extern void register_java_lang_StrictMath(JNIEnv*);
 extern void register_java_lang_Math(JNIEnv*);
 extern void register_java_lang_System(JNIEnv*);
@@ -126,7 +125,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) { JNIEnv* env;
     register_java_lang_ProcessEnvironment(env);
     register_java_lang_Runtime(env);
     register_java_lang_System(env);
-    register_java_lang_Shutdown(env);
     register_java_lang_UNIXProcess(env);
     // register_java_net_InetAddress depends on java_lang_Float & Math being
     // fully registered (getMethodId on InetAddress class triggers its

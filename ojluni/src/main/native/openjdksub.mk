@@ -69,7 +69,6 @@ LOCAL_SRC_FILES := \
     ProcessEnvironment_md.c \
     System.c \
     Runtime.c \
-    Shutdown.c \
     UNIXProcess_md.c \
     Bits.c \
     Character.cpp \
