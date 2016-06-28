@@ -169,7 +169,12 @@ class MulticastSocket extends DatagramSocket {
         setReuseAddress(true);
 
         if (bindaddr != null) {
-            bind(bindaddr);
+            try {
+                bind(bindaddr);
+            } finally {
+                if (!isBound())
+                    close();
+            }
         }
     }
 
