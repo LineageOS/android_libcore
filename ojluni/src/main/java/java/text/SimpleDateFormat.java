@@ -1135,17 +1135,17 @@ public class SimpleDateFormat extends DateFormat {
             }
             break;
 
-        case PATTERN_STANDALONE_MONTH: // 'L'
-        {
-            current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
-                    true /* standalone */);
-            break;
-        }
-
         case PATTERN_MONTH: // 'M'
         {
             current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
                     false /* standalone */);
+            break;
+        }
+
+        case PATTERN_STANDALONE_MONTH: // 'L'
+        {
+            current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
+                    true /* standalone */);
             break;
         }
 
@@ -1159,15 +1159,15 @@ public class SimpleDateFormat extends DateFormat {
             }
             break;
 
-        case PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
-        {
-            current = formatWeekday(count, value, useDateFormatSymbols, true /* standalone */);
-            break;
-        }
-
         case PATTERN_DAY_OF_WEEK: // 'E'
         {
             current = formatWeekday(count, value, useDateFormatSymbols, false /* standalone */);
+            break;
+        }
+
+        case PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
+        {
+            current = formatWeekday(count, value, useDateFormatSymbols, true /* standalone */);
             break;
         }
 
@@ -1929,16 +1929,6 @@ public class SimpleDateFormat extends DateFormat {
                 calb.set(field, value);
                 return pos.index;
 
-            case PATTERN_STANDALONE_MONTH: // 'L'.
-            {
-                final int idx = parseMonth(text, count, value, start, field, pos,
-                        useDateFormatSymbols, true /* isStandalone */, calb);
-                if (idx > 0) {
-                    return idx;
-                }
-                break parsing;
-            }
-
             case PATTERN_MONTH: // 'M'
             {
                 final int idx = parseMonth(text, count, value, start, field, pos,
@@ -1947,6 +1937,16 @@ public class SimpleDateFormat extends DateFormat {
                     return idx;
                 }
 
+                break parsing;
+            }
+
+            case PATTERN_STANDALONE_MONTH: // 'L'.
+            {
+                final int idx = parseMonth(text, count, value, start, field, pos,
+                        useDateFormatSymbols, true /* isStandalone */, calb);
+                if (idx > 0) {
+                    return idx;
+                }
                 break parsing;
             }
 
@@ -1963,6 +1963,16 @@ public class SimpleDateFormat extends DateFormat {
                 calb.set(Calendar.HOUR_OF_DAY, value);
                 return pos.index;
 
+            case PATTERN_DAY_OF_WEEK:  // 'E'
+            {
+                final int idx = parseWeekday(text, start, field, useDateFormatSymbols,
+                        false /* standalone */, calb);
+                if (idx > 0) {
+                    return idx;
+                }
+                break parsing;
+            }
+
             case PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
             {
                 final int idx = parseWeekday(text, start, field, useDateFormatSymbols,
@@ -1973,18 +1983,6 @@ public class SimpleDateFormat extends DateFormat {
 
                 break parsing;
             }
-
-            case PATTERN_DAY_OF_WEEK:  // 'E'
-            {
-                final int idx = parseWeekday(text, start, field, useDateFormatSymbols,
-                        false /* standalone */, calb);
-                if (idx > 0) {
-                    return idx;
-                }
-
-                break parsing;
-            }
-
 
             case PATTERN_AM_PM:    // 'a'
                 if (useDateFormatSymbols) {
@@ -2146,10 +2144,10 @@ public class SimpleDateFormat extends DateFormat {
                     }
 
                     if (useFollowingMinusSignAsDelimiter && (value < 0) &&
-                            (((pos.index < text.length()) &&
-                                    (text.charAt(pos.index) != minusSign)) ||
-                                    ((pos.index == text.length()) &&
-                                            (text.charAt(pos.index - 1) == minusSign)))) {
+                        (((pos.index < text.length()) &&
+                         (text.charAt(pos.index) != minusSign)) ||
+                         ((pos.index == text.length()) &&
+                          (text.charAt(pos.index-1) == minusSign)))) {
                         value = -value;
                         pos.index--;
                     }
