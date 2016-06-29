@@ -40,21 +40,37 @@ public class DefaultAsynchronousChannelProvider {
      */
     private DefaultAsynchronousChannelProvider() { }
 
+    @SuppressWarnings("unchecked")
+    private static AsynchronousChannelProvider createProvider(String cn) {
+        Class<AsynchronousChannelProvider> c;
+        try {
+            c = (Class<AsynchronousChannelProvider>)Class.forName(cn);
+        } catch (ClassNotFoundException x) {
+            throw new AssertionError(x);
+        }
+        try {
+            return c.newInstance();
+        } catch (IllegalAccessException | InstantiationException x) {
+            throw new AssertionError(x);
+        }
+
+    }
+
     /**
      * Returns the default AsynchronousChannelProvider.
      */
     public static AsynchronousChannelProvider create() {
-        String osname = AccessController
-            .doPrivileged(new GetPropertyAction("os.name"));
-        // Android-changed: We don't compile SolarisAsynchronousChannelProvider.
+        // Android-changed: Android is Linux based.
+        // String osname = AccessController
+        //    .doPrivileged(new GetPropertyAction("os.name"));
         //
         // if (osname.equals("SunOS"))
         //     return new SolarisAsynchronousChannelProvider();
-        if (osname.equals("Linux"))
-            return new LinuxAsynchronousChannelProvider();
-        if (osname.contains("OS X"))
-            return new BsdAsynchronousChannelProvider();
-        throw new InternalError("platform not recognized");
+        // if (osname.equals("Linux"))
+        return createProvider("sun.nio.ch.LinuxAsynchronousChannelProvider");
+        // if (osname.contains("OS X"))
+        //    return new BsdAsynchronousChannelProvider();
+        // throw new InternalError("platform not recognized");
     }
 
 }
