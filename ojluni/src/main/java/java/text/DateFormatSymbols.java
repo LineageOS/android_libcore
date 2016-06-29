@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -59,7 +59,7 @@ import sun.util.LocaleServiceProviderPool;
  * <code>DateFormatSymbols</code> is a public class for encapsulating
  * localizable date-time formatting data, such as the names of the
  * months, the names of the days of the week, and the time zone data.
- * <code>DateFormat</code> and <code>SimpleDateFormat</code> both use
+ * <code>SimpleDateFormat</code> uses
  * <code>DateFormatSymbols</code> to encapsulate this information.
  *
  * <p>
@@ -104,14 +104,19 @@ public class DateFormatSymbols implements Serializable, Cloneable {
 
     /**
      * Construct a DateFormatSymbols object by loading format data from
-     * resources for the default locale. This constructor can only
+     * resources for the default {@link java.util.Locale.Category#FORMAT FORMAT}
+     * locale. This constructor can only
      * construct instances for the locales supported by the Java
      * runtime environment, not for those supported by installed
      * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
      * implementations. For full locale coverage, use the
      * {@link #getInstance(Locale) getInstance} method.
-     *
+     * <p>This is equivalent to calling
+     * {@link #DateFormatSymbols(Locale)
+     *     DateFormatSymbols(Locale.getDefault(Locale.Category.FORMAT))}.
      * @see #getInstance()
+     * @see java.util.Locale#getDefault(java.util.Locale.Category)
+     * @see java.util.Locale.Category#FORMAT
      * @exception  java.util.MissingResourceException
      *             if the resources for the default locale cannot be
      *             found or cannot be loaded.
@@ -130,6 +135,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * implementations. For full locale coverage, use the
      * {@link #getInstance(Locale) getInstance} method.
      *
+     * @param locale the desired locale
      * @see #getInstance(Locale)
      * @exception  java.util.MissingResourceException
      *             if the resources for the specified locale cannot be
@@ -381,6 +387,10 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * as for those supported by installed
      * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
      * implementations.
+     * <p>This is equivalent to calling {@link #getInstance(Locale)
+     *     getInstance(Locale.getDefault(Locale.Category.FORMAT))}.
+     * @see java.util.Locale#getDefault(java.util.Locale.Category)
+     * @see java.util.Locale.Category#FORMAT
      * @return a <code>DateFormatSymbols</code> instance.
      * @since 1.6
      */
@@ -708,7 +718,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             copyMembers(this, other);
             return other;
         } catch (CloneNotSupportedException e) {
-            throw new InternalError();
+            throw new InternalError(e);
         }
     }
 
@@ -716,6 +726,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * Override hashCode.
      * Generates a hash code for the DateFormatSymbols object.
      */
+    @Override
     public int hashCode() {
         int hashcode = 0;
         String[][] zoneStrings = getZoneStringsWrapper();
@@ -901,7 +912,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         return aCopy;
     }
 
-    private final boolean isSubclassObject() {
+    private boolean isSubclassObject() {
         return !getClass().getName().equals("java.text.DateFormatSymbols");
     }
 
@@ -911,7 +922,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * @param src the source DateFormatSymbols.
      * @param dst the target DateFormatSymbols.
      */
-    private final void copyMembers(DateFormatSymbols src, DateFormatSymbols dst)
+    private void copyMembers(DateFormatSymbols src, DateFormatSymbols dst)
     {
         dst.eras = Arrays.copyOf(src.eras, src.eras.length);
         dst.months = Arrays.copyOf(src.months, src.months.length);
