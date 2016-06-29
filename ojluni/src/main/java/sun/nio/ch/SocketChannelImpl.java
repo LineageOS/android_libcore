@@ -37,6 +37,7 @@ import java.util.*;
 import dalvik.system.BlockGuard;
 import sun.net.NetHooks;
 import sun.misc.IoTrace;
+import sun.net.ExtendedOptionsImpl;
 
 /**
  * An implementation of SocketChannels
@@ -240,6 +241,9 @@ class SocketChannelImpl
             // additional options required by socket adaptor
             set.add(StandardSocketOptions.IP_TOS);
             set.add(ExtendedSocketOption.SO_OOBINLINE);
+            if (ExtendedOptionsImpl.flowSupported()) {
+                set.add(jdk.net.ExtendedSocketOptions.SO_FLOW_SLA);
+            }
             return Collections.unmodifiableSet(set);
         }
     }
