@@ -729,13 +729,13 @@ public final class URITest extends TestCase {
         assertEquals("a_b.c.d.net", uri.getHost());
     }
 
-    // RFC1034#section-3.5 doesn't permit empty labels in hostnames, but we
-    // accepted this prior to N and the behavior is used by some apps. We need
-    // to keep the behavior for now for compatibility.
+    // RFC1034#section-3.5 doesn't permit empty labels in hostnames. This was accepted prior to N,
+    // but returns null in later releases.
     // http://b/25991669
+    // http://b/29560247
     public void testHostWithEmptyLabel() throws Exception {
-        assertEquals(".example.com", new URI("http://.example.com/").getHost());
-        assertEquals("example..com", new URI("http://example..com/").getHost());
+        assertNull(new URI("http://.example.com/").getHost());
+        assertNull(new URI("http://example..com/").getHost());
     }
 
     // Adding a new test? Consider adding an equivalent test to URLTest.java
