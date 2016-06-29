@@ -107,7 +107,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/annotation/Target.java \
     ojluni/src/main/java/java/lang/annotation/package-info.java \
     ojluni/src/main/java/java/lang/Appendable.java \
-    ojluni/src/main/java/java/lang/ApplicationShutdownHooks.java \
     ojluni/src/main/java/java/lang/ArithmeticException.java \
     ojluni/src/main/java/java/lang/ArrayIndexOutOfBoundsException.java \
     ojluni/src/main/java/java/lang/ArrayStoreException.java \
@@ -1143,7 +1142,6 @@ openjdk_java_files := \
     ojluni/src/main/java/com/sun/nio/file/ExtendedWatchEventModifier.java \
     ojluni/src/main/java/com/sun/nio/file/SensitivityWatchEventModifier.java \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
-    ojluni/src/main/java/java/lang/Shutdown.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/text/spi/BreakIteratorProvider.java \
