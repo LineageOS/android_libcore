@@ -43,14 +43,6 @@ import java.util.Collections;
  */
 public class ExtendedOptionsImpl {
 
-    static {
-        AccessController.doPrivileged((PrivilegedAction<Void>)() -> {
-            System.loadLibrary("net");
-            return null;
-        });
-        init();
-    }
-
     private ExtendedOptionsImpl() {}
 
     public static void checkSetOptionPermission(SocketOption<?> option) {
@@ -78,8 +70,6 @@ public class ExtendedOptionsImpl {
             throw new IllegalArgumentException(s);
         }
     }
-
-    private static native void init();
 
     /*
      * Extension native implementations
