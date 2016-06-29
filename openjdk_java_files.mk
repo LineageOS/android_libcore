@@ -1156,6 +1156,10 @@ openjdk_java_files := \
     ojluni/src/main/java/java/util/spi/LocaleNameProvider.java \
     ojluni/src/main/java/java/util/spi/LocaleServiceProvider.java \
     ojluni/src/main/java/java/util/spi/TimeZoneNameProvider.java \
+    ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
+    ojluni/src/main/java/jdk/net/NetworkPermission.java \
+    ojluni/src/main/java/jdk/net/SocketFlow.java \
+    ojluni/src/main/java/jdk/net/Sockets.java \
     ojluni/src/main/java/sun/misc/ASCIICaseInsensitiveComparator.java \
     ojluni/src/main/java/sun/misc/BASE64Decoder.java \
     ojluni/src/main/java/sun/misc/BASE64Encoder.java \
@@ -1195,6 +1199,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/VM.java \
     ojluni/src/main/java/sun/net/ApplicationProxy.java \
     ojluni/src/main/java/sun/net/ConnectionResetException.java \
+    ojluni/src/main/java/sun/net/ExtendedOptionsImpl.java \
     ojluni/src/main/java/sun/net/ftp/FtpClient.java \
     ojluni/src/main/java/sun/net/ftp/FtpClientProvider.java \
     ojluni/src/main/java/sun/net/ftp/FtpDirEntry.java \
