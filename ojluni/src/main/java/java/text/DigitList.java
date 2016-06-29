@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -270,7 +270,7 @@ final class DigitList implements Cloneable {
      * @param maximumFractionDigits The most fractional digits which should
      * be converted.
      */
-    public final void set(boolean isNegative, double source, int maximumFractionDigits) {
+    final void set(boolean isNegative, double source, int maximumFractionDigits) {
         set(isNegative, source, maximumFractionDigits, true);
     }
 
@@ -496,7 +496,7 @@ final class DigitList implements Cloneable {
     /**
      * Utility routine to set the value of the digit list from a long
      */
-    public final void set(boolean isNegative, long source) {
+    final void set(boolean isNegative, long source) {
         set(isNegative, source, 0);
     }
 
@@ -509,7 +509,7 @@ final class DigitList implements Cloneable {
      * If maximumDigits is lower than the number of significant digits
      * in source, the representation will be rounded.  Ignored if <= 0.
      */
-    public final void set(boolean isNegative, long source, int maximumDigits) {
+    final void set(boolean isNegative, long source, int maximumDigits) {
         this.isNegative = isNegative;
 
         // This method does not expect a negative number. However,
@@ -632,7 +632,7 @@ final class DigitList implements Cloneable {
             other.tempBuffer = null;
             return other;
         } catch (CloneNotSupportedException e) {
-            throw new InternalError();
+            throw new InternalError(e);
         }
     }
 

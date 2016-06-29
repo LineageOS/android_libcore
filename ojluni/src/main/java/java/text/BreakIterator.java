@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -188,7 +188,7 @@ import java.util.Locale;
  *
  * Find the next word:
  * <blockquote>
- * <pre>
+ * <pre>{@code
  * public static int nextWordStartAfter(int pos, String text) {
  *     BreakIterator wb = BreakIterator.getWordInstance();
  *     wb.setText(text);
@@ -204,7 +204,7 @@ import java.util.Locale;
  *     }
  *     return BreakIterator.DONE;
  * }
- * </pre>
+ * }</pre>
  * (The iterator returned by BreakIterator.getWordInstance() is unique in that
  * the break positions it returns don't represent both the start and end of the
  * thing being iterated over.  That is, a sentence-break iterator returns breaks
@@ -235,13 +235,14 @@ public abstract class BreakIterator implements Cloneable
      * Create a copy of this iterator
      * @return A copy of this
      */
+    @Override
     public Object clone()
     {
         try {
             return super.clone();
         }
         catch (CloneNotSupportedException e) {
-            throw new InternalError();
+            throw new InternalError(e);
         }
     }
 
@@ -334,7 +335,7 @@ public abstract class BreakIterator implements Cloneable
      * Otherwise, the iterator's current position is set to the returned boundary.
      * The value returned is always less than the offset or the value
      * <code>BreakIterator.DONE</code>.
-     * @param offset the characater offset to begin scanning.
+     * @param offset the character offset to begin scanning.
      * @return The last boundary before the specified offset or
      * <code>BreakIterator.DONE</code> if the first text boundary is passed in
      * as the offset.
@@ -347,8 +348,9 @@ public abstract class BreakIterator implements Cloneable
         // abstract methods to an existing class.  There is almost ALWAYS a
         // better, faster way to do this.
         int pos = following(offset);
-        while (pos >= offset && pos != DONE)
+        while (pos >= offset && pos != DONE) {
             pos = previous();
+        }
         return pos;
     }
 
@@ -424,7 +426,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#word">word breaks</a>
+     * for <a href="BreakIterator.html#word">word breaks</a>
      * for the {@linkplain Locale#getDefault() default locale}.
      * @return A break iterator for word breaks
      */
@@ -435,7 +437,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#word">word breaks</a>
+     * for <a href="BreakIterator.html#word">word breaks</a>
      * for the given locale.
      * @param locale the desired locale
      * @return A break iterator for word breaks
@@ -449,7 +451,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#line">line breaks</a>
+     * for <a href="BreakIterator.html#line">line breaks</a>
      * for the {@linkplain Locale#getDefault() default locale}.
      * @return A break iterator for line breaks
      */
@@ -460,7 +462,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#line">line breaks</a>
+     * for <a href="BreakIterator.html#line">line breaks</a>
      * for the given locale.
      * @param locale the desired locale
      * @return A break iterator for line breaks
@@ -474,7 +476,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#character">character breaks</a>
+     * for <a href="BreakIterator.html#character">character breaks</a>
      * for the {@linkplain Locale#getDefault() default locale}.
      * @return A break iterator for character breaks
      */
@@ -485,7 +487,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#character">character breaks</a>
+     * for <a href="BreakIterator.html#character">character breaks</a>
      * for the given locale.
      * @param locale the desired locale
      * @return A break iterator for character breaks
@@ -499,7 +501,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#sentence">sentence breaks</a>
+     * for <a href="BreakIterator.html#sentence">sentence breaks</a>
      * for the {@linkplain Locale#getDefault() default locale}.
      * @return A break iterator for sentence breaks
      */
@@ -510,7 +512,7 @@ public abstract class BreakIterator implements Cloneable
 
     /**
      * Returns a new <code>BreakIterator</code> instance
-     * for <a href="#sentence">sentence breaks</a>
+     * for <a href="BreakIterator.html#sentence">sentence breaks</a>
      * for the given locale.
      * @param locale the desired locale
      * @return A break iterator for sentence breaks

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1997, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -67,14 +67,14 @@ import libcore.icu.ICU;
  * The following example shows how to compare two strings using
  * the <code>Collator</code> for the default locale.
  * <blockquote>
- * <pre>
+ * <pre>{@code
  * // Compare two strings in the default locale
  * Collator myCollator = Collator.getInstance();
  * if( myCollator.compare("abc", "ABC") < 0 )
  *     System.out.println("abc is less than ABC");
  * else
  *     System.out.println("abc is greater than or equal to ABC");
- * </pre>
+ * }</pre>
  * </blockquote>
  *
  * <p>
@@ -449,9 +449,15 @@ public abstract class Collator
     @Override
     public boolean equals(Object that)
     {
-        if (this == that) return true;
-        if (that == null) return false;
-        if (getClass() != that.getClass()) return false;
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
         Collator other = (Collator) that;
         return icuColl == null ? other.icuColl == null : icuColl.equals(other.icuColl);
     }
