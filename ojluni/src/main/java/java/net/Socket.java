@@ -431,15 +431,18 @@ class Socket implements java.io.Closeable {
             createImpl(stream);
             if (localAddr != null)
                 bind(localAddr);
-            if (address != null)
-                connect(address);
-        } catch (IOException e) {
-            // Do not call #close, classes that extend this class may do not expect a call
-            // to #close coming from the superclass constructor.
-            if (impl != null) {
-                impl.close();
+            connect(address);
+        } catch (IOException | IllegalArgumentException | SecurityException e) {
+            try {
+                // Do not call #close, classes that extend this class may do not expect a call
+                // to #close coming from the superclass constructor.
+                if (impl != null) {
+                    impl.close();
+                }
+                closed = true;
+            } catch (IOException ce) {
+                e.addSuppressed(ce);
             }
-            closed = true;
             throw e;
         }
     }
