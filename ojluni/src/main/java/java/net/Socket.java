@@ -434,6 +434,7 @@ class Socket implements java.io.Closeable {
             connect(address);
         } catch (IOException | IllegalArgumentException | SecurityException e) {
             try {
+                // Android-changed:
                 // Do not call #close, classes that extend this class may do not expect a call
                 // to #close coming from the superclass constructor.
                 if (impl != null) {
