@@ -121,20 +121,17 @@ public class AlgorithmId implements Serializable, DerEncoder {
         try {
             algParams = AlgorithmParameters.getInstance(algidString);
         } catch (NoSuchAlgorithmException e) {
-            try {
-                // Try the internal EC code so that we can fully parse EC
-                // keys even if the provider is not registered.
-                // This code can go away once we have EC in the SUN provider.
-                algParams = AlgorithmParameters.getInstance(algidString,
-                                sun.security.ec.ECKeyFactory.ecInternalProvider);
-            } catch (NoSuchAlgorithmException ee) {
-                /*
-                 * This algorithm parameter type is not supported, so we cannot
-                 * parse the parameters.
-                 */
-                algParams = null;
-                return;
-            }
+            // BEGIN android-changed
+            // It was searching for the EC parameters in an internal provider in the deleted package
+            // sun.security.ec before setting them to null. Since EC is in the OpenSSL provider,
+            // there's no need for such fallback. Setting it to null directly.
+            /*
+             * This algorithm parameter type is not supported, so we cannot
+             * parse the parameters.
+             */
+            algParams = null;
+            return;
+            // END android-changed
         }
         // Decode (parse) the parameters
         algParams.init(params.toByteArray());
