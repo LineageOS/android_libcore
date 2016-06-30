@@ -23,6 +23,8 @@ import com.google.mockwebserver.RecordedRequest;
 import com.google.mockwebserver.SocketPolicy;
 
 import com.android.okhttp.AndroidShimResponseCache;
+import com.android.okhttp.internal.Platform;
+import com.android.okhttp.internal.tls.TrustRootIndex;
 
 import junit.framework.TestCase;
 
@@ -914,10 +916,14 @@ public final class URLConnectionTest extends TestCase {
      */
     public void testProxyConnectIncludesProxyHeadersOnly()
             throws IOException, InterruptedException {
+        Authenticator.setDefault(new SimpleAuthenticator());
         RecordingHostnameVerifier hostnameVerifier = new RecordingHostnameVerifier();
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
 
         server.useHttps(testSSLContext.serverContext.getSocketFactory(), true);
+        server.enqueue(new MockResponse()
+                .setResponseCode(407)
+                .addHeader("Proxy-Authenticate: Basic realm=\"localhost\""));
         server.enqueue(new MockResponse()
                 .setSocketPolicy(SocketPolicy.UPGRADE_TO_SSL_AT_END)
                 .clearHeaders());
@@ -928,18 +934,33 @@ public final class URLConnectionTest extends TestCase {
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(
                 server.toProxyAddress());
         connection.addRequestProperty("Private", "Secret");
-        connection.addRequestProperty("Proxy-Authorization", "bar");
         connection.addRequestProperty("User-Agent", "baz");
         connection.setSSLSocketFactory(testSSLContext.clientContext.getSocketFactory());
         connection.setHostnameVerifier(hostnameVerifier);
         assertContent("encrypted response from the origin server", connection);
 
-        RecordedRequest connect = server.takeRequest();
-        assertContainsNoneMatching(connect.getHeaders(), "Private.*");
-        assertContains(connect.getHeaders(), "Proxy-Authorization: bar");
-        assertContains(connect.getHeaders(), "User-Agent: baz");
-        assertContains(connect.getHeaders(), "Host: android.com");
-        assertContains(connect.getHeaders(), "Proxy-Connection: Keep-Alive");
+        // connect1 and connect2 are tunnel requests which potentially tunnel multiple requests;
+        // Thus we can't expect its headers to exactly match those of the wrapped request.
+        // See https://github.com/square/okhttp/commit/457fb428a729c50c562822571ea9b13e689648f3
+        RecordedRequest connect1 = server.takeRequest();
+        {
+            List<String> headers = connect1.getHeaders();
+            assertContainsNoneMatching(headers, "Private.*");
+            assertContainsNoneMatching(headers, "Proxy\\-Authorization.*");
+            assertHeaderPresent(connect1, "User-Agent");
+            assertContains(headers, "Host: android.com");
+            assertContains(headers, "Proxy-Connection: Keep-Alive");
+        }
+
+        RecordedRequest connect2 = server.takeRequest();
+        {
+            List<String> headers = connect2.getHeaders();
+            assertContainsNoneMatching(headers, "Private.*");
+            assertHeaderPresent(connect2, "Proxy-Authorization");
+            assertHeaderPresent(connect1, "User-Agent");
+            assertContains(headers, "Host: android.com");
+            assertContains(headers, "Proxy-Connection: Keep-Alive");
+        }
 
         RecordedRequest get = server.takeRequest();
         assertContains(get.getHeaders(), "Private: Secret");
@@ -1804,8 +1825,10 @@ public final class URLConnectionTest extends TestCase {
 
             // The first URI will be the initial request. We want to inspect the redirect.
             URI uri = proxySelectorUris.get(1);
-            // The HttpURLConnectionImpl converts %0 -> %250. i.e. it escapes the %.
-            assertEquals(redirectPath + "?foo=%250&bar=%00", uri.toString());
+            // The proxy is selected by Address alone (not the whole target URI).
+            // In OkHttp, HttpEngine.createAddress() converts to an Address and the
+            // RouteSelector converts back to address.url().
+            assertEquals(server2.getUrl("/").toString(), uri.toString());
         } finally {
             ProxySelector.setDefault(originalSelector);
             server2.shutdown();
@@ -2835,6 +2858,65 @@ public final class URLConnectionTest extends TestCase {
     }
 
     /**
+     * Checks that OkHttp's certificate pinning logic is not used for the common case
+     * of HttpsUrlConnections.
+     *
+     * <p>OkHttp 2.7 introduced logic for Certificate Pinning. We deliberately don't
+     * expose any API surface that would interact with OkHttp's implementation because
+     * Android has its own API / implementation for certificate pinning. We can't
+     * easily test that there is *no* code path that would invoke OkHttp's certificate
+     * pinning logic, so this test only covers the *common* code path of a
+     * HttpsURLConnection as a sanity check.
+     *
+     * <p>To check whether OkHttp performs certificate pinning under the hood, this
+     * test disables two {@link Platform} methods. In OkHttp 2.7.5, these two methods
+     * are exclusively used in relation to certificate pinning. Android only provides
+     * the minimal implementation of these methods to get OkHttp's tests to pass, so
+     * they should never be invoked outside of OkHttp's tests.
+     */
+    public void testTrustManagerAndTrustRootIndex_unusedForHttpsConnection() throws Exception {
+        Platform platform = Platform.getAndSetForTest(new PlatformWithoutTrustManager());
+        try {
+            testConnectViaHttps();
+        } finally {
+            Platform.getAndSetForTest(platform);
+        }
+    }
+
+    /**
+     * Similar to {@link #testTrustManagerAndTrustRootIndex_unusedForHttpsConnection()},
+     * but for the HTTP case. In the HTTP case, no certificate or trust management
+     * related logic should ever be involved at all, so some pretty basic things must
+     * be going wrong in order for this test to (unexpectedly) invoke the corresponding
+     * Platform methods.
+     */
+    public void testTrustManagerAndTrustRootIndex_unusedForHttpConnection() throws Exception {
+        Platform platform = Platform.getAndSetForTest(new PlatformWithoutTrustManager());
+        try {
+            server.enqueue(new MockResponse().setBody("response").setResponseCode(200));
+            server.play();
+            HttpURLConnection urlConnection =
+                    (HttpURLConnection) server.getUrl("/").openConnection();
+            assertEquals(200, urlConnection.getResponseCode());
+        } finally {
+            Platform.getAndSetForTest(platform);
+        }
+    }
+
+    /**
+     * A {@link Platform} that doesn't support two methods that, in OkHttp 2.7.5,
+     * are exclusively used to provide custom CertificatePinning.
+     */
+    static class PlatformWithoutTrustManager extends Platform {
+        @Override public X509TrustManager trustManager(SSLSocketFactory sslSocketFactory) {
+            throw new AssertionError("Unexpected call");
+        }
+        @Override public TrustRootIndex trustRootIndex(X509TrustManager trustManager) {
+            throw new AssertionError("Unexpected call");
+        }
+    }
+
+    /**
      * Returns a gzipped copy of {@code bytes}.
      */
     public byte[] gzip(byte[] bytes) throws IOException {
@@ -2858,6 +2940,11 @@ public final class URLConnectionTest extends TestCase {
 
     private void assertContent(String expected, URLConnection connection) throws IOException {
         assertContent(expected, connection, Integer.MAX_VALUE);
+    }
+
+    private static void assertHeaderPresent(RecordedRequest request, String headerName) {
+        assertNotNull(headerName + " missing: " + request.getHeaders(),
+                request.getHeader(headerName));
     }
 
     private void assertContains(List<String> list, String value) {
