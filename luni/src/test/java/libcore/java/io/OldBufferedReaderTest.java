@@ -387,11 +387,6 @@ public class OldBufferedReaderTest extends junit.framework.TestCase {
               PrintWriter pw = new PrintWriter(new OutputStreamWriter(pos));
               pw.print("hello, world\r");
               pw.flush();
-              try {
-                  Thread.sleep(2*60*1000);
-              } catch (InterruptedException ex) {
-                  fail();
-              }
             }
         };
         t.start();
