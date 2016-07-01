@@ -36,7 +36,6 @@ import java.util.Enumeration;
 public class MembershipKeyTest extends TestCase {
 
     private MembershipKey key;
-    private MembershipKey keyWithSource;
     private final int PORT = 5000;
     private final String TEST_MESSAGE = "hello";
     private DatagramChannel client;
@@ -50,7 +49,7 @@ public class MembershipKeyTest extends TestCase {
         client.configureBlocking(false);
 
         if (withSource) {
-            keyWithSource = client.join(MULTICAST_ADDRESS, NETWORK_INTERFACE, sourceAddress);
+            key = client.join(MULTICAST_ADDRESS, NETWORK_INTERFACE, sourceAddress);
         } else {
             key = client.join(MULTICAST_ADDRESS, NETWORK_INTERFACE);
         }
@@ -164,7 +163,6 @@ public class MembershipKeyTest extends TestCase {
         setup(true);
         try {
             key.block(sourceAddress);
-            fail();
         } catch (IllegalStateException expected) {}
     }
 
@@ -191,16 +189,19 @@ public class MembershipKeyTest extends TestCase {
         // Blocking a multicast channel
         try {
             key.block(Inet4Address.getByName("224.0.0.10"));
+            fail();
         } catch (IllegalArgumentException expected) {}
 
         // Different address type than the group
         try {
             key.block(Inet6Address.LOOPBACK);
+            fail();
         } catch (IllegalArgumentException expected) {}
 
         key.drop();
         try {
             key.block(sourceAddress);
+            fail();
         } catch (IllegalStateException expected) {}
     }
 
@@ -208,6 +209,7 @@ public class MembershipKeyTest extends TestCase {
         setup(true);
         try {
             key.unblock(Inet4Address.getByName("127.0.0.2"));
+            fail();
         } catch (IllegalStateException expected) {}
     }
 
@@ -239,12 +241,14 @@ public class MembershipKeyTest extends TestCase {
         setup(false);
         try {
             key.unblock(sourceAddress);
+            fail();
         } catch (IllegalStateException expected) {}
 
         key.drop();
 
         try {
             key.unblock(sourceAddress);
+            fail();
         } catch (IllegalStateException expected) {}
     }
 
