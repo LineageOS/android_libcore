@@ -942,8 +942,9 @@ public final class URLConnectionTest extends TestCase {
         // connect1 and connect2 are tunnel requests which potentially tunnel multiple requests;
         // Thus we can't expect its headers to exactly match those of the wrapped request.
         // See https://github.com/square/okhttp/commit/457fb428a729c50c562822571ea9b13e689648f3
-        RecordedRequest connect1 = server.takeRequest();
+
         {
+            RecordedRequest connect1 = server.takeRequest();
             List<String> headers = connect1.getHeaders();
             assertContainsNoneMatching(headers, "Private.*");
             assertContainsNoneMatching(headers, "Proxy\\-Authorization.*");
@@ -952,12 +953,12 @@ public final class URLConnectionTest extends TestCase {
             assertContains(headers, "Proxy-Connection: Keep-Alive");
         }
 
-        RecordedRequest connect2 = server.takeRequest();
         {
+            RecordedRequest connect2 = server.takeRequest();
             List<String> headers = connect2.getHeaders();
             assertContainsNoneMatching(headers, "Private.*");
             assertHeaderPresent(connect2, "Proxy-Authorization");
-            assertHeaderPresent(connect1, "User-Agent");
+            assertHeaderPresent(connect2, "User-Agent");
             assertContains(headers, "Host: android.com");
             assertContains(headers, "Proxy-Connection: Keep-Alive");
         }
