@@ -295,6 +295,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/net/SocketOptions.java \
     ojluni/src/main/java/java/net/SocketOutputStream.java \
     ojluni/src/main/java/java/net/SocketPermission.java \
+    ojluni/src/main/java/java/net/SocketSecrets.java \
     ojluni/src/main/java/java/net/SocketTimeoutException.java \
     ojluni/src/main/java/java/net/SocksConsts.java \
     ojluni/src/main/java/java/net/SocksSocketImpl.java \
