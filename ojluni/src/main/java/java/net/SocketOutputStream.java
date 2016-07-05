@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 import dalvik.system.BlockGuard;
-import sun.misc.IoTrace;
 
 /**
  * This stream extends FileOutputStream to implement a
@@ -104,13 +103,10 @@ class SocketOutputStream extends FileOutputStream
             throw new ArrayIndexOutOfBoundsException();
         }
 
-        Object traceContext = IoTrace.socketWriteBegin();
-        int bytesWritten = 0;
         FileDescriptor fd = impl.acquireFD();
         try {
             BlockGuard.getThreadPolicy().onNetwork();
             socketWrite0(fd, b, off, len);
-            bytesWritten = len;
         } catch (SocketException se) {
             if (se instanceof sun.net.ConnectionResetException) {
                 impl.setConnectionResetPending();
@@ -121,8 +117,6 @@ class SocketOutputStream extends FileOutputStream
             } else {
                 throw se;
             }
-        } finally {
-            IoTrace.socketWriteEnd(traceContext, impl.address, impl.port, bytesWritten);
         }
     }
 
