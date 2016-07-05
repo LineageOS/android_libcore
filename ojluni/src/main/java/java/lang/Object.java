@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -57,8 +57,7 @@ public class Object {
      *
      * @return The {@code Class} object that represents the runtime
      *         class of this object.
-     * @see    Class Literals, section 15.8.2 of
-     *         <cite>The Java&trade; Language Specification</cite>.
+     * @jls 15.8.2 Class Literals
      */
     public final Class<?> getClass() {
       return shadow$_klass_;
@@ -93,7 +92,7 @@ public class Object {
      * objects. (This is typically implemented by converting the internal
      * address of the object into an integer, but this implementation
      * technique is not required by the
-     * Java<font size="-2"><sup>TM</sup></font> programming language.)
+     * Java&trade; programming language.)
      *
      * @return  a hash code value for this object.
      * @see     java.lang.Object#equals(java.lang.Object)
@@ -213,7 +212,7 @@ public class Object {
      * exception at run time.
      *
      * @return     a clone of this instance.
-     * @exception  CloneNotSupportedException  if the object's class does not
+     * @throws  CloneNotSupportedException  if the object's class does not
      *               support the {@code Cloneable} interface. Subclasses
      *               that override the {@code clone} method can also
      *               throw this exception to indicate that an instance cannot
@@ -287,7 +286,7 @@ public class Object {
      * <p>
      * Only one thread at a time can own an object's monitor.
      *
-     * @exception  IllegalMonitorStateException  if the current thread is not
+     * @throws  IllegalMonitorStateException  if the current thread is not
      *               the owner of this object's monitor.
      * @see        java.lang.Object#notifyAll()
      * @see        java.lang.Object#wait()
@@ -311,7 +310,7 @@ public class Object {
      * description of the ways in which a thread can become the owner of
      * a monitor.
      *
-     * @exception  IllegalMonitorStateException  if the current thread is not
+     * @throws  IllegalMonitorStateException  if the current thread is not
      *               the owner of this object's monitor.
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#wait()
@@ -391,11 +390,11 @@ public class Object {
      * a monitor.
      *
      * @param      millis   the maximum time to wait in milliseconds.
-     * @exception  IllegalArgumentException      if the value of timeout is
+     * @throws  IllegalArgumentException      if the value of timeout is
      *               negative.
-     * @exception  IllegalMonitorStateException  if the current thread is not
+     * @throws  IllegalMonitorStateException  if the current thread is not
      *               the owner of the object's monitor.
-     * @exception  InterruptedException if any thread interrupted the
+     * @throws  InterruptedException if any thread interrupted the
      *             current thread before or while the current thread
      *             was waiting for a notification.  The <i>interrupted
      *             status</i> of the current thread is cleared when
@@ -458,12 +457,12 @@ public class Object {
      * @param      millis   the maximum time to wait in milliseconds.
      * @param      nanos      additional time, in nanoseconds range
      *                       0-999999.
-     * @exception  IllegalArgumentException      if the value of timeout is
+     * @throws  IllegalArgumentException      if the value of timeout is
      *                      negative or the value of nanos is
      *                      not in the range 0-999999.
-     * @exception  IllegalMonitorStateException  if the current thread is not
+     * @throws  IllegalMonitorStateException  if the current thread is not
      *               the owner of this object's monitor.
-     * @exception  InterruptedException if any thread interrupted the
+     * @throws  InterruptedException if any thread interrupted the
      *             current thread before or while the current thread
      *             was waiting for a notification.  The <i>interrupted
      *             status</i> of the current thread is cleared when
@@ -499,9 +498,9 @@ public class Object {
      * description of the ways in which a thread can become the owner of
      * a monitor.
      *
-     * @exception  IllegalMonitorStateException  if the current thread is not
+     * @throws  IllegalMonitorStateException  if the current thread is not
      *               the owner of the object's monitor.
-     * @exception  InterruptedException if any thread interrupted the
+     * @throws  InterruptedException if any thread interrupted the
      *             current thread before or while the current thread
      *             was waiting for a notification.  The <i>interrupted
      *             status</i> of the current thread is cleared when
@@ -518,7 +517,7 @@ public class Object {
      * system resources or to perform other cleanup.
      * <p>
      * The general contract of {@code finalize} is that it is invoked
-     * if and when the Java<font size="-2"><sup>TM</sup></font> virtual
+     * if and when the Java&trade; virtual
      * machine has determined that there is no longer any
      * means by which this object can be accessed by any thread that has
      * not yet died, except as a result of an action taken by the
@@ -557,6 +556,9 @@ public class Object {
      * ignored.
      *
      * @throws Throwable the {@code Exception} raised by this method
+     * @see java.lang.ref.WeakReference
+     * @see java.lang.ref.PhantomReference
+     * @jls 12.6 Finalization of Class Instances
      */
     protected void finalize() throws Throwable { }
 }
