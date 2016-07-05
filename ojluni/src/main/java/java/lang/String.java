@@ -29,6 +29,7 @@ import java.io.ObjectStreamField;
 import java.io.UnsupportedEncodingException;
 import java.lang.ArrayIndexOutOfBoundsException;
 import java.nio.charset.Charset;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -891,7 +892,10 @@ public final class String
             return CharsetUtils.toBigEndianUtf16Bytes(this, 0, count);
         }
 
-        return StringCoding.encode(charset, this);
+        ByteBuffer buffer = charset.encode(this);
+        byte[] bytes = new byte[buffer.limit()];
+        buffer.get(bytes);
+        return bytes;
     }
 
     /**
