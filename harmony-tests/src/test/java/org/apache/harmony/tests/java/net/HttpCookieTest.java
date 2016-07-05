@@ -164,6 +164,10 @@ public class HttpCookieTest extends TestCase {
 
         match = HttpCookie.domainMatches(null, "b.a.AJAX.com");
         assertFalse(match);
+
+        // JDK-7023713
+        match = HttpCookie.domainMatches("hostname.local", "hostname");
+        assertTrue(match);
     }
 
     /**
