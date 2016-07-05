@@ -345,8 +345,8 @@ public class ChoiceFormat extends NumberFormat {
             throw new IllegalArgumentException(
                 "Array and limit arrays must be of the same length.");
         }
-        choiceLimits = limits;
-        choiceFormats = formats;
+        choiceLimits = Arrays.copyOf(limits, limits.length);
+        choiceFormats = Arrays.copyOf(formats, formats.length);
     }
 
     /**
@@ -354,7 +354,8 @@ public class ChoiceFormat extends NumberFormat {
      * @return the limits.
      */
     public double[] getLimits() {
-        return choiceLimits;
+        double[] newLimits = Arrays.copyOf(choiceLimits, choiceLimits.length);
+        return newLimits;
     }
 
     /**
@@ -362,7 +363,8 @@ public class ChoiceFormat extends NumberFormat {
      * @return the formats.
      */
     public Object[] getFormats() {
-        return choiceFormats;
+        Object[] newFormats = Arrays.copyOf(choiceFormats, choiceFormats.length);
+        return newFormats;
     }
 
     // Overrides
