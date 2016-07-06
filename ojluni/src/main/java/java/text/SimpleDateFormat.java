@@ -508,7 +508,7 @@ public class SimpleDateFormat extends DateFormat {
      * Cache NumberFormat instances with Locale key.
      */
     private static final ConcurrentMap<Locale, NumberFormat> cachedNumberFormatData
-        = new ConcurrentHashMap<Locale, NumberFormat>(3);
+        = new ConcurrentHashMap<>(3);
 
     /**
      * The Locale used to instantiate this
@@ -754,7 +754,7 @@ public class SimpleDateFormat extends DateFormat {
     private char[] compile(String pattern) {
         int length = pattern.length();
         boolean inQuote = false;
-        StringBuilder compiledPattern = new StringBuilder(length * 2);
+        StringBuilder compiledCode = new StringBuilder(length * 2);
         StringBuilder tmpBuffer = null;
         int count = 0;
         int lastTag = -1;
@@ -770,21 +770,21 @@ public class SimpleDateFormat extends DateFormat {
                     if (c == '\'') {
                         i++;
                         if (count != 0) {
-                            encode(lastTag, count, compiledPattern);
+                            encode(lastTag, count, compiledCode);
                             lastTag = -1;
                             count = 0;
                         }
                         if (inQuote) {
                             tmpBuffer.append(c);
                         } else {
-                            compiledPattern.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
+                            compiledCode.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
                         }
                         continue;
                     }
                 }
                 if (!inQuote) {
                     if (count != 0) {
-                        encode(lastTag, count, compiledPattern);
+                        encode(lastTag, count, compiledCode);
                         lastTag = -1;
                         count = 0;
                     }
@@ -799,14 +799,14 @@ public class SimpleDateFormat extends DateFormat {
                     if (len == 1) {
                         char ch = tmpBuffer.charAt(0);
                         if (ch < 128) {
-                            compiledPattern.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | ch));
+                            compiledCode.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | ch));
                         } else {
-                            compiledPattern.append((char)(TAG_QUOTE_CHARS << 8 | 1));
-                            compiledPattern.append(ch);
+                            compiledCode.append((char)(TAG_QUOTE_CHARS << 8 | 1));
+                            compiledCode.append(ch);
                         }
                     } else {
-                        encode(TAG_QUOTE_CHARS, len, compiledPattern);
-                        compiledPattern.append(tmpBuffer);
+                        encode(TAG_QUOTE_CHARS, len, compiledCode);
+                        compiledCode.append(tmpBuffer);
                     }
                     inQuote = false;
                 }
@@ -818,13 +818,13 @@ public class SimpleDateFormat extends DateFormat {
             }
             if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z')) {
                 if (count != 0) {
-                    encode(lastTag, count, compiledPattern);
+                    encode(lastTag, count, compiledCode);
                     lastTag = -1;
                     count = 0;
                 }
                 if (c < 128) {
                     // In most cases, c would be a delimiter, such as ':'.
-                    compiledPattern.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
+                    compiledCode.append((char)(TAG_QUOTE_ASCII_CHAR << 8 | c));
                 } else {
                     // Take any contiguous non-ASCII alphabet characters and
                     // put them in a single TAG_QUOTE_CHARS.
@@ -835,9 +835,9 @@ public class SimpleDateFormat extends DateFormat {
                             break;
                         }
                     }
-                    compiledPattern.append((char)(TAG_QUOTE_CHARS << 8 | (j - i)));
+                    compiledCode.append((char)(TAG_QUOTE_CHARS << 8 | (j - i)));
                     for (; i < j; i++) {
-                        compiledPattern.append(pattern.charAt(i));
+                        compiledCode.append(pattern.charAt(i));
                     }
                     i--;
                 }
@@ -854,7 +854,7 @@ public class SimpleDateFormat extends DateFormat {
                 count++;
                 continue;
             }
-            encode(lastTag, count, compiledPattern);
+            encode(lastTag, count, compiledCode);
             lastTag = tag;
             count = 1;
         }
@@ -864,13 +864,13 @@ public class SimpleDateFormat extends DateFormat {
         }
 
         if (count != 0) {
-            encode(lastTag, count, compiledPattern);
+            encode(lastTag, count, compiledCode);
         }
 
         // Copy the compiled pattern to a char array
-        int len = compiledPattern.length();
+        int len = compiledCode.length();
         char[] r = new char[len];
-        compiledPattern.getChars(0, len, r, 0);
+        compiledCode.getChars(0, len, r, 0);
         return r;
     }
 
@@ -1169,7 +1169,7 @@ public class SimpleDateFormat extends DateFormat {
             if (calendar instanceof GregorianCalendar) {
                 if (count != 2) {
                     zeroPaddingNumber(value, count, maxIntCount, buffer);
-                } else { // count == 2
+                } else {
                     zeroPaddingNumber(value, 2, 2, buffer);
                 } // clip 1996 to 96
             } else {
@@ -1187,7 +1187,7 @@ public class SimpleDateFormat extends DateFormat {
             break;
         }
 
-        case PATTERN_STANDALONE_MONTH: // 'L'
+        case PATTERN_MONTH_STANDALONE: // 'L'
         {
             current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
                     true /* standalone */);
@@ -1806,6 +1806,15 @@ public class SimpleDateFormat extends DateFormat {
             if (count != 1) {
                 // Proceed with parsing mm
                 c = text.charAt(index++);
+                // Intentional change in behavior from OpenJDK. OpenJDK will return an error code
+                // if a : is found and colonRequired is false, this will return an error code if
+                // a : is not found and colonRequired is true.
+                //
+                // colonRequired | c == ':' | OpenJDK | this
+                //   false       |  false   |   ok    |  ok
+                //   false       |  true    |  error  |  ok
+                //   true        |  false   |   ok    | error
+                //   true        |  true    |   ok    |  ok
                 if (c == ':') {
                     c = text.charAt(index++);
                 } else if (colonRequired) {
@@ -1992,7 +2001,7 @@ public class SimpleDateFormat extends DateFormat {
                 break parsing;
             }
 
-            case PATTERN_STANDALONE_MONTH: // 'L'.
+            case PATTERN_MONTH_STANDALONE: // 'L'.
             {
                 final int idx = parseMonth(text, count, value, start, field, pos,
                         useDateFormatSymbols, true /* isStandalone */, calb);
