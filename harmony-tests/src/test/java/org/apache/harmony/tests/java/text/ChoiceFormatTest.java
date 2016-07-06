@@ -294,35 +294,6 @@ public class ChoiceFormatTest extends TestCase {
     }
 
     /**
-     * @tests java.text.ChoiceFormat#getFormats()
-     */
-    public void test_getFormats() {
-        // Test for method java.lang.Object []
-        // java.text.ChoiceFormat.getFormats()
-        String[] orgFormats = (String[]) formats.clone();
-        String[] f = (String[]) f1.getFormats();
-        // getFormats() documentation says "Get the formats passed in the constructor",
-        // which can be interpreted as object identity.
-        assertTrue("Wrong formats", f == formats);
-        f[0] = "Modified";
-        assertTrue("Formats copied", f != orgFormats);
-    }
-
-    /**
-     * @tests java.text.ChoiceFormat#getLimits()
-     */
-    public void test_getLimits() {
-        // Test for method double [] java.text.ChoiceFormat.getLimits()
-        double[] orgLimits = (double[]) limits.clone();
-        double[] l = f1.getLimits();
-        // getLimits() documentation says "Get the limits passed in the constructor",
-        // which can be interpreted as object identity.
-        assertTrue("Wrong limits", l == limits);
-        l[0] = 3.14527;
-        assertTrue("Limits copied", l != orgLimits);
-    }
-
-    /**
      * @tests java.text.ChoiceFormat#hashCode()
      */
     public void test_hashCode() {
@@ -392,20 +363,6 @@ public class ChoiceFormatTest extends TestCase {
         assertTrue("Not less -5", ChoiceFormat.previousDouble(-5) < -5);
         assertTrue("Not NaN", Double.isNaN(ChoiceFormat
                 .previousDouble(Double.NaN)));
-    }
-
-    /**
-     * @tests java.text.ChoiceFormat#setChoices(double[], java.lang.String[])
-     */
-    public void test_setChoices$D$Ljava_lang_String() {
-        // Test for method void java.text.ChoiceFormat.setChoices(double [],
-        // java.lang.String [])
-        ChoiceFormat f = (ChoiceFormat) f1.clone();
-        double[] l = new double[] { 0, 1 };
-        String[] fs = new String[] { "0", "1" };
-        f.setChoices(l, fs);
-        assertTrue("Limits copied", f.getLimits() == l);
-        assertTrue("Formats copied", f.getFormats() == fs);
     }
 
 	/**
