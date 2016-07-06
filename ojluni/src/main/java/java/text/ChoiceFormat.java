@@ -351,6 +351,10 @@ public class ChoiceFormat extends NumberFormat {
 
     /**
      * Get the limits passed in the constructor.
+     *
+     * <p>The contents of the array are the same as the array passed into the constructor but the
+     * array will not be the same array.
+     *
      * @return the limits.
      */
     public double[] getLimits() {
@@ -360,6 +364,10 @@ public class ChoiceFormat extends NumberFormat {
 
     /**
      * Get the formats passed in the constructor.
+     *
+     * <p>The contents of the array are the same as the array passed into the constructor but the
+     * array will not be the same array.
+     *
      * @return the formats.
      */
     public Object[] getFormats() {
