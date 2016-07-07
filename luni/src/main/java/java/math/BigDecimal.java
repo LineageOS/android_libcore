@@ -937,8 +937,14 @@ public class BigDecimal extends Number implements Comparable<BigDecimal>, Serial
         }
         /* Let be: this = [u1,s1] and multiplicand = [u2,s2] so:
          * this x multiplicand = [ s1 * s2 , s1 + s2 ] */
-        if(this.bitLength + multiplicand.bitLength < 64) {
-            return valueOf(this.smallValue*multiplicand.smallValue, safeLongToInt(newScale));
+        if (this.bitLength + multiplicand.bitLength < 64) {
+            long unscaledValue = this.smallValue * multiplicand.smallValue;
+            // b/19185440 Case where result should be +2^63 but unscaledValue overflowed to -2^63
+            boolean longMultiplicationOverflowed = (unscaledValue == Long.MIN_VALUE) &&
+                    (Math.signum(smallValue) * Math.signum(multiplicand.smallValue) > 0);
+            if (!longMultiplicationOverflowed) {
+                return valueOf(unscaledValue, safeLongToInt(newScale));
+            }
         }
         return new BigDecimal(this.getUnscaledValue().multiply(
                 multiplicand.getUnscaledValue()), safeLongToInt(newScale));
