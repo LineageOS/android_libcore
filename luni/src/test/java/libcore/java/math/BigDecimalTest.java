@@ -24,6 +24,8 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import static java.math.BigDecimal.valueOf;
+
 public final class BigDecimalTest extends TestCase {
 
     public void testGetPrecision() {
@@ -115,7 +117,7 @@ public final class BigDecimalTest extends TestCase {
         BigDecimal zero = BigDecimal.ZERO;
         zero = zero.setScale(2, RoundingMode.HALF_EVEN);
 
-        BigDecimal other = BigDecimal.valueOf(999999998000000001.00);
+        BigDecimal other = valueOf(999999998000000001.00);
         other = other.setScale(2, RoundingMode.HALF_EVEN);
 
         assertFalse(zero.equals(other));
@@ -203,6 +205,62 @@ public final class BigDecimalTest extends TestCase {
         }
     }
 
+    public void testNegate() {
+        checkNegate(valueOf(0), valueOf(0));
+        checkNegate(valueOf(1), valueOf(-1));
+        checkNegate(valueOf(43), valueOf(-43));
+        checkNegate(valueOf(Long.MAX_VALUE), valueOf(-Long.MAX_VALUE));
+        checkNegate(new BigDecimal("9223372036854775808"), valueOf(Long.MIN_VALUE));
+        // arbitrary large decimal
+        checkNegate(new BigDecimal("342343243546465623424321423112321.43243434343412321"),
+                new BigDecimal("-342343243546465623424321423112321.43243434343412321"));
+    }
+
+    private static void checkNegate(BigDecimal a, BigDecimal b) {
+        if (!a.toString().equals("0")) {
+            assertFalse(a.equals(b));
+        }
+        assertEquals(a.negate(), b);
+        assertEquals(a, b.negate());
+        assertEquals(a, a.negate().negate());
+    }
+
+    public void testAddAndSubtract_near64BitOverflow() throws Exception {
+        // Check that the test is set up correctly - these values should be MIN_VALUE and MAX_VALUE
+        assertEquals("-9223372036854775808", Long.toString(Long.MIN_VALUE));
+        assertEquals("9223372036854775807", Long.toString(Long.MAX_VALUE));
+
+        // Exactly MIN_VALUE and MAX_VALUE
+        assertSum("-9223372036854775808", -(1L << 62L), -(1L << 62L));
+        assertSum("9223372036854775807", (1L << 62L) - 1L, 1L << 62L);
+
+        // One beyond MIN_VALUE and MAX_VALUE
+        assertSum("-9223372036854775809", -(1L << 62L), -(1L << 62L) - 1);
+        assertSum("-9223372036854775809", Long.MIN_VALUE + 1, -2);
+        assertSum("9223372036854775808", 1L << 62L, 1L << 62L);
+        assertSum("9223372036854775808", Long.MAX_VALUE, 1);
+    }
+
+    /**
+     * Assert that {@code (a + b), (b + a), (a - (-b)) and (b - (-a))} all have the same
+     * expected result in BigDecimal arithmetic.
+     */
+    private static void assertSum(String expectedSumAsString, long a, long b) {
+        if (a == Long.MIN_VALUE || b == Long.MIN_VALUE) {
+            // - (Long.MIN_VALUE) can't be represented as a long, so don't allow it here.
+            throw new IllegalArgumentException("Long.MIN_VALUE not allowed");
+        }
+        BigDecimal bigA = valueOf(a);
+        BigDecimal bigB = valueOf(b);
+        BigDecimal bigMinusB = valueOf(-b);
+        BigDecimal bigMinusA = valueOf(-a);
+
+        assertEquals("a + b", expectedSumAsString, bigA.add(bigB).toString());
+        assertEquals("b + a", expectedSumAsString, bigB.add(bigA).toString());
+        assertEquals("a - (-b)", expectedSumAsString, bigA.subtract(bigMinusB).toString());
+        assertEquals("b - (-a)", expectedSumAsString, bigB.subtract(bigMinusA).toString());
+    }
+
     /**
      * Tests that Long.MIN_VALUE / -1 doesn't overflow back to Long.MIN_VALUE,
      * like it would in long arithmetic.
@@ -248,7 +306,119 @@ public final class BigDecimalTest extends TestCase {
                 new BigDecimal("9223372036854775808"),
                 new BigDecimal("-4611686018427387904").divide(
                         new BigDecimal("-5E-1"), /* scale = */ 0, RoundingMode.UNNECESSARY));
+    }
 
+    /**
+     * Tests addition, subtraction, multiplication and division involving a range of
+     * even long values and 1/2 of that value.
+     */
+    public void testCommonOperations_halfOfEvenLongValue() {
+        checkCommonOperations(0);
+        checkCommonOperations(2);
+        checkCommonOperations(-2);
+        checkCommonOperations(Long.MIN_VALUE);
+        checkCommonOperations(1L << 62L);
+        checkCommonOperations(-(1L << 62L));
+        checkCommonOperations(1L << 62L + 1 << 30 + 1 << 10);
+        checkCommonOperations(Long.MAX_VALUE - 1);
+    }
+
+    private static void checkCommonOperations(long value) {
+        if (value % 2 != 0) {
+            throw new IllegalArgumentException("Expected even value, got " + value);
+        }
+        BigDecimal bigHalfValue = valueOf(value / 2);
+        BigDecimal bigValue = valueOf(value);
+        BigDecimal two = valueOf(2);
+
+        assertEquals(bigValue, bigHalfValue.multiply(two));
+        assertEquals(bigValue, bigHalfValue.add(bigHalfValue));
+        assertEquals(bigHalfValue, bigValue.subtract(bigHalfValue));
+        assertEquals(bigHalfValue, bigValue.divide(two, RoundingMode.UNNECESSARY));
+        if (value != 0) {
+            assertEquals(two, bigValue.divide(bigHalfValue, RoundingMode.UNNECESSARY));
+        }
+    }
+
+    /**
+     * Tests that when long multiplication doesn't overflow, its result is consistent with
+     * BigDecimal multiplication.
+     */
+    public void testMultiply_consistentWithLong() {
+        checkMultiply_consistentWithLong(0, 0);
+        checkMultiply_consistentWithLong(0, 1);
+        checkMultiply_consistentWithLong(1, 1);
+        checkMultiply_consistentWithLong(2, 3);
+        checkMultiply_consistentWithLong(123, 456);
+        checkMultiply_consistentWithLong(9, 9);
+        checkMultiply_consistentWithLong(34545, 3423421);
+        checkMultiply_consistentWithLong(5465653, 342343234568L);
+        checkMultiply_consistentWithLong(Integer.MAX_VALUE, Integer.MAX_VALUE);
+        checkMultiply_consistentWithLong((1L << 40) + 454L, 34324);
+    }
+
+    private void checkMultiply_consistentWithLong(long a, long b) {
+        // Guard against the test using examples that overflow. This condition here is
+        // not meant to be exact, it'll reject some values that wouldn't overflow.
+        if (a != 0 && b != 0 && Math.abs(Long.MAX_VALUE / a) <= Math.abs(b)) {
+            throw new IllegalArgumentException("Multiplication might overflow: " + a + " * " + b);
+        }
+        long expectedResult = a * b;
+        // check the easy case with no decimals
+        assertEquals(Long.toString(expectedResult),
+                valueOf(a).multiply(valueOf(b)).toString());
+        // number with 2 decimals * number with 3 decimals => number with 5 decimals
+        // E.g. 9E-2 * 2E-3 == 18E-5 == 0.00018
+        // valueOf(unscaledValue, scale) corresponds to {@code unscaledValue * 10<sup>-scale</sup>}
+        assertEquals(valueOf(expectedResult, 5), valueOf(a, 2).multiply(valueOf(b, 3)));
+    }
+
+    public void testMultiply_near64BitOverflow_scaled() {
+        // -((2^31) / 100) * (-2/10) == (2^64)/1000
+        assertEquals("9223372036854775.808",
+                valueOf(-(1L << 62L), 2).multiply(valueOf(-2, 1)).toString());
+
+        // -((2^31) / 100) * (2/10) == -(2^64)/1000
+        assertEquals("-9223372036854775.808",
+                valueOf(-(1L << 62L), 2).multiply(valueOf(2, 1)).toString());
+
+        // -((2^31) * 100) * (-2/10) == (2^64) * 10
+        assertEquals(new BigDecimal("9223372036854775808E1"),
+                valueOf(-(1L << 62L), -2).multiply(valueOf(-2, 1)));
+    }
+
+    /** Tests multiplications whose result is near 2^63 (= Long.MAX_VALUE + 1). */
+    public void testMultiply_near64BitOverflow_positive() {
+        // Results of exactly +2^63, which doesn't fit into a long even though -2^63 does
+        assertEquals("9223372036854775808", bigMultiply(Long.MIN_VALUE, -1).toString());
+        assertEquals("9223372036854775808", bigMultiply(Long.MIN_VALUE / 2, -2).toString());
+        assertEquals("9223372036854775808", bigMultiply(-(Long.MIN_VALUE / 2), 2).toString());
+        assertEquals("9223372036854775808", bigMultiply(1L << 31, 1L << 32).toString());
+        assertEquals("9223372036854775808", bigMultiply(-(1L << 31), -(1L << 32)).toString());
+
+        // Results near but not exactly +2^63
+        assertEquals("9223372036854775806", bigMultiply(2147483647, 4294967298L).toString());
+        assertEquals("9223372036854775807", bigMultiply(Long.MAX_VALUE, 1).toString());
+        assertEquals("9223372036854775807", bigMultiply(42128471623L, 218934409L).toString());
+        assertEquals("9223372036854775809", bigMultiply(77158673929L, 119537721L).toString());
+        assertEquals("9223372036854775810", bigMultiply((1L << 62L) + 1, 2).toString());
+    }
+
+    /** Tests multiplications whose result is near -2^63 (= Long.MIN_VALUE). */
+    public void testMultiply_near64BitOverflow_negative() {
+        assertEquals("-9223372036854775808", bigMultiply(Long.MIN_VALUE, 1).toString());
+        assertEquals("-9223372036854775808", bigMultiply(Long.MIN_VALUE / 2, 2).toString());
+        assertEquals("-9223372036854775808", bigMultiply(-(1L << 31), 1L << 32).toString());
+        assertEquals("-9223372036854775807", bigMultiply(-42128471623L, 218934409L).toString());
+        assertEquals("-9223372036854775810", bigMultiply(-(Long.MIN_VALUE / 2) + 1, -2).toString());
+    }
+
+    private static BigDecimal bigMultiply(long a, long b) {
+        BigDecimal bigA = valueOf(a);
+        BigDecimal bigB = valueOf(b);
+        BigDecimal result = bigA.multiply(bigB);
+        assertEquals("Multiplication should be commutative", result, bigB.multiply(bigA));
+        return result;
     }
 
 }
