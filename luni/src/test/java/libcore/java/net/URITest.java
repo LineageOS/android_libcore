@@ -738,5 +738,18 @@ public final class URITest extends TestCase {
         assertNull(new URI("http://example..com/").getHost());
     }
 
+    public void test_JDK7171415() {
+        URI lower, mixed;
+        lower = URI.create("http://www.example.com/%2b");
+        mixed = URI.create("http://wWw.ExAmPlE.com/%2B");
+        assertTrue(lower.equals(mixed));
+        assertEquals(lower.hashCode(), mixed.hashCode());
+
+        lower = URI.create("http://www.example.com/%2bbb");
+        mixed = URI.create("http://wWw.ExAmPlE.com/%2BbB");
+        assertFalse(lower.equals(mixed));
+        assertFalse(lower.hashCode() == mixed.hashCode());
+    }
+
     // Adding a new test? Consider adding an equivalent test to URLTest.java
 }
