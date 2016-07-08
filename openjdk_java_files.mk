@@ -1107,6 +1107,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/security/auth/Destroyable.java \
     ojluni/src/main/java/javax/security/auth/DestroyFailedException.java \
     ojluni/src/main/java/javax/security/auth/login/LoginException.java \
+    ojluni/src/main/java/javax/security/auth/login/package-info.java \
     ojluni/src/main/java/javax/security/auth/PrivateCredentialPermission.java \
     ojluni/src/main/java/javax/security/auth/SubjectDomainCombiner.java \
     ojluni/src/main/java/javax/security/auth/Subject.java \
