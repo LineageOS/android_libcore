@@ -1112,6 +1112,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/security/auth/SubjectDomainCombiner.java \
     ojluni/src/main/java/javax/security/auth/Subject.java \
     ojluni/src/main/java/javax/security/auth/x500/X500Principal.java \
+    ojluni/src/main/java/javax/security/auth/x500/package-info.java \
     ojluni/src/main/java/javax/security/cert/CertificateEncodingException.java \
     ojluni/src/main/java/javax/security/cert/CertificateException.java \
     ojluni/src/main/java/javax/security/cert/CertificateExpiredException.java \
