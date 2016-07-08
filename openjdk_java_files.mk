@@ -1104,6 +1104,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/security/auth/callback/Callback.java \
     ojluni/src/main/java/javax/security/auth/callback/PasswordCallback.java \
     ojluni/src/main/java/javax/security/auth/callback/UnsupportedCallbackException.java \
+    ojluni/src/main/java/javax/security/auth/callback/package-info.java \
     ojluni/src/main/java/javax/security/auth/Destroyable.java \
     ojluni/src/main/java/javax/security/auth/DestroyFailedException.java \
     ojluni/src/main/java/javax/security/auth/login/LoginException.java \
