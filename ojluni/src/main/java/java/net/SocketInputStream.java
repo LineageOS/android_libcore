@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.nio.channels.FileChannel;
 
 import dalvik.system.BlockGuard;
-import sun.misc.IoTrace;
 import sun.net.ConnectionResetException;
 
 /**
@@ -95,6 +94,26 @@ class SocketInputStream extends FileInputStream
                                    int timeout)
         throws IOException;
 
+    // wrap native call to allow instrumentation
+    /**
+     * Reads into an array of bytes at the specified offset using
+     * the received socket primitive.
+     * @param fd the FileDescriptor
+     * @param b the buffer into which the data is read
+     * @param off the start offset of the data
+     * @param len the maximum number of bytes read
+     * @param timeout the read timeout in ms
+     * @return the actual number of bytes read, -1 is
+     *          returned when the end of the stream is reached.
+     * @exception IOException If an I/O error has occurred.
+     */
+    private int socketRead(FileDescriptor fd,
+                           byte b[], int off, int len,
+                           int timeout)
+        throws IOException {
+        return socketRead0(fd, b, off, len, timeout);
+    }
+
     /**
      * Reads into a byte array data from the socket.
      * @param b the buffer into which the data is read
@@ -121,7 +140,7 @@ class SocketInputStream extends FileInputStream
     }
 
     int read(byte b[], int off, int length, int timeout) throws IOException {
-        int n = 0;
+        int n;
 
         // EOF already encountered
         if (eof) {
@@ -143,20 +162,16 @@ class SocketInputStream extends FileInputStream
 
         boolean gotReset = false;
 
-        Object traceContext = IoTrace.socketReadBegin();
         // acquire file descriptor and do the read
         FileDescriptor fd = impl.acquireFD();
         try {
             BlockGuard.getThreadPolicy().onNetwork();
-            n = socketRead0(fd, b, off, length, timeout);
+            n = socketRead(fd, b, off, length, timeout);
             if (n > 0) {
                 return n;
             }
         } catch (ConnectionResetException rstExc) {
             gotReset = true;
-        } finally {
-            IoTrace.socketReadEnd(traceContext, impl.address, impl.port,
-                                  timeout, n > 0 ? n : 0);
         }
 
         /*
@@ -164,17 +179,13 @@ class SocketInputStream extends FileInputStream
          * buffered on the socket
          */
         if (gotReset) {
-            traceContext = IoTrace.socketReadBegin();
             impl.setConnectionResetPending();
             try {
-                n = socketRead0(fd, b, off, length, timeout);
+                n = socketRead(fd, b, off, length, timeout);
                 if (n > 0) {
                     return n;
                 }
             } catch (ConnectionResetException rstExc) {
-            } finally {
-                IoTrace.socketReadEnd(traceContext, impl.address, impl.port,
-                                      timeout, n > 0 ? n : 0);
             }
         }
 
