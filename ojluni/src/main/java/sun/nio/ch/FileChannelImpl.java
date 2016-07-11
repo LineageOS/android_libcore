@@ -38,7 +38,6 @@ import java.security.AccessController;
 
 import dalvik.system.BlockGuard;
 import sun.misc.Cleaner;
-import sun.misc.IoTrace;
 import sun.security.action.GetPropertyAction;
 
 // ----- BEGIN android -----
@@ -148,7 +147,6 @@ public class FileChannelImpl
         synchronized (positionLock) {
             int n = 0;
             int ti = -1;
-            Object traceContext = IoTrace.fileReadBegin(path);
             try {
                 begin();
                 ti = threads.add();
@@ -160,7 +158,6 @@ public class FileChannelImpl
                 return IOStatus.normalize(n);
             } finally {
                 threads.remove(ti);
-                IoTrace.fileReadEnd(traceContext, n > 0 ? n : 0);
                 end(n > 0);
                 assert IOStatus.check(n);
             }
@@ -178,7 +175,6 @@ public class FileChannelImpl
         synchronized (positionLock) {
             long n = 0;
             int ti = -1;
-            Object traceContext = IoTrace.fileReadBegin(path);
             try {
                 begin();
                 ti = threads.add();
@@ -190,7 +186,6 @@ public class FileChannelImpl
                 return IOStatus.normalize(n);
             } finally {
                 threads.remove(ti);
-                IoTrace.fileReadEnd(traceContext, n > 0 ? n : 0);
                 end(n > 0);
                 assert IOStatus.check(n);
             }
@@ -204,7 +199,6 @@ public class FileChannelImpl
         synchronized (positionLock) {
             int n = 0;
             int ti = -1;
-            Object traceContext = IoTrace.fileWriteBegin(path);
             try {
                 begin();
                 ti = threads.add();
@@ -217,7 +211,6 @@ public class FileChannelImpl
             } finally {
                 threads.remove(ti);
                 end(n > 0);
-                IoTrace.fileWriteEnd(traceContext, n > 0 ? n : 0);
                 assert IOStatus.check(n);
             }
         }
@@ -234,7 +227,6 @@ public class FileChannelImpl
         synchronized (positionLock) {
             long n = 0;
             int ti = -1;
-            Object traceContext = IoTrace.fileWriteBegin(path);
             try {
                 begin();
                 ti = threads.add();
@@ -246,7 +238,6 @@ public class FileChannelImpl
                 return IOStatus.normalize(n);
             } finally {
                 threads.remove(ti);
-                IoTrace.fileWriteEnd(traceContext, n > 0 ? n : 0);
                 end(n > 0);
                 assert IOStatus.check(n);
             }
@@ -711,7 +702,6 @@ public class FileChannelImpl
         assert !nd.needsPositionLock() || Thread.holdsLock(positionLock);
         int n = 0;
         int ti = -1;
-        Object traceContext = IoTrace.fileReadBegin(path);
         try {
             begin();
             ti = threads.add();
@@ -723,7 +713,6 @@ public class FileChannelImpl
             return IOStatus.normalize(n);
         } finally {
             threads.remove(ti);
-            IoTrace.fileReadEnd(traceContext, n > 0 ? n : 0);
             end(n > 0);
             assert IOStatus.check(n);
         }
@@ -750,7 +739,6 @@ public class FileChannelImpl
         assert !nd.needsPositionLock() || Thread.holdsLock(positionLock);
         int n = 0;
         int ti = -1;
-        Object traceContext = IoTrace.fileWriteBegin(path);
         try {
             begin();
             ti = threads.add();
@@ -763,7 +751,6 @@ public class FileChannelImpl
         } finally {
             threads.remove(ti);
             end(n > 0);
-            IoTrace.fileWriteEnd(traceContext, n > 0 ? n : 0);
             assert IOStatus.check(n);
         }
     }

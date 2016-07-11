@@ -130,7 +130,7 @@ class SocketInputStream extends FileInputStream
      * <i>length</i> bytes of data.
      * @param b the buffer into which the data is read
      * @param off the start offset of the data
-     * @param len the maximum number of bytes read
+     * @param length the maximum number of bytes read
      * @return the actual number of bytes read, -1 is
      *          returned when the end of the stream is reached.
      * @exception IOException If an I/O error has occurred.
