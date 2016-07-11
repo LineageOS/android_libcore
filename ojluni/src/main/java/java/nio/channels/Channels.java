@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2000, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -85,7 +85,7 @@ public final class Channels {
     /**
      * Write all remaining bytes in buffer to the given channel.
      *
-     * @throws  IllegalBlockingException
+     * @throws  IllegalBlockingModeException
      *          If the channel is selectable and configured non-blocking.
      */
     private static void writeFully(WritableByteChannel ch, ByteBuffer bb)
