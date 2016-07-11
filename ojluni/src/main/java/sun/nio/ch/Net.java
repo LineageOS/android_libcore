@@ -209,43 +209,19 @@ class Net {                                             // package-private
         if (addr == null || sm == null)
             return addr;
 
-        if (!getRevealLocalAddress()) {
+        try{
+            sm.checkConnect(addr.getAddress().getHostAddress(), -1);
+            // Security check passed
+        } catch (SecurityException e) {
             // Return loopback address only if security check fails
-            try{
-                sm.checkConnect(addr.getAddress().getHostAddress(), -1);
-                //Security check passed
-            } catch (SecurityException e) {
-                //Return loopback address
-                addr = getLoopbackAddress(addr.getPort());
-            }
+            addr = getLoopbackAddress(addr.getPort());
         }
         return addr;
     }
 
     static String getRevealedLocalAddressAsString(InetSocketAddress addr) {
-        if (!getRevealLocalAddress() && System.getSecurityManager() != null)
-            addr = getLoopbackAddress(addr.getPort());
-        return addr.toString();
-    }
-
-    private static boolean getRevealLocalAddress() {
-        if (!propRevealLocalAddress) {
-            try {
-                revealLocalAddress = Boolean.parseBoolean(
-                      AccessController.doPrivileged(
-                          new PrivilegedExceptionAction<String>() {
-                              public String run() {
-                                  return System.getProperty(
-                                      "jdk.net.revealLocalAddress");
-                              }
-                          }));
-
-            } catch (Exception e) {
-                // revealLocalAddress is false
-            }
-            propRevealLocalAddress = true;
-        }
-        return revealLocalAddress;
+        return System.getSecurityManager() == null ? addr.toString() :
+                getLoopbackAddress(addr.getPort()).toString();
     }
 
     private static InetSocketAddress getLoopbackAddress(int port) {

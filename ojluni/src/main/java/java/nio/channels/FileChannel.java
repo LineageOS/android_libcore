@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import java.util.Collections;
  * of bytes that can be read and written and whose current {@link #size
  * <i>size</i>} can be queried.  The size of the file increases
  * when bytes are written beyond its current size; the size of the file
- * decreases when it is {@link #truncate </code><i>truncated</i><code>}.  The
+ * decreases when it is {@link #truncate <i>truncated</i>}.  The
  * file may also have some associated <i>metadata</i> such as access
  * permissions, content type, and last-modification time; this class does not
  * define methods for metadata access.
@@ -229,7 +229,7 @@ public abstract class FileChannel
      *   written synchronously to the underlying storage device. (see <a
      *   href="../file/package-summary.html#integrity"> Synchronized I/O file
      *   integrity</a>). </td>
-     * <tr>
+     * </tr>
      * <tr>
      *   <td> {@link StandardOpenOption#DSYNC DSYNC} </td>
      *   <td> Requires that every update to the file's content be written
@@ -287,6 +287,7 @@ public abstract class FileChannel
         return provider.newFileChannel(path, options, attrs);
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"}) // generic array construction
     private static final FileAttribute<?>[] NO_ATTRIBUTES = new FileAttribute[0];
 
     /**
@@ -417,7 +418,7 @@ public abstract class FileChannel
     // -- Other operations --
 
     /**
-     * Returns this channel's file position.  </p>
+     * Returns this channel's file position.
      *
      * @return  This channel's file position,
      *          a non-negative integer counting the number of bytes
@@ -460,7 +461,7 @@ public abstract class FileChannel
     public abstract FileChannel position(long newPosition) throws IOException;
 
     /**
-     * Returns the current size of this channel's file.  </p>
+     * Returns the current size of this channel's file.
      *
      * @return  The current size of this channel's file,
      *          measured in bytes
@@ -829,7 +830,7 @@ public abstract class FileChannel
      * <p> A region of a file may be mapped into memory in one of three modes:
      * </p>
      *
-     * <ul type=disc>
+     * <ul>
      *
      *   <li><p> <i>Read-only:</i> Any attempt to modify the resulting buffer
      *   will cause a {@link java.nio.ReadOnlyBufferException} to be thrown.

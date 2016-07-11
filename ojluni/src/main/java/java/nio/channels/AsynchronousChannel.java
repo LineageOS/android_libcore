@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -61,7 +61,7 @@ import java.util.concurrent.Future;  // javadoc
  * may not allow more than one read and one write operation to be outstanding at
  * any given time.
  *
- * <h4>Cancellation</h4>
+ * <h2>Cancellation</h2>
  *
  * <p> The {@code Future} interface defines the {@link Future#cancel cancel}
  * method to cancel execution. This causes all threads waiting on the result of
