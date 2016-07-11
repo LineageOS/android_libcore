@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -60,12 +60,11 @@ import java.util.concurrent.TimeUnit;
  * default group is not configured then the pooled threads of the default group
  * are {@link Thread#isDaemon daemon} threads.
  *
- * <table border>
+ * <table border summary="System properties">
  *   <tr>
  *     <th>System property</th>
  *     <th>Description</th>
  *   </tr>
- *   <tr>
  *   <tr>
  *     <td> {@code java.nio.channels.DefaultThreadPool.threadFactory} </td>
  *     <td> The value of this property is taken to be the fully-qualified name
@@ -89,7 +88,7 @@ import java.util.concurrent.TimeUnit;
  *   </tr>
  * </table>
  *
- * <a name="threading"><h4>Threading</h4></a>
+ * <a name="threading"></a><h2>Threading</h2>
  *
  * <p> The completion handler for an I/O operation initiated on a channel bound
  * to a group is guaranteed to be invoked by one of the pooled threads in the
@@ -104,7 +103,7 @@ import java.util.concurrent.TimeUnit;
  * handler directly by the initiating thread (see {@link
  * AsynchronousServerSocketChannel#accept(Object,CompletionHandler) accept}).
  *
- * <a name="shutdown"><h4>Shutdown and Termination</h4></a>
+ * <a name="shutdown"></a><h2>Shutdown and Termination</h2>
  *
  * <p> The {@link #shutdown() shutdown} method is used to initiate an <em>orderly
  * shutdown</em> of a group. An orderly shutdown marks the group as shutdown;
@@ -199,7 +198,7 @@ public abstract class AsynchronousChannelGroup {
      *
      * <p> The {@code initialSize} parameter may be used by the implementation
      * as a <em>hint</em> as to the initial number of tasks it may submit. For
-     * example, it may be used to indictae the initial number of threads that
+     * example, it may be used to indicate the initial number of threads that
      * wait on I/O events.
      *
      * <p> The executor is intended to be used exclusively by the resulting

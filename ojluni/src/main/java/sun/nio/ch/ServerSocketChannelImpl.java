@@ -106,6 +106,7 @@ class ServerSocketChannelImpl
     public ServerSocket socket() {
         synchronized (stateLock) {
             if (socket == null)
+
                 socket = ServerSocketAdaptor.create(this);
             return socket;
         }
