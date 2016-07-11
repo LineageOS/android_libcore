@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -64,7 +64,7 @@ class InheritedChannel {
             dup2(devnull, 2);
         } catch (IOException ioe) {
             // this shouldn't happen
-            throw new InternalError();
+            throw new InternalError(ioe);
         }
     }
 
@@ -166,8 +166,8 @@ class InheritedChannel {
         // is implemented.
 
         Class paramTypes[] = { int.class };
-        Constructor ctr = Reflect.lookupConstructor("java.io.FileDescriptor",
-                                                    paramTypes);
+        Constructor<?> ctr = Reflect.lookupConstructor("java.io.FileDescriptor",
+                                                       paramTypes);
         Object args[] = { new Integer(fdVal) };
         FileDescriptor fd = (FileDescriptor)Reflect.invoke(ctr, args);
 
