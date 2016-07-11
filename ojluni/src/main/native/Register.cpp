@@ -82,7 +82,6 @@ extern void register_sun_nio_ch_ServerSocketChannelImpl(JNIEnv*);
 extern void register_sun_nio_ch_SocketChannelImpl(JNIEnv* env);
 extern void register_sun_nio_ch_InheritedChannel(JNIEnv* env);
 extern void register_sun_nio_ch_EPollArrayWrapper(JNIEnv* env);
-extern void register_sun_nio_ch_PollArrayWrapper(JNIEnv* env);
 
 extern jint net_JNI_OnLoad(JavaVM*, void*);
 
@@ -149,7 +148,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) { JNIEnv* env;
     register_sun_nio_ch_DatagramChannelImpl(env);
     register_sun_nio_ch_DatagramDispatcher(env);
     register_sun_nio_ch_EPollArrayWrapper(env);
-    register_sun_nio_ch_PollArrayWrapper(env);
     register_java_nio_MappedByteBuffer(env);
     net_JNI_OnLoad(vm, NULL);
     return JNI_VERSION_1_6;
