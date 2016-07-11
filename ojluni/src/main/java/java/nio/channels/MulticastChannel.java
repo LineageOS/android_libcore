@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -71,7 +71,7 @@ import java.net.StandardSocketOptions;      // javadoc
  * MembershipKey#drop drop} method drops membership so that datagrams from the
  * source address can no longer be received.
  *
- * <h4>Platform dependencies</h4>
+ * <h2>Platform dependencies</h2>
  *
  * The multicast implementation is intended to map directly to the native
  * multicasting facility. Consequently, the following items should be considered
