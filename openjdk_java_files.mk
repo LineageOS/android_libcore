@@ -1281,7 +1281,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/ch/AsynchronousFileChannelImpl.java \
     ojluni/src/main/java/sun/nio/ch/AsynchronousServerSocketChannelImpl.java \
     ojluni/src/main/java/sun/nio/ch/AsynchronousSocketChannelImpl.java \
-    ojluni/src/main/java/sun/nio/ch/BsdAsynchronousChannelProvider.java \
     ojluni/src/main/java/sun/nio/ch/Cancellable.java \
     ojluni/src/main/java/sun/nio/ch/ChannelInputStream.java \
     ojluni/src/main/java/sun/nio/ch/CompletedFuture.java \

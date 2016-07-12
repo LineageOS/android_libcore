@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -66,7 +66,8 @@ public class FileChannelImpl
     // Required to prevent finalization of creating stream (immutable)
     private final Object parent;
 
-    // The path of the referenced file (null if the parent stream is created with a file descriptor)
+    // The path of the referenced file
+    // (null if the parent stream is created with a file descriptor)
     private final String path;
 
     // Thread-safe set of IDs of native threads, for signalling
@@ -124,6 +125,7 @@ public class FileChannelImpl
             }
         }
 
+        // signal any threads blocked on this channel
         threads.signalAndWait();
 
         if (parent != null) {
@@ -319,15 +321,10 @@ public class FileChannelImpl
         }
     }
 
-    public FileChannel truncate(long size) throws IOException {
+    public FileChannel truncate(long newSize) throws IOException {
         ensureOpen();
-        if (size < 0)
-            throw new IllegalArgumentException();
-        // ----- BEGIN android -----
-        // This code may forget to update position.
-        //if (size > size())
-        //    return this;
-        // ----- END android -----
+        if (newSize < 0)
+            throw new IllegalArgumentException("Negative size");
         if (!writable)
             throw new NonWritableChannelException();
         synchronized (positionLock) {
@@ -340,6 +337,14 @@ public class FileChannelImpl
                 if (!isOpen())
                     return null;
 
+                // get current size
+                long size;
+                do {
+                    size = nd.size(fd);
+                } while ((size == IOStatus.INTERRUPTED) && isOpen());
+                if (!isOpen())
+                    return null;
+
                 // get current position
                 do {
                     p = position0(fd, -1);
@@ -348,21 +353,18 @@ public class FileChannelImpl
                     return null;
                 assert p >= 0;
 
-                // truncate file
-                // ----- BEGIN android -----
-                if (size < size()) {
-                // ----- END android -----
+                // truncate file if given size is less than the current size
+                if (newSize < size) {
                     do {
-                        rv = nd.truncate(fd, size);
+                        rv = nd.truncate(fd, newSize);
                     } while ((rv == IOStatus.INTERRUPTED) && isOpen());
                     if (!isOpen())
                         return null;
-                // ----- BEGIN android -----
                 }
-                // ----- END android -----
-                // set position to size if greater than size
-                if (p > size)
-                    p = size;
+
+                // if position is beyond new size then adjust it
+                if (p > newSize)
+                    p = newSize;
                 do {
                     rv = (int)position0(fd, p);
                 } while ((rv == IOStatus.INTERRUPTED) && isOpen());
@@ -409,30 +411,13 @@ public class FileChannelImpl
     //
     private static volatile boolean fileSupported = true;
 
-    private long transferToDirectly(long position, int icount,
-                                    WritableByteChannel target)
+    private long transferToDirectlyInternal(long position, int icount,
+                                            WritableByteChannel target,
+                                            FileDescriptor targetFD)
         throws IOException
     {
-        if (!transferSupported)
-            return IOStatus.UNSUPPORTED;
-
-        FileDescriptor targetFD = null;
-        if (target instanceof FileChannelImpl) {
-            if (!fileSupported)
-                return IOStatus.UNSUPPORTED_CASE;
-            targetFD = ((FileChannelImpl)target).fd;
-        } else if (target instanceof SelChImpl) {
-            // Direct transfer to pipe causes EINVAL on some configurations
-            if ((target instanceof SinkChannelImpl) && !pipeSupported)
-                return IOStatus.UNSUPPORTED_CASE;
-            targetFD = ((SelChImpl)target).getFD();
-        }
-        if (targetFD == null)
-            return IOStatus.UNSUPPORTED;
-        int thisFDVal = IOUtil.fdVal(fd);
-        int targetFDVal = IOUtil.fdVal(targetFD);
-        if (thisFDVal == targetFDVal) // Not supported on some configurations
-            return IOStatus.UNSUPPORTED;
+        assert !nd.transferToDirectlyNeedsPositionLock() ||
+               Thread.holdsLock(positionLock);
 
         long n = -1;
         int ti = -1;
@@ -443,7 +428,7 @@ public class FileChannelImpl
                 return -1;
             BlockGuard.getThreadPolicy().onWriteToDisk();
             do {
-                n = transferTo0(thisFDVal, position, icount, targetFDVal);
+                n = transferTo0(fd, position, icount, targetFD);
             } while ((n == IOStatus.INTERRUPTED) && isOpen());
             if (n == IOStatus.UNSUPPORTED_CASE) {
                 if (target instanceof SinkChannelImpl)
@@ -461,6 +446,54 @@ public class FileChannelImpl
         } finally {
             threads.remove(ti);
             end (n > -1);
+        }
+    }
+
+    private long transferToDirectly(long position, int icount,
+                                    WritableByteChannel target)
+        throws IOException
+    {
+        if (!transferSupported)
+            return IOStatus.UNSUPPORTED;
+
+        FileDescriptor targetFD = null;
+        if (target instanceof FileChannelImpl) {
+            if (!fileSupported)
+                return IOStatus.UNSUPPORTED_CASE;
+            targetFD = ((FileChannelImpl)target).fd;
+        } else if (target instanceof SelChImpl) {
+            // Direct transfer to pipe causes EINVAL on some configurations
+            if ((target instanceof SinkChannelImpl) && !pipeSupported)
+                return IOStatus.UNSUPPORTED_CASE;
+
+            // Platform-specific restrictions. Now there is only one:
+            // Direct transfer to non-blocking channel could be forbidden
+            SelectableChannel sc = (SelectableChannel)target;
+            if (!nd.canTransferToDirectly(sc))
+                return IOStatus.UNSUPPORTED_CASE;
+
+            targetFD = ((SelChImpl)target).getFD();
+        }
+
+        if (targetFD == null)
+            return IOStatus.UNSUPPORTED;
+        int thisFDVal = IOUtil.fdVal(fd);
+        int targetFDVal = IOUtil.fdVal(targetFD);
+        if (thisFDVal == targetFDVal) // Not supported on some configurations
+            return IOStatus.UNSUPPORTED;
+
+        if (nd.transferToDirectlyNeedsPositionLock()) {
+            synchronized (positionLock) {
+                long pos = position();
+                try {
+                    return transferToDirectlyInternal(position, icount,
+                                                      target, targetFD);
+                } finally {
+                    position(pos);
+                }
+            }
+        } else {
+            return transferToDirectlyInternal(position, icount, target, targetFD);
         }
     }
 
@@ -827,6 +860,8 @@ public class FileChannelImpl
         throws IOException
     {
         ensureOpen();
+        if (mode == null)
+            throw new NullPointerException("Mode is null");
         if (position < 0L)
             throw new IllegalArgumentException("Negative position");
         if (size < 0L)
@@ -835,6 +870,7 @@ public class FileChannelImpl
             throw new IllegalArgumentException("Position + size overflow");
         if (size > Integer.MAX_VALUE)
             throw new IllegalArgumentException("Size exceeds Integer.MAX_VALUE");
+
         int imode = -1;
         if (mode == MapMode.READ_ONLY)
             imode = MAP_RO;
@@ -855,7 +891,15 @@ public class FileChannelImpl
             ti = threads.add();
             if (!isOpen())
                 return null;
-            if (size() < position + size) { // Extend file size
+
+            long filesize;
+            do {
+                filesize = nd.size(fd);
+            } while ((filesize == IOStatus.INTERRUPTED) && isOpen());
+            if (!isOpen())
+                return null;
+
+            if (filesize < position + size) { // Extend file size
                 /* ----- BEGIN android -----
                 if (!writable) {
                     throw new IOException("Channel not open for writing " +
@@ -884,6 +928,8 @@ public class FileChannelImpl
                     }
                     // ----- END android -----
                 } while ((rv == IOStatus.INTERRUPTED) && isOpen());
+                if (!isOpen())
+                    return null;
             }
             if (size == 0) {
                 addr = 0;
@@ -1149,7 +1195,8 @@ public class FileChannelImpl
     private static native int unmap0(long address, long length);
 
     // Transfers from src to dst, or returns -2 if kernel can't do that
-    private native long transferTo0(int src, long position, long count, int dst);
+    private native long transferTo0(FileDescriptor src, long position,
+                                    long count, FileDescriptor dst);
 
     // Sets or reports this file's position
     // If offset is -1, the current position is returned
