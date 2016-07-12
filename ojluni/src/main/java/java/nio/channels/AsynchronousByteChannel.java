@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -87,6 +87,8 @@ public interface AsynchronousByteChannel
      * initiates a read operation before a previous read operation has
      * completed then a {@link ReadPendingException} will be thrown.
      *
+     * @param   <A>
+     *          The type of the attachment
      * @param   dst
      *          The buffer into which bytes are to be transferred
      * @param   attachment
@@ -166,6 +168,8 @@ public interface AsynchronousByteChannel
      * initiates a write operation before a previous write operation has
      * completed then a {@link WritePendingException} will be thrown.
      *
+     * @param   <A>
+     *          The type of the attachment
      * @param   src
      *          The buffer from which bytes are to be retrieved
      * @param   attachment
