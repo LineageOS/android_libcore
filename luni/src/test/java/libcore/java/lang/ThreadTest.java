@@ -17,6 +17,8 @@
 package libcore.java.lang;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import libcore.java.lang.ref.FinalizationTester;
@@ -177,6 +179,39 @@ public final class ThreadTest extends TestCase {
         if (testResult != null) {
             fail(testResult);
         }
+    }
+
+    // http://b/29746125
+    public void testParkUntilWithUnderflowValue() throws Exception {
+        final Thread current = Thread.currentThread();
+
+        // watchdog to unpark the tread in case it will be parked
+        AtomicBoolean afterPark = new AtomicBoolean(false);
+        AtomicBoolean wasParkedForLongTime = new AtomicBoolean(false);
+        Thread watchdog = new Thread() {
+            @Override public void run() {
+                try {
+                    sleep(5000);
+                } catch(InterruptedException expected) {}
+
+                if (!afterPark.get()) {
+                    wasParkedForLongTime.set(true);
+                    current.unpark$();
+                }
+            }
+        };
+        watchdog.start();
+
+        // b/29746125 is caused by underflow: parkUntilArg - System.currentTimeMillis() > 0.
+        // parkUntil$ should return immediately for everyargument that's <=
+        // System.currentTimeMillis().
+        current.parkUntil$(Long.MIN_VALUE);
+        if (wasParkedForLongTime.get()) {
+            fail("Current thread was parked, but was expected to return immediately");
+        }
+        afterPark.set(true);
+        watchdog.interrupt();
+        watchdog.join();
     }
 
     // This method returns {@code null} if all tests pass, or a non-null String containing
