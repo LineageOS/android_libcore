@@ -726,7 +726,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/text/DateFormatSymbols.java \
     ojluni/src/main/java/java/text/DecimalFormat.java \
     ojluni/src/main/java/java/text/DecimalFormatSymbols.java \
-    ojluni/src/main/java/java/text/DigitList.java \
     ojluni/src/main/java/java/text/DontCareFieldPosition.java \
     ojluni/src/main/java/java/text/EntryPair.java \
     ojluni/src/main/java/java/text/FieldPosition.java \
