@@ -330,6 +330,16 @@ public class OldSystemTest extends junit.framework.TestCase {
         String libPath = (String) m.invoke(cl, "c");
         assertNotNull(libPath);
         System.load(new File(libPath).getAbsolutePath());
+
+        // A negative test for a library that exists but isn't specified as an absolute path.
+        // In other words, a name for which System.loadLibrary(libname) would suceed and
+        // System.load(libname) would fail.
+        String libName = new File(libPath).getName();
+        try {
+            System.load(libName);
+            fail();
+        } catch (UnsatisfiedLinkError expected) {
+        }
     }
 
     public void test_loadLibrary() {
