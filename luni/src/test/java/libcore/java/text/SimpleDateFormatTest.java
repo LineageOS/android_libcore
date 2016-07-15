@@ -453,6 +453,20 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertEquals(tz, df.getTimeZone());
     }
 
+    public void testZoneStringsUsedForParsingWhenPresent() throws ParseException {
+        DateFormatSymbols symbols = DateFormatSymbols.getInstance(Locale.ENGLISH);
+        String[][] zoneStrings = symbols.getZoneStrings();
+        TimeZone tz = TimeZone.getTimeZone(zoneStrings[0][0]);
+        zoneStrings[0][1] = "CustomTimeZone";
+        symbols.setZoneStrings(zoneStrings);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MM yyyy HH:mm zzz", symbols);
+
+        Date gmtDate = sdf.parse("1 1 2000 12:00 GMT");
+        Date customDate = sdf.parse("1 1 2000 12:00 CustomTimeZone");
+        assertEquals(tz.getOffset(gmtDate.getTime()), customDate.getTime() - gmtDate.getTime());
+    }
+
     public void testTimeZoneFormattingRespectsSetZoneStrings() throws ParseException {
         DateFormatSymbols symbols = DateFormatSymbols.getInstance(Locale.ENGLISH);
         String[][] zoneStrings = symbols.getZoneStrings();
