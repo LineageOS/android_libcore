@@ -41,7 +41,6 @@ import sun.nio.ch.Interruptible;
 import sun.reflect.CallerSensitive;
 import dalvik.system.VMStack;
 import libcore.util.EmptyArray;
-import sun.security.util.SecurityConstants;
 
 
 /**
@@ -1905,6 +1904,28 @@ class Thread implements Runnable {
         return defaultUncaughtExceptionHandler;
     }
 
+    // Android-changed: Added concept of an uncaughtExceptionPreHandler for use by platform.
+    // null unless explicitly set
+    private static volatile UncaughtExceptionHandler uncaughtExceptionPreHandler;
+
+    /**
+     * Sets an {@link UncaughtExceptionHandler} that will be called before any
+     * returned by {@link #getUncaughtExceptionHandler()}. To allow the standard
+     * handlers to run, this handler should never terminate this process. Any
+     * throwables thrown by the handler will be ignored by
+     * {@link #dispatchUncaughtException(Throwable)}.
+     *
+     * @hide only for use by the Android framework (RuntimeInit) b/29624607
+     */
+    public static void setUncaughtExceptionPreHandler(UncaughtExceptionHandler eh) {
+        uncaughtExceptionPreHandler = eh;
+    }
+
+    /** @hide */
+    public static UncaughtExceptionHandler getUncaughtExceptionPreHandler() {
+        return uncaughtExceptionPreHandler;
+    }
+
     /**
      * Returns the handler invoked when this thread abruptly terminates
      * due to an uncaught exception. If this thread has not had an
@@ -1940,9 +1961,21 @@ class Thread implements Runnable {
 
     /**
      * Dispatch an uncaught exception to the handler. This method is
-     * intended to be called only by the JVM.
+     * intended to be called only by the runtime and by tests.
+     *
+     * @hide
      */
-    private void dispatchUncaughtException(Throwable e) {
+    // @VisibleForTesting (would be private if not for tests)
+    public final void dispatchUncaughtException(Throwable e) {
+        Thread.UncaughtExceptionHandler initialUeh =
+                Thread.getUncaughtExceptionPreHandler();
+        if (initialUeh != null) {
+            try {
+                initialUeh.uncaughtException(this, e);
+            } catch (RuntimeException | Error ignored) {
+                // Throwables thrown by the initial handler are ignored
+            }
+        }
         getUncaughtExceptionHandler().uncaughtException(this, e);
     }
 

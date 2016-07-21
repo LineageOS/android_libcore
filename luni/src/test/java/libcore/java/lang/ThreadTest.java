@@ -16,11 +16,16 @@
 
 package libcore.java.lang;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
+
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
 import libcore.java.lang.ref.FinalizationTester;
 
 public final class ThreadTest extends TestCase {
@@ -128,6 +133,46 @@ public final class ThreadTest extends TestCase {
     public void testContextClassLoaderIsInherited() {
         Thread other = new Thread();
         assertSame(Thread.currentThread().getContextClassLoader(), other.getContextClassLoader());
+    }
+
+    public void testUncaughtExceptionPreHandler_calledBeforeDefaultHandler() {
+        UncaughtExceptionHandler initialHandler = Mockito.mock(UncaughtExceptionHandler.class);
+        UncaughtExceptionHandler defaultHandler = Mockito.mock(UncaughtExceptionHandler.class);
+        InOrder inOrder = Mockito.inOrder(initialHandler, defaultHandler);
+
+        UncaughtExceptionHandler originalDefaultHandler
+                = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setUncaughtExceptionPreHandler(initialHandler);
+        Thread.setDefaultUncaughtExceptionHandler(defaultHandler);
+        try {
+            Thread t = new Thread();
+            Throwable e = new Throwable();
+            t.dispatchUncaughtException(e);
+            inOrder.verify(initialHandler).uncaughtException(t, e);
+            inOrder.verify(defaultHandler).uncaughtException(t, e);
+            inOrder.verifyNoMoreInteractions();
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalDefaultHandler);
+            Thread.setUncaughtExceptionPreHandler(null);
+        }
+    }
+
+    public void testUncaughtExceptionPreHandler_noDefaultHandler() {
+        UncaughtExceptionHandler initialHandler = Mockito.mock(UncaughtExceptionHandler.class);
+        UncaughtExceptionHandler originalDefaultHandler
+                = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setUncaughtExceptionPreHandler(initialHandler);
+        Thread.setDefaultUncaughtExceptionHandler(null);
+        try {
+            Thread t = new Thread();
+            Throwable e = new Throwable();
+            t.dispatchUncaughtException(e);
+            Mockito.verify(initialHandler).uncaughtException(t, e);
+            Mockito.verifyNoMoreInteractions(initialHandler);
+        } finally {
+            Thread.setDefaultUncaughtExceptionHandler(originalDefaultHandler);
+            Thread.setUncaughtExceptionPreHandler(null);
+        }
     }
 
     /**
