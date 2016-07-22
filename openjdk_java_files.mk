@@ -1137,6 +1137,8 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/sql/StatementEventListener.java \
     ojluni/src/main/java/sun/reflect/CallerSensitive.java \
 
+# NOTE: Files in java/lang/invoke are listed here because they're not being made public
+# until the entire package is available for use.
 openjdk_java_files := \
     ojluni/src/main/java/com/sun/net/ssl/internal/ssl/X509ExtendedTrustManager.java \
     ojluni/src/main/java/com/sun/security/cert/internal/x509/X509V1CertImpl.java \
@@ -1147,6 +1149,8 @@ openjdk_java_files := \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
+    ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
+    ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
     ojluni/src/main/java/java/text/spi/BreakIteratorProvider.java \
     ojluni/src/main/java/java/text/spi/CollatorProvider.java \
     ojluni/src/main/java/java/text/spi/DateFormatProvider.java \
@@ -1597,11 +1601,13 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/resources/OpenListResourceBundle.java \
     $(openjdk_javadoc_files)
 
-# Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
-# not used on Android devices or required by the Jack compiler.
+# javac requires sections of java.lang.invoke.* to be available in the boot
+# classpath in order to compile a lambda expression in Java source. Some of
+# the classes it needs are present in core-oj, and those that aren't are
+# stubbed here. In the long term, core-oj will contain a complete
+# java.lang.invoke implementation and this list can be removed.
 openjdk_lambda_stub_files := \
     ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
-    ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandleInfo.java \
