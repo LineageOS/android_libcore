@@ -593,6 +593,8 @@ static netif *enumInterfaces(JNIEnv *env) {
           ifs = addif(env, sock, ifa, ifs);
           break;
       }
+    } else {
+      ifs = addif(env, sock, ifa, ifs);
     }
   }
 
@@ -676,19 +678,23 @@ netif *addif(JNIEnv *env, int sock, struct ifaddrs *ifa, netif *ifs)
    * Create and populate the netaddr node. If allocation fails
    * return an un-updated list.
    */
-  switch(ifa->ifa_addr->sa_family) {
-    case AF_INET:
-      addr_size = sizeof(struct sockaddr_in);
-      break;
-    case AF_INET6:
-      addr_size = sizeof(struct sockaddr_in6);
-      break;
-    case AF_PACKET:
-      // Don't add an address entry, will extract data to netif struct
-      addr_size = 0;
-      break;
-    default:
-      return NULL;
+  if (ifa->ifa_addr != NULL) {
+    switch(ifa->ifa_addr->sa_family) {
+      case AF_INET:
+        addr_size = sizeof(struct sockaddr_in);
+        break;
+      case AF_INET6:
+        addr_size = sizeof(struct sockaddr_in6);
+        break;
+      case AF_PACKET:
+        // Don't add an address entry, will extract data to netif struct
+        addr_size = 0;
+        break;
+      default:
+        return NULL;
+    }
+  } else {
+    addr_size = 0;
   }
 
   if (addr_size > 0) {
@@ -778,6 +784,9 @@ netif *addif(JNIEnv *env, int sock, struct ifaddrs *ifa, netif *ifs)
     currif->next = ifs;
     ifs = currif;
   }
+
+  // If it's only an interface name, we're done.
+  if (ifa->ifa_addr == NULL) return ifs;
 
   /*
    * Insert the mac address on the interface
