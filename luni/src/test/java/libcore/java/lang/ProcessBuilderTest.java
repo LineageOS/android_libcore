@@ -43,7 +43,6 @@ import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
 
 import static java.lang.ProcessBuilder.Redirect.INHERIT;
 import static java.lang.ProcessBuilder.Redirect.PIPE;
-import static tests.support.Support_Exec.execAndCheckOutput;
 
 public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase {
     private static final String TAG = ProcessBuilderTest.class.getSimpleName();
@@ -58,7 +57,8 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
             String expectedOut, String expectedErr) throws Exception {
         ProcessBuilder pb = new ProcessBuilder(shell(), "-c", "echo out; echo err 1>&2");
         pb.redirectErrorStream(doRedirect);
-        execAndCheckOutput(pb, expectedOut, expectedErr);
+        checkProcessExecution(pb, ResultCodes.ZERO,
+                "" /* processInput */, expectedOut, expectedErr);
     }
 
     public void test_redirectErrorStream_true() throws Exception {
@@ -67,6 +67,20 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
 
     public void test_redirectErrorStream_false() throws Exception {
         assertRedirectErrorStream(false, "out\n", "err\n");
+    }
+
+    public void testRedirectErrorStream_outputAndErrorAreMerged() throws Exception {
+        Process process = new ProcessBuilder(shell())
+                .redirectErrorStream(true)
+                .start();
+        try {
+            long pid = getChildProcessPid(process);
+            String path = "/proc/" + pid + "/fd/";
+            assertEquals("stdout and stderr should point to the same socket",
+                    Os.stat(path + "1").st_ino, Os.stat(path + "2").st_ino);
+        } finally {
+            process.destroy();
+        }
     }
 
     /**
@@ -85,11 +99,7 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
                     Os.fstat(FileDescriptor.in).st_ino,
                     Os.fstat(FileDescriptor.out).st_ino,
                     Os.fstat(FileDescriptor.err).st_ino);
-
-            // Hack: UNIXProcess.pid is private; parse toString() instead of reflection
-            Matcher matcher = Pattern.compile("pid=(\\d+)").matcher(process.toString());
-            assertTrue("Can't find PID in: " + process, matcher.find());
-            int childPid = Integer.parseInt(matcher.group(1));
+            long childPid = getChildProcessPid(process);
             // Get the inode numbers of the ends of the symlink chains
             List<Long> childInodes = Arrays.asList(
                     Os.stat("/proc/" + childPid + "/fd/0").st_ino,
@@ -186,7 +196,7 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
     public void testEnvironment() throws Exception {
         ProcessBuilder pb = new ProcessBuilder(shell(), "-c", "echo $A");
         pb.environment().put("A", "android");
-        execAndCheckOutput(pb, "android\n", "");
+        checkProcessExecution(pb, ResultCodes.ZERO, "", "android\n", "");
     }
 
     public void testDestroyClosesEverything() throws IOException {
@@ -237,7 +247,44 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
             fail();
         } catch (NullPointerException expected) {
         }
+        try {
+            environment.containsKey(null);
+            fail("Attempting to check the presence of a null key should throw");
+        } catch (NullPointerException expected) {
+        }
+        try {
+            environment.containsValue(null);
+            fail("Attempting to check the presence of a null value should throw");
+        } catch (NullPointerException expected) {
+        }
         assertEquals(before, environment);
+    }
+
+    /**
+     * Tests attempting to query the presence of a non-String key or value
+     * in the environment map. Since that is a {@code Map<String, String>},
+     * it's hard to imagine this ever breaking, but it's good to have a test
+     * since it's called out in the documentation.
+     */
+    public void testEnvironmentMapForbidsNonStringKeysAndValues() {
+        ProcessBuilder pb = new ProcessBuilder("echo", "Hello, world!");
+        Map<String, String> environment = pb.environment();
+        Integer nonString = Integer.valueOf(23);
+        try {
+            environment.containsKey(nonString);
+            fail("Attempting to query the presence of a non-String key should throw");
+        } catch (ClassCastException expected) {
+        }
+        try {
+            environment.get(nonString);
+            fail("Attempting to query the presence of a non-String key should throw");
+        } catch (ClassCastException expected) {
+        }
+        try {
+            environment.containsValue(nonString);
+            fail("Attempting to query the presence of a non-String value should throw");
+        } catch (ClassCastException expected) {
+        }
     }
 
     /**
@@ -350,6 +397,11 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
     public void testDirectory_setAndGet() {
         File directory = new File("/tmp/fake/directory/for/" + TAG);
         assertEquals(directory, new ProcessBuilder().directory(directory).directory());
+        assertNull(new ProcessBuilder().directory());
+        assertNull(new ProcessBuilder()
+                .directory(directory)
+                .directory(null)
+                .directory());
     }
 
     /**
@@ -404,6 +456,14 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
         assertEquals(a, b);
         assertEquals(b, a);
         assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    private static long getChildProcessPid(Process process) {
+        // Hack: UNIXProcess.pid is private; parse toString() instead of reflection
+        Matcher matcher = Pattern.compile("pid=(\\d+)").matcher(process.toString());
+        assertTrue("Can't find PID in: " + process, matcher.find());
+        long result = Integer.parseInt(matcher.group(1));
+        return result;
     }
 
     static String readAsString(InputStream inputStream) throws IOException {
