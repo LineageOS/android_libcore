@@ -193,6 +193,32 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
                 errorString.contains(missingFilePath) && !errorString.equals(missingFilePath));
     }
 
+    public void testRedirect_nullStreams() throws IOException {
+        Process process = new ProcessBuilder()
+                .command(shell())
+                .inheritIO()
+                .start();
+        try {
+            assertNullInputStream(process.getInputStream());
+            assertNullOutputStream(process.getOutputStream());
+            assertNullInputStream(process.getErrorStream());
+        } finally {
+            process.destroy();
+        }
+    }
+
+    public void testRedirectErrorStream_nullStream() throws IOException {
+        Process process = new ProcessBuilder()
+                .command(shell())
+                .redirectErrorStream(true)
+                .start();
+        try {
+            assertNullInputStream(process.getErrorStream());
+        } finally {
+            process.destroy();
+        }
+    }
+
     public void testEnvironment() throws Exception {
         ProcessBuilder pb = new ProcessBuilder(shell(), "-c", "echo $A");
         pb.environment().put("A", "android");
@@ -439,6 +465,29 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
         expectedResultCode.assertMatches(actualResultCode);
         assertEquals(expectedOutput, processOutput.get());
         assertEquals(expectedError, processError.get());
+    }
+
+    /**
+     * Asserts that inputStream is a <a href="ProcessBuilder#redirect-input">null input stream</a>.
+     */
+    private static void assertNullInputStream(InputStream inputStream) throws IOException {
+        assertEquals(-1, inputStream.read());
+        assertEquals(0, inputStream.available());
+        inputStream.close(); // should do nothing
+    }
+
+    /**
+     * Asserts that outputStream is a <a href="ProcessBuilder#redirect-output">null output
+     * stream</a>.
+     */
+    private static void assertNullOutputStream(OutputStream outputStream) throws IOException {
+        try {
+            outputStream.write(42);
+            fail("NullOutputStream.write(int) must throw IOException: " + outputStream);
+        } catch (IOException expected) {
+            // expected
+        }
+        outputStream.close(); // should do nothing
     }
 
     private static void assertRedirects(Redirect in, Redirect out, Redirect err, ProcessBuilder pb) {
