@@ -16,8 +16,11 @@
 
 package libcore.java.lang;
 
+import android.system.Os;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
-import libcore.io.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import libcore.io.IoUtils;
 import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
 
@@ -63,6 +67,39 @@ public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase 
 
     public void test_redirectErrorStream_false() throws Exception {
         assertRedirectErrorStream(false, "out\n", "err\n");
+    }
+
+    /**
+     * Tests that a child process can INHERIT this parent process's
+     * stdin / stdout / stderr file descriptors.
+     */
+    public void testRedirectInherit() throws Exception {
+        Process process = new ProcessBuilder()
+                .command(shell())
+                .redirectInput(Redirect.INHERIT)
+                .redirectOutput(Redirect.INHERIT)
+                .redirectError(Redirect.INHERIT)
+                .start();
+        try {
+            List<Long> parentInodes = Arrays.asList(
+                    Os.fstat(FileDescriptor.in).st_ino,
+                    Os.fstat(FileDescriptor.out).st_ino,
+                    Os.fstat(FileDescriptor.err).st_ino);
+
+            // Hack: UNIXProcess.pid is private; parse toString() instead of reflection
+            Matcher matcher = Pattern.compile("pid=(\\d+)").matcher(process.toString());
+            assertTrue("Can't find PID in: " + process, matcher.find());
+            int childPid = Integer.parseInt(matcher.group(1));
+            // Get the inode numbers of the ends of the symlink chains
+            List<Long> childInodes = Arrays.asList(
+                    Os.stat("/proc/" + childPid + "/fd/0").st_ino,
+                    Os.stat("/proc/" + childPid + "/fd/1").st_ino,
+                    Os.stat("/proc/" + childPid + "/fd/2").st_ino);
+
+            assertEquals(parentInodes, childInodes);
+        } finally {
+            process.destroy();
+        }
     }
 
     public void testRedirectFile_input() throws Exception {
