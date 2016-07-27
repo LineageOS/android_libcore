@@ -1120,6 +1120,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/security/cert/CertificateNotYetValidException.java \
     ojluni/src/main/java/javax/security/cert/CertificateParsingException.java \
     ojluni/src/main/java/javax/security/cert/X509Certificate.java \
+    ojluni/src/main/java/javax/security/cert/package-info.java \
     ojluni/src/main/java/javax/sql/CommonDataSource.java \
     ojluni/src/main/java/javax/sql/ConnectionEvent.java \
     ojluni/src/main/java/javax/sql/ConnectionEventListener.java \
