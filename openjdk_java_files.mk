@@ -1409,12 +1409,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/action/GetPropertyAction.java \
     ojluni/src/main/java/sun/security/action/LoadLibraryAction.java \
     ojluni/src/main/java/sun/security/action/PutAllAction.java \
-    ojluni/src/main/java/sun/security/internal/interfaces/TlsMasterSecret.java \
-    ojluni/src/main/java/sun/security/internal/spec/TlsKeyMaterialParameterSpec.java \
-    ojluni/src/main/java/sun/security/internal/spec/TlsKeyMaterialSpec.java \
-    ojluni/src/main/java/sun/security/internal/spec/TlsMasterSecretParameterSpec.java \
-    ojluni/src/main/java/sun/security/internal/spec/TlsPrfParameterSpec.java \
-    ojluni/src/main/java/sun/security/internal/spec/TlsRsaPremasterSecretParameterSpec.java \
     ojluni/src/main/java/sun/security/jca/GetInstance.java \
     ojluni/src/main/java/sun/security/jca/JCAUtil.java \
     ojluni/src/main/java/sun/security/jca/ProviderConfig.java \
