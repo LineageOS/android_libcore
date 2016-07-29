@@ -6398,6 +6398,15 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @since   1.5
      */
     public static int toLowerCase(int codePoint) {
+        if (codePoint >= 'A' && codePoint <= 'Z') {
+            return codePoint + ('a' - 'A');
+        }
+
+        // All ASCII codepoints except the ones above remain unchanged.
+        if (codePoint < 0x80) {
+            return codePoint;
+        }
+
         return toLowerCaseImpl(codePoint);
     }
 
@@ -6460,6 +6469,15 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @since   1.5
      */
     public static int toUpperCase(int codePoint) {
+        if (codePoint >= 'a' && codePoint <= 'z') {
+            return codePoint - ('a' - 'A');
+        }
+
+        // All ASCII codepoints except the ones above remain unchanged.
+        if (codePoint < 0x80) {
+            return codePoint;
+        }
+
         return toUpperCaseImpl(codePoint);
     }
 
