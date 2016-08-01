@@ -504,6 +504,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/acl/NotOwnerException.java \
     ojluni/src/main/java/java/security/acl/Owner.java \
     ojluni/src/main/java/java/security/acl/Permission.java \
+    ojluni/src/main/java/java/security/acl/package-info.java \
     ojluni/src/main/java/java/security/AlgorithmConstraints.java \
     ojluni/src/main/java/java/security/AlgorithmParameterGenerator.java \
     ojluni/src/main/java/java/security/AlgorithmParameterGeneratorSpi.java \
