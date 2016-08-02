@@ -134,7 +134,7 @@ include $(BUILD_JAVA_LIBRARY)
 # A library that exists to satisfy javac when
 # compiling source code that contains lambdas.
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_lambda_stub_files)
+LOCAL_SRC_FILES := $(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE_TAGS := optional
@@ -318,7 +318,7 @@ include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 # A library that exists to satisfy javac when
 # compiling source code that contains lambdas.
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_lambda_stub_files)
+LOCAL_SRC_FILES := $(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE_TAGS := optional
