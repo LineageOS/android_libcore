@@ -493,6 +493,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/nio/file/spi/FileSystemProvider.java \
     ojluni/src/main/java/java/nio/file/spi/FileTypeDetector.java \
     ojluni/src/main/java/java/nio/package-info.java \
+    ojluni/src/main/java/java/security/package-info.java \
     ojluni/src/main/java/java/security/AccessControlContext.java \
     ojluni/src/main/java/java/security/AccessControlException.java \
     ojluni/src/main/java/java/security/AccessController.java \
