@@ -1606,14 +1606,21 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/resources/OpenListResourceBundle.java \
     $(openjdk_javadoc_files)
 
-# javac requires sections of java.lang.invoke.* to be available in the boot
-# classpath in order to compile a lambda expression in Java source. Some of
-# the classes it needs are present in core-oj, and those that aren't are
-# stubbed here. In the long term, core-oj will contain a complete
-# java.lang.invoke implementation and this list can be removed.
+# Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
+# not used on Android devices or required by the Jack compiler.
+#
+# The stub files in openjdk_lambda_duplicate_stub_files are present in core-oj as
+# well, and need to be included here to support compiling against older SDKs and the
+# like. This additional bit of ugliness if required to avoid a circular dependency
+# between core-all and these stubs. Eventually, all of these stubs will become
+# "duplicates" and then that list can be renamed to "openjdk_lambda_stub_files".
 openjdk_lambda_stub_files := \
     ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandleInfo.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
-    ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java \
+    ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
+openjdk_lambda_duplicate_stub_files := \
+    ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
+    ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \
+    ojluni/src/lambda/java/java/lang/invoke/MethodType.java \
