@@ -52,4 +52,23 @@ public class MimeUtilsTest extends TestCase {
   public void test_18390752() {
     assertEquals("jpg", MimeUtils.guessExtensionFromMimeType("image/jpeg"));
   }
+
+  public void test_30207891() {
+    assertTrue(MimeUtils.hasMimeType("IMAGE/PNG"));
+    assertTrue(MimeUtils.hasMimeType("IMAGE/png"));
+    assertFalse(MimeUtils.hasMimeType(""));
+    assertEquals("png", MimeUtils.guessExtensionFromMimeType("IMAGE/PNG"));
+    assertEquals("png", MimeUtils.guessExtensionFromMimeType("IMAGE/png"));
+    assertNull(MimeUtils.guessMimeTypeFromExtension(""));
+    assertNull(MimeUtils.guessMimeTypeFromExtension("doesnotexist"));
+    assertTrue(MimeUtils.hasExtension("PNG"));
+    assertTrue(MimeUtils.hasExtension("PnG"));
+    assertFalse(MimeUtils.hasExtension(""));
+    assertFalse(MimeUtils.hasExtension(".png"));
+    assertEquals("image/png", MimeUtils.guessMimeTypeFromExtension("PNG"));
+    assertEquals("image/png", MimeUtils.guessMimeTypeFromExtension("PnG"));
+    assertNull(MimeUtils.guessMimeTypeFromExtension(".png"));
+    assertNull(MimeUtils.guessMimeTypeFromExtension(""));
+    assertNull(MimeUtils.guessExtensionFromMimeType("doesnotexist"));
+  }
 }
