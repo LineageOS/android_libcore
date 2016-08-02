@@ -1512,14 +1512,12 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/x509/CertificateExtensions.java \
     ojluni/src/main/java/sun/security/x509/CertificateIssuerExtension.java \
     ojluni/src/main/java/sun/security/x509/CertificateIssuerName.java \
-    ojluni/src/main/java/sun/security/x509/CertificateIssuerUniqueIdentity.java \
     ojluni/src/main/java/sun/security/x509/CertificatePoliciesExtension.java \
     ojluni/src/main/java/sun/security/x509/CertificatePolicyId.java \
     ojluni/src/main/java/sun/security/x509/CertificatePolicyMap.java \
     ojluni/src/main/java/sun/security/x509/CertificatePolicySet.java \
     ojluni/src/main/java/sun/security/x509/CertificateSerialNumber.java \
     ojluni/src/main/java/sun/security/x509/CertificateSubjectName.java \
-    ojluni/src/main/java/sun/security/x509/CertificateSubjectUniqueIdentity.java \
     ojluni/src/main/java/sun/security/x509/CertificateValidity.java \
     ojluni/src/main/java/sun/security/x509/CertificateVersion.java \
     ojluni/src/main/java/sun/security/x509/CertificateX509Key.java \
