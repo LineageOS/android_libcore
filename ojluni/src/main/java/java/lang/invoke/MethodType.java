@@ -44,8 +44,8 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * and expected  by a method handle caller.  Method types must be properly
  * matched between a method handle and all its callers,
  * and the JVM's operations enforce this matching at, specifically
- * during calls to {@code MethodHandle#invokeExact MethodHandle.invokeExact}
- * and {@code MethodHandle#invoke MethodHandle.invoke}, and during execution
+ * during calls to {@link MethodHandle#invokeExact MethodHandle.invokeExact}
+ * and {@link MethodHandle#invoke MethodHandle.invoke}, and during execution
  * of {@code invokedynamic} instructions.
  * <p>
  * The structure is a return type accompanied by any number of parameter types.
@@ -86,7 +86,6 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * This loading may occur at any time before the {@code MethodType} object is first derived.
  * @author John Rose, JSR 292 EG
  */
-// Android-changed, TODO(narayan): Temporarily changed links to MethodHandle API to @code.
 public final
 class MethodType implements java.io.Serializable {
     private static final long serialVersionUID = 292L;  // {rtype, {ptype...}}
@@ -622,10 +621,9 @@ class MethodType implements java.io.Serializable {
     /**
      * Erases all reference types to {@code Object}, and all subword types to {@code int}.
      * This is the reduced type polymorphism used by private methods
-     * such as {@code MethodHandle#invokeBasic invokeBasic}.
+     * such as {@link MethodHandle#invokeBasic invokeBasic}.
      * @return a version of the original type with all reference and subword types replaced
      */
-    // Android-changed, TODO(narayan): Temporarily changed links to MethodHandle API to @code.
     /*non-public*/ MethodType basicType() {
         return form.basicType();
     }
@@ -634,10 +632,7 @@ class MethodType implements java.io.Serializable {
      * @return a version of the original type with MethodHandle prepended as the first argument
      */
     /*non-public*/ MethodType invokerType() {
-        // Android-changed, TODO(narayan): Temporarily disabled until MethodHandle.class is
-        // available.
-        // return insertParameterTypes(0, MethodHandle.class);
-        throw new UnsupportedOperationException();
+        return insertParameterTypes(0, MethodHandle.class);
     }
 
     /**
