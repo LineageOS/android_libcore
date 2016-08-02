@@ -14,6 +14,7 @@ LOCAL_SRC_FILES := \
     canonicalize_path.cpp \
     cbigint.cpp \
     java_lang_StringToReal.cpp \
+    java_lang_invoke_MethodHandle.cpp \
     java_math_NativeBN.cpp \
     java_util_regex_Matcher.cpp \
     java_util_regex_Pattern.cpp \
