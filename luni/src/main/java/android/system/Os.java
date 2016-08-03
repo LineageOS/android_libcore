@@ -466,7 +466,12 @@ public final class Os {
 
   /** @hide */ public static void setsockoptByte(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptByte(fd, level, option, value); }
   /** @hide */ public static void setsockoptIfreq(FileDescriptor fd, int level, int option, String value) throws ErrnoException { Libcore.os.setsockoptIfreq(fd, level, option, value); }
-  /** @hide */ public static void setsockoptInt(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptInt(fd, level, option, value); }
+
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">setsockopt(2)</a>.
+   */
+  public static void setsockoptInt(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptInt(fd, level, option, value); }
+
   /** @hide */ public static void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptIpMreqn(fd, level, option, value); }
   /** @hide */ public static void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException { Libcore.os.setsockoptGroupReq(fd, level, option, value); }
   /** @hide */ public static void setsockoptGroupSourceReq(FileDescriptor fd, int level, int option, StructGroupSourceReq value) throws ErrnoException { Libcore.os.setsockoptGroupSourceReq(fd, level, option, value); }
