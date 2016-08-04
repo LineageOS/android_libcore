@@ -551,6 +551,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "S_IXOTH", S_IXOTH);
     initConstant(env, c, "S_IXUSR", S_IXUSR);
     initConstant(env, c, "TCP_NODELAY", TCP_NODELAY);
+#if defined(TCP_USER_TIMEOUT)
+    initConstant(env, c, "TCP_USER_TIMEOUT", TCP_USER_TIMEOUT);
+#endif
     initConstant(env, c, "TIOCOUTQ", TIOCOUTQ);
     // UNIX_PATH_MAX is mentioned in some versions of unix(7), but not actually declared.
     initConstant(env, c, "UNIX_PATH_MAX", sizeof(sockaddr_un::sun_path));
