@@ -495,6 +495,7 @@ public final class OsConstants {
     public static final int S_IXOTH = placeholder();
     public static final int S_IXUSR = placeholder();
     public static final int TCP_NODELAY = placeholder();
+    public static final int TCP_USER_TIMEOUT = placeholder();
     /** @hide */ public static final int TIOCOUTQ = placeholder();
     /** @hide */ public static final int UNIX_PATH_MAX = placeholder();
     public static final int WCONTINUED = placeholder();
