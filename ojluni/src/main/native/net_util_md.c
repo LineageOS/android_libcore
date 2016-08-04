@@ -772,8 +772,7 @@ NET_InetAddressToSockaddr(JNIEnv *env, jobject iaObj, int port, struct sockaddr 
                 caddr[15] = (address & 0xff);
             }
         } else {
-            ipaddress = (*env)->GetObjectField(env, iaObj, ia6_ipaddressID);
-            (*env)->GetByteArrayRegion(env, ipaddress, 0, 16, caddr);
+            getInet6Address_ipaddress(env, iaObj, (char *)caddr);
         }
         memset((char *)him6, 0, sizeof(struct sockaddr_in6));
         him6->sin6_port = htons(port);
@@ -791,7 +790,7 @@ NET_InetAddressToSockaddr(JNIEnv *env, jobject iaObj, int port, struct sockaddr 
         // was constructed with a specific scope_id or NetworkInterface).
         if (family != IPv4) {
             if (ia6_scopeidID) {
-                int scope_id = (int)(*env)->GetIntField(env, iaObj, ia6_scopeidID);
+                int scope_id = getInet6Address_scopeid(env, iaObj);
                 if (scope_id > 0) {
                     him6->sin6_scope_id = scope_id;
                 }
