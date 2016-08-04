@@ -564,6 +564,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/cert/X509CRL.java \
     ojluni/src/main/java/java/security/cert/X509CRLSelector.java \
     ojluni/src/main/java/java/security/cert/X509Extension.java \
+    ojluni/src/main/java/java/security/cert/package-info.java \
     ojluni/src/main/java/java/security/CodeSigner.java \
     ojluni/src/main/java/java/security/CodeSource.java \
     ojluni/src/main/java/java/security/CryptoPrimitive.java \
