@@ -589,6 +589,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/interfaces/RSAPrivateCrtKey.java \
     ojluni/src/main/java/java/security/interfaces/RSAPrivateKey.java \
     ojluni/src/main/java/java/security/interfaces/RSAPublicKey.java \
+    ojluni/src/main/java/java/security/interfaces/package-info.java \
     ojluni/src/main/java/java/security/InvalidAlgorithmParameterException.java \
     ojluni/src/main/java/java/security/InvalidKeyException.java \
     ojluni/src/main/java/java/security/InvalidParameterException.java \
