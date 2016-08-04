@@ -1317,7 +1317,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/ch/FileLockImpl.java \
     ojluni/src/main/java/sun/nio/ch/FileLockTable.java \
     ojluni/src/main/java/sun/nio/ch/Groupable.java \
-    ojluni/src/main/java/sun/nio/ch/InheritedChannel.java \
     ojluni/src/main/java/sun/nio/ch/Interruptible.java \
     ojluni/src/main/java/sun/nio/ch/Invoker.java \
     ojluni/src/main/java/sun/nio/ch/IOStatus.java \
