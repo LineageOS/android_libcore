@@ -65,8 +65,6 @@ static jclass ni_ia4cls;
 static jclass ni_ia6cls;
 static jmethodID ni_ia4ctrID;
 static jmethodID ni_ia6ctrID;
-static jfieldID ni_ia6ipaddressID;
-static int initialized = 0;
 
 /*
  * Class:     java_net_Inet6AddressImpl
