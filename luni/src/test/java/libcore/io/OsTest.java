@@ -571,6 +571,39 @@ public class OsTest extends TestCase {
       }
   }
 
+  /**
+   * Tests that TCP_USER_TIMEOUT can be set on a TCP socket, but doesn't test
+   * that it behaves as expected.
+   */
+  public void test_socket_tcpUserTimeout_setAndGet() throws Exception {
+    final FileDescriptor fd = Libcore.os.socket(AF_INET, SOCK_STREAM, 0);
+    try {
+      int v = Libcore.os.getsockoptInt(fd, OsConstants.IPPROTO_TCP, OsConstants.TCP_USER_TIMEOUT);
+      assertEquals(0, v); // system default value
+      int newValue = 3000;
+      Libcore.os.setsockoptInt(fd, OsConstants.IPPROTO_TCP, OsConstants.TCP_USER_TIMEOUT,
+              newValue);
+      assertEquals(newValue, Libcore.os.getsockoptInt(fd, OsConstants.IPPROTO_TCP,
+              OsConstants.TCP_USER_TIMEOUT));
+      // No need to reset the value to 0, since we're throwing the socket away
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
+  public void test_socket_tcpUserTimeout_doesNotWorkOnDatagramSocket() throws Exception {
+    final FileDescriptor fd = Libcore.os.socket(AF_INET, SOCK_DGRAM, 0);
+    try {
+      Libcore.os.setsockoptInt(fd, OsConstants.IPPROTO_TCP, OsConstants.TCP_USER_TIMEOUT,
+              3000);
+      fail("datagram (connectionless) sockets shouldn't support TCP_USER_TIMEOUT");
+    } catch (ErrnoException expected) {
+      // expected
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
   private static void assertStartsWith(byte[] expectedContents, byte[] container) {
     for (int i = 0; i < expectedContents.length; i++) {
       if (expectedContents[i] != container[i]) {
