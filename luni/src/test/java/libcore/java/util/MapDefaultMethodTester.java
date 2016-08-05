@@ -63,6 +63,7 @@ public class MapDefaultMethodTester {
         // Null pointer exception for empty function
         try {
             m.forEach(null);
+            fail();
         } catch (NullPointerException expected) {
         }
     }
@@ -275,6 +276,7 @@ public class MapDefaultMethodTester {
         // If the remapping function is null
         try {
             m.computeIfPresent(1, null);
+            fail();
         } catch (NullPointerException expected) {}
 
         if (acceptsNullKey) {
@@ -283,6 +285,7 @@ public class MapDefaultMethodTester {
         } else {
             try {
                 m.computeIfPresent(null, (k, v) -> 5.0);
+                fail();
             } catch (NullPointerException expected) {}
         }
     }
