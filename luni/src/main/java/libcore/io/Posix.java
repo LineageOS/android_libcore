@@ -22,6 +22,7 @@ import android.system.StructAddrinfo;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructGroupSourceReq;
+import android.system.StructIfaddrs;
 import android.system.StructLinger;
 import android.system.StructPasswd;
 import android.system.StructPollfd;
@@ -91,7 +92,9 @@ public final class Posix implements Os {
     public native int gettid();
     public native int getuid();
     public native int getxattr(String path, String name, byte[] outValue) throws ErrnoException;
+    public native StructIfaddrs[] getifaddrs() throws ErrnoException;
     public native String if_indextoname(int index);
+    public native int if_nametoindex(String name);
     public native InetAddress inet_pton(int family, String address);
     public native int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public native InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException;
