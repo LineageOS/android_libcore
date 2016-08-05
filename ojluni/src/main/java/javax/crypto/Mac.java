@@ -34,7 +34,9 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import java.nio.ByteBuffer;
 
+/* ANDROID-REMOVED: this debugging mechanism is not used in Android.
 import sun.security.util.Debug;
+*/
 import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
 
@@ -138,8 +140,12 @@ import sun.security.jca.GetInstance.Instance;
 
 public class Mac implements Cloneable {
 
-    private static final Debug debug =
-                        Debug.getInstance("jca", "Mac");
+    /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+    private static final Debug pdebug =
+                        Debug.getInstance("provider", "Provider");
+    private static final boolean skipDebug =
+        Debug.isOn("engine=") && !Debug.isOn("mac");
+    */
 
     // The provider
     private Provider provider;
@@ -216,11 +222,11 @@ public class Mac implements Cloneable {
      */
     public static final Mac getInstance(String algorithm)
             throws NoSuchAlgorithmException {
-        List services = GetInstance.getServices("Mac", algorithm);
+        List<Service> services = GetInstance.getServices("Mac", algorithm);
         // make sure there is at least one service from a signed provider
-        Iterator t = services.iterator();
+        Iterator<Service> t = services.iterator();
         while (t.hasNext()) {
-            Service s = (Service)t.next();
+            Service s = t.next();
             if (JceSecurity.canUseProvider(s.getProvider()) == false) {
                 continue;
             }
@@ -322,6 +328,7 @@ public class Mac implements Cloneable {
             if (spi != null) {
                 return;
             }
+            /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
             if (debug != null) {
                 int w = --warnCount;
                 if (w >= 0) {
@@ -334,6 +341,7 @@ public class Mac implements Cloneable {
                     new Exception("Call trace").printStackTrace();
                 }
             }
+            */
             Exception lastException = null;
             for (Service s : GetInstance.getServices("Mac", algorithm)) {
                 if (JceSecurity.canUseProvider(s.getProvider()) == false) {
@@ -447,6 +455,13 @@ public class Mac implements Cloneable {
             throw new InvalidKeyException("init() failed", e);
         }
         initialized = true;
+
+        /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+        if (!skipDebug && pdebug != null) {
+            pdebug.println("Mac." + algorithm + " algorithm from: " +
+                this.provider.getName());
+        }
+        */
     }
 
     /**
@@ -469,6 +484,13 @@ public class Mac implements Cloneable {
             chooseProvider(key, params);
         }
         initialized = true;
+
+        /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+        if (!skipDebug && pdebug != null) {
+            pdebug.println("Mac." + algorithm + " algorithm from: " +
+                this.provider.getName());
+        }
+        */
     }
 
     /**
