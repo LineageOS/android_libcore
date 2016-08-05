@@ -36,7 +36,8 @@ public class EPollSelectorProvider
         return new EPollSelectorImpl(this);
     }
 
-    public Channel inheritedChannel() throws IOException {
-        return InheritedChannel.getChannel();
-    }
+    // Android-changed: Android never has stdin/stdout connected to a socket.
+    // public Channel inheritedChannel() throws IOException {
+    //     return InheritedChannel.getChannel();
+    // }
 }
