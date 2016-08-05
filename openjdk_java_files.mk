@@ -661,6 +661,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/spec/RSAPrivateKeySpec.java \
     ojluni/src/main/java/java/security/spec/RSAPublicKeySpec.java \
     ojluni/src/main/java/java/security/spec/X509EncodedKeySpec.java \
+    ojluni/src/main/java/java/security/spec/package-info.java \
     ojluni/src/main/java/java/security/Timestamp.java \
     ojluni/src/main/java/java/security/UnrecoverableEntryException.java \
     ojluni/src/main/java/java/security/UnrecoverableKeyException.java \
