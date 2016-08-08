@@ -30,6 +30,10 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import junit.framework.TestCase;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 public final class CipherInputStreamTest extends TestCase {
 
     private final byte[] aesKeyBytes = {
@@ -202,5 +206,17 @@ public final class CipherInputStreamTest extends TestCase {
             fail("Expected NullPointerException");
         } catch (NullPointerException expected) {
         }
+    }
+
+    public void testCloseTwice() throws Exception {
+        InputStream mockIs = mock(InputStream.class);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, key, iv);
+
+        CipherInputStream cis = new CipherInputStream(mockIs, cipher);
+        cis.close();
+        cis.close();
+
+        verify(mockIs, times(1)).close();
     }
 }
