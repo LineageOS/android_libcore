@@ -38,6 +38,9 @@ import java.net.SocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
@@ -602,6 +605,21 @@ public class OsTest extends TestCase {
     } finally {
       Libcore.os.close(fd);
     }
+  }
+
+  public void test_if_nametoindex_if_indextoname() throws Exception {
+    List<NetworkInterface> nis = Collections.list(NetworkInterface.getNetworkInterfaces());
+
+    assertTrue(nis.size() > 0);
+    for (NetworkInterface ni : nis) {
+      int index = ni.getIndex();
+      String name = ni.getName();
+      assertEquals(index, Libcore.os.if_nametoindex(name));
+      assertTrue(Libcore.os.if_indextoname(index).equals(name));
+    }
+
+    assertEquals(0, Libcore.os.if_nametoindex("this-interface-does-not-exist"));
+    assertEquals(null, Libcore.os.if_indextoname(-1000));
   }
 
   private static void assertStartsWith(byte[] expectedContents, byte[] container) {

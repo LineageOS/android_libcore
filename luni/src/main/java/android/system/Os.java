@@ -236,7 +236,7 @@ public final class Os {
   /**
    * See <a href="http://man7.org/linux/man-pages/man3/if_nametoindex.3.html">if_nametoindex(3)</a>.
    */
-  /** @hide */ public static int if_nametoindex(String name) { return Libcore.os.if_nametoindex(name); }
+  public static int if_nametoindex(String name) { return Libcore.os.if_nametoindex(name); }
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man3/inet_pton.3.html">inet_pton(3)</a>.
