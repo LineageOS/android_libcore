@@ -173,6 +173,11 @@ public final class Os {
    */
   public static String getenv(String name) { return Libcore.os.getenv(name); }
 
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man3/getifaddrs.3.html">getifaddrs(3)</a>.
+   */
+  /** @hide */ public static StructIfaddrs[] getifaddrs() throws ErrnoException { return Libcore.os.getifaddrs(); }
+
   /** @hide */ public static String getnameinfo(InetAddress address, int flags) throws GaiException { return Libcore.os.getnameinfo(address, flags); }
 
   /**
@@ -227,6 +232,11 @@ public final class Os {
    * See <a href="http://man7.org/linux/man-pages/man3/if_indextoname.3.html">if_indextoname(3)</a>.
    */
   public static String if_indextoname(int index) { return Libcore.os.if_indextoname(index); }
+
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man3/if_nametoindex.3.html">if_nametoindex(3)</a>.
+   */
+  /** @hide */ public static int if_nametoindex(String name) { return Libcore.os.if_nametoindex(name); }
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man3/inet_pton.3.html">inet_pton(3)</a>.
