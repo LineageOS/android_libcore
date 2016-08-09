@@ -609,49 +609,39 @@ public final class URLConnectionTest extends TestCase {
         assertEquals(0, server.getRequestCount());
     }
 
-    public void testConnectViaProxyUsingProxyArg() throws Exception {
-        testConnectViaProxy(ProxyConfig.CREATE_ARG, "http://android.com/foo", "android.com");
-    }
-
-    public void testConnectViaProxyUsingProxySystemProperty() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.PROXY_SYSTEM_PROPERTY, "http://android.com/foo", "android.com");
-    }
-
-    public void testConnectViaProxyUsingHttpProxySystemProperty() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com/foo", "android.com");
-    }
-
-    // Regression test for http://b/29983827 : ensure that a trailing "/" is not added to the
-    // HTTP request line when using a proxy.
     public void testConnectViaProxy_emptyPath() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com", "android.com");
-    }
-
-    public void testConnectViaProxy_rootPath() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com/", "android.com");
-    }
-
-    public void testConnectViaProxy_pathWithoutTrailingSlash() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com/foo", "android.com");
-    }
-
-    public void testConnectViaProxy_pathWithTrailingSlash() throws Exception {
-        testConnectViaProxy(
-                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com/foo/", "android.com");
+        // expected normalization http://android -> http://android/ per b/30107354
+        checkConnectViaProxy(
+                ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY, "http://android.com",
+                "http://android.com/", "android.com");
     }
 
     public void testConnectViaProxy_complexUrlWithNoPath() throws Exception {
-        testConnectViaProxy(ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY,
-                "http://android.com:8080?height=100&width=42", "android.com:8080");
+        checkConnectViaProxy(ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY,
+                "http://android.com:8080?height=100&width=42",
+                "http://android.com:8080/?height=100&width=42",
+                "android.com:8080");
     }
 
-    private void testConnectViaProxy(ProxyConfig proxyConfig, String urlString, String expectedHost)
-            throws Exception {
+    public void testConnectViaProxyUsingProxyArg() throws Exception {
+        checkConnectViaProxy(ProxyConfig.CREATE_ARG);
+    }
+
+    public void testConnectViaProxyUsingProxySystemProperty() throws Exception {
+        checkConnectViaProxy(ProxyConfig.PROXY_SYSTEM_PROPERTY);
+    }
+
+    public void testConnectViaProxyUsingHttpProxySystemProperty() throws Exception {
+        checkConnectViaProxy(ProxyConfig.HTTP_PROXY_SYSTEM_PROPERTY);
+    }
+
+    private void checkConnectViaProxy(ProxyConfig proxyConfig) throws Exception {
+        checkConnectViaProxy(proxyConfig,
+                "http://android.com/foo", "http://android.com/foo", "android.com");
+    }
+
+    private void checkConnectViaProxy(ProxyConfig proxyConfig, String urlString,
+            String expectedUrlInRequestLine, String expectedHost) throws Exception {
         MockResponse mockResponse = new MockResponse().setBody("this response comes via a proxy");
         server.enqueue(mockResponse);
         server.play();
@@ -661,7 +651,7 @@ public final class URLConnectionTest extends TestCase {
         assertContent("this response comes via a proxy", connection);
 
         RecordedRequest request = server.takeRequest();
-        assertEquals("GET " + urlString + " HTTP/1.1", request.getRequestLine());
+        assertEquals("GET " + expectedUrlInRequestLine + " HTTP/1.1", request.getRequestLine());
         assertContains(request.getHeaders(), "Host: " + expectedHost);
     }
 
