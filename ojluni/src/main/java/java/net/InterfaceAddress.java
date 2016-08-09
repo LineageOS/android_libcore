@@ -46,6 +46,26 @@ public class InterfaceAddress {
     InterfaceAddress() {
     }
 
+    InterfaceAddress(InetAddress address, Inet4Address broadcast, InetAddress netmask) {
+        this.address = address;
+        this.broadcast = broadcast;
+        this.maskLength = countPrefixLength(netmask);
+    }
+
+    /**
+     * Counts the prefix length for the netmask address.
+     *
+     * A valid netmask address must start with a continuous sequence of 1, followed by a continuous
+     * sequence of 0.
+     */
+    private short countPrefixLength(InetAddress netmask) {
+        short count = 0;
+        for (byte b : netmask.getAddress()) {
+            for (; b != 0; b <<= 1, ++count);
+        }
+        return count;
+    }
+
     /**
      * Returns an {@code InetAddress} for this address.
      *
