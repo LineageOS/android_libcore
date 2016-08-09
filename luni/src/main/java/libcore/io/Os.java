@@ -22,6 +22,7 @@ import android.system.StructAddrinfo;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructGroupSourceReq;
+import android.system.StructIfaddrs;
 import android.system.StructLinger;
 import android.system.StructPasswd;
 import android.system.StructPollfd;
@@ -89,7 +90,9 @@ public interface Os {
     public int gettid();
     public int getuid();
     public int getxattr(String path, String name, byte[] outValue) throws ErrnoException;
+    public StructIfaddrs[] getifaddrs() throws ErrnoException;
     public String if_indextoname(int index);
+    public int if_nametoindex(String name);
     public InetAddress inet_pton(int family, String address);
     public int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException;

@@ -22,6 +22,7 @@ import android.system.StructAddrinfo;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructGroupSourceReq;
+import android.system.StructIfaddrs;
 import android.system.StructLinger;
 import android.system.StructPasswd;
 import android.system.StructPollfd;
@@ -97,7 +98,9 @@ public class ForwardingOs implements Os {
     public int gettid() { return os.gettid(); }
     public int getuid() { return os.getuid(); }
     public int getxattr(String path, String name, byte[] outValue) throws ErrnoException { return os.getxattr(path, name, outValue); }
+    public StructIfaddrs[] getifaddrs() throws ErrnoException { return os.getifaddrs(); }
     public String if_indextoname(int index) { return os.if_indextoname(index); }
+    public int if_nametoindex(String name) { return os.if_nametoindex(name); }
     public InetAddress inet_pton(int family, String address) { return os.inet_pton(family, address); }
     public int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException { return os.ioctlFlags(fd, interfaceName); };
     public InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException { return os.ioctlInetAddress(fd, cmd, interfaceName); }

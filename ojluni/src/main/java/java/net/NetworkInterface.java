@@ -28,9 +28,16 @@ package java.net;
 import android.system.ErrnoException;
 
 import java.io.FileDescriptor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
+import android.system.StructIfaddrs;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import sun.security.action.*;
@@ -54,7 +61,7 @@ public final class NetworkInterface {
     private int index;
     private InetAddress addrs[];
     private InterfaceAddress bindings[];
-    private NetworkInterface childs[];
+    private List<NetworkInterface> childs;
     private NetworkInterface parent = null;
     private boolean virtual = false;
     private byte[] hardwareAddr;
@@ -191,27 +198,7 @@ public final class NetworkInterface {
      * @since 1.6
      */
     public Enumeration<NetworkInterface> getSubInterfaces() {
-        class subIFs implements Enumeration<NetworkInterface> {
-
-            private int i=0;
-
-            subIFs() {
-            }
-
-            public NetworkInterface nextElement() {
-                if (i < childs.length) {
-                    return childs[i++];
-                } else {
-                    throw new NoSuchElementException();
-                }
-            }
-
-            public boolean hasMoreElements() {
-                return (i < childs.length);
-            }
-        }
-        return new subIFs();
-
+        return Collections.enumeration(childs);
     }
 
     /**
@@ -273,7 +260,14 @@ public final class NetworkInterface {
     public static NetworkInterface getByName(String name) throws SocketException {
         if (name == null)
             throw new NullPointerException();
-        return getByName0(name);
+
+        NetworkInterface[] nis = getAll();
+        for (NetworkInterface ni : nis) {
+            if (ni.getName().equals(name)) {
+                return ni;
+            }
+        }
+        return null;
     }
 
     /**
@@ -290,7 +284,14 @@ public final class NetworkInterface {
     public static NetworkInterface getByIndex(int index) throws SocketException {
         if (index < 0)
             throw new IllegalArgumentException("Interface index can't be negative");
-        return getByIndex0(index);
+
+        NetworkInterface[] nis = getAll();
+        for (NetworkInterface ni : nis) {
+            if (ni.getIndex() == index) {
+                return ni;
+            }
+        }
+        return null;
     }
 
     /**
@@ -322,7 +323,16 @@ public final class NetworkInterface {
         if (!(addr instanceof Inet4Address || addr instanceof Inet6Address)) {
             throw new IllegalArgumentException ("invalid address type");
         }
-        return getByInetAddress0(addr);
+
+        NetworkInterface[] nis = getAll();
+        for (NetworkInterface ni : nis) {
+            for (InetAddress inetAddress : Collections.list(ni.getInetAddresses())) {
+                if (inetAddress.equals(addr)) {
+                    return ni;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -343,37 +353,86 @@ public final class NetworkInterface {
         final NetworkInterface[] netifs = getAll();
 
         // specified to return null if no network interfaces
-        if (netifs == null)
+        if (netifs.length == 0)
             return null;
 
-        return new Enumeration<NetworkInterface>() {
-            private int i = 0;
-            public NetworkInterface nextElement() {
-                if (netifs != null && i < netifs.length) {
-                    NetworkInterface netif = netifs[i++];
-                    return netif;
-                } else {
-                    throw new NoSuchElementException();
+        return Collections.enumeration(Arrays.asList(netifs));
+    }
+
+    private static NetworkInterface[] getAll() throws SocketException {
+        // Group Ifaddrs by interface name.
+        Map<String, List<StructIfaddrs>> inetMap = new HashMap<>();
+
+        StructIfaddrs[] ifaddrs;
+        try {
+            ifaddrs = Libcore.os.getifaddrs();
+        } catch (ErrnoException e) {
+            throw e.rethrowAsSocketException();
+        }
+
+        for (StructIfaddrs ifa : ifaddrs) {
+            String name = ifa.ifa_name;
+
+            List<StructIfaddrs> ifas;
+            if ((ifas = inetMap.get(name)) == null) {
+                ifas = new ArrayList<>();
+                inetMap.put(name, ifas);
+            }
+
+            ifas.add(ifa);
+        }
+
+        // Populate NetworkInterface instances.
+        Map<String, NetworkInterface> nis = new HashMap<>(inetMap.size());
+        for (Map.Entry<String, List<StructIfaddrs>> e : inetMap.entrySet()) {
+            String name = e.getKey();
+            int index = Libcore.os.if_nametoindex(e.getKey());
+            if (index == 0) {
+                // This interface has gone away between getifaddrs and if_nametoindex
+                continue;
+            }
+
+            NetworkInterface ni = new NetworkInterface(name, index, null);
+            ni.displayName = name;
+
+            List<InetAddress> addrs = new ArrayList<>();
+            List<InterfaceAddress> binds = new ArrayList<>();
+
+            for (StructIfaddrs ifa : e.getValue()) {
+                if (ifa.ifa_addr != null) {
+                    addrs.add(ifa.ifa_addr);
+                    binds.add(new InterfaceAddress(ifa.ifa_addr, (Inet4Address) ifa.ifa_broadaddr,
+                                                   ifa.ifa_netmask));
+                }
+
+                if (ifa.hwaddr != null) {
+                    ni.hardwareAddr = ifa.hwaddr;
                 }
             }
 
-            public boolean hasMoreElements() {
-                return (netifs != null && i < netifs.length);
+            ni.addrs = addrs.toArray(new InetAddress[addrs.size()]);
+            ni.bindings = binds.toArray(new InterfaceAddress[binds.size()]);
+            nis.put(name, ni);
+        }
+
+        // Populate childs/parent.
+        for (Map.Entry<String, NetworkInterface> e : nis.entrySet()) {
+            NetworkInterface ni = e.getValue();
+            String niName = ni.getName();
+            int colonIdx = niName.indexOf(':');
+            if (colonIdx != -1) {
+                // This is a virtual interface.
+                String parentName = niName.substring(0, colonIdx);
+                NetworkInterface parent = nis.get(parentName);
+
+                ni.virtual = true;
+                ni.parent = parent;
+                parent.childs.add(ni);
             }
-        };
+        }
+
+        return nis.values().toArray(new NetworkInterface[nis.size()]);
     }
-
-    private native static NetworkInterface[] getAll()
-        throws SocketException;
-
-    private native static NetworkInterface getByName0(String name)
-        throws SocketException;
-
-    private native static NetworkInterface getByIndex0(int index)
-        throws SocketException;
-
-    private native static NetworkInterface getByInetAddress0(InetAddress addr)
-        throws SocketException;
 
     /**
      * Returns whether a network interface is up and running.
@@ -443,7 +502,7 @@ public final class NetworkInterface {
     public byte[] getHardwareAddress() throws SocketException {
         // Android chage - do not use the cached address, fetch
         // the object again. NI might not be valid anymore.
-        NetworkInterface ni = getByName0(name);
+        NetworkInterface ni = getByName(name);
         if (ni == null) {
             throw new SocketException("NetworkInterface doesn't exist anymore");
         }
