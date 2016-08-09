@@ -70,12 +70,6 @@
   bug: 2702411
 },
 {
-  description: "Runtime.getRuntime().traceMethodCalls(true) doesn't return on the host, fails in CTS",
-  bug: 3447964,
-  result: EXEC_FAILED,
-  name: "libcore.java.lang.OldRuntimeTest#test_traceMethodCalls"
-},
-{
   description: "It's not allowed to pass null as parent class loader to a new ClassLoader anymore. Maybe we need
                 to change URLClassLoader to allow this? It's not specified.",
   result: EXEC_FAILED,
