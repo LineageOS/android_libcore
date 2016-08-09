@@ -821,6 +821,10 @@ public class Runtime {
      * <p>
      * Calling this method with argument false suggests that the
      * virtual machine cease emitting per-call debugging information.
+     * <p>
+     * Calling this method on Android Lollipop or later (API level >= 21)
+     * with {@code true} argument will cause it to throw an
+     * {@code UnsupportedOperationException}.
      *
      * @param   on   <code>true</code> to enable instruction tracing;
      *               <code>false</code> to disable this feature.
