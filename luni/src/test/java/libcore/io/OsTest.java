@@ -39,7 +39,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
@@ -620,6 +619,11 @@ public class OsTest extends TestCase {
 
     assertEquals(0, Libcore.os.if_nametoindex("this-interface-does-not-exist"));
     assertEquals(null, Libcore.os.if_indextoname(-1000));
+
+    try {
+      Libcore.os.if_nametoindex(null);
+      fail();
+    } catch (NullPointerException expected) { }
   }
 
   private static void assertStartsWith(byte[] expectedContents, byte[] container) {
