@@ -1292,6 +1292,10 @@ static jstring Posix_if_indextoname(JNIEnv* env, jobject, jint index) {
 
 static jint Posix_if_nametoindex(JNIEnv* env, jobject, jstring name) {
     ScopedUtfChars cname(env, name);
+    if (cname.c_str() == NULL) {
+        return 0;
+    }
+
     // There's no useful information in errno, so we don't bother throwing. Callers can zero-check.
     return if_nametoindex(cname.c_str());
 }
