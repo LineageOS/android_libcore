@@ -271,7 +271,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/net/MalformedURLException.java \
     ojluni/src/main/java/java/net/MulticastSocket.java \
     ojluni/src/main/java/java/net/NetPermission.java \
-    ojluni/src/main/java/java/net/NetUtil.java \
     ojluni/src/main/java/java/net/NetworkInterface.java \
     ojluni/src/main/java/java/net/NoRouteToHostException.java \
     ojluni/src/main/java/java/net/PasswordAuthentication.java \
