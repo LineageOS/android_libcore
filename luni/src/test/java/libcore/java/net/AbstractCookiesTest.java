@@ -1535,4 +1535,21 @@ public abstract class AbstractCookiesTest extends TestCase {
             return true;
         }
     }
+
+    // JDK-7169142
+    public void testCookieWithNoPeriod() throws Exception {
+        CookieManager cm = new CookieManager(createCookieStore(), null);
+        Map<String, List<String>> responseHeaders = Collections.singletonMap("Set-Cookie",
+                Collections.singletonList("foo=bar"));
+
+        URI uri = new URI("http://localhost");
+        cm.put(uri, responseHeaders);
+
+        Map<String, List<String>> cookies = cm.get(
+                new URI("https://localhost/log/me/in"),
+                responseHeaders);
+
+        List<String> cookieList = cookies.values().iterator().next();
+        assertEquals(Collections.singletonList("foo=bar"), cookieList);
+    }
 }
