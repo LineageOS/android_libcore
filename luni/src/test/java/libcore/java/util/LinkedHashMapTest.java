@@ -17,6 +17,9 @@
 package libcore.java.util;
 
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.lang.Iterable;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -205,6 +208,46 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
         }
         assertEquals("key1", newest.getKey());
         assertEquals("value3", newest.getValue());
+    }
+
+    // This tests the behaviour is consistent with the RI.
+    // This behaviour is NOT consistent with earlier Android releases up to
+    // and including Android N, see http://b/27929722
+    public void test_removeEldestEntry() {
+        final AtomicBoolean removeEldestEntryReturnValue = new AtomicBoolean(false);
+        final AtomicInteger removeEldestEntryCallCount = new AtomicInteger(0);
+        LinkedHashMap<String, String> m = new LinkedHashMap<String, String>() {
+            @Override
+            protected boolean removeEldestEntry(Entry eldest) {
+                int size = size();
+                assertEquals(size, iterableSize(entrySet()));
+                assertEquals(size, iterableSize(keySet()));
+                assertEquals(size, iterableSize(values()));
+                assertEquals(size, removeEldestEntryCallCount.get() + 1);
+                removeEldestEntryCallCount.incrementAndGet();
+                return removeEldestEntryReturnValue.get();
+            }
+        };
+
+        assertEquals(0, removeEldestEntryCallCount.get());
+        m.put("foo", "bar");
+        assertEquals(1, removeEldestEntryCallCount.get());
+        m.put("baz", "quux");
+        assertEquals(2, removeEldestEntryCallCount.get());
+
+        removeEldestEntryReturnValue.set(true);
+        m.put("foob", "faab");
+        assertEquals(3, removeEldestEntryCallCount.get());
+        assertEquals(2, m.size());
+        assertFalse(m.containsKey("foo"));
+    }
+
+    private static<E> int iterableSize(Iterable<E> iterable) {
+        int result = 0;
+        for (E element : iterable) {
+            result++;
+        }
+        return result;
     }
 
     public void test_replaceAll() {
