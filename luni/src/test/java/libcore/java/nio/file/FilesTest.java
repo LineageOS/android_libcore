@@ -19,13 +19,9 @@ package libcore.java.nio.file;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.model.FrameworkMethod;
-import org.junit.runners.model.Statement;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -53,9 +49,6 @@ import java.util.regex.PatternSyntaxException;
 
 import static java.nio.file.StandardOpenOption.APPEND;
 import static java.nio.file.StandardOpenOption.READ;
-import static libcore.java.nio.file.FilesSetup.DATA_FILE_PATH;
-import static libcore.java.nio.file.FilesSetup.TEST_DIR;
-import static libcore.java.nio.file.FilesSetup.TEST_PATH;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
@@ -115,7 +108,7 @@ public class FilesTest {
 
     @Test
     public void test_newByteChannel() throws IOException {
-        try (FileChannel sfc = FileChannel.open(DATA_FILE_PATH)) {
+        try (FileChannel sfc = FileChannel.open(filesSetup.getDataFilePath())) {
             HashSet<OpenOption> openOptions = new HashSet<>();
             openOptions.add(READ);
 
@@ -129,18 +122,18 @@ public class FilesTest {
 
     @Test
     public void test_createFile() throws IOException {
-        assertFalse(Files.exists(TEST_PATH));
-        Files.createFile(TEST_PATH);
-        assertTrue(Files.exists(TEST_PATH));
+        assertFalse(Files.exists(filesSetup.getTestPath()));
+        Files.createFile(filesSetup.getTestPath());
+        assertTrue(Files.exists(filesSetup.getTestPath()));
 
         // File with unicode name.
-        Path unicodeFilePath = Paths.get(TEST_DIR, "परीक्षण फ़ाइल");
+        Path unicodeFilePath = Paths.get(filesSetup.getTestDir(), "परीक्षण फ़ाइल");
         Files.createFile(unicodeFilePath);
         Files.exists(unicodeFilePath);
 
         // When file exists.
         try {
-            Files.createFile(DATA_FILE_PATH);
+            Files.createFile(filesSetup.getDataFilePath());
             fail();
         } catch(FileAlreadyExistsException expected) {}
     }
@@ -157,20 +150,20 @@ public class FilesTest {
     public void test_createFile$String$Attr() throws IOException {
         Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perm);
-        Files.createFile(TEST_PATH, attr);
-        assertEquals(attr.value(), Files.getAttribute(TEST_PATH, attr.name()));
+        Files.createFile(filesSetup.getTestPath(), attr);
+        assertEquals(attr.value(), Files.getAttribute(filesSetup.getTestPath(), attr.name()));
 
         // Creating a new file and passing multiple attribute of the same name.
         perm = PosixFilePermissions.fromString("rw-------");
         FileAttribute<Set<PosixFilePermission>> attr1 = PosixFilePermissions.asFileAttribute(perm);
-        Path filePath2 = Paths.get(TEST_DIR, "new_file");
+        Path filePath2 = Paths.get(filesSetup.getTestDir(), "new_file");
         Files.createFile(filePath2, attr, attr1);
         // Value should be equal to the last attribute passed.
         assertEquals(attr1.value(), Files.getAttribute(filePath2, attr.name()));
 
         // When file exists.
         try {
-            Files.createFile(DATA_FILE_PATH, attr);
+            Files.createFile(filesSetup.getDataFilePath(), attr);
             fail();
         } catch(FileAlreadyExistsException expected) {}
     }
@@ -186,7 +179,7 @@ public class FilesTest {
     @Test
     public void test_createDirectories() throws IOException {
         // Should be able to create parent directories.
-        Path dirPath = Paths.get(TEST_DIR, "dir1/dir2/dir3");
+        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir1/dir2/dir3");
         assertFalse(Files.exists(dirPath));
         Files.createDirectories(dirPath);
         assertTrue(Files.isDirectory(dirPath));
@@ -205,7 +198,7 @@ public class FilesTest {
 
     @Test
     public void test_createDirectories$Path$Attr() throws IOException {
-        Path dirPath = Paths.get(TEST_DIR, "dir1/dir2/dir3");
+        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir1/dir2/dir3");
         Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perm);
         assertFalse(Files.exists(dirPath));
@@ -221,7 +214,7 @@ public class FilesTest {
         assertEquals(attr.value(), Files.getAttribute(dirPath, attr.name()));
 
         // Creating a new directory and passing multiple attribute of the same name.
-        Path dirPath2 = Paths.get(TEST_DIR, "dir1/dir2/dir4");
+        Path dirPath2 = Paths.get(filesSetup.getTestDir(), "dir1/dir2/dir4");
         Files.createDirectories(dirPath2, attr, attr1);
         // Value should be equal to the last attribute passed.
         assertEquals(attr1.value(), Files.getAttribute(dirPath2, attr.name()));
@@ -229,7 +222,7 @@ public class FilesTest {
 
     @Test
     public void test_createDirectories$Path$Attr_NPE() throws IOException {
-        Path dirPath = Paths.get(TEST_DIR, "dir1/dir2/dir3");
+        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir1/dir2/dir3");
         Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perm);
         try {
@@ -246,12 +239,12 @@ public class FilesTest {
     @Test
     public void test_newDirectoryStream() throws IOException {
         // Directory setup.
-        Path path_dir1 = Paths.get(TEST_DIR, "newDir1");
-        Path path_dir2 = Paths.get(TEST_DIR, "newDir1/newDir2");
-        Path path_dir3 = Paths.get(TEST_DIR, "newDir1/newDir3");
-        Path path_file1 = Paths.get(TEST_DIR, "newDir1/newFile1");
-        Path path_file2 = Paths.get(TEST_DIR, "newDir1/newFile2");
-        Path path_file3 = Paths.get(TEST_DIR, "newDir1/newDir2/newFile3");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
+        Path path_dir2 = Paths.get(filesSetup.getTestDir(), "newDir1/newDir2");
+        Path path_dir3 = Paths.get(filesSetup.getTestDir(), "newDir1/newDir3");
+        Path path_file1 = Paths.get(filesSetup.getTestDir(), "newDir1/newFile1");
+        Path path_file2 = Paths.get(filesSetup.getTestDir(), "newDir1/newFile2");
+        Path path_file3 = Paths.get(filesSetup.getTestDir(), "newDir1/newDir2/newFile3");
 
         Files.createDirectory(path_dir1);
         Files.createDirectory(path_dir2);
@@ -277,14 +270,14 @@ public class FilesTest {
     public void test_newDirectoryStream_Exception() throws IOException {
 
         // Non existent directory.
-        Path path_dir1 = Paths.get(TEST_DIR, "newDir1");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path_dir1)) {
             fail();
         } catch (NoSuchFileException expected) {
         }
 
         // File instead of directory.
-        Path path_file1 = Paths.get(TEST_DIR, "newFile1");
+        Path path_file1 = Paths.get(filesSetup.getTestDir(), "newFile1");
         Files.createFile(path_file1);
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path_file1)) {
             fail();
@@ -300,14 +293,14 @@ public class FilesTest {
     @Test
     public void test_newDirectoryStream$Path$String() throws IOException {
         // Directory setup.
-        Path path_root = Paths.get(TEST_DIR, "dir");
-        Path path_java1 = Paths.get(TEST_DIR, "dir/f1.java");
-        Path path_java2 = Paths.get(TEST_DIR, "dir/f2.java");
-        Path path_java3 = Paths.get(TEST_DIR, "dir/f3.java");
+        Path path_root = Paths.get(filesSetup.getTestDir(), "dir");
+        Path path_java1 = Paths.get(filesSetup.getTestDir(), "dir/f1.java");
+        Path path_java2 = Paths.get(filesSetup.getTestDir(), "dir/f2.java");
+        Path path_java3 = Paths.get(filesSetup.getTestDir(), "dir/f3.java");
 
-        Path path_txt1 = Paths.get(TEST_DIR, "dir/f1.txt");
-        Path path_txt2 = Paths.get(TEST_DIR, "dir/f2.txt");
-        Path path_txt3 = Paths.get(TEST_DIR, "dir/f3.txt");
+        Path path_txt1 = Paths.get(filesSetup.getTestDir(), "dir/f1.txt");
+        Path path_txt2 = Paths.get(filesSetup.getTestDir(), "dir/f2.txt");
+        Path path_txt3 = Paths.get(filesSetup.getTestDir(), "dir/f3.txt");
 
         Files.createDirectory(path_root);
         // A directory with .java extension.
@@ -335,14 +328,14 @@ public class FilesTest {
     public void test_newDirectoryStream$Path$String_Exception() throws IOException {
 
         // Non existent directory.
-        Path path_dir1 = Paths.get(TEST_DIR, "newDir1");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path_dir1, "*.c")) {
             fail();
         } catch (NoSuchFileException expected) {
         }
 
         // File instead of directory.
-        Path path_file1 = Paths.get(TEST_DIR, "newFile1");
+        Path path_file1 = Paths.get(filesSetup.getTestDir(), "newFile1");
         Files.createFile(path_file1);
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path_file1, "*.c")) {
             fail();
