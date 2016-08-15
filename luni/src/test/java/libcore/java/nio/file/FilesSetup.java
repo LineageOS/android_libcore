@@ -35,9 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 
-public class FilesSetup implements TestRule {
-
-    final static String TEST_DIR = "testDir";
+class FilesSetup implements TestRule {
 
     final static String DATA_FILE = "dataFile";
 
@@ -47,19 +45,28 @@ public class FilesSetup implements TestRule {
 
     final static String TEST_FILE_DATA_2 = "test";
 
-    final static Path DATA_FILE_PATH = Paths.get(TEST_DIR, DATA_FILE);
+    private String testDir;
 
-    final static Path TEST_PATH = Paths.get(TEST_DIR, NON_EXISTENT_FILE);
+    private Path dataFilePath;
 
-    final static Path TEST_DIR_PATH = Paths.get(TEST_DIR);
+    private Path testPath;
 
-    public void setUp() throws Exception {
+    private boolean filesInitialized = false;
+
+    void setUp() throws Exception {
         initializeFiles();
     }
 
-    private static void initializeFiles() throws IOException {
-        Files.createDirectory(TEST_DIR_PATH);
-        File testInputFile = new File(TEST_DIR, DATA_FILE);
+    void tearDown() throws Exception {
+        filesInitialized = false;
+        clearAll();
+    }
+
+    private void initializeFiles() throws IOException {
+        testDir = Files.createTempDirectory("testDir").toString();
+        dataFilePath = Paths.get(testDir, DATA_FILE);
+        testPath = Paths.get(testDir, NON_EXISTENT_FILE);
+        File testInputFile = new File(testDir, DATA_FILE);
         if (!testInputFile.exists()) {
             testInputFile.createNewFile();
         }
@@ -67,18 +74,36 @@ public class FilesSetup implements TestRule {
         BufferedWriter bw = new BufferedWriter(fw);
         bw.write(TEST_FILE_DATA);
         bw.close();
+        filesInitialized = true;
     }
 
-    static public void tearDown() throws Exception {
-        clearAll();
+    Path getTestPath() {
+        checkState();
+        return testPath;
     }
 
-    static void clearAll() throws IOException {
-        Path root = Paths.get(TEST_DIR);
+    Path getDataFilePath() {
+        checkState();
+        return dataFilePath;
+    }
+
+    String getTestDir() {
+        checkState();
+        return testDir;
+    }
+
+    private void checkState() {
+        if (!filesInitialized) {
+            throw new IllegalStateException("Files are not setup.");
+        }
+    }
+
+    void clearAll() throws IOException {
+        Path root = Paths.get(testDir);
         delete(root);
     }
 
-    static void reset() throws IOException {
+    void reset() throws IOException {
         clearAll();
         initializeFiles();
     }
