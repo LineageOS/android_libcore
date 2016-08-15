@@ -19,8 +19,6 @@ package libcore.java.nio.file;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,22 +63,17 @@ import static java.nio.file.StandardOpenOption.SYNC;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
 import static libcore.java.nio.file.FilesSetup.DATA_FILE;
-import static libcore.java.nio.file.FilesSetup.DATA_FILE_PATH;
 import static libcore.java.nio.file.FilesSetup.NonStandardOption;
-import static libcore.java.nio.file.FilesSetup.TEST_DIR;
 import static libcore.java.nio.file.FilesSetup.TEST_FILE_DATA;
 import static libcore.java.nio.file.FilesSetup.TEST_FILE_DATA_2;
-import static libcore.java.nio.file.FilesSetup.TEST_PATH;
 import static libcore.java.nio.file.FilesSetup.readFromFile;
 import static libcore.java.nio.file.FilesSetup.readFromInputStream;
-import static libcore.java.nio.file.FilesSetup.reset;
 import static libcore.java.nio.file.FilesSetup.writeToFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-@RunWith(JUnit4.class)
 public class DefaultFileSystemProviderTest {
 
     @Rule
@@ -90,12 +83,12 @@ public class DefaultFileSystemProviderTest {
 
     @Before
     public void setUp() throws Exception {
-        provider = DATA_FILE_PATH.getFileSystem().provider();
+        provider = filesSetup.getDataFilePath().getFileSystem().provider();
     }
 
     @Test
     public void test_newInputStream() throws IOException {
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, READ)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(), READ)) {
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
     }
@@ -103,33 +96,34 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newInputStream_openOption() throws IOException {
         // Write and Append are not supported.
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, WRITE)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(), WRITE)) {
             fail();
         } catch (UnsupportedOperationException expected) {
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, APPEND)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(), APPEND)) {
             fail();
         } catch (UnsupportedOperationException expected) {
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, NonStandardOption.OPTION1)){
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(),
+                NonStandardOption.OPTION1)){
             fail();
         } catch (UnsupportedOperationException expected) {
         }
 
         // Supported options.
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, DELETE_ON_CLOSE, CREATE_NEW,
-                TRUNCATE_EXISTING, SPARSE, SYNC, DSYNC)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(), DELETE_ON_CLOSE,
+                CREATE_NEW, TRUNCATE_EXISTING, SPARSE, SYNC, DSYNC)) {
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
     }
 
     @Test
     public void test_newInputStream_twice() throws IOException {
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, READ);
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(), READ);
              // Open the same file again.
-             InputStream is2 = provider.newInputStream(DATA_FILE_PATH, READ)) {
+             InputStream is2 = provider.newInputStream(filesSetup.getDataFilePath(), READ)) {
 
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
             assertEquals(TEST_FILE_DATA, readFromInputStream(is2));
@@ -142,25 +136,26 @@ public class DefaultFileSystemProviderTest {
             fail();
         } catch (NullPointerException expected) {}
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH, (OpenOption[]) null)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath(),
+                (OpenOption[]) null)) {
             fail();
         } catch (NullPointerException expected) {}
     }
 
     @Test
     public void test_newOutputStream() throws IOException {
-        try (OutputStream os = provider.newOutputStream(TEST_PATH)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath())) {
             os.write(TEST_FILE_DATA.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(TEST_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getTestPath())) {
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
     }
 
     @Test
     public void test_newOutputStream_openOption_READ() throws IOException {
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, READ)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), READ)) {
             fail();
         } catch (IllegalArgumentException expected) {
         }
@@ -169,82 +164,83 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newOutputStream_openOption_APPEND() throws IOException {
         // When file exists and it contains data.
-        try (OutputStream os = provider.newOutputStream(DATA_FILE_PATH, APPEND)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getDataFilePath(), APPEND)) {
             os.write(TEST_FILE_DATA.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             assertEquals(TEST_FILE_DATA + TEST_FILE_DATA, readFromInputStream(is));
         }
 
         // When file doesn't exist.
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, APPEND)){
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), APPEND)) {
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
     }
 
     @Test
     public void test_newOutputStream_openOption_TRUNCATE() throws IOException {
         // When file exists.
-        try (OutputStream os = provider.newOutputStream(DATA_FILE_PATH, TRUNCATE_EXISTING)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getDataFilePath(),
+                TRUNCATE_EXISTING)) {
             os.write(TEST_FILE_DATA_2.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             assertEquals(TEST_FILE_DATA_2, readFromInputStream(is));
         }
 
         // When file doesn't exist.
-        try (OutputStream os = provider.newOutputStream(TEST_PATH,
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(),
                 TRUNCATE_EXISTING)) {
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
     }
 
     @Test
     public void test_newOutputStream_openOption_WRITE() throws IOException {
         // When file exists.
-        try (OutputStream os = provider.newOutputStream(DATA_FILE_PATH, WRITE)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getDataFilePath(), WRITE)) {
             os.write(TEST_FILE_DATA_2.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             String expectedFileData = TEST_FILE_DATA_2 +
                     TEST_FILE_DATA.substring(TEST_FILE_DATA_2.length());
             assertEquals(expectedFileData, readFromInputStream(is));
         }
 
         // When file doesn't exist.
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, WRITE)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), WRITE)) {
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
     }
 
     @Test
     public void test_newOutputStream_openOption_CREATE() throws IOException {
         // When file exists.
-        try (OutputStream os = provider.newOutputStream(DATA_FILE_PATH, CREATE)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getDataFilePath(), CREATE)) {
             os.write(TEST_FILE_DATA_2.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             String expectedFileData = TEST_FILE_DATA_2 +
                     TEST_FILE_DATA.substring(TEST_FILE_DATA_2.length());
             assertEquals(expectedFileData, readFromInputStream(is));
         }
 
         // When file doesn't exist.
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, CREATE)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), CREATE)) {
             os.write(TEST_FILE_DATA.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(TEST_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getTestPath())) {
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
     }
@@ -252,17 +248,17 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newOutputStream_openOption_CREATE_NEW() throws IOException {
         // When file exists.
-        try (OutputStream os = provider.newOutputStream(DATA_FILE_PATH, CREATE_NEW)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getDataFilePath(), CREATE_NEW)) {
             fail();
         } catch (FileAlreadyExistsException expected) {
         }
 
         // When file doesn't exist.
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, CREATE_NEW)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), CREATE_NEW)) {
             os.write(TEST_FILE_DATA.getBytes());
         }
 
-        try (InputStream is = provider.newInputStream(TEST_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getTestPath())) {
             assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
     }
@@ -270,8 +266,8 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newOutputStream_openOption_SYNC() throws IOException {
         // The data should be written to the file
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, CREATE, SYNC);
-             InputStream is = provider.newInputStream(TEST_PATH, SYNC)) {
+        try (OutputStream os = provider.newOutputStream(filesSetup.getTestPath(), CREATE, SYNC);
+             InputStream is = provider.newInputStream(filesSetup.getTestPath(), SYNC)) {
                 os.write(TEST_FILE_DATA.getBytes());
                 assertEquals(TEST_FILE_DATA, readFromInputStream(is));
         }
@@ -283,7 +279,8 @@ public class DefaultFileSystemProviderTest {
             fail();
         } catch (NullPointerException expected) {}
 
-        try (OutputStream os = provider.newOutputStream(TEST_PATH, (OpenOption[]) null)) {
+        try (OutputStream os = provider
+                .newOutputStream(filesSetup.getTestPath(), (OpenOption[]) null)) {
             fail();
         } catch (NullPointerException expected) {}
     }
@@ -293,23 +290,23 @@ public class DefaultFileSystemProviderTest {
         Set<OpenOption> set = new HashSet<OpenOption>();
 
         // When file doesn't exist
-        try (SeekableByteChannel sbc = provider.newByteChannel(TEST_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getTestPath(), set)) {
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
 
         // When file exists.
 
         // File opens in READ mode by default. The channel is non writable by default.
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getDataFilePath(), set)) {
             sbc.write(ByteBuffer.allocate(10));
             fail();
         } catch (NonWritableChannelException expected) {
         }
 
         // Read a file.
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getDataFilePath(), set)) {
             ByteBuffer readBuffer = ByteBuffer.allocate(10);
             int bytesReadCount = sbc.read(readBuffer);
 
@@ -329,26 +326,26 @@ public class DefaultFileSystemProviderTest {
         set.add(WRITE);
 
         // When file doesn't exist
-        try (SeekableByteChannel sbc = provider.newByteChannel(TEST_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getTestPath(), set)) {
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
 
 
         // When file exists.
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getDataFilePath(), set)) {
             sbc.read(ByteBuffer.allocate(10));
             fail();
         } catch (NonReadableChannelException expected) {
         }
 
         // Write in file.
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getDataFilePath(), set)) {
             sbc.write(ByteBuffer.wrap(TEST_FILE_DATA_2.getBytes()));
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             String expectedFileData = TEST_FILE_DATA_2 +
                     TEST_FILE_DATA.substring(TEST_FILE_DATA_2.length());
             assertEquals(expectedFileData, readFromInputStream(is));
@@ -366,7 +363,7 @@ public class DefaultFileSystemProviderTest {
         set.add(READ);
         set.add(SYNC);
 
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, set)) {
+        try (SeekableByteChannel sbc = provider.newByteChannel(filesSetup.getDataFilePath(), set)) {
             ByteBuffer readBuffer = ByteBuffer.allocate(10);
             int bytesReadCount = sbc.read(readBuffer);
 
@@ -379,7 +376,7 @@ public class DefaultFileSystemProviderTest {
             sbc.write(ByteBuffer.wrap(TEST_FILE_DATA_2.getBytes()));
         }
 
-        try (InputStream is = provider.newInputStream(DATA_FILE_PATH)) {
+        try (InputStream is = provider.newInputStream(filesSetup.getDataFilePath())) {
             String expectedFileData = TEST_FILE_DATA + TEST_FILE_DATA_2;
             assertEquals(expectedFileData, readFromInputStream(is));
         }
@@ -392,7 +389,8 @@ public class DefaultFileSystemProviderTest {
             fail();
         } catch(NullPointerException expected) {}
 
-        try (SeekableByteChannel sbc = provider.newByteChannel(DATA_FILE_PATH, null)) {
+        try (SeekableByteChannel sbc = provider
+                .newByteChannel(filesSetup.getDataFilePath(), null)) {
             fail();
         } catch(NullPointerException expected) {}
     }
@@ -400,7 +398,7 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_createDirectory() throws IOException {
         // Check if createDirectory is actually creating a directory.
-        Path newDirectory = Paths.get(TEST_DIR, "newDir");
+        Path newDirectory = Paths.get(filesSetup.getTestDir(), "newDir");
         assertFalse(Files.exists(newDirectory));
         assertFalse(Files.isDirectory(newDirectory));
 
@@ -417,7 +415,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // File with unicode name.
-        Path unicodeFilePath = Paths.get(TEST_DIR, "टेस्ट डायरेक्टरी");
+        Path unicodeFilePath = Paths.get(filesSetup.getTestDir(), "टेस्ट डायरेक्टरी");
         provider.createDirectory(unicodeFilePath);
         assertTrue(Files.exists(unicodeFilePath));
     }
@@ -426,13 +424,13 @@ public class DefaultFileSystemProviderTest {
     public void test_createDirectory$String$FileAttr() throws IOException {
         Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perm);
-        provider.createDirectory(TEST_PATH, attr);
-        assertEquals(attr.value(), Files.getAttribute(TEST_PATH, attr.name()));
+        provider.createDirectory(filesSetup.getTestPath(), attr);
+        assertEquals(attr.value(), Files.getAttribute(filesSetup.getTestPath(), attr.name()));
 
         // Creating a new file and passing multiple attribute of the same name.
         perm = PosixFilePermissions.fromString("rw-------");
         FileAttribute<Set<PosixFilePermission>> attr1 = PosixFilePermissions.asFileAttribute(perm);
-        Path dirPath2 = Paths.get(TEST_DIR, "new_file");
+        Path dirPath2 = Paths.get(filesSetup.getTestDir(), "new_file");
         provider.createDirectory(dirPath2, attr, attr1);
         // Value should be equal to the last attribute passed.
         assertEquals(attr1.value(), Files.getAttribute(dirPath2, attr.name()));
@@ -448,7 +446,7 @@ public class DefaultFileSystemProviderTest {
         } catch(NullPointerException expected) {}
 
         try {
-            provider.createDirectory(TEST_PATH, (FileAttribute<?>[]) null);
+            provider.createDirectory(filesSetup.getTestPath(), (FileAttribute<?>[]) null);
             fail();
         } catch(NullPointerException expected) {}
     }
@@ -463,34 +461,37 @@ public class DefaultFileSystemProviderTest {
 
     @Test
     public void test_createSymbolicLink() throws IOException {
-        provider.createSymbolicLink(/* Path of the symbolic link */ TEST_PATH,
-                /* Path of the target of the symbolic link */ DATA_FILE_PATH.toAbsolutePath());
-        assertTrue(Files.isSymbolicLink(TEST_PATH));
+        provider.createSymbolicLink(/* Path of the symbolic link */ filesSetup.getTestPath(),
+                /* Path of the target of the symbolic link */
+                filesSetup.getDataFilePath().toAbsolutePath());
+        assertTrue(Files.isSymbolicLink(filesSetup.getTestPath()));
 
         // When file exists at the sym link location.
         try {
-            provider.createSymbolicLink(/* Path of the symbolic link */ TEST_PATH,
-                    /* Path of the target of the symbolic link */ DATA_FILE_PATH.toAbsolutePath());
+            provider.createSymbolicLink(/* Path of the symbolic link */ filesSetup.getTestPath(),
+                    /* Path of the target of the symbolic link */
+                    filesSetup.getDataFilePath().toAbsolutePath());
             fail();
         } catch (FileAlreadyExistsException expected) {} finally {
-            Files.deleteIfExists(TEST_PATH);
+            Files.deleteIfExists(filesSetup.getTestPath());
         }
 
         // Sym link to itself
-        provider.createSymbolicLink(/* Path of the symbolic link */ TEST_PATH,
-                /* Path of the target of the symbolic link */ TEST_PATH.toAbsolutePath());
-        assertTrue(Files.isSymbolicLink(TEST_PATH.toAbsolutePath()));
+        provider.createSymbolicLink(/* Path of the symbolic link */ filesSetup.getTestPath(),
+                /* Path of the target of the symbolic link */
+                filesSetup.getTestPath().toAbsolutePath());
+        assertTrue(Files.isSymbolicLink(filesSetup.getTestPath().toAbsolutePath()));
     }
 
     @Test
     public void test_createSymbolicLink_NPE() throws IOException {
         try {
-            provider.createSymbolicLink(null, DATA_FILE_PATH.toAbsolutePath());
+            provider.createSymbolicLink(null, filesSetup.getDataFilePath().toAbsolutePath());
             fail();
         } catch (NullPointerException expected) {}
 
         try {
-            provider.createSymbolicLink(TEST_PATH, null);
+            provider.createSymbolicLink(filesSetup.getTestPath(), null);
             fail();
         } catch (NullPointerException expected) {}
     }
@@ -501,8 +502,8 @@ public class DefaultFileSystemProviderTest {
             Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
             FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
                     .asFileAttribute(perm);
-            provider.createSymbolicLink(TEST_PATH, DATA_FILE_PATH.toAbsolutePath()
-                    , attr);
+            provider.createSymbolicLink(filesSetup.getTestPath(),
+                    filesSetup.getDataFilePath().toAbsolutePath(), attr);
             fail();
         } catch (UnsupportedOperationException expected) {}
     }
@@ -514,18 +515,18 @@ public class DefaultFileSystemProviderTest {
                 .asFileAttribute(perm);
 
         try {
-            provider.createSymbolicLink(null, DATA_FILE_PATH.toAbsolutePath(), attr);
+            provider.createSymbolicLink(null, filesSetup.getDataFilePath().toAbsolutePath(), attr);
             fail();
         } catch (NullPointerException expected) {}
 
         try {
-            provider.createSymbolicLink(TEST_PATH, null, attr);
+            provider.createSymbolicLink(filesSetup.getTestPath(), null, attr);
             fail();
 
         } catch (NullPointerException expected) {}
 
         try {
-            provider.createSymbolicLink(TEST_PATH, DATA_FILE_PATH,
+            provider.createSymbolicLink(filesSetup.getTestPath(), filesSetup.getDataFilePath(),
                     (FileAttribute<?>[]) null);
             fail();
         } catch (NullPointerException expected) {}
@@ -534,19 +535,19 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_delete() throws IOException {
         // Delete existing file.
-        provider.delete(DATA_FILE_PATH);
-        assertFalse(Files.exists(DATA_FILE_PATH));
+        provider.delete(filesSetup.getDataFilePath());
+        assertFalse(Files.exists(filesSetup.getDataFilePath()));
 
         // Delete non existing files.
         try {
-            provider.delete(TEST_PATH);
+            provider.delete(filesSetup.getTestPath());
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
 
         // Delete a directory.
-        Path dirPath = Paths.get(TEST_DIR, "dir");
+        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectory(dirPath);
         provider.delete(dirPath);
         assertFalse(Files.exists(dirPath));
@@ -554,7 +555,7 @@ public class DefaultFileSystemProviderTest {
 
         // Delete a non empty directory.
         Files.createDirectory(dirPath);
-        Files.createFile(Paths.get(TEST_DIR, "dir/file"));
+        Files.createFile(Paths.get(filesSetup.getTestDir(), "dir/file"));
         try {
             provider.delete(dirPath);
             fail();
@@ -572,21 +573,21 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_deleteIfExist() throws IOException {
         // Delete existing file.
-        assertTrue(Files.deleteIfExists(DATA_FILE_PATH));
-        assertFalse(Files.exists(DATA_FILE_PATH));
+        assertTrue(Files.deleteIfExists(filesSetup.getDataFilePath()));
+        assertFalse(Files.exists(filesSetup.getDataFilePath()));
 
         // Delete non existing files.
-        assertFalse(Files.deleteIfExists(TEST_PATH));
+        assertFalse(Files.deleteIfExists(filesSetup.getTestPath()));
 
         // Delete a directory.
-        Path dirPath = Paths.get(TEST_DIR, "dir");
+        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectory(dirPath);
         assertTrue(Files.deleteIfExists(dirPath));
         assertFalse(Files.exists(dirPath));
 
         // Delete a non empty directory.
         Files.createDirectory(dirPath);
-        Files.createFile(Paths.get(TEST_DIR, "dir/file"));
+        Files.createFile(Paths.get(filesSetup.getTestDir(), "dir/file"));
         try {
             provider.deleteIfExists(dirPath);
             fail();
@@ -603,63 +604,64 @@ public class DefaultFileSystemProviderTest {
 
     @Test
     public void test_copy() throws IOException {
-        provider.copy(DATA_FILE_PATH, TEST_PATH);
-        assertEquals(TEST_FILE_DATA, readFromFile(TEST_PATH));
+        provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath());
+        assertEquals(TEST_FILE_DATA, readFromFile(filesSetup.getTestPath()));
         // The original file should also exists.
-        assertEquals(TEST_FILE_DATA, readFromFile(DATA_FILE_PATH));
+        assertEquals(TEST_FILE_DATA, readFromFile(filesSetup.getDataFilePath()));
 
         // When target file exists.
         try {
-            provider.copy(DATA_FILE_PATH, TEST_PATH);
+            provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath());
             fail();
         } catch (FileAlreadyExistsException expected) {}
 
         // Copy to existing target file with REPLACE_EXISTING copy option.
-        writeToFile(DATA_FILE_PATH, TEST_FILE_DATA_2);
-        provider.copy(DATA_FILE_PATH, TEST_PATH, REPLACE_EXISTING);
-        assertEquals(TEST_FILE_DATA_2, readFromFile(TEST_PATH));
+        writeToFile(filesSetup.getDataFilePath(), TEST_FILE_DATA_2);
+        provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath(), REPLACE_EXISTING);
+        assertEquals(TEST_FILE_DATA_2, readFromFile(filesSetup.getTestPath()));
 
 
         // Copy to the same file. Should not fail.
-        reset();
-        provider.copy(DATA_FILE_PATH, DATA_FILE_PATH);
-        assertEquals(TEST_FILE_DATA, readFromFile(DATA_FILE_PATH));
+        filesSetup.reset();
+        provider.copy(filesSetup.getDataFilePath(), filesSetup.getDataFilePath());
+        assertEquals(TEST_FILE_DATA, readFromFile(filesSetup.getDataFilePath()));
 
         // With target is a symbolic link file.
         try {
-            reset();
-            Path symlink = Paths.get(TEST_DIR, "symlink");
-            Path newFile = Paths.get(TEST_DIR, "newDir");
+            filesSetup.reset();
+            Path symlink = Paths.get(filesSetup.getTestDir(), "symlink");
+            Path newFile = Paths.get(filesSetup.getTestDir(), "newDir");
             Files.createFile(newFile);
             assertTrue(Files.exists(newFile));
-            Files.createSymbolicLink(symlink, DATA_FILE_PATH);
-            provider.copy(DATA_FILE_PATH, symlink);
+            Files.createSymbolicLink(symlink, filesSetup.getDataFilePath());
+            provider.copy(filesSetup.getDataFilePath(), symlink);
             fail();
         } catch (FileAlreadyExistsException expected) {}
 
-        reset();
+        filesSetup.reset();
         try {
-            provider.copy(TEST_PATH, DATA_FILE_PATH, REPLACE_EXISTING);
+            provider.copy(filesSetup.getTestPath(), filesSetup.getDataFilePath(), REPLACE_EXISTING);
             fail();
         } catch (NoSuchFileException expected) {
-            assertTrue(expected.getMessage().contains(TEST_PATH.toString()));
+            assertTrue(expected.getMessage().contains(filesSetup.getTestPath().toString()));
         }
     }
 
     @Test
     public void test_copy_NPE() throws IOException {
         try {
-            provider.copy((Path)null, TEST_PATH);
+            provider.copy((Path) null, filesSetup.getTestPath());
             fail();
         } catch(NullPointerException expected) {}
 
         try {
-            provider.copy(DATA_FILE_PATH, (Path)null);
+            provider.copy(filesSetup.getDataFilePath(), (Path) null);
             fail();
         } catch(NullPointerException expected) {}
 
         try {
-            provider.copy(DATA_FILE_PATH, TEST_PATH, (CopyOption[]) null);
+            provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath(),
+                    (CopyOption[]) null);
             fail();
         } catch(NullPointerException expected) {}
     }
@@ -668,39 +670,41 @@ public class DefaultFileSystemProviderTest {
     public void test_copy_CopyOption() throws IOException {
         // COPY_ATTRIBUTES
         FileTime fileTime = FileTime.fromMillis(System.currentTimeMillis() - 10000);
-        Files.setAttribute(DATA_FILE_PATH, "basic:lastModifiedTime", fileTime);
-        provider.copy(DATA_FILE_PATH, TEST_PATH, COPY_ATTRIBUTES);
+        Files.setAttribute(filesSetup.getDataFilePath(), "basic:lastModifiedTime", fileTime);
+        provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath(), COPY_ATTRIBUTES);
         assertEquals(fileTime.to(TimeUnit.SECONDS),
-                ((FileTime)Files.getAttribute(TEST_PATH,
+                ((FileTime) Files.getAttribute(filesSetup.getTestPath(),
                         "basic:lastModifiedTime")).to(TimeUnit.SECONDS));
-        assertEquals(TEST_FILE_DATA, readFromFile(TEST_PATH));
+        assertEquals(TEST_FILE_DATA, readFromFile(filesSetup.getTestPath()));
 
         // ATOMIC_MOVE
-        Files.deleteIfExists(TEST_PATH);
+        Files.deleteIfExists(filesSetup.getTestPath());
         try {
-            provider.copy(DATA_FILE_PATH, TEST_PATH, ATOMIC_MOVE);
+            provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath(), ATOMIC_MOVE);
             fail();
         } catch (UnsupportedOperationException expected) {}
 
-        Files.deleteIfExists(TEST_PATH);
+        Files.deleteIfExists(filesSetup.getTestPath());
         try {
-            provider.copy(DATA_FILE_PATH, TEST_PATH, NonStandardOption.OPTION1);
+            provider.copy(filesSetup.getDataFilePath(), filesSetup.getTestPath(),
+                    NonStandardOption.OPTION1);
             fail();
         } catch (UnsupportedOperationException expected) {}
     }
 
     @Test
     public void test_copy_directory() throws IOException {
-        final Path dirPath = Paths.get(TEST_DIR, "dir1");
-        final Path dirPath2 = Paths.get(TEST_DIR, "dir2");
+        final Path dirPath = Paths.get(filesSetup.getTestDir(), "dir1");
+        final Path dirPath2 = Paths.get(filesSetup.getTestDir(), "dir2");
         // Nested directory.
-        final Path dirPath3 = Paths.get(TEST_DIR, "dir1/dir");
+        final Path dirPath3 = Paths.get(filesSetup.getTestDir(), "dir1/dir");
 
         // Create dir1 and dir1/dir, and copying dir1/dir to dir2. Copy will create dir2, however,
         // it will not copy the content of the source directory.
         Files.createDirectory(dirPath);
         Files.createDirectory(dirPath3);
-        provider.copy(DATA_FILE_PATH, Paths.get(TEST_DIR, "dir1/" + DATA_FILE));
+        provider.copy(filesSetup.getDataFilePath(),
+                Paths.get(filesSetup.getTestDir(), "dir1/" + DATA_FILE));
         provider.copy(dirPath, dirPath2);
         assertTrue(Files.exists(dirPath2));
 
@@ -714,7 +718,7 @@ public class DefaultFileSystemProviderTest {
 
 
         // When the target directory is not empty.
-        Path dirPath4 = Paths.get(TEST_DIR, "dir4");
+        Path dirPath4 = Paths.get(filesSetup.getTestDir(), "dir4");
         Files.createDirectories(dirPath4);
         Path file = Paths.get("file");
         Files.createFile(Paths.get(dirPath.toString(), file.toString()));
@@ -730,14 +734,14 @@ public class DefaultFileSystemProviderTest {
     public void test_newDirectoryStream$Path$Filter() throws IOException {
 
         // Initial setup of directory.
-        Path path_root = Paths.get(TEST_DIR, "dir");
-        Path path_dir1 = Paths.get(TEST_DIR, "dir/dir1");
-        Path path_dir2 = Paths.get(TEST_DIR, "dir/dir2");
-        Path path_dir3 = Paths.get(TEST_DIR, "dir/dir3");
+        Path path_root = Paths.get(filesSetup.getTestDir(), "dir");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "dir/dir1");
+        Path path_dir2 = Paths.get(filesSetup.getTestDir(), "dir/dir2");
+        Path path_dir3 = Paths.get(filesSetup.getTestDir(), "dir/dir3");
 
-        Path path_f1 = Paths.get(TEST_DIR, "dir/f1");
-        Path path_f2 = Paths.get(TEST_DIR, "dir/f2");
-        Path path_f3 = Paths.get(TEST_DIR, "dir/f3");
+        Path path_f1 = Paths.get(filesSetup.getTestDir(), "dir/f1");
+        Path path_f2 = Paths.get(filesSetup.getTestDir(), "dir/f2");
+        Path path_f3 = Paths.get(filesSetup.getTestDir(), "dir/f3");
 
         Files.createDirectory(path_root);
         Files.createDirectory(path_dir1);
@@ -772,7 +776,7 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newDirectoryStream$Filter_Exception() throws IOException {
         // Non existent directory.
-        Path path_dir1 = Paths.get(TEST_DIR, "newDir1");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
         DirectoryStream.Filter<Path> fileFilter = new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept(Path entry) throws IOException {
@@ -788,7 +792,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // File instead of directory.
-        Path path_file1 = Paths.get(TEST_DIR, "newFile1");
+        Path path_file1 = Paths.get(filesSetup.getTestDir(), "newFile1");
         Files.createFile(path_file1);
         try (DirectoryStream<Path> directoryStream = provider.newDirectoryStream(path_file1,
                 fileFilter)) {
@@ -812,7 +816,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // Non existent directory.
-        Path path_dir1 = Paths.get(TEST_DIR, "newDir1");
+        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
         try (DirectoryStream<Path> directoryStream = provider.newDirectoryStream(path_dir1,
                 (DirectoryStream.Filter<? super Path>) null)) {
             fail();
