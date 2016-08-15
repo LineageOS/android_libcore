@@ -35,7 +35,6 @@ import java.nio.file.attribute.UserDefinedFileAttributeView;
 import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertNull;
 import static junit.framework.TestCase.assertTrue;
-import static libcore.java.nio.file.FilesSetup.TEST_DIR;
 import static libcore.java.nio.file.FilesSetup.execCmdAndWaitForTermination;
 import static libcore.java.nio.file.FilesSetup.readFromInputStream;
 import static org.junit.Assert.assertEquals;
@@ -48,7 +47,7 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_name() throws IOException, InterruptedException {
-        Path path = Paths.get(TEST_DIR, "dir");
+        Path path = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectory(path);
         Process p = execCmdAndWaitForTermination("df", path.toAbsolutePath().toString());
         String shellOutput = readFromInputStream(p.getInputStream()).split("\n")[1];
@@ -58,7 +57,7 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_type() throws IOException, InterruptedException {
-        Path path = Paths.get(TEST_DIR, "dir");
+        Path path = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectory(path);
         String fileStore = Files.getFileStore(path).name();
         Process p = execCmdAndWaitForTermination("mount");
@@ -104,11 +103,14 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_supportsFileAttributeView$Class() throws IOException {
-        Path path = Paths.get(TEST_DIR, "dir");
+        Path path = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectories(path);
-        assertTrue(Files.getFileStore(path).supportsFileAttributeView(BasicFileAttributeView.class));
-        assertTrue(Files.getFileStore(path).supportsFileAttributeView(FileOwnerAttributeView.class));
-        assertTrue(Files.getFileStore(path).supportsFileAttributeView(PosixFileAttributeView.class));
+        assertTrue(Files.getFileStore(path).supportsFileAttributeView(
+                BasicFileAttributeView.class));
+        assertTrue(Files.getFileStore(path).supportsFileAttributeView(
+                FileOwnerAttributeView.class));
+        assertTrue(Files.getFileStore(path).supportsFileAttributeView(
+                PosixFileAttributeView.class));
         assertFalse(Files.getFileStore(path).supportsFileAttributeView(DosFileAttributeView.class));
         assertFalse(Files.getFileStore(path).
                 supportsFileAttributeView(UserDefinedFileAttributeView.class));
@@ -118,7 +120,7 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_supportsFileAttributeView$String() throws IOException {
-        Path path = Paths.get(TEST_DIR, "dir");
+        Path path = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectories(path);
         assertTrue(Files.getFileStore(path).supportsFileAttributeView("basic"));
         assertTrue(Files.getFileStore(path).supportsFileAttributeView("unix"));
@@ -131,9 +133,10 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_getFileStoreAttributeView() throws IOException {
-        Path path = Paths.get(TEST_DIR, "dir");
+        Path path = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectories(path);
-        assertNull(Files.getFileStore(path).getFileStoreAttributeView(FileStoreAttributeView.class));
+        assertNull(Files.getFileStore(path).getFileStoreAttributeView(
+                FileStoreAttributeView.class));
         try {
             Files.getFileStore(path).getFileStoreAttributeView(null);
             fail();
@@ -142,7 +145,7 @@ public class DefaultFileStoreTest {
 
     @Test
     public void test_getAttribute() throws IOException {
-        Path p = Paths.get(TEST_DIR, "dir");
+        Path p = Paths.get(filesSetup.getTestDir(), "dir");
         Files.createDirectories(p);
         FileStore store = Files.getFileStore(p);
         assertEquals(store.getTotalSpace(), store.getAttribute("totalSpace"));
