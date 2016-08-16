@@ -1158,6 +1158,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandle.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java \
     ojluni/src/main/java/java/lang/invoke/MethodType.java \
     ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
@@ -1618,7 +1619,6 @@ openjdk_java_files := \
 openjdk_lambda_stub_files := \
     ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
-    ojluni/src/lambda/java/java/lang/invoke/MethodHandleInfo.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
 openjdk_lambda_duplicate_stub_files := \
