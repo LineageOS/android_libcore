@@ -73,7 +73,7 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
      * Test for b/27763633.
      */
     public void testConcurrentServerSocketCloseReliablyThrows() {
-        int numIterations = 200;
+        int numIterations = 100;
         for (int i = 0; i < numIterations; i++) {
             checkConnectIterationAndCloseSocket("Iteration " + (i+1) + " of " + numIterations,
                     /* msecPerIteration */ 50);
