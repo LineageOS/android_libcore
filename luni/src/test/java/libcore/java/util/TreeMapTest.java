@@ -495,13 +495,14 @@ public class TreeMapTest extends TestCase {
                 String::compareTo);
         SpliteratorTester.runBasicSplitTests(keys, expectedKeys);
         SpliteratorTester.testSpliteratorNPE(keys.spliterator());
-
-        assertTrue(keys.spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+        assertEquals(
+                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SORTED,
+                keys.spliterator().characteristics());
         SpliteratorTester.runSortedTests(keys);
         SpliteratorTester.runOrderedTests(keys);
     }
 
-    public void test_spliterator_valueSet() {
+    public void test_spliterator_values() {
         TreeMap<String, String> treeMap = new TreeMap<>();
         treeMap.put("a", "1");
         treeMap.put("b", "2");
@@ -528,7 +529,8 @@ public class TreeMapTest extends TestCase {
         SpliteratorTester.runBasicSplitTests(values, expectedValues);
         SpliteratorTester.testSpliteratorNPE(values.spliterator());
 
-        assertTrue(values.spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SIZED));
+        assertEquals(Spliterator.ORDERED | Spliterator.SIZED,
+                values.spliterator().characteristics());
         SpliteratorTester.runSizedTests(values, 16);
         SpliteratorTester.runOrderedTests(values);
     }
@@ -552,20 +554,22 @@ public class TreeMapTest extends TestCase {
         treeMap.put("o", "15");
         treeMap.put("p", "16");
 
-        Set<Map.Entry<String, String>> values = treeMap.entrySet();
-        ArrayList<Map.Entry<String, String>> expectedValues = new ArrayList<>(values);
+        Set<Map.Entry<String, String>> entries = treeMap.entrySet();
+        ArrayList<Map.Entry<String, String>> expectedValues = new ArrayList<>(entries);
 
         Comparator<Map.Entry<String, String>> comparator =
                 (a, b) -> (a.getKey().compareTo(b.getKey()));
 
-        SpliteratorTester.runBasicIterationTests_unordered(values.spliterator(), expectedValues,
+        SpliteratorTester.runBasicIterationTests_unordered(entries.spliterator(), expectedValues,
                 (a, b) -> (a.getKey().compareTo(b.getKey())));
-        SpliteratorTester.runBasicSplitTests(values, expectedValues, comparator);
-        SpliteratorTester.testSpliteratorNPE(values.spliterator());
+        SpliteratorTester.runBasicSplitTests(entries, expectedValues, comparator);
+        SpliteratorTester.testSpliteratorNPE(entries.spliterator());
 
-        assertTrue(values.spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
-        SpliteratorTester.runSortedTests(values, (a, b) -> (a.getKey().compareTo(b.getKey())));
-        SpliteratorTester.runOrderedTests(values);
+        assertEquals(
+                Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SORTED,
+                entries.spliterator().characteristics());
+        SpliteratorTester.runSortedTests(entries, (a, b) -> (a.getKey().compareTo(b.getKey())));
+        SpliteratorTester.runOrderedTests(entries);
     }
 
     public void test_replaceAll() throws Exception {
@@ -586,12 +590,9 @@ public class TreeMapTest extends TestCase {
         } catch(NullPointerException expected) {}
 
         try {
-            map.replaceAll(new java.util.function.BiFunction<String, String, String>() {
-                @Override
-                public String apply(String k, String v) {
-                    map.put("foo", v);
-                    return v;
-                }
+            map.replaceAll((k, v) -> {
+                map.put("foo", v);
+                return v;
             });
             fail();
         } catch(ConcurrentModificationException expected) {}
