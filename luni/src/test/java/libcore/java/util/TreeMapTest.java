@@ -16,6 +16,8 @@
 
 package libcore.java.util;
 
+import junit.framework.TestCase;
+
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -30,9 +32,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.Spliterator;
 import java.util.TreeMap;
-import java.util.WeakHashMap;
-
-import junit.framework.TestCase;
 import libcore.util.SerializationTester;
 
 public class TreeMapTest extends TestCase {
@@ -440,6 +439,150 @@ public class TreeMapTest extends TestCase {
                 }
             }
         }.test();
+    }
+
+    /**
+     * Taking a headMap or tailMap (exclusive or inclusive of the bound) of
+     * a TreeMap with unbounded range never throws IllegalArgumentException.
+     */
+    public void testBounds_fromUnbounded() {
+        applyBound('[', new TreeMap<>());
+        applyBound(']', new TreeMap<>());
+        applyBound('(', new TreeMap<>());
+        applyBound(')', new TreeMap<>());
+    }
+
+    /**
+     * Taking an exclusive-end submap of a parent map with an exclusive
+     * range is allowed only if the bounds go in the same direction
+     * (if parent and child are either both headMaps or both tailMaps,
+     * but not otherwise).
+     */
+    public void testBounds_openSubrangeOfOpenRange() {
+        // NavigableMap.{tail,head}Map(T key, boolean inclusive)'s
+        // documentation says that it throws IAE "if this map itself has a
+        // restricted range, and key lies outside the bounds of the range".
+        // Since that documentation doesn't mention the value of inclusive,
+        // one could argue that the following two cases should throw IAE,
+        // but the actual implementation in TreeMap does not. This test
+        // asserts the actual behavior.
+        assertTrue(isWithinBounds(')', ')'));
+        assertTrue(isWithinBounds('(', '('));
+
+        // The following two tests check that TreeMap's behavior matches
+        // that from earlier versions of Android (from before Android N).
+        // AOSP commit b4105e7f1e3ab24131976f68be4554e694a0e1d4 ensured
+        // that Android N was consistent with earlier versions' behavior.
+        // Specifically, on Android,
+        //      new TreeMap<>().headMap(0, false).tailMap(0, false)
+        // and  new TreeMap<>().tailMap(0, false).headMap(0, false)
+        // are both not allowed.
+        assertFalse(isWithinBounds(')', '('));
+        assertFalse(isWithinBounds('(', ')'));
+    }
+
+    /**
+     * Taking a exclusive-end submap of an inclusive-end parent map is not
+     * allowed regardless of the direction of the constraints (headMap
+     * vs. tailMap) because the inclusive bound of the submap is not
+     * contained in the exclusive range of the parent map.
+     */
+    public void testBounds_closedSubrangeOfOpenRange() {
+        assertFalse(isWithinBounds(']', '('));
+        assertFalse(isWithinBounds('[', ')'));
+        assertFalse(isWithinBounds(']', ')'));
+        assertFalse(isWithinBounds('[', '('));
+    }
+
+    /**
+     * Taking an inclusive-end submap of an inclusive-end parent map
+     * is allowed regardless of the direction of the constraints (headMap
+     * vs. tailMap) because the inclusive bound of the submap is
+     * contained in the inclusive range of the parent map.
+     */
+    public void testBounds_closedSubrangeOfClosedRange() {
+        assertTrue(isWithinBounds(']', '['));
+        assertTrue(isWithinBounds('[', ']'));
+        assertTrue(isWithinBounds(']', ']'));
+        assertTrue(isWithinBounds('[', '['));
+    }
+
+    /**
+     * Taking an exclusive-end submap of an inclusive-end parent map
+     * is allowed regardless of the direction of the constraints (headMap
+     * vs. tailMap) because the exclusive bound of the submap is
+     * contained in the inclusive range of the parent map.
+     *
+     * Note that
+     * (a) isWithinBounds(')', '[') == true, while
+     * (b) isWithinBounds('[', ')') == false
+     * means that
+     *   {@code new TreeMap<>().tailMap(0, true).headMap(0, false)}
+     * is allowed but
+     *   {@code new TreeMap<>().headMap(0, false).tailMap(0, true)}
+     * is not.
+     */
+    public void testBounds_openSubrangeOfClosedRange() {
+        assertTrue(isWithinBounds(')', '['));
+        assertTrue(isWithinBounds('(', ']'));
+        assertTrue(isWithinBounds('(', '['));
+        assertTrue(isWithinBounds(')', ']'));
+
+        // This is allowed:
+        new TreeMap<>().tailMap(0, true).headMap(0, false);
+
+        // This is not:
+        try {
+            new TreeMap<>().headMap(0, false).tailMap(0, true);
+            fail("Should have thrown");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+    }
+
+    /**
+     * Asserts whether constructing a (head or tail) submap with (inclusive or
+     * exclusive) bound 0 is allowed on a (head or tail) map with (inclusive or
+     * exclusive) bound 0. For example,
+     *
+     * {@code isWithinBounds(')', ']'} is true because the boundary of "0)"
+     * (an infinitesimally small negative value) lies within the range "0]",
+     * but {@code isWithinBounds(']', ')'} is false because 0 does not lie
+     * within the range "0)".
+     */
+    private static boolean isWithinBounds(char submapBound, char mapBound) {
+        NavigableMap<Integer, Void> m = applyBound(mapBound, new TreeMap<>());
+        IllegalArgumentException thrownException = null;
+        try {
+            applyBound(submapBound, m);
+        } catch (IllegalArgumentException e) {
+            thrownException = e;
+        }
+        return (thrownException == null);
+    }
+
+    /**
+     * Constructs a submap of the specified map, constrained by the given bound.
+     */
+    private static<V> NavigableMap<Integer, V> applyBound(char bound, NavigableMap<Integer, V> m) {
+        Integer boundValue = 0; // arbitrary
+        if (isLowerBound(bound)) {
+            return m.tailMap(boundValue, isBoundInclusive(bound));
+        } else {
+            return m.headMap(boundValue, isBoundInclusive(bound));
+        }
+    }
+
+    private static boolean isBoundInclusive(char bound) {
+        return bound == '[' || bound == ']';
+    }
+
+    /**
+     * Returns whether the specified bound corresponds to a tailMap, i.e. a Map whose
+     * range of values has an (exclusive or inclusive) lower bound.
+     */
+    private static boolean isLowerBound(char bound) {
+        return bound == '[' || bound == '(';
     }
 
     public void test_spliterator_keySet() {
