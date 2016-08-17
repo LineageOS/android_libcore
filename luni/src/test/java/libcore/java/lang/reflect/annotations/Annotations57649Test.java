@@ -1,4 +1,4 @@
-package libcore.java.lang.reflect;
+package libcore.java.lang.reflect.annotations;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
