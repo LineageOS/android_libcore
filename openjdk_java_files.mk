@@ -1416,7 +1416,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/fs/UnixUriUtils.java \
     ojluni/src/main/java/sun/nio/fs/UnixUserPrincipals.java \
     ojluni/src/main/java/sun/nio/fs/Util.java \
-    ojluni/src/main/java/sun/reflect/annotation/AnnotationType.java \
     ojluni/src/main/java/sun/reflect/ConstructorAccessor.java \
     ojluni/src/main/java/sun/reflect/misc/ReflectUtil.java \
     ojluni/src/main/java/sun/reflect/Reflection.java \
