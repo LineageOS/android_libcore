@@ -24,14 +24,12 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.StandardProtocolFamily;
 import java.net.StandardSocketOptions;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.MembershipKey;
-import java.util.Enumeration;
 
 public class MembershipKeyTest extends TestCase {
 
@@ -43,7 +41,7 @@ public class MembershipKeyTest extends TestCase {
     private final static InetAddress MULTICAST_ADDRESS = getMulticastAddress();
     private final static NetworkInterface NETWORK_INTERFACE = getNetworkInterface();
 
-    private void setup(boolean withSource) throws Exception {
+    private void init(boolean withSource) throws Exception {
         client = DatagramChannel.open(StandardProtocolFamily.INET)
                 .bind(new InetSocketAddress(Inet4Address.ANY, PORT));
         client.configureBlocking(false);
@@ -62,48 +60,48 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_isValid_OnChannelCloseWithJoinWithoutSource() throws Exception {
-        setup(false);
-        test_isValid();
+        init(false);
+        check_isValid();
     }
 
     public void test_isValid_OnChannelCloseWithJoinWithSource() throws Exception {
-        setup(true);
-        test_isValid();
+        init(true);
+        check_isValid();
     }
 
-    private void test_isValid() throws IOException {
+    private void check_isValid() throws IOException {
         assertTrue(key.isValid());
         client.close();
         assertFalse(key.isValid());
     }
 
     public void test_isValid_OnDropJoinWithoutSource() throws Exception {
-        setup(false);
-        test_isValid_OnDrop();
+        init(false);
+        check_isValid_OnDrop();
     }
 
     public void test_isValid_OnDropJoinWithSource() throws Exception {
-        setup(true);
-        test_isValid_OnDrop();
+        init(true);
+        check_isValid_OnDrop();
     }
 
-    private void test_isValid_OnDrop() {
+    private void check_isValid_OnDrop() {
         assertTrue(key.isValid());
         key.drop();
         assertFalse(key.isValid());
     }
 
     public void test_dropWithJoinWithoutSource() throws Exception {
-        setup(false);
-        test_drop();
+        init(false);
+        check_drop();
     }
 
     public void test_dropWithJoinWithSource() throws Exception {
-        setup(true);
-        test_drop();
+        init(true);
+        check_drop();
     }
 
-    private void test_drop() throws IOException {
+    private void check_drop() throws IOException {
         key.drop();
         try(DatagramChannel dc = DatagramChannel.open(StandardProtocolFamily.INET)) {
             assertEquals(TEST_MESSAGE.length(), dc
@@ -119,55 +117,55 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_networkInterface() throws Exception {
-        setup(false);
+        init(false);
         assertEquals(NETWORK_INTERFACE, key.networkInterface());
         client.close();
         assertEquals(NETWORK_INTERFACE, key.networkInterface());
     }
 
     public void test_sourceAddressWithJoinWithSource() throws Exception {
-        setup(true);
+        init(true);
         assertEquals(sourceAddress, key.sourceAddress());
     }
 
     public void test_sourceAddressWithJoinWithoutSource() throws Exception {
-        setup(false);
+        init(false);
         assertNull(key.sourceAddress());
     }
 
     public void test_groupWithJoinWithSource() throws Exception {
-        setup(true);
+        init(true);
         assertEquals(MULTICAST_ADDRESS, key.group());
     }
 
     public void test_groupWithoutJoinWIthSource() throws Exception {
-        setup(false);
+        init(false);
         assertEquals(MULTICAST_ADDRESS, key.group());
     }
 
     public void test_channelWithJoinWithSource() throws Exception {
-        setup(true);
+        init(true);
         assertEquals(client, key.channel());
         key.drop();
         assertEquals(client, key.channel());
     }
 
     public void test_channelWithJoinWithoutSource() throws Exception {
-        setup(false);
+        init(false);
         assertEquals(client, key.channel());
         key.drop();
         assertEquals(client, key.channel());
     }
 
     public void test_blockWithJoinWithSource() throws Exception {
-        setup(true);
+        init(true);
         try {
             key.block(sourceAddress);
         } catch (IllegalStateException expected) {}
     }
 
     public void test_blockWithJoinWithoutSource() throws Exception {
-        setup(false);
+        init(false);
         key.block(sourceAddress);
 
         try (DatagramChannel dc = DatagramChannel.open(StandardProtocolFamily.INET)) {
@@ -184,7 +182,7 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_block_Exception () throws Exception {
-        setup(false);
+        init(false);
 
         // Blocking a multicast channel
         try {
@@ -206,7 +204,7 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_unblockWithJoinWithSource() throws Exception {
-        setup(true);
+        init(true);
         try {
             key.unblock(Inet4Address.getByName("127.0.0.2"));
             fail();
@@ -214,7 +212,7 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_unblockWithJoinWithoutSource() throws Exception {
-        setup(false);
+        init(false);
 
         key.block(sourceAddress);
         key.unblock(sourceAddress);
@@ -238,7 +236,7 @@ public class MembershipKeyTest extends TestCase {
     }
 
     public void test_unblock_Exception() throws Exception {
-        setup(false);
+        init(false);
         try {
             key.unblock(sourceAddress);
             fail();
