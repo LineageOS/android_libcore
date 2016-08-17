@@ -533,11 +533,11 @@ public abstract class ByteBuffer
         if (!isAccessible()) {
             throw new IllegalStateException("buffer is inaccessible");
         }
-        if (isReadOnly) {
-            throw new ReadOnlyBufferException();
-        }
         if (src == this) {
             throw new IllegalArgumentException();
+        }
+        if (isReadOnly) {
+            throw new ReadOnlyBufferException();
         }
         int n = src.remaining();
         if (n > remaining()) {
