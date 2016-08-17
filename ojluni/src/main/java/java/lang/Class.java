@@ -28,42 +28,24 @@ package java.lang;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Member;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.ref.SoftReference;
 import java.io.InputStream;
-import java.io.ObjectStreamField;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.LinkedList;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.Map;
 import java.util.HashMap;
-import sun.misc.Unsafe;
 import sun.reflect.CallerSensitive;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Proxy;
-import sun.reflect.annotation.*;
-import sun.reflect.misc.ReflectUtil;
 
 import java.io.Serializable;
-import java.lang.reflect.AccessibleObject;
 import com.android.dex.Dex;
 import dalvik.system.VMStack;
 import libcore.reflect.InternalNames;
@@ -72,7 +54,6 @@ import libcore.reflect.Types;
 import libcore.util.BasicLruCache;
 import libcore.util.CollectionUtils;
 import libcore.util.EmptyArray;
-import libcore.util.SneakyThrow;
 import java.util.Collections;
 
 /**
@@ -257,8 +238,6 @@ public final
 
     /** Offset of the first virtual method defined in this class in the methods array. */
     private transient short virtualMethodsOffset;
-
-    private AnnotationType annotationType;
 
     private static final int ANNOTATION  = 0x00002000;
     private static final int ENUM        = 0x00004000;
@@ -1760,7 +1739,6 @@ public final
      * resolution checks first. If no fields exist, the list is not modified.
      *
      * @param publicOnly Whether to return only public fields.
-     * @param fields A list to populate with declared fields.
      * @hide
      */
     public native Field[] getDeclaredFieldsUnchecked(boolean publicOnly);
@@ -1819,7 +1797,6 @@ public final
      * resolution checks first. If no methods exist, the list is not modified.
      *
      * @param publicOnly Whether to return only public methods.
-     * @param methods A list to populate with declared methods.
      * @hide
      */
     public native Method[] getDeclaredMethodsUnchecked(boolean publicOnly);
@@ -1867,8 +1844,6 @@ public final
     /**
      * Returns the constructor with the given parameters if it is defined by this class;
      * {@code null} otherwise. This may return a non-public member.
-     *
-     * @param args the types of the parameters to the constructor.
      */
     private native Constructor<?>[] getDeclaredConstructorsInternal(boolean publicOnly);
 
@@ -2476,18 +2451,6 @@ public final
      * Returns true if the annotation exists.
      */
     private native boolean isDeclaredAnnotationPresent(Class<? extends Annotation> annotationClass);
-
-    // Annotation types cache their internal (AnnotationType) form
-
-    /** @hide */
-    public void setAnnotationType(AnnotationType type) {
-        annotationType = type;
-    }
-
-    /** @hide */
-    public AnnotationType getAnnotationType() {
-        return annotationType;
-    }
 
     private String getSignatureAttribute() {
         String[] annotation = getSignatureAnnotation();
