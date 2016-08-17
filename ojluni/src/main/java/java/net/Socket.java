@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,7 +30,6 @@ import java.io.FileDescriptor;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.nio.channels.SocketChannel;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
@@ -497,13 +496,10 @@ class Socket implements java.io.Closeable {
         oldImpl = AccessController.doPrivileged
                                 (new PrivilegedAction<Boolean>() {
             public Boolean run() {
-                Class[] cl = new Class[2];
-                cl[0] = SocketAddress.class;
-                cl[1] = Integer.TYPE;
-                Class clazz = impl.getClass();
+                Class<?> clazz = impl.getClass();
                 while (true) {
                     try {
-                        clazz.getDeclaredMethod("connect", cl);
+                        clazz.getDeclaredMethod("connect", SocketAddress.class, int.class);
                         return Boolean.FALSE;
                     } catch (NoSuchMethodException e) {
                         clazz = clazz.getSuperclass();
@@ -643,6 +639,9 @@ class Socket implements java.io.Closeable {
      *                     is already bound.
      * @throws  IllegalArgumentException if bindpoint is a
      *          SocketAddress subclass not supported by this socket
+     * @throws  SecurityException  if a security manager exists and its
+     *          {@code checkListen} method doesn't allow the bind
+     *          to the local port.
      *
      * @since   1.4
      * @see #isBound
@@ -664,6 +663,10 @@ class Socket implements java.io.Closeable {
         InetAddress addr = epoint.getAddress();
         int port = epoint.getPort();
         checkAddress (addr, "bind");
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) {
+            security.checkListen(port);
+        }
         getImpl().bind (addr, port);
         bound = true;
     }
@@ -740,12 +743,9 @@ class Socket implements java.io.Closeable {
         InetAddress in = null;
         try {
             in = (InetAddress) getImpl().getOption(SocketOptions.SO_BINDADDR);
-
-            if (!NetUtil.doRevealLocalAddress()) {
-                SecurityManager sm = System.getSecurityManager();
-                if (sm != null)
-                    sm.checkConnect(in.getHostAddress(), -1);
-            }
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null)
+                sm.checkConnect(in.getHostAddress(), -1);
             if (in.isAnyLocalAddress()) {
                 in = InetAddress.anyLocalAddress();
             }

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -46,7 +46,7 @@ import sun.net.www.MessageHeader;
  * application and a URL. Instances of this class can be used both to
  * read from and to write to the resource referenced by the URL. In
  * general, creating a connection to a URL is a multistep process:
- * <p>
+ *
  * <center><table border=2 summary="Describes the process of creating a connection to a URL: openConnection() and connect() over time.">
  * <tr><th>{@code openConnection()}</th>
  *     <th>{@code connect()}</th></tr>
@@ -1216,7 +1216,7 @@ public abstract class URLConnection {
         factory = fac;
     }
 
-    private static Hashtable handlers = new Hashtable();
+    private static Hashtable<String, ContentHandler> handlers = new Hashtable<>();
 
     /**
      * Gets the Content Handler appropriate for this connection.
@@ -1236,7 +1236,7 @@ public abstract class URLConnection {
             return UnknownContentHandler.INSTANCE;
         }
         try {
-            handler = (ContentHandler) handlers.get(contentType);
+            handler = handlers.get(contentType);
             if (handler != null)
                 return handler;
         } catch(Exception e) {
@@ -1302,7 +1302,7 @@ public abstract class URLConnection {
 
             try {
                 String clsName = packagePrefix + "." + contentHandlerClassName;
-                Class cls = null;
+                Class<?> cls = null;
                 try {
                     cls = Class.forName(clsName);
                 } catch (ClassNotFoundException e) {

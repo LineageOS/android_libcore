@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,28 +25,30 @@
 
 package java.net;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.ref.*;
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandlerFactory;
-import java.util.Enumeration;
-import java.util.*;
-import java.util.jar.Manifest;
-import java.util.jar.JarFile;
-import java.util.jar.Attributes;
-import java.util.jar.Attributes.Name;
-import java.security.CodeSigner;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedExceptionAction;
-import java.security.AccessController;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FilePermission;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.AccessControlContext;
-import java.security.SecureClassLoader;
+import java.security.AccessController;
+import java.security.CodeSigner;
 import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedExceptionAction;
+import java.security.SecureClassLoader;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.jar.Attributes;
+import java.util.jar.Attributes.Name;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import sun.misc.Resource;
 import sun.misc.URLClassPath;
 import sun.net.www.ParseUtil;
@@ -348,6 +350,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
      * @return the resulting class
      * @exception ClassNotFoundException if the class could not be found,
      *            or if the loader is closed.
+     * @exception NullPointerException if {@code name} is {@code null}.
      */
     protected Class<?> findClass(final String name)
         throws ClassNotFoundException
@@ -408,12 +411,35 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
         return pkg;
     }
 
+    // Also called by VM to define Package for classes loaded from the CDS
+    // archive
+    private void definePackageInternal(String pkgname, Manifest man, URL url)
+    {
+        if (getAndVerifyPackage(pkgname, man, url) == null) {
+            try {
+                if (man != null) {
+                    definePackage(pkgname, man, url);
+                } else {
+                    definePackage(pkgname, null, null, null, null, null, null, null);
+                }
+            } catch (IllegalArgumentException iae) {
+                // parallel-capable class loaders: re-verify in case of a
+                // race condition
+                if (getAndVerifyPackage(pkgname, man, url) == null) {
+                    // Should never happen
+                    throw new AssertionError("Cannot find package " +
+                                             pkgname);
+                }
+            }
+        }
+    }
+
     /*
      * Defines a Class using the class bytes obtained from the specified
      * Resource. The resulting Class must be resolved before it can be
      * used.
      */
-    private Class defineClass(String name, Resource res) throws IOException {
+    private Class<?> defineClass(String name, Resource res) throws IOException {
         long t0 = System.nanoTime();
         int i = name.lastIndexOf('.');
         URL url = res.getCodeSourceURL();
@@ -421,23 +447,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
             String pkgname = name.substring(0, i);
             // Check if package already loaded.
             Manifest man = res.getManifest();
-            if (getAndVerifyPackage(pkgname, man, url) == null) {
-                try {
-                    if (man != null) {
-                        definePackage(pkgname, man, url);
-                    } else {
-                        definePackage(pkgname, null, null, null, null, null, null, null);
-                    }
-                } catch (IllegalArgumentException iae) {
-                    // parallel-capable class loaders: re-verify in case of a
-                    // race condition
-                    if (getAndVerifyPackage(pkgname, man, url) == null) {
-                        // Should never happen
-                        throw new AssertionError("Cannot find package " +
-                                                 pkgname);
-                    }
-                }
-            }
+            definePackageInternal(pkgname, man, url);
         }
         // Now read the class bytes and define the class
         java.nio.ByteBuffer bb = res.getByteBuffer();
@@ -786,7 +796,7 @@ final class FactoryURLClassLoader extends URLClassLoader {
         super(urls, acc);
     }
 
-    public final Class loadClass(String name, boolean resolve)
+    public final Class<?> loadClass(String name, boolean resolve)
         throws ClassNotFoundException
     {
         // First check if we have permission to access the package. This
