@@ -198,6 +198,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/reflect/Type.java \
     ojluni/src/main/java/java/lang/reflect/TypeVariable.java \
     ojluni/src/main/java/java/lang/reflect/UndeclaredThrowableException.java \
+    ojluni/src/main/java/java/lang/reflect/WeakCache.java \
     ojluni/src/main/java/java/lang/reflect/WildcardType.java \
     ojluni/src/main/java/java/lang/reflect/package-info.java \
     ojluni/src/main/java/java/lang/ref/PhantomReference.java \
