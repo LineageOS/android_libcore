@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2005, 2012, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -34,8 +34,6 @@ import java.util.TimeZone;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Date;
-
-import java.lang.NullPointerException;  // for javadoc
 import java.util.Locale;
 import java.util.Objects;
 
@@ -84,17 +82,11 @@ public final class HttpCookie implements Cloneable {
 
     /* ---------------- Fields -------------- */
 
-    //
     // The value of the cookie itself.
-    //
-
-    private String name;        // NAME= ... "$Name" style is reserved
+    private final String name;  // NAME= ... "$Name" style is reserved
     private String value;       // value of NAME
 
-    //
     // Attributes encoded in the header's cookie fields.
-    //
-
     private String comment;     // Comment=VALUE ... describes cookie's use
     private String commentURL;  // CommentURL="http URL" ... describes cookie's use
     private boolean toDiscard;  // Discard ... discard cookie unconditionally
@@ -117,21 +109,14 @@ public final class HttpCookie implements Cloneable {
     //
     // Hold the creation time (in seconds) of the http cookie for later
     // expiration calculation
-    //
-    private long whenCreated = 0;
+    private final long whenCreated;
 
-
-    //
     // Since the positive and zero max-age have their meanings,
     // this value serves as a hint as 'not specify max-age'
-    //
     private final static long MAX_AGE_UNSPECIFIED = -1;
 
-
-    //
     // date formats used by Netscape's cookie draft
     // as well as formats seen on various sites
-    //
     private final static String[] COOKIE_DATE_FORMATS = {
         "EEE',' dd-MMM-yyyy HH:mm:ss 'GMT'",
         "EEE',' dd MMM yyyy HH:mm:ss 'GMT'",
@@ -163,7 +148,6 @@ public final class HttpCookie implements Cloneable {
      * <p> By default, cookies are created according to the RFC 2965
      * cookie specification. The version can be changed with the
      * {@code setVersion} method.
-     *
      *
      * @param  name
      *         a {@code String} specifying the name of the cookie
@@ -239,10 +223,9 @@ public final class HttpCookie implements Cloneable {
             header = header.substring(SET_COOKIE.length());
         }
 
-
-        List<HttpCookie> cookies = new java.util.ArrayList<HttpCookie>();
-        // The Netscape cookie may have a comma in its expires attribute,
-        // while the comma is the delimiter in rfc 2965/2109 cookie header string.
+        List<HttpCookie> cookies = new java.util.ArrayList<>();
+        // The Netscape cookie may have a comma in its expires attribute, while
+        // the comma is the delimiter in rfc 2965/2109 cookie header string.
         // so the parse logic is slightly different
         if (version == 0) {
             // Netscape draft cookie
@@ -690,7 +673,8 @@ public final class HttpCookie implements Cloneable {
         if (embeddedDotInDomain == 0)
             embeddedDotInDomain = domain.indexOf('.', 1);
         if (!isLocalDomain
-            && (embeddedDotInDomain == -1 || embeddedDotInDomain == domain.length() - 1))
+            && (embeddedDotInDomain == -1 ||
+                embeddedDotInDomain == domain.length() - 1))
             return false;
 
         // if the host name contains no dot and the domain name
@@ -918,63 +902,92 @@ public final class HttpCookie implements Cloneable {
      * use a map to simulate method dispatch
      */
     static interface CookieAttributeAssignor {
-            public void assign(HttpCookie cookie, String attrName, String attrValue);
+            public void assign(HttpCookie cookie,
+                               String attrName,
+                               String attrValue);
     }
-    static java.util.Map<String, CookieAttributeAssignor> assignors = null;
+    static final java.util.Map<String, CookieAttributeAssignor> assignors =
+            new java.util.HashMap<>();
     static {
-        assignors = new java.util.HashMap<String, CookieAttributeAssignor>();
-        assignors.put("comment", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
-                    if (cookie.getComment() == null) cookie.setComment(attrValue);
+        assignors.put("comment", new CookieAttributeAssignor() {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
+                    if (cookie.getComment() == null)
+                        cookie.setComment(attrValue);
                 }
             });
-        assignors.put("commenturl", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
-                    if (cookie.getCommentURL() == null) cookie.setCommentURL(attrValue);
+        assignors.put("commenturl", new CookieAttributeAssignor() {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
+                    if (cookie.getCommentURL() == null)
+                        cookie.setCommentURL(attrValue);
                 }
             });
-        assignors.put("discard", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+        assignors.put("discard", new CookieAttributeAssignor() {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     cookie.setDiscard(true);
                 }
             });
         assignors.put("domain", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
-                    if (cookie.getDomain() == null) cookie.setDomain(attrValue);
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
+                    if (cookie.getDomain() == null)
+                        cookie.setDomain(attrValue);
                 }
             });
         assignors.put("max-age", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     try {
                         long maxage = Long.parseLong(attrValue);
-                        if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED) cookie.setMaxAge(maxage);
+                        if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED)
+                            cookie.setMaxAge(maxage);
                     } catch (NumberFormatException ignored) {
-                        throw new IllegalArgumentException("Illegal cookie max-age attribute");
+                        throw new IllegalArgumentException(
+                                "Illegal cookie max-age attribute");
                     }
                 }
             });
         assignors.put("path", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
-                    if (cookie.getPath() == null) cookie.setPath(attrValue);
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
+                    if (cookie.getPath() == null)
+                        cookie.setPath(attrValue);
                 }
             });
         assignors.put("port", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
-                    if (cookie.getPortlist() == null) cookie.setPortlist(attrValue == null ? "" : attrValue);
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
+                    if (cookie.getPortlist() == null)
+                        cookie.setPortlist(attrValue == null ? "" : attrValue);
                 }
             });
         assignors.put("secure", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     cookie.setSecure(true);
                 }
             });
         assignors.put("httponly", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     cookie.setHttpOnly(true);
                 }
             });
         assignors.put("version", new CookieAttributeAssignor(){
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     try {
                         int version = Integer.parseInt(attrValue);
                         cookie.setVersion(version);
@@ -984,7 +997,9 @@ public final class HttpCookie implements Cloneable {
                 }
             });
         assignors.put("expires", new CookieAttributeAssignor(){ // Netscape only
-                public void assign(HttpCookie cookie, String attrName, String attrValue) {
+                public void assign(HttpCookie cookie,
+                                   String attrName,
+                                   String attrValue) {
                     if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED) {
                         cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
                     }
@@ -992,8 +1007,8 @@ public final class HttpCookie implements Cloneable {
             });
     }
     private static void assignAttribute(HttpCookie cookie,
-                                       String attrName,
-                                       String attrValue)
+                                        String attrName,
+                                        String attrValue)
     {
         // strip off the surrounding "-sign if there's any
         attrValue = stripOffSurroundingQuote(attrValue);
@@ -1019,11 +1034,7 @@ public final class HttpCookie implements Cloneable {
      * as Netscape spec, but without leading "Cookie:" token.
      */
     private String toNetscapeHeaderString() {
-        StringBuilder sb = new StringBuilder();
-
-        sb.append(getName() + "=" + getValue());
-
-        return sb.toString();
+        return getName() + "=" + getValue();
     }
 
     /*

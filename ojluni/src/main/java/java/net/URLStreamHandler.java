@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -138,7 +138,7 @@ public abstract class URLStreamHandler {
         boolean querySet = false;
         // ----- END android -----
 
-        // FIX: should not assume query if opaque
+// FIX: should not assume query if opaque
         // Strip off the query part
         if (start < limit) {
             int queryStart = spec.indexOf('?');
