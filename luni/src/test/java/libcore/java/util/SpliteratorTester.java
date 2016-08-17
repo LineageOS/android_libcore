@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
@@ -55,8 +56,12 @@ public class SpliteratorTester {
         Consumer<T> consumer = (T value) -> recorder.add(value);
 
         // tryAdvance.
-        assertTrue(spliterator.tryAdvance(consumer));
-        assertTrue(expectedElements.contains(recorder.get(0)));
+        if (expectedElements.isEmpty()) {
+            assertFalse(spliterator.tryAdvance(consumer));
+        } else {
+            assertTrue(spliterator.tryAdvance(consumer));
+            assertTrue(expectedElements.contains(recorder.get(0)));
+        }
 
         // forEachRemaining.
         spliterator.forEachRemaining(consumer);
@@ -106,7 +111,8 @@ public class SpliteratorTester {
         ArrayList<T> recorder = new ArrayList<>();
 
         // Advance the original spliterator by one element.
-        assertTrue(spliterator.tryAdvance(value -> recorder.add(value)));
+        boolean didAdvance = spliterator.tryAdvance(value -> recorder.add(value));
+        assertEquals(!expectedElements.isEmpty(), didAdvance);
 
         // Try splitting it.
         Spliterator<T> split1 = spliterator.trySplit();
@@ -168,7 +174,12 @@ public class SpliteratorTester {
         assertEquals(iteration1, iteration2);
     }
 
+    /**
+     * Checks that the specified SIZED Spliterator reports containing the
+     * specified number of elements.
+     */
     public static <T> void runSizedTests(Spliterator<T> spliterator, int expectedSize) {
+        assertTrue(spliterator.hasCharacteristics(Spliterator.SIZED));
         assertEquals(expectedSize, spliterator.estimateSize());
         assertEquals(expectedSize, spliterator.getExactSizeIfKnown());
     }
@@ -177,14 +188,28 @@ public class SpliteratorTester {
         runSizedTests(spliterable.spliterator(), expectedSize);
     }
 
+    /**
+     * Checks that the specified Spliterator and its {@link Spliterator#trySplit()
+     * children} are SIZED and SUBSIZED and report containing the specified number
+     * of elements.
+     */
     public static <T> void runSubSizedTests(Spliterator<T> spliterator, int expectedSize) {
+        assertTrue(spliterator.hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
         assertEquals(expectedSize, spliterator.estimateSize());
         assertEquals(expectedSize, spliterator.getExactSizeIfKnown());
 
-
-        Spliterator<T> split1 = spliterator.trySplit();
-        assertEquals(expectedSize, spliterator.estimateSize() + split1.estimateSize());
-        assertEquals(expectedSize, spliterator.getExactSizeIfKnown() + split1.getExactSizeIfKnown());
+        Spliterator<T> child = spliterator.trySplit();
+        assertTrue(spliterator.hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+        if (expectedSize == 0) {
+            assertNull(child);
+            assertEquals(expectedSize, spliterator.estimateSize());
+            assertEquals(expectedSize, spliterator.getExactSizeIfKnown());
+        } else {
+            assertTrue(child.hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+            assertEquals(expectedSize, spliterator.estimateSize() + child.estimateSize());
+            assertEquals(expectedSize,
+                    spliterator.getExactSizeIfKnown() + child.getExactSizeIfKnown());
+        }
     }
 
     public static <T> void runSubSizedTests(Iterable<T> spliterable, int expectedSize) {
