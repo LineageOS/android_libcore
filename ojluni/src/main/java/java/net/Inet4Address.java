@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2000, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,9 +26,7 @@
 
 package java.net;
 
-import java.security.AccessController;
 import java.io.ObjectStreamException;
-import sun.security.action.*;
 import static android.system.OsConstants.*;
 
 /**
@@ -186,7 +184,6 @@ class Inet4Address extends InetAddress {
      * a loopback address; or false otherwise.
      * @since 1.4
      */
-    private static final int loopback = 2130706433; /* 127.0.0.1 */
     public boolean isLoopbackAddress() {
         /* 127.x.x.x */
         byte[] byteAddr = getAddress();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -268,10 +268,9 @@ class ServerSocket implements java.io.Closeable {
             AccessController.doPrivileged(
                 new PrivilegedExceptionAction<Void>() {
                     public Void run() throws NoSuchMethodException {
-                        Class[] cl = new Class[2];
-                        cl[0] = SocketAddress.class;
-                        cl[1] = Integer.TYPE;
-                        impl.getClass().getDeclaredMethod("connect", cl);
+                        impl.getClass().getDeclaredMethod("connect",
+                                                          SocketAddress.class,
+                                                          int.class);
                         return null;
                     }
                 });
@@ -409,11 +408,9 @@ class ServerSocket implements java.io.Closeable {
             return null;
         try {
             InetAddress in = getImpl().getInetAddress();
-            if (!NetUtil.doRevealLocalAddress()) {
-                SecurityManager sm = System.getSecurityManager();
-                if (sm != null)
-                    sm.checkConnect(in.getHostAddress(), -1);
-            }
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null)
+                sm.checkConnect(in.getHostAddress(), -1);
             return in;
         } catch (SecurityException e) {
             return InetAddress.getLoopbackAddress();
@@ -752,13 +749,10 @@ class ServerSocket implements java.io.Closeable {
         if (!isBound())
             return "ServerSocket[unbound]";
         InetAddress in;
-        if (!NetUtil.doRevealLocalAddress() &&
-                System.getSecurityManager() != null)
-        {
+        if (System.getSecurityManager() != null)
             in = InetAddress.getLoopbackAddress();
-        } else {
+        else
             in = impl.getInetAddress();
-        }
         return "ServerSocket[addr=" + in +
                 ",localport=" + impl.getLocalPort()  + "]";
     }
@@ -864,9 +858,9 @@ class ServerSocket implements java.io.Closeable {
      *
      * <p>Note, the value actually set in the accepted socket is determined by
      * calling {@link Socket#getReceiveBufferSize()}.
+     * @return the value of the {@link SocketOptions#SO_RCVBUF SO_RCVBUF}
      *         option for this {@code Socket}.
      * @exception SocketException if there is an error
-     *            in the underlying protocol, such as a TCP error.
      *            in the underlying protocol, such as a TCP error.
      * @see #setReceiveBufferSize(int)
      * @since 1.4

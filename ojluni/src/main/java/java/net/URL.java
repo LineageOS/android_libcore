@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,9 +28,6 @@ package java.net;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import sun.security.util.SecurityConstants;
@@ -1139,7 +1136,7 @@ public final class URL implements java.io.Serializable {
     /**
      * A table of protocol handlers.
      */
-    static Hashtable handlers = new Hashtable();
+    static Hashtable<String,URLStreamHandler> handlers = new Hashtable<>();
     private static Object streamHandlerLock = new Object();
 
     /**
@@ -1148,7 +1145,7 @@ public final class URL implements java.io.Serializable {
      */
     static URLStreamHandler getURLStreamHandler(String protocol) {
 
-        URLStreamHandler handler = (URLStreamHandler)handlers.get(protocol);
+        URLStreamHandler handler = handlers.get(protocol);
         if (handler == null) {
 
             boolean checkedWithFactory = false;
@@ -1169,8 +1166,9 @@ public final class URL implements java.io.Serializable {
 
                     String packagePrefix = packagePrefixIter.nextToken().trim();
                     try {
-                        String clsName = packagePrefix + "." + protocol +  ".Handler";
-                        Class cls = null;
+                        String clsName = packagePrefix + "." + protocol +
+                          ".Handler";
+                        Class<?> cls = null;
                         try {
                             ClassLoader cl = ClassLoader.getSystemClassLoader();
                             cls = Class.forName(clsName, true, cl);
@@ -1221,7 +1219,7 @@ public final class URL implements java.io.Serializable {
 
                 // Check again with hashtable just in case another
                 // thread created a handler since we last checked
-                handler2 = (URLStreamHandler)handlers.get(protocol);
+                handler2 = handlers.get(protocol);
 
                 if (handler2 != null) {
                     return handler2;
