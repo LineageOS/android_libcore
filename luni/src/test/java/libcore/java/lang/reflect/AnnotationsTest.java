@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import junit.framework.TestCase;
+import dalvik.system.VMRuntime;
 
 public final class AnnotationsTest extends TestCase {
 
@@ -299,7 +300,24 @@ public final class AnnotationsTest extends TestCase {
     }
 
     public void testRetentionPolicy() {
-        assertNull(RetentionAnnotations.class.getAnnotation(ClassRetentionAnnotation.class));
+        // b/29500035
+        int savedTargetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+        try {
+            // Test N and later behavior
+            VMRuntime.getRuntime().setTargetSdkVersion(24);
+            Annotation classRetentionAnnotation =
+                RetentionAnnotations.class.getAnnotation(ClassRetentionAnnotation.class);
+            assertNull(classRetentionAnnotation);
+
+            // Test pre-N behavior
+            VMRuntime.getRuntime().setTargetSdkVersion(23);
+            classRetentionAnnotation =
+                RetentionAnnotations.class.getAnnotation(ClassRetentionAnnotation.class);
+            assertNotNull(classRetentionAnnotation);
+        } finally {
+            VMRuntime.getRuntime().setTargetSdkVersion(savedTargetSdkVersion);
+        }
+
         assertNotNull(RetentionAnnotations.class.getAnnotation(RuntimeRetentionAnnotation.class));
         assertNull(RetentionAnnotations.class.getAnnotation(SourceRetentionAnnotation.class));
     }
