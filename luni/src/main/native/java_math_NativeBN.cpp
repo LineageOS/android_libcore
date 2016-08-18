@@ -68,6 +68,8 @@ static bool throwExceptionIfNecessary(JNIEnv* env) {
   } else {
     jniThrowException(env, "java/lang/ArithmeticException", message);
   }
+  // OpenSSL's error queue may contain multiple errors. Clean up after them.
+  ERR_clear_error();
   return true;
 }
 
