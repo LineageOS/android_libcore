@@ -33,8 +33,8 @@
 package java.lang.reflect;
 
 import com.android.dex.Dex;
+
 import java.lang.annotation.Annotation;
-import java.util.List;
 import libcore.reflect.GenericSignatureParser;
 import libcore.reflect.ListOfTypes;
 import libcore.reflect.Types;
@@ -44,37 +44,39 @@ import libcore.util.EmptyArray;
  * This class represents an abstract method. Abstract methods are either methods or constructors.
  * @hide
  */
-public abstract class AbstractMethod extends AccessibleObject {
+public abstract class AbstractMethod extends Executable {
     /** Bits encoding access (e.g. public, private) as well as other runtime specific flags */
-    protected int accessFlags;
+    @SuppressWarnings("unused") // set by runtime
+    private int accessFlags;
 
     /**
-     * The ArtMethod associated with this Method, requried for dispatching due to entrypoints
+     * The ArtMethod associated with this Method, required for dispatching due to entrypoints
      * Classloader is held live by the declaring class.
      * Hidden to workaround b/16828157.
      * @hide
      */
-    protected long artMethod;
+    @SuppressWarnings("unused") // set by runtime
+    private long artMethod;
 
     /** Method's declaring class */
-    protected Class<?> declaringClass;
+    @SuppressWarnings("unused") // set by runtime
+    private Class<?> declaringClass;
 
     /** Overriden method's declaring class (same as declaringClass unless declaringClass
-     * is a proxy class) */
-    protected Class<?> declaringClassOfOverriddenMethod;
+     * is a proxy class)
+     */
+    @SuppressWarnings("unused") // set by runtime
+    private Class<?> declaringClassOfOverriddenMethod;
 
     /** The method index of this method within its defining dex file */
-    protected int dexMethodIndex;
+    @SuppressWarnings("unused") // set by runtime
+    private int dexMethodIndex;
 
     /**
      * Hidden to workaround b/16828157.
      * @hide
      */
     protected AbstractMethod() {
-    }
-
-    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        return super.getAnnotation(annotationClass);
     }
 
     /**
@@ -99,56 +101,28 @@ public abstract class AbstractMethod extends AccessibleObject {
         return flags & 0xffff;  // mask out bits not used by Java
     }
 
-    int getModifiers() {
+    // Overrides {@link Executable#getModifiers()} - for ART behavior see fixMethodFlags().
+    @Override
+    public int getModifiers() {
         return fixMethodFlags(accessFlags);
     }
 
-    boolean isVarArgs() {
-        return (accessFlags & Modifier.VARARGS) != 0;
-    }
-
-    boolean isBridge() {
-        return (accessFlags & Modifier.BRIDGE) != 0;
-    }
-
-    boolean isSynthetic() {
+    // Overrides {@link Executable#isSynthetic()} - we can do it cheaply here.
+    @Override
+    public boolean isSynthetic() {
         return (accessFlags & Modifier.SYNTHETIC) != 0;
     }
 
-    boolean isDefault() {
-      return (accessFlags & Modifier.DEFAULT) != 0;
+    // Overrides {@link Executable#isVarArgs()} - we can do it cheaply here.
+    @Override
+    public boolean isVarArgs() {
+        return (accessFlags & Modifier.VARARGS) != 0;
     }
 
-    /**
-     * @hide
-     */
-    public final int getAccessFlags() {
-        return accessFlags;
-    }
-
-    /**
-     * Returns the class that declares this constructor or method.
-     */
-    Class<?> getDeclaringClass() {
+    @Override
+    public Class<?> getDeclaringClass() {
         return declaringClass;
     }
-
-    /**
-     * Returns the index of this method's ID in its dex file.
-     *
-     * @hide
-     */
-    public final int getDexMethodIndex() {
-        return dexMethodIndex;
-    }
-
-    /**
-     * Returns the name of the method or constructor represented by this
-     * instance.
-     *
-     * @return the name of this method
-     */
-    abstract public String getName();
 
     /**
      * Returns an array of {@code Class} objects associated with the parameter types of this
@@ -157,7 +131,8 @@ public abstract class AbstractMethod extends AccessibleObject {
      *
      * @return the parameter types
      */
-    Class<?>[] getParameterTypes() {
+    @Override
+    public Class<?>[] getParameterTypes() {
         Dex dex = declaringClassOfOverriddenMethod.getDex();
         short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
         if (types.length == 0) {
@@ -171,30 +146,23 @@ public abstract class AbstractMethod extends AccessibleObject {
         return parametersArray;
     }
 
-    /**
-     * Returns true if {@code other} has the same declaring class, name,
-     * parameters and return type as this method.
-     */
-    @Override public boolean equals(Object other) {
-        if (!(other instanceof AbstractMethod)) {
-            return false;
-        }
-        // Exactly one instance of each member in this runtime, todo, does this work for proxies?
-        AbstractMethod otherMethod = (AbstractMethod) other;
-        return this.declaringClass == otherMethod.declaringClass &&
-            this.dexMethodIndex == otherMethod.dexMethodIndex;
+    @Override
+    public int getParameterCount() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
+        return types.length;
     }
 
-    String toGenericString() {
-        return toGenericStringHelper();
+    @Override
+    public Type[] getGenericParameterTypes() {
+        return Types.getTypeArray(
+                getMethodOrConstructorGenericInfoInternal().genericParameterTypes, false);
     }
 
-    Type[] getGenericParameterTypes() {
-        return Types.getTypeArray(getMethodOrConstructorGenericInfo().genericParameterTypes, false);
-    }
-
-    Type[] getGenericExceptionTypes() {
-        return Types.getTypeArray(getMethodOrConstructorGenericInfo().genericExceptionTypes, false);
+    @Override
+    public Type[] getGenericExceptionTypes() {
+        return Types.getTypeArray(
+                getMethodOrConstructorGenericInfoInternal().genericExceptionTypes, false);
     }
 
     @Override public native Annotation[] getDeclaredAnnotations();
@@ -205,22 +173,33 @@ public abstract class AbstractMethod extends AccessibleObject {
         }
         return isAnnotationPresentNative(annotationType);
     }
-
     private native boolean isAnnotationPresentNative(Class<? extends Annotation> annotationType);
 
-    public Annotation[] getAnnotations() {
-        return super.getAnnotations();
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        if (annotationClass == null) {
+            throw new NullPointerException("annotationClass == null");
+        }
+        return getAnnotationNative(annotationClass);
     }
+    private native <T extends Annotation> T getAnnotationNative(Class<T> annotationClass);
+
+    @Override
+    public Annotation[][] getParameterAnnotations() {
+        Annotation[][] parameterAnnotations = getParameterAnnotationsNative();
+        if (parameterAnnotations == null) {
+            parameterAnnotations = new Annotation[getParameterTypes().length][0];
+        }
+        return parameterAnnotations;
+    }
+    private native Annotation[][] getParameterAnnotationsNative();
 
     /**
-     * Returns an array of arrays that represent the annotations of the formal
-     * parameters of this method. If there are no parameters on this method,
-     * then an empty array is returned. If there are no annotations set, then
-     * and array of empty arrays is returned.
-     *
-     * @return an array of arrays of {@code Annotation} instances
+     * @hide
      */
-    public abstract Annotation[][] getParameterAnnotations();
+    public final int getAccessFlags() {
+        return accessFlags;
+    }
 
     /**
      * Returns the constructor's signature in non-printable form. This is called
@@ -250,28 +229,15 @@ public abstract class AbstractMethod extends AccessibleObject {
     /**
      * Returns generic information associated with this method/constructor member.
      */
-    final GenericInfo getMethodOrConstructorGenericInfo() {
+    final GenericInfo getMethodOrConstructorGenericInfoInternal() {
         String signatureAttribute = getSignatureAttribute();
-        Member member;
-        Class<?>[] exceptionTypes;
-        boolean method = this instanceof Method;
-        if (method) {
-            Method m = (Method) this;
-            member = m;
-            exceptionTypes = m.getExceptionTypes();
-        } else {
-            Constructor<?> c = (Constructor<?>) this;
-            member = c;
-            exceptionTypes = c.getExceptionTypes();
-        }
+        Class<?>[] exceptionTypes = this.getExceptionTypes();
         GenericSignatureParser parser =
-            new GenericSignatureParser(member.getDeclaringClass().getClassLoader());
-        if (method) {
-            parser.parseForMethod((GenericDeclaration) this, signatureAttribute, exceptionTypes);
+            new GenericSignatureParser(this.getDeclaringClass().getClassLoader());
+        if (this instanceof Method) {
+            parser.parseForMethod(this, signatureAttribute, exceptionTypes);
         } else {
-            parser.parseForConstructor((GenericDeclaration) this,
-                                       signatureAttribute,
-                                       exceptionTypes);
+            parser.parseForConstructor(this, signatureAttribute, exceptionTypes);
         }
         return new GenericInfo(parser.exceptionTypes, parser.parameterTypes,
                                parser.returnType, parser.formalTypeParameters);
@@ -288,10 +254,13 @@ public abstract class AbstractMethod extends AccessibleObject {
         }
         return result.toString();
     }
-
     private native String[] getSignatureAnnotation();
 
-    protected boolean equalMethodParameters(Class<?>[] params) {
+    final boolean equalNameAndParametersInternal(Method m) {
+        return getName().equals(m.getName()) && equalMethodParameters(m.getParameterTypes());
+    }
+
+    private boolean equalMethodParameters(Class<?>[] params) {
         Dex dex = declaringClassOfOverriddenMethod.getDex();
         short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
         if (types.length != params.length) {
@@ -305,7 +274,7 @@ public abstract class AbstractMethod extends AccessibleObject {
         return true;
     }
 
-    protected int compareParameters(Class<?>[] params) {
+    final int compareMethodParametersInternal(Class<?>[] params) {
         Dex dex = declaringClassOfOverriddenMethod.getDex();
         short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
         int length = Math.min(types.length, params.length);
@@ -322,51 +291,26 @@ public abstract class AbstractMethod extends AccessibleObject {
         return types.length - params.length;
     }
 
-    /**
-     * Helper for Method and Constructor for toGenericString
-     */
-    final String toGenericStringHelper() {
-        StringBuilder sb = new StringBuilder(80);
-        GenericInfo info =  getMethodOrConstructorGenericInfo();
-        int modifiers = ((Member)this).getModifiers();
-        // append modifiers if any
-        if (modifiers != 0) {
-            sb.append(Modifier.toString(modifiers & ~Modifier.VARARGS)).append(' ');
-        }
-        // append type parameters
-        if (info.formalTypeParameters != null && info.formalTypeParameters.length > 0) {
-            sb.append('<');
-            for (int i = 0; i < info.formalTypeParameters.length; i++) {
-                Types.appendGenericType(sb, info.formalTypeParameters[i]);
-                if (i < info.formalTypeParameters.length - 1) {
-                    sb.append(",");
-                }
-            }
-            sb.append("> ");
-        }
-        Class<?> declaringClass = ((Member) this).getDeclaringClass();
-        if (this instanceof Constructor) {
-            // append constructor name
-            Types.appendTypeName(sb, declaringClass);
-        } else {
-            // append return type
-            Types.appendGenericType(sb, Types.getType(info.genericReturnType));
-            sb.append(' ');
-            // append method name
-            Types.appendTypeName(sb, declaringClass);
-            sb.append(".").append(((Method) this).getName());
-        }
-        // append parameters
-        sb.append('(');
-        Types.appendArrayGenericType(sb, info.genericParameterTypes.getResolvedTypes());
-        sb.append(')');
-        // append exceptions if any
-        Type[] genericExceptionTypeArray =
-            Types.getTypeArray(info.genericExceptionTypes, false);
-        if (genericExceptionTypeArray.length > 0) {
-            sb.append(" throws ");
-            Types.appendArrayGenericType(sb, genericExceptionTypeArray);
-        }
-        return sb.toString();
+    final String getMethodNameInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        int nameIndex = dex.nameIndexFromMethodIndex(dexMethodIndex);
+        return declaringClassOfOverriddenMethod.getDexCacheString(dex, nameIndex);
+    }
+
+    final Class<?> getMethodReturnTypeInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        int returnTypeIndex = dex.returnTypeIndexFromMethodIndex(dexMethodIndex);
+        // Note, in the case of a Proxy the dex cache types are equal.
+        return declaringClassOfOverriddenMethod.getDexCacheType(dex, returnTypeIndex);
+    }
+
+    /** A cheap implementation for {@link Method#isDefault()}. */
+    final boolean isDefaultMethodInternal() {
+        return (accessFlags & Modifier.DEFAULT) != 0;
+    }
+
+    /** A cheap implementation for {@link Method#isBridge()}. */
+    final boolean isBridgeMethodInternal() {
+        return (accessFlags & Modifier.BRIDGE) != 0;
     }
 }
