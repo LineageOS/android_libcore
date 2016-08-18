@@ -17,6 +17,7 @@
 package libcore.java.util;
 
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -101,5 +102,35 @@ public class HashtableTest extends junit.framework.TestCase {
         try {
             ht.replaceAll((k, v) -> null);
         } catch (NullPointerException expected) {}
+    }
+
+
+    /**
+     * Check that {@code Hashtable.Entry} compiles and refers to
+     * {@link java.util.Map.Entry}, which is required for source
+     * compatibility with earlier versions of Android.
+     * If this test fails to compile, the code under test is broken.
+     */
+    public void test_entryCompatibility_compiletime() {
+        Class c = Hashtable.Entry.class;
+        assertEquals("java.util.Map$Entry", c.getName());
+        assertEquals(Map.Entry.class, c);
+    }
+
+    /**
+     * Checks that there is no nested class named 'Entry' in Hashtable.
+     * If {@link #test_entryCompatibility_compiletime()} passes but
+     * this test fails, then the test was probably compiled against a
+     * version of Hashtable that does not have a nested Entry class,
+     * but run against a version that does.
+     */
+    public void test_entryCompatibility_runtime() {
+        String forbiddenClassName = "java.util.Hashtable$Entry";
+        try {
+            Class.forName(forbiddenClassName);
+            fail("Class " + forbiddenClassName + " should not exist");
+        } catch (ClassNotFoundException expected) {
+            // pass
+        }
     }
 }
