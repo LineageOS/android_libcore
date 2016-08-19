@@ -51,6 +51,9 @@ public class SocketTest extends junit.framework.TestCase {
     // This hostname is required to resolve to 127.0.0.1 and ::1 for all tests to pass.
     private static final String ALL_LOOPBACK_HOSTNAME = "loopback46.unittest.grpc.io";
 
+    // From net/inet_ecn.h
+    private static final int INET_ECN_MASK = 0x3;
+
     // See http://b/2980559.
     public void test_close() throws Exception {
         Socket s = new Socket();
@@ -249,8 +252,14 @@ public class SocketTest extends junit.framework.TestCase {
 
     public void test_setTrafficClass() throws Exception {
         Socket s = new Socket();
-        s.setTrafficClass(123);
-        assertEquals(123, s.getTrafficClass());
+
+        for (int i = 0; i <= 255; ++i) {
+            s.setTrafficClass(i);
+
+            // b/30909505
+            // Linux does not set ECN bits for STREAM sockets, so these bits should be zero.
+            assertEquals(i & ~INET_ECN_MASK, s.getTrafficClass());
+        }
     }
 
     public void testReadAfterClose() throws Exception {
