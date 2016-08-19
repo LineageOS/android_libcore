@@ -1219,14 +1219,7 @@ class DatagramSocket implements java.io.Closeable {
 
         if (isClosed())
             throw new SocketException("Socket is closed");
-        try {
-            getImpl().setOption(SocketOptions.IP_TOS, tc);
-        } catch (SocketException se) {
-            // not supported if socket already connected
-            // Solaris returns error in such cases
-            if(!isConnected())
-                throw se;
-        }
+        getImpl().setOption(SocketOptions.IP_TOS, new Integer(tc));
     }
 
     /**
