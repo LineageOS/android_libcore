@@ -20,6 +20,10 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
 
 import junit.framework.TestCase;
 
@@ -187,24 +191,88 @@ public final class MethodTest extends TestCase {
 
     // http://b/1045939
     public void testMethodToString() throws Exception {
-        assertEquals("public final native void java.lang.Object.notify()",
-                Object.class.getMethod("notify", new Class[] { }).toString());
-        assertEquals("public java.lang.String java.lang.Object.toString()",
-                Object.class.getMethod("toString", new Class[] { }).toString());
-        assertEquals("public final native void java.lang.Object.wait(long,int)"
+        checkToString("public final native void java.lang.Object.notify()",
+                Object.class, "notify");
+        checkToString("public java.lang.String java.lang.Object.toString()",
+                Object.class, "toString");
+        checkToString("public final native void java.lang.Object.wait(long,int)"
                 + " throws java.lang.InterruptedException",
-                Object.class.getMethod("wait", new Class[] { long.class, int.class }).toString());
-        assertEquals("public boolean java.lang.Object.equals(java.lang.Object)",
-                Object.class.getMethod("equals", new Class[] { Object.class }).toString());
-        assertEquals("public static java.lang.String java.lang.String.valueOf(char[])",
-                String.class.getMethod("valueOf", new Class[] { char[].class }).toString());
-        assertEquals( "public java.lang.Process java.lang.Runtime.exec(java.lang.String[])"
+                Object.class, "wait", long.class, int.class);
+        checkToString("public boolean java.lang.Object.equals(java.lang.Object)",
+                Object.class, "equals", Object.class);
+        checkToString("public static java.lang.String java.lang.String.valueOf(char[])",
+                String.class, "valueOf", char[].class);
+        checkToString( "public java.lang.Process java.lang.Runtime.exec(java.lang.String[])"
                 + " throws java.io.IOException",
-                Runtime.class.getMethod("exec", new Class[] { String[].class }).toString());
+                Runtime.class, "exec", String[].class);
         // http://b/18488857
-        assertEquals(
+        checkToString(
                 "public int java.lang.String.compareTo(java.lang.Object)",
-                String.class.getMethod("compareTo", Object.class).toString());
+                String.class, "compareTo", Object.class);
+
+        // Generic methods
+        checkToString(
+                "public abstract java.lang.Object java.util.List.get(int)",
+                List.class, "get", int.class);
+        checkToString(
+                "public abstract boolean java.util.List.add(java.lang.Object)",
+                List.class, "add", Object.class);
+        checkToString(
+                "public static void java.util.Collections.sort(java.util.List,java.util.Comparator)",
+                Collections.class, "sort", List.class, Comparator.class);
+
+        // Java 8 language addition: default interface method.
+        checkToString(
+                "public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
+                Function.class, "compose", Function.class);
+        // Java 8 language addition: static interface method.
+        checkToString(
+                "public static java.util.function.Function java.util.function.Function.identity()",
+                Function.class, "identity");
+    }
+
+    private static void checkToString(String expected, Class<?> clazz, String methodName,
+            Class... methodArgTypes) throws Exception {
+        Method m = clazz.getMethod(methodName, methodArgTypes);
+        assertEquals(expected, m.toString());
+    }
+
+    public void testMethodToGenericString() throws Exception {
+        // Non-generic methods.
+        checkToGenericString("public final native void java.lang.Object.notify()",
+                Object.class, "notify");
+        checkToGenericString("public java.lang.String java.lang.Object.toString()",
+                Object.class, "toString");
+        checkToGenericString("public final native void java.lang.Object.wait(long,int)"
+                + " throws java.lang.InterruptedException",
+                Object.class, "wait", long.class, int.class);
+
+        // Generic methods
+        checkToGenericString(
+                "public abstract E java.util.List.get(int)",
+                List.class, "get", int.class);
+        checkToGenericString(
+                "public abstract boolean java.util.List.add(E)",
+                List.class, "add", Object.class);
+        checkToGenericString(
+                "public static <T> void java.util.Collections.sort(java.util.List<T>,java.util.Comparator<? super T>)",
+                Collections.class, "sort", List.class, Comparator.class);
+
+
+        // Java 8 language addition: default interface method.
+        checkToGenericString(
+                "public default <V> java.util.function.Function<V, R> java.util.function.Function.compose(java.util.function.Function<? super V, ? extends T>)",
+                Function.class, "compose", Function.class);
+        // Java 8 language addition: static interface method.
+        checkToGenericString(
+                "public static <T> java.util.function.Function<T, T> java.util.function.Function.identity()",
+                Function.class, "identity");
+    }
+
+    private static void checkToGenericString(String expected, Class<?> clazz, String methodName,
+            Class... methodArgTypes) throws Exception {
+        Method m = clazz.getMethod(methodName, methodArgTypes);
+        assertEquals(expected, m.toGenericString());
     }
 
     // Tests that the "varargs" modifier is handled correctly.
