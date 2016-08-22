@@ -228,35 +228,48 @@ public final class FileInputStreamTest extends TestCase {
     // http://b/28192631
     public void testSkipOnLargeFiles() throws Exception {
         File largeFile = File.createTempFile("FileInputStreamTest_testSkipOnLargeFiles", "");
-
         // Required space is 3.1 GB: 3GB for file plus 100M headroom.
         final long requiredFreeSpaceBytes = 3172L * 1024 * 1024;
-
+        long fileSize = 3 * 1024L * 1024 * 1024; // 3 GiB
         // If system doesn't have enough space free for this test, skip it.
         final StructStatVfs statVfs = Os.statvfs(largeFile.getPath());
         final long freeSpaceAvailableBytes = statVfs.f_bsize * statVfs.f_bavail;
         if (freeSpaceAvailableBytes < requiredFreeSpaceBytes) {
             return;
         }
-
         try {
-            FileOutputStream fos = new FileOutputStream(largeFile);
-            try {
-                byte[] buffer = new byte[1024 * 1024]; // 1 MB
-                for (int i = 0; i < 3 * 1024; i++) { // 3 GB
-                    fos.write(buffer);
-                }
-            } finally {
-                fos.close();
+            allocateEmptyFile(largeFile, fileSize);
+            assertEquals(fileSize, largeFile.length());
+            try (FileInputStream fis = new FileInputStream(largeFile)) {
+                long lastByte = fileSize - 1;
+                assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
+                assertEquals(lastByte, fis.skip(lastByte));
             }
-
-            FileInputStream fis = new FileInputStream(largeFile);
-            long lastByte = 3 * 1024 * 1024 * 1024L - 1;
-            assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
-            assertEquals(lastByte, fis.skip(lastByte));
         } finally {
             // Proactively cleanup - it's a pretty large file.
             assertTrue(largeFile.delete());
+        }
+    }
+
+    /**
+     * Allocates a file to the specified size using fallocate, falling back to ftruncate.
+     */
+    private static void allocateEmptyFile(File file, long fileSize)
+            throws IOException, InterruptedException {
+        // fallocate is much faster than ftruncate (<<1sec rather than 24sec for 3 GiB on Nexus 6P)
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            try {
+                Os.posix_fallocate(fos.getFD(), 0, fileSize);
+                return;
+            } catch (ErrnoException e) {
+                // Fall back to ftruncate, which works on all filesystems but is slower
+            }
+        }
+        // Need to reopen the file to get a valid FileDescriptor
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            Os.ftruncate(fos.getFD(), fileSize);
+        } catch (ErrnoException e2) {
+            throw new IOException("Failed to truncate: " + file, e2);
         }
     }
 
