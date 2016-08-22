@@ -109,12 +109,9 @@ public class HashtableTest extends junit.framework.TestCase {
      * Check that {@code Hashtable.Entry} compiles and refers to
      * {@link java.util.Map.Entry}, which is required for source
      * compatibility with earlier versions of Android.
-     * If this test fails to compile, the code under test is broken.
      */
     public void test_entryCompatibility_compiletime() {
-        Class c = Hashtable.Entry.class;
-        assertEquals("java.util.Map$Entry", c.getName());
-        assertEquals(Map.Entry.class, c);
+        assertEquals(Map.Entry.class, Hashtable.Entry.class);
     }
 
     /**
@@ -130,7 +127,6 @@ public class HashtableTest extends junit.framework.TestCase {
             Class.forName(forbiddenClassName);
             fail("Class " + forbiddenClassName + " should not exist");
         } catch (ClassNotFoundException expected) {
-            // pass
         }
     }
 }
