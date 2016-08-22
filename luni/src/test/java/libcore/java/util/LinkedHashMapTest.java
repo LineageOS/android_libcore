@@ -331,12 +331,9 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
      * Check that {@code LinkedHashMap.Entry} compiles and refers to
      * {@link java.util.Map.Entry}, which is required for source
      * compatibility with earlier versions of Android.
-     * If this test fails to compile, the code under test is broken.
      */
     public void test_entryCompatibility_compiletime() {
-        Class c = LinkedHashMap.Entry.class;
-        assertEquals("java.util.Map$Entry", c.getName());
-        assertEquals(Map.Entry.class, c);
+        assertEquals(Map.Entry.class, LinkedHashMap.Entry.class);
     }
 
     /**
@@ -352,7 +349,6 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
             Class.forName(forbiddenClassName);
             fail("Class " + forbiddenClassName + " should not exist");
         } catch (ClassNotFoundException expected) {
-            // pass
         }
     }
 
