@@ -217,6 +217,33 @@ public class TreeMapTest extends TestCase {
         }
     }
 
+    // Tests for naming of TreeMap.TreeMapEntry. Based on similar tests
+    // that exist for LinkedHashMap.LinkedHashMapEntry.
+    /**
+     * Check that {@code TreeMap.Entry} compiles and refers to
+     * {@link java.util.Map.Entry}, which is required for source
+     * compatibility with earlier versions of Android.
+     */
+    public void test_entryCompatibility_compiletime() {
+        assertEquals(Map.Entry.class, TreeMap.Entry.class);
+    }
+
+    /**
+     * Checks that there is no nested class named 'Entry' in TreeMap.
+     * If {@link #test_entryCompatibility_compiletime()} passes but
+     * this test fails, then the test was probably compiled against a
+     * version of TreeMap that does not have a nested Entry class,
+     * but run against a version that does.
+     */
+    public void test_entryCompatibility_runtime() {
+        String forbiddenClassName = "java.util.TreeMap$Entry";
+        try {
+            Class.forName(forbiddenClassName);
+            fail("Class " + forbiddenClassName + " should not exist");
+        } catch (ClassNotFoundException expected) {
+        }
+    }
+
     public void testClassCastExceptions() {
         Map<Object, Object> map = new TreeMap<Object, Object>();
         map.put("A", "a");
