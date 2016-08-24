@@ -536,7 +536,9 @@ public final class String
      *          object.
      */
     public int length() {
-        return count;
+        // For the compression purposes (save the characters as 8-bit if all characters
+        // are ASCII), the first bit of "count" used as the compression flag.
+        return (count & Integer.MAX_VALUE);
     }
 
     /**
@@ -548,7 +550,7 @@ public final class String
      * @since 1.6
      */
     public boolean isEmpty() {
-        return count == 0;
+        return length() == 0;
     }
 
     /**
@@ -585,7 +587,7 @@ public final class String
      * {@code char} value at the following index is in the
      * low-surrogate range, then the supplementary code point
      * corresponding to this surrogate pair is returned. Otherwise,
-     * the {@code char} value at the given index is returned.
+     * the {@code char} value at the given index is returned
      *
      * @param      index the index to the {@code char} values
      * @return     the code point value of the character at the
@@ -596,7 +598,7 @@ public final class String
      * @since      1.5
      */
     public int codePointAt(int index) {
-        if ((index < 0) || (index >= count)) {
+        if ((index < 0) || (index >= length())) {
             throw new StringIndexOutOfBoundsException(index);
         }
         return Character.codePointAt(this, index);
@@ -626,7 +628,7 @@ public final class String
      */
     public int codePointBefore(int index) {
         int i = index - 1;
-        if ((i < 0) || (i >= count)) {
+        if ((i < 0) || (i >= length())) {
             throw new StringIndexOutOfBoundsException(index);
         }
         return Character.codePointBefore(this, index);
@@ -654,7 +656,7 @@ public final class String
      * @since  1.5
      */
     public int codePointCount(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || endIndex > count || beginIndex > endIndex) {
+        if (beginIndex < 0 || endIndex > length() || beginIndex > endIndex) {
             throw new IndexOutOfBoundsException();
         }
         return Character.codePointCount(this, beginIndex, endIndex);
@@ -681,7 +683,7 @@ public final class String
      * @since 1.5
      */
     public int offsetByCodePoints(int index, int codePointOffset) {
-        if (index < 0 || index > count) {
+        if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException();
         }
         return Character.offsetByCodePoints(this, index, codePointOffset);
@@ -692,7 +694,7 @@ public final class String
      * This method doesn't perform any range checking.
      */
     void getChars(char dst[], int dstBegin) {
-        getCharsNoCheck(0, count, dst, dstBegin);
+        getCharsNoCheck(0, length(), dst, dstBegin);
     }
 
     /**
@@ -733,7 +735,7 @@ public final class String
         if (srcBegin < 0) {
             throw new StringIndexOutOfBoundsException(this, srcBegin);
         }
-        if (srcEnd > count) {
+        if (srcEnd > length()) {
             throw new StringIndexOutOfBoundsException(this, srcEnd);
         }
 
@@ -816,7 +818,7 @@ public final class String
         if (srcBegin < 0) {
             throw new StringIndexOutOfBoundsException(this, srcBegin);
         }
-        if (srcEnd > count) {
+        if (srcEnd > length()) {
             throw new StringIndexOutOfBoundsException(this, srcEnd);
         }
         if (srcBegin > srcEnd) {
@@ -881,15 +883,16 @@ public final class String
             throw new NullPointerException("charset == null");
         }
 
+        final int len = length();
         final String name = charset.name();
         if ("UTF-8".equals(name)) {
-            return CharsetUtils.toUtf8Bytes(this, 0, count);
+            return CharsetUtils.toUtf8Bytes(this, 0, len);
         } else if ("ISO-8859-1".equals(name)) {
-            return CharsetUtils.toIsoLatin1Bytes(this, 0, count);
+            return CharsetUtils.toIsoLatin1Bytes(this, 0, len);
         } else if ("US-ASCII".equals(name)) {
-            return CharsetUtils.toAsciiBytes(this, 0, count);
+            return CharsetUtils.toAsciiBytes(this, 0, len);
         } else if ("UTF-16BE".equals(name)) {
-            return CharsetUtils.toBigEndianUtf16Bytes(this, 0, count);
+            return CharsetUtils.toBigEndianUtf16Bytes(this, 0, len);
         }
 
         ByteBuffer buffer = charset.encode(this);
@@ -936,8 +939,8 @@ public final class String
         }
         if (anObject instanceof String) {
             String anotherString = (String) anObject;
-            int n = count;
-            if (n == anotherString.count) {
+            int n = length();
+            if (n == anotherString.length()) {
                 int i = 0;
                 while (n-- != 0) {
                     if (charAt(i) != anotherString.charAt(i))
@@ -971,7 +974,7 @@ public final class String
 
     private boolean nonSyncContentEquals(AbstractStringBuilder sb) {
         char v2[] = sb.getValue();
-        int n = count;
+        int n = length();
         if (n != sb.length()) {
             return false;
         }
@@ -1015,7 +1018,7 @@ public final class String
             return equals(cs);
         }
         // Argument is a generic CharSequence
-        int n = count;
+        int n = length();
         if (n != cs.length()) {
             return false;
         }
@@ -1056,10 +1059,11 @@ public final class String
      * @see  #equals(Object)
      */
     public boolean equalsIgnoreCase(String anotherString) {
+        final int len = length();
         return (this == anotherString) ? true
                 : (anotherString != null)
-                && (anotherString.count == count)
-                && regionMatches(true, 0, anotherString, 0, count);
+                && (anotherString.length() == len)
+                && regionMatches(true, 0, anotherString, 0, len);
     }
 
     /**
@@ -1213,8 +1217,8 @@ public final class String
         int po = ooffset;
         // Note: toffset, ooffset, or len might be near -1>>>1.
         if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long)count - len)
-                || (ooffset > (long)other.count - len)) {
+                || (toffset > (long)length() - len)
+                || (ooffset > (long)other.length() - len)) {
             return false;
         }
         while (len-- > 0) {
@@ -1281,8 +1285,8 @@ public final class String
         int po = ooffset;
         // Note: toffset, ooffset, or len might be near -1>>>1.
         if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long)count - len)
-                || (ooffset > (long)other.count - len)) {
+                || (toffset > (long)length() - len)
+                || (ooffset > (long)other.length() - len)) {
             return false;
         }
         while (len-- > 0) {
@@ -1334,9 +1338,9 @@ public final class String
     public boolean startsWith(String prefix, int toffset) {
         int to = toffset;
         int po = 0;
-        int pc = prefix.count;
+        int pc = prefix.length();
         // Note: toffset might be near -1>>>1.
-        if ((toffset < 0) || (toffset > count - pc)) {
+        if ((toffset < 0) || (toffset > length() - pc)) {
             return false;
         }
         while (--pc >= 0) {
@@ -1376,7 +1380,7 @@ public final class String
      *          as determined by the {@link #equals(Object)} method.
      */
     public boolean endsWith(String suffix) {
-        return startsWith(suffix, count - suffix.count);
+        return startsWith(suffix, length() - suffix.length());
     }
 
     /**
@@ -1394,8 +1398,9 @@ public final class String
      */
     public int hashCode() {
         int h = hash;
-        if (h == 0 && count > 0) {
-            for (int i = 0; i < count; i++) {
+        final int len = length();
+        if (h == 0 && len > 0) {
+            for (int i = 0; i < len; i++) {
                 h = 31 * h + charAt(i);
             }
             hash = h;
@@ -1471,7 +1476,7 @@ public final class String
      *          if the character does not occur.
      */
     public int indexOf(int ch, int fromIndex) {
-        final int max = count;
+        final int max = length();
         if (fromIndex < 0) {
             fromIndex = 0;
         } else if (fromIndex >= max) {
@@ -1502,7 +1507,7 @@ public final class String
         if (Character.isValidCodePoint(ch)) {
             final char hi = Character.highSurrogate(ch);
             final char lo = Character.lowSurrogate(ch);
-            final int max = count - 1;
+            final int max = length() - 1;
             for (int i = fromIndex; i < max; i++) {
                 if (charAt(i) == hi && charAt(i + 1) == lo) {
                     return i;
@@ -1536,7 +1541,7 @@ public final class String
      *          {@code -1} if the character does not occur.
      */
     public int lastIndexOf(int ch) {
-        return lastIndexOf(ch, count - 1);
+        return lastIndexOf(ch, length() - 1);
     }
 
     /**
@@ -1577,7 +1582,7 @@ public final class String
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
-            int i = Math.min(fromIndex, count - 1);
+            int i = Math.min(fromIndex, length() - 1);
             for (; i >= 0; i--) {
                 if (charAt(i) == ch) {
                     return i;
@@ -1596,7 +1601,7 @@ public final class String
         if (Character.isValidCodePoint(ch)) {
             char hi = Character.highSurrogate(ch);
             char lo = Character.lowSurrogate(ch);
-            int i = Math.min(fromIndex, count - 2);
+            int i = Math.min(fromIndex, length() - 2);
             for (; i >= 0; i--) {
                 if (charAt(i) == hi && charAt(i + 1) == lo) {
                     return i;
@@ -1656,18 +1661,20 @@ public final class String
     static int indexOf(String source,
                        String target,
                        int fromIndex) {
-        if (fromIndex >= source.count) {
-            return (target.count == 0 ? source.count : -1);
+        final int sourceLength = source.length();
+        final int targetLength = target.length();
+        if (fromIndex >= sourceLength) {
+            return (targetLength == 0 ? sourceLength : -1);
         }
         if (fromIndex < 0) {
             fromIndex = 0;
         }
-        if (target.count == 0) {
+        if (targetLength == 0) {
             return fromIndex;
         }
 
         char first = target.charAt(0);
-        int max = (source.count - target.count);
+        int max = (sourceLength - targetLength);
 
         for (int i = fromIndex; i <= max; i++) {
             /* Look for first character. */
@@ -1678,7 +1685,7 @@ public final class String
             /* Found first character, now look at the rest of v2 */
             if (i <= max) {
                 int j = i + 1;
-                int end = j + target.count - 1;
+                int end = j + targetLength - 1;
                 for (int k = 1; j < end && source.charAt(j)
                          == target.charAt(k); j++, k++);
 
@@ -1758,7 +1765,7 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(String str) {
-        return lastIndexOf(str, count);
+        return lastIndexOf(str, length());
     }
 
     /**
@@ -1797,7 +1804,9 @@ public final class String
          * Check arguments; return immediately where possible. For
          * consistency, don't check for null str.
          */
-        int rightIndex = source.count - target.count;
+        final int sourceLength = source.length();
+        final int targetLength = target.length();
+        int rightIndex = sourceLength - targetLength;
         if (fromIndex < 0) {
             return -1;
         }
@@ -1805,13 +1814,13 @@ public final class String
             fromIndex = rightIndex;
         }
         /* Empty string always matches. */
-        if (target.count == 0) {
+        if (targetLength == 0) {
             return fromIndex;
         }
 
-        int strLastIndex = target.count - 1;
+        int strLastIndex = targetLength - 1;
         char strLastChar = target.charAt(strLastIndex);
-        int min = target.count - 1;
+        int min = targetLength - 1;
         int i = min + fromIndex;
 
         startSearchForLastChar:
@@ -1823,7 +1832,7 @@ public final class String
                 return -1;
             }
             int j = i - 1;
-            int start = j - (target.count - 1);
+            int start = j - (targetLength - 1);
             int k = strLastIndex - 1;
 
             while (j > start) {
@@ -1916,7 +1925,7 @@ public final class String
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(this, beginIndex);
         }
-        int subLen = count - beginIndex;
+        int subLen = length() - beginIndex;
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(this, beginIndex);
         }
@@ -1949,7 +1958,7 @@ public final class String
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(this, beginIndex);
         }
-        if (endIndex > count) {
+        if (endIndex > length()) {
             throw new StringIndexOutOfBoundsException(this, endIndex);
         }
         int subLen = endIndex - beginIndex;
@@ -1957,7 +1966,7 @@ public final class String
             throw new StringIndexOutOfBoundsException(subLen);
         }
 
-        return ((beginIndex == 0) && (endIndex == count)) ? this
+        return ((beginIndex == 0) && (endIndex == length())) ? this
                 : fastSubstring(beginIndex, subLen);
     }
 
@@ -2050,7 +2059,8 @@ public final class String
     public String replace(char oldChar, char newChar) {
         String replaced = this;
         if (oldChar != newChar) {
-            for (int i = 0; i < count; ++i) {
+            final int len = length();
+            for (int i = 0; i < len; ++i) {
                 if (charAt(i) == oldChar) {
                     if (replaced == this) {
                         replaced = StringFactory.newStringFromString(this);
@@ -2227,12 +2237,13 @@ public final class String
         // See commit 870b23b3febc85 and http://code.google.com/p/android/issues/detail?id=8807
         // An empty target is inserted at the start of the string, the end of the string and
         // between all characters.
+        final int len = length();
         if (targetStr.isEmpty()) {
             // Note that overallocates by |replacement.size()| if |this| is the empty string, but
             // that should be a rare case within an already nonsensical case.
-            StringBuilder sb = new StringBuilder(replacementStr.length() * (count + 2) + count);
+            StringBuilder sb = new StringBuilder(replacementStr.length() * (len + 2) + len);
             sb.append(replacementStr);
-            for (int i = 0; i < count; ++i) {
+            for (int i = 0; i < len; ++i) {
                 sb.append(charAt(i));
                 sb.append(replacementStr);
             }
@@ -2250,16 +2261,16 @@ public final class String
             }
 
             if (sb == null) {
-                sb = new StringBuilder(count);
+                sb = new StringBuilder(len);
             }
 
             sb.append(this, lastMatch, currentMatch);
             sb.append(replacementStr);
-            lastMatch = currentMatch + targetStr.count;
+            lastMatch = currentMatch + targetStr.length();
         }
 
         if (sb != null) {
-            sb.append(this, lastMatch, count);
+            sb.append(this, lastMatch, len);
             return sb.toString();
         } else {
             return this;
@@ -2616,7 +2627,7 @@ public final class String
      * @since   1.1
      */
     public String toUpperCase(Locale locale) {
-        return CaseMapper.toUpperCase(locale, this, count);
+        return CaseMapper.toUpperCase(locale, this, length());
     }
 
     /**
@@ -2674,7 +2685,7 @@ public final class String
      *          trailing white space.
      */
     public String trim() {
-        int len = count;
+        int len = length();
         int st = 0;
 
         while ((st < len) && (charAt(st) <= ' ')) {
@@ -2683,7 +2694,7 @@ public final class String
         while ((st < len) && (charAt(len - 1) <= ' ')) {
             len--;
         }
-        return ((st > 0) || (len < count)) ? substring(st, len) : this;
+        return ((st > 0) || (len < length())) ? substring(st, len) : this;
     }
 
     /**
