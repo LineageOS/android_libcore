@@ -213,7 +213,7 @@ public class NetworkInterfaceTest extends TestCase {
         Set<String> actualNiNames = new HashSet<>();
         Collections.list(nifs).forEach(ni -> actualNiNames.add(ni.getName()));
 
-        assertTrue(actualNiNames.equals(expectedNiNames));
+        assertEquals(expectedNiNames, actualNiNames);
     }
 
     // Is ifName a name of a Ethernet device?
