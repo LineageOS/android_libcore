@@ -572,6 +572,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/DigestInputStream.java \
     ojluni/src/main/java/java/security/DigestOutputStream.java \
     ojluni/src/main/java/java/security/DomainCombiner.java \
+    ojluni/src/main/java/java/security/DomainLoadStoreParameter.java \
     ojluni/src/main/java/java/security/GeneralSecurityException.java \
     ojluni/src/main/java/java/security/GuardedObject.java \
     ojluni/src/main/java/java/security/Guard.java \
