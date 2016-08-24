@@ -634,4 +634,15 @@ public class OsTest extends TestCase {
       }
     }
   }
+
+  public void test_readlink() throws Exception {
+    // ext2 and ext4 have PAGE_SIZE limits on symlink targets.
+    String xs = "";
+    for (int i = 0; i < (4096 - 1); ++i) xs += "x";
+
+    String path = System.getProperty("java.io.tmpdir") + "/symlink";
+    Libcore.os.symlink(xs, path);
+
+    assertEquals(xs, Libcore.os.readlink(path));
+  }
 }
