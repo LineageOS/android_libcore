@@ -199,7 +199,7 @@ public class NetworkInterfaceTest extends TestCase {
         BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
         Set<String> expectedNiNames = new HashSet<>();
         for (String s; (s = stdInput.readLine()) != null; ) {
-            String[] split = s.split(": ");
+            String[] split = s.split(": |@");
             try {
                 if (split.length > 2) {
                     expectedNiNames.add(split[1]);
