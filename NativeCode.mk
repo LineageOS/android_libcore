@@ -229,7 +229,7 @@ endif
 LOCAL_MODULE_TAGS := optional
 LOCAL_MODULE := libjavacore
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/NativeCode.mk
-LOCAL_SHARED_LIBRARIES += $(core_shared_libraries) libexpat libicuuc-host libicui18n-host libcrypto libz-host libziparchive-host
+LOCAL_SHARED_LIBRARIES += $(core_shared_libraries) libexpat libicuuc-host libicui18n-host libcrypto libz-host libziparchive
 LOCAL_STATIC_LIBRARIES += $(core_static_libraries)
 LOCAL_MULTILIB := both
 LOCAL_CXX_STL := libc++
