@@ -53,6 +53,13 @@ public final class MethodTest extends TestCase {
         assertEquals(expectedParameters[0], parameters[0]);
     }
 
+    public void test_getParameterCount() throws Exception {
+        Class[] expectedParameters = new Class[] { Object.class };
+        Method method = MethodTestHelper.class.getMethod("m2", expectedParameters);
+        int count = method.getParameterCount();
+        assertEquals(1, count);
+    }
+
     public void testGetMethodWithPrivateMethodAndInterfaceMethod() throws Exception {
         assertEquals(InterfaceA.class, Sub.class.getMethod("a").getDeclaringClass());
     }
@@ -222,11 +229,9 @@ public final class MethodTest extends TestCase {
                 Collections.class, "sort", List.class, Comparator.class);
 
         // Java 8 language addition: default interface method.
-        // Commented until http://b/28666126 is complete: toString() for default methods not
-        // implemented yet.
-        // checkToString(
-        //        "public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
-        //        Function.class, "compose", Function.class);
+        checkToString(
+                "public default java.util.function.Function java.util.function.Function.compose(java.util.function.Function)",
+                Function.class, "compose", Function.class);
         // Java 8 language addition: static interface method.
         checkToString(
                 "public static java.util.function.Function java.util.function.Function.identity()",
@@ -262,11 +267,9 @@ public final class MethodTest extends TestCase {
 
 
         // Java 8 language addition: default interface method.
-        // Commented until http://b/28666126 is complete: toGenericString() for default methods not
-        // implemented yet.
-        // checkToGenericString(
-        //        "public default <V> java.util.function.Function<V, R> java.util.function.Function.compose(java.util.function.Function<? super V, ? extends T>)",
-        //        Function.class, "compose", Function.class);
+        checkToGenericString(
+                "public default <V> java.util.function.Function<V, R> java.util.function.Function.compose(java.util.function.Function<? super V, ? extends T>)",
+                Function.class, "compose", Function.class);
         // Java 8 language addition: static interface method.
         checkToGenericString(
                 "public static <T> java.util.function.Function<T, T> java.util.function.Function.identity()",

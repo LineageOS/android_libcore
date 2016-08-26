@@ -26,35 +26,36 @@
 
 package java.lang;
 
+import com.android.dex.Dex;
+
+import java.io.InputStream;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Inherited;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
-import java.lang.reflect.Member;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.HashMap;
-import sun.reflect.CallerSensitive;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Annotation;
-
-import java.io.Serializable;
-import com.android.dex.Dex;
-import dalvik.system.VMStack;
-import libcore.reflect.InternalNames;
+import java.util.List;
 import libcore.reflect.GenericSignatureParser;
+import libcore.reflect.InternalNames;
 import libcore.reflect.Types;
 import libcore.util.BasicLruCache;
 import libcore.util.CollectionUtils;
 import libcore.util.EmptyArray;
-import java.util.Collections;
+
+import dalvik.system.VMStack;
+import sun.reflect.CallerSensitive;
 
 /**
  * Instances of the class {@code Class} represent classes and
@@ -1155,6 +1156,33 @@ public final
         }
 
         return simpleName;
+    }
+
+
+    /**
+     * Return an informative string for the name of this type.
+     *
+     * @return an informative string for the name of this type
+     * @since 1.8
+     */
+    public String getTypeName() {
+        if (isArray()) {
+            try {
+                Class<?> cl = this;
+                int dimensions = 0;
+                while (cl.isArray()) {
+                    dimensions++;
+                    cl = cl.getComponentType();
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.append(cl.getName());
+                for (int i = 0; i < dimensions; i++) {
+                    sb.append("[]");
+                }
+                return sb.toString();
+            } catch (Throwable e) { /*FALLTHRU*/ }
+        }
+        return getName();
     }
 
     /**

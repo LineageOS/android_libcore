@@ -45,6 +45,13 @@ public final class ConstructorTest extends TestCase {
         assertEquals(expectedParameters[0], parameters[0]);
     }
 
+    public void test_getParameterCount() throws Exception {
+        Class[] expectedParameters = new Class[] { Object.class };
+        Constructor<?> constructor = ConstructorTestHelper.class.getConstructor(expectedParameters);
+        int count = constructor.getParameterCount();
+        assertEquals(1, count);
+    }
+
     public void testGetConstructorWithNullArgumentsArray() throws Exception {
         Constructor<?> constructor = ConstructorTestHelper.class.getConstructor((Class[]) null);
         assertEquals(0, constructor.getParameterTypes().length);
