@@ -2703,6 +2703,24 @@ public final class CipherTest extends TestCase {
 
     /*
      * Test vector generation:
+     * openssl rand -hex 5 | sed 's/\(..\)/(byte) 0x\1, /g'
+     */
+    private static final byte[] ARC4_40BIT_KEY = new byte[] {
+            (byte) 0x9c, (byte) 0xc8, (byte) 0xb9, (byte) 0x94, (byte) 0x98,
+    };
+
+    /*
+     * Test vector generation:
+     * openssl rand -hex 24 | sed 's/\(..\)/(byte) 0x\1, /g'
+     */
+    private static final byte[] ARC4_128BIT_KEY = new byte[] {
+            (byte) 0xbc, (byte) 0x0a, (byte) 0x3c, (byte) 0xca, (byte) 0xb5, (byte) 0x42,
+            (byte) 0xfa, (byte) 0x5d, (byte) 0x86, (byte) 0x5b, (byte) 0x44, (byte) 0x87,
+            (byte) 0x83, (byte) 0xd8, (byte) 0xcb, (byte) 0xd4,
+    };
+
+    /*
+     * Test vector generation:
      * openssl rand -hex 16
      * echo '3d4f8970b1f27537f40a39298a41555f' | sed 's/\(..\)/(byte) 0x\1, /g'
      */
@@ -2756,6 +2774,7 @@ public final class CipherTest extends TestCase {
             (byte) 0x73, (byte) 0x21
     };
 
+
     /*
      * Test vector generation: take DES_Plaintext1 and PKCS #5 pad it manually (it's not hard).
      */
@@ -2799,6 +2818,39 @@ public final class CipherTest extends TestCase {
             (byte) 0xC9, (byte) 0xF1, (byte) 0x83, (byte) 0x1F, (byte) 0x24, (byte) 0x83,
             (byte) 0x2C, (byte) 0x7B, (byte) 0x66, (byte) 0x66, (byte) 0x99, (byte) 0x98,
             (byte) 0x27, (byte) 0xB0, (byte) 0xED, (byte) 0x47
+    };
+
+
+    /*
+     * Test vector generation:
+     * echo -n 'Plaintext for arc4' | recode ../x1 | sed 's/0x/(byte) 0x/g'
+     */
+    private static final byte[] ARC4_Plaintext1 = new byte[] {
+            (byte) 0x50, (byte) 0x6C, (byte) 0x61, (byte) 0x69, (byte) 0x6E, (byte) 0x74,
+            (byte) 0x65, (byte) 0x78, (byte) 0x74, (byte) 0x20, (byte) 0x66, (byte) 0x6F,
+            (byte) 0x72, (byte) 0x20, (byte) 0x61, (byte) 0x72, (byte) 0x63, (byte) 0x34
+    };
+
+    /*
+     * Test vector generation:
+     *  echo -n 'Plaintext for arc4' | openssl enc -rc4-40 -K 9cc8b99498 | recode ../x1 \
+     *     | sed 's/0x/(byte) 0x/g'
+     */
+    private static final byte[] ARC4_Plaintext1_Encrypted_With_ARC4_40Bit_Key = new byte[] {
+            (byte) 0x63, (byte) 0xF7, (byte) 0x11, (byte) 0x90, (byte) 0x63, (byte) 0xEF,
+            (byte) 0x5E, (byte) 0xB3, (byte) 0x93, (byte) 0xB3, (byte) 0x46, (byte) 0x3F,
+            (byte) 0x1B, (byte) 0x02, (byte) 0x53, (byte) 0x9B, (byte) 0xD9, (byte) 0xE0
+    };
+
+    /*
+     * Test vector generation:
+     *  echo -n 'Plaintext for arc4' | openssl enc -rc4 -K bc0a3ccab542fa5d865b448783d8cbd4 \
+     *     | recode ../x1 | sed 's/0x/(byte) 0x/g'
+     */
+    private static final byte[] ARC4_Plaintext1_Encrypted_With_ARC4_128Bit_Key = new byte[] {
+            (byte) 0x25, (byte) 0x14, (byte) 0xA9, (byte) 0x72, (byte) 0x4D, (byte) 0xA9,
+            (byte) 0xF6, (byte) 0xA7, (byte) 0x2F, (byte) 0xB7, (byte) 0x0D, (byte) 0x60,
+            (byte) 0x09, (byte) 0xBE, (byte) 0x41, (byte) 0x9B, (byte) 0x32, (byte) 0x2B
     };
 
     /*
@@ -3019,8 +3071,11 @@ public final class CipherTest extends TestCase {
 
         public final byte[] plaintextPadded;
 
+        public final boolean isStreamCipher;
+
         public CipherTestParam(String transformation, String keyAlgorithm, byte[] key, byte[] iv,
-                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
+                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
+                boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
             this.keyAlgorithm = keyAlgorithm;
             this.key = key;
@@ -3029,6 +3084,13 @@ public final class CipherTest extends TestCase {
             this.plaintext = plaintext;
             this.plaintextPadded = plaintextPadded;
             this.ciphertext = ciphertext;
+            this.isStreamCipher = isStreamCipher;
+        }
+
+        public CipherTestParam(String transformation, String keyAlgorithm, byte[] key, byte[] iv,
+                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
+            this(transformation, keyAlgorithm, key, iv, aad, plaintext, plaintextPadded, ciphertext,
+                    false /* isStreamCipher */);
         }
     }
 
@@ -3054,6 +3116,32 @@ public final class CipherTest extends TestCase {
                 DES_Plaintext1_PKCS5_Padded,
                 DES_Plaintext1_Encrypted_With_DES_168_KEY_And_DESEDE_CBC_PKCS5PADDING_With_DES_IV1
                 ));
+    }
+
+    private static List<CipherTestParam> ARC4_CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
+    static {
+        ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                "ARC4",
+                "ARC4",
+                ARC4_40BIT_KEY,
+                null, // IV,
+                null, // aad
+                ARC4_Plaintext1,
+                null, // padded
+                ARC4_Plaintext1_Encrypted_With_ARC4_40Bit_Key,
+                true /*isStreamCipher */
+        ));
+        ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                "ARC4",
+                "ARC4",
+                ARC4_128BIT_KEY,
+                null, // IV,
+                null, // aad
+                ARC4_Plaintext1,
+                null, // padded
+                ARC4_Plaintext1_Encrypted_With_ARC4_128Bit_Key,
+                true /*isStreamCipher */
+        ));
     }
 
     private static List<CipherTestParam> CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
@@ -3108,6 +3196,8 @@ public final class CipherTest extends TestCase {
 
         testCipher_Success_ForAllSupportingProviders_AtLeastOneProviderRequired(
                 DES_CIPHER_TEST_PARAMS);
+        testCipher_Success_ForAllSupportingProviders_AtLeastOneProviderRequired(
+                ARC4_CIPHER_TEST_PARAMS);
     }
 
     /**
@@ -3210,9 +3300,10 @@ public final class CipherTest extends TestCase {
 
         // empty decrypt
         {
-            if (!isAEAD(p.transformation)
+            if ((!isAEAD(p.transformation)
                     && (StandardNames.IS_RI || provider.equals("AndroidOpenSSL") ||
-                            (provider.equals("BC") && p.transformation.contains("/CTR/")))) {
+                            (provider.equals("BC") && p.transformation.contains("/CTR/"))))
+                    || p.transformation.equals("ARC4")) {
                 assertEquals(Arrays.toString(new byte[0]),
                              Arrays.toString(c.doFinal()));
 
@@ -3300,7 +3391,7 @@ public final class CipherTest extends TestCase {
                     Arrays.toString(Arrays.copyOfRange(actualPlaintext, 1, p.plaintext.length + 1)));
         }
 
-        if (!p.transformation.endsWith("NOPADDING")) {
+        if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")) {
             Cipher cNoPad = Cipher.getInstance(
                     getCipherTransformationWithNoPadding(p.transformation), provider);
             cNoPad.init(Cipher.DECRYPT_MODE, key, spec);
