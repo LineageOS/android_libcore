@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2016 The Android Open Source Project
- * Copyright (c) 2003, 2005, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,6 +27,7 @@
 package java.lang.reflect;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 import libcore.reflect.AnnotatedElements;
 
 /**
@@ -102,6 +103,50 @@ public interface AnnotatedElement {
     Annotation[] getAnnotations();
 
     /**
+     * Returns an associated list of annotations on {@code this} element,
+     * whose class is {@code annotationClass}, or an empty array if nothing was found.
+     *
+     * @since 1.8
+     */
+    default <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        // This method does not handle inherited annotations and is intended for use for
+        // {@code Method}, {@code Field}, {@code Package}. The {@link Class#getAnnotationsByType}
+        // is implemented explicitly. Therefore this implementation does not fulfill the documented
+        // default implementation for {@link AnnotatedElement#getAnnotationsByType(Class)} but in an
+        // undetectable way because Class is final.
+        return AnnotatedElements.getDirectOrIndirectAnnotationsByType(this, annotationClass);
+    }
+
+    /**
+     * Returns a directly-present annotation on {@code this} element, whose class is
+     * {@code annotationClass}, or {@code null} if nothing was found.
+     *
+     * @since 1.8
+     */
+    default <T extends Annotation> Annotation getDeclaredAnnotation(Class<T> annotationClass) {
+        Objects.requireNonNull(annotationClass);
+        // Loop over all directly-present annotations looking for a matching one
+        for (Annotation annotation : getDeclaredAnnotations()) {
+            if (annotationClass.equals(annotation.annotationType())) {
+                // More robust to do a dynamic cast at runtime instead
+                // of compile-time only.
+                return annotationClass.cast(annotation);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a directly or indirectly present list of annotations on {@code this} element,
+     * whose class is {@code annotationClass}, or an empty array if nothing was found.
+     *
+     * @since 1.8
+     */
+    default <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
+        return AnnotatedElements.getDirectOrIndirectAnnotationsByType(this, annotationClass);
+    }
+
+    /**
      * Returns all annotations that are directly present on this
      * element.  Unlike the other methods in this interface, this method
      * ignores inherited annotations.  (Returns an array of length zero if
@@ -113,34 +158,4 @@ public interface AnnotatedElement {
      * @since 1.5
      */
     Annotation[] getDeclaredAnnotations();
-
-    /**
-     * Returns a directly-present annotation on {@code this} element, whose class is
-     * {@code annotationClass}, or {@code null} if nothing was found.
-     *
-     * @since 1.8
-     */
-    default <T extends Annotation> Annotation getDeclaredAnnotation(Class<T> annotationClass) {
-        return AnnotatedElements.getDeclaredAnnotation(this, annotationClass);
-    }
-
-    /**
-     * Returns a directly or indirectly present list of annotations on {@code this} element,
-     * whose class is {@code annotationClass}, or an empty array if nothing was found.
-     *
-     * @since 1.8
-     */
-    default <T extends Annotation> T[] getDeclaredAnnotationsByType(Class<T> annotationClass) {
-        return AnnotatedElements.getDeclaredAnnotationsByType(this, annotationClass);
-    }
-
-    /**
-     * Returns an associated list of annotations on {@code this} element,
-     * whose class is {@code annotationClass}, or an empty array if nothing was found.
-     *
-     * @since 1.8
-     */
-    default <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
-        return AnnotatedElements.getAnnotationsByType(this, annotationClass);
-    }
 }
