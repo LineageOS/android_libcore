@@ -565,6 +565,26 @@ public class ClassTest extends junit.framework.TestCase {
                 "class [Ljava.lang.Object;", clazz.toString());
     }
 
+    /**
+     * java.lang.Class#getTypeName()
+     */
+    public void test_getTypeName() throws ClassNotFoundException {
+        assertEquals("Class toString printed wrong value",
+                "int", int.class.getTypeName());
+
+        Class<?> clazz = null;
+        clazz = Class.forName("[I");
+        assertEquals("Class toString printed wrong value",
+                "int[]", clazz.getTypeName());
+
+        clazz = Class.forName("java.lang.Object");
+        assertEquals("Class toString printed wrong value",
+                "java.lang.Object", clazz.getTypeName());
+
+        clazz = Class.forName("[Ljava.lang.Object;");
+        assertEquals("Class toString printed wrong value",
+                "java.lang.Object[]", clazz.getTypeName());
+    }
 
     // Regression Test for JIRA-2047
     public void test_getResourceAsStream_withSharpChar() throws Exception {
