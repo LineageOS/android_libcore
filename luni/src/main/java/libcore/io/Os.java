@@ -89,7 +89,7 @@ public interface Os {
     public StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException;
     public int gettid();
     public int getuid();
-    public int getxattr(String path, String name, byte[] outValue) throws ErrnoException;
+    public byte[] getxattr(String path, String name) throws ErrnoException;
     public StructIfaddrs[] getifaddrs() throws ErrnoException;
     public String if_indextoname(int index);
     public int if_nametoindex(String name);
