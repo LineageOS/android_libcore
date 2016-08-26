@@ -26,13 +26,11 @@
 
 package java.lang.reflect;
 
-import sun.reflect.CallerSensitive;
-import sun.reflect.Reflection;
-import java.lang.annotation.Annotation;
-import java.util.Map;
 import com.android.dex.Dex;
+
+import java.lang.annotation.Annotation;
+import libcore.reflect.AnnotatedElements;
 import libcore.reflect.GenericSignatureParser;
-import java.util.List;
 
 
 /**
@@ -848,6 +846,18 @@ class Field extends AccessibleObject implements Member {
         return getAnnotationNative(annotationType);
     }
     private native <A extends Annotation> A getAnnotationNative(Class<A> annotationType);
+
+    /**
+     * {@inheritDoc}
+     * @throws NullPointerException {@inheritDoc}
+     * @since 1.8
+     */
+    @Override
+    public <T extends Annotation> T[] getAnnotationsByType(Class<T> annotationClass) {
+        // Android-changed: Uses AnnotatedElements instead.
+        return AnnotatedElements.getDirectOrIndirectAnnotationsByType(this, annotationClass);
+    }
+
 
     @Override public boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
         if (annotationType == null) {
