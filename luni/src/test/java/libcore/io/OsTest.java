@@ -506,18 +506,18 @@ public class OsTest extends TestCase {
     File file = File.createTempFile("xattr", "test");
     String path = file.getAbsolutePath();
 
-    byte[] tmp = new byte[1024];
     try {
       try {
-        Libcore.os.getxattr(path, NAME_TEST, tmp);
+        Libcore.os.getxattr(path, NAME_TEST);
         fail("Expected ENODATA");
       } catch (ErrnoException e) {
         assertEquals(OsConstants.ENODATA, e.errno);
       }
 
       Libcore.os.setxattr(path, NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
-      assertEquals(VALUE_CAKE.length, Libcore.os.getxattr(path, NAME_TEST, tmp));
-      assertStartsWith(VALUE_CAKE, tmp);
+      byte[] xattr_create = Libcore.os.getxattr(path, NAME_TEST);
+      assertEquals(VALUE_CAKE.length, xattr_create.length);
+      assertStartsWith(VALUE_CAKE, xattr_create);
 
       try {
         Libcore.os.setxattr(path, NAME_TEST, VALUE_PIE, OsConstants.XATTR_CREATE);
@@ -527,12 +527,13 @@ public class OsTest extends TestCase {
       }
 
       Libcore.os.setxattr(path, NAME_TEST, VALUE_PIE, OsConstants.XATTR_REPLACE);
-      assertEquals(VALUE_PIE.length, Libcore.os.getxattr(path, NAME_TEST, tmp));
-      assertStartsWith(VALUE_PIE, tmp);
+      byte[] xattr_replace = Libcore.os.getxattr(path, NAME_TEST);
+      assertEquals(VALUE_PIE.length, xattr_replace.length);
+      assertStartsWith(VALUE_PIE, xattr_replace);
 
       Libcore.os.removexattr(path, NAME_TEST);
       try {
-        Libcore.os.getxattr(path, NAME_TEST, tmp);
+        Libcore.os.getxattr(path, NAME_TEST);
         fail("Expected ENODATA");
       } catch (ErrnoException e) {
         assertEquals(OsConstants.ENODATA, e.errno);
