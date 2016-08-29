@@ -97,7 +97,7 @@ public class ForwardingOs implements Os {
     public StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException { return os.getsockoptUcred(fd, level, option); }
     public int gettid() { return os.gettid(); }
     public int getuid() { return os.getuid(); }
-    public int getxattr(String path, String name, byte[] outValue) throws ErrnoException { return os.getxattr(path, name, outValue); }
+    public byte[] getxattr(String path, String name) throws ErrnoException { return os.getxattr(path, name); }
     public StructIfaddrs[] getifaddrs() throws ErrnoException { return os.getifaddrs(); }
     public String if_indextoname(int index) { return os.if_indextoname(index); }
     public int if_nametoindex(String name) { return os.if_nametoindex(name); }

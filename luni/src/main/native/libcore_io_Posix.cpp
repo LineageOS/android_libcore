@@ -1165,26 +1165,43 @@ static jint Posix_getuid(JNIEnv*, jobject) {
     return getuid();
 }
 
-static jint Posix_getxattr(JNIEnv* env, jobject, jstring javaPath,
-        jstring javaName, jbyteArray javaOutValue) {
+static jbyteArray Posix_getxattr(JNIEnv* env, jobject, jstring javaPath,
+        jstring javaName) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
-        return -1;
+        return NULL;
     }
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
-        return -1;
+        return NULL;
     }
-    ScopedBytesRW outValue(env, javaOutValue);
-    if (outValue.get() == NULL) {
-        return -1;
+
+    while (true) {
+        // Get the current size of the named extended attribute.
+        ssize_t valueLength;
+        if ((valueLength = getxattr(path.c_str(), name.c_str(), NULL, 0)) < 0) {
+            throwErrnoException(env, "getxattr");
+            return NULL;
+        }
+
+        // Create the actual byte array.
+        std::vector<char> buf(valueLength);
+        if ((valueLength = getxattr(path.c_str(), name.c_str(), buf.data(), valueLength)) < 0) {
+            if (errno == ERANGE) {
+                // The attribute value has changed since last getxattr call and buf no longer fits,
+                // try again.
+                continue;
+            }
+            throwErrnoException(env, "getxattr");
+            return NULL;
+        }
+        jbyteArray array = env->NewByteArray(valueLength);
+        if (array == NULL) {
+            return NULL;
+        }
+        env->SetByteArrayRegion(array, 0, valueLength, reinterpret_cast<const jbyte*>(buf.data()));
+        return array;
     }
-    size_t outValueLength = env->GetArrayLength(javaOutValue);
-    ssize_t size = getxattr(path.c_str(), name.c_str(), outValue.get(), outValueLength);
-    if (size < 0) {
-        throwErrnoException(env, "getxattr");
-    }
-    return size;
 }
 
 static jobjectArray Posix_getifaddrs(JNIEnv* env, jobject) {
@@ -2133,7 +2150,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Posix, getsockoptUcred, "(Ljava/io/FileDescriptor;II)Landroid/system/StructUcred;"),
     NATIVE_METHOD(Posix, gettid, "()I"),
     NATIVE_METHOD(Posix, getuid, "()I"),
-    NATIVE_METHOD(Posix, getxattr, "(Ljava/lang/String;Ljava/lang/String;[B)I"),
+    NATIVE_METHOD(Posix, getxattr, "(Ljava/lang/String;Ljava/lang/String;)[B"),
     NATIVE_METHOD(Posix, getifaddrs, "()[Landroid/system/StructIfaddrs;"),
     NATIVE_METHOD(Posix, if_indextoname, "(I)Ljava/lang/String;"),
     NATIVE_METHOD(Posix, if_nametoindex, "(Ljava/lang/String;)I"),
