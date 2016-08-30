@@ -115,6 +115,7 @@ public final class Constructor<T> extends AbstractMethod {
         return (TypeVariable<Constructor<T>>[]) info.formalTypeParameters.clone();
     }
 
+
     /**
      * {@inheritDoc}
      */
@@ -207,7 +208,7 @@ public final class Constructor<T> extends AbstractMethod {
      * @jls 8.8.3. Constructor Modifiers
      */
     public String toString() {
-        // Android changed: Use getParameterTypes.
+        // Android changed: Use getParameterTypes().
         return sharedToString(Modifier.constructorModifiers(),
                               false,
                               getParameterTypes(),
@@ -286,7 +287,7 @@ public final class Constructor<T> extends AbstractMethod {
      * <p>If the constructor completes normally, returns the newly
      * created and initialized instance.
      *
-     * @param args array of objects to be passed as arguments to
+     * @param initargs array of objects to be passed as arguments to
      * the constructor call; values of primitive types are wrapped in
      * a wrapper object of the appropriate type (e.g. a {@code float}
      * in a {@link java.lang.Float Float})
@@ -311,11 +312,12 @@ public final class Constructor<T> extends AbstractMethod {
      * @exception ExceptionInInitializerError if the initialization provoked
      *              by this method fails.
      */
-    // Android changed param name s/initargs/args
-    public T newInstance(Object... args) throws InstantiationException,
-            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+    public T newInstance(Object ... initargs)
+        throws InstantiationException, IllegalAccessException,
+               IllegalArgumentException, InvocationTargetException
+    {
         if (serializationClass == null) {
-            return newInstance0(args);
+            return newInstance0(initargs);
         } else {
             return (T) newInstanceFromSerialization(serializationCtor, serializationClass);
         }
