@@ -122,8 +122,9 @@ public class AccessibleObject implements AnnotatedElement {
     {
         if (obj instanceof Constructor && flag == true) {
             Constructor<?> c = (Constructor<?>)obj;
+            // Android-changed: Added additional checks below.
             Class<?> clazz = c.getDeclaringClass();
-            if (clazz == Class.class) {
+            if (c.getDeclaringClass() == Class.class) {
                 throw new SecurityException("Can not make a java.lang.Class" +
                                             " constructor accessible");
             } else if (clazz == Method.class) {
@@ -159,9 +160,6 @@ public class AccessibleObject implements AnnotatedElement {
     // outside this package.
     boolean override;
 
-    // Reflection factory used by subclasses for creating field,
-    // method, and constructor accessors. Note that this is called
-    // very early in the bootstrapping process.
     /**
      * @throws NullPointerException {@inheritDoc}
      * @since 1.5
