@@ -178,6 +178,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/reflect/Array.java \
     ojluni/src/main/java/java/lang/reflect/Constructor.java \
     ojluni/src/main/java/java/lang/reflect/Field.java \
+    ojluni/src/main/java/java/lang/reflect/Executable.java \
     ojluni/src/main/java/java/lang/reflect/GenericArrayType.java \
     ojluni/src/main/java/java/lang/reflect/GenericDeclaration.java \
     ojluni/src/main/java/java/lang/reflect/GenericSignatureFormatError.java \
