@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,6 +29,7 @@ package java.lang.reflect;
 import com.android.dex.Dex;
 
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 import libcore.reflect.AnnotatedElements;
 import libcore.reflect.GenericSignatureParser;
 
@@ -227,12 +228,15 @@ class Field extends AccessibleObject implements Member {
      * {@code protected} or {@code private} first, and then other
      * modifiers in the following order: {@code static}, {@code final},
      * {@code transient}, {@code volatile}.
+     *
+     * @return a string describing this {@code Field}
+     * @jls 8.3.1 Field Modifiers
      */
     public String toString() {
         int mod = getModifiers();
         return (((mod == 0) ? "" : (Modifier.toString(mod) + " "))
-            + getTypeName(getType()) + " "
-            + getTypeName(getDeclaringClass()) + "."
+            + getType().getTypeName() + " "
+            + getDeclaringClass().getTypeName() + "."
             + getName());
     }
 
@@ -254,14 +258,14 @@ class Field extends AccessibleObject implements Member {
      * its generic type
      *
      * @since 1.5
+     * @jls 8.3.1 Field Modifiers
      */
     public String toGenericString() {
         int mod = getModifiers();
         Type fieldType = getGenericType();
         return (((mod == 0) ? "" : (Modifier.toString(mod) + " "))
-            +  ((fieldType instanceof Class) ?
-                getTypeName((Class)fieldType): fieldType.toString())+ " "
-            + getTypeName(getDeclaringClass()) + "."
+            + fieldType.getTypeName() + " "
+            + getDeclaringClass().getTypeName() + "."
             + getName());
     }
 
@@ -295,7 +299,7 @@ class Field extends AccessibleObject implements Member {
      * <p>If the field is hidden in the type of {@code obj},
      * the field's value is obtained according to the preceding rules.
      *
-     * @param object object from which the represented field's value is
+     * @param obj object from which the represented field's value is
      * to be extracted
      * @return the value of the represented field in object
      * {@code obj}; primitive values are wrapped in an appropriate
@@ -312,13 +316,13 @@ class Field extends AccessibleObject implements Member {
      * @exception ExceptionInInitializerError if the initialization provoked
      *              by this method fails.
      */
-    public native Object get(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native Object get(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance {@code boolean} field.
      *
-     * @param object the object to extract the {@code boolean} value
+     * @param obj the object to extract the {@code boolean} value
      * from
      * @return the value of the {@code boolean} field
      *
@@ -337,13 +341,13 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native boolean getBoolean(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native boolean getBoolean(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance {@code byte} field.
      *
-     * @param object the object to extract the {@code byte} value
+     * @param obj the object to extract the {@code byte} value
      * from
      * @return the value of the {@code byte} field
      *
@@ -362,15 +366,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native byte getByte(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native byte getByte(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code char} or of another primitive type convertible to
      * type {@code char} via a widening conversion.
      *
-     * @param object the object to extract the {@code char} value
+     * @param obj the object to extract the {@code char} value
      * from
      * @return the value of the field converted to type {@code char}
      *
@@ -389,15 +393,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see Field#get
      */
-    public native char getChar(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native char getChar(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code short} or of another primitive type convertible to
      * type {@code short} via a widening conversion.
      *
-     * @param object the object to extract the {@code short} value
+     * @param obj the object to extract the {@code short} value
      * from
      * @return the value of the field converted to type {@code short}
      *
@@ -416,15 +420,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native short getShort(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native short getShort(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code int} or of another primitive type convertible to
      * type {@code int} via a widening conversion.
      *
-     * @param object the object to extract the {@code int} value
+     * @param obj the object to extract the {@code int} value
      * from
      * @return the value of the field converted to type {@code int}
      *
@@ -443,15 +447,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native int getInt(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native int getInt(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code long} or of another primitive type convertible to
      * type {@code long} via a widening conversion.
      *
-     * @param object the object to extract the {@code long} value
+     * @param obj the object to extract the {@code long} value
      * from
      * @return the value of the field converted to type {@code long}
      *
@@ -470,15 +474,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native long getLong(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native long getLong(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code float} or of another primitive type convertible to
      * type {@code float} via a widening conversion.
      *
-     * @param object the object to extract the {@code float} value
+     * @param obj the object to extract the {@code float} value
      * from
      * @return the value of the field converted to type {@code float}
      *
@@ -497,15 +501,15 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see Field#get
      */
-    public native float getFloat(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native float getFloat(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Gets the value of a static or instance field of type
      * {@code double} or of another primitive type convertible to
      * type {@code double} via a widening conversion.
      *
-     * @param object the object to extract the {@code double} value
+     * @param obj the object to extract the {@code double} value
      * from
      * @return the value of the field converted to type {@code double}
      *
@@ -524,8 +528,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
-    public native double getDouble(Object object)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native double getDouble(Object obj)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the field represented by this {@code Field} object on the
@@ -577,7 +581,7 @@ class Field extends AccessibleObject implements Member {
      * <p>If the field is hidden in the type of {@code obj},
      * the field's value is set according to the preceding rules.
      *
-     * @param object the object whose field should be modified
+     * @param obj the object whose field should be modified
      * @param value the new value for the field of {@code obj}
      * being modified
      *
@@ -593,8 +597,8 @@ class Field extends AccessibleObject implements Member {
      * @exception ExceptionInInitializerError if the initialization provoked
      *              by this method fails.
      */
-    public native void set(Object object, Object value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void set(Object obj, Object value)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code boolean} on the specified object.
@@ -603,8 +607,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code zObj} is a {@code Boolean} object and
      * {@code zObj.booleanValue() == z}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param z   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -620,8 +624,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setBoolean(Object object, boolean value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setBoolean(Object obj, boolean z)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code byte} on the specified object.
@@ -630,8 +634,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code bObj} is a {@code Byte} object and
      * {@code bObj.byteValue() == b}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param b   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -647,8 +651,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setByte(Object object, byte value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setByte(Object obj, byte b)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code char} on the specified object.
@@ -657,8 +661,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code cObj} is a {@code Character} object and
      * {@code cObj.charValue() == c}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param c   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -674,8 +678,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setChar(Object object, char value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setChar(Object obj, char c)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code short} on the specified object.
@@ -684,8 +688,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code sObj} is a {@code Short} object and
      * {@code sObj.shortValue() == s}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param s   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -701,8 +705,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setShort(Object object, short value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setShort(Object obj, short s)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as an {@code int} on the specified object.
@@ -711,8 +715,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code iObj} is a {@code Integer} object and
      * {@code iObj.intValue() == i}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param i   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -728,8 +732,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setInt(Object object, int value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setInt(Object obj, int i)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code long} on the specified object.
@@ -738,8 +742,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code lObj} is a {@code Long} object and
      * {@code lObj.longValue() == l}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param l   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -755,8 +759,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setLong(Object object, long value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setLong(Object obj, long l)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code float} on the specified object.
@@ -765,8 +769,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code fObj} is a {@code Float} object and
      * {@code fObj.floatValue() == f}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param f   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -782,8 +786,8 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setFloat(Object object, float value)
-            throws IllegalAccessException, IllegalArgumentException;
+    public native void setFloat(Object obj, float f)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * Sets the value of a field as a {@code double} on the specified object.
@@ -792,8 +796,8 @@ class Field extends AccessibleObject implements Member {
      * where {@code dObj} is a {@code Double} object and
      * {@code dObj.doubleValue() == d}.
      *
-     * @param object the object whose field should be modified
-     * @param value   the new value for the field of {@code obj}
+     * @param obj the object whose field should be modified
+     * @param d   the new value for the field of {@code obj}
      * being modified
      *
      * @exception IllegalAccessException    if this {@code Field} object
@@ -809,41 +813,17 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
-    public native void setDouble(Object object, double value)
-            throws IllegalAccessException, IllegalArgumentException;
-
-    /*
-     * Utility routine to paper over array type names
-     */
-    static String getTypeName(Class<?> type) {
-        if (type.isArray()) {
-            try {
-                Class<?> cl = type;
-                int dimensions = 0;
-                while (cl.isArray()) {
-                    dimensions++;
-                    cl = cl.getComponentType();
-                }
-                StringBuffer sb = new StringBuffer();
-                sb.append(cl.getName());
-                for (int i = 0; i < dimensions; i++) {
-                    sb.append("[]");
-                }
-                return sb.toString();
-            } catch (Throwable e) { /*FALLTHRU*/ }
-        }
-        return type.getName();
-    }
+    public native void setDouble(Object obj, double d)
+        throws IllegalArgumentException, IllegalAccessException;
 
     /**
      * @throws NullPointerException {@inheritDoc}
      * @since 1.5
      */
-    @Override public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
-        if (annotationType == null) {
-            throw new NullPointerException("annotationType == null");
-        }
-        return getAnnotationNative(annotationType);
+    @Override
+    public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
+        Objects.requireNonNull(annotationClass);
+        return getAnnotationNative(annotationClass);
     }
     private native <A extends Annotation> A getAnnotationNative(Class<A> annotationType);
 
@@ -868,9 +848,10 @@ class Field extends AccessibleObject implements Member {
     private native boolean isAnnotationPresentNative(Class<? extends Annotation> annotationType);
 
     /**
-     * @since 1.5
+     * {@inheritDoc}
      */
-    @Override public native Annotation[] getDeclaredAnnotations();
+    @Override
+    public native Annotation[] getDeclaredAnnotations();
 
     /**
      * Returns the index of this field's ID in its dex file.
