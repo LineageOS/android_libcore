@@ -97,6 +97,15 @@ public class CertificateTest extends TestCase {
         assertFalse(cert.equals(c1));
     }
 
+    /**
+     * Test for <code>hashCode()</code> method<br>
+     * Assertion: returns the value computed with the algorithm in jdk8u60.
+     */
+    public final void testHashCodeValue() {
+        Certificate c1 = new MyCertificate("TEST_TYPE", testEncoding);
+        // Result used to be 40 prior to jdk8u60.
+        assertEquals(29615266, c1.hashCode());
+    }
 
     /**
      * Test for <code>getType()</code> method<br>
@@ -209,7 +218,7 @@ public class CertificateTest extends TestCase {
                NoSuchProviderException,
                SignatureException {
         Certificate c1 = new MyCertificate("TEST_TYPE", testEncoding);
-        c1.verify(null, null);
+        c1.verify((PublicKey) null, (String) null);
     }
 
     /**
