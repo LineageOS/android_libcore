@@ -91,7 +91,7 @@ public final class Posix implements Os {
     public native StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException;
     public native int gettid();
     public native int getuid();
-    public native int getxattr(String path, String name, byte[] outValue) throws ErrnoException;
+    public native byte[] getxattr(String path, String name) throws ErrnoException;
     public native StructIfaddrs[] getifaddrs() throws ErrnoException;
     public native String if_indextoname(int index);
     public native int if_nametoindex(String name);

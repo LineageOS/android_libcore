@@ -226,7 +226,11 @@ public final class Os {
    */
   public static int getuid() { return Libcore.os.getuid(); }
 
-  /** @hide */ public static int getxattr(String path, String name, byte[] outValue) throws ErrnoException { return Libcore.os.getxattr(path, name, outValue); }
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man2/getxattr.2.html">getxattr(2)</a>
+   * @hide
+   */
+  public static byte[] getxattr(String path, String name) throws ErrnoException { return Libcore.os.getxattr(path, name); }
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man3/if_indextoname.3.html">if_indextoname(3)</a>.
@@ -493,7 +497,11 @@ public final class Os {
    */
   public static void setuid(int uid) throws ErrnoException { Libcore.os.setuid(uid); }
 
-  /** @hide */ public static void setxattr(String path, String name, byte[] value, int flags) throws ErrnoException { Libcore.os.setxattr(path, name, value, flags); };
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>
+   * @hide
+   */
+  public static void setxattr(String path, String name, byte[] value, int flags) throws ErrnoException { Libcore.os.setxattr(path, name, value, flags); };
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/shutdown.2.html">shutdown(2)</a>.
