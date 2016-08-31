@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Cipher;
@@ -658,6 +659,119 @@ public class ProviderTest extends TestCase {
             }
         } finally {
             Security.removeProvider(srp.getName());
+        }
+    }
+
+    // TODO(29631070): this is a general testing mechanism to test other operations that are
+    // going to be added.
+    public void testHashMapOperations() {
+        performHashMapOperationAndCheckResults(
+                PUT /* operation */,
+                mapOf("class1.algorithm1", "impl1") /* initialStatus */,
+                new Pair("class2.algorithm2", "impl2") /* operationParameters */,
+                mapOf("class1.algorithm1", "impl1",
+                        "class2.algorithm2", "impl2"),
+                true /* mustChangeSecurityVersion */);
+        performHashMapOperationAndCheckResults(
+                PUT_ALL,
+                mapOf("class1.algorithm1", "impl1"),
+                mapOf("class2.algorithm2", "impl2", "class3.algorithm3", "impl3"),
+                mapOf("class1.algorithm1", "impl1",
+                        "class2.algorithm2", "impl2",
+                        "class3.algorithm3", "impl3"),
+                true /* mustChangeSecurityVersion */);
+        performHashMapOperationAndCheckResults(
+                REMOVE,
+                mapOf("class1.algorithm1", "impl1"),
+                "class1.algorithm1",
+                mapOf(),
+                true /* mustChangeSecurityVersion */);
+        performHashMapOperationAndCheckResults(
+                REMOVE,
+                mapOf("class1.algorithm1", "impl1"),
+                "class2.algorithm1",
+                mapOf("class1.algorithm1", "impl1"),
+                true /* mustChangeSecurityVersion */);
+    }
+
+    private static class Pair<A, B> {
+        private final A first;
+        private final B second;
+        Pair(A first, B second) {
+            this.first = first;
+            this.second = second;
+        }
+    }
+
+    /* Holder class for the provider parameter and the parameter for the operation. */
+    private static class ProviderAndOperationParameter<T> {
+        private final Provider provider;
+        private final T operationParameters;
+        ProviderAndOperationParameter(Provider p, T o) {
+            provider = p;
+            operationParameters = o;
+        }
+    }
+
+    private static final Consumer<ProviderAndOperationParameter<Pair<String, String>>> PUT =
+            (ProviderAndOperationParameter<Pair<String, String>> provAndParam) ->
+                {
+                    provAndParam.provider.put(provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+                };
+    private static final Consumer<ProviderAndOperationParameter<Map<String, String>>> PUT_ALL =
+            (ProviderAndOperationParameter<Map<String, String>> provAndParam) ->
+                    provAndParam.provider.putAll(provAndParam.operationParameters);
+    private static final Consumer<ProviderAndOperationParameter<String>> REMOVE =
+            (ProviderAndOperationParameter<String> provAndParam) ->
+                    provAndParam.provider.remove(provAndParam.operationParameters);
+
+
+    private static Map<String, String> mapOf(String... elements) {
+        Map<String, String> ret = new HashMap<String, String>();
+        for (int i = 0; i < elements.length; i += 2) {
+            ret.put(elements[i], elements[i + 1]);
+        }
+        return ret;
+    }
+
+
+    private <A> void performHashMapOperationAndCheckResults(
+            Consumer<ProviderAndOperationParameter<A>> operation,
+            Map<String, String> initialState,
+            A operationParameters,
+            Map<String, String> expectedResult,
+            boolean mustChangeVersion) {
+        Provider p = new MockProvider("MockProvider");
+        // Need to set as registered so that the security version will change on update.
+        p.setRegistered();
+        int securityVersionBeforeOperation = Security.getVersion();
+        p.putAll(initialState);
+
+        // Perform the operation.
+        operation.accept(new ProviderAndOperationParameter<A>(p, operationParameters));
+
+        // Check that elements are correctly mapped to services.
+        HashMap<String, String> services = new HashMap<String, String>();
+        for (Provider.Service s : p.getServices()) {
+            services.put(s.getType() + "." + s.getAlgorithm(), s.getClassName());
+        }
+        assertEquals(expectedResult.entrySet(), services.entrySet());
+
+        // Check that elements are in the provider hash map.
+        // The hash map in the provider has info other than services, include those in the
+        // expected results.
+        HashMap<String, String> hashExpectedResult = new HashMap<String, String>();
+        hashExpectedResult.putAll(expectedResult);
+        hashExpectedResult.put("Provider.id info", p.getInfo());
+        hashExpectedResult.put("Provider.id className", p.getClass().getName());
+        hashExpectedResult.put("Provider.id version", String.valueOf(p.getVersion()));
+        hashExpectedResult.put("Provider.id name", p.getName());
+
+        assertEquals(hashExpectedResult.entrySet(), p.entrySet());
+
+        if (mustChangeVersion) {
+            assertTrue(securityVersionBeforeOperation != Security.getVersion());
         }
     }
 

@@ -464,6 +464,22 @@ public abstract class Provider extends Properties {
         putAll(copy);
     }
 
+    private boolean checkLegacy(Object key) {
+        if (registered) {
+            Security.increaseVersion();
+        }
+        String keyString = (String)key;
+        if (keyString.startsWith("Provider.")) {
+            return false;
+        }
+
+        legacyChanged = true;
+        if (legacyStrings == null) {
+            legacyStrings = new LinkedHashMap<String,String>();
+        }
+        return true;
+    }
+
     /**
      * Copies all of the mappings from the specified Map to this provider.
      * Internal method to be called AFTER the security check has been
@@ -479,37 +495,21 @@ public abstract class Provider extends Properties {
     }
 
     private Object implRemove(Object key) {
-        if (registered) {
-            Security.increaseVersion();
-        }
         if (key instanceof String) {
-            String keyString = (String)key;
-            if (keyString.startsWith("Provider.")) {
+            if (!checkLegacy(key)) {
                 return null;
             }
-            legacyChanged = true;
-            if (legacyStrings == null) {
-                legacyStrings = new LinkedHashMap<String,String>();
-            }
-            legacyStrings.remove(keyString);
+            legacyStrings.remove((String)key);
         }
         return super.remove(key);
     }
 
     private Object implPut(Object key, Object value) {
         if ((key instanceof String) && (value instanceof String)) {
-            String keyString = (String)key;
-            if (keyString.startsWith("Provider.")) {
+            if (!checkLegacy(key)) {
                 return null;
             }
-            if (registered) {
-                Security.increaseVersion();
-            }
-            legacyChanged = true;
-            if (legacyStrings == null) {
-                legacyStrings = new LinkedHashMap<String,String>();
-            }
-            legacyStrings.put(keyString, (String)value);
+            legacyStrings.put((String)key, (String)value);
         }
         return super.put(key, value);
     }
