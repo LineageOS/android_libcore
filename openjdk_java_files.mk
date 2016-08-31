@@ -610,6 +610,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/security/MessageDigestSpi.java \
     ojluni/src/main/java/java/security/NoSuchAlgorithmException.java \
     ojluni/src/main/java/java/security/NoSuchProviderException.java \
+    ojluni/src/main/java/java/security/PKCS12Attribute.java \
     ojluni/src/main/java/java/security/PermissionCollection.java \
     ojluni/src/main/java/java/security/Permission.java \
     ojluni/src/main/java/java/security/Permissions.java \
