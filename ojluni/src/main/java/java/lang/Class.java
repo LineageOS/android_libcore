@@ -226,6 +226,12 @@ public final class Class<T> implements java.io.Serializable,
     private transient int objectSize;
 
     /**
+     * Aligned object size for allocation fast path. The value is max int if the object is
+     * uninitialized or finalizable, otherwise the aligned object size.
+     */
+    private transient int objectSizeAllocFastPath;
+
+    /**
      * The lower 16 bits is the primitive type value, or 0 if not a primitive type; set for
      * generated primitive classes.
      */
