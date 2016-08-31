@@ -11,7 +11,6 @@ LOCAL_SRC_FILES := \
     Register.cpp \
     ZipUtilities.cpp \
     android_system_OsConstants.cpp \
-    canonicalize_path.cpp \
     cbigint.cpp \
     java_lang_StringToReal.cpp \
     java_lang_invoke_MethodHandle.cpp \
@@ -26,7 +25,6 @@ LOCAL_SRC_FILES := \
     libcore_io_Posix.cpp \
     libcore_util_NativeAllocationRegistry.cpp \
     org_apache_harmony_xml_ExpatParser.cpp \
-    readlink.cpp \
     sun_misc_Unsafe.cpp \
     valueOf.cpp \
 
