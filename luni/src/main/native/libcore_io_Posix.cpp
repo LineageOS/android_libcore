@@ -24,7 +24,6 @@
 #include "JniException.h"
 #include "NetworkUtilities.h"
 #include "Portability.h"
-#include "readlink.h"
 #include "ScopedBytes.h"
 #include "ScopedLocalRef.h"
 #include "ScopedPrimitiveArray.h"
@@ -60,6 +59,8 @@
 #include <termios.h>
 #include <unistd.h>
 #include <memory>
+
+#include <android-base/file.h>
 
 #ifndef __unused
 #define __unused __attribute__((__unused__))
@@ -1639,7 +1640,7 @@ static jstring Posix_readlink(JNIEnv* env, jobject, jstring javaPath) {
     }
 
     std::string result;
-    if (!readlink(path.c_str(), result)) {
+    if (!android::base::Readlink(path.c_str(), &result)) {
         throwErrnoException(env, "readlink");
         return NULL;
     }
