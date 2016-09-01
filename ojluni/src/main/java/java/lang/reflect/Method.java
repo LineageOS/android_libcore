@@ -487,27 +487,6 @@ public final class Method extends AbstractMethod  {
     }
 
     /**
-     * Returns the constructor's signature in non-printable form. This is called
-     * (only) from IO native code and needed for deriving the serialVersionUID
-     * of the class
-     *
-     * @return The constructor's signature.
-     */
-    @SuppressWarnings("unused")
-    String getSignature() {
-        StringBuilder result = new StringBuilder();
-
-        result.append('(');
-        Class<?>[] parameterTypes = getParameterTypes();
-        for (Class<?> parameterType : parameterTypes) {
-            result.append(Types.getSignature(parameterType));
-        }
-        result.append(')');
-        result.append(Types.getSignature(getReturnType()));
-
-        return result.toString();
-    }
-    /**
      * Returns true if this and {@code method} have the same name and the same
      * parameters in the same order. Such methods can share implementation if
      * one method's return types is assignable to the other.
