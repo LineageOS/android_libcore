@@ -41,9 +41,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.crypto.Cipher;
@@ -554,6 +557,46 @@ public class ProviderTest extends TestCase {
     }
 
     @SuppressWarnings("serial")
+    public void testProviderService_newInstance_PrivateClass_throws()
+            throws Exception {
+        MockProvider provider = new MockProvider("MockProvider");
+
+        provider.putServiceForTest(new Provider.Service(provider, "CertStore", "FOO",
+                CertStoreSpiPrivateClass.class.getName(), null, null));
+
+        Security.addProvider(provider);
+        // The class for the service is private, it must fail with NoSuchAlgorithmException
+        try {
+            Provider.Service service = provider.getService("CertStore", "FOO");
+            service.newInstance(null);
+            fail();
+        } catch (NoSuchAlgorithmException expected) {
+        } finally {
+            Security.removeProvider(provider.getName());
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public void testProviderService_newInstance_PrivateEmptyConstructor_throws()
+            throws Exception {
+        MockProvider provider = new MockProvider("MockProvider");
+
+        provider.putServiceForTest(new Provider.Service(provider, "CertStore", "FOO",
+                CertStoreSpiPrivateEmptyConstructor.class.getName(), null, null));
+
+        Security.addProvider(provider);
+        // The empty constructor is private, it must fail with NoSuchAlgorithmException
+        try {
+            Provider.Service service = provider.getService("CertStore", "FOO");
+            service.newInstance(null);
+            fail();
+        } catch (NoSuchAlgorithmException expected) {
+        } finally {
+            Security.removeProvider(provider.getName());
+        }
+    }
+
+    @SuppressWarnings("serial")
     public void testProviderService_AliasDoesNotEraseCanonical_Success()
             throws Exception {
         // Make sure we start with a "known good" alias for this OID.
@@ -632,6 +675,45 @@ public class ProviderTest extends TestCase {
         }
     }
 
+    private static class CertStoreSpiPrivateClass extends CertStoreSpi {
+        public CertStoreSpiPrivateClass()
+                throws InvalidAlgorithmParameterException {
+            super(null);
+        }
+
+        @Override
+        public Collection<? extends Certificate> engineGetCertificates(CertSelector selector)
+                throws CertStoreException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Collection<? extends CRL> engineGetCRLs(CRLSelector selector)
+                throws CertStoreException {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    private static class CertStoreSpiPrivateEmptyConstructor extends CertStoreSpi {
+        private CertStoreSpiPrivateEmptyConstructor(CertStoreParameters params)
+                throws InvalidAlgorithmParameterException {
+            super(null);
+        }
+
+        @Override
+        public Collection<? extends Certificate> engineGetCertificates(CertSelector selector)
+                throws CertStoreException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Collection<? extends CRL> engineGetCRLs(CRLSelector selector)
+                throws CertStoreException {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+
     public static class MyCertStoreParameters implements CertStoreParameters {
         public Object clone() {
             return new MyCertStoreParameters();
@@ -692,6 +774,118 @@ public class ProviderTest extends TestCase {
                 "class2.algorithm1",
                 mapOf("class1.algorithm1", "impl1"),
                 true /* mustChangeSecurityVersion */);
+        performHashMapOperationAndCheckResults(
+                COMPUTE,
+                mapOf("class1.algorithm1", "impl1"),
+                // It's really difficult to find an example of this that sounds realistic
+                // for a Provider...
+                new Pair("class1.algorithm1", CONCAT),
+                mapOf("class1.algorithm1", "class1.algorithm1impl1"),
+                true);
+        performHashMapOperationAndCheckResults(
+                PUT_IF_ABSENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class1.algorithm1", "impl2"),
+                // Don't put because key is absent.
+                mapOf("class1.algorithm1", "impl1"),
+                true);
+        performHashMapOperationAndCheckResults(
+                PUT_IF_ABSENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class2.algorithm2", "impl2"),
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                PUT_IF_ABSENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class2.algorithm2", "impl2"),
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                COMPUTE_IF_PRESENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class1.algorithm1", CONCAT),
+                mapOf("class1.algorithm1", "class1.algorithm1impl1"),
+                true);
+        performHashMapOperationAndCheckResults(
+                COMPUTE_IF_PRESENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class2.algorithm2", CONCAT),
+                // Don't compute because is not present.
+                mapOf("class1.algorithm1", "impl1"),
+                true);
+        performHashMapOperationAndCheckResults(
+                COMPUTE_IF_ABSENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class2.algorithm2", TO_UPPER_CASE),
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "CLASS2.ALGORITHM2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                COMPUTE_IF_ABSENT,
+                mapOf("class1.algorithm1", "impl1"),
+                new Pair("class1.algorithm1", TO_UPPER_CASE),
+                // Don't compute because if not absent.
+                mapOf("class1.algorithm1", "impl1"),
+                true);
+        performHashMapOperationAndCheckResults(
+                REPLACE_USING_KEY,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair("class1.algorithm1", "impl3"),
+                mapOf("class1.algorithm1", "impl3", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                REPLACE_USING_KEY,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair("class1.algorithm3", "impl3"),
+                // Do not replace as the key is not present.
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                REPLACE_USING_KEY_AND_VALUE,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair(new Pair("class1.algorithm1", "impl1"), "impl3"),
+                mapOf("class1.algorithm1", "impl3", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                REPLACE_USING_KEY_AND_VALUE,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair(new Pair("class1.algorithm1", "impl4"), "impl3"),
+                // Do not replace as the key/value pair is not present.
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                REPLACE_ALL,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                // Applying simply CONCAT will affect internal mappings of the provider (version,
+                // info, name, etc)
+                CONCAT_IF_STARTING_WITH_CLASS,
+                mapOf("class1.algorithm1", "class1.algorithm1impl1",
+                        "class2.algorithm2", "class2.algorithm2impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                MERGE,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair(new Pair("class1.algorithm1", "impl3"), CONCAT),
+                // The key is present, so the function is used.
+                mapOf("class1.algorithm1", "impl1impl3",
+                        "class2.algorithm2", "impl2"),
+                true);
+        performHashMapOperationAndCheckResults(
+                MERGE,
+                mapOf("class1.algorithm1", "impl1", "class2.algorithm2", "impl2"),
+                new Pair(new Pair("class3.algorithm3", "impl3"), CONCAT),
+                // The key is not present, so the value is used.
+                mapOf("class1.algorithm1", "impl1",
+                        "class2.algorithm2", "impl2",
+                        "class3.algorithm3", "impl3"),
+                true);
+    }
+
+    public void test_getOrDefault() {
+        Provider p = new MockProvider("MockProvider");
+        p.put("class1.algorithm1", "impl1");
+        assertEquals("impl1", p.getOrDefault("class1.algorithm1", "default"));
+        assertEquals("default", p.getOrDefault("thisIsNotInTheProvider", "default"));
     }
 
     private static class Pair<A, B> {
@@ -714,17 +908,77 @@ public class ProviderTest extends TestCase {
     }
 
     private static final Consumer<ProviderAndOperationParameter<Pair<String, String>>> PUT =
-            (ProviderAndOperationParameter<Pair<String, String>> provAndParam) ->
-                {
-                    provAndParam.provider.put(provAndParam.operationParameters.first,
+            provAndParam ->
+                    provAndParam.provider.put(
+                            provAndParam.operationParameters.first,
                             provAndParam.operationParameters.second);
-                };
+
     private static final Consumer<ProviderAndOperationParameter<Map<String, String>>> PUT_ALL =
-            (ProviderAndOperationParameter<Map<String, String>> provAndParam) ->
-                    provAndParam.provider.putAll(provAndParam.operationParameters);
+            provAndParam -> provAndParam.provider.putAll(provAndParam.operationParameters);
+
     private static final Consumer<ProviderAndOperationParameter<String>> REMOVE =
-            (ProviderAndOperationParameter<String> provAndParam) ->
-                    provAndParam.provider.remove(provAndParam.operationParameters);
+            provAndParam -> provAndParam.provider.remove(provAndParam.operationParameters);
+
+    private static final Consumer<ProviderAndOperationParameter<
+            Pair<String, BiFunction<Object, Object, Object>>>> COMPUTE =
+                    provAndParam -> provAndParam.provider.compute(
+                            provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+
+    private static final BiFunction<Object, Object, Object> CONCAT =
+            (a, b) -> Objects.toString(a) + Objects.toString(b);
+
+    private static final Consumer<ProviderAndOperationParameter<Pair<String, String>>>
+            PUT_IF_ABSENT = provAndParam ->
+                    provAndParam.provider.putIfAbsent(
+                            provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+
+    private static final Consumer<ProviderAndOperationParameter<
+            Pair<String, BiFunction<Object, Object, Object>>>> COMPUTE_IF_PRESENT =
+                    provAndParam -> provAndParam.provider.computeIfPresent(
+                            provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+
+    private static final Consumer<ProviderAndOperationParameter<
+            Pair<String, Function<Object, Object>>>> COMPUTE_IF_ABSENT =
+                    provAndParam -> provAndParam.provider.computeIfAbsent(
+                            provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+
+    private static final Function<Object, Object> TO_UPPER_CASE =
+            s -> Objects.toString(s).toUpperCase();
+
+    private static final Consumer<ProviderAndOperationParameter<Pair<String, String>>>
+            REPLACE_USING_KEY = provAndParam ->
+                    provAndParam.provider.replace(
+                            provAndParam.operationParameters.first,
+                            provAndParam.operationParameters.second);
+
+    private static final Consumer<ProviderAndOperationParameter<Pair<Pair<String, String>, String>>>
+            REPLACE_USING_KEY_AND_VALUE = provAndParam ->
+            provAndParam.provider.replace(
+                    provAndParam.operationParameters.first.first,
+                    provAndParam.operationParameters.first.second,
+                    provAndParam.operationParameters.second);
+
+    private static final Consumer<ProviderAndOperationParameter<
+                BiFunction<Object, Object, Object>>> REPLACE_ALL =
+                        provAndParam -> provAndParam.provider.replaceAll(
+                                provAndParam.operationParameters);
+
+    private static final BiFunction<Object, Object, Object> CONCAT_IF_STARTING_WITH_CLASS =
+            (a, b) -> (Objects.toString(a).startsWith("class"))
+                    ? Objects.toString(a) + Objects.toString(b)
+                    : b;
+
+    private static final Consumer<ProviderAndOperationParameter<
+                    Pair<Pair<String, String>, BiFunction<Object, Object, Object>>>>
+            MERGE = provAndParam -> provAndParam.provider.merge(
+                    provAndParam.operationParameters.first.first,
+                    provAndParam.operationParameters.first.second,
+                    provAndParam.operationParameters.second);
+
 
 
     private static Map<String, String> mapOf(String... elements) {
