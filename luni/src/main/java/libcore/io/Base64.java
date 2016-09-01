@@ -22,7 +22,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * Perform encoding and decoding of Base64 byte arrays as described in
  * http://www.ietf.org/rfc/rfc2045.txt
+ *
+ * @deprecated use {@link java.util.Base64} instead
  */
+@Deprecated
 public final class Base64 {
     private static final byte[] BASE_64_ALPHABET = initializeBase64Alphabet();
 
