@@ -201,16 +201,6 @@ public abstract class AbstractMethod extends Executable {
         return accessFlags;
     }
 
-    /**
-     * Returns the constructor's signature in non-printable form. This is called
-     * (only) from IO native code and needed for deriving the serialVersionUID
-     * of the class
-     *
-     * @return The constructor's signature.
-     */
-    @SuppressWarnings("unused")
-    abstract String getSignature();
-
     static final class GenericInfo {
         final ListOfTypes genericExceptionTypes;
         final ListOfTypes genericParameterTypes;
