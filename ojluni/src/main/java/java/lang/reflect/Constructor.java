@@ -348,19 +348,6 @@ public final class Constructor<T> extends AbstractMethod {
         return super.isSynthetic();
     }
 
-    String getSignature() {
-        StringBuilder result = new StringBuilder();
-
-        result.append('(');
-        Class<?>[] parameterTypes = getParameterTypes();
-        for (Class<?> parameterType : parameterTypes) {
-            result.append(Types.getSignature(parameterType));
-        }
-        result.append(")V");
-
-        return result.toString();
-    }
-
     /**
      * {@inheritDoc}
      * @throws NullPointerException  {@inheritDoc}
