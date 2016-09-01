@@ -38,7 +38,6 @@ import libcore.reflect.AnnotatedElements;
  * means of obtaining attributes for the parameter.
  *
  * @since 1.8
- * @hide Hidden pending tests
  */
 public final class Parameter implements AnnotatedElement {
 
