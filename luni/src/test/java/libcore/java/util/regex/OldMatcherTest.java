@@ -576,10 +576,10 @@ public class OldMatcherTest extends TestCase {
         final Matcher m = p.matcher("");
 
         ArrayList<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 5; ++i) {
             Thread t = new Thread(new Runnable() {
                 public void run() {
-                    for (int i = 0; i < 4096; ++i) {
+                    for (int i = 0; i < 1024; ++i) {
                         String s = "some example text";
                         m.reset(s);
                         try {
