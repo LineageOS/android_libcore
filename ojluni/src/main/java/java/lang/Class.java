@@ -292,7 +292,6 @@ public final class Class<T> implements java.io.Serializable,
      * information about modifiers and type parameters
      *
      * @since 1.8
-     * @hide Hidden pending tests
      */
     public String toGenericString() {
         if (isPrimitive()) {

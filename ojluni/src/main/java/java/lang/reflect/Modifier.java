@@ -502,7 +502,6 @@ public class Modifier {
      *
      * @jls 8.4.1 Formal Parameters
      * @since 1.8
-     * @hide Hidden pending tests
      */
     public static int parameterModifiers() {
         return PARAMETER_MODIFIERS;
