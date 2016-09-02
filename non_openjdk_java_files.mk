@@ -36,6 +36,7 @@ non_openjdk_javadoc_files := \
   dalvik/src/main/java/dalvik/annotation/TestTarget.java \
   dalvik/src/main/java/dalvik/annotation/TestTargetClass.java \
   dalvik/src/main/java/dalvik/annotation/Throws.java \
+  dalvik/src/main/java/dalvik/annotation/optimization/CriticalNative.java \
   dalvik/src/main/java/dalvik/annotation/optimization/FastNative.java \
   dalvik/src/main/java/dalvik/bytecode/OpcodeInfo.java \
   dalvik/src/main/java/dalvik/bytecode/Opcodes.java \
