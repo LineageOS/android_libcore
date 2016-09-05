@@ -295,8 +295,13 @@ public class WeakHashMap<K,V>
      * in lower bits.
      */
     final int hash(Object k) {
-        // Android-changed: Choice of hash function, http://b/28082128
-        return sun.misc.Hashing.singleWordWangJenkinsHash(k);
+        int h = k.hashCode();
+
+        // This function ensures that hashCodes that differ only by
+        // constant multiples at each bit position have a bounded
+        // number of collisions (approximately 8 at default load factor).
+        h ^= (h >>> 20) ^ (h >>> 12);
+        return h ^ (h >>> 7) ^ (h >>> 4);
     }
 
     /**
