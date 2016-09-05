@@ -76,6 +76,7 @@ public class DexClassLoaderTest extends TestCase {
                 assertTrue(file.delete());
             }
         }
+        assertTrue(dir.delete());
     }
 
     /**

@@ -47,6 +47,7 @@ non_openjdk_javadoc_files := \
   dalvik/src/main/java/dalvik/system/DalvikLogging.java \
   dalvik/src/main/java/dalvik/system/DexClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexFile.java \
+  dalvik/src/main/java/dalvik/system/InMemoryDexClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexPathList.java \
   dalvik/src/main/java/dalvik/system/NativeStart.java \
   dalvik/src/main/java/dalvik/system/PathClassLoader.java \
