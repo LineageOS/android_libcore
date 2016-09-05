@@ -169,16 +169,15 @@ class FilesSetup implements TestRule {
         };
     }
 
+    Path getPathInTestDir(String path) {
+        return Paths.get(getTestDir(), path);
+    }
+
     /**
      * Non Standard CopyOptions.
      */
     enum NonStandardOption implements CopyOption, OpenOption {
         OPTION1,
-    }
-
-    static Object getFileKey(Path file) throws IOException {
-        return Files.readAttributes(file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)
-                .fileKey();
     }
 
 }
