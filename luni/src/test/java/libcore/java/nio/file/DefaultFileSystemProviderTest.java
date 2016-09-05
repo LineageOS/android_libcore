@@ -398,7 +398,7 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_createDirectory() throws IOException {
         // Check if createDirectory is actually creating a directory.
-        Path newDirectory = Paths.get(filesSetup.getTestDir(), "newDir");
+        Path newDirectory = filesSetup.getPathInTestDir("newDir");
         assertFalse(Files.exists(newDirectory));
         assertFalse(Files.isDirectory(newDirectory));
 
@@ -415,7 +415,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // File with unicode name.
-        Path unicodeFilePath = Paths.get(filesSetup.getTestDir(), "टेस्ट डायरेक्टरी");
+        Path unicodeFilePath = filesSetup.getPathInTestDir("टेस्ट डायरेक्टरी");
         provider.createDirectory(unicodeFilePath);
         assertTrue(Files.exists(unicodeFilePath));
     }
@@ -430,7 +430,7 @@ public class DefaultFileSystemProviderTest {
         // Creating a new file and passing multiple attribute of the same name.
         perm = PosixFilePermissions.fromString("rw-------");
         FileAttribute<Set<PosixFilePermission>> attr1 = PosixFilePermissions.asFileAttribute(perm);
-        Path dirPath2 = Paths.get(filesSetup.getTestDir(), "new_file");
+        Path dirPath2 = filesSetup.getPathInTestDir("new_file");
         provider.createDirectory(dirPath2, attr, attr1);
         // Value should be equal to the last attribute passed.
         assertEquals(attr1.value(), Files.getAttribute(dirPath2, attr.name()));
@@ -547,7 +547,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // Delete a directory.
-        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir");
+        Path dirPath = filesSetup.getPathInTestDir("dir");
         Files.createDirectory(dirPath);
         provider.delete(dirPath);
         assertFalse(Files.exists(dirPath));
@@ -555,7 +555,7 @@ public class DefaultFileSystemProviderTest {
 
         // Delete a non empty directory.
         Files.createDirectory(dirPath);
-        Files.createFile(Paths.get(filesSetup.getTestDir(), "dir/file"));
+        Files.createFile(filesSetup.getPathInTestDir("dir/file"));
         try {
             provider.delete(dirPath);
             fail();
@@ -580,14 +580,14 @@ public class DefaultFileSystemProviderTest {
         assertFalse(Files.deleteIfExists(filesSetup.getTestPath()));
 
         // Delete a directory.
-        Path dirPath = Paths.get(filesSetup.getTestDir(), "dir");
+        Path dirPath = filesSetup.getPathInTestDir("dir");
         Files.createDirectory(dirPath);
         assertTrue(Files.deleteIfExists(dirPath));
         assertFalse(Files.exists(dirPath));
 
         // Delete a non empty directory.
         Files.createDirectory(dirPath);
-        Files.createFile(Paths.get(filesSetup.getTestDir(), "dir/file"));
+        Files.createFile(filesSetup.getPathInTestDir("dir/file"));
         try {
             provider.deleteIfExists(dirPath);
             fail();
@@ -629,8 +629,8 @@ public class DefaultFileSystemProviderTest {
         // With target is a symbolic link file.
         try {
             filesSetup.reset();
-            Path symlink = Paths.get(filesSetup.getTestDir(), "symlink");
-            Path newFile = Paths.get(filesSetup.getTestDir(), "newDir");
+            Path symlink = filesSetup.getPathInTestDir("symlink");
+            Path newFile = filesSetup.getPathInTestDir("newDir");
             Files.createFile(newFile);
             assertTrue(Files.exists(newFile));
             Files.createSymbolicLink(symlink, filesSetup.getDataFilePath());
@@ -694,17 +694,17 @@ public class DefaultFileSystemProviderTest {
 
     @Test
     public void test_copy_directory() throws IOException {
-        final Path dirPath = Paths.get(filesSetup.getTestDir(), "dir1");
-        final Path dirPath2 = Paths.get(filesSetup.getTestDir(), "dir2");
+        final Path dirPath = filesSetup.getPathInTestDir("dir1");
+        final Path dirPath2 = filesSetup.getPathInTestDir("dir2");
         // Nested directory.
-        final Path dirPath3 = Paths.get(filesSetup.getTestDir(), "dir1/dir");
+        final Path dirPath3 = filesSetup.getPathInTestDir("dir1/dir");
 
         // Create dir1 and dir1/dir, and copying dir1/dir to dir2. Copy will create dir2, however,
         // it will not copy the content of the source directory.
         Files.createDirectory(dirPath);
         Files.createDirectory(dirPath3);
         provider.copy(filesSetup.getDataFilePath(),
-                Paths.get(filesSetup.getTestDir(), "dir1/" + DATA_FILE));
+                filesSetup.getPathInTestDir("dir1/" + DATA_FILE));
         provider.copy(dirPath, dirPath2);
         assertTrue(Files.exists(dirPath2));
 
@@ -718,7 +718,7 @@ public class DefaultFileSystemProviderTest {
 
 
         // When the target directory is not empty.
-        Path dirPath4 = Paths.get(filesSetup.getTestDir(), "dir4");
+        Path dirPath4 = filesSetup.getPathInTestDir("dir4");
         Files.createDirectories(dirPath4);
         Path file = Paths.get("file");
         Files.createFile(Paths.get(dirPath.toString(), file.toString()));
@@ -734,14 +734,14 @@ public class DefaultFileSystemProviderTest {
     public void test_newDirectoryStream$Path$Filter() throws IOException {
 
         // Initial setup of directory.
-        Path path_root = Paths.get(filesSetup.getTestDir(), "dir");
-        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "dir/dir1");
-        Path path_dir2 = Paths.get(filesSetup.getTestDir(), "dir/dir2");
-        Path path_dir3 = Paths.get(filesSetup.getTestDir(), "dir/dir3");
+        Path path_root = filesSetup.getPathInTestDir("dir");
+        Path path_dir1 = filesSetup.getPathInTestDir("dir/dir1");
+        Path path_dir2 = filesSetup.getPathInTestDir("dir/dir2");
+        Path path_dir3 = filesSetup.getPathInTestDir("dir/dir3");
 
-        Path path_f1 = Paths.get(filesSetup.getTestDir(), "dir/f1");
-        Path path_f2 = Paths.get(filesSetup.getTestDir(), "dir/f2");
-        Path path_f3 = Paths.get(filesSetup.getTestDir(), "dir/f3");
+        Path path_f1 = filesSetup.getPathInTestDir("dir/f1");
+        Path path_f2 = filesSetup.getPathInTestDir("dir/f2");
+        Path path_f3 = filesSetup.getPathInTestDir("dir/f3");
 
         Files.createDirectory(path_root);
         Files.createDirectory(path_dir1);
@@ -776,7 +776,7 @@ public class DefaultFileSystemProviderTest {
     @Test
     public void test_newDirectoryStream$Filter_Exception() throws IOException {
         // Non existent directory.
-        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
+        Path path_dir1 = filesSetup.getPathInTestDir("newDir1");
         DirectoryStream.Filter<Path> fileFilter = new DirectoryStream.Filter<Path>() {
             @Override
             public boolean accept(Path entry) throws IOException {
@@ -792,7 +792,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // File instead of directory.
-        Path path_file1 = Paths.get(filesSetup.getTestDir(), "newFile1");
+        Path path_file1 = filesSetup.getPathInTestDir("newFile1");
         Files.createFile(path_file1);
         try (DirectoryStream<Path> directoryStream = provider.newDirectoryStream(path_file1,
                 fileFilter)) {
@@ -816,7 +816,7 @@ public class DefaultFileSystemProviderTest {
         }
 
         // Non existent directory.
-        Path path_dir1 = Paths.get(filesSetup.getTestDir(), "newDir1");
+        Path path_dir1 = filesSetup.getPathInTestDir("newDir1");
         try (DirectoryStream<Path> directoryStream = provider.newDirectoryStream(path_dir1,
                 (DirectoryStream.Filter<? super Path>) null)) {
             fail();
