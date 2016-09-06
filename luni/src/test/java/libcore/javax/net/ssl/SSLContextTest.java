@@ -57,6 +57,7 @@ public class SSLContextTest extends TestCase {
         assertNotNull(sslContext);
         try {
             sslContext.init(null, null, null);
+            fail();
         } catch (KeyManagementException expected) {
         }
     }
@@ -64,6 +65,7 @@ public class SSLContextTest extends TestCase {
     public void test_SSLContext_setDefault() throws Exception {
         try {
             SSLContext.setDefault(null);
+            fail();
         } catch (NullPointerException expected) {
         }
 

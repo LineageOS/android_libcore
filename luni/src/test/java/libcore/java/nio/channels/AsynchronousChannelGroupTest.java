@@ -99,6 +99,7 @@ public class AsynchronousChannelGroupTest extends TestCase {
         // It should not be possible to bind a new channel.
         try {
             AsynchronousServerSocketChannel.open(acg);
+            fail();
         } catch (ShutdownChannelGroupException expected) {}
 
         // ExecutorService hasn't yet terminated as the channel is still open.
@@ -127,6 +128,7 @@ public class AsynchronousChannelGroupTest extends TestCase {
         // It should not be possible to bind a new channel.
         try {
             AsynchronousServerSocketChannel.open(acg);
+            fail();
         } catch (ShutdownChannelGroupException expected) {}
 
         acg.shutdownNow();

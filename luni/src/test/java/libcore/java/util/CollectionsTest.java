@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public final class CollectionsTest extends TestCase {
@@ -629,12 +630,14 @@ public final class CollectionsTest extends TestCase {
         checkedMap2.putIfAbsent(1, A_STRING);
         try {
             checkedMap2.putIfAbsent(1, NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
 
         // When key is absent
         checkedMap2.clear();
         try {
             checkedMap2.putIfAbsent(1, NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -657,6 +660,7 @@ public final class CollectionsTest extends TestCase {
 
         try {
             checkedMap2.replace(1, NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -672,6 +676,7 @@ public final class CollectionsTest extends TestCase {
 
         try {
             checkedMap2.replace(1, 1, NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -685,15 +690,16 @@ public final class CollectionsTest extends TestCase {
         Map checkedMap2 = Collections.checkedMap(new HashMap<>(), Integer.class, String.class);
         checkedMap2.put(1, A_STRING);
 
-        // When key is present
-        try {
-            checkedMap2.computeIfAbsent(1, k -> NOT_A_STRING);
-        } catch (ClassCastException expected) {}
+        // When key is present, function should not be invoked
+        assertSame(A_STRING, checkedMap2.computeIfAbsent(1, k -> {
+            throw new AssertionFailedError("key present: function should not be invoked");
+        }));
 
-        // When key is absent
+        // When key is absent, computed value's type should be checked
         checkedMap2.clear();
         try {
             checkedMap2.computeIfAbsent(1, k -> NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -709,6 +715,7 @@ public final class CollectionsTest extends TestCase {
 
         try {
             checkedMap2.computeIfPresent(1, (k, v) -> NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -721,6 +728,7 @@ public final class CollectionsTest extends TestCase {
         checkedMap2.put(1, A_STRING);
         try {
             checkedMap2.compute(1, (k, v) -> NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 
@@ -736,6 +744,7 @@ public final class CollectionsTest extends TestCase {
 
         try {
             checkedMap2.merge(1, A_STRING, (v1, v2) -> NOT_A_STRING);
+            fail();
         } catch (ClassCastException expected) {}
     }
 }
