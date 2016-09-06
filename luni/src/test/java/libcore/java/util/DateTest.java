@@ -16,6 +16,7 @@
 
 package libcore.java.util;
 
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -77,6 +78,84 @@ public class DateTest extends TestCase {
         assertEquals(
                 Date.parse("Wed, 06 Jan 2016 11:55:59 GMT+05:00"),
                 Date.parse("Wed, 06 Jan 2016 11:55:59 GMT+05"));
+    }
 
+    /**
+     * The minimum long value below which {@link Instant#toEpochMilli()} will
+     * throw is not clearly documented. This test discovers if that minimum
+     * value ever changes, and also checks that it is also the minimum Instant
+     * (at a millisecond boundary) that can be converted to a Date.
+     */
+    public void test_convertFromInstant_lowerBound() {
+        // smallest millisecond Instant that can be converted to Date
+        long minConvertible = -9223372036854775000L;
+
+        // show that this value is < 1 sec away from Long.MIN_VALUE
+        assertEquals(Long.MIN_VALUE + 808, minConvertible);
+
+        Instant inBound = Instant.ofEpochMilli(minConvertible);
+        assertEquals(new Date(minConvertible), Date.from(inBound));
+        assertEquals(minConvertible, inBound.toEpochMilli());
+
+        Instant outOfBound = Instant.ofEpochMilli(minConvertible - 1);
+        try {
+            Date.from(outOfBound);
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals(ArithmeticException.class, expected.getCause().getClass());
+        }
+
+        try {
+            outOfBound.toEpochMilli();
+            fail();
+        } catch (ArithmeticException expected) {
+
+        }
+    }
+
+    public void test_convertFromInstant_upperBound() {
+        Date.from(Instant.ofEpochMilli(Long.MAX_VALUE));
+
+        Date.from(Instant.ofEpochSecond(Long.MAX_VALUE / 1000, 0));
+        Date.from(Instant.ofEpochSecond(Long.MAX_VALUE / 1000, 999999999));
+        Instant outOfBound = Instant.ofEpochSecond(Long.MAX_VALUE / 1000 + 1, 0);
+        try {
+            Date.from(outOfBound);
+            fail();
+        } catch (IllegalArgumentException expected) {
+            assertEquals(ArithmeticException.class, expected.getCause().getClass());
+        }
+    }
+
+    /**
+     * Checks conversion between long, Date and Instant.
+     */
+    public void test_convertToInstantAndBack() {
+        check_convertToInstantAndBack(0);
+        check_convertToInstantAndBack(-1);
+        check_convertToInstantAndBack( 999999999);
+        check_convertToInstantAndBack(1000000000);
+        check_convertToInstantAndBack(1000000001);
+        check_convertToInstantAndBack(1000000002);
+        check_convertToInstantAndBack(1000000499);
+        check_convertToInstantAndBack(1000000500);
+        check_convertToInstantAndBack(1000000999);
+        check_convertToInstantAndBack(1000001000);
+        check_convertToInstantAndBack(Long.MIN_VALUE + 808); // minimum ofEpochMilli argument
+        check_convertToInstantAndBack(Long.MAX_VALUE);
+        check_convertToInstantAndBack(System.currentTimeMillis());
+        check_convertToInstantAndBack(Date.parse("Wed, 06 Jan 2016 11:55:59 GMT+0500"));
+    }
+
+    private static void check_convertToInstantAndBack(long millis) {
+        Date date = new Date(millis);
+        Instant instant = date.toInstant();
+        assertEquals(date, Date.from(instant));
+
+        assertEquals(instant, Instant.ofEpochMilli(millis));
+        assertEquals("Millis should be a millions of nanos", 0, instant.getNano() % 1000000);
+
+        assertEquals(millis, date.getTime());
+        assertEquals(millis, instant.toEpochMilli());
     }
 }
