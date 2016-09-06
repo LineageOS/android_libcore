@@ -51,6 +51,8 @@ class FilesSetup implements TestRule {
 
     private Path testPath;
 
+    private Path testDirPath;
+
     private boolean filesInitialized = false;
 
     void setUp() throws Exception {
@@ -63,7 +65,8 @@ class FilesSetup implements TestRule {
     }
 
     private void initializeFiles() throws IOException {
-        testDir = Files.createTempDirectory("testDir").toString();
+        testDirPath = Files.createTempDirectory("testDir");
+        testDir = testDirPath.toString();
         dataFilePath = Paths.get(testDir, DATA_FILE);
         testPath = Paths.get(testDir, NON_EXISTENT_FILE);
         File testInputFile = new File(testDir, DATA_FILE);
@@ -85,6 +88,11 @@ class FilesSetup implements TestRule {
     Path getDataFilePath() {
         checkState();
         return dataFilePath;
+    }
+
+    Path getTestDirPath() {
+        checkState();
+        return testDirPath;
     }
 
     String getTestDir() {
