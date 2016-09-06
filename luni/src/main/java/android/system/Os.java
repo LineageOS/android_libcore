@@ -276,6 +276,12 @@ public final class Os {
   public static void listen(FileDescriptor fd, int backlog) throws ErrnoException { Libcore.os.listen(fd, backlog); }
 
   /**
+   * See <a href="http://man7.org/linux/man-pages/man2/listxattr.2.html">listxattr(2)</a>
+   * @hide
+   */
+  public static String[] listxattr(String path) throws ErrnoException { return Libcore.os.listxattr(path); }
+
+  /**
    * See <a href="http://man7.org/linux/man-pages/man2/lseek.2.html">lseek(2)</a>.
    */
   public static long lseek(FileDescriptor fd, long offset, int whence) throws ErrnoException { return Libcore.os.lseek(fd, offset, whence); }
