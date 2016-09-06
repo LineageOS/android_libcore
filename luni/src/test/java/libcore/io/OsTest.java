@@ -513,9 +513,11 @@ public class OsTest extends TestCase {
       } catch (ErrnoException e) {
         assertEquals(OsConstants.ENODATA, e.errno);
       }
+      assertFalse(Arrays.asList(Libcore.os.listxattr(path)).contains(NAME_TEST));
 
       Libcore.os.setxattr(path, NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
       byte[] xattr_create = Libcore.os.getxattr(path, NAME_TEST);
+      assertTrue(Arrays.asList(Libcore.os.listxattr(path)).contains(NAME_TEST));
       assertEquals(VALUE_CAKE.length, xattr_create.length);
       assertStartsWith(VALUE_CAKE, xattr_create);
 
@@ -528,6 +530,7 @@ public class OsTest extends TestCase {
 
       Libcore.os.setxattr(path, NAME_TEST, VALUE_PIE, OsConstants.XATTR_REPLACE);
       byte[] xattr_replace = Libcore.os.getxattr(path, NAME_TEST);
+      assertTrue(Arrays.asList(Libcore.os.listxattr(path)).contains(NAME_TEST));
       assertEquals(VALUE_PIE.length, xattr_replace.length);
       assertStartsWith(VALUE_PIE, xattr_replace);
 
@@ -538,9 +541,118 @@ public class OsTest extends TestCase {
       } catch (ErrnoException e) {
         assertEquals(OsConstants.ENODATA, e.errno);
       }
+      assertFalse(Arrays.asList(Libcore.os.listxattr(path)).contains(NAME_TEST));
 
     } finally {
       file.delete();
+    }
+  }
+
+  public void test_xattr_NPE() throws Exception {
+    File file = File.createTempFile("xattr", "test");
+    final String path = file.getAbsolutePath();
+    final String NAME_TEST = "user.meow";
+    final byte[] VALUE_CAKE = "cake cake cake".getBytes(StandardCharsets.UTF_8);
+
+    // getxattr
+    try {
+      Libcore.os.getxattr(null, NAME_TEST);
+      fail();
+    } catch (NullPointerException expected) { }
+    try {
+      Libcore.os.getxattr(path, null);
+      fail();
+    } catch (NullPointerException expected) { }
+
+    // listxattr
+    try {
+      Libcore.os.listxattr(null);
+      fail();
+    } catch (NullPointerException expected) { }
+
+    // removexattr
+    try {
+      Libcore.os.removexattr(null, NAME_TEST);
+      fail();
+    } catch (NullPointerException expected) { }
+    try {
+      Libcore.os.removexattr(path, null);
+      fail();
+    } catch (NullPointerException expected) { }
+
+    // setxattr
+    try {
+      Libcore.os.setxattr(null, NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
+      fail();
+    } catch (NullPointerException expected) { }
+    try {
+      Libcore.os.setxattr(path, null, VALUE_CAKE, OsConstants.XATTR_CREATE);
+      fail();
+    } catch (NullPointerException expected) { }
+    try {
+      Libcore.os.setxattr(path, NAME_TEST, null, OsConstants.XATTR_CREATE);
+      fail();
+    } catch (NullPointerException expected) { }
+  }
+
+  public void test_xattr_Errno() throws Exception {
+    File file = File.createTempFile("xattr", "test");
+    final String path = file.getAbsolutePath();
+    final String NAME_TEST = "user.meow";
+    final byte[] VALUE_CAKE = "cake cake cake".getBytes(StandardCharsets.UTF_8);
+
+    // ENOENT, No such file or directory.
+    try {
+      Libcore.os.getxattr("", NAME_TEST);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOENT, e.errno);
+    }
+    try {
+      Libcore.os.listxattr("");
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOENT, e.errno);
+    }
+    try {
+      Libcore.os.removexattr("", NAME_TEST);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOENT, e.errno);
+    }
+    try {
+      Libcore.os.setxattr("", NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOENT, e.errno);
+    }
+
+    // ENOTSUP, Extended attributes are not supported by the filesystem, or are disabled.
+    try {
+      Libcore.os.getxattr("/proc/version", NAME_TEST);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOTSUP, e.errno);
+    }
+    try {
+      // Linux listxattr does not set errno.
+      String[] xattrs = Libcore.os.listxattr("/proc/version");
+      assertEquals(0, xattrs.length);
+    } catch (ErrnoException e) {
+      fail();
+    }
+    try {
+      Libcore.os.removexattr("/proc/version", NAME_TEST);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(OsConstants.ENOTSUP, e.errno);
+    }
+    try {
+      Libcore.os.setxattr("/proc/version", NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
+      fail();
+    } catch (ErrnoException e) {
+      // For setxattr, EACCES is set instead of ENOTSUP.
+      assertEquals(OsConstants.EACCES, e.errno);
     }
   }
 
