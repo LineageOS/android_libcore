@@ -1156,11 +1156,13 @@ public class DatagramChannelMulticastTest extends TestCase {
 
         try {
             membershipKey.block(UNICAST_IPv4_1);
+            fail();
         } catch (IllegalStateException expected) {
         }
 
         try {
             membershipKey.unblock(UNICAST_IPv4_1);
+            fail();
         } catch (IllegalStateException expected) {
         }
 

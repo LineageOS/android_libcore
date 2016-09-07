@@ -161,6 +161,7 @@ public class MembershipKeyTest extends TestCase {
         init(true);
         try {
             key.block(sourceAddress);
+            fail();
         } catch (IllegalStateException expected) {}
     }
 
