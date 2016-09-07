@@ -531,21 +531,27 @@ public class SocketTest extends junit.framework.TestCase {
         // Test all Socket ctors
         try {
             new SocketThatFailOnClose("localhost", 1);
+            fail();
         } catch(IOException expected) {}
         try {
             new SocketThatFailOnClose(InetAddress.getLocalHost(), 1);
+            fail();
         } catch(IOException expected) {}
         try {
             new SocketThatFailOnClose("localhost", 1, null, 0);
+            fail();
         } catch(IOException expected) {}
         try {
             new SocketThatFailOnClose(InetAddress.getLocalHost(), 1, null, 0);
+            fail();
         } catch(IOException expected) {}
         try {
             new SocketThatFailOnClose("localhost", 1, true);
+            fail();
         } catch(IOException expected) {}
         try {
             new SocketThatFailOnClose(InetAddress.getLocalHost(), 1, true);
+            fail();
         } catch(IOException expected) {}
     }
 
