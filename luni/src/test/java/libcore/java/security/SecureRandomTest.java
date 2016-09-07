@@ -174,4 +174,40 @@ public class SecureRandomTest extends TestCase {
                     SecureRandom.DEFAULT_SDK_TARGET_FOR_CRYPTO_PROVIDER_WORKAROUND);
         }
     }
+
+    /**
+     * Test that the strong instance is from OpenSSLProvider (as specified in security.properties)
+     * even if there are other providers installed.
+     */
+    public void testGetInstanceStrong() throws Exception {
+        Provider openSSLProvider = null;
+        for (Provider p : Security.getProviders()) {
+            if (p.getClass().getName().equals("com.android.org.conscrypt.OpenSSLProvider")) {
+                openSSLProvider = p;
+            }
+        }
+        if (openSSLProvider == null) {
+            throw new IllegalStateException("OpenSSLProvider not found");
+        }
+
+        // Default comes from the OpenSSLProvider
+        assertEquals(openSSLProvider, SecureRandom.getInstance("SHA1PRNG").getProvider());
+        assertEquals(openSSLProvider, new SecureRandom().getProvider());
+
+        Provider weakProvider = new Provider("MockWeakSecureRandomProvider", 1.0, "For testing") {
+        };
+        weakProvider.put("SecureRandom.SHA1PRNG", ProviderTest.SecureRandom1.class.getName());
+
+        // Insert a different provider with highest priority.
+        try {
+            Security.insertProviderAt(weakProvider, 1);
+            // Default comes from the weak provider.
+            assertEquals(weakProvider, SecureRandom.getInstance("SHA1PRNG").getProvider());
+            assertEquals(weakProvider, new SecureRandom().getProvider());
+            // Strong SecureRandom comes from the OpenSSLProvider.
+            assertEquals(openSSLProvider, SecureRandom.getInstanceStrong().getProvider());
+        } finally {
+            Security.removeProvider(weakProvider.getName());
+        }
+    }
 }
