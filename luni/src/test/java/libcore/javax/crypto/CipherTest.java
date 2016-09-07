@@ -1300,6 +1300,7 @@ public final class CipherTest extends TestCase {
 
         try {
             c.getOutputSize(0);
+            fail();
         } catch (IllegalStateException expected) {
         }
 

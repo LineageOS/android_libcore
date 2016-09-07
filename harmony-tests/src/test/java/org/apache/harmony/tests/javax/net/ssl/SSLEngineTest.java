@@ -894,6 +894,7 @@ public class SSLEngineTest extends TestCase {
         SSLEngine sse = getEngine(host, port);
 
         try {
+            // TODO: decide whether OpenSSLEngineImpl should throw ISE (it doesn't) b/31301555
             SSLEngineResult result = sse.wrap(bbs, bbd);
         } catch (IllegalStateException expected) {
         }

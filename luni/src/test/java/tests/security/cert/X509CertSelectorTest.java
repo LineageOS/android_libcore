@@ -859,6 +859,7 @@ public class X509CertSelectorTest extends TestCase {
         for (int i = 0; i < invalidValues.length; i++) {
             try {
                 selector.setBasicConstraints(-3);
+                fail();
             } catch (IllegalArgumentException expected) {
             }
         }

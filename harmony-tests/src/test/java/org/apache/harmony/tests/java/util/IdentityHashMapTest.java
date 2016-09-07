@@ -1080,6 +1080,7 @@ public class IdentityHashMapTest extends junit.framework.TestCase {
                     return "";
                 }
             });
+            fail();
         } catch (ConcurrentModificationException expected) {}
     }
 
