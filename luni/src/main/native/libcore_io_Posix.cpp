@@ -61,6 +61,7 @@
 #include <memory>
 
 #include <android-base/file.h>
+#include <android-base/strings.h>
 
 #ifndef __unused
 #define __unused __attribute__((__unused__))
@@ -1414,6 +1415,41 @@ static void Posix_listen(JNIEnv* env, jobject, jobject javaFd, jint backlog) {
     throwIfMinusOne(env, "listen", TEMP_FAILURE_RETRY(listen(fd, backlog)));
 }
 
+static jobjectArray Posix_listxattr(JNIEnv* env, jobject, jstring javaPath) {
+    ScopedUtfChars path(env, javaPath);
+    if (path.c_str() == NULL) {
+        return NULL;
+    }
+
+    while (true) {
+        // Get the current size of the named extended attribute.
+        ssize_t valueLength;
+        if ((valueLength = listxattr(path.c_str(), NULL, 0)) < 0) {
+            throwErrnoException(env, "listxattr");
+            return NULL;
+        }
+
+        // Create the actual byte array.
+        std::string buf(valueLength, '\0');
+        if ((valueLength = listxattr(path.c_str(), &buf[0], valueLength)) < 0) {
+            if (errno == ERANGE) {
+                // The attribute value has changed since last listxattr call and buf no longer fits,
+                // try again.
+                continue;
+            }
+            throwErrnoException(env, "listxattr");
+            return NULL;
+        }
+
+        // Split the output by '\0'.
+        buf.resize(valueLength > 0 ? valueLength - 1 : 0); // Remove the trailing NULL character.
+        std::string delim("\0", 1);
+        auto xattrs = android::base::Split(buf, delim);
+
+        return toStringArray(env, xattrs);
+    }
+}
+
 static jlong Posix_lseek(JNIEnv* env, jobject, jobject javaFd, jlong offset, jint whence) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return throwIfMinusOne(env, "lseek", TEMP_FAILURE_RETRY(lseek64(fd, offset, whence)));
@@ -2165,6 +2201,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Posix, lchown, "(Ljava/lang/String;II)V"),
     NATIVE_METHOD(Posix, link, "(Ljava/lang/String;Ljava/lang/String;)V"),
     NATIVE_METHOD(Posix, listen, "(Ljava/io/FileDescriptor;I)V"),
+    NATIVE_METHOD(Posix, listxattr, "(Ljava/lang/String;)[Ljava/lang/String;"),
     NATIVE_METHOD(Posix, lseek, "(Ljava/io/FileDescriptor;JI)J"),
     NATIVE_METHOD(Posix, lstat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
     NATIVE_METHOD(Posix, mincore, "(JJ[B)V"),
