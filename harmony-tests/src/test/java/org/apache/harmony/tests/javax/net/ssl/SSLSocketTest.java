@@ -249,6 +249,7 @@ public class SSLSocketTest extends TestCase {
 
         try {
             ssl.removeHandshakeCompletedListener(ls);
+            fail();
         } catch (IllegalArgumentException expected) {
         }
 

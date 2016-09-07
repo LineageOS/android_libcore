@@ -530,6 +530,7 @@ public class URLConnectionTest extends TestCase {
         uc2.connect();
         try {
             uc2.getInputStream();
+            fail();
         } catch (Throwable expected) {
         }
     }

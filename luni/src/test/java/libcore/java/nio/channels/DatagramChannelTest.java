@@ -209,6 +209,7 @@ public class DatagramChannelTest extends junit.framework.TestCase {
         socketAddress = new InetSocketAddress(Inet4Address.LOOPBACK, 0);
         try {
             channel.bind(socketAddress);
+            fail();
         } catch (ClosedChannelException expected) {}
     }
 

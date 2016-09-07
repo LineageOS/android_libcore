@@ -530,6 +530,7 @@ public abstract class AbstractCookiesTest extends TestCase {
         assertEquals(Arrays.asList(cookieA), cookieStore.getCookies());
         try {
             cookieStore.add(null, cookieB);
+            fail();
         } catch (NullPointerException expected) {
         }
         assertEquals(Arrays.asList(cookieA, cookieB), cookieStore.getCookies());

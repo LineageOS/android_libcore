@@ -458,6 +458,7 @@ public abstract class AbstractZipFileTest extends TestCase {
         // setCrc takes a long, not an int, so -1 isn't a valid CRC32 (because it's 64 bits).
         try {
             ze.setCrc(-1);
+            fail();
         } catch (IllegalArgumentException expected) {
         }
 
