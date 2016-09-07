@@ -101,6 +101,7 @@ public class HashtableTest extends junit.framework.TestCase {
 
         try {
             ht.replaceAll((k, v) -> null);
+            fail();
         } catch (NullPointerException expected) {}
     }
 

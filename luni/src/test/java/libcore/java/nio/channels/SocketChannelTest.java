@@ -321,6 +321,7 @@ public class SocketChannelTest extends junit.framework.TestCase {
         socketAddress = new InetSocketAddress(Inet4Address.LOOPBACK, 0);
         try {
             sc.bind(socketAddress);
+            fail();
         } catch (ClosedChannelException expected) {
         }
     }

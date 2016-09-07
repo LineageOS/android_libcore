@@ -72,9 +72,16 @@ public final class FinalizeTest extends TestCase {
     // Helper function since we do not want a vreg to keep the allocated object live.
     // For b/25851249
     private void exceptionInConstructor() {
+        boolean thrown = false;
         try {
             new ConstructionFails();
+            // can't fail() here since AssertionFailedError extends AssertionError, which
+            // we expect
         } catch (AssertionError expected) {
+            thrown = true;
+        }
+        if (!thrown) {
+            fail();
         }
     }
 
