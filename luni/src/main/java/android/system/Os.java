@@ -228,7 +228,6 @@ public final class Os {
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/getxattr.2.html">getxattr(2)</a>
-   * @hide
    */
   public static byte[] getxattr(String path, String name) throws ErrnoException { return Libcore.os.getxattr(path, name); }
 
@@ -277,7 +276,6 @@ public final class Os {
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/listxattr.2.html">listxattr(2)</a>
-   * @hide
    */
   public static String[] listxattr(String path) throws ErrnoException { return Libcore.os.listxattr(path); }
 
@@ -417,7 +415,10 @@ public final class Os {
    */
   public static void remove(String path) throws ErrnoException { Libcore.os.remove(path); }
 
-  /** @hide */ public static void removexattr(String path, String name) throws ErrnoException { Libcore.os.removexattr(path, name); }
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man2/removexattr.2.html">removexattr(2)</a>.
+   */
+  public static void removexattr(String path, String name) throws ErrnoException { Libcore.os.removexattr(path, name); }
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/rename.2.html">rename(2)</a>.
@@ -505,7 +506,6 @@ public final class Os {
 
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/setxattr.2.html">setxattr(2)</a>
-   * @hide
    */
   public static void setxattr(String path, String name, byte[] value, int flags) throws ErrnoException { Libcore.os.setxattr(path, name, value, flags); };
 
