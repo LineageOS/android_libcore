@@ -845,11 +845,11 @@ PlainSocketImpl_socketShutdown(JNIEnv *env, jobject this,
 
 /*
  * Class:     java_net_PlainSocketImpl
- * Method:    socketSetOption
+ * Method:    socketSetOption0
  * Signature: (IZLjava/lang/Object;)V
  */
 JNIEXPORT void JNICALL
-PlainSocketImpl_socketSetOption(JNIEnv *env, jobject this,
+PlainSocketImpl_socketSetOption0(JNIEnv *env, jobject this,
                                               jint cmd, jboolean on,
                                               jobject value) {
     int fd;
@@ -1073,7 +1073,7 @@ PlainSocketImpl_socketSendUrgentData(JNIEnv *env, jobject this,
 static JNINativeMethod gMethods[] = {
   NATIVE_METHOD(PlainSocketImpl, socketSendUrgentData, "(I)V"),
   NATIVE_METHOD(PlainSocketImpl, socketGetOption, "(ILjava/lang/Object;)I"),
-  NATIVE_METHOD(PlainSocketImpl, socketSetOption, "(IZLjava/lang/Object;)V"),
+  NATIVE_METHOD(PlainSocketImpl, socketSetOption0, "(IZLjava/lang/Object;)V"),
   NATIVE_METHOD(PlainSocketImpl, socketShutdown, "(I)V"),
   NATIVE_METHOD(PlainSocketImpl, socketClose0, "()V"),
   NATIVE_METHOD(PlainSocketImpl, socketAccept, "(Ljava/net/SocketImpl;)V"),

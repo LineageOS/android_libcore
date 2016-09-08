@@ -88,4 +88,13 @@ public class DatagramSocketTest extends TestCase {
       }
     }
   }
+
+  public void test_setTrafficClass() throws Exception {
+    DatagramSocket s = new DatagramSocket();
+
+    for (int i = 0; i <= 255; ++i) {
+      s.setTrafficClass(i);
+      assertEquals(i, s.getTrafficClass());
+    }
+  }
 }
