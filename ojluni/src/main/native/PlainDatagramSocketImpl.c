@@ -1284,11 +1284,11 @@ static void setMulticastLoopbackMode(JNIEnv *env, jobject this, int fd,
 
 /*
  * Class:     java_net_PlainDatagramSocketImpl
- * Method:    socketSetOption
+ * Method:    socketSetOption0
  * Signature: (ILjava/lang/Object;)V
  */
 JNIEXPORT void JNICALL
-PlainDatagramSocketImpl_socketSetOption(JNIEnv *env,
+PlainDatagramSocketImpl_socketSetOption0(JNIEnv *env,
                                                       jobject this,
                                                       jint opt,
                                                       jobject value) {
@@ -1942,7 +1942,7 @@ static JNINativeMethod gMethods[] = {
   NATIVE_METHOD(PlainDatagramSocketImpl, setTimeToLive, "(I)V"),
   NATIVE_METHOD(PlainDatagramSocketImpl, setTTL, "(B)V"),
   NATIVE_METHOD(PlainDatagramSocketImpl, socketGetOption, "(I)Ljava/lang/Object;"),
-  NATIVE_METHOD(PlainDatagramSocketImpl, socketSetOption, "(ILjava/lang/Object;)V"),
+  NATIVE_METHOD(PlainDatagramSocketImpl, socketSetOption0, "(ILjava/lang/Object;)V"),
   NATIVE_METHOD(PlainDatagramSocketImpl, datagramSocketClose, "()V"),
   NATIVE_METHOD(PlainDatagramSocketImpl, datagramSocketCreate, "()V"),
   NATIVE_METHOD(PlainDatagramSocketImpl, receive0, "(Ljava/net/DatagramPacket;)V"),
