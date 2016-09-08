@@ -217,10 +217,12 @@ public class Files2Test {
         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perm);
         try {
             Files.setPosixFilePermissions(null, perm);
+            fail();
         } catch(NullPointerException expected) {}
 
         try {
             Files.setPosixFilePermissions(filesSetup.getDataFilePath(), null);
+            fail();
         } catch(NullPointerException expected) {}
     }
 
