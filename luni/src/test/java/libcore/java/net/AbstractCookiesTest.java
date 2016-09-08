@@ -521,18 +521,9 @@ public abstract class AbstractCookiesTest extends TestCase {
         HttpCookie cookieA = createCookie("a", "android", ".android.com", "/source");
         HttpCookie cookieB = createCookie("b", "banana", "code.google.com", "/p/android");
 
-        try {
-            cookieStore.add(null, cookieA);
-        } catch (NullPointerException expected) {
-            // the RI crashes even though the cookie does get added to the store; sigh
-            expected.printStackTrace();
-        }
+        cookieStore.add(null, cookieA);
         assertEquals(Arrays.asList(cookieA), cookieStore.getCookies());
-        try {
-            cookieStore.add(null, cookieB);
-            fail();
-        } catch (NullPointerException expected) {
-        }
+        cookieStore.add(null, cookieB);
         assertEquals(Arrays.asList(cookieA, cookieB), cookieStore.getCookies());
 
         try {
