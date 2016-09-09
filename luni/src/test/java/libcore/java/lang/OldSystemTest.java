@@ -321,13 +321,14 @@ public class OldSystemTest extends junit.framework.TestCase {
         } catch(NullPointerException expected) {
         }
 
-        // Trivial positive test for System.load: Attempt to load a libc++.so - it's guaranteed
-        // to exist and is whitelisted for use from applications.
+        // Trivial positive test for System.load: Attempt to load a liblog.so - it's guaranteed
+        // to exist and is whitelisted for use from applications. Also, it's in the library search
+        // path for host builds.
         final ClassLoader cl = getClass().getClassLoader();
         // ClassLoader.findLibrary has protected access, so it's guaranteed to exist.
         final Method m = ClassLoader.class.getDeclaredMethod("findLibrary", String.class);
         assertNotNull(m);
-        String libPath = (String) m.invoke(cl, "c++");
+        String libPath = (String) m.invoke(cl, "log");
         assertNotNull(libPath);
         System.load(new File(libPath).getAbsolutePath());
 
