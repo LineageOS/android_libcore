@@ -558,7 +558,9 @@ public class SignatureTest extends TestCase {
     }
 
     @SuppressWarnings("unused")
-    protected static class MySignature extends Signature implements Cloneable {
+    // Needs to be public as this is checked by the provider class when providing an instance of
+    // a class
+    public static class MySignature extends Signature implements Cloneable {
 
         public MySignature() {
             super("TestSignature");
