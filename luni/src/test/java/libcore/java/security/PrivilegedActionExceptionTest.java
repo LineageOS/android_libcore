@@ -30,7 +30,7 @@ public class PrivilegedActionExceptionTest {
      * b/31360928
      */
     @Test
-    public void test() {
+    public void testGetException() {
         Exception e = new Exception();
         PrivilegedActionException pae = new PrivilegedActionException(e);
 
