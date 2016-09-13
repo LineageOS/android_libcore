@@ -216,6 +216,10 @@ public abstract class AbstractMethod extends Executable {
         }
     }
 
+    boolean hasGenericInformationInternal() {
+        return getSignatureAnnotation() != null;
+    }
+
     /**
      * Returns generic information associated with this method/constructor member.
      */
