@@ -82,9 +82,15 @@ public final class Method extends AbstractMethod  {
     private Method() {
     }
 
+    @Override
+    boolean hasGenericInformation() {
+        // Android-changed: Signature retrieval is handled in AbstractMethod.
+        return super.hasGenericInformationInternal();
+    }
+
     /**
      * {@inheritDoc}
-      */
+     */
     @Override
     public Class<?> getDeclaringClass() {
         // Android-changed: This is handled by AbstractMethod.
@@ -159,6 +165,7 @@ public final class Method extends AbstractMethod  {
      * @since 1.5
      */
     public Type getGenericReturnType() {
+        // Android-changed: Modified implementation to use AbstractMethod.
       return Types.getType(getMethodOrConstructorGenericInfoInternal().genericReturnType);
     }
 
@@ -237,7 +244,6 @@ public final class Method extends AbstractMethod  {
     public int hashCode() {
         return getDeclaringClass().getName().hashCode() ^ getName().hashCode();
     }
-
 
     /**
      * Returns a string describing this {@code Method}.  The string is
@@ -332,7 +338,6 @@ public final class Method extends AbstractMethod  {
         sb.append(getName());
     }
 
-
     /**
      * Invokes the underlying method represented by this {@code Method}
      * object, on the specified object with the specified parameters.
@@ -424,7 +429,6 @@ public final class Method extends AbstractMethod  {
     public boolean isSynthetic() {
         return super.isSynthetic();
     }
-
 
     /**
      * Returns {@code true} if this method is a default
