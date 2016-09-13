@@ -41,6 +41,11 @@ public abstract class Executable extends AccessibleObject
      */
     Executable() {}
 
+    /**
+     * Does the Executable have generic information.
+     */
+    abstract boolean hasGenericInformation();
+
     boolean equalParamTypes(Class<?>[] params1, Class<?>[] params2) {
         /* Avoid unnecessary cloning */
         if (params1.length == params2.length) {
@@ -254,6 +259,160 @@ public abstract class Executable extends AccessibleObject
         throw new UnsupportedOperationException(
                 "Executable.getGenericParameterTypes() not implemented");
     }
+
+    /**
+     * Behaves like {@code getGenericParameterTypes}, but returns type
+     * information for all parameters, including synthetic parameters.
+     */
+    Type[] getAllGenericParameterTypes() {
+        final boolean genericInfo = hasGenericInformation();
+
+        // Easy case: we don't have generic parameter information.  In
+        // this case, we just return the result of
+        // getParameterTypes().
+        if (!genericInfo) {
+            return getParameterTypes();
+        } else {
+            final boolean realParamData = hasRealParameterData();
+            final Type[] genericParamTypes = getGenericParameterTypes();
+            final Type[] nonGenericParamTypes = getParameterTypes();
+            final Type[] out = new Type[nonGenericParamTypes.length];
+            final Parameter[] params = getParameters();
+            int fromidx = 0;
+            // If we have real parameter data, then we use the
+            // synthetic and mandate flags to our advantage.
+            if (realParamData) {
+                for (int i = 0; i < out.length; i++) {
+                    final Parameter param = params[i];
+                    if (param.isSynthetic() || param.isImplicit()) {
+                        // If we hit a synthetic or mandated parameter,
+                        // use the non generic parameter info.
+                        out[i] = nonGenericParamTypes[i];
+                    } else {
+                        // Otherwise, use the generic parameter info.
+                        out[i] = genericParamTypes[fromidx];
+                        fromidx++;
+                    }
+                }
+            } else {
+                // Otherwise, use the non-generic parameter data.
+                // Without method parameter reflection data, we have
+                // no way to figure out which parameters are
+                // synthetic/mandated, thus, no way to match up the
+                // indexes.
+                return genericParamTypes.length == nonGenericParamTypes.length ?
+                    genericParamTypes : nonGenericParamTypes;
+            }
+            return out;
+        }
+    }
+
+    /**
+     * Returns an array of {@code Parameter} objects that represent
+     * all the parameters to the underlying executable represented by
+     * this object.  Returns an array of length 0 if the executable
+     * has no parameters.
+     *
+     * <p>The parameters of the underlying executable do not necessarily
+     * have unique names, or names that are legal identifiers in the
+     * Java programming language (JLS 3.8).
+     *
+     * @since 1.8
+     * @throws MalformedParametersException if the class file contains
+     * a MethodParameters attribute that is improperly formatted.
+     * @return an array of {@code Parameter} objects representing all
+     * the parameters to the executable this object represents.
+     * @hide Hidden pending tests
+     */
+    public Parameter[] getParameters() {
+        // TODO: This may eventually need to be guarded by security
+        // mechanisms similar to those in Field, Method, etc.
+        //
+        // Need to copy the cached array to prevent users from messing
+        // with it.  Since parameters are immutable, we can
+        // shallow-copy.
+        return privateGetParameters().clone();
+    }
+
+    private Parameter[] synthesizeAllParams() {
+        final int realparams = getParameterCount();
+        final Parameter[] out = new Parameter[realparams];
+        for (int i = 0; i < realparams; i++)
+            // TODO: is there a way to synthetically derive the
+            // modifiers?  Probably not in the general case, since
+            // we'd have no way of knowing about them, but there
+            // may be specific cases.
+            out[i] = new Parameter("arg" + i, 0, this, i);
+        return out;
+    }
+
+    private void verifyParameters(final Parameter[] parameters) {
+        final int mask = Modifier.FINAL | Modifier.SYNTHETIC | Modifier.MANDATED;
+
+        if (getParameterTypes().length != parameters.length)
+            throw new MalformedParametersException("Wrong number of parameters in MethodParameters attribute");
+
+        for (Parameter parameter : parameters) {
+            final String name = parameter.getRealName();
+            final int mods = parameter.getModifiers();
+
+            if (name != null) {
+                if (name.isEmpty() || name.indexOf('.') != -1 ||
+                    name.indexOf(';') != -1 || name.indexOf('[') != -1 ||
+                    name.indexOf('/') != -1) {
+                    throw new MalformedParametersException("Invalid parameter name \"" + name + "\"");
+                }
+            }
+
+            if (mods != (mods & mask)) {
+                throw new MalformedParametersException("Invalid parameter modifiers");
+            }
+        }
+    }
+
+    private Parameter[] privateGetParameters() {
+        // Use tmp to avoid multiple writes to a volatile.
+        Parameter[] tmp = parameters;
+
+        if (tmp == null) {
+            // Android-changed: Commented for now.
+            /*
+            // Otherwise, go to the JVM to get them
+            try {
+                tmp = getParameters0();
+            } catch(IllegalArgumentException e) {
+                // Rethrow ClassFormatErrors
+                throw new MalformedParametersException("Invalid constant pool index");
+            }
+            */
+            // Android-changed: End of changes.
+
+            // If we get back nothing, then synthesize parameters
+            if (tmp == null) {
+                hasRealParameterData = false;
+                tmp = synthesizeAllParams();
+            } else {
+                hasRealParameterData = true;
+                verifyParameters(tmp);
+            }
+
+            parameters = tmp;
+        }
+
+        return tmp;
+    }
+
+    boolean hasRealParameterData() {
+        // If this somehow gets called before parameters gets
+        // initialized, force it into existence.
+        if (parameters == null) {
+            privateGetParameters();
+        }
+        return hasRealParameterData;
+    }
+
+    private transient volatile boolean hasRealParameterData;
+    private transient volatile Parameter[] parameters;
 
     /**
      * Returns an array of {@code Class} objects that represent the
