@@ -220,8 +220,7 @@ public class SSLEngineTest extends TestCase {
                 assertConnected(pair);
 
                 boolean needsRecordSplit =
-                        ("TLS".equalsIgnoreCase(c.clientContext.getProtocol())
-                                || "SSLv3".equalsIgnoreCase(c.clientContext.getProtocol()))
+                        "TLS".equalsIgnoreCase(c.clientContext.getProtocol())
                                 && cipherSuite.contains("_CBC_");
 
                 assertSendsCorrectly("This is the client. Hello!".getBytes(),
