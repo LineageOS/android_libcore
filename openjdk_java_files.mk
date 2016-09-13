@@ -186,9 +186,11 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/reflect/InvocationTargetException.java \
     ojluni/src/main/java/java/lang/ReflectiveOperationException.java \
     ojluni/src/main/java/java/lang/reflect/MalformedParameterizedTypeException.java \
+    ojluni/src/main/java/java/lang/reflect/MalformedParametersException.java \
     ojluni/src/main/java/java/lang/reflect/Member.java \
     ojluni/src/main/java/java/lang/reflect/Method.java \
     ojluni/src/main/java/java/lang/reflect/Modifier.java \
+    ojluni/src/main/java/java/lang/reflect/Parameter.java \
     ojluni/src/main/java/java/lang/reflect/ParameterizedType.java \
     ojluni/src/main/java/java/lang/reflect/Proxy.java \
     ojluni/src/main/java/java/lang/reflect/ReflectPermission.java \

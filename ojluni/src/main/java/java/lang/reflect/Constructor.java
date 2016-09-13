@@ -74,6 +74,12 @@ public final class Constructor<T> extends AbstractMethod {
         return new Constructor<T>(ctor, cl);
     }
 
+    @Override
+    boolean hasGenericInformation() {
+        // Android-changed: Signature retrieval is handled in AbstractMethod.
+        return super.hasGenericInformationInternal();
+    }
+
     /**
      * {@inheritDoc}
      */
