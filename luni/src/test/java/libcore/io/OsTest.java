@@ -596,8 +596,6 @@ public class OsTest extends TestCase {
   }
 
   public void test_xattr_Errno() throws Exception {
-    File file = File.createTempFile("xattr", "test");
-    final String path = file.getAbsolutePath();
     final String NAME_TEST = "user.meow";
     final byte[] VALUE_CAKE = "cake cake cake".getBytes(StandardCharsets.UTF_8);
 
@@ -606,53 +604,54 @@ public class OsTest extends TestCase {
       Libcore.os.getxattr("", NAME_TEST);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOENT, e.errno);
+      assertEquals(ENOENT, e.errno);
     }
     try {
       Libcore.os.listxattr("");
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOENT, e.errno);
+      assertEquals(ENOENT, e.errno);
     }
     try {
       Libcore.os.removexattr("", NAME_TEST);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOENT, e.errno);
+      assertEquals(ENOENT, e.errno);
     }
     try {
       Libcore.os.setxattr("", NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOENT, e.errno);
+      assertEquals(ENOENT, e.errno);
     }
 
     // ENOTSUP, Extended attributes are not supported by the filesystem, or are disabled.
+    final boolean root = (Libcore.os.getuid() == 0);
+    final String path = "/proc/self/stat";
     try {
-      Libcore.os.getxattr("/proc/version", NAME_TEST);
+      Libcore.os.setxattr(path, NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOTSUP, e.errno);
+      // setxattr(2) requires root permission for writing to this file, will get EACCES otherwise.
+      assertEquals(root ? ENOTSUP : EACCES, e.errno);
+    }
+    try {
+      Libcore.os.getxattr(path, NAME_TEST);
+      fail();
+    } catch (ErrnoException e) {
+      assertEquals(ENOTSUP, e.errno);
     }
     try {
       // Linux listxattr does not set errno.
-      Libcore.os.listxattr("/proc/version");
+      Libcore.os.listxattr(path);
     } catch (ErrnoException e) {
       fail();
     }
     try {
-      Libcore.os.removexattr("/proc/version", "security.selinux");
+      Libcore.os.removexattr(path, NAME_TEST);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(OsConstants.ENOTSUP, e.errno);
-    }
-    try {
-      Libcore.os.setxattr("/proc/version", NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
-      fail();
-    } catch (ErrnoException e) {
-      // For setxattr, EACCES or ENOTSUP is set depending on whether running with root permission.
-      assertTrue(e.errno == OsConstants.EACCES ||
-                 e.errno == OsConstants.ENOTSUP);
+      assertEquals(ENOTSUP, e.errno);
     }
   }
 
