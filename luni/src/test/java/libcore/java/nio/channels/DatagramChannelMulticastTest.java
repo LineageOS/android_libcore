@@ -490,6 +490,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         assertTrue(key.isValid());
         assertSame(networkInterface, key.networkInterface());
         assertNull(key.sourceAddress());
+        dc.close();
     }
 
     public void test_dropAnySource_twice_IPv4() throws Exception {
