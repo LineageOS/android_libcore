@@ -498,14 +498,14 @@ import java.nio.ReadOnlyBufferException;
  *             <td>9&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSL_RSA_WITH_RC4_128_MD5</td>
- *             <td>9+</td>
+ *             <td>9&ndash;TBD</td>
  *             <td>9&ndash;19</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSL_RSA_WITH_RC4_128_SHA</td>
- *             <td>9+</td>
+ *             <td>9&ndash;TBD</td>
  *             <td>9&ndash;23</td>
  *         </tr>
  *         <tr class="deprecated">
@@ -718,9 +718,9 @@ import java.nio.ReadOnlyBufferException;
  *             <td>20&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_ECDHE_ECDSA_WITH_RC4_128_SHA</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
  *             <td>20&ndash;23</td>
  *         </tr>
  *         <tr>
@@ -783,9 +783,9 @@ import java.nio.ReadOnlyBufferException;
  *             <td>20&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_ECDHE_RSA_WITH_RC4_128_SHA</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
  *             <td>20&ndash;23</td>
  *         </tr>
  *         <tr class="deprecated">
@@ -933,9 +933,9 @@ import java.nio.ReadOnlyBufferException;
  *             <td>21+</td>
  *             <td>21+</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_PSK_WITH_RC4_128_SHA</td>
- *             <td>21+</td>
+ *             <td>21&ndash;TBD</td>
  *             <td></td>
  *         </tr>
  *         <tr class="deprecated">

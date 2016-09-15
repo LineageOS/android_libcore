@@ -313,14 +313,14 @@ import java.util.Vector;
  *             <td>9&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSL_RSA_WITH_RC4_128_MD5</td>
- *             <td>9+</td>
+ *             <td>9&ndash;TBD</td>
  *             <td>9&ndash;19</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSL_RSA_WITH_RC4_128_SHA</td>
- *             <td>9+</td>
+ *             <td>9&ndash;TBD</td>
  *             <td>9&ndash;23</td>
  *         </tr>
  *         <tr class="deprecated">
@@ -458,9 +458,9 @@ import java.util.Vector;
  *             <td>11&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_ECDHE_ECDSA_WITH_RC4_128_SHA</td>
- *             <td>11+</td>
+ *             <td>11&ndash;TBD</td>
  *             <td>11&ndash;23</td>
  *         </tr>
  *         <tr>
@@ -518,9 +518,9 @@ import java.util.Vector;
  *             <td>11&ndash;22</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_ECDHE_RSA_WITH_RC4_128_SHA</td>
- *             <td>11+</td>
+ *             <td>11&ndash;TBD</td>
  *             <td>11&ndash;23</td>
  *         </tr>
  *         <tr class="deprecated">
@@ -663,9 +663,9 @@ import java.util.Vector;
  *             <td>21+</td>
  *             <td>21+</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_PSK_WITH_RC4_128_SHA</td>
- *             <td>21+</td>
+ *             <td>21&ndash;TBD</td>
  *             <td></td>
  *         </tr>
  *         <tr>
@@ -848,16 +848,16 @@ import java.util.Vector;
  *             <td>1&ndash;8</td>
  *             <td>1&ndash;8</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>RC4-MD5</td>
  *             <td>SSL_RSA_WITH_RC4_128_MD5</td>
- *             <td>1+</td>
+ *             <td>1&ndash;TBD</td>
  *             <td>1&ndash;19</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>RC4-SHA</td>
  *             <td>SSL_RSA_WITH_RC4_128_SHA</td>
- *             <td>1+</td>
+ *             <td>1&ndash;TBD</td>
  *             <td>1&ndash;23</td>
  *         </tr>
  *     </tbody>
