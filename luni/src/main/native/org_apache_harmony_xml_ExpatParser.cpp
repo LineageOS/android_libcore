@@ -19,7 +19,6 @@
 #include "JNIHelp.h"
 #include "JniConstants.h"
 #include "JniException.h"
-#include "LocalArray.h"
 #include "ScopedLocalRef.h"
 #include "ScopedPrimitiveArray.h"
 #include "ScopedStringChars.h"
@@ -32,6 +31,8 @@
 
 #include <string.h>
 #include <expat.h>
+
+#include <android-base/stringprintf.h>
 
 #define BUCKET_COUNT 128
 
@@ -519,9 +520,8 @@ public:
         }
 
         // return prefix + ":" + localName
-        ::LocalArray<1024> qName(strlen(mPrefix) + 1 + strlen(mLocalName) + 1);
-        snprintf(&qName[0], qName.size(), "%s:%s", mPrefix, mLocalName);
-        return internString(mEnv, mParsingContext, &qName[0]);
+        auto qName = android::base::StringPrintf("%s:%s", mPrefix, mLocalName);
+        return internString(mEnv, mParsingContext, qName.c_str());
     }
 
     /**
