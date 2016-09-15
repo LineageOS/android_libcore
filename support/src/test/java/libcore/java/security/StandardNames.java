@@ -735,11 +735,7 @@ public final class StandardNames extends Assert {
         addBoth(   "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA");
         addBoth(   "TLS_RSA_WITH_AES_128_CBC_SHA");
         addBoth(   "TLS_DHE_RSA_WITH_AES_128_CBC_SHA");
-        addBoth(   "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA");
-        addBoth(   "TLS_ECDHE_RSA_WITH_RC4_128_SHA");
-        addBoth(   "SSL_RSA_WITH_RC4_128_SHA");
         addBoth(   "SSL_RSA_WITH_3DES_EDE_CBC_SHA");
-        addBoth(   "SSL_RSA_WITH_RC4_128_MD5");
 
         // TLSv1.2 cipher suites
         addBoth(   "TLS_RSA_WITH_AES_128_CBC_SHA256");
@@ -762,7 +758,6 @@ public final class StandardNames extends Assert {
         addOpenSsl("TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
 
         // Pre-Shared Key (PSK) cipher suites
-        addOpenSsl("TLS_PSK_WITH_RC4_128_SHA");
         addOpenSsl("TLS_PSK_WITH_AES_128_CBC_SHA");
         addOpenSsl("TLS_PSK_WITH_AES_256_CBC_SHA");
         addOpenSsl("TLS_ECDHE_PSK_WITH_AES_128_CBC_SHA");
@@ -800,6 +795,12 @@ public final class StandardNames extends Assert {
         addRi(     "TLS_DHE_DSS_WITH_AES_256_CBC_SHA");
         addRi(     "TLS_DHE_DSS_WITH_AES_256_CBC_SHA256");
         addNeither("TLS_DHE_DSS_WITH_AES_256_GCM_SHA384");
+
+        // Android does not have RC4 support
+        addRi(     "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA");
+        addRi(     "TLS_ECDHE_RSA_WITH_RC4_128_SHA");
+        addRi(     "SSL_RSA_WITH_RC4_128_SHA");
+        addRi(     "SSL_RSA_WITH_RC4_128_MD5");
 
         // Dropped
         addNeither("SSL_DH_DSS_EXPORT_WITH_DES40_CBC_SHA");
