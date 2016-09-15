@@ -172,10 +172,11 @@ class DatagramSocket implements java.io.Closeable {
                 // connection will be emulated by DatagramSocket
                 connectState = ST_CONNECTED_NO_IMPL;
           }*/
-          getImpl().connect(address, port);
 
           // socket is now connected by the impl
           connectState = ST_CONNECTED;
+          getImpl().connect(address, port);
+
           // Do we need to filter some packets?
           int avail = getImpl().dataAvailable();
           if (avail == -1) {
