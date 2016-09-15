@@ -22,29 +22,26 @@
 
 package org.apache.harmony.crypto.tests.javax.crypto.interfaces;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
 import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+
+import javax.crypto.interfaces.DHKey;
 import javax.crypto.interfaces.DHPublicKey;
 import javax.crypto.spec.DHParameterSpec;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 
 /**
  * Tests for <code>DHPublicKey</code> class field
  *
  */
-public class DHPublicKeyTest {
+public class DHPublicKeyTest extends TestCase {
 
     /**
      * Test for <code>serialVersionUID</code> field
      */
-    @Test
     public void testField() {
         checkDHPublicKey key = new checkDHPublicKey();
         assertEquals("Incorrect serialVersionUID",
@@ -52,7 +49,6 @@ public class DHPublicKeyTest {
                 -6628103563352519193L);
     }
 
-    @Test(timeout = 30 * 60 * 1000) // http://b/30741591
     public void test_getParams() throws Exception {
         KeyPairGenerator kg = KeyPairGenerator.getInstance("DH");
         kg.initialize(1024);
