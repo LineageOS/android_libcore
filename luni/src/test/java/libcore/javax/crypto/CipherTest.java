@@ -3083,8 +3083,6 @@ public final class CipherTest extends TestCase {
 
         public final Key key;
 
-        public final String keyAlgorithm;
-
         public final byte[] iv;
 
         public final byte[] aad;
@@ -3097,11 +3095,10 @@ public final class CipherTest extends TestCase {
 
         public final boolean isStreamCipher;
 
-        public CipherTestParam(String transformation, String keyAlgorithm, Key key, byte[] iv,
-                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
+        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
+                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
                 boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
-            this.keyAlgorithm = keyAlgorithm;
             this.key = key;
             this.iv = iv;
             this.aad = aad;
@@ -3111,9 +3108,9 @@ public final class CipherTest extends TestCase {
             this.isStreamCipher = isStreamCipher;
         }
 
-        public CipherTestParam(String transformation, String keyAlgorithm, Key key, byte[] iv,
-                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
-            this(transformation, keyAlgorithm, key, iv, aad, plaintext, plaintextPadded, ciphertext,
+        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
+                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
+            this(transformation, key, iv, aad, plaintext, plaintextPadded, ciphertext,
                     false /* isStreamCipher */);
         }
     }
@@ -3122,7 +3119,6 @@ public final class CipherTest extends TestCase {
     static {
         DES_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "DESede/CBC/PKCS5Padding",
-                "DESede",
                 DES_112_KEY,
                 DES_IV1,
                 null,
@@ -3132,7 +3128,6 @@ public final class CipherTest extends TestCase {
                 ));
         DES_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "DESede/CBC/PKCS5Padding",
-                "DESede",
                 DES_168_KEY,
                 DES_IV1,
                 null,
@@ -3146,7 +3141,6 @@ public final class CipherTest extends TestCase {
     static {
         ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "ARC4",
-                "ARC4",
                 ARC4_40BIT_KEY,
                 null, // IV,
                 null, // aad
@@ -3156,7 +3150,6 @@ public final class CipherTest extends TestCase {
                 true /*isStreamCipher */
         ));
         ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
-                "ARC4",
                 "ARC4",
                 ARC4_128BIT_KEY,
                 null, // IV,
@@ -3170,21 +3163,25 @@ public final class CipherTest extends TestCase {
 
     private static List<CipherTestParam> CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
     static {
-        CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/ECB/PKCS5Padding", "AES", AES_128_KEY,
+        CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                "AES/ECB/PKCS5Padding",
+                AES_128_KEY,
                 null,
                 null,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Encrypted));
         // PKCS#5 is assumed to be equivalent to PKCS#7 -- same test vectors are thus used for both.
-        CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/ECB/PKCS7Padding", "AES", AES_128_KEY,
+        CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                "AES/ECB/PKCS7Padding",
+                AES_128_KEY,
                 null,
                 null,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Encrypted));
-        CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/GCM/NOPADDING",
-                "AES",
+        CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                "AES/GCM/NOPADDING",
                 AES_128_GCM_TestVector_1_Key,
                 AES_128_GCM_TestVector_1_IV,
                 AES_128_GCM_TestVector_1_AAD,
@@ -3192,19 +3189,25 @@ public final class CipherTest extends TestCase {
                 AES_128_GCM_TestVector_1_Plaintext,
                 AES_128_GCM_TestVector_1_Encrypted));
         if (IS_UNLIMITED) {
-            CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/CTR/NoPadding", "AES", AES_192_KEY,
+            CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                    "AES/CTR/NoPadding",
+                    AES_192_KEY,
                     AES_192_CTR_NoPadding_TestVector_1_IV,
                     null,
                     AES_192_CTR_NoPadding_TestVector_1_Plaintext,
                     AES_192_CTR_NoPadding_TestVector_1_Plaintext,
                     AES_192_CTR_NoPadding_TestVector_1_Ciphertext));
-            CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/CBC/PKCS5Padding", "AES", AES_256_KEY,
+            CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                    "AES/CBC/PKCS5Padding",
+                    AES_256_KEY,
                     AES_256_CBC_PKCS5Padding_TestVector_1_IV,
                     null,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext_Padded,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Ciphertext));
-            CIPHER_TEST_PARAMS.add(new CipherTestParam("AES/CBC/PKCS7Padding", "AES", AES_256_KEY,
+            CIPHER_TEST_PARAMS.add(new CipherTestParam(
+                    "AES/CBC/PKCS7Padding",
+                    AES_256_KEY,
                     AES_256_CBC_PKCS5Padding_TestVector_1_IV,
                     null,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext,
