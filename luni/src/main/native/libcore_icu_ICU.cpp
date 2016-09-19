@@ -839,136 +839,55 @@ static JNINativeMethod gMethods[] = {
 };
 
 #define FAIL_WITH_STRERROR(s) \
-    ALOGE("Couldn't " s " '%s': %s", path_.c_str(), strerror(errno)); \
+    ALOGE("Couldn't " s " '%s': %s", path.c_str(), strerror(errno)); \
     return FALSE;
 
 #define MAYBE_FAIL_WITH_ICU_ERROR(s) \
     if (status != U_ZERO_ERROR) {\
-        ALOGE("Couldn't initialize ICU (" s "): %s (%s)", u_errorName(status), path_.c_str()); \
+        ALOGE("Couldn't initialize ICU (" s "): %s (%s)", u_errorName(status), path.c_str()); \
         return FALSE; \
     }
 
-// Contain the memory map for ICU data files.
-// Automatically adds the data file to ICU's list of data files upon constructing.
-//
-// - Automatically unmaps in the destructor.
-struct IcuDataMap {
-  // Map in ICU data at the path, returning null if it failed (prints error to ALOGE).
-  static std::unique_ptr<IcuDataMap> Create(const std::string& path) {
-    std::unique_ptr<IcuDataMap> map(new IcuDataMap(path));
-
-    if (!map->TryMap()) {
-      // madvise or ICU could fail but mmap still succeeds.
-      // Destructor will take care of cleaning up a partial init.
-      return nullptr;
-    }
-
-    return map;
-  }
-
-  // Unmap the ICU data.
-  ~IcuDataMap() {
-    TryUnmap();
-  }
-
- private:
-  IcuDataMap(const std::string& path)
-    : path_(path),
-      data_(MAP_FAILED),
-      data_length_(0)
-  {}
-
-  bool TryMap() {
+static bool mapIcuData(const std::string& path) {
     // Open the file and get its length.
-    android::base::unique_fd fd(TEMP_FAILURE_RETRY(open(path_.c_str(), O_RDONLY)));
-
+    android::base::unique_fd fd(open(path.c_str(), O_RDONLY));
     if (fd.get() == -1) {
         FAIL_WITH_STRERROR("open");
     }
-
     struct stat sb;
     if (fstat(fd.get(), &sb) == -1) {
         FAIL_WITH_STRERROR("stat");
     }
 
-    data_length_ = sb.st_size;
-
     // Map it.
-    data_ = mmap(NULL, data_length_, PROT_READ, MAP_SHARED, fd.get(), 0  /* offset */);
-    if (data_ == MAP_FAILED) {
+    void* data = mmap(NULL, sb.st_size, PROT_READ, MAP_SHARED, fd.get(), 0);
+    if (data == MAP_FAILED) {
         FAIL_WITH_STRERROR("mmap");
     }
 
     // Tell the kernel that accesses are likely to be random rather than sequential.
-    if (madvise(data_, data_length_, MADV_RANDOM) == -1) {
+    if (madvise(data, sb.st_size, MADV_RANDOM) == -1) {
         FAIL_WITH_STRERROR("madvise(MADV_RANDOM)");
     }
 
     UErrorCode status = U_ZERO_ERROR;
 
     // Tell ICU to use our memory-mapped data.
-    udata_setCommonData(data_, &status);
+    udata_setCommonData(data, &status);
     MAYBE_FAIL_WITH_ICU_ERROR("udata_setCommonData");
 
-    return true;
-  }
+    return TRUE;
+}
 
-  bool TryUnmap() {
-    // Don't need to do opposite of udata_setCommonData,
-    // u_cleanup (performed in unregister_libcore_icu_ICU) takes care of it.
-
-    // Don't need to opposite of madvise, munmap will take care of it.
-
-    if (data_ != MAP_FAILED) {
-      if (munmap(data_, data_length_) == -1) {
-        FAIL_WITH_STRERROR("munmap");
-      }
-    }
-
-    // Don't need to close the file, it was closed automatically during TryMap.
-    return true;
-  }
-
-  std::string path_;    // Save for error messages.
-  void* data_;          // Save for munmap.
-  size_t data_length_;  // Save for munmap.
-};
-
-static std::unique_ptr<IcuDataMap> sIcuDataMapFromData;
-static std::unique_ptr<IcuDataMap> sIcuDataMapFromSystem;
-
-// Check the timezone override file exists. If it does, map it first so we use it in preference
-// to the one that shipped with the device.
-static std::string getTzDataOverridePath() {
+void register_libcore_icu_ICU(JNIEnv* env) {
+    // Check the timezone override file exists. If it does, map it first so we use it in preference
+    // to the one that shipped with the device.
     const char* dataPathPrefix = getenv("ANDROID_DATA");
     if (dataPathPrefix == NULL) {
         ALOGE("ANDROID_DATA environment variable not set"); \
         abort();
     }
-    std::string dataPath;
-    dataPath = dataPathPrefix;
-    dataPath += "/misc/zoneinfo/current/icu/icu_tzdata.dat";
 
-    return dataPath;
-}
-
-static std::string getSystemPath() {
-    const char* systemPathPrefix = getenv("ANDROID_ROOT");
-    if (systemPathPrefix == NULL) {
-        ALOGE("ANDROID_ROOT environment variable not set"); \
-        abort();
-    }
-
-    std::string systemPath;
-    systemPath = systemPathPrefix;
-    systemPath += "/usr/icu/";
-    systemPath += U_ICUDATA_NAME;
-    systemPath += ".dat";
-    return systemPath;
-}
-
-// Init ICU, configuring it and loading the data files.
-void register_libcore_icu_ICU(JNIEnv* env) {
     UErrorCode status = U_ZERO_ERROR;
     // Tell ICU it can *only* use our memory-mapped data.
     udata_setFileAccess(UDATA_NO_FILES, &status);
@@ -977,13 +896,15 @@ void register_libcore_icu_ICU(JNIEnv* env) {
         abort();
     }
 
-    std::string dataPath = getTzDataOverridePath();
-
     // Map in optional TZ data files.
+    std::string dataPath;
+    dataPath = dataPathPrefix;
+    dataPath += "/misc/zoneinfo/current/icu/icu_tzdata.dat";
+
     struct stat sb;
     if (stat(dataPath.c_str(), &sb) == 0) {
         ALOGD("Timezone override file found: %s", dataPath.c_str());
-        if ((sIcuDataMapFromData = IcuDataMap::Create(dataPath)) == nullptr) {
+        if (!mapIcuData(dataPath)) {
             ALOGW("TZ override file %s exists but could not be loaded. Skipping.", dataPath.c_str());
         }
     } else {
@@ -991,7 +912,18 @@ void register_libcore_icu_ICU(JNIEnv* env) {
     }
 
     // Use the ICU data files that shipped with the device for everything else.
-    if ((sIcuDataMapFromSystem = IcuDataMap::Create(getSystemPath())) == nullptr) {
+    const char* systemPathPrefix = getenv("ANDROID_ROOT");
+    if (systemPathPrefix == NULL) {
+        ALOGE("ANDROID_ROOT environment variable not set"); \
+        abort();
+    }
+    std::string systemPath;
+    systemPath = systemPathPrefix;
+    systemPath += "/usr/icu/";
+    systemPath += U_ICUDATA_NAME;
+    systemPath += ".dat";
+
+    if (!mapIcuData(systemPath)) {
         abort();
     }
 
@@ -1005,28 +937,4 @@ void register_libcore_icu_ICU(JNIEnv* env) {
     }
 
     jniRegisterNativeMethods(env, "libcore/icu/ICU", gMethods, NELEM(gMethods));
-}
-
-// De-init ICU, unloading the data files. Do the opposite of the above function.
-void unregister_libcore_icu_ICU(JNIEnv* env) {
-    // Unregister JNI native methods explicitly.
-    {
-        ScopedLocalRef<jclass> c(env, env->FindClass("libcore/icu/ICU"));
-        if (c.get() != nullptr) {
-          env->UnregisterNatives(c.get());
-        } else {
-          ALOGW("Couldn't find class libcore/icu/ICU to unregister natives");
-        }
-    }
-
-    // Reset libicu state to before it was loaded.
-    u_cleanup();
-
-    // Unmap ICU data files that shipped with the device for everything else.
-    sIcuDataMapFromSystem.reset();
-
-    // Unmap optional TZ data files.
-    sIcuDataMapFromData.reset();
-
-    // We don't need to call udata_setFileAccess because u_cleanup takes care of it.
 }
