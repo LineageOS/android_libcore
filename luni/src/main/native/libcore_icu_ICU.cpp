@@ -838,6 +838,11 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, toUpperCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
 };
 
+//
+// Global initialization & Teardown for ICU Setup
+//   - Contains handlers for JNI_OnLoad and JNI_OnUnload
+//
+
 #define FAIL_WITH_STRERROR(s) \
     ALOGE("Couldn't " s " '%s': %s", path_.c_str(), strerror(errno)); \
     return FALSE;
@@ -934,41 +939,9 @@ struct IcuDataMap {
   size_t data_length_;  // Save for munmap.
 };
 
-static std::unique_ptr<IcuDataMap> sIcuDataMapFromData;
-static std::unique_ptr<IcuDataMap> sIcuDataMapFromSystem;
-
-// Check the timezone override file exists. If it does, map it first so we use it in preference
-// to the one that shipped with the device.
-static std::string getTzDataOverridePath() {
-    const char* dataPathPrefix = getenv("ANDROID_DATA");
-    if (dataPathPrefix == NULL) {
-        ALOGE("ANDROID_DATA environment variable not set"); \
-        abort();
-    }
-    std::string dataPath;
-    dataPath = dataPathPrefix;
-    dataPath += "/misc/zoneinfo/current/icu/icu_tzdata.dat";
-
-    return dataPath;
-}
-
-static std::string getSystemPath() {
-    const char* systemPathPrefix = getenv("ANDROID_ROOT");
-    if (systemPathPrefix == NULL) {
-        ALOGE("ANDROID_ROOT environment variable not set"); \
-        abort();
-    }
-
-    std::string systemPath;
-    systemPath = systemPathPrefix;
-    systemPath += "/usr/icu/";
-    systemPath += U_ICUDATA_NAME;
-    systemPath += ".dat";
-    return systemPath;
-}
-
-// Init ICU, configuring it and loading the data files.
-void register_libcore_icu_ICU(JNIEnv* env) {
+struct ICURegistration {
+  // Init ICU, configuring it and loading the data files.
+  ICURegistration(JNIEnv* env) {
     UErrorCode status = U_ZERO_ERROR;
     // Tell ICU it can *only* use our memory-mapped data.
     udata_setFileAccess(UDATA_NO_FILES, &status);
@@ -983,7 +956,7 @@ void register_libcore_icu_ICU(JNIEnv* env) {
     struct stat sb;
     if (stat(dataPath.c_str(), &sb) == 0) {
         ALOGD("Timezone override file found: %s", dataPath.c_str());
-        if ((sIcuDataMapFromData = IcuDataMap::Create(dataPath)) == nullptr) {
+        if ((icu_datamap_from_data_ = IcuDataMap::Create(dataPath)) == nullptr) {
             ALOGW("TZ override file %s exists but could not be loaded. Skipping.", dataPath.c_str());
         }
     } else {
@@ -991,7 +964,7 @@ void register_libcore_icu_ICU(JNIEnv* env) {
     }
 
     // Use the ICU data files that shipped with the device for everything else.
-    if ((sIcuDataMapFromSystem = IcuDataMap::Create(getSystemPath())) == nullptr) {
+    if ((icu_datamap_from_system_ = IcuDataMap::Create(getSystemPath())) == nullptr) {
         abort();
     }
 
@@ -1005,28 +978,69 @@ void register_libcore_icu_ICU(JNIEnv* env) {
     }
 
     jniRegisterNativeMethods(env, "libcore/icu/ICU", gMethods, NELEM(gMethods));
-}
+  }
 
-// De-init ICU, unloading the data files. Do the opposite of the above function.
-void unregister_libcore_icu_ICU(JNIEnv* env) {
-    // Unregister JNI native methods explicitly.
-    {
-        ScopedLocalRef<jclass> c(env, env->FindClass("libcore/icu/ICU"));
-        if (c.get() != nullptr) {
-          env->UnregisterNatives(c.get());
-        } else {
-          ALOGW("Couldn't find class libcore/icu/ICU to unregister natives");
-        }
-    }
+  // De-init ICU, unloading the data files. Do the opposite of the above function.
+  ~ICURegistration() {
+    // Skip unregistering JNI methods explicitly, class unloading takes care of it.
 
     // Reset libicu state to before it was loaded.
     u_cleanup();
 
     // Unmap ICU data files that shipped with the device for everything else.
-    sIcuDataMapFromSystem.reset();
+    icu_datamap_from_system_.reset();
 
     // Unmap optional TZ data files.
-    sIcuDataMapFromData.reset();
+    icu_datamap_from_data_.reset();
 
     // We don't need to call udata_setFileAccess because u_cleanup takes care of it.
+  }
+
+  // Check the timezone override file exists. If it does, map it first so we use it in preference
+  // to the one that shipped with the device.
+  static std::string getTzDataOverridePath() {
+    const char* dataPathPrefix = getenv("ANDROID_DATA");
+    if (dataPathPrefix == NULL) {
+      ALOGE("ANDROID_DATA environment variable not set"); \
+      abort();
+    }
+    std::string dataPath;
+    dataPath = dataPathPrefix;
+    dataPath += "/misc/zoneinfo/current/icu/icu_tzdata.dat";
+
+    return dataPath;
+  }
+
+  static std::string getSystemPath() {
+    const char* systemPathPrefix = getenv("ANDROID_ROOT");
+    if (systemPathPrefix == NULL) {
+      ALOGE("ANDROID_ROOT environment variable not set"); \
+      abort();
+    }
+
+    std::string systemPath;
+    systemPath = systemPathPrefix;
+    systemPath += "/usr/icu/";
+    systemPath += U_ICUDATA_NAME;
+    systemPath += ".dat";
+    return systemPath;
+  }
+
+  std::unique_ptr<IcuDataMap> icu_datamap_from_data_;
+  std::unique_ptr<IcuDataMap> icu_datamap_from_system_;
+};
+
+// Use RAII-style initialization/teardown so that we can get unregistered
+// when dlclose is called (even if JNI_OnUnload is not).
+static std::unique_ptr<ICURegistration> sIcuRegistration;
+
+// Init ICU, configuring it and loading the data files.
+void register_libcore_icu_ICU(JNIEnv* env) {
+  sIcuRegistration.reset(new ICURegistration(env));
+}
+
+// De-init ICU, unloading the data files. Do the opposite of the above function.
+void unregister_libcore_icu_ICU(JNIEnv*) {
+  // Explicitly calling this is optional. Dlclose will take care of it as well.
+  sIcuRegistration.reset();
 }
