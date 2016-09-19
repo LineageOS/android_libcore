@@ -243,7 +243,15 @@ public final class CipherTest extends TestCase {
                 || algorithm.contains("/CFB");
     }
 
+    private static boolean isRandomizedEncryption(String algorithm) {
+        return algorithm.endsWith("/PKCS1PADDING");
+    }
+
     private static Map<String, Key> ENCRYPT_KEYS = new HashMap<String, Key>();
+
+    /**
+     * Returns the key meant for enciphering for {@code algorithm}.
+     */
     private synchronized static Key getEncryptKey(String algorithm) throws Exception {
         Key key = ENCRYPT_KEYS.get(algorithm);
         if (key != null) {
@@ -251,9 +259,9 @@ public final class CipherTest extends TestCase {
         }
         if (algorithm.startsWith("RSA")) {
             KeyFactory kf = KeyFactory.getInstance("RSA");
-            RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                                                              RSA_2048_privateExponent);
-            key = kf.generatePrivate(keySpec);
+            RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus,
+                                                            RSA_2048_publicExponent);
+            key = kf.generatePublic(keySpec);
         } else if (isPBE(algorithm)) {
             SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithm);
             key = skf.generateSecret(new PBEKeySpec("secret".toCharArray()));
@@ -266,6 +274,10 @@ public final class CipherTest extends TestCase {
     }
 
     private static Map<String, Key> DECRYPT_KEYS = new HashMap<String, Key>();
+
+    /**
+     * Returns the key meant for deciphering for {@code algorithm}.
+     */
     private synchronized static Key getDecryptKey(String algorithm) throws Exception {
         Key key = DECRYPT_KEYS.get(algorithm);
         if (key != null) {
@@ -273,9 +285,9 @@ public final class CipherTest extends TestCase {
         }
         if (algorithm.startsWith("RSA")) {
             KeyFactory kf = KeyFactory.getInstance("RSA");
-            RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                                                            RSA_2048_publicExponent);
-            key = kf.generatePublic(keySpec);
+            RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
+                                                              RSA_2048_privateExponent);
+            key = kf.generatePrivate(keySpec);
         } else {
             assertFalse(algorithm, isAsymmetric(algorithm));
             key = getEncryptKey(algorithm);
@@ -1395,7 +1407,7 @@ public final class CipherTest extends TestCase {
 
         test_Cipher_init_Decrypt_NullParameters(c, decryptMode, encryptKey, decryptSpec != null);
 
-        c.init(decryptMode, encryptKey, decryptSpec);
+        c.init(decryptMode, getDecryptKey(algorithm), decryptSpec);
         assertEquals(cipherID + " getBlockSize() decryptMode",
                      getExpectedBlockSize(algorithm, decryptMode, providerName), c.getBlockSize());
         assertEquals(cipherID + " getOutputSize(0) decryptMode",
@@ -1484,13 +1496,13 @@ public final class CipherTest extends TestCase {
                 c.updateAAD(new byte[24]);
             }
             byte[] cipherText = c.doFinal(getActualPlainText(algorithm));
-            if (isAEAD(algorithm)) {
-                c.updateAAD(new byte[24]);
+            if (!isRandomizedEncryption(algorithm)) {
+                if (isAEAD(algorithm)) {
+                    c.updateAAD(new byte[24]);
+                }
+                byte[] cipherText2 = c.doFinal(getActualPlainText(algorithm));
+                assertEquals(cipherID, Arrays.toString(cipherText), Arrays.toString(cipherText2));
             }
-            byte[] cipherText2 = c.doFinal(getActualPlainText(algorithm));
-            assertEquals(cipherID,
-                         Arrays.toString(cipherText),
-                         Arrays.toString(cipherText2));
             c.init(Cipher.DECRYPT_MODE, getDecryptKey(algorithm), decryptSpec);
             if (isAEAD(algorithm)) {
                 c.updateAAD(new byte[24]);
@@ -1602,18 +1614,21 @@ public final class CipherTest extends TestCase {
     }
 
     private void testInputPKCS1Padding(String provider) throws Exception {
-        testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_01_PADDED_PLAIN_TEXT, getEncryptKey("RSA"), getDecryptKey("RSA"));
+        // Type 1 is for signatures (PrivateKey to "encrypt")
+        testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_01_PADDED_PLAIN_TEXT, getDecryptKey("RSA"), getEncryptKey("RSA"));
         try {
-            testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_02_PADDED_PLAIN_TEXT, getEncryptKey("RSA"), getDecryptKey("RSA"));
+            testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_02_PADDED_PLAIN_TEXT, getDecryptKey("RSA"), getEncryptKey("RSA"));
             fail();
         } catch (BadPaddingException expected) {
         }
+
+        // Type 2 is for enciphering (PublicKey to "encrypt")
+        testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_02_PADDED_PLAIN_TEXT, getEncryptKey("RSA"), getDecryptKey("RSA"));
         try {
-            testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_01_PADDED_PLAIN_TEXT, getDecryptKey("RSA"), getEncryptKey("RSA"));
+            testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_01_PADDED_PLAIN_TEXT, getEncryptKey("RSA"), getDecryptKey("RSA"));
             fail();
         } catch (BadPaddingException expected) {
         }
-        testInputPKCS1Padding(provider, PKCS1_BLOCK_TYPE_02_PADDED_PLAIN_TEXT, getDecryptKey("RSA"), getEncryptKey("RSA"));
     }
 
     private void testInputPKCS1Padding(String provider, byte[] prePaddedPlainText, Key encryptKey, Key decryptKey) throws Exception {
@@ -1645,8 +1660,10 @@ public final class CipherTest extends TestCase {
     }
 
     private void testOutputPKCS1Padding(String provider) throws Exception {
-       testOutputPKCS1Padding(provider, (byte) 1, getEncryptKey("RSA"), getDecryptKey("RSA"));
-       testOutputPKCS1Padding(provider, (byte) 2, getDecryptKey("RSA"), getEncryptKey("RSA"));
+        // Type 1 is for signatures (PrivateKey to "encrypt")
+        testOutputPKCS1Padding(provider, (byte) 1, getDecryptKey("RSA"), getEncryptKey("RSA"));
+        // Type 2 is for enciphering (PublicKey to "encrypt")
+        testOutputPKCS1Padding(provider, (byte) 2, getEncryptKey("RSA"), getDecryptKey("RSA"));
     }
 
     private void testOutputPKCS1Padding(String provider, byte expectedBlockType, Key encryptKey, Key decryptKey) throws Exception {
