@@ -37,7 +37,6 @@ import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
-import java.security.spec.RSAPrivateKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -2209,11 +2208,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Private_OnlyDoFinal_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2240,11 +2235,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Private_UpdateThenEmptyDoFinal_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2275,11 +2266,7 @@ public final class CipherTest extends TestCase {
 
     private void testRSA_ECB_NoPadding_Private_SingleByteUpdateThenEmptyDoFinal_Success(String provider)
             throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2313,10 +2300,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Private_OnlyDoFinalWithOffset_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2513,11 +2497,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Private_TooSmall_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2563,11 +2543,7 @@ public final class CipherTest extends TestCase {
 
     private void testRSA_ECB_NoPadding_Private_CombinedUpdateAndDoFinal_TooBig_Failure(String provider)
             throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2598,11 +2574,7 @@ public final class CipherTest extends TestCase {
 
     private void testRSA_ECB_NoPadding_Private_UpdateInAndOutPlusDoFinal_TooBig_Failure(String provider)
             throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2634,11 +2606,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Private_OnlyDoFinal_TooBig_Failure(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPrivateKeySpec keySpec = new RSAPrivateKeySpec(RSA_2048_modulus,
-                RSA_2048_privateExponent);
-
-        final PrivateKey privKey = kf.generatePrivate(keySpec);
+        final PrivateKey privKey = (PrivateKey) getDecryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
