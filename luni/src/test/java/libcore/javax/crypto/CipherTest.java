@@ -2708,77 +2708,77 @@ public final class CipherTest extends TestCase {
      * Test vector generation:
      * openssl rand -hex 16 | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] DES_112_KEY = new byte[] {
+    private static final SecretKeySpec DES_112_KEY = new SecretKeySpec(new byte[] {
             (byte) 0x6b, (byte) 0xb3, (byte) 0x85, (byte) 0x1c, (byte) 0x3d, (byte) 0x50,
             (byte) 0xd4, (byte) 0x95, (byte) 0x39, (byte) 0x48, (byte) 0x77, (byte) 0x30,
             (byte) 0x1a, (byte) 0xd7, (byte) 0x86, (byte) 0x57,
-    };
+    }, "DESede");
 
     /*
      * Test vector generation:
      * openssl rand -hex 24 | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] DES_168_KEY = new byte[] {
+    private static final SecretKeySpec DES_168_KEY = new SecretKeySpec(new byte[] {
             (byte) 0xfe, (byte) 0xd4, (byte) 0xd7, (byte) 0xc9, (byte) 0x8a, (byte) 0x13,
             (byte) 0x6a, (byte) 0xa8, (byte) 0x5a, (byte) 0xb8, (byte) 0x19, (byte) 0xb8,
             (byte) 0xcf, (byte) 0x3c, (byte) 0x5f, (byte) 0xe0, (byte) 0xa2, (byte) 0xf7,
             (byte) 0x7b, (byte) 0x65, (byte) 0x43, (byte) 0xc0, (byte) 0xc4, (byte) 0xe1,
-    };
+    }, "DESede");
 
     /*
      * Test vector generation:
      * openssl rand -hex 5 | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] ARC4_40BIT_KEY = new byte[] {
+    private static final SecretKeySpec ARC4_40BIT_KEY = new SecretKeySpec(new byte[] {
             (byte) 0x9c, (byte) 0xc8, (byte) 0xb9, (byte) 0x94, (byte) 0x98,
-    };
+    }, "ARC4");
 
     /*
      * Test vector generation:
      * openssl rand -hex 24 | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] ARC4_128BIT_KEY = new byte[] {
+    private static final SecretKeySpec ARC4_128BIT_KEY = new SecretKeySpec(new byte[] {
             (byte) 0xbc, (byte) 0x0a, (byte) 0x3c, (byte) 0xca, (byte) 0xb5, (byte) 0x42,
             (byte) 0xfa, (byte) 0x5d, (byte) 0x86, (byte) 0x5b, (byte) 0x44, (byte) 0x87,
             (byte) 0x83, (byte) 0xd8, (byte) 0xcb, (byte) 0xd4,
-    };
+    }, "ARC4");
 
     /*
      * Test vector generation:
      * openssl rand -hex 16
      * echo '3d4f8970b1f27537f40a39298a41555f' | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] AES_128_KEY = new byte[] {
+    private static final SecretKeySpec AES_128_KEY = new SecretKeySpec(new byte[] {
             (byte) 0x3d, (byte) 0x4f, (byte) 0x89, (byte) 0x70, (byte) 0xb1, (byte) 0xf2,
             (byte) 0x75, (byte) 0x37, (byte) 0xf4, (byte) 0x0a, (byte) 0x39, (byte) 0x29,
             (byte) 0x8a, (byte) 0x41, (byte) 0x55, (byte) 0x5f,
-    };
+    }, "AES");
 
     /*
      * Test key generation:
      * openssl rand -hex 24
      * echo '5a7a3d7e40b64ed996f7afa15f97fd595e27db6af428e342' | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] AES_192_KEY = new byte[] {
+    private static final SecretKeySpec AES_192_KEY = new SecretKeySpec(new byte[] {
             (byte) 0x5a, (byte) 0x7a, (byte) 0x3d, (byte) 0x7e, (byte) 0x40, (byte) 0xb6,
             (byte) 0x4e, (byte) 0xd9, (byte) 0x96, (byte) 0xf7, (byte) 0xaf, (byte) 0xa1,
             (byte) 0x5f, (byte) 0x97, (byte) 0xfd, (byte) 0x59, (byte) 0x5e, (byte) 0x27,
             (byte) 0xdb, (byte) 0x6a, (byte) 0xf4, (byte) 0x28, (byte) 0xe3, (byte) 0x42,
-    };
+    }, "AES");
 
     /*
      * Test key generation:
      * openssl rand -hex 32
      * echo 'ec53c6d51d2c4973585fb0b8e51cd2e39915ff07a1837872715d6121bf861935' | sed 's/\(..\)/(byte) 0x\1, /g'
      */
-    private static final byte[] AES_256_KEY = new byte[] {
+    private static final SecretKeySpec AES_256_KEY = new SecretKeySpec(new byte[] {
             (byte) 0xec, (byte) 0x53, (byte) 0xc6, (byte) 0xd5, (byte) 0x1d, (byte) 0x2c,
             (byte) 0x49, (byte) 0x73, (byte) 0x58, (byte) 0x5f, (byte) 0xb0, (byte) 0xb8,
             (byte) 0xe5, (byte) 0x1c, (byte) 0xd2, (byte) 0xe3, (byte) 0x99, (byte) 0x15,
             (byte) 0xff, (byte) 0x07, (byte) 0xa1, (byte) 0x83, (byte) 0x78, (byte) 0x72,
             (byte) 0x71, (byte) 0x5d, (byte) 0x61, (byte) 0x21, (byte) 0xbf, (byte) 0x86,
             (byte) 0x19, (byte) 0x35,
-    };
+    }, "AES");
 
     private static final String[] AES_MODES = new String[] {
             "AES/ECB",
@@ -2910,11 +2910,11 @@ public final class CipherTest extends TestCase {
     /*
      * Taken from BoringSSL test vectors.
      */
-    private static final byte[] AES_128_GCM_TestVector_1_Key = new byte[] {
+    private static final SecretKeySpec AES_128_GCM_TestVector_1_Key = new SecretKeySpec(new byte[] {
             (byte) 0xca, (byte) 0xbd, (byte) 0xcf, (byte) 0x54, (byte) 0x1a, (byte) 0xeb,
             (byte) 0xf9, (byte) 0x17, (byte) 0xba, (byte) 0xc0, (byte) 0x19, (byte) 0xf1,
             (byte) 0x39, (byte) 0x25, (byte) 0xd2, (byte) 0x67,
-    };
+    }, "AES");
 
     /*
      * Taken from BoringSSL test vectors.
@@ -3081,7 +3081,7 @@ public final class CipherTest extends TestCase {
     private static class CipherTestParam {
         public final String transformation;
 
-        public final byte[] key;
+        public final Key key;
 
         public final String keyAlgorithm;
 
@@ -3097,7 +3097,7 @@ public final class CipherTest extends TestCase {
 
         public final boolean isStreamCipher;
 
-        public CipherTestParam(String transformation, String keyAlgorithm, byte[] key, byte[] iv,
+        public CipherTestParam(String transformation, String keyAlgorithm, Key key, byte[] iv,
                 byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
                 boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
@@ -3111,7 +3111,7 @@ public final class CipherTest extends TestCase {
             this.isStreamCipher = isStreamCipher;
         }
 
-        public CipherTestParam(String transformation, String keyAlgorithm, byte[] key, byte[] iv,
+        public CipherTestParam(String transformation, String keyAlgorithm, Key key, byte[] iv,
                 byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
             this(transformation, keyAlgorithm, key, iv, aad, plaintext, plaintextPadded, ciphertext,
                     false /* isStreamCipher */);
@@ -3244,8 +3244,8 @@ public final class CipherTest extends TestCase {
                     checkCipher(testVector, provider.getName());
                 } catch (Throwable e) {
                     out.append("Error encountered checking " + testVector.transformation
-                            + ", keySize=" + (testVector.key.length * 8) + " with provider "
-                            + provider.getName() + "\n");
+                            + ", keySize=" + (testVector.key.getEncoded().length * 8)
+                            + " with provider " + provider.getName() + "\n");
                     e.printStackTrace(out);
                 }
             }
@@ -3264,7 +3264,7 @@ public final class CipherTest extends TestCase {
                 checkCipher(p, provider);
             } catch (Exception e) {
                 out.append("Error encountered checking " + p.transformation + ", keySize="
-                        + (p.key.length * 8)
+                        + (p.key.getEncoded().length * 8)
                         + " with provider " + provider + "\n");
 
                 e.printStackTrace(out);
@@ -3277,7 +3277,6 @@ public final class CipherTest extends TestCase {
     }
 
     private void checkCipher(CipherTestParam p, String provider) throws Exception {
-        SecretKey key = new SecretKeySpec(p.key, p.keyAlgorithm);
         Cipher c = Cipher.getInstance(p.transformation, provider);
 
         AlgorithmParameterSpec spec = null;
@@ -3289,7 +3288,7 @@ public final class CipherTest extends TestCase {
             }
         }
 
-        c.init(Cipher.ENCRYPT_MODE, key, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.key, spec);
 
         if (p.aad != null) {
             c.updateAAD(p.aad);
@@ -3299,11 +3298,11 @@ public final class CipherTest extends TestCase {
                 Arrays.toString(actualCiphertext));
 
         c = Cipher.getInstance(p.transformation, provider);
-        c.init(Cipher.ENCRYPT_MODE, key, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.key, spec);
         byte[] emptyCipherText = c.doFinal();
         assertNotNull(emptyCipherText);
 
-        c.init(Cipher.DECRYPT_MODE, key, spec);
+        c.init(Cipher.DECRYPT_MODE, p.key, spec);
 
         if (!isAEAD(p.transformation)) {
             try {
@@ -3366,7 +3365,7 @@ public final class CipherTest extends TestCase {
         }
 
         // Cipher might be in unspecified state from failures above.
-        c.init(Cipher.DECRYPT_MODE, key, spec);
+        c.init(Cipher.DECRYPT_MODE, p.key, spec);
 
         // .doFinal(input)
         {
@@ -3418,7 +3417,7 @@ public final class CipherTest extends TestCase {
         if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")) {
             Cipher cNoPad = Cipher.getInstance(
                     getCipherTransformationWithNoPadding(p.transformation), provider);
-            cNoPad.init(Cipher.DECRYPT_MODE, key, spec);
+            cNoPad.init(Cipher.DECRYPT_MODE, p.key, spec);
 
             if (p.aad != null) {
                 c.updateAAD(p.aad);
@@ -3437,11 +3436,11 @@ public final class CipherTest extends TestCase {
 
             // Wrap it
             c = Cipher.getInstance(p.transformation, provider);
-            c.init(Cipher.WRAP_MODE, key, spec);
+            c.init(Cipher.WRAP_MODE, p.key, spec);
             byte[] cipherText = c.wrap(sk);
 
             // Unwrap it
-            c.init(Cipher.UNWRAP_MODE, key, spec);
+            c.init(Cipher.UNWRAP_MODE, p.key, spec);
             Key decryptedKey = c.unwrap(cipherText, sk.getAlgorithm(), Cipher.SECRET_KEY);
 
             assertEquals(
@@ -3580,8 +3579,7 @@ public final class CipherTest extends TestCase {
                 checkCipher_ShortBlock_Failure(p, provider);
             } catch (Exception e) {
                 out.append("Error encountered checking " + p.transformation + ", keySize="
-                        + (p.key.length * 8)
-                        + " with provider " + provider + "\n");
+                        + (p.key.getEncoded().length * 8) + " with provider " + provider + "\n");
                 e.printStackTrace(out);
             }
         }
@@ -3662,9 +3660,8 @@ public final class CipherTest extends TestCase {
     }
 
     public void testCipher_Update_WithZeroLengthInput_ReturnsNull() throws Exception {
-        SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
         Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
-        c.init(Cipher.ENCRYPT_MODE, key);
+        c.init(Cipher.ENCRYPT_MODE, AES_128_KEY);
         assertNull(c.update(new byte[0]));
         assertNull(c.update(new byte[c.getBlockSize() * 2], 0, 0));
 
@@ -3736,7 +3733,6 @@ public final class CipherTest extends TestCase {
             return;
         }
 
-        SecretKey key = new SecretKeySpec(p.key, "AES");
         Cipher c = Cipher.getInstance(
                 getCipherTransformationWithNoPadding(p.transformation), provider);
         if (c.getBlockSize() == 0) {
@@ -3744,7 +3740,7 @@ public final class CipherTest extends TestCase {
         }
 
         if (!p.transformation.endsWith("NOPADDING")) {
-            c.init(Cipher.ENCRYPT_MODE, key);
+            c.init(Cipher.ENCRYPT_MODE, p.key);
             try {
                 c.doFinal(new byte[] { 0x01, 0x02, 0x03 });
                 fail("Should throw IllegalBlockSizeException on wrong-sized block; transform="
@@ -3784,9 +3780,8 @@ public final class CipherTest extends TestCase {
     }
 
     private void testAES_ECB_PKCS5Padding_ShortBuffer_Failure(String provider) throws Exception {
-        SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
         Cipher c = Cipher.getInstance("AES/ECB/PKCS5Padding", provider);
-        c.init(Cipher.ENCRYPT_MODE, key);
+        c.init(Cipher.ENCRYPT_MODE, AES_128_KEY);
 
         final byte[] fragmentOutput = c.update(AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext);
         if (fragmentOutput != null) {
@@ -3838,10 +3833,9 @@ public final class CipherTest extends TestCase {
     }
 
     private void testAES_ECB_NoPadding_IncrementalUpdate_Success(String provider) throws Exception {
-        SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
         Cipher c = Cipher.getInstance("AES/ECB/NoPadding", provider);
         assertEquals(provider, c.getProvider().getName());
-        c.init(Cipher.ENCRYPT_MODE, key);
+        c.init(Cipher.ENCRYPT_MODE, AES_128_KEY);
 
         for (int i = 0; i < AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded.length - 1; i++) {
             final byte[] outputFragment = c.update(AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded, i, 1);
@@ -3872,12 +3866,11 @@ public final class CipherTest extends TestCase {
     }
 
     private void testAES_ECB_NoPadding_IvParameters_Failure(String provider) throws Exception {
-        SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
         Cipher c = Cipher.getInstance("AES/ECB/NoPadding", provider);
 
         AlgorithmParameterSpec spec = new IvParameterSpec(AES_IV_ZEROES);
         try {
-            c.init(Cipher.ENCRYPT_MODE, key, spec);
+            c.init(Cipher.ENCRYPT_MODE, AES_128_KEY, spec);
             fail("Should not accept an IV in ECB mode; provider=" + provider);
         } catch (InvalidAlgorithmParameterException expected) {
         }
@@ -4228,9 +4221,8 @@ public final class CipherTest extends TestCase {
 
     private static Cipher createAesCipher(int opmode) {
         try {
-            SecretKey key = new SecretKeySpec(AES_128_KEY, "AES");
             final Cipher c = Cipher.getInstance("AES/ECB/NoPadding");
-            c.init(opmode, key);
+            c.init(opmode, AES_128_KEY);
             return c;
         } catch (Exception e) {
             fail("Unexpected Exception: " + e.getMessage());
