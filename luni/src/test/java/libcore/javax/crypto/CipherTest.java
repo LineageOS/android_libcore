@@ -2698,8 +2698,6 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_GetParameters_NoneProvided_Success(String provider) throws Exception {
-        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
-
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
         assertNull("Parameters should be null", c.getParameters());
     }
