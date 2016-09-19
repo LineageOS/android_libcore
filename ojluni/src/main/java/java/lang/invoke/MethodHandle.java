@@ -446,6 +446,20 @@ public abstract class MethodHandle {
     private final MethodType type;
     /*private*/ MethodHandle asTypeCache;
     // asTypeCache is not private so that invokers can easily fetch it
+    // Used by the runtime.
+
+    // The kind of this method handle (used by the runtime). This is a well defined
+    // mapping from the MethodHandleInfo.REF_* constants, but is not intended for
+    // public use.
+    private final int handleKind;
+    // The ArtMethod* or ArtField* associated with this method handle (used by the runtime).
+    private final long artFieldOrMethod;
+
+    protected MethodHandle(long artFieldOrMethod, int handleKind, MethodType type) {
+        this.artFieldOrMethod = artFieldOrMethod;
+        this.handleKind = handleKind;
+        this.type = type;
+    }
 
     /**
      * Reports the type of this method handle.
@@ -454,19 +468,6 @@ public abstract class MethodHandle {
      */
     public MethodType type() {
         return type;
-    }
-
-    /**
-     * Package-private constructor for the method handle implementation hierarchy.
-     * Method handle inheritance will be contained completely within
-     * the {@code java.lang.invoke} package.
-     */
-    // @param type type (permanently assigned) of the new method handle
-    /*non-public*/ MethodHandle(MethodType type) {
-        type.getClass();  // explicit NPE
-        this.type = type;
-
-        // Android-changed: No LambdaForms associated with this MH.
     }
 
     /**
