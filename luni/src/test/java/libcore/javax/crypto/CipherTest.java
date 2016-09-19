@@ -3074,11 +3074,11 @@ public final class CipherTest extends TestCase {
     private static class CipherTestParam {
         public final String transformation;
 
+        public final AlgorithmParameterSpec spec;
+
         public final Key encryptKey;
 
         public final Key decryptKey;
-
-        public final byte[] iv;
 
         public final byte[] aad;
 
@@ -3090,13 +3090,13 @@ public final class CipherTest extends TestCase {
 
         public final boolean isStreamCipher;
 
-        public CipherTestParam(String transformation, Key encryptKey, Key decryptKey, byte[] iv, byte[] aad,
-                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
-                boolean isStreamCipher) {
+        public CipherTestParam(String transformation, AlgorithmParameterSpec spec, Key encryptKey,
+                Key decryptKey, byte[] aad, byte[] plaintext, byte[] plaintextPadded,
+                byte[] ciphertext, boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
+            this.spec = spec;
             this.encryptKey = encryptKey;
             this.decryptKey = decryptKey;
-            this.iv = iv;
             this.aad = aad;
             this.plaintext = plaintext;
             this.plaintextPadded = plaintextPadded;
@@ -3104,16 +3104,16 @@ public final class CipherTest extends TestCase {
             this.isStreamCipher = isStreamCipher;
         }
 
-        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
-                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
+        public CipherTestParam(String transformation, AlgorithmParameterSpec spec, Key key,
+                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
                 boolean isStreamCipher) {
-            this(transformation, key, key, iv, aad, plaintext, plaintextPadded, ciphertext,
+            this(transformation, spec, key, key, aad, plaintext, plaintextPadded, ciphertext,
                     isStreamCipher);
         }
 
-        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
-                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
-            this(transformation, key, iv, aad, plaintext, plaintextPadded, ciphertext,
+        public CipherTestParam(String transformation, AlgorithmParameterSpec spec, Key key,
+                byte[] aad, byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext) {
+            this(transformation, spec, key, aad, plaintext, plaintextPadded, ciphertext,
                     false /* isStreamCipher */);
         }
     }
@@ -3122,8 +3122,8 @@ public final class CipherTest extends TestCase {
     static {
         DES_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "DESede/CBC/PKCS5Padding",
+                new IvParameterSpec(DES_IV1),
                 DES_112_KEY,
-                DES_IV1,
                 null,
                 DES_Plaintext1,
                 DES_Plaintext1_PKCS5_Padded,
@@ -3131,8 +3131,8 @@ public final class CipherTest extends TestCase {
                 ));
         DES_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "DESede/CBC/PKCS5Padding",
+                new IvParameterSpec(DES_IV1),
                 DES_168_KEY,
-                DES_IV1,
                 null,
                 DES_Plaintext1,
                 DES_Plaintext1_PKCS5_Padded,
@@ -3144,8 +3144,8 @@ public final class CipherTest extends TestCase {
     static {
         ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "ARC4",
+                null,
                 ARC4_40BIT_KEY,
-                null, // IV,
                 null, // aad
                 ARC4_Plaintext1,
                 null, // padded
@@ -3154,8 +3154,8 @@ public final class CipherTest extends TestCase {
         ));
         ARC4_CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "ARC4",
+                null,
                 ARC4_128BIT_KEY,
-                null, // IV,
                 null, // aad
                 ARC4_Plaintext1,
                 null, // padded
@@ -3168,8 +3168,8 @@ public final class CipherTest extends TestCase {
     static {
         CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "AES/ECB/PKCS5Padding",
-                AES_128_KEY,
                 null,
+                AES_128_KEY,
                 null,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded,
@@ -3177,16 +3177,19 @@ public final class CipherTest extends TestCase {
         // PKCS#5 is assumed to be equivalent to PKCS#7 -- same test vectors are thus used for both.
         CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "AES/ECB/PKCS7Padding",
-                AES_128_KEY,
                 null,
+                AES_128_KEY,
                 null,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Plaintext_Padded,
                 AES_128_ECB_PKCS5Padding_TestVector_1_Encrypted));
         CIPHER_TEST_PARAMS.add(new CipherTestParam(
                 "AES/GCM/NOPADDING",
+                new GCMParameterSpec(
+                        (AES_128_GCM_TestVector_1_Encrypted.length -
+                                AES_128_GCM_TestVector_1_Plaintext.length) * 8,
+                        AES_128_GCM_TestVector_1_IV),
                 AES_128_GCM_TestVector_1_Key,
-                AES_128_GCM_TestVector_1_IV,
                 AES_128_GCM_TestVector_1_AAD,
                 AES_128_GCM_TestVector_1_Plaintext,
                 AES_128_GCM_TestVector_1_Plaintext,
@@ -3194,24 +3197,24 @@ public final class CipherTest extends TestCase {
         if (IS_UNLIMITED) {
             CIPHER_TEST_PARAMS.add(new CipherTestParam(
                     "AES/CTR/NoPadding",
+                    new IvParameterSpec(AES_192_CTR_NoPadding_TestVector_1_IV),
                     AES_192_KEY,
-                    AES_192_CTR_NoPadding_TestVector_1_IV,
                     null,
                     AES_192_CTR_NoPadding_TestVector_1_Plaintext,
                     AES_192_CTR_NoPadding_TestVector_1_Plaintext,
                     AES_192_CTR_NoPadding_TestVector_1_Ciphertext));
             CIPHER_TEST_PARAMS.add(new CipherTestParam(
                     "AES/CBC/PKCS5Padding",
+                    new IvParameterSpec(AES_256_CBC_PKCS5Padding_TestVector_1_IV),
                     AES_256_KEY,
-                    AES_256_CBC_PKCS5Padding_TestVector_1_IV,
                     null,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext_Padded,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Ciphertext));
             CIPHER_TEST_PARAMS.add(new CipherTestParam(
                     "AES/CBC/PKCS7Padding",
+                    new IvParameterSpec(AES_256_CBC_PKCS5Padding_TestVector_1_IV),
                     AES_256_KEY,
-                    AES_256_CBC_PKCS5Padding_TestVector_1_IV,
                     null,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext,
                     AES_256_CBC_PKCS5Padding_TestVector_1_Plaintext_Padded,
@@ -3286,16 +3289,7 @@ public final class CipherTest extends TestCase {
     private void checkCipher(CipherTestParam p, String provider) throws Exception {
         Cipher c = Cipher.getInstance(p.transformation, provider);
 
-        AlgorithmParameterSpec spec = null;
-        if (p.iv != null) {
-            if (isAEAD(p.transformation)) {
-                spec = new GCMParameterSpec((p.ciphertext.length - p.plaintext.length) * 8, p.iv);
-            } else {
-                spec = new IvParameterSpec(p.iv);
-            }
-        }
-
-        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, p.spec);
 
         if (p.aad != null) {
             c.updateAAD(p.aad);
@@ -3305,11 +3299,11 @@ public final class CipherTest extends TestCase {
                 Arrays.toString(actualCiphertext));
 
         c = Cipher.getInstance(p.transformation, provider);
-        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, p.spec);
         byte[] emptyCipherText = c.doFinal();
         assertNotNull(emptyCipherText);
 
-        c.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
+        c.init(Cipher.DECRYPT_MODE, p.decryptKey, p.spec);
 
         if (!isAEAD(p.transformation)) {
             try {
@@ -3372,7 +3366,7 @@ public final class CipherTest extends TestCase {
         }
 
         // Cipher might be in unspecified state from failures above.
-        c.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
+        c.init(Cipher.DECRYPT_MODE, p.decryptKey, p.spec);
 
         // .doFinal(input)
         {
@@ -3424,7 +3418,7 @@ public final class CipherTest extends TestCase {
         if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")) {
             Cipher cNoPad = Cipher.getInstance(
                     getCipherTransformationWithNoPadding(p.transformation), provider);
-            cNoPad.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
+            cNoPad.init(Cipher.DECRYPT_MODE, p.decryptKey, p.spec);
 
             if (p.aad != null) {
                 c.updateAAD(p.aad);
@@ -3443,11 +3437,11 @@ public final class CipherTest extends TestCase {
 
             // Wrap it
             c = Cipher.getInstance(p.transformation, provider);
-            c.init(Cipher.WRAP_MODE, p.encryptKey, spec);
+            c.init(Cipher.WRAP_MODE, p.encryptKey, p.spec);
             byte[] cipherText = c.wrap(sk);
 
             // Unwrap it
-            c.init(Cipher.UNWRAP_MODE, p.decryptKey, spec);
+            c.init(Cipher.UNWRAP_MODE, p.decryptKey, p.spec);
             Key decryptedKey = c.unwrap(cipherText, sk.getAlgorithm(), Cipher.SECRET_KEY);
 
             assertEquals(
