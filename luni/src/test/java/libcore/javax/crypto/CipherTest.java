@@ -2778,14 +2778,6 @@ public final class CipherTest extends TestCase {
             (byte) 0x19, (byte) 0x35,
     }, "AES");
 
-    private static final String[] AES_MODES = new String[] {
-            "AES/ECB",
-            "AES/CBC",
-            "AES/CFB",
-            "AES/CTR",
-            "AES/OFB",
-    };
-
     /*
      * Test vector generation:
      * echo -n 'Testing rocks!' | recode ../x1 | sed 's/0x/(byte) 0x/g'
