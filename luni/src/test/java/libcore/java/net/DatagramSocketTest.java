@@ -24,6 +24,7 @@ import java.net.DatagramSocket;
 import java.net.DatagramSocketImpl;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.SocketException;
 
 public class DatagramSocketTest extends TestCase {
@@ -65,55 +66,90 @@ public class DatagramSocketTest extends TestCase {
     final int port = 9999;
 
     try (DatagramSocket s = new DatagramSocket()) {
-      s.connect(InetAddress.getLocalHost(), port);
+      forceConnectToThrowSocketException(s);
 
-      // connect may set pendingConnectException on internal failure; since we have no reliable way
-      // to make connect fail, set pendingConnectException through reflection.
-      Field pendingConnectException = s.getClass().getDeclaredField("pendingConnectException");
-      pendingConnectException.setAccessible(true);
-      pendingConnectException.set(s, new SocketException());
+      s.connect(InetAddress.getLocalHost(), port);
 
       byte[] data = new byte[100];
       DatagramPacket p = new DatagramPacket(data, data.length);
 
+      // Confirm send() throws the pendingConnectException.
       try {
         s.send(p);
         fail();
       } catch (SocketException expected) {
+        assertTrue(expected.getMessage().contains("Pending connect failure"));
       }
 
+      // Confirm receive() throws the pendingConnectException.
       try {
         s.receive(p);
         fail();
       } catch (SocketException expected) {
+        assertTrue(expected.getMessage().contains("Pending connect failure"));
       }
+
+      // Confirm that disconnect() doesn't throw a runtime exception.
+      s.disconnect();
     }
   }
 
   public void test_setTrafficClass() throws Exception {
-    DatagramSocket s = new DatagramSocket();
-
-    for (int i = 0; i <= 255; ++i) {
-      s.setTrafficClass(i);
-      assertEquals(i, s.getTrafficClass());
+    try (DatagramSocket s = new DatagramSocket()) {
+      for (int i = 0; i <= 255; ++i) {
+        s.setTrafficClass(i);
+        assertEquals(i, s.getTrafficClass());
+      }
     }
   }
 
-  // Socket should become connected even if impl.connect() failed and threw exception.
+  // DatagramSocket should "become connected" even when impl.connect() fails and throws an
+  // exception.
   public void test_b31218085() throws Exception {
     final int port = 9999;
 
     try (DatagramSocket s = new DatagramSocket()) {
-      // Set fd of DatagramSocket to null, forcing impl.connect() to throw.
-      Field f = DatagramSocket.class.getDeclaredField("impl");
-      f.setAccessible(true);
-      DatagramSocketImpl impl = (DatagramSocketImpl) f.get(s);
-      f = DatagramSocketImpl.class.getDeclaredField("fd");
-      f.setAccessible(true);
-      f.set(impl, null);
+      forceConnectToThrowSocketException(s);
 
       s.connect(InetAddress.getLocalHost(), port);
       assertTrue(s.isConnected());
+
+      // Confirm that disconnect() doesn't throw a runtime exception.
+      s.disconnect();
     }
+  }
+
+  public void testForceConnectToThrowSocketException() throws Exception {
+    // Unlike connect(InetAddress, int), connect(SocketAddress) can (and should) throw an
+    // exception after a call to forceConnectToThrowSocketException(). The
+    // forceConnectToThrowSocketException() method is used in various tests for
+    // connect(InetAddress, int) and this test exists to confirm it stays working.
+
+    SocketAddress validAddress = new InetSocketAddress(InetAddress.getLocalHost(), 9999);
+
+    try (DatagramSocket s1 = new DatagramSocket()) {
+      s1.connect(validAddress);
+      s1.disconnect();
+    }
+
+    try (DatagramSocket s2 = new DatagramSocket()) {
+      forceConnectToThrowSocketException(s2);
+      try {
+        s2.connect(validAddress);
+      } catch (SocketException expected) {
+      }
+      s2.disconnect();
+    }
+  }
+
+  private static void forceConnectToThrowSocketException(DatagramSocket s) throws Exception {
+    // Set fd of DatagramSocketImpl to null, forcing impl.connect() to throw a SocketException
+    // (Socket closed).
+    Field f = DatagramSocket.class.getDeclaredField("impl");
+    f.setAccessible(true);
+    DatagramSocketImpl impl = (DatagramSocketImpl) f.get(s);
+    f = DatagramSocketImpl.class.getDeclaredField("fd");
+    f.setAccessible(true);
+    f.set(impl, null);
   }
 }
