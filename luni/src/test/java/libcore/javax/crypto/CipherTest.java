@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
 import java.util.ArrayList;
@@ -57,8 +58,10 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.ShortBufferException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
+import javax.crypto.spec.PSource;
 import javax.crypto.spec.SecretKeySpec;
 import junit.framework.TestCase;
 import libcore.java.security.StandardNames;
@@ -244,7 +247,8 @@ public final class CipherTest extends TestCase {
     }
 
     private static boolean isRandomizedEncryption(String algorithm) {
-        return algorithm.endsWith("/PKCS1PADDING");
+        return algorithm.endsWith("/PKCS1PADDING") || algorithm.endsWith("/OAEPPADDING")
+                || algorithm.contains("/OAEPWITH");
     }
 
     private static Map<String, Key> ENCRYPT_KEYS = new HashMap<String, Key>();
@@ -2200,6 +2204,319 @@ public final class CipherTest extends TestCase {
         (byte) 0x4b, (byte) 0x98, (byte) 0x3f, (byte) 0xae, (byte) 0x20, (byte) 0xfd,
         (byte) 0x8a, (byte) 0x50, (byte) 0x73, (byte) 0xe4,
     };
+    /*
+     * echo -n 'This is a test of OAEP' | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_Plaintext = new byte[] {
+            (byte) 0x54, (byte) 0x68, (byte) 0x69, (byte) 0x73, (byte) 0x20, (byte) 0x69,
+            (byte) 0x73, (byte) 0x20, (byte) 0x61, (byte) 0x20, (byte) 0x74, (byte) 0x65,
+            (byte) 0x73, (byte) 0x74, (byte) 0x20, (byte) 0x6f, (byte) 0x66, (byte) 0x20,
+            (byte) 0x4f, (byte) 0x41, (byte) 0x45, (byte) 0x50
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey rsakey.pem \
+     * -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha1 -pkeyopt rsa_mgf1_md:sha1 \
+     * | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA1_MGF1_SHA1 = new byte[] {
+            (byte) 0x53, (byte) 0x71, (byte) 0x84, (byte) 0x2e, (byte) 0x01, (byte) 0x74,
+            (byte) 0x82, (byte) 0xb3, (byte) 0x01, (byte) 0xac, (byte) 0x2b, (byte) 0xbd,
+            (byte) 0x40, (byte) 0xa7, (byte) 0x5b, (byte) 0x60, (byte) 0xf1, (byte) 0xde,
+            (byte) 0x54, (byte) 0x1d, (byte) 0x94, (byte) 0xc1, (byte) 0x10, (byte) 0x31,
+            (byte) 0x6f, (byte) 0xa3, (byte) 0xd8, (byte) 0x41, (byte) 0x2e, (byte) 0x82,
+            (byte) 0xad, (byte) 0x07, (byte) 0x6f, (byte) 0x25, (byte) 0x6c, (byte) 0xb5,
+            (byte) 0xef, (byte) 0xc6, (byte) 0xa6, (byte) 0xfb, (byte) 0xb1, (byte) 0x9d,
+            (byte) 0x75, (byte) 0x67, (byte) 0xb0, (byte) 0x97, (byte) 0x21, (byte) 0x3c,
+            (byte) 0x17, (byte) 0x04, (byte) 0xdc, (byte) 0x4e, (byte) 0x7e, (byte) 0x3f,
+            (byte) 0x5c, (byte) 0x13, (byte) 0x5e, (byte) 0x15, (byte) 0x0f, (byte) 0xe2,
+            (byte) 0xa7, (byte) 0x62, (byte) 0x6a, (byte) 0x08, (byte) 0xb1, (byte) 0xbc,
+            (byte) 0x2f, (byte) 0xcb, (byte) 0xb5, (byte) 0x96, (byte) 0x2d, (byte) 0xec,
+            (byte) 0x71, (byte) 0x4d, (byte) 0x59, (byte) 0x6e, (byte) 0x27, (byte) 0x85,
+            (byte) 0x87, (byte) 0x9b, (byte) 0xcc, (byte) 0x40, (byte) 0x32, (byte) 0x09,
+            (byte) 0x06, (byte) 0xe6, (byte) 0x7d, (byte) 0xdf, (byte) 0xeb, (byte) 0x2f,
+            (byte) 0xa8, (byte) 0x1c, (byte) 0x53, (byte) 0xdb, (byte) 0xa7, (byte) 0x48,
+            (byte) 0xf5, (byte) 0xbf, (byte) 0x2f, (byte) 0xbb, (byte) 0xee, (byte) 0xc7,
+            (byte) 0x55, (byte) 0x5e, (byte) 0xc4, (byte) 0x1c, (byte) 0x84, (byte) 0xed,
+            (byte) 0x97, (byte) 0x7e, (byte) 0xce, (byte) 0xa5, (byte) 0x69, (byte) 0x73,
+            (byte) 0xb3, (byte) 0xe0, (byte) 0x8c, (byte) 0x2a, (byte) 0xf2, (byte) 0xc7,
+            (byte) 0x65, (byte) 0xff, (byte) 0x10, (byte) 0xed, (byte) 0x25, (byte) 0xf0,
+            (byte) 0xf8, (byte) 0xda, (byte) 0x2f, (byte) 0x7f, (byte) 0xe0, (byte) 0x69,
+            (byte) 0xed, (byte) 0xb1, (byte) 0x0e, (byte) 0xcb, (byte) 0x43, (byte) 0xe4,
+            (byte) 0x31, (byte) 0xe6, (byte) 0x52, (byte) 0xfd, (byte) 0xa7, (byte) 0xe5,
+            (byte) 0x21, (byte) 0xd0, (byte) 0x67, (byte) 0x0a, (byte) 0xc1, (byte) 0xa1,
+            (byte) 0xb9, (byte) 0x04, (byte) 0xdb, (byte) 0x98, (byte) 0x4f, (byte) 0xf9,
+            (byte) 0x5c, (byte) 0x60, (byte) 0x4d, (byte) 0xac, (byte) 0x7a, (byte) 0x69,
+            (byte) 0xbd, (byte) 0x63, (byte) 0x0d, (byte) 0xb2, (byte) 0x01, (byte) 0x83,
+            (byte) 0xd7, (byte) 0x22, (byte) 0x5d, (byte) 0xed, (byte) 0xbd, (byte) 0x32,
+            (byte) 0x98, (byte) 0xd1, (byte) 0x4a, (byte) 0x2e, (byte) 0xb7, (byte) 0xb1,
+            (byte) 0x6d, (byte) 0x8a, (byte) 0x8f, (byte) 0xef, (byte) 0xc3, (byte) 0x89,
+            (byte) 0xdf, (byte) 0xa5, (byte) 0xac, (byte) 0xfb, (byte) 0x38, (byte) 0x61,
+            (byte) 0x32, (byte) 0xc5, (byte) 0x19, (byte) 0x83, (byte) 0x1f, (byte) 0x9c,
+            (byte) 0x45, (byte) 0x58, (byte) 0xdd, (byte) 0xa3, (byte) 0x57, (byte) 0xe4,
+            (byte) 0x91, (byte) 0xd2, (byte) 0x11, (byte) 0xf8, (byte) 0x96, (byte) 0x36,
+            (byte) 0x67, (byte) 0x99, (byte) 0x2b, (byte) 0x62, (byte) 0x21, (byte) 0xe3,
+            (byte) 0xa8, (byte) 0x5e, (byte) 0xa4, (byte) 0x2e, (byte) 0x0c, (byte) 0x29,
+            (byte) 0xf9, (byte) 0xcd, (byte) 0xfa, (byte) 0xbe, (byte) 0x3f, (byte) 0xd8,
+            (byte) 0xec, (byte) 0x6b, (byte) 0x32, (byte) 0xb3, (byte) 0x40, (byte) 0x4f,
+            (byte) 0x48, (byte) 0xe3, (byte) 0x14, (byte) 0x87, (byte) 0xa7, (byte) 0x5c,
+            (byte) 0xba, (byte) 0xdf, (byte) 0x0e, (byte) 0x64, (byte) 0xdc, (byte) 0xe2,
+            (byte) 0x51, (byte) 0xf4, (byte) 0x41, (byte) 0x25, (byte) 0x23, (byte) 0xc8,
+            (byte) 0x50, (byte) 0x1e, (byte) 0x9e, (byte) 0xb0
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey rsakey.pem -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha1 | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA256_MGF1_SHA1 = new byte[] {
+            (byte) 0x25, (byte) 0x9f, (byte) 0xc3, (byte) 0x69, (byte) 0xbc, (byte) 0x3f,
+            (byte) 0xe7, (byte) 0x9e, (byte) 0x76, (byte) 0xef, (byte) 0x6c, (byte) 0xd2,
+            (byte) 0x2b, (byte) 0x7b, (byte) 0xf0, (byte) 0xeb, (byte) 0xc2, (byte) 0x28,
+            (byte) 0x40, (byte) 0x4e, (byte) 0x9b, (byte) 0x2a, (byte) 0x4e, (byte) 0xa4,
+            (byte) 0x79, (byte) 0x66, (byte) 0xf1, (byte) 0x10, (byte) 0x96, (byte) 0x8c,
+            (byte) 0x58, (byte) 0x92, (byte) 0xb7, (byte) 0x70, (byte) 0xed, (byte) 0x3a,
+            (byte) 0xe0, (byte) 0x99, (byte) 0xd1, (byte) 0x80, (byte) 0x4b, (byte) 0x53,
+            (byte) 0x70, (byte) 0x9b, (byte) 0x51, (byte) 0xbf, (byte) 0xc1, (byte) 0x3a,
+            (byte) 0x70, (byte) 0xc5, (byte) 0x79, (byte) 0x21, (byte) 0x6e, (byte) 0xb3,
+            (byte) 0xf7, (byte) 0xa9, (byte) 0xe6, (byte) 0xcb, (byte) 0x70, (byte) 0xe4,
+            (byte) 0xf3, (byte) 0x4f, (byte) 0x45, (byte) 0xcf, (byte) 0xb7, (byte) 0x2b,
+            (byte) 0x38, (byte) 0xfd, (byte) 0x5d, (byte) 0x9a, (byte) 0x53, (byte) 0xc5,
+            (byte) 0x05, (byte) 0x74, (byte) 0x8d, (byte) 0x1d, (byte) 0x6e, (byte) 0x83,
+            (byte) 0xaa, (byte) 0x71, (byte) 0xc5, (byte) 0xe1, (byte) 0xa1, (byte) 0xa6,
+            (byte) 0xf3, (byte) 0xee, (byte) 0x5f, (byte) 0x9e, (byte) 0x4f, (byte) 0xe8,
+            (byte) 0x15, (byte) 0xd5, (byte) 0xa9, (byte) 0x1b, (byte) 0xa6, (byte) 0x41,
+            (byte) 0x2b, (byte) 0x18, (byte) 0x13, (byte) 0x20, (byte) 0x9f, (byte) 0x6b,
+            (byte) 0xf1, (byte) 0xd8, (byte) 0xf4, (byte) 0x87, (byte) 0xfa, (byte) 0x80,
+            (byte) 0xec, (byte) 0x0e, (byte) 0xa4, (byte) 0x4b, (byte) 0x24, (byte) 0x03,
+            (byte) 0x14, (byte) 0x25, (byte) 0xf2, (byte) 0x20, (byte) 0xfc, (byte) 0x52,
+            (byte) 0xf9, (byte) 0xd6, (byte) 0x7a, (byte) 0x4a, (byte) 0x45, (byte) 0x33,
+            (byte) 0xec, (byte) 0xde, (byte) 0x3c, (byte) 0x5b, (byte) 0xf2, (byte) 0xdc,
+            (byte) 0x8e, (byte) 0xc6, (byte) 0xb3, (byte) 0x26, (byte) 0xd3, (byte) 0x68,
+            (byte) 0xa7, (byte) 0xd8, (byte) 0x3a, (byte) 0xde, (byte) 0xa9, (byte) 0x25,
+            (byte) 0x1d, (byte) 0x42, (byte) 0x75, (byte) 0x66, (byte) 0x16, (byte) 0x29,
+            (byte) 0xad, (byte) 0x09, (byte) 0x74, (byte) 0x41, (byte) 0xbb, (byte) 0x45,
+            (byte) 0x39, (byte) 0x04, (byte) 0x7a, (byte) 0x93, (byte) 0xad, (byte) 0x1c,
+            (byte) 0xa6, (byte) 0x38, (byte) 0xf4, (byte) 0xac, (byte) 0xca, (byte) 0x5a,
+            (byte) 0xab, (byte) 0x92, (byte) 0x76, (byte) 0x26, (byte) 0x3c, (byte) 0xeb,
+            (byte) 0xda, (byte) 0xfc, (byte) 0x25, (byte) 0x93, (byte) 0x23, (byte) 0x01,
+            (byte) 0xe2, (byte) 0xac, (byte) 0x5e, (byte) 0x4c, (byte) 0xb7, (byte) 0xbc,
+            (byte) 0x5b, (byte) 0xaa, (byte) 0x14, (byte) 0xe9, (byte) 0xbf, (byte) 0x2d,
+            (byte) 0x3a, (byte) 0xdc, (byte) 0x2f, (byte) 0x6b, (byte) 0x4d, (byte) 0x0e,
+            (byte) 0x0a, (byte) 0x82, (byte) 0x3c, (byte) 0xd9, (byte) 0x32, (byte) 0xc1,
+            (byte) 0xc4, (byte) 0xa2, (byte) 0x46, (byte) 0x71, (byte) 0x10, (byte) 0x54,
+            (byte) 0x1a, (byte) 0xa6, (byte) 0xaa, (byte) 0x64, (byte) 0xe7, (byte) 0xc2,
+            (byte) 0xae, (byte) 0xbc, (byte) 0x3d, (byte) 0xa4, (byte) 0xa8, (byte) 0xd1,
+            (byte) 0xb7, (byte) 0x27, (byte) 0xef, (byte) 0x5f, (byte) 0xe7, (byte) 0xa7,
+            (byte) 0x5d, (byte) 0xa0, (byte) 0xcd, (byte) 0x57, (byte) 0xf1, (byte) 0xe0,
+            (byte) 0xd8, (byte) 0x42, (byte) 0x10, (byte) 0x77, (byte) 0xc3, (byte) 0xa7,
+            (byte) 0x1e, (byte) 0x0c, (byte) 0x37, (byte) 0x16, (byte) 0x11, (byte) 0x94,
+            (byte) 0x21, (byte) 0xf2, (byte) 0xca, (byte) 0x60, (byte) 0xce, (byte) 0xca,
+            (byte) 0x59, (byte) 0xf9, (byte) 0xe5, (byte) 0xe4
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey rsakey.pem \
+     * -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha224 -pkeyopt rsa_mgf1_md:sha224 \
+     * | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA224_MGF1_SHA224 = new byte[] {
+            (byte) 0xae, (byte) 0xdd, (byte) 0xe6, (byte) 0xab, (byte) 0x00, (byte) 0xd6,
+            (byte) 0x1e, (byte) 0x7e, (byte) 0x85, (byte) 0x63, (byte) 0xab, (byte) 0x51,
+            (byte) 0x79, (byte) 0x92, (byte) 0xf1, (byte) 0xb9, (byte) 0x4f, (byte) 0x23,
+            (byte) 0xae, (byte) 0xf7, (byte) 0x1b, (byte) 0x5f, (byte) 0x10, (byte) 0x5b,
+            (byte) 0xa5, (byte) 0x15, (byte) 0x87, (byte) 0xa3, (byte) 0xbb, (byte) 0x26,
+            (byte) 0xfe, (byte) 0x7f, (byte) 0xc0, (byte) 0xa3, (byte) 0x67, (byte) 0x95,
+            (byte) 0xda, (byte) 0xc4, (byte) 0x6f, (byte) 0x6e, (byte) 0x08, (byte) 0x23,
+            (byte) 0x28, (byte) 0x0b, (byte) 0xdd, (byte) 0x29, (byte) 0x29, (byte) 0xdc,
+            (byte) 0xb0, (byte) 0x35, (byte) 0x16, (byte) 0x2e, (byte) 0x0f, (byte) 0xb9,
+            (byte) 0x1d, (byte) 0x90, (byte) 0x27, (byte) 0x68, (byte) 0xc7, (byte) 0x92,
+            (byte) 0x52, (byte) 0x8a, (byte) 0x1d, (byte) 0x48, (byte) 0x6a, (byte) 0x7d,
+            (byte) 0x0b, (byte) 0xf6, (byte) 0x35, (byte) 0xca, (byte) 0xe1, (byte) 0x57,
+            (byte) 0xdd, (byte) 0x36, (byte) 0x3b, (byte) 0x51, (byte) 0x45, (byte) 0x77,
+            (byte) 0x28, (byte) 0x4f, (byte) 0x98, (byte) 0xc0, (byte) 0xe0, (byte) 0xa7,
+            (byte) 0x51, (byte) 0x98, (byte) 0x84, (byte) 0x7a, (byte) 0x29, (byte) 0x05,
+            (byte) 0x9f, (byte) 0x60, (byte) 0x66, (byte) 0xf6, (byte) 0x83, (byte) 0xcd,
+            (byte) 0x03, (byte) 0x3e, (byte) 0x82, (byte) 0x0f, (byte) 0x57, (byte) 0x4b,
+            (byte) 0x27, (byte) 0x14, (byte) 0xf6, (byte) 0xc8, (byte) 0x5b, (byte) 0xed,
+            (byte) 0xc3, (byte) 0x77, (byte) 0x6f, (byte) 0xec, (byte) 0x0e, (byte) 0xae,
+            (byte) 0x59, (byte) 0xbe, (byte) 0x68, (byte) 0x76, (byte) 0x16, (byte) 0x17,
+            (byte) 0x77, (byte) 0xe2, (byte) 0xbd, (byte) 0xe0, (byte) 0x5a, (byte) 0x14,
+            (byte) 0xd9, (byte) 0xf4, (byte) 0x3f, (byte) 0x50, (byte) 0x31, (byte) 0xf0,
+            (byte) 0x0c, (byte) 0x82, (byte) 0x6c, (byte) 0xcc, (byte) 0x81, (byte) 0x84,
+            (byte) 0x3e, (byte) 0x63, (byte) 0x93, (byte) 0xe7, (byte) 0x12, (byte) 0x2d,
+            (byte) 0xc9, (byte) 0xa3, (byte) 0xe3, (byte) 0xce, (byte) 0xfd, (byte) 0xc7,
+            (byte) 0xe1, (byte) 0xef, (byte) 0xa4, (byte) 0x16, (byte) 0x5c, (byte) 0x60,
+            (byte) 0xb1, (byte) 0x80, (byte) 0x31, (byte) 0x15, (byte) 0x5c, (byte) 0x35,
+            (byte) 0x25, (byte) 0x0b, (byte) 0x89, (byte) 0xe4, (byte) 0x56, (byte) 0x74,
+            (byte) 0x8b, (byte) 0xaf, (byte) 0x8e, (byte) 0xe9, (byte) 0xe2, (byte) 0x37,
+            (byte) 0x17, (byte) 0xe6, (byte) 0x7b, (byte) 0x78, (byte) 0xd8, (byte) 0x2c,
+            (byte) 0x27, (byte) 0x52, (byte) 0x21, (byte) 0x96, (byte) 0xa0, (byte) 0x92,
+            (byte) 0x95, (byte) 0x64, (byte) 0xc3, (byte) 0x7f, (byte) 0x45, (byte) 0xfc,
+            (byte) 0x3d, (byte) 0x48, (byte) 0x4a, (byte) 0xd5, (byte) 0xa4, (byte) 0x0a,
+            (byte) 0x57, (byte) 0x07, (byte) 0x57, (byte) 0x95, (byte) 0x9f, (byte) 0x2f,
+            (byte) 0x75, (byte) 0x32, (byte) 0x2a, (byte) 0x4d, (byte) 0x64, (byte) 0xbd,
+            (byte) 0xb1, (byte) 0xe0, (byte) 0x46, (byte) 0x4f, (byte) 0xe8, (byte) 0x6c,
+            (byte) 0x4b, (byte) 0x77, (byte) 0xcc, (byte) 0x36, (byte) 0x87, (byte) 0x05,
+            (byte) 0x56, (byte) 0x9a, (byte) 0xe4, (byte) 0x2c, (byte) 0x43, (byte) 0xfd,
+            (byte) 0x34, (byte) 0x97, (byte) 0xf8, (byte) 0xd7, (byte) 0x91, (byte) 0xff,
+            (byte) 0x56, (byte) 0x86, (byte) 0x17, (byte) 0x49, (byte) 0x0a, (byte) 0x52,
+            (byte) 0xfb, (byte) 0xe5, (byte) 0x49, (byte) 0xdf, (byte) 0xc1, (byte) 0x28,
+            (byte) 0x9d, (byte) 0x85, (byte) 0x66, (byte) 0x9d, (byte) 0x1d, (byte) 0xa4,
+            (byte) 0x7e, (byte) 0x9a, (byte) 0x5b, (byte) 0x30
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey /tmp/rsakey.txt \
+     * -pkeyopt rsa_padding_mode:oaep -pkey rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha256 \
+     * | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA256_MGF1_SHA256 = new byte[] {
+            (byte) 0x6a, (byte) 0x2b, (byte) 0xb2, (byte) 0xa3, (byte) 0x26, (byte) 0xa6,
+            (byte) 0x7a, (byte) 0x4a, (byte) 0x1f, (byte) 0xe5, (byte) 0xc8, (byte) 0x94,
+            (byte) 0x11, (byte) 0x1a, (byte) 0x92, (byte) 0x07, (byte) 0x0a, (byte) 0xf4,
+            (byte) 0x07, (byte) 0x0b, (byte) 0xd6, (byte) 0x37, (byte) 0xa5, (byte) 0x5d,
+            (byte) 0x16, (byte) 0x0a, (byte) 0x7d, (byte) 0x13, (byte) 0x27, (byte) 0x32,
+            (byte) 0x5a, (byte) 0xc3, (byte) 0x0d, (byte) 0x7a, (byte) 0x54, (byte) 0xfe,
+            (byte) 0x02, (byte) 0x28, (byte) 0xc6, (byte) 0x8e, (byte) 0x32, (byte) 0x7b,
+            (byte) 0x0a, (byte) 0x52, (byte) 0xf8, (byte) 0xe6, (byte) 0xab, (byte) 0x16,
+            (byte) 0x77, (byte) 0x7c, (byte) 0x53, (byte) 0xcd, (byte) 0xb0, (byte) 0xb6,
+            (byte) 0x90, (byte) 0xce, (byte) 0x7b, (byte) 0xa5, (byte) 0xdb, (byte) 0xab,
+            (byte) 0xfd, (byte) 0xf5, (byte) 0xbb, (byte) 0x49, (byte) 0x63, (byte) 0xb7,
+            (byte) 0xa8, (byte) 0x3e, (byte) 0x53, (byte) 0xf1, (byte) 0x00, (byte) 0x4d,
+            (byte) 0x72, (byte) 0x15, (byte) 0x34, (byte) 0xa8, (byte) 0x5b, (byte) 0x00,
+            (byte) 0x01, (byte) 0x75, (byte) 0xdc, (byte) 0xb6, (byte) 0xd1, (byte) 0xdf,
+            (byte) 0xcb, (byte) 0x93, (byte) 0xf3, (byte) 0x31, (byte) 0x04, (byte) 0x7e,
+            (byte) 0x48, (byte) 0x3e, (byte) 0xc9, (byte) 0xaf, (byte) 0xd7, (byte) 0xbd,
+            (byte) 0x9e, (byte) 0x73, (byte) 0x01, (byte) 0x79, (byte) 0xf8, (byte) 0xdc,
+            (byte) 0x46, (byte) 0x31, (byte) 0x55, (byte) 0x83, (byte) 0x21, (byte) 0xd1,
+            (byte) 0x19, (byte) 0x0b, (byte) 0x57, (byte) 0xf1, (byte) 0x06, (byte) 0xb9,
+            (byte) 0x32, (byte) 0x0e, (byte) 0x9d, (byte) 0x38, (byte) 0x53, (byte) 0x94,
+            (byte) 0x96, (byte) 0xd4, (byte) 0x6d, (byte) 0x18, (byte) 0xe2, (byte) 0xe3,
+            (byte) 0xcd, (byte) 0xfa, (byte) 0xfe, (byte) 0xb3, (byte) 0xe3, (byte) 0x27,
+            (byte) 0xd7, (byte) 0x45, (byte) 0xe8, (byte) 0x46, (byte) 0x6b, (byte) 0x06,
+            (byte) 0x0f, (byte) 0x5e, (byte) 0x24, (byte) 0x02, (byte) 0xef, (byte) 0xa2,
+            (byte) 0x69, (byte) 0xe6, (byte) 0x15, (byte) 0xb3, (byte) 0x8f, (byte) 0x71,
+            (byte) 0x97, (byte) 0x39, (byte) 0xfb, (byte) 0x32, (byte) 0xe0, (byte) 0xe5,
+            (byte) 0xac, (byte) 0x46, (byte) 0xb4, (byte) 0xe7, (byte) 0x3d, (byte) 0x89,
+            (byte) 0xba, (byte) 0xd9, (byte) 0x4c, (byte) 0x25, (byte) 0x97, (byte) 0xef,
+            (byte) 0xe6, (byte) 0x17, (byte) 0x23, (byte) 0x4e, (byte) 0xc8, (byte) 0xdb,
+            (byte) 0x18, (byte) 0x9b, (byte) 0xba, (byte) 0xb5, (byte) 0x7e, (byte) 0x19,
+            (byte) 0x4d, (byte) 0x95, (byte) 0x7d, (byte) 0x60, (byte) 0x1b, (byte) 0xa7,
+            (byte) 0x06, (byte) 0x1e, (byte) 0x99, (byte) 0x4a, (byte) 0xf2, (byte) 0x82,
+            (byte) 0x71, (byte) 0x62, (byte) 0x41, (byte) 0xa4, (byte) 0xa7, (byte) 0xdb,
+            (byte) 0x88, (byte) 0xb0, (byte) 0x4a, (byte) 0xc7, (byte) 0x3b, (byte) 0xce,
+            (byte) 0x91, (byte) 0x4f, (byte) 0xc7, (byte) 0xca, (byte) 0x6f, (byte) 0x89,
+            (byte) 0xac, (byte) 0x1a, (byte) 0x36, (byte) 0x84, (byte) 0x0c, (byte) 0x97,
+            (byte) 0xa0, (byte) 0x1a, (byte) 0x08, (byte) 0x6f, (byte) 0x70, (byte) 0xf3,
+            (byte) 0x94, (byte) 0xa0, (byte) 0x0f, (byte) 0x44, (byte) 0xdd, (byte) 0x86,
+            (byte) 0x9d, (byte) 0x2c, (byte) 0xac, (byte) 0x43, (byte) 0xed, (byte) 0xb8,
+            (byte) 0xa1, (byte) 0x66, (byte) 0xf3, (byte) 0xd3, (byte) 0x5c, (byte) 0xe5,
+            (byte) 0xe2, (byte) 0x4c, (byte) 0x7e, (byte) 0xda, (byte) 0x20, (byte) 0xbd,
+            (byte) 0x5a, (byte) 0x75, (byte) 0x12, (byte) 0x31, (byte) 0x23, (byte) 0x02,
+            (byte) 0xb5, (byte) 0x1f, (byte) 0x38, (byte) 0x98
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey /tmp/rsakey.txt \
+     * -pkeyopt rsa_padding_mode:oaep -pkey rsa_oaep_md:sha384 -pkeyopt rsa_mgf1_md:sha384 \
+     * | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA384_MGF1_SHA384 = new byte[] {
+            (byte) 0xa1, (byte) 0xb3, (byte) 0x3b, (byte) 0x34, (byte) 0x69, (byte) 0x9e,
+            (byte) 0xd8, (byte) 0xa0, (byte) 0x37, (byte) 0x2c, (byte) 0xeb, (byte) 0xef,
+            (byte) 0xf2, (byte) 0xaf, (byte) 0xfa, (byte) 0x63, (byte) 0x5d, (byte) 0x88,
+            (byte) 0xac, (byte) 0x51, (byte) 0xd4, (byte) 0x7f, (byte) 0x85, (byte) 0xf0,
+            (byte) 0x5e, (byte) 0xb4, (byte) 0x81, (byte) 0x7c, (byte) 0x82, (byte) 0x4f,
+            (byte) 0x92, (byte) 0xf7, (byte) 0x77, (byte) 0x48, (byte) 0x4c, (byte) 0xb1,
+            (byte) 0x42, (byte) 0xb3, (byte) 0x0e, (byte) 0x94, (byte) 0xc8, (byte) 0x5a,
+            (byte) 0xae, (byte) 0xed, (byte) 0x8d, (byte) 0x51, (byte) 0x72, (byte) 0x6b,
+            (byte) 0xa9, (byte) 0xd4, (byte) 0x1e, (byte) 0xbe, (byte) 0x38, (byte) 0x2c,
+            (byte) 0xd0, (byte) 0x43, (byte) 0xae, (byte) 0xb4, (byte) 0x30, (byte) 0xa9,
+            (byte) 0x93, (byte) 0x47, (byte) 0xb5, (byte) 0x9d, (byte) 0x03, (byte) 0x92,
+            (byte) 0x25, (byte) 0x74, (byte) 0xed, (byte) 0xfa, (byte) 0xfe, (byte) 0xf1,
+            (byte) 0xba, (byte) 0x04, (byte) 0x3a, (byte) 0x4d, (byte) 0x6d, (byte) 0x9a,
+            (byte) 0x0d, (byte) 0x95, (byte) 0x02, (byte) 0xb0, (byte) 0xac, (byte) 0x77,
+            (byte) 0x11, (byte) 0x44, (byte) 0xeb, (byte) 0xd2, (byte) 0x02, (byte) 0x90,
+            (byte) 0xea, (byte) 0x2f, (byte) 0x68, (byte) 0x2a, (byte) 0x69, (byte) 0xcf,
+            (byte) 0x45, (byte) 0x34, (byte) 0xff, (byte) 0x00, (byte) 0xc6, (byte) 0x3c,
+            (byte) 0x0b, (byte) 0x2c, (byte) 0x5f, (byte) 0x8c, (byte) 0x2c, (byte) 0xbf,
+            (byte) 0xc2, (byte) 0x4b, (byte) 0x16, (byte) 0x07, (byte) 0x84, (byte) 0x74,
+            (byte) 0xf0, (byte) 0x7a, (byte) 0x01, (byte) 0x7e, (byte) 0x74, (byte) 0x01,
+            (byte) 0x88, (byte) 0xce, (byte) 0xda, (byte) 0xe4, (byte) 0x21, (byte) 0x89,
+            (byte) 0xfc, (byte) 0xac, (byte) 0x68, (byte) 0xdb, (byte) 0xfc, (byte) 0x5f,
+            (byte) 0x3f, (byte) 0x00, (byte) 0xd9, (byte) 0x32, (byte) 0x1d, (byte) 0xa5,
+            (byte) 0xec, (byte) 0x72, (byte) 0x46, (byte) 0x23, (byte) 0xe5, (byte) 0x7f,
+            (byte) 0x49, (byte) 0x0e, (byte) 0x3e, (byte) 0xf2, (byte) 0x2b, (byte) 0x16,
+            (byte) 0x52, (byte) 0x9f, (byte) 0x9d, (byte) 0x0c, (byte) 0xfe, (byte) 0xab,
+            (byte) 0xdd, (byte) 0x77, (byte) 0x77, (byte) 0x94, (byte) 0xa4, (byte) 0x92,
+            (byte) 0xa2, (byte) 0x41, (byte) 0x0d, (byte) 0x4b, (byte) 0x57, (byte) 0x80,
+            (byte) 0xd6, (byte) 0x74, (byte) 0x63, (byte) 0xd5, (byte) 0xbf, (byte) 0x5c,
+            (byte) 0xa0, (byte) 0xda, (byte) 0x3c, (byte) 0xe6, (byte) 0xbf, (byte) 0xa4,
+            (byte) 0xc3, (byte) 0xfb, (byte) 0x46, (byte) 0x3b, (byte) 0x73, (byte) 0x30,
+            (byte) 0x4b, (byte) 0x57, (byte) 0x27, (byte) 0x0c, (byte) 0x81, (byte) 0xde,
+            (byte) 0x8a, (byte) 0x01, (byte) 0xe5, (byte) 0x7e, (byte) 0xe0, (byte) 0x16,
+            (byte) 0x11, (byte) 0x24, (byte) 0x34, (byte) 0x22, (byte) 0x01, (byte) 0x9f,
+            (byte) 0xe6, (byte) 0xa9, (byte) 0xfb, (byte) 0xad, (byte) 0x55, (byte) 0x17,
+            (byte) 0x2a, (byte) 0x92, (byte) 0x87, (byte) 0xf3, (byte) 0x72, (byte) 0xc9,
+            (byte) 0x3d, (byte) 0xc9, (byte) 0x2e, (byte) 0x32, (byte) 0x8e, (byte) 0xbb,
+            (byte) 0xdc, (byte) 0x1b, (byte) 0xa7, (byte) 0x7b, (byte) 0x73, (byte) 0xd7,
+            (byte) 0xf4, (byte) 0xad, (byte) 0xa9, (byte) 0x3a, (byte) 0xf7, (byte) 0xa8,
+            (byte) 0x82, (byte) 0x92, (byte) 0x40, (byte) 0xd4, (byte) 0x51, (byte) 0x87,
+            (byte) 0xe1, (byte) 0xb7, (byte) 0x4f, (byte) 0x91, (byte) 0x75, (byte) 0x5b,
+            (byte) 0x03, (byte) 0x9d, (byte) 0xa1, (byte) 0xd4, (byte) 0x00, (byte) 0x05,
+            (byte) 0x79, (byte) 0x42, (byte) 0x93, (byte) 0x76
+    };
+
+    /*
+     * echo -n 'This is a test of OAEP' | openssl pkeyutl -encrypt -inkey /tmp/rsakey.txt \
+     * -pkeyopt rsa_padding_mode:oaep -pkey rsa_oaep_md:sha512 -pkeyopt rsa_mgf1_md:sha512 \
+     * | xxd -p -i | sed 's/0x/(byte) 0x/g'
+     */
+    public static final byte[] RSA_Vector2_OAEP_SHA512_MGF1_SHA512 = new byte[] {
+            (byte) 0x75, (byte) 0x0f, (byte) 0xf9, (byte) 0x21, (byte) 0xca, (byte) 0xcc,
+            (byte) 0x0e, (byte) 0x13, (byte) 0x9e, (byte) 0x38, (byte) 0xa4, (byte) 0xa7,
+            (byte) 0xee, (byte) 0x61, (byte) 0x6d, (byte) 0x56, (byte) 0xea, (byte) 0x36,
+            (byte) 0xeb, (byte) 0xec, (byte) 0xfa, (byte) 0x1a, (byte) 0xeb, (byte) 0x0c,
+            (byte) 0xb2, (byte) 0x58, (byte) 0x9d, (byte) 0xde, (byte) 0x47, (byte) 0x27,
+            (byte) 0x2d, (byte) 0xbd, (byte) 0x8b, (byte) 0xa7, (byte) 0xf1, (byte) 0x8b,
+            (byte) 0xba, (byte) 0x4c, (byte) 0xab, (byte) 0x39, (byte) 0x6a, (byte) 0x82,
+            (byte) 0x0d, (byte) 0xaf, (byte) 0x4c, (byte) 0xde, (byte) 0xdb, (byte) 0x5e,
+            (byte) 0xdb, (byte) 0x08, (byte) 0x98, (byte) 0x06, (byte) 0xc5, (byte) 0x99,
+            (byte) 0xb6, (byte) 0x6d, (byte) 0xbc, (byte) 0x5b, (byte) 0xf9, (byte) 0xe4,
+            (byte) 0x97, (byte) 0x0b, (byte) 0xba, (byte) 0xe3, (byte) 0x17, (byte) 0xa9,
+            (byte) 0x3c, (byte) 0x4b, (byte) 0x21, (byte) 0xd8, (byte) 0x29, (byte) 0xf8,
+            (byte) 0xa7, (byte) 0x1c, (byte) 0x15, (byte) 0xd7, (byte) 0xf6, (byte) 0xfc,
+            (byte) 0x53, (byte) 0x64, (byte) 0x97, (byte) 0x9e, (byte) 0x22, (byte) 0xb1,
+            (byte) 0x93, (byte) 0x26, (byte) 0x80, (byte) 0xdc, (byte) 0xaa, (byte) 0x1b,
+            (byte) 0xae, (byte) 0x69, (byte) 0x0f, (byte) 0x74, (byte) 0x3d, (byte) 0x61,
+            (byte) 0x80, (byte) 0x68, (byte) 0xb8, (byte) 0xaf, (byte) 0x63, (byte) 0x72,
+            (byte) 0x37, (byte) 0x4f, (byte) 0xf3, (byte) 0x29, (byte) 0x4a, (byte) 0x75,
+            (byte) 0x4f, (byte) 0x29, (byte) 0x40, (byte) 0x01, (byte) 0xd3, (byte) 0xc6,
+            (byte) 0x56, (byte) 0x1a, (byte) 0xaf, (byte) 0xc3, (byte) 0xb3, (byte) 0xd2,
+            (byte) 0xb9, (byte) 0x91, (byte) 0x35, (byte) 0x1b, (byte) 0x89, (byte) 0x4c,
+            (byte) 0x61, (byte) 0xa2, (byte) 0x8e, (byte) 0x6f, (byte) 0x12, (byte) 0x4a,
+            (byte) 0x10, (byte) 0xc2, (byte) 0xcc, (byte) 0xab, (byte) 0x51, (byte) 0xec,
+            (byte) 0x1b, (byte) 0xb5, (byte) 0xfe, (byte) 0x20, (byte) 0x16, (byte) 0xb2,
+            (byte) 0xc5, (byte) 0x0f, (byte) 0xe1, (byte) 0x6a, (byte) 0xb4, (byte) 0x6c,
+            (byte) 0x27, (byte) 0xd9, (byte) 0x42, (byte) 0xb9, (byte) 0xb6, (byte) 0x55,
+            (byte) 0xa8, (byte) 0xbc, (byte) 0x1c, (byte) 0x32, (byte) 0x54, (byte) 0x84,
+            (byte) 0xec, (byte) 0x1e, (byte) 0x95, (byte) 0xd8, (byte) 0xae, (byte) 0xca,
+            (byte) 0xc1, (byte) 0xad, (byte) 0x4c, (byte) 0x65, (byte) 0xd6, (byte) 0xc2,
+            (byte) 0x19, (byte) 0x66, (byte) 0xad, (byte) 0x9f, (byte) 0x55, (byte) 0x15,
+            (byte) 0xe1, (byte) 0x5d, (byte) 0x8f, (byte) 0xab, (byte) 0x18, (byte) 0x68,
+            (byte) 0x42, (byte) 0x7c, (byte) 0x48, (byte) 0xb7, (byte) 0x2c, (byte) 0xfd,
+            (byte) 0x1a, (byte) 0x07, (byte) 0xa1, (byte) 0x6a, (byte) 0xfb, (byte) 0x81,
+            (byte) 0xc6, (byte) 0x93, (byte) 0xbf, (byte) 0xa3, (byte) 0x5d, (byte) 0xfd,
+            (byte) 0xce, (byte) 0xf3, (byte) 0x17, (byte) 0x26, (byte) 0xf0, (byte) 0xda,
+            (byte) 0x0e, (byte) 0xd1, (byte) 0x86, (byte) 0x9d, (byte) 0x61, (byte) 0xd1,
+            (byte) 0x8a, (byte) 0xdb, (byte) 0x36, (byte) 0x39, (byte) 0x1c, (byte) 0xd4,
+            (byte) 0x99, (byte) 0x53, (byte) 0x30, (byte) 0x5a, (byte) 0x01, (byte) 0xf4,
+            (byte) 0xa0, (byte) 0xca, (byte) 0x94, (byte) 0x72, (byte) 0x3d, (byte) 0xe3,
+            (byte) 0x50, (byte) 0x95, (byte) 0xcb, (byte) 0xa9, (byte) 0x37, (byte) 0xeb,
+            (byte) 0x66, (byte) 0x21, (byte) 0x20, (byte) 0x2e, (byte) 0xf2, (byte) 0xfd,
+            (byte) 0xfa, (byte) 0x54, (byte) 0xbf, (byte) 0x17, (byte) 0x23, (byte) 0xbb,
+            (byte) 0x9e, (byte) 0x77, (byte) 0xe0, (byte) 0xaa
+    };
 
     public void testRSA_ECB_NoPadding_Private_OnlyDoFinal_Success() throws Exception {
         for (String provider : RSA_PROVIDERS) {
@@ -3115,6 +3432,14 @@ public final class CipherTest extends TestCase {
         }
     }
 
+    private static class OAEPCipherTestParam extends CipherTestParam {
+        public OAEPCipherTestParam(String transformation, OAEPParameterSpec spec,
+                PublicKey encryptKey, PrivateKey decryptKey, byte[] plaintext, byte[] ciphertext) {
+            super(transformation, spec, encryptKey, decryptKey, null, plaintext, plaintext, ciphertext,
+                    false);
+        }
+    }
+
     private static List<CipherTestParam> DES_CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
     static {
         DES_CIPHER_TEST_PARAMS.add(new CipherTestParam(
@@ -3219,6 +3544,65 @@ public final class CipherTest extends TestCase {
         }
     }
 
+    private static final List<CipherTestParam> RSA_OAEP_CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
+    static {
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
+                null,
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA1_MGF1_SHA1));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPPadding",
+                new OAEPParameterSpec("SHA-1", "MGF1", MGF1ParameterSpec.SHA1,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA1_MGF1_SHA1));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPPadding",
+                new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA256_MGF1_SHA1));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWithSHA-224AndMGF1Padding",
+                new OAEPParameterSpec("SHA-224", "MGF1", MGF1ParameterSpec.SHA224,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA224_MGF1_SHA224));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
+                new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA256_MGF1_SHA256));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWithSHA-384AndMGF1Padding",
+                new OAEPParameterSpec("SHA-384", "MGF1", MGF1ParameterSpec.SHA384,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA384_MGF1_SHA384));
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWithSHA-512AndMGF1Padding",
+                new OAEPParameterSpec("SHA-512", "MGF1", MGF1ParameterSpec.SHA512,
+                        PSource.PSpecified.DEFAULT),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                RSA_Vector2_OAEP_SHA512_MGF1_SHA512));
+    }
+
     public void testCipher_Success() throws Exception {
         for (String provider : AES_PROVIDERS) {
             testCipher_Success(provider);
@@ -3228,6 +3612,8 @@ public final class CipherTest extends TestCase {
                 DES_CIPHER_TEST_PARAMS);
         testCipher_Success_ForAllSupportingProviders_AtLeastOneProviderRequired(
                 ARC4_CIPHER_TEST_PARAMS);
+        testCipher_Success_ForAllSupportingProviders_AtLeastOneProviderRequired(
+                RSA_OAEP_CIPHER_TEST_PARAMS);
     }
 
     /**
@@ -3262,6 +3648,13 @@ public final class CipherTest extends TestCase {
             }
 
             for (Provider provider : providers) {
+                // Do not test AndroidKeyStore's Signature. It needs an AndroidKeyStore-specific key.
+                // It's OKish not to test AndroidKeyStore's Signature here because it's tested
+                // by cts/tests/test/keystore.
+                if (provider.getName().startsWith("AndroidKeyStore")) {
+                    continue;
+                }
+
                 try {
                     checkCipher(testVector, provider.getName());
                 } catch (Throwable e) {
@@ -3297,6 +3690,17 @@ public final class CipherTest extends TestCase {
 
         if (params.encryptKey instanceof SecretKey) {
             logStream.append(", keySize=" + (params.encryptKey.getEncoded().length * 8));
+        }
+
+        if (params.spec instanceof OAEPParameterSpec) {
+            OAEPParameterSpec oaepSpec = (OAEPParameterSpec) params.spec;
+            logStream.append(", OAEPSpec{digest=" + oaepSpec.getDigestAlgorithm() + ", mgfAlg="
+                    + oaepSpec.getMGFAlgorithm());
+            if (oaepSpec.getMGFParameters() instanceof MGF1ParameterSpec) {
+                MGF1ParameterSpec mgf1Spec = (MGF1ParameterSpec) oaepSpec.getMGFParameters();
+                logStream.append(", mgf1Hash=" + mgf1Spec.getDigestAlgorithm());
+            }
+            logStream.append('}');
         }
 
         logStream.append(" with provider " + provider + "\n");
@@ -3335,9 +3739,14 @@ public final class CipherTest extends TestCase {
         try {
             byte[] emptyPlainText = c.doFinal(emptyCipherText);
             assertEquals(Arrays.toString(new byte[0]), Arrays.toString(emptyPlainText));
-        } catch (AEADBadTagException e) {
+        } catch (AEADBadTagException maybe) {
             if (!"AndroidOpenSSL".equals(provider) || !isAEAD(p.transformation)) {
-                throw e;
+                throw maybe;
+            }
+        } catch (BadPaddingException maybe) {
+            // BC's OAEP has a bug where it doesn't support empty decrypt
+            if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
+                throw maybe;
             }
         }
 
@@ -3365,6 +3774,11 @@ public final class CipherTest extends TestCase {
                     if (!isAEAD(p.transformation)) {
                         throw maybe;
                     }
+                } catch (BadPaddingException maybe) {
+                    // BC's OAEP has a bug where it doesn't support empty decrypt
+                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
+                        throw maybe;
+                    }
                 }
                 try {
                     c.update(new byte[0]);
@@ -3376,6 +3790,11 @@ public final class CipherTest extends TestCase {
                     }
                 } catch (AEADBadTagException maybe) {
                     if (!isAEAD(p.transformation)) {
+                        throw maybe;
+                    }
+                } catch (BadPaddingException maybe) {
+                    // BC's OAEP has a bug where it doesn't support empty decrypt
+                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
                         throw maybe;
                     }
                 }
@@ -3434,7 +3853,8 @@ public final class CipherTest extends TestCase {
                     Arrays.toString(Arrays.copyOfRange(actualPlaintext, 1, p.plaintext.length + 1)));
         }
 
-        if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")) {
+        if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")
+                && !isRandomizedEncryption(p.transformation)) {
             Cipher cNoPad = Cipher.getInstance(
                     getCipherTransformationWithNoPadding(p.transformation), provider);
             cNoPad.init(Cipher.DECRYPT_MODE, p.decryptKey, p.spec);
