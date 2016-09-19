@@ -2334,10 +2334,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Public_OnlyDoFinal_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus, RSA_2048_publicExponent);
-
-        final PublicKey privKey = kf.generatePublic(keySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2346,11 +2343,11 @@ public final class CipherTest extends TestCase {
          * distinction made here. It's all keyed off of what kind of key you're
          * using. ENCRYPT_MODE and DECRYPT_MODE are the same.
          */
-        c.init(Cipher.ENCRYPT_MODE, privKey);
+        c.init(Cipher.ENCRYPT_MODE, pubKey);
         byte[] encrypted = c.doFinal(RSA_Vector1_Encrypt_Private);
         assertEncryptedEqualsNoPadding(provider, Cipher.ENCRYPT_MODE, RSA_2048_Vector1, encrypted);
 
-        c.init(Cipher.DECRYPT_MODE, privKey);
+        c.init(Cipher.DECRYPT_MODE, pubKey);
         encrypted = c.doFinal(RSA_Vector1_Encrypt_Private);
         assertEncryptedEqualsNoPadding(provider, Cipher.DECRYPT_MODE, RSA_2048_Vector1, encrypted);
     }
@@ -2362,10 +2359,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Public_OnlyDoFinalWithOffset_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus, RSA_2048_publicExponent);
-
-        final PublicKey pubKey = kf.generatePublic(keySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2400,10 +2394,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Public_UpdateThenEmptyDoFinal_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus, RSA_2048_publicExponent);
-
-        final PublicKey privKey = kf.generatePublic(keySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2412,12 +2403,12 @@ public final class CipherTest extends TestCase {
          * distinction made here. It's all keyed off of what kind of key you're
          * using. ENCRYPT_MODE and DECRYPT_MODE are the same.
          */
-        c.init(Cipher.ENCRYPT_MODE, privKey);
+        c.init(Cipher.ENCRYPT_MODE, pubKey);
         c.update(RSA_Vector1_Encrypt_Private);
         byte[] encrypted = c.doFinal();
         assertEncryptedEqualsNoPadding(provider, Cipher.ENCRYPT_MODE, RSA_2048_Vector1, encrypted);
 
-        c.init(Cipher.DECRYPT_MODE, privKey);
+        c.init(Cipher.DECRYPT_MODE, pubKey);
         c.update(RSA_Vector1_Encrypt_Private);
         encrypted = c.doFinal();
         assertEncryptedEqualsNoPadding(provider, Cipher.DECRYPT_MODE, RSA_2048_Vector1, encrypted);
@@ -2432,10 +2423,7 @@ public final class CipherTest extends TestCase {
 
     private void testRSA_ECB_NoPadding_Public_SingleByteUpdateThenEmptyDoFinal_Success(String provider)
             throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus, RSA_2048_publicExponent);
-
-        final PublicKey privKey = kf.generatePublic(keySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2444,7 +2432,7 @@ public final class CipherTest extends TestCase {
          * distinction made here. It's all keyed off of what kind of key you're
          * using. ENCRYPT_MODE and DECRYPT_MODE are the same.
          */
-        c.init(Cipher.ENCRYPT_MODE, privKey);
+        c.init(Cipher.ENCRYPT_MODE, pubKey);
         int i;
         for (i = 0; i < RSA_Vector1_Encrypt_Private.length / 2; i++) {
             c.update(RSA_Vector1_Encrypt_Private, i, 1);
@@ -2452,7 +2440,7 @@ public final class CipherTest extends TestCase {
         byte[] encrypted = c.doFinal(RSA_Vector1_Encrypt_Private, i, RSA_2048_Vector1.length - i);
         assertEncryptedEqualsNoPadding(provider, Cipher.ENCRYPT_MODE, RSA_2048_Vector1, encrypted);
 
-        c.init(Cipher.DECRYPT_MODE, privKey);
+        c.init(Cipher.DECRYPT_MODE, pubKey);
         for (i = 0; i < RSA_Vector1_Encrypt_Private.length / 2; i++) {
             c.update(RSA_Vector1_Encrypt_Private, i, 1);
         }
@@ -2467,10 +2455,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_Public_TooSmall_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus, RSA_2048_publicExponent);
-
-        final PublicKey privKey = kf.generatePublic(keySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
 
@@ -2479,12 +2464,12 @@ public final class CipherTest extends TestCase {
          * distinction made here. It's all keyed off of what kind of key you're
          * using. ENCRYPT_MODE and DECRYPT_MODE are the same.
          */
-        c.init(Cipher.ENCRYPT_MODE, privKey);
+        c.init(Cipher.ENCRYPT_MODE, pubKey);
         byte[] encrypted = c.doFinal(TooShort_Vector);
         assertTrue("Encrypted should match expected",
                 Arrays.equals(RSA_Vector1_ZeroPadded_Encrypted, encrypted));
 
-        c.init(Cipher.DECRYPT_MODE, privKey);
+        c.init(Cipher.DECRYPT_MODE, pubKey);
         encrypted = c.doFinal(TooShort_Vector);
         assertTrue("Encrypted should match expected",
                 Arrays.equals(RSA_Vector1_ZeroPadded_Encrypted, encrypted));
@@ -2651,10 +2636,7 @@ public final class CipherTest extends TestCase {
             }
         }
 
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                RSA_2048_publicExponent);
-        final PublicKey pubKey = kf.generatePublic(pubKeySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
         c.init(Cipher.ENCRYPT_MODE, pubKey);
         assertEquals(getExpectedBlockSize("RSA", Cipher.ENCRYPT_MODE, provider), c.getBlockSize());
     }
@@ -2681,10 +2663,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_GetOutputSize_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                RSA_2048_publicExponent);
-        final PublicKey pubKey = kf.generatePublic(pubKeySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
         c.init(Cipher.ENCRYPT_MODE, pubKey);
@@ -2702,10 +2681,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_GetIV_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                RSA_2048_publicExponent);
-        final PublicKey pubKey = kf.generatePublic(pubKeySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
         assertNull("ECB mode has no IV and should be null", c.getIV());
@@ -2722,10 +2698,7 @@ public final class CipherTest extends TestCase {
     }
 
     private void testRSA_ECB_NoPadding_GetParameters_NoneProvided_Success(String provider) throws Exception {
-        KeyFactory kf = KeyFactory.getInstance("RSA");
-        RSAPublicKeySpec pubKeySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                RSA_2048_publicExponent);
-        final PublicKey pubKey = kf.generatePublic(pubKeySpec);
+        final PublicKey pubKey = (PublicKey) getEncryptKey("RSA");
 
         Cipher c = Cipher.getInstance("RSA/ECB/NoPadding", provider);
         assertNull("Parameters should be null", c.getParameters());
