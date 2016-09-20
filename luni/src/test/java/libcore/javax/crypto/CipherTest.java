@@ -3235,11 +3235,8 @@ public final class CipherTest extends TestCase {
             for (Provider provider : providers) {
                 try {
                     checkCipher(testVector, provider.getName());
-                } catch (Throwable e) {
-                    out.append("Error encountered checking " + testVector.transformation
-                            + ", keySize=" + (testVector.key.getEncoded().length * 8)
-                            + " with provider " + provider.getName() + "\n");
-                    e.printStackTrace(out);
+                } catch (Exception e) {
+                    logTestFailure(out, provider.getName(), testVector, e);
                 }
             }
         }
@@ -3256,17 +3253,20 @@ public final class CipherTest extends TestCase {
             try {
                 checkCipher(p, provider);
             } catch (Exception e) {
-                out.append("Error encountered checking " + p.transformation + ", keySize="
-                        + (p.key.getEncoded().length * 8)
-                        + " with provider " + provider + "\n");
-
-                e.printStackTrace(out);
+                logTestFailure(out, provider, p, e);
             }
         }
         out.flush();
         if (errBuffer.size() > 0) {
             throw new Exception("Errors encountered:\n\n" + errBuffer.toString() + "\n\n");
         }
+    }
+
+    private void logTestFailure(PrintStream logStream, String provider, CipherTestParam params,
+            Exception e) {
+        logStream.append("Error encountered checking " + params.transformation + ", keySize="
+                + (params.key.getEncoded().length * 8) + " with provider " + provider + "\n");
+        e.printStackTrace(logStream);
     }
 
     private void checkCipher(CipherTestParam p, String provider) throws Exception {
@@ -3571,9 +3571,7 @@ public final class CipherTest extends TestCase {
             try {
                 checkCipher_ShortBlock_Failure(p, provider);
             } catch (Exception e) {
-                out.append("Error encountered checking " + p.transformation + ", keySize="
-                        + (p.key.getEncoded().length * 8) + " with provider " + provider + "\n");
-                e.printStackTrace(out);
+                logTestFailure(out, provider, p, e);
             }
         }
         out.flush();
