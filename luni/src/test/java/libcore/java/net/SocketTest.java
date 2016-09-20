@@ -16,6 +16,7 @@
 
 package libcore.java.net;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,7 +44,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.io.FileDescriptor;
 
 
 public class SocketTest extends junit.framework.TestCase {
@@ -379,33 +379,43 @@ public class SocketTest extends junit.framework.TestCase {
 
     public void testCloseDuringConnect() throws Exception {
         final CountDownLatch signal = new CountDownLatch(1);
-
         final Socket s = new Socket();
-        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    // This address is reserved for documentation: should never be reachable.
-                    InetSocketAddress unreachableIp = new InetSocketAddress("192.0.2.0", 80);
-                    // This should never return.
-                    s.connect(unreachableIp, 0 /* infinite */);
-                    fail("Connect returned unexpectedly for: " + unreachableIp);
-                } catch (SocketException expected) {
-                    assertTrue(expected.getMessage().contains("Socket closed"));
-                    signal.countDown();
-                } catch (IOException e) {
-                    fail("Unexpected exception: " + e);
-                }
-            }
-        }.start();
 
-        // Wait for the connect() thread to run and start connect()
+        // Executes a connect() that should block.
+        Callable<String> connectWorker = () -> {
+            try {
+                // This address is reserved for documentation: should never be reachable.
+                InetSocketAddress unreachableIp = new InetSocketAddress("192.0.2.0", 80);
+                // This should never return.
+                s.connect(unreachableIp, 0 /* infinite */);
+                return "Connect returned unexpectedly for: " + unreachableIp;
+            } catch (SocketException expected) {
+                signal.countDown();
+                return expected.getMessage().contains("Socket closed")
+                        ? null
+                        : "Unexpected SocketException message: " + expected.getMessage();
+            } catch (IOException e) {
+                return "Unexpected exception: " + e;
+            }
+        };
+        Future<String> connectResult =
+                Executors.newSingleThreadScheduledExecutor().submit(connectWorker);
+
+        // Wait sufficient time for the connectWorker thread to run and start connect().
         Thread.sleep(2000);
 
+        // Close the socket that connectWorker should currently be blocked in connect().
         s.close();
 
+        // connectWorker should have been unblocked so await() should return true.
         boolean connectUnblocked = signal.await(2000, TimeUnit.MILLISECONDS);
-        assertTrue(connectUnblocked);
+
+        // connectWorker should have returned null if everything went as expected.
+        String workerFailure = connectResult.get(2000, TimeUnit.MILLISECONDS);
+
+        assertTrue("connectUnblocked=[" + connectUnblocked
+                + "], workerFailure=[" + workerFailure + "]",
+                connectUnblocked && workerFailure == null);
     }
 
     // http://b/29092095
