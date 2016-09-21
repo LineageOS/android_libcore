@@ -3071,7 +3071,9 @@ public final class CipherTest extends TestCase {
     private static class CipherTestParam {
         public final String transformation;
 
-        public final Key key;
+        public final Key encryptKey;
+
+        public final Key decryptKey;
 
         public final byte[] iv;
 
@@ -3089,7 +3091,8 @@ public final class CipherTest extends TestCase {
                 byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
                 boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
-            this.key = key;
+            this.encryptKey = key;
+            this.decryptKey = key;
             this.iv = iv;
             this.aad = aad;
             this.plaintext = plaintext;
@@ -3265,7 +3268,8 @@ public final class CipherTest extends TestCase {
     private void logTestFailure(PrintStream logStream, String provider, CipherTestParam params,
             Exception e) {
         logStream.append("Error encountered checking " + params.transformation + ", keySize="
-                + (params.key.getEncoded().length * 8) + " with provider " + provider + "\n");
+                + (params.encryptKey.getEncoded().length * 8) + " with provider " + provider
+                + "\n");
         e.printStackTrace(logStream);
     }
 
@@ -3281,7 +3285,7 @@ public final class CipherTest extends TestCase {
             }
         }
 
-        c.init(Cipher.ENCRYPT_MODE, p.key, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, spec);
 
         if (p.aad != null) {
             c.updateAAD(p.aad);
@@ -3291,11 +3295,11 @@ public final class CipherTest extends TestCase {
                 Arrays.toString(actualCiphertext));
 
         c = Cipher.getInstance(p.transformation, provider);
-        c.init(Cipher.ENCRYPT_MODE, p.key, spec);
+        c.init(Cipher.ENCRYPT_MODE, p.encryptKey, spec);
         byte[] emptyCipherText = c.doFinal();
         assertNotNull(emptyCipherText);
 
-        c.init(Cipher.DECRYPT_MODE, p.key, spec);
+        c.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
 
         if (!isAEAD(p.transformation)) {
             try {
@@ -3358,7 +3362,7 @@ public final class CipherTest extends TestCase {
         }
 
         // Cipher might be in unspecified state from failures above.
-        c.init(Cipher.DECRYPT_MODE, p.key, spec);
+        c.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
 
         // .doFinal(input)
         {
@@ -3410,7 +3414,7 @@ public final class CipherTest extends TestCase {
         if (!p.isStreamCipher && !p.transformation.endsWith("NOPADDING")) {
             Cipher cNoPad = Cipher.getInstance(
                     getCipherTransformationWithNoPadding(p.transformation), provider);
-            cNoPad.init(Cipher.DECRYPT_MODE, p.key, spec);
+            cNoPad.init(Cipher.DECRYPT_MODE, p.decryptKey, spec);
 
             if (p.aad != null) {
                 c.updateAAD(p.aad);
@@ -3429,11 +3433,11 @@ public final class CipherTest extends TestCase {
 
             // Wrap it
             c = Cipher.getInstance(p.transformation, provider);
-            c.init(Cipher.WRAP_MODE, p.key, spec);
+            c.init(Cipher.WRAP_MODE, p.encryptKey, spec);
             byte[] cipherText = c.wrap(sk);
 
             // Unwrap it
-            c.init(Cipher.UNWRAP_MODE, p.key, spec);
+            c.init(Cipher.UNWRAP_MODE, p.decryptKey, spec);
             Key decryptedKey = c.unwrap(cipherText, sk.getAlgorithm(), Cipher.SECRET_KEY);
 
             assertEquals(
@@ -3731,7 +3735,7 @@ public final class CipherTest extends TestCase {
         }
 
         if (!p.transformation.endsWith("NOPADDING")) {
-            c.init(Cipher.ENCRYPT_MODE, p.key);
+            c.init(Cipher.ENCRYPT_MODE, p.encryptKey);
             try {
                 c.doFinal(new byte[] { 0x01, 0x02, 0x03 });
                 fail("Should throw IllegalBlockSizeException on wrong-sized block; transform="
