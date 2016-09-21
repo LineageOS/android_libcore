@@ -3295,8 +3295,10 @@ public final class CipherTest extends TestCase {
             c.updateAAD(p.aad);
         }
         final byte[] actualCiphertext = c.doFinal(p.plaintext);
-        assertEquals(p.transformation + " " + provider, Arrays.toString(p.ciphertext),
-                Arrays.toString(actualCiphertext));
+        if (!isRandomizedEncryption(p.transformation)) {
+            assertEquals(p.transformation + " " + provider, Arrays.toString(p.ciphertext),
+                    Arrays.toString(actualCiphertext));
+        }
 
         c = Cipher.getInstance(p.transformation, provider);
         c.init(Cipher.ENCRYPT_MODE, p.encryptKey, p.spec);
