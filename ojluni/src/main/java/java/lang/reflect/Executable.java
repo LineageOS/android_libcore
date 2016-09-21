@@ -25,8 +25,15 @@
 
 package java.lang.reflect;
 
+import com.android.dex.Dex;
+
 import java.lang.annotation.Annotation;
+import java.util.Objects;
 import libcore.reflect.AnnotatedElements;
+import libcore.reflect.GenericSignatureParser;
+import libcore.reflect.ListOfTypes;
+import libcore.reflect.Types;
+import libcore.util.EmptyArray;
 
 /**
  * A shared superclass for the common functionality of {@link Method}
@@ -112,7 +119,6 @@ public abstract class Executable extends AccessibleObject
      * constructor.
      */
     abstract void specificToStringHeader(StringBuilder sb);
-
 
     String sharedToGenericString(int modifierMask, boolean isDefault) {
         try {
@@ -255,9 +261,9 @@ public abstract class Executable extends AccessibleObject
      *     type that cannot be instantiated for any reason
      */
     public Type[] getGenericParameterTypes() {
-        // Android-changed: Implemented in AbstractMethod instead.
-        throw new UnsupportedOperationException(
-                "Executable.getGenericParameterTypes() not implemented");
+        // Android-changed: Changed to use Types / getMethodOrConstructorGenericInfoInternal()
+        return Types.getTypeArray(
+                getMethodOrConstructorGenericInfoInternal().genericParameterTypes, false);
     }
 
     /**
@@ -447,9 +453,9 @@ public abstract class Executable extends AccessibleObject
      *     parameterized type that cannot be instantiated for any reason
      */
     public Type[] getGenericExceptionTypes() {
-        // Android-changed: Implemented in AbstractMethod instead.
-        throw new UnsupportedOperationException(
-                "Executable.getGenericExceptionTypes() not implemented");
+        // Android-changed: Changed to use Types / getMethodOrConstructorGenericInfoInternal()
+        return Types.getTypeArray(
+                getMethodOrConstructorGenericInfoInternal().genericExceptionTypes, false);
     }
 
     /**
@@ -468,7 +474,8 @@ public abstract class Executable extends AccessibleObject
      * to take a variable number of arguments.
      */
     public boolean isVarArgs()  {
-        return (getModifiers() & Modifier.VARARGS) != 0;
+        // Android-changed: Slightly more efficient.
+        return (accessFlags & Modifier.VARARGS) != 0;
     }
 
     /**
@@ -481,7 +488,8 @@ public abstract class Executable extends AccessibleObject
      * @jls 13.1 The Form of a Binary
      */
     public boolean isSynthetic() {
-        return Modifier.isSynthetic(getModifiers());
+        // Android-changed: Slightly more efficient.
+        return (accessFlags & Modifier.SYNTHETIC) != 0;
     }
 
     /**
@@ -519,9 +527,11 @@ public abstract class Executable extends AccessibleObject
      * @throws NullPointerException  {@inheritDoc}
      */
     public <T extends Annotation> T getAnnotation(Class<T> annotationClass) {
-        // Android-changed: Implemented in AbstractMethod instead.
-        throw new UnsupportedOperationException("Executable.getAnnotation(Class) not implemented");
+        Objects.requireNonNull(annotationClass);
+        // Android-changed: Implemented natively.
+        return getAnnotationNative(annotationClass);
     }
+    private native <T extends Annotation> T getAnnotationNative(Class<T> annotationClass);
 
     /**
      * {@inheritDoc}
@@ -538,8 +548,226 @@ public abstract class Executable extends AccessibleObject
      * {@inheritDoc}
      */
     public Annotation[] getDeclaredAnnotations()  {
-        // Android-changed: Implemented in AbstractMethod instead.
-        throw new UnsupportedOperationException(
-                "Executable.getDeclaredAnnotations() not implemented");
+        // Android-changed: Implemented natively.
+        return getDeclaredAnnotationsNative();
+    }
+    private native Annotation[] getDeclaredAnnotationsNative();
+
+    // Android-changed: Additional ART-related fields and logic below that is shared between
+    // Method and Constructor.
+
+    /** Bits encoding access (e.g. public, private) as well as other runtime specific flags */
+    @SuppressWarnings("unused") // set by runtime
+    private int accessFlags;
+
+    /**
+     * The ArtMethod associated with this Executable, required for dispatching due to entrypoints
+     * Classloader is held live by the declaring class.
+     */
+    @SuppressWarnings("unused") // set by runtime
+    private long artMethod;
+
+    /** Executable's declaring class */
+    @SuppressWarnings("unused") // set by runtime
+    private Class<?> declaringClass;
+
+    /**
+     * Overriden method's declaring class (same as declaringClass unless declaringClass is a proxy
+     * class).
+     */
+    @SuppressWarnings("unused") // set by runtime
+    private Class<?> declaringClassOfOverriddenMethod;
+
+    /** The method index of this method within its defining dex file */
+    @SuppressWarnings("unused") // set by runtime
+    private int dexMethodIndex;
+
+    /**
+     * We insert native method stubs for abstract methods so we don't have to
+     * check the access flags at the time of the method call.  This results in
+     * "native abstract" methods, which can't exist.  If we see the "abstract"
+     * flag set, clear the "native" flag.
+     *
+     * We also move the DECLARED_SYNCHRONIZED flag into the SYNCHRONIZED
+     * position, because the callers of this function are trying to convey
+     * the "traditional" meaning of the flags to their callers.
+     */
+    private static int fixMethodFlags(int flags) {
+        if ((flags & Modifier.ABSTRACT) != 0) {
+            flags &= ~Modifier.NATIVE;
+        }
+        flags &= ~Modifier.SYNCHRONIZED;
+        int ACC_DECLARED_SYNCHRONIZED = 0x00020000;
+        if ((flags & ACC_DECLARED_SYNCHRONIZED) != 0) {
+            flags |= Modifier.SYNCHRONIZED;
+        }
+        return flags & 0xffff;  // mask out bits not used by Java
+    }
+
+    final int getModifiersInternal() {
+        return fixMethodFlags(accessFlags);
+    }
+
+    final Class<?> getDeclaringClassInternal() {
+        return declaringClass;
+    }
+
+    /**
+     * Returns an array of {@code Class} objects associated with the parameter types of this
+     * Executable. If the Executable was declared with no parameters, an empty array will be
+     * returned.
+     *
+     * @return the parameter types
+     */
+    final Class<?>[] getParameterTypesInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
+        if (types.length == 0) {
+            return EmptyArray.CLASS;
+        }
+        Class<?>[] parametersArray = new Class[types.length];
+        for (int i = 0; i < types.length; i++) {
+            // Note, in the case of a Proxy the dex cache types are equal.
+            parametersArray[i] = declaringClassOfOverriddenMethod.getDexCacheType(dex, types[i]);
+        }
+        return parametersArray;
+    }
+
+    final int getParameterCountInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
+        return types.length;
+    }
+
+    // Android provides a more efficient implementation of this method for Executable than the one
+    // implemented in AnnotatedElement.
+    @Override
+    public final boolean isAnnotationPresent(Class<? extends Annotation> annotationType) {
+        Objects.requireNonNull(annotationType);
+        return isAnnotationPresentNative(annotationType);
+    }
+    private native boolean isAnnotationPresentNative(Class<? extends Annotation> annotationType);
+
+    final Annotation[][] getParameterAnnotationsInternal() {
+        Annotation[][] parameterAnnotations = getParameterAnnotationsNative();
+        if (parameterAnnotations == null) {
+            parameterAnnotations = new Annotation[getParameterTypes().length][0];
+        }
+        return parameterAnnotations;
+    }
+    private native Annotation[][] getParameterAnnotationsNative();
+
+    /**
+     * @hide - exposed for use by {@link Class}.
+     */
+    public final int getAccessFlags() {
+        return accessFlags;
+    }
+
+    static final class GenericInfo {
+        final ListOfTypes genericExceptionTypes;
+        final ListOfTypes genericParameterTypes;
+        final Type genericReturnType;
+        final TypeVariable<?>[] formalTypeParameters;
+
+        GenericInfo(ListOfTypes exceptions, ListOfTypes parameters, Type ret,
+                TypeVariable<?>[] formal) {
+            genericExceptionTypes = exceptions;
+            genericParameterTypes = parameters;
+            genericReturnType = ret;
+            formalTypeParameters = formal;
+        }
+    }
+
+    final boolean hasGenericInformationInternal() {
+        return getSignatureAnnotation() != null;
+    }
+
+    /**
+     * Returns generic information associated with this method/constructor member.
+     */
+    final GenericInfo getMethodOrConstructorGenericInfoInternal() {
+        String signatureAttribute = getSignatureAttribute();
+        Class<?>[] exceptionTypes = this.getExceptionTypes();
+        GenericSignatureParser parser =
+                new GenericSignatureParser(this.getDeclaringClass().getClassLoader());
+        if (this instanceof Method) {
+            parser.parseForMethod(this, signatureAttribute, exceptionTypes);
+        } else {
+            parser.parseForConstructor(this, signatureAttribute, exceptionTypes);
+        }
+        return new GenericInfo(parser.exceptionTypes, parser.parameterTypes,
+                parser.returnType, parser.formalTypeParameters);
+    }
+
+    private String getSignatureAttribute() {
+        String[] annotation = getSignatureAnnotation();
+        if (annotation == null) {
+            return null;
+        }
+        StringBuilder result = new StringBuilder();
+        for (String s : annotation) {
+            result.append(s);
+        }
+        return result.toString();
+    }
+    private native String[] getSignatureAnnotation();
+
+    final boolean equalNameAndParametersInternal(Method m) {
+        return getName().equals(m.getName()) && equalMethodParameters(m.getParameterTypes());
+    }
+
+    private boolean equalMethodParameters(Class<?>[] params) {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
+        if (types.length != params.length) {
+            return false;
+        }
+        for (int i = 0; i < types.length; i++) {
+            if (declaringClassOfOverriddenMethod.getDexCacheType(dex, types[i]) != params[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    final int compareMethodParametersInternal(Class<?>[] params) {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        short[] types = dex.parameterTypeIndicesFromMethodIndex(dexMethodIndex);
+        int length = Math.min(types.length, params.length);
+        for (int i = 0; i < length; i++) {
+            Class<?> aType = declaringClassOfOverriddenMethod.getDexCacheType(dex, types[i]);
+            Class<?> bType = params[i];
+            if (aType != bType) {
+                int comparison = aType.getName().compareTo(bType.getName());
+                if (comparison != 0) {
+                    return comparison;
+                }
+            }
+        }
+        return types.length - params.length;
+    }
+
+    final String getMethodNameInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        int nameIndex = dex.nameIndexFromMethodIndex(dexMethodIndex);
+        return declaringClassOfOverriddenMethod.getDexCacheString(dex, nameIndex);
+    }
+
+    final Class<?> getMethodReturnTypeInternal() {
+        Dex dex = declaringClassOfOverriddenMethod.getDex();
+        int returnTypeIndex = dex.returnTypeIndexFromMethodIndex(dexMethodIndex);
+        // Note, in the case of a Proxy the dex cache types are equal.
+        return declaringClassOfOverriddenMethod.getDexCacheType(dex, returnTypeIndex);
+    }
+
+    /** A cheap implementation for {@link Method#isDefault()}. */
+    final boolean isDefaultMethodInternal() {
+        return (accessFlags & Modifier.DEFAULT) != 0;
+    }
+
+    /** A cheap implementation for {@link Method#isBridge()}. */
+    final boolean isBridgeMethodInternal() {
+        return (accessFlags & Modifier.BRIDGE) != 0;
     }
 }
