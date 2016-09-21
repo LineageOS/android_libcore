@@ -3087,18 +3087,25 @@ public final class CipherTest extends TestCase {
 
         public final boolean isStreamCipher;
 
-        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
+        public CipherTestParam(String transformation, Key encryptKey, Key decryptKey, byte[] iv, byte[] aad,
                 byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
                 boolean isStreamCipher) {
             this.transformation = transformation.toUpperCase(Locale.ROOT);
-            this.encryptKey = key;
-            this.decryptKey = key;
+            this.encryptKey = encryptKey;
+            this.decryptKey = decryptKey;
             this.iv = iv;
             this.aad = aad;
             this.plaintext = plaintext;
             this.plaintextPadded = plaintextPadded;
             this.ciphertext = ciphertext;
             this.isStreamCipher = isStreamCipher;
+        }
+
+        public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
+                byte[] plaintext, byte[] plaintextPadded, byte[] ciphertext,
+                boolean isStreamCipher) {
+            this(transformation, key, key, iv, aad, plaintext, plaintextPadded, ciphertext,
+                    isStreamCipher);
         }
 
         public CipherTestParam(String transformation, Key key, byte[] iv, byte[] aad,
