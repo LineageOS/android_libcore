@@ -26,10 +26,8 @@
 
 package java.lang.reflect;
 
-import java.util.Comparator;
-import libcore.reflect.Types;
-
 import java.lang.annotation.Annotation;
+import java.util.Comparator;
 
 /**
  * {@code Constructor} provides information about, and access to, a single
@@ -51,7 +49,7 @@ import java.lang.annotation.Annotation;
  * @author      Kenneth Russell
  * @author      Nakul Saraiya
  */
-public final class Constructor<T> extends AbstractMethod {
+public final class Constructor<T> extends Executable {
     private static final Comparator<Method> ORDER_BY_SIGNATURE = null; // Unused; must match Method.
 
     private final Class<?> serializationClass;
@@ -76,7 +74,7 @@ public final class Constructor<T> extends AbstractMethod {
 
     @Override
     boolean hasGenericInformation() {
-        // Android-changed: Signature retrieval is handled in AbstractMethod.
+        // Android-changed: Signature retrieval is handled in Executable.
         return super.hasGenericInformationInternal();
     }
 
@@ -86,8 +84,8 @@ public final class Constructor<T> extends AbstractMethod {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Class<T> getDeclaringClass() {
-        // Android-changed: This is handled by AbstractMethod.
-        return (Class<T>) super.getDeclaringClass();
+        // Android-changed: This is handled by Executable.
+        return (Class<T>) super.getDeclaringClassInternal();
     }
 
     /**
@@ -104,8 +102,8 @@ public final class Constructor<T> extends AbstractMethod {
      */
     @Override
     public int getModifiers() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getModifiers();
+        // Android-changed: This is handled by Executable.
+        return super.getModifiersInternal();
     }
 
     /**
@@ -116,7 +114,7 @@ public final class Constructor<T> extends AbstractMethod {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public TypeVariable<Constructor<T>>[] getTypeParameters() {
-        // Android-changed: This is mostly handled by AbstractMethod.
+        // Android-changed: This is mostly handled by Executable.
         GenericInfo info = getMethodOrConstructorGenericInfoInternal();
         return (TypeVariable<Constructor<T>>[]) info.formalTypeParameters.clone();
     }
@@ -127,16 +125,16 @@ public final class Constructor<T> extends AbstractMethod {
      */
     @Override
     public Class<?>[] getParameterTypes() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterTypes();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterTypesInternal();
     }
 
     /**
      * {@inheritDoc}
      */
     public int getParameterCount() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterCount();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterCountInternal();
     }
 
     /**
@@ -377,7 +375,7 @@ public final class Constructor<T> extends AbstractMethod {
      */
     @Override
     public Annotation[][] getParameterAnnotations() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterAnnotations();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterAnnotationsInternal();
     }
 }
