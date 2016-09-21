@@ -50,7 +50,7 @@ import libcore.reflect.Types;
  * @author Kenneth Russell
  * @author Nakul Saraiya
  */
-public final class Method extends AbstractMethod  {
+public final class Method extends Executable  {
     /**
      * Orders methods by their name, parameters and return type.
      *
@@ -84,7 +84,7 @@ public final class Method extends AbstractMethod  {
 
     @Override
     boolean hasGenericInformation() {
-        // Android-changed: Signature retrieval is handled in AbstractMethod.
+        // Android-changed: Signature retrieval is handled in Executable.
         return super.hasGenericInformationInternal();
     }
 
@@ -93,8 +93,8 @@ public final class Method extends AbstractMethod  {
      */
     @Override
     public Class<?> getDeclaringClass() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getDeclaringClass();
+        // Android-changed: This is handled by Executable.
+        return super.getDeclaringClassInternal();
     }
 
     /**
@@ -103,7 +103,7 @@ public final class Method extends AbstractMethod  {
      */
     @Override
     public String getName() {
-        // Android-changed: This is handled by AbstractMethod.
+        // Android-changed: This is handled by Executable.
         return getMethodNameInternal();
     }
 
@@ -112,8 +112,8 @@ public final class Method extends AbstractMethod  {
      */
     @Override
     public int getModifiers() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getModifiers();
+        // Android-changed: This is handled by Executable.
+        return super.getModifiersInternal();
     }
 
     /**
@@ -124,7 +124,7 @@ public final class Method extends AbstractMethod  {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public TypeVariable<Method>[] getTypeParameters() {
-        // Android-changed: This is mostly handled by AbstractMethod.
+        // Android-changed: This is mostly handled by Executable.
         GenericInfo info = getMethodOrConstructorGenericInfoInternal();
         return (TypeVariable<Method>[]) info.formalTypeParameters.clone();
     }
@@ -136,7 +136,7 @@ public final class Method extends AbstractMethod  {
      * @return the return type for the method this object represents
      */
     public Class<?> getReturnType() {
-        // Android-changed: This is handled by AbstractMethod.
+        // Android-changed: This is handled by Executable.
         return getMethodReturnTypeInternal();
     }
 
@@ -165,7 +165,7 @@ public final class Method extends AbstractMethod  {
      * @since 1.5
      */
     public Type getGenericReturnType() {
-        // Android-changed: Modified implementation to use AbstractMethod.
+        // Android-changed: Modified implementation to use Executable.
       return Types.getType(getMethodOrConstructorGenericInfoInternal().genericReturnType);
     }
 
@@ -174,16 +174,16 @@ public final class Method extends AbstractMethod  {
      */
     @Override
     public Class<?>[] getParameterTypes() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterTypes();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterTypesInternal();
     }
 
     /**
      * {@inheritDoc}
      */
     public int getParameterCount() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterCount();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterCountInternal();
     }
 
     /**
@@ -407,7 +407,7 @@ public final class Method extends AbstractMethod  {
      * @since 1.5
      */
     public boolean isBridge() {
-        // Android-changed: This is handled by AbstractMethod.
+        // Android-changed: This is handled by Executable.
         return super.isBridgeMethodInternal();
     }
 
@@ -443,7 +443,7 @@ public final class Method extends AbstractMethod  {
      * @since 1.8
      */
     public boolean isDefault() {
-        // Android-changed: This is handled by AbstractMethod.
+        // Android-changed: This is handled by Executable.
         return super.isDefaultMethodInternal();
     }
 
@@ -486,8 +486,8 @@ public final class Method extends AbstractMethod  {
      */
     @Override
     public Annotation[][] getParameterAnnotations() {
-        // Android-changed: This is handled by AbstractMethod.
-        return super.getParameterAnnotations();
+        // Android-changed: This is handled by Executable.
+        return super.getParameterAnnotationsInternal();
     }
 
     /**
