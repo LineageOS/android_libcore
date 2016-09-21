@@ -252,22 +252,26 @@ public final class CipherTest extends TestCase {
     /**
      * Returns the key meant for enciphering for {@code algorithm}.
      */
-    private synchronized static Key getEncryptKey(String algorithm) throws Exception {
+    private synchronized static Key getEncryptKey(String algorithm) {
         Key key = ENCRYPT_KEYS.get(algorithm);
         if (key != null) {
             return key;
         }
-        if (algorithm.startsWith("RSA")) {
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus,
-                                                            RSA_2048_publicExponent);
-            key = kf.generatePublic(keySpec);
-        } else if (isPBE(algorithm)) {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithm);
-            key = skf.generateSecret(new PBEKeySpec("secret".toCharArray()));
-        } else {
-            KeyGenerator kg = KeyGenerator.getInstance(getBaseAlgorithm(algorithm));
-            key = kg.generateKey();
+        try {
+            if (algorithm.startsWith("RSA")) {
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                RSAPublicKeySpec keySpec = new RSAPublicKeySpec(RSA_2048_modulus,
+                        RSA_2048_publicExponent);
+                key = kf.generatePublic(keySpec);
+            } else if (isPBE(algorithm)) {
+                SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithm);
+                key = skf.generateSecret(new PBEKeySpec("secret".toCharArray()));
+            } else {
+                KeyGenerator kg = KeyGenerator.getInstance(getBaseAlgorithm(algorithm));
+                key = kg.generateKey();
+            }
+        } catch (Exception e) {
+            throw new AssertionError("Error generating keys for test setup", e);
         }
         ENCRYPT_KEYS.put(algorithm, key);
         return key;
@@ -278,26 +282,25 @@ public final class CipherTest extends TestCase {
     /**
      * Returns the key meant for deciphering for {@code algorithm}.
      */
-    private synchronized static Key getDecryptKey(String algorithm) throws Exception {
+    private synchronized static Key getDecryptKey(String algorithm) {
         Key key = DECRYPT_KEYS.get(algorithm);
         if (key != null) {
             return key;
         }
-        if (algorithm.startsWith("RSA")) {
-            KeyFactory kf = KeyFactory.getInstance("RSA");
-            RSAPrivateCrtKeySpec keySpec = new RSAPrivateCrtKeySpec(
-                    RSA_2048_modulus,
-                    RSA_2048_publicExponent,
-                    RSA_2048_privateExponent,
-                    RSA_2048_primeP,
-                    RSA_2048_primeQ,
-                    RSA_2048_primeExponentP,
-                    RSA_2048_primeExponentQ,
-                    RSA_2048_crtCoefficient);
-            key = kf.generatePrivate(keySpec);
-        } else {
-            assertFalse(algorithm, isAsymmetric(algorithm));
-            key = getEncryptKey(algorithm);
+        try {
+            if (algorithm.startsWith("RSA")) {
+                KeyFactory kf = KeyFactory.getInstance("RSA");
+                RSAPrivateCrtKeySpec keySpec = new RSAPrivateCrtKeySpec(RSA_2048_modulus,
+                        RSA_2048_publicExponent, RSA_2048_privateExponent, RSA_2048_primeP,
+                        RSA_2048_primeQ, RSA_2048_primeExponentP, RSA_2048_primeExponentQ,
+                        RSA_2048_crtCoefficient);
+                key = kf.generatePrivate(keySpec);
+            } else {
+                assertFalse(algorithm, isAsymmetric(algorithm));
+                key = getEncryptKey(algorithm);
+            }
+        } catch (Exception e) {
+            throw new AssertionError("Error generating keys for test setup", e);
         }
         DECRYPT_KEYS.put(algorithm, key);
         return key;
