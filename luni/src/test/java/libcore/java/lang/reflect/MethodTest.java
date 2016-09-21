@@ -19,6 +19,7 @@ package libcore.java.lang.reflect;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.Proxy;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,8 +42,12 @@ public final class MethodTest extends TestCase {
     }
 
     public void test_getParameterTypes() throws Exception {
-        Class[] expectedParameters = new Class[] { Object.class };
-        Method method = MethodTestHelper.class.getMethod("m2", expectedParameters);
+        Class[] expectedParameters = new Class[0];
+        Method method = MethodTestHelper.class.getMethod("m1", expectedParameters);
+        assertEquals(0, method.getParameterTypes().length);
+
+        expectedParameters = new Class[] { Object.class };
+        method = MethodTestHelper.class.getMethod("m2", expectedParameters);
         Class[] parameters = method.getParameterTypes();
         assertEquals(1, parameters.length);
         assertEquals(expectedParameters[0], parameters[0]);
@@ -54,10 +59,35 @@ public final class MethodTest extends TestCase {
     }
 
     public void test_getParameterCount() throws Exception {
-        Class[] expectedParameters = new Class[] { Object.class };
-        Method method = MethodTestHelper.class.getMethod("m2", expectedParameters);
+        Class[] expectedParameters = new Class[0];
+        Method method = MethodTestHelper.class.getMethod("m1", expectedParameters);
+        assertEquals(0, method.getParameterCount());
+
+        expectedParameters = new Class[] { Object.class };
+        method = MethodTestHelper.class.getMethod("m2", expectedParameters);
         int count = method.getParameterCount();
         assertEquals(1, count);
+    }
+
+    public void test_getParameters() throws Exception {
+        Class[] expectedParameters = new Class[0];
+        Method method = MethodTestHelper.class.getMethod("m1", expectedParameters);
+        assertEquals(0, method.getParameters().length);
+
+        expectedParameters = new Class[] { Object.class };
+        method = MethodTestHelper.class.getMethod("m2", expectedParameters);
+
+        // Test the information available via other Method methods. See ParameterTest and
+        // annotations.ParameterTest for more in-depth Parameter testing.
+        Parameter[] parameters = method.getParameters();
+        assertEquals(1, parameters.length);
+        assertEquals(Object.class, parameters[0].getType());
+
+        // Check that corrupting our array doesn't affect other callers.
+        parameters[0] = null;
+        parameters = method.getParameters();
+        assertEquals(1, parameters.length);
+        assertEquals(Object.class, parameters[0].getType());
     }
 
     public void testGetMethodWithPrivateMethodAndInterfaceMethod() throws Exception {
