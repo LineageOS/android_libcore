@@ -322,7 +322,6 @@ public abstract class Executable extends AccessibleObject
      * a MethodParameters attribute that is improperly formatted.
      * @return an array of {@code Parameter} objects representing all
      * the parameters to the executable this object represents.
-     * @hide Hidden pending tests
      */
     public Parameter[] getParameters() {
         // TODO: This may eventually need to be guarded by security
@@ -504,8 +503,11 @@ public abstract class Executable extends AccessibleObject
      * A compiler may add extra parameters that are implicitly
      * declared in source ("mandated"), as well as parameters that
      * are neither implicitly nor explicitly declared in source
-     * ("synthetic") to the parameter list for a method.
+     * ("synthetic") to the parameter list for a method.  See {@link
+     * java.lang.reflect.Parameter} for more information.
      *
+     * @see java.lang.reflect.Parameter
+     * @see java.lang.reflect.Parameter#getAnnotations
      * @return an array of arrays that represent the annotations on
      *    the formal and implicit parameters, in declaration order, of
      *    the executable represented by this object
