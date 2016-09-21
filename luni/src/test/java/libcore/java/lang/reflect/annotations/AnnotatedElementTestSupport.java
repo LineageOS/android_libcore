@@ -95,8 +95,8 @@ public class AnnotatedElementTestSupport {
      * returns annotations of the supplied expected classes.
      *
      * <p>Where the expected classes contains some subset from
-     * {@link AnnotationA}, {@link AnnotationB} and {@link AnnotationC}, this method also asserts
-     * that {@link AnnotatedElement#isAnnotationPresent(Class)} and
+     * {@link AnnotationA}, {@link AnnotationB}, {@link AnnotationC}, {@link AnnotationD} this
+     * method also asserts that {@link AnnotatedElement#isAnnotationPresent(Class)} and
      * {@link AnnotatedElement#getAnnotation(Class)} works as expected.
      *
      * <p>This method also confirms that {@link AnnotatedElement#isAnnotationPresent(Class)} and
@@ -112,6 +112,7 @@ public class AnnotatedElementTestSupport {
         assertPresent(expectedTypes.contains(AnnotationA.class), element, AnnotationA.class);
         assertPresent(expectedTypes.contains(AnnotationB.class), element, AnnotationB.class);
         assertPresent(expectedTypes.contains(AnnotationC.class), element, AnnotationC.class);
+        assertPresent(expectedTypes.contains(AnnotationD.class), element, AnnotationD.class);
 
         try {
             element.isAnnotationPresent(null);
