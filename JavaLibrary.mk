@@ -188,7 +188,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(test_src_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart core-lambda-stubs okhttp core-junit junit4-target bouncycastle mockito-target
+LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp core-junit junit4-target bouncycastle mockito-target
 LOCAL_STATIC_JAVA_LIBRARIES := core-tests-support sqlite-jdbc mockwebserver nist-pkix-tests
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -217,7 +217,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES :=  $(call all-test-java-files-under, jsr166-tests)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart core-lambda-stubs core-junit junit4-target
+LOCAL_JAVA_LIBRARIES := core-oj core-libart core-junit junit4-target
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE := jsr166-tests
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -229,7 +229,7 @@ endif
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj core-libart core-lambda-stubs okhttp bouncycastle
+    LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
     LOCAL_STATIC_JAVA_LIBRARIES := testng
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
@@ -249,7 +249,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     # Include source code as part of JAR
     LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj core-libart core-lambda-stubs okhttp bouncycastle testng
+    LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle testng
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -335,7 +335,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_SRC_FILES := $(test_src_files)
     LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex core-lambda-stubs-hostdex okhttp-hostdex bouncycastle-hostdex core-junit-hostdex junit4-target-hostdex core-tests-support-hostdex mockito-api-hostdex
+    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex okhttp-hostdex bouncycastle-hostdex core-junit-hostdex junit4-target-hostdex core-tests-support-hostdex mockito-api-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := sqlite-jdbc-host mockwebserver-host nist-pkix-tests-host
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
@@ -365,7 +365,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
     LOCAL_SRC_FILES := $(ojtest_src_files)
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex core-lambda-stubs-hostdex okhttp-hostdex bouncycastle-hostdex
+    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex okhttp-hostdex bouncycastle-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := testng-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
