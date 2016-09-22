@@ -754,6 +754,13 @@ public final class Math {
     }
 
     /**
+     * @hide for internal use only.
+     */
+    public static long randomLongInternal() {
+        return RandomNumberGeneratorHolder.randomNumberGenerator.nextLong();
+    }
+
+    /**
      * Returns the sum of its arguments,
      * throwing an exception if the result overflows an {@code int}.
      *
