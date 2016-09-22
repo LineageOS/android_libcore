@@ -1586,7 +1586,9 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/locale/Extension.java \
     ojluni/src/main/java/sun/util/locale/InternalLocaleBuilder.java \
     ojluni/src/main/java/sun/util/locale/LanguageTag.java \
+    ojluni/src/main/java/sun/util/locale/LocaleEquivalentMaps.java \
     ojluni/src/main/java/sun/util/locale/LocaleExtensions.java \
+    ojluni/src/main/java/sun/util/locale/LocaleMatcher.java \
     ojluni/src/main/java/sun/util/locale/LocaleObjectCache.java \
     ojluni/src/main/java/sun/util/locale/LocaleSyntaxException.java \
     ojluni/src/main/java/sun/util/locale/LocaleUtils.java \
