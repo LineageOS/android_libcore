@@ -1548,5 +1548,15 @@
   names: [
     "com.android.org.apache.harmony.luni.tests.java.net.URLClassLoaderImplTest#test_Constructor$Ljava_net_URLLjava_lang_ClassLoaderLjava_net_URLStreamHandlerFactory"
   ]
+},
+{
+  description: "MethodHandlesTest fails because of a bad compilation rule.",
+  result: EXEC_FAILED,
+  bug: 31675876,
+  names: [
+    "libcore.java.lang.invoke.MethodHandlesTest#test_LookupIn",
+    "libcore.java.lang.invoke.MethodHandlesTest#test_defaultLookupClassAndModes",
+    "libcore.java.lang.invoke.MethodHandlesTest#test_publicLookupClassAndModes"
+  ]
 }
 ]
