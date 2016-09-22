@@ -1163,6 +1163,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandle.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java \
@@ -1187,6 +1188,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/invoke/empty/Empty.java \
     ojluni/src/main/java/sun/invoke/util/BytecodeDescriptor.java \
     ojluni/src/main/java/sun/invoke/util/Wrapper.java \
+    ojluni/src/main/java/sun/invoke/util/VerifyAccess.java \
     ojluni/src/main/java/sun/misc/ASCIICaseInsensitiveComparator.java \
     ojluni/src/main/java/sun/misc/BASE64Decoder.java \
     ojluni/src/main/java/sun/misc/BASE64Encoder.java \
@@ -1625,9 +1627,9 @@ openjdk_java_files := \
 openjdk_lambda_stub_files := \
     ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
-    ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
 openjdk_lambda_duplicate_stub_files := \
+    ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodType.java \
