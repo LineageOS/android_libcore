@@ -28,6 +28,7 @@ package java.lang.invoke;
 import java.lang.reflect.*;
 import java.util.List;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 import dalvik.system.VMStack;
 import sun.invoke.util.VerifyAccess;
@@ -134,14 +135,8 @@ public class MethodHandles {
      */
     public static <T extends Member> T
     reflectAs(Class<T> expected, MethodHandle target) {
-        SecurityManager smgr = System.getSecurityManager();
-        if (smgr != null)  smgr.checkPermission(ACCESS_PERMISSION);
-        Lookup lookup = Lookup.IMPL_LOOKUP;  // use maximally privileged lookup
-        return lookup.revealDirect(target).reflectAs(expected, lookup);
+        throw new UnsupportedOperationException("MethodHandles.reflectAs is not implemented.");
     }
-    // Copied from AccessibleObject, as used by Method.setAccessible, etc.:
-    static final private java.security.Permission ACCESS_PERMISSION =
-        new ReflectPermission("suppressAccessChecks");
 
     /**
      * A <em>lookup object</em> is a factory for creating method handles,
@@ -504,7 +499,7 @@ public class MethodHandles {
     public static final
     class Lookup {
         /** The class on behalf of whom the lookup is being performed. */
-        private final Class<?> lookupClass;
+        /* @NonNull */ private final Class<?> lookupClass;
 
         /** The allowed sorts of members which may be looked up (PUBLIC, etc.). */
         private final int allowedModes;
@@ -538,7 +533,12 @@ public class MethodHandles {
         public static final int PACKAGE = Modifier.STATIC;
 
         private static final int ALL_MODES = (PUBLIC | PRIVATE | PROTECTED | PACKAGE);
-        private static final int TRUSTED   = -1;
+
+        // Android-note: Android has no notion of a trusted lookup. If required, such lookups
+        // are performed by the runtime. As a result, we always use lookupClass, which will always
+        // be non-null in our implementation.
+        //
+        // private static final int TRUSTED   = -1;
 
         private static int fixmods(int mods) {
             mods &= (ALL_MODES - PACKAGE);
@@ -556,11 +556,6 @@ public class MethodHandles {
          */
         public Class<?> lookupClass() {
             return lookupClass;
-        }
-
-        // This is just for calling out to MethodHandleImpl.
-        private Class<?> lookupClassOrNull() {
-            return (allowedModes == TRUSTED) ? null : lookupClass;
         }
 
         /** Tells which access-protection classes of members this lookup object can produce.
@@ -627,8 +622,10 @@ public class MethodHandles {
          */
         public Lookup in(Class<?> requestedLookupClass) {
             requestedLookupClass.getClass();  // null check
-            if (allowedModes == TRUSTED)  // IMPL_LOOKUP can make any lookup at all
-                return new Lookup(requestedLookupClass, ALL_MODES);
+            // Android-changed: There's no notion of a trusted lookup.
+            // if (allowedModes == TRUSTED)  // IMPL_LOOKUP can make any lookup at all
+            //    return new Lookup(requestedLookupClass, ALL_MODES);
+
             if (requestedLookupClass == this.lookupClass)
                 return this;  // keep same capabilities
             int newModes = (allowedModes & (ALL_MODES & ~PROTECTED));
@@ -661,9 +658,6 @@ public class MethodHandles {
          *  publicly accessible members.
          */
         static final Lookup PUBLIC_LOOKUP = new Lookup(Object.class, PUBLIC);
-
-        /** Package-private version of lookup which is trusted. */
-        static final Lookup IMPL_LOOKUP = new Lookup(Object.class, TRUSTED);
 
         private static void checkUnprivilegedlookupClass(Class<?> lookupClass, int allowedModes) {
             String name = lookupClass.getName();
@@ -725,8 +719,9 @@ public class MethodHandles {
                 return cname + "/private";
             case ALL_MODES:
                 return cname;
-            case TRUSTED:
-                return "/trusted";  // internal only; not exported
+            // Android-changed: No support for TRUSTED callers.
+            // case TRUSTED:
+            //    return "/trusted";  // internal only; not exported
             default:  // Should not happen, but it's a bitfield...
                 cname = cname + "/" + Integer.toHexString(allowedModes);
                 assert(false) : cname;
@@ -772,8 +767,31 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
          */
         public
         MethodHandle findStatic(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findStatic is not implemented");
+            // TODO: Support varargs methods. The returned method handle must be a var-args
+            // collector in that case.
+            if (refc == MethodHandle.class) {
+                MethodHandle mh = findVirtualForMH(name, type);
+                if (mh != null) {
+                    return mh;
+                }
+            }
+
+            Method method = refc.getDeclaredMethod(name, type.ptypes());
+            final int modifiers = method.getModifiers();
+            if (!Modifier.isStatic(modifiers)) {
+                throw new IllegalAccessException("Method" + method + " is not static");
+            }
+
+            checkAccess(refc, method.getDeclaringClass(), modifiers, method.getName());
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_STATIC, type);
+        }
+        private MethodHandle findVirtualForMH(String name, MethodType type) {
+            // these names require special lookups because of the implicit MethodType argument
+            if ("invoke".equals(name))
+                return invoker(type);
+            if ("invokeExact".equals(name))
+                return exactInvoker(type);
+            return null;
         }
 
         /**
@@ -848,8 +866,21 @@ assertEquals("", (String) MH_newString.invokeExact());
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findVirtual(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findVirtual is not implemented");
+            // TODO: Support varargs methods. The returned method handle must be a var-args
+            // collector in that case.
+
+            Method method = refc.getDeclaredMethod(name, type.ptypes());
+            final int modifiers = method.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
+                throw new IllegalAccessException("Method" + method + " is static.");
+            }
+
+            checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
+
+            // Insert the leading reference parameter.
+            MethodType handleType = type.insertParameterTypes(0, refc);
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_VIRTUAL,
+                    handleType);
         }
 
         /**
@@ -898,8 +929,19 @@ assertEquals("[x, y, z]", pb.command().toString());
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findConstructor(Class<?> refc, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findConstructor is not implemented");
+            // TODO: Support varargs methods. The returned method handle must be a var-args
+            // collector in that case.
+
+            if (type.returnType() != void.class) {
+                throw new NoSuchElementException("Unable to find constructor of type: " + type);
+            }
+
+            Constructor constructor = refc.getDeclaredConstructor(type.ptypes());
+            checkAccess(refc, constructor.getDeclaringClass(), constructor.getModifiers(),
+                    constructor.getName());
+
+            MethodType handleType = type.changeReturnType(refc);
+            return new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, handleType);
         }
 
         /**
@@ -1289,6 +1331,97 @@ return mh1;
             // Notes: Only works for direct method handles. Must check access.
             //
             throw new UnsupportedOperationException("MethodHandles.Lookup.revealDirect is not implemented");
+        }
+
+        private boolean hasPrivateAccess() {
+            return (allowedModes & PRIVATE) != 0;
+        }
+
+        /** Check public/protected/private bits on the symbolic reference class and its member. */
+        void checkAccess(Class<?> refc, Class<?> defc, int mods, String methName)
+                throws IllegalAccessException {
+            int allowedModes = this.allowedModes;
+
+            if (Modifier.isProtected(mods) &&
+                    defc == Object.class &&
+                    "clone".equals(methName) &&
+                    refc.isArray()) {
+                // The JVM does this hack also.
+                // (See ClassVerifier::verify_invoke_instructions
+                // and LinkResolver::check_method_accessability.)
+                // Because the JVM does not allow separate methods on array types,
+                // there is no separate method for int[].clone.
+                // All arrays simply inherit Object.clone.
+                // But for access checking logic, we make Object.clone
+                // (normally protected) appear to be public.
+                // Later on, when the DirectMethodHandle is created,
+                // its leading argument will be restricted to the
+                // requested array type.
+                // N.B. The return type is not adjusted, because
+                // that is *not* the bytecode behavior.
+                mods ^= Modifier.PROTECTED | Modifier.PUBLIC;
+            }
+
+            if (Modifier.isProtected(mods) && Modifier.isConstructor(mods)) {
+                // cannot "new" a protected ctor in a different package
+                mods ^= Modifier.PROTECTED;
+            }
+
+            if (Modifier.isPublic(mods) && Modifier.isPublic(refc.getModifiers()) && allowedModes != 0)
+                return;  // common case
+            int requestedModes = fixmods(mods);  // adjust 0 => PACKAGE
+            if ((requestedModes & allowedModes) != 0) {
+                if (VerifyAccess.isMemberAccessible(refc, defc, mods, lookupClass(), allowedModes))
+                    return;
+            } else {
+                // Protected members can also be checked as if they were package-private.
+                if ((requestedModes & PROTECTED) != 0 && (allowedModes & PACKAGE) != 0
+                        && VerifyAccess.isSamePackage(defc, lookupClass()))
+                    return;
+            }
+
+            throwMakeAccessException(accessFailedMessage(refc, defc, mods), this);
+        }
+
+        String accessFailedMessage(Class<?> refc, Class<?> defc, int mods) {
+            // check the class first:
+            boolean classOK = (Modifier.isPublic(defc.getModifiers()) &&
+                    (defc == refc ||
+                            Modifier.isPublic(refc.getModifiers())));
+            if (!classOK && (allowedModes & PACKAGE) != 0) {
+                classOK = (VerifyAccess.isClassAccessible(defc, lookupClass(), ALL_MODES) &&
+                        (defc == refc ||
+                                VerifyAccess.isClassAccessible(refc, lookupClass(), ALL_MODES)));
+            }
+            if (!classOK)
+                return "class is not public";
+            if (Modifier.isPublic(mods))
+                return "access to public member failed";  // (how?)
+            if (Modifier.isPrivate(mods))
+                return "member is private";
+            if (Modifier.isProtected(mods))
+                return "member is protected";
+            return "member is private to package";
+        }
+
+        private static final boolean ALLOW_NESTMATE_ACCESS = false;
+
+        private void checkSpecialCaller(Class<?> specialCaller) throws IllegalAccessException {
+            int allowedModes = this.allowedModes;
+            // Android-changed: No support for TRUSTED lookups.
+            // if (allowedModes == TRUSTED)  return;
+            if (!hasPrivateAccess()
+                    || (specialCaller != lookupClass()
+                    && !(ALLOW_NESTMATE_ACCESS &&
+                    VerifyAccess.isSamePackageMember(specialCaller, lookupClass()))))
+                throwMakeAccessException("no private access for invokespecial", this);
+        }
+
+        public void throwMakeAccessException(String message, Object from) throws
+                IllegalAccessException{
+            message = message + ": "+ toString();
+            if (from != null)  message += ", from " + from;
+            throw new IllegalAccessException(message);
         }
     }
 

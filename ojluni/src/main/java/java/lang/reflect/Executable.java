@@ -664,6 +664,13 @@ public abstract class Executable extends AccessibleObject
         return accessFlags;
     }
 
+    /**
+     * @hide - exposed for use by {@code java.lang.invoke.*}.
+     */
+    public final long getArtMethod() {
+        return artMethod;
+    }
+
     static final class GenericInfo {
         final ListOfTypes genericExceptionTypes;
         final ListOfTypes genericParameterTypes;
