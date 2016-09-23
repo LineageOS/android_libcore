@@ -22,6 +22,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/io/DataInputStream.java \
     ojluni/src/main/java/java/io/DataOutput.java \
     ojluni/src/main/java/java/io/DataOutputStream.java \
+    ojluni/src/main/java/java/io/DefaultFileSystem.java \
     ojluni/src/main/java/java/io/DeleteOnExitHook.java \
     ojluni/src/main/java/java/io/EOFException.java \
     ojluni/src/main/java/java/io/ExpiringCache.java \

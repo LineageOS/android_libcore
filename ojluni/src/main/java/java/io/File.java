@@ -32,8 +32,10 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.ArrayList;
+import java.security.AccessController;
 import java.nio.file.Path;
 import java.nio.file.FileSystems;
+import sun.security.action.GetPropertyAction;
 
 /**
  * An abstract representation of file and directory pathnames.
@@ -127,7 +129,7 @@ import java.nio.file.FileSystems;
  * created, the abstract pathname represented by a <code>File</code> object
  * will never change.
  *
- * <h4>Interoperability with {@code java.nio.file} package</h4>
+ * <h3>Interoperability with {@code java.nio.file} package</h3>
  *
  * <p> The <a href="../../java/nio/file/package-summary.html">{@code java.nio.file}</a>
  * package defines interfaces and classes for the Java virtual machine to access
@@ -156,7 +158,7 @@ public class File
     /**
      * The FileSystem object representing the platform's local file system.
      */
-    static private final FileSystem fs = FileSystem.getFileSystem();
+    private static final FileSystem fs = DefaultFileSystem.getFileSystem();
 
     /**
      * This abstract pathname's normalized pathname string. A normalized
@@ -165,7 +167,7 @@ public class File
      *
      * @serial
      */
-    private String path;
+    private final String path;
 
     /**
      * Enum type that indicates the status of a file path.
@@ -197,7 +199,7 @@ public class File
      * The length of this abstract pathname's prefix, or zero if it has no
      * prefix.
      */
-    private transient int prefixLength;
+    private final transient int prefixLength;
 
     /**
      * Returns the length of this abstract pathname's prefix.
@@ -728,6 +730,8 @@ public class File
 
     /* -- Attribute accessors -- */
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Tests whether the application can read the file denoted by this
      * abstract pathname.
@@ -752,6 +756,8 @@ public class File
         return fs.checkAccess(this, FileSystem.ACCESS_READ);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Tests whether the application can modify the file denoted by this
      * abstract pathname.
@@ -1434,11 +1440,13 @@ public class File
         return fs.setLastModifiedTime(this, time);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Marks the file or directory named by this abstract pathname so that
-     * only read operations are allowed.  After invoking this method the file
-     * or directory is guaranteed not to change until it is either deleted or
-     * marked to allow write access.  Whether or not a read-only file or
+     * only read operations are allowed. After invoking this method the file
+     * or directory will not change until it is either deleted or marked
+     * to allow write access. Whether or not a read-only file or
      * directory may be deleted depends upon the underlying system.
      *
      * @return <code>true</code> if and only if the operation succeeded;
@@ -1462,6 +1470,8 @@ public class File
         return fs.setReadOnly(this);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Sets the owner's or everybody's write permission for this abstract
      * pathname.
@@ -1503,6 +1513,8 @@ public class File
         return fs.setPermission(this, FileSystem.ACCESS_WRITE, writable, ownerOnly);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * A convenience method to set the owner's write permission for this abstract
      * pathname.
@@ -1532,6 +1544,8 @@ public class File
         return setWritable(writable, true);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Sets the owner's or everybody's read permission for this abstract
      * pathname.
@@ -1576,6 +1590,8 @@ public class File
         return fs.setPermission(this, FileSystem.ACCESS_READ, readable, ownerOnly);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * A convenience method to set the owner's read permission for this abstract
      * pathname.
@@ -1608,6 +1624,8 @@ public class File
         return setReadable(readable, true);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Sets the owner's or everybody's execute permission for this abstract
      * pathname.
@@ -1652,9 +1670,11 @@ public class File
         return fs.setPermission(this, FileSystem.ACCESS_EXECUTE, executable, ownerOnly);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
-     * A convenience method to set the owner's execute permission for this abstract
-     * pathname.
+     * A convenience method to set the owner's execute permission for this
+     * abstract pathname.
      *
      * <p>An invocation of this method of the form <tt>file.setExcutable(arg)</tt>
      * behaves in exactly the same way as the invocation
@@ -1670,7 +1690,7 @@ public class File
      *           operation will fail if the user does not have permission to
      *           change the access permissions of this abstract pathname.  If
      *           <code>executable</code> is <code>false</code> and the underlying
-     *           file system does not implement an excute permission, then the
+     *           file system does not implement an execute permission, then the
      *           operation will fail.
      *
      * @throws  SecurityException
@@ -1684,6 +1704,8 @@ public class File
         return setExecutable(executable, true);
     }
 
+    // Android-changed. Removed javadoc comment about special privileges
+    // that doesn't make sense on android
     /**
      * Tests whether the application can execute the file denoted by this
      * abstract pathname.
@@ -1836,24 +1858,45 @@ public class File
     }
 
     /* -- Temporary files -- */
+    private static class TempDirectory {
+        private TempDirectory() { }
 
-    // file name generation
-    private static File generateTempFile(String prefix, String suffix, File dir)
+        // Android-changed: Don't cache java.io.tmpdir value
+        // temporary directory location
+        // private static final File tmpdir = new File(AccessController
+        //     .doPrivileged(new GetPropertyAction("java.io.tmpdir")));
+        // static File location() {
+        //     return tmpdir;
+        // }
+
+        // file name generation
+        static File generateFile(String prefix, String suffix, File dir)
             throws IOException
-    {
-        // Android-changed: Use Math.randomIntInternal. This (pseudo) random number
-        // is initialized post-fork
-        int n = Math.randomIntInternal();
-        if (n == Integer.MIN_VALUE) {
-            n = 0;      // corner case
-        } else {
-            n = Math.abs(n);
+        {
+            // Android-changed: Use Math.randomIntInternal. This (pseudo) random number
+            // is initialized post-fork
+
+            long n = Math.randomLongInternal();
+            if (n == Long.MIN_VALUE) {
+                n = 0;      // corner case
+            } else {
+                n = Math.abs(n);
+            }
+
+            // Android changed: Reject invalid file prefixes
+            // Use only the file name from the supplied prefix
+            //prefix = (new File(prefix)).getName();
+
+            String name = prefix + Long.toString(n) + suffix;
+            File f = new File(dir, name);
+            if (!name.equals(f.getName()) || f.isInvalid()) {
+                if (System.getSecurityManager() != null)
+                    throw new IOException("Unable to create temporary file");
+                else
+                    throw new IOException("Unable to create temporary file, " + f);
+            }
+            return f;
         }
-        String name = prefix + Integer.toString(n) + suffix;
-        File f = new File(dir, name);
-        if (!name.equals(f.getName()))
-            throw new IOException("Unable to create temporary file");
-        return f;
     }
 
     /**
@@ -1934,21 +1977,30 @@ public class File
         if (suffix == null)
             suffix = ".tmp";
 
+
         File tmpdir = (directory != null) ? directory
                                           : new File(System.getProperty("java.io.tmpdir", "."));
+        //SecurityManager sm = System.getSecurityManager();
         File f;
-        try {
-            do {
-                f = generateTempFile(prefix, suffix, tmpdir);
-            } while (f.exists());
-            if (!f.createNewFile())
-                throw new IOException("Unable to create temporary file");
-        } catch (SecurityException se) {
-            // don't reveal temporary directory location
-            if (directory == null)
-                throw new SecurityException("Unable to create temporary file");
-            throw se;
-        }
+        do {
+            f = TempDirectory.generateFile(prefix, suffix, tmpdir);
+
+            // Android change: sm is always null on android
+            // if (sm != null) {
+            //     try {
+            //         sm.checkWrite(f.getPath());
+            //     } catch (SecurityException se) {
+            //         // don't reveal temporary directory location
+            //         if (directory == null)
+            //             throw new SecurityException("Unable to create temporary file");
+            //         throw se;
+            //     }
+            // }
+        } while ((fs.getBooleanAttributes(f) & FileSystem.BA_EXISTS) != 0);
+
+        if (!fs.createFileExclusively(f.getPath()))
+            throw new IOException("Unable to create temporary file");
+
         return f;
     }
 
@@ -2078,7 +2130,7 @@ public class File
         throws IOException
     {
         s.defaultWriteObject();
-        s.writeChar(this.separatorChar); // Add the separator character
+        s.writeChar(separatorChar); // Add the separator character
     }
 
     /**
@@ -2095,9 +2147,27 @@ public class File
         char sep = s.readChar(); // read the previous separator char
         if (sep != separatorChar)
             pathField = pathField.replace(sep, separatorChar);
-        this.path = fs.normalize(pathField);
-        this.prefixLength = fs.prefixLength(this.path);
+        String path = fs.normalize(pathField);
+        UNSAFE.putObject(this, PATH_OFFSET, path);
+        UNSAFE.putIntVolatile(this, PREFIX_LENGTH_OFFSET, fs.prefixLength(path));
     }
+
+    private static final long PATH_OFFSET;
+    private static final long PREFIX_LENGTH_OFFSET;
+    private static final sun.misc.Unsafe UNSAFE;
+    static {
+        try {
+            sun.misc.Unsafe unsafe = sun.misc.Unsafe.getUnsafe();
+            PATH_OFFSET = unsafe.objectFieldOffset(
+                    File.class.getDeclaredField("path"));
+            PREFIX_LENGTH_OFFSET = unsafe.objectFieldOffset(
+                    File.class.getDeclaredField("prefixLength"));
+            UNSAFE = unsafe;
+        } catch (ReflectiveOperationException e) {
+            throw new Error(e);
+        }
+    }
+
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     private static final long serialVersionUID = 301077366599181567L;
