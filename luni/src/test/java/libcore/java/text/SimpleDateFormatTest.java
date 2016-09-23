@@ -513,4 +513,18 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertEquals("torstai", formatDate(fi, "cccc"));
         assertEquals("torstaina", formatDate(fi, "EEEE"));
     }
+
+    public void testDayNumberOfWeek() throws Exception {
+        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+        Locale en = Locale.ENGLISH;
+        Locale pl = new Locale("pl");
+
+        assertEquals("4", formatDate(en, "u"));
+        assertEquals("04", formatDate(en, "uu"));
+        assertEquals("4", formatDate(pl, "u"));
+        assertEquals("04", formatDate(pl, "uu"));
+
+        assertEquals(Calendar.THURSDAY, parseDate(en, "u", "4").get(Calendar.DAY_OF_WEEK));
+        assertEquals(Calendar.MONDAY, parseDate(en, "uu", "1").get(Calendar.DAY_OF_WEEK));
+    }
 }
