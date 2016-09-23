@@ -1556,5 +1556,15 @@
   names: [
     "libcore.java.text.OldBidiTest#testUnicode9EmojisAreLtrNeutral"
   ]
+},
+{
+  description: "MethodHandlesTest fails because of a bad compilation rule.",
+  result: EXEC_FAILED,
+  bug: 31675876,
+  names: [
+    "libcore.java.lang.invoke.MethodHandlesTest#test_LookupIn",
+    "libcore.java.lang.invoke.MethodHandlesTest#test_defaultLookupClassAndModes",
+    "libcore.java.lang.invoke.MethodHandlesTest#test_publicLookupClassAndModes"
+  ]
 }
 ]
