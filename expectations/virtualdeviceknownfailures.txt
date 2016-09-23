@@ -1,0 +1,11 @@
+/*
+ * This file contains expectations for tests known to fail on virtual device
+ */
+[
+{
+  description: "IPv6 connectivity not yet supported in virtual device testing infra",
+  result: EXEC_FAILED,
+  name: "libcore.java.net.SocketTest#testSocketTestAllAddresses",
+  bug: 30965313
+}
+]
