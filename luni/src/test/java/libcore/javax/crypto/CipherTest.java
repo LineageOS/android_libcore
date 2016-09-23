@@ -1506,10 +1506,7 @@ public final class CipherTest extends TestCase {
                 c.updateAAD(new byte[24]);
             }
             byte[] cipherText = c.doFinal(getActualPlainText(algorithm));
-            if (!isRandomizedEncryption(algorithm)) {
-                if (isAEAD(algorithm)) {
-                    c.updateAAD(new byte[24]);
-                }
+            if (!isRandomizedEncryption(algorithm) && !isAEAD(algorithm)) {
                 byte[] cipherText2 = c.doFinal(getActualPlainText(algorithm));
                 assertEquals(cipherID, Arrays.toString(cipherText), Arrays.toString(cipherText2));
             }
@@ -4139,17 +4136,27 @@ public final class CipherTest extends TestCase {
 
         assertEquals(Arrays.toString(c1.doFinal()), Arrays.toString(c2.doFinal()));
 
-        // .doFinal should also reset the state, so check that as well.
+        // .doFinal should also not allow reuse without re-initialization
         byte[] aad2 = new byte[] {
                 0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
         };
+        try {
+            c1.updateAAD(aad2);
+            fail("Should not allow updateAAD without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
 
-        Cipher c3 = Cipher.getInstance("AES/GCM/NoPadding");
-        c3.init(Cipher.ENCRYPT_MODE, key, spec);
+        try {
+            c1.update(new byte[8]);
+            fail("Should not allow update without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
 
-        c1.updateAAD(aad2);
-        c3.updateAAD(aad2);
-        assertEquals(Arrays.toString(c1.doFinal()), Arrays.toString(c3.doFinal()));
+        try {
+            c1.doFinal();
+            fail("Should not allow doFinal without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
     }
 
     /**
