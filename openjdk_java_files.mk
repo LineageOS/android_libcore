@@ -1614,16 +1614,18 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/logging/PlatformLogger.java \
     ojluni/src/main/java/sun/util/ResourceBundleEnumeration.java \
     ojluni/src/main/java/sun/util/resources/OpenListResourceBundle.java \
-    $(openjdk_javadoc_files)
+    $(openjdk_javadoc_files) \
+    $(openjdk_lambda_stub_files)
 
 # Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
 # not used on Android devices or required by the Jack compiler.
 #
-# The stub files in openjdk_lambda_duplicate_stub_files are present in core-oj as
-# well, and need to be included here to support compiling against older SDKs and the
-# like. This additional bit of ugliness if required to avoid a circular dependency
-# between core-all and these stubs. Eventually, all of these stubs will become
-# "duplicates" and then that list can be renamed to "openjdk_lambda_stub_files".
+# On aosp/master:
+# openjdk_lambda_stub_files : These are included in core-oj as stubs
+# openjdk_lambda_duplicate_stub_files : These contain complete implementations in core-oj.
+#
+# On older platforms : Both sets of stub files are used and core-oj does not contain
+# any of these classes.
 openjdk_lambda_stub_files := \
     ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
