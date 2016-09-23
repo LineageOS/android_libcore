@@ -1550,6 +1550,14 @@
   ]
 },
 {
+  description: "Waiting for ICU 58 to be merged",
+  bug: 31516121,
+  result: EXEC_FAILED,
+  names: [
+    "libcore.java.text.OldBidiTest#testUnicode9EmojisAreLtrNeutral"
+  ]
+},
+{
   description: "MethodHandlesTest fails because of a bad compilation rule.",
   result: EXEC_FAILED,
   bug: 31675876,
