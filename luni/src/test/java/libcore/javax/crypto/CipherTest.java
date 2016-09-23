@@ -3265,12 +3265,7 @@ public final class CipherTest extends TestCase {
                 try {
                     checkCipher(testVector, provider.getName());
                 } catch (Throwable e) {
-                    out.append("Error encountered checking " + testVector.transformation);
-                    if (testVector.encryptKey instanceof SecretKey) {
-                        out.append(", keySize=" + testVector.encryptKey.getEncoded().length * 8);
-                    }
-                    out.append(" with provider " + provider + "\n");
-                    e.printStackTrace(out);
+                    logTestFailure(out, provider.getName(), testVector, e);
                 }
             }
         }
@@ -3286,7 +3281,7 @@ public final class CipherTest extends TestCase {
         for (CipherTestParam p : CIPHER_TEST_PARAMS) {
             try {
                 checkCipher(p, provider);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logTestFailure(out, provider, p, e);
             }
         }
@@ -3297,10 +3292,14 @@ public final class CipherTest extends TestCase {
     }
 
     private void logTestFailure(PrintStream logStream, String provider, CipherTestParam params,
-            Exception e) {
-        logStream.append("Error encountered checking " + params.transformation + ", keySize="
-                + (params.encryptKey.getEncoded().length * 8) + " with provider " + provider
-                + "\n");
+            Throwable e) {
+        logStream.append("Error encountered checking " + params.transformation);
+
+        if (params.encryptKey instanceof SecretKey) {
+            logStream.append(", keySize=" + (params.encryptKey.getEncoded().length * 8));
+        }
+
+        logStream.append(" with provider " + provider + "\n");
         e.printStackTrace(logStream);
     }
 
