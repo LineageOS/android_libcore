@@ -58,6 +58,7 @@ import sun.util.calendar.CalendarUtils;
 
 import static java.text.DateFormatSymbols.*;
 
+// Android-changed: Added supported API level, removed unnecessary <br>
 /**
  * <code>SimpleDateFormat</code> is a concrete class for formatting and
  * parsing dates in a locale-sensitive manner. It allows for formatting
@@ -100,116 +101,139 @@ import static java.text.DateFormatSymbols.*;
  *         <th align=left>Date or Time Component
  *         <th align=left>Presentation
  *         <th align=left>Examples
+ *         <th align=left>Supported (API Levels)
  *     <tr>
  *         <td><code>G</code>
  *         <td>Era designator
  *         <td><a href="#text">Text</a>
  *         <td><code>AD</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>y</code>
  *         <td>Year
  *         <td><a href="#year">Year</a>
  *         <td><code>1996</code>; <code>96</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>Y</code>
  *         <td>Week year
  *         <td><a href="#year">Year</a>
  *         <td><code>2009</code>; <code>09</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>M</code>
  *         <td>Month in year (context sensitive)
  *         <td><a href="#month">Month</a>
  *         <td><code>July</code>; <code>Jul</code>; <code>07</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>w</code>
  *         <td>Week in year
  *         <td><a href="#number">Number</a>
  *         <td><code>27</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>W</code>
  *         <td>Week in month
  *         <td><a href="#number">Number</a>
  *         <td><code>2</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>D</code>
  *         <td>Day in year
  *         <td><a href="#number">Number</a>
  *         <td><code>189</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>d</code>
  *         <td>Day in month
  *         <td><a href="#number">Number</a>
  *         <td><code>10</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>F</code>
  *         <td>Day of week in month
  *         <td><a href="#number">Number</a>
  *         <td><code>2</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>E</code>
  *         <td>Day name in week
  *         <td><a href="#text">Text</a>
  *         <td><code>Tuesday</code>; <code>Tue</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>u</code>
  *         <td>Day number of week (1 = Monday, ..., 7 = Sunday)
  *         <td><a href="#number">Number</a>
  *         <td><code>1</code>
+ *         <td>24+</td>
  *     <tr>
  *         <td><code>a</code>
  *         <td>Am/pm marker
  *         <td><a href="#text">Text</a>
  *         <td><code>PM</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>H</code>
  *         <td>Hour in day (0-23)
  *         <td><a href="#number">Number</a>
  *         <td><code>0</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>k</code>
  *         <td>Hour in day (1-24)
  *         <td><a href="#number">Number</a>
  *         <td><code>24</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>K</code>
  *         <td>Hour in am/pm (0-11)
  *         <td><a href="#number">Number</a>
  *         <td><code>0</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>h</code>
  *         <td>Hour in am/pm (1-12)
  *         <td><a href="#number">Number</a>
  *         <td><code>12</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>m</code>
  *         <td>Minute in hour
  *         <td><a href="#number">Number</a>
  *         <td><code>30</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>s</code>
  *         <td>Second in minute
  *         <td><a href="#number">Number</a>
  *         <td><code>55</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>S</code>
  *         <td>Millisecond
  *         <td><a href="#number">Number</a>
  *         <td><code>978</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>z</code>
  *         <td>Time zone
  *         <td><a href="#timezone">General time zone</a>
  *         <td><code>Pacific Standard Time</code>; <code>PST</code>; <code>GMT-08:00</code>
+ *         <td>1+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>Z</code>
  *         <td>Time zone
  *         <td><a href="#rfc822timezone">RFC 822 time zone</a>
  *         <td><code>-0800</code>
+ *         <td>1+</td>
  *     <tr>
  *         <td><code>X</code>
  *         <td>Time zone
  *         <td><a href="#iso8601timezone">ISO 8601 time zone</a>
  *         <td><code>-08</code>; <code>-0800</code>;  <code>-08:00</code>
+ *         <td>1+</td>
  * </table>
  * </blockquote>
  * Pattern letters are usually repeated, as their number determines the
@@ -220,15 +244,15 @@ import static java.text.DateFormatSymbols.*;
  *     the full form is used; otherwise a short or abbreviated form
  *     is used if available.
  *     For parsing, both forms are accepted, independent of the number
- *     of pattern letters.<br><br></li>
+ *     of pattern letters.</li>
  * <li><strong><a name="number">Number:</a></strong>
  *     For formatting, the number of pattern letters is the minimum
  *     number of digits, and shorter numbers are zero-padded to this amount.
  *     For parsing, the number of pattern letters is ignored unless
- *     it's needed to separate two adjacent fields.<br><br></li>
+ *     it's needed to separate two adjacent fields.</li>
  * <li><strong><a name="year">Year:</a></strong>
  *     If the formatter's {@link #getCalendar() Calendar} is the Gregorian
- *     calendar, the following rules are applied.<br>
+ *     calendar, the following rules are applied.
  *     <ul>
  *     <li>For formatting, if the number of pattern letters is 2, the year
  *         is truncated to 2 digits; otherwise it is interpreted as a
@@ -257,7 +281,7 @@ import static java.text.DateFormatSymbols.*;
  *     letters is 4 or more, a calendar specific {@linkplain
  *     Calendar#LONG long form} is used. Otherwise, a calendar
  *     specific {@linkplain Calendar#SHORT short or abbreviated form}
- *     is used.<br>
+ *     is used.
  *     <br>
  *     If week year {@code 'Y'} is specified and the {@linkplain
  *     #getCalendar() calendar} doesn't support any <a
@@ -266,11 +290,11 @@ import static java.text.DateFormatSymbols.*;
  *     support of week years can be tested with a call to {@link
  *     DateFormat#getCalendar() getCalendar()}.{@link
  *     java.util.Calendar#isWeekDateSupported()
- *     isWeekDateSupported()}.<br><br></li>
+ *     isWeekDateSupported()}.</li>
  * <li><strong><a name="month">Month:</a></strong>
  *     If the number of pattern letters is 3 or more, the month is
  *     interpreted as <a href="#text">text</a>; otherwise,
- *     it is interpreted as a <a href="#number">number</a>.<br><br></li>
+ *     it is interpreted as a <a href="#number">number</a>.</li>
  * <li><strong><a name="timezone">General time zone:</a></strong>
  *     Time zones are interpreted as <a href="#text">text</a> if they have
  *     names. For time zones representing a GMT offset value, the
@@ -291,7 +315,7 @@ import static java.text.DateFormatSymbols.*;
  *     00 and 59. The format is locale independent and digits must be taken
  *     from the Basic Latin block of the Unicode standard.
  *     <p>For parsing, <a href="#rfc822timezone">RFC 822 time zones</a> are also
- *     accepted.<br><br></li>
+ *     accepted.</li>
  * <li><strong><a name="rfc822timezone">RFC 822 time zone:</a></strong>
  *     For formatting, the RFC 822 4-digit time zone format is used:
  *
