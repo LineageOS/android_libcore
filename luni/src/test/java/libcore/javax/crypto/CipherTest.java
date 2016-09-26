@@ -3240,16 +3240,37 @@ public final class CipherTest extends TestCase {
         ByteArrayOutputStream errBuffer = new ByteArrayOutputStream();
         PrintStream out = new PrintStream(errBuffer);
         for (CipherTestParam testVector : testVectors) {
-            Provider[] providers = Security.getProviders("Cipher." + testVector.transformation);
-            if ((providers == null) || (providers.length == 0)) {
+            ArrayList<Provider> providers = new ArrayList<>();
+
+            Provider[] providerArray = Security.getProviders("Cipher." + testVector.transformation);
+            if (providerArray != null) {
+                Collections.addAll(providers, providerArray);
+            }
+
+            if (testVector.transformation.indexOf('/') > 0) {
+                Provider[] baseTransformProviderArray = Security.getProviders("Cipher."
+                        + testVector.transformation.substring(
+                                  0, testVector.transformation.indexOf('/')));
+                if (baseTransformProviderArray != null) {
+                    Collections.addAll(providers, baseTransformProviderArray);
+                }
+            }
+
+            if (providers.isEmpty()) {
                 out.append("No providers offer " + testVector.transformation + "\n");
                 continue;
             }
+
             for (Provider provider : providers) {
                 try {
                     checkCipher(testVector, provider.getName());
-                } catch (Exception e) {
-                    logTestFailure(out, provider.getName(), testVector, e);
+                } catch (Throwable e) {
+                    out.append("Error encountered checking " + testVector.transformation);
+                    if (testVector.encryptKey instanceof SecretKey) {
+                        out.append(", keySize=" + testVector.encryptKey.getEncoded().length * 8);
+                    }
+                    out.append(" with provider " + provider + "\n");
+                    e.printStackTrace(out);
                 }
             }
         }
