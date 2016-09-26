@@ -1992,14 +1992,14 @@ public class SSLSocketTest extends TestCase {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
                 public Void call() throws Exception {
-                    server.setEnabledProtocols(new String[] { "TLSv1", "SSLv3" });
+                    server.setEnabledProtocols(new String[] { "TLSv1.2", "TLSv1.1" });
                     server.startHandshake();
                     return null;
                 }
             });
         Future<Void> c = executor.submit(new Callable<Void>() {
                 public Void call() throws Exception {
-                    client.setEnabledProtocols(new String[] { "SSLv3" });
+                    client.setEnabledProtocols(new String[] { "TLSv1.1" });
                     client.startHandshake();
                     return null;
                 }
@@ -2035,7 +2035,7 @@ public class SSLSocketTest extends TestCase {
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
                 public Void call() throws Exception {
-                    server.setEnabledProtocols(new String[] { "TLSv1", "SSLv3" });
+                    server.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1" });
                     server.setEnabledCipherSuites(serverCipherSuites);
                     try {
                         server.startHandshake();
@@ -2050,7 +2050,7 @@ public class SSLSocketTest extends TestCase {
             });
         Future<Void> c = executor.submit(new Callable<Void>() {
                 public Void call() throws Exception {
-                    client.setEnabledProtocols(new String[] { "SSLv3" });
+                    client.setEnabledProtocols(new String[] { "TLSv1" });
                     client.setEnabledCipherSuites(clientCipherSuites);
                     try {
                         client.startHandshake();
@@ -2217,6 +2217,25 @@ public class SSLSocketTest extends TestCase {
         client.close();
         server.close();
         context.close();
+    }
+
+    public void test_SSLSocket_SSLv3Unsupported() throws Exception {
+        TestSSLContext context = TestSSLContext.create();
+
+        final SSLSocket client = (SSLSocket)
+            context.clientContext.getSocketFactory().createSocket();
+
+        try {
+            client.setEnabledProtocols(new String[] {"SSLv3"});
+            fail("SSLSocket should not support SSLv3 protocol");
+        } catch (IllegalArgumentException expected) {
+        }
+
+        try {
+            client.setEnabledProtocols(new String[] {"SSL"});
+            fail("SSLSocket should not support SSL protocol");
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     /**
