@@ -50,13 +50,13 @@ import sun.security.jca.GetInstance;
  *             <td>Default</td>
  *             <td>10+</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSL</td>
- *             <td>10+</td>
+ *             <td>10&ndash;TBD</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>10+</td>
+ *             <td>10&ndash;TBD</td>
  *         </tr>
  *         <tr>
  *             <td>TLS</td>
