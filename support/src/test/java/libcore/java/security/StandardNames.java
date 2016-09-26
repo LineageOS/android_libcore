@@ -230,7 +230,10 @@ public final class StandardNames extends Assert {
         provide("MessageDigest", "SHA-384");
         provide("MessageDigest", "SHA-512");
         provide("Policy", "JavaPolicy");
-        provide("SSLContext", "SSLv3");
+        // Android does not support SSLv3
+        if (IS_RI) {
+            provide("SSLContext", "SSLv3");
+        }
         provide("SSLContext", "TLSv1");
         provide("SSLContext", "TLSv1.1");
         provide("SSLContext", "TLSv1.2");
@@ -580,8 +583,6 @@ public final class StandardNames extends Assert {
             provideSslContextEnabledProtocols("TLSv1.2", TLSVersion.SSLv3, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("Default", TLSVersion.SSLv3, TLSVersion.TLSv1);
         } else {
-            provideSslContextEnabledProtocols("SSL", TLSVersion.SSLv3, TLSVersion.TLSv12);
-            provideSslContextEnabledProtocols("SSLv3", TLSVersion.SSLv3, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLS", TLSVersion.TLSv1, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLSv1", TLSVersion.TLSv1, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLSv1.1", TLSVersion.TLSv1, TLSVersion.TLSv12);
@@ -593,9 +594,6 @@ public final class StandardNames extends Assert {
     public static final String SSL_CONTEXT_PROTOCOLS_DEFAULT = "Default";
     public static final Set<String> SSL_CONTEXT_PROTOCOLS = new HashSet<String>(Arrays.asList(
         SSL_CONTEXT_PROTOCOLS_DEFAULT,
-        "SSL",
-        // "SSLv2",
-        "SSLv3",
         "TLS",
         "TLSv1",
         "TLSv1.1",
@@ -619,8 +617,6 @@ public final class StandardNames extends Assert {
     }
 
     public static final Set<String> SSL_SOCKET_PROTOCOLS = new HashSet<String>(Arrays.asList(
-        // "SSLv2",
-        "SSLv3",
         "TLSv1",
         "TLSv1.1",
         "TLSv1.2"));
