@@ -155,9 +155,9 @@ import java.util.Vector;
  *         </tr>
  *     </thead>
  *     <tbody>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>1+</td>
+ *             <td>1&ndash;TBD</td>
  *             <td>1&ndash;22</td>
  *         </tr>
  *         <tr>
@@ -188,9 +188,9 @@ import java.util.Vector;
  *         </tr>
  *     </thead>
  *     <tbody>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>1+</td>
+ *             <td>1&ndash;TBD</td>
  *             <td>1&ndash;22</td>
  *         </tr>
  *         <tr>
