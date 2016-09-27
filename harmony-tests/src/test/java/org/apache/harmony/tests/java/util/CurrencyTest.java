@@ -131,6 +131,18 @@ public class CurrencyTest extends junit.framework.TestCase {
             fail("Expected IllegalArgumentException");
         } catch (IllegalArgumentException e) {
         }
+
+        try {
+            Currency.getInstance((Locale) null);
+            fail("Expected NullPointerException");
+        } catch (NullPointerException expected) {
+        }
+
+        try {
+            Currency.getInstance((String) null);
+            fail("Expected NullPointerException");
+        } catch (NullPointerException expected) {
+        }
     }
 
     /**
