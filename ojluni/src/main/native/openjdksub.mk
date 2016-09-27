@@ -36,7 +36,6 @@ LOCAL_SRC_FILES := \
     NativeThread.c \
     FileKey.c \
     UnixFileSystem_md.c \
-    FileSystem_md.c \
     ObjectStreamClass.c \
     ObjectOutputStream.c \
     ObjectInputStream.c \
