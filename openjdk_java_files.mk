@@ -1181,6 +1181,7 @@ openjdk_java_files := \
     ojluni/src/main/java/java/util/spi/CurrencyNameProvider.java \
     ojluni/src/main/java/java/util/spi/LocaleNameProvider.java \
     ojluni/src/main/java/java/util/spi/LocaleServiceProvider.java \
+    ojluni/src/main/java/java/util/spi/ResourceBundleControlProvider.java \
     ojluni/src/main/java/java/util/spi/TimeZoneNameProvider.java \
     ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
     ojluni/src/main/java/jdk/net/NetworkPermission.java \
