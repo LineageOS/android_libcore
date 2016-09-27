@@ -238,32 +238,28 @@ public class SignatureTest extends TestCase {
 
         @Override
         protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
-            throw new UnsupportedOperationException();
         }
 
         @Override
         protected void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
-            throw new UnsupportedOperationException();
         }
 
         @Override
         protected void engineUpdate(byte b) throws SignatureException {
-            throw new UnsupportedOperationException();
         }
 
         @Override
         protected void engineUpdate(byte[] b, int off, int len) throws SignatureException {
-            throw new UnsupportedOperationException();
         }
 
         @Override
         protected byte[] engineSign() throws SignatureException {
-            throw new UnsupportedOperationException();
+            return new byte[10];
         }
 
         @Override
         protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
-            throw new UnsupportedOperationException();
+            return true;
         }
 
         @Override
@@ -275,6 +271,153 @@ public class SignatureTest extends TestCase {
         protected Object engineGetParameter(String param) throws InvalidParameterException {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public void testSignature_signArray_nullArray_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.sign(null /* outbuf */, 1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_signArray_negativeOffset_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.sign(new byte[4], -1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_signArray_negativeLength_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.sign(new byte[4], 1 /* offset */ , -1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_signArray_invalidLengths_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            // Start at offset 3 with length 2, thus attempting to overread from an array of size 4.
+            s.sign(new byte[4], 3 /* offset */ , 2 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    private static PublicKey createPublicKey() throws Exception {
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(PK_BYTES);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePublic(keySpec);
+    }
+
+    public void testSignature_verifyArray_nullArray_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.verify(null /* outbuf */, 1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_verifyArray_negativeOffset_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.verify(new byte[4], -1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_verifyArray_negativeLength_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.verify(new byte[4], 1 /* offset */ , -1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_verifyArray_invalidLengths_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            // Start at offset 3 with length 2, thus attempting to overread from an array of size 4.
+            s.verify(new byte[4], 3 /* offset */ , 2 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_verifyArray_correctParameters_ok() throws Exception {
+        Signature s = new MySignature("FOO");
+        s.initVerify(createPublicKey());
+        // Start at offset 3 with length 2, thus attempting to overread from an array of size 4.
+        s.verify(new byte[4], 1 /* offset */, 2 /* length */);
+    }
+
+    public void testSignature_updateArray_nullArray_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.update(null /* outbuf */, 1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_updateArray_negativeOffset_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.update(new byte[4], -1 /* offset */, 1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_updateArray_negativeLength_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            s.update(new byte[4], 1 /* offset */ , -1 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_updateArray_invalidLengths_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.initVerify(createPublicKey());
+            // Start at offset 3 with length 2, thus attempting to overread from an array of size 4.
+            s.update(new byte[4], 3 /* offset */ , 2 /* length */);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testSignature_updateArray_wrongState_throws() throws Exception {
+        try {
+            Signature s = new MySignature("FOO");
+            s.update(new byte[4], 0 /* offset */ , 1 /* length */);
+            fail();
+        } catch (SignatureException expected) {
+        }
+    }
+
+    public void testSignature_updateArray_correctStateAndParameters_ok() throws Exception {
+        Signature s = new MySignature("FOO");
+        s.initVerify(createPublicKey());
+        s.update(new byte[4], 0 /* offset */ , 1 /* length */);
     }
 
     public void testSignature_getProvider_Subclass() throws Exception {
