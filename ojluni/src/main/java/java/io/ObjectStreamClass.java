@@ -2274,24 +2274,36 @@ public class ObjectStreamClass implements Serializable {
     // **** THESE METHODS WILL BE REMOVED IN A FUTURE ANDROID RELEASE ****.
     //
     private static long getConstructorId(Class<?> clazz) {
-        System.logE("WARNING: ObjectStreamClass.getConstructorId(Class<?>) is private API and" +
-                "will be removed in a future Android release.");
-        // NOTE: This method is a stub that returns a fixed value. It's meant to be used
-        // with newInstance(Class<?>, long) and our current implementation of that method ignores
-        // the "constructorId" argument. We return :
-        //
-        // oh one one eight nine nine nine
-        // eight eight one nine nine
-        // nine one one nine seven two five
-        // three
-        //
-        // in all cases.
-        return 1189998819991197253L;
+        final int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+        if (targetSdkVersion > 0 && targetSdkVersion <= 24) {
+            System.logE("WARNING: ObjectStreamClass.getConstructorId(Class<?>) is private API and" +
+                        "will be removed in a future Android release.");
+            // NOTE: This method is a stub that returns a fixed value. It's meant to be used
+            // with newInstance(Class<?>, long) and our current implementation of that method ignores
+            // the "constructorId" argument. We return :
+            //
+            // oh one one eight nine nine nine
+            // eight eight one nine nine
+            // nine one one nine seven two five
+            // three
+            //
+            // in all cases.
+            return 1189998819991197253L;
+        }
+
+        throw new UnsupportedOperationException("ObjectStreamClass.getConstructorId(Class<?>) is " +
+                                                "not supported on SDK " + targetSdkVersion);
     }
     private static Object newInstance(Class<?> clazz, long constructorId) {
-        System.logE("WARNING: ObjectStreamClass.newInstance(Class<?>, long) is private API and" +
-                "will be removed in a future Android release.");
-        return sun.misc.Unsafe.getUnsafe().allocateInstance(clazz);
+        final int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+        if (targetSdkVersion > 0 && targetSdkVersion <= 24) {
+            System.logE("WARNING: ObjectStreamClass.newInstance(Class<?>, long) is private API and" +
+                        "will be removed in a future Android release.");
+            return sun.misc.Unsafe.getUnsafe().allocateInstance(clazz);
+        }
+
+        throw new UnsupportedOperationException("ObjectStreamClass.newInstance(Class<?>, long) " +
+                                                "is not supported on SDK " + targetSdkVersion);
     }
 
     /**
