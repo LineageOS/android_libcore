@@ -18,34 +18,78 @@ package libcore.java.lang.reflect;
 
 import junit.framework.TestCase;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
+import java.lang.reflect.MalformedParametersException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
+import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
+import libcore.io.Streams;
+
+import dalvik.system.PathClassLoader;
 
 /**
  * Tests for {@link Parameter}. For annotation-related tests see
  * {@link libcore.java.lang.reflect.annotations.AnnotatedElementParameterTest} and
  * {@link libcore.java.lang.reflect.annotations.ExecutableParameterTest}.
+ *
+ * <p>Tests suffixed with _withMetadata() require parameter metadata compiled in to work properly.
+ * These are handled by loading pre-compiled .dex files.
+ * See also {@link DependsOnParameterMetadata}.
  */
 public class ParameterTest extends TestCase {
 
     /**
-     * A source annotation used to mark tests below with behavior that is highly dependent on
+     * A ClassLoader that can be used to load the
+     * libcore.java.lang.reflect.parameter.ParameterMetadataTestClasses class and its nested
+     * classes. The loaded classes has valid metadata that could be created by a valid Android
+     * compiler.
+     */
+    private ClassLoader classesWithMetadataClassLoader;
+
+    /**
+     * A ClassLoader that can be used to load the
+     * libcore.java.lang.reflect.parameter.MetadataVariations class.
+     * The loaded class has invalid metadata that could not be created by a valid Android
+     * compiler.
+     */
+    private ClassLoader metadataVariationsClassLoader;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        File dexDir = File.createTempFile("dexDir", "");
+        assertTrue(dexDir.delete());
+        assertTrue(dexDir.mkdirs());
+
+        classesWithMetadataClassLoader =
+                createClassLoaderForDexResource(dexDir, "parameter_metadata_test_classes.dex");
+        metadataVariationsClassLoader =
+                createClassLoaderForDexResource(dexDir, "metadata_variations.dex");
+    }
+
+    /**
+     * A source annotation used to mark code below with behavior that is highly dependent on
      * parameter metadata. It is intended to bring readers here for the following:
      *
      * <p>Unless the compiler supports (and is configured to enable) storage of metadata
      * for parameters, the runtime does not have access to the parameter name from the source and
      * some modifier information like "implicit" (AKA "mandated"), "synthetic" and "final".
-     * These tests are currently expected to be compiled without requesting the metadata and can
-     * only test the negative case without the metadata present (the expected, common case).
+     *
+     * <p>This test class is expected to be compiled <em>without</em> requesting that the metadata
+     * be compiled in. dex files that contains classes with metadata are loaded in setUp() and
+     * used from the tests suffixed with "_withMetadata".
      */
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.METHOD)
@@ -81,6 +125,32 @@ public class ParameterTest extends TestCase {
                 .checkGetParameterizedType("class java.lang.String");
     }
 
+    public void testSingleParameterConstructor_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("SingleParameter");
+        Constructor<?> constructor  = clazz.getDeclaredConstructor(String.class);
+        checkSingleStringParameter_withMetadata(constructor);
+    }
+
+    public void testSingleParameterMethod_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("SingleParameter");
+        Method method = clazz.getDeclaredMethod("oneParameter", String.class);
+        checkSingleStringParameter_withMetadata(method);
+    }
+
+    private static void checkSingleStringParameter_withMetadata(Executable executable) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(executable);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[java.lang.String p0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkGetType(String.class)
+                .checkName(true /* expectedNameIsPresent */, "p0")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetParameterizedType("class java.lang.String");
+    }
+
     private static class GenericParameter {
         @SuppressWarnings("unused")
         GenericParameter(Function<String, Integer> p0) {}
@@ -110,6 +180,34 @@ public class ParameterTest extends TestCase {
 
         helper.getParameterTestHelper(0)
                 .checkGetType(Function.class)
+                .checkGetParameterizedType(
+                        "java.util.function.Function<java.lang.String, java.lang.Integer>");
+    }
+
+    public void testGenericParameterConstructor_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("GenericParameter");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(Function.class);
+        checkGenericParameter_withMetadata(constructor);
+    }
+
+    public void testGenericParameterMethod_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("GenericParameter");
+        Method method = clazz.getDeclaredMethod("genericParameter", Function.class);
+        checkGenericParameter_withMetadata(method);
+    }
+
+    private static void checkGenericParameter_withMetadata(Executable executable) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(executable);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString(
+                        "[java.util.function.Function<java.lang.String, java.lang.Integer> p0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkGetType(Function.class)
+                .checkName(true /* expectedNameIsPresent */, "p0")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
                 .checkGetParameterizedType(
                         "java.util.function.Function<java.lang.String, java.lang.Integer>");
     }
@@ -149,6 +247,39 @@ public class ParameterTest extends TestCase {
                 .checkGetParameterizedType("class java.lang.Integer");
     }
 
+    public void testTwoParameterConstructor_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("TwoParameters");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(String.class, Integer.class);
+        checkTwoParameters_withMetadata(constructor);
+    }
+
+    public void testTwoParameterMethod_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("TwoParameters");
+        Method method = clazz.getDeclaredMethod("twoParameters", String.class, Integer.class);
+        checkTwoParameters_withMetadata(method);
+    }
+
+    private static void checkTwoParameters_withMetadata(Executable executable) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(executable);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[java.lang.String p0, java.lang.Integer p1]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkGetType(String.class)
+                .checkName(true /* expectedNameIsPresent */, "p0")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetParameterizedType("class java.lang.String");
+
+        helper.getParameterTestHelper(1)
+                .checkGetType(Integer.class)
+                .checkName(true /* expectedNameIsPresent */, "p1")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetParameterizedType("class java.lang.Integer");
+    }
+
     private static class FinalParameter {
         @SuppressWarnings("unused")
         FinalParameter(final String p0) {}
@@ -176,9 +307,32 @@ public class ParameterTest extends TestCase {
         helper.getParameterTestHelper(0)
                 .checkGetType(String.class)
                 .checkGetParameterizedType("class java.lang.String");
+    }
 
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0).checkModifiers(Modifier.FINAL);
+    public void testFinalParameterConstructor_withMetdata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("FinalParameter");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(String.class);
+        checkFinalParameter_withMetadata(constructor);
+    }
+
+    public void testFinalParameterMethod_withMetdata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("FinalParameter");
+        Method method = clazz.getDeclaredMethod("finalParameter", String.class);
+        checkFinalParameter_withMetadata(method);
+    }
+
+    private static void checkFinalParameter_withMetadata(Executable executable) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(executable);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[final java.lang.String p0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkGetType(String.class)
+                .checkName(true /* expectedNameIsPresent */, "p0")
+                .checkModifiers(Modifier.FINAL)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetParameterizedType("class java.lang.String");
     }
 
     /**
@@ -195,83 +349,138 @@ public class ParameterTest extends TestCase {
     }
 
     public void testInnerClassSingleParameter() throws Exception {
-        Constructor<?> constructor =
-                InnerClass.class.getDeclaredConstructor(ParameterTest.class);
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = InnerClass.class;
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
-                .checkParametersToString("[libcore.java.lang.reflect.ParameterTest arg0]")
+                .checkParametersToString("[" + outerClass.getName() + " arg0]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
+    }
 
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32784)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32784 == Modifier.MANDATED & Modifier.FINAL
+    public void testInnerClassSingleParameter_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Class<?> innerClass = loadTestInnerClassWithMetadata("InnerClass");
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[final " + outerClass.getName() + " this$0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkGetType(outerClass)
+                .checkName(true /* expectedNameIsPresent */, "this$0")
+                .checkModifiers(32784) // 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetParameterizedType("class " + outerClass.getName());
     }
 
     public void testInnerClassTwoParameters() throws Exception {
-        Constructor<?> constructor =
-                InnerClass.class.getDeclaredConstructor(ParameterTest.class, String.class);
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = InnerClass.class;
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass, String.class);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
                 .checkParametersToString(
-                        "[libcore.java.lang.reflect.ParameterTest arg0, java.lang.String arg1]")
+                        "[" + outerClass.getName() + " arg0, java.lang.String arg1]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
-
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32784)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32784 == Modifier.MANDATED & Modifier.FINAL
-
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName());
 
         helper.getParameterTestHelper(1)
                 .checkGetType(String.class)
                 .checkGetParameterizedType("class java.lang.String");
     }
 
-    public void testInnerClassGenericParameter() throws Exception {
-        Constructor<?> constructor =
-                InnerClass.class.getDeclaredConstructor(
-                        ParameterTest.class, Function.class);
+    public void testInnerClassTwoParameters_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Class<?> innerClass = loadTestInnerClassWithMetadata("InnerClass");
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass, String.class);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
                 .checkParametersToString(
-                        "[libcore.java.lang.reflect.ParameterTest arg0, "
-                                + "java.util.function.Function arg1]")
+                        "[final " + outerClass.getName() + " this$0, java.lang.String p1]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "this$0")
+                .checkModifiers(32784) // 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
+
+        helper.getParameterTestHelper(1)
+                .checkName(true /* expectedNameIsPresent */, "p1")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetType(String.class)
+                .checkGetParameterizedType("class java.lang.String");
+    }
+
+    public void testInnerClassGenericParameter() throws Exception {
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = InnerClass.class;
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass, Function.class);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString(
+                        "[" + outerClass.getName() + " arg0, java.util.function.Function arg1]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
-
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32784)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
 
         helper.getParameterTestHelper(1)
                 .checkGetType(Function.class)
                 .checkGetParameterizedType("interface java.util.function.Function");
 
-        // The non-genericised string above is probably the result of a bug due to a mismatch
+        // The non-genericised string above is probably the result of a spec bug due to a mismatch
         // between the generic signature for the constructor (which suggests a single parameter)
-        // and the actual parameters (which suggests two).
+        // and the actual parameters (which suggests two). In the absence of parameter metadata
+        // to identify the synthetic parameter the code reverts to using non-Signature (type erased)
+        // information.
+    }
+
+    public void testInnerClassGenericParameter_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Class<?> innerClass = loadTestInnerClassWithMetadata("InnerClass");
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass, Function.class);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[final " + outerClass.getName() + " this$0, "
+                        + "java.util.function.Function<java.lang.String, java.lang.Integer> p1]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "this$0")
+                .checkModifiers(32784) // 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
+
+        helper.getParameterTestHelper(1)
+                .checkName(true /* expectedNameIsPresent */, "p1")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
+                .checkGetType(Function.class)
+                .checkGetParameterizedType(
+                        "java.util.function.Function<java.lang.String, java.lang.Integer>");
     }
 
     @SuppressWarnings("unused")
@@ -282,27 +491,46 @@ public class ParameterTest extends TestCase {
      * generated methods. This test may be brittle as it may rely on the compiler's implementation
      * of enums.
      */
-    @DependsOnParameterMetadata
     public void testEnumConstructor() throws Exception {
         Constructor<?> constructor = TestEnum.class.getDeclaredConstructor(String.class, int.class);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
                 .checkParametersToString("[java.lang.String arg0, int arg1]")
-                .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
                 .checkGetType(String.class)
                 .checkGetParameterizedType("class java.lang.String");
 
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(4096)
-        //         .checkImplicitAndSynthetic(false, true);
-        // i.e. 4096 == Modifier.SYNTHETIC
+        helper.getParameterTestHelper(1)
+                .checkGetType(int.class)
+                .checkGetParameterizedType("int");
+    }
+
+    public void testEnumConstructor_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("TestEnum");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(String.class, int.class);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                // The extra spaces below are the result of a trivial upstream bug in
+                // Parameter.toString() due to Modifier.toString(int) outputting nothing for
+                // "SYNTHETIC".
+                .checkParametersToString("[ java.lang.String $enum$name,  int $enum$ordinal]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "$enum$name")
+                .checkModifiers(4096) // 4096 == Modifier.SYNTHETIC
+                .checkImplicitAndSynthetic(false, true)
+                .checkGetType(String.class)
+                .checkGetParameterizedType("class java.lang.String");
 
         helper.getParameterTestHelper(1)
+                .checkName(true /* expectedNameIsPresent */, "$enum$ordinal")
+                .checkModifiers(4096) // 4096 == Modifier.SYNTHETIC
+                .checkImplicitAndSynthetic(false, true)
                 .checkGetType(int.class)
                 .checkGetParameterizedType("int");
     }
@@ -319,12 +547,26 @@ public class ParameterTest extends TestCase {
         helper.getParameterTestHelper(0)
                 .checkGetType(String.class)
                 .checkGetParameterizedType("class java.lang.String");
+    }
 
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32768)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32768 == Modifier.MANDATED
+    public void testEnumValueOf_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("TestEnum");
+        Method method = clazz.getDeclaredMethod("valueOf", String.class);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(method);
+        helper.checkStandardParametersBehavior()
+                // The extra space below are the result of a trivial upstream bug in
+                // Parameter.toString() due to Modifier.toString(int) outputting nothing for
+                // "MANDATED".
+                .checkParametersToString("[ java.lang.String name]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "name")
+                .checkModifiers(32768) // 32768 == Modifier.MANDATED
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetType(String.class)
+                .checkGetParameterizedType("class java.lang.String");
     }
 
     private static class SingleVarArgs {
@@ -351,8 +593,33 @@ public class ParameterTest extends TestCase {
                 .checkParametersToString("[java.lang.String... arg0]")
                 .checkParametersMetadataNotAvailable();
 
+        helper.getParameterTestHelper(0)
+                .checkGetType(String[].class)
+                .checkIsVarArg(true)
+                .checkGetParameterizedType("class [Ljava.lang.String;");
+    }
+
+    public void testSingleVarArgsConstructor_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("SingleVarArgs");
+        Constructor<?> constructor = clazz.getDeclaredConstructor(String[].class);
+        checkSingleVarArgsParameter_withMetadata(constructor);
+    }
+
+    public void testSingleVarArgsMethod_withMetadata() throws Exception {
+        Class<?> clazz = loadTestInnerClassWithMetadata("SingleVarArgs");
+        Method method = clazz.getDeclaredMethod("varArgs", String[].class);
+        checkSingleVarArgsParameter_withMetadata(method);
+    }
+
+    private static void checkSingleVarArgsParameter_withMetadata(Executable executable) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(executable);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[java.lang.String... p0]");
 
         helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "p0")
+                .checkModifiers(0)
+                .checkImplicitAndSynthetic(false, false)
                 .checkGetType(String[].class)
                 .checkIsVarArg(true)
                 .checkGetParameterizedType("class [Ljava.lang.String;");
@@ -423,24 +690,19 @@ public class ParameterTest extends TestCase {
     }
 
     public void testAnonymousClassConstructor() throws Exception {
-        Class<?> clazz = getAnonymousClassWith1ParameterConstructor();
-        Constructor<?> constructor = clazz.getDeclaredConstructor(ParameterTest.class);
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = getAnonymousClassWith1ParameterConstructor();
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
-                .checkParametersToString("[libcore.java.lang.reflect.ParameterTest arg0]")
+                .checkParametersToString("[" + outerClass.getName() + " arg0]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
-
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32784)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
     }
 
     private Class<?> getAnonymousClassWith1ParameterConstructor() {
@@ -454,25 +716,40 @@ public class ParameterTest extends TestCase {
         return anonymousClassObject.getClass();
     }
 
-    public void testMethodClassConstructor() throws Exception {
-        Class<?> clazz = getMethodClassWith1ImplicitParameterConstructor();
-        Constructor<?> constructor = clazz.getDeclaredConstructor(ParameterTest.class);
+    public void testAnonymousClassConstructor_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Object outer = outerClass.newInstance();
+        Class<?> innerClass = (Class<?>) outerClass.getDeclaredMethod(
+                "getAnonymousClassWith1ParameterConstructor").invoke(outer);
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
-                .checkParametersToString("[libcore.java.lang.reflect.ParameterTest arg0]")
+                .checkParametersToString("[final " + outerClass.getName() + " this$0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "this$0")
+                .checkModifiers(32784) // 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
+    }
+
+    public void testMethodClassConstructor() throws Exception {
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = getMethodClassWith1ImplicitParameterConstructor();
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
+
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[" + outerClass.getName() + " arg0]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
-
-        // If parameter metadata were included, this would be the expected:
-        // helper.getParameterTestHelper(0)
-        //         .checkModifiers(32784)
-        //         .checkImplicitAndSynthetic(true, false);
-        // i.e. 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
     }
 
     private Class<?> getMethodClassWith1ImplicitParameterConstructor() {
@@ -484,31 +761,67 @@ public class ParameterTest extends TestCase {
         return MethodClass.class;
     }
 
-    // This behavior is likely to be quite brittle and may not be specified.
-    public void testLambdaClassConstructor() throws Exception {
-        Class<?> anonymousClass = getLambdaClassWith1ParameterConstructor();
-        Constructor<?> constructor = anonymousClass.getDeclaredConstructor(ParameterTest.class);
+    public void testMethodClassConstructor_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Object outer = outerClass.newInstance();
+        Class<?> innerClass = (Class<?>) outerClass.getDeclaredMethod(
+                "getMethodClassWith1ImplicitParameterConstructor").invoke(outer);
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
 
         ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
         helper.checkStandardParametersBehavior()
-                .checkParametersToString("[libcore.java.lang.reflect.ParameterTest arg0]")
+                .checkParametersToString("[final " + outerClass.getName() + " this$0]")
+                .checkParametersNoVarArgs();
+
+        helper.getParameterTestHelper(0)
+                .checkName(true /* expectedNameIsPresent */, "this$0")
+                .checkModifiers(32784) // 32784 == Modifier.MANDATED & Modifier.FINAL
+                .checkImplicitAndSynthetic(true, false)
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
+    }
+
+    public void testLambdaClassConstructor() throws Exception {
+        Class<?> outerClass = ParameterTest.class;
+        Class<?> innerClass = getLambdaClassWith1ParameterConstructor();
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
+
+        checkLambdaClassConstructor(outerClass, constructor);
+    }
+
+    private Class<?> getLambdaClassWith1ParameterConstructor() {
+        return ((Callable<?>) ParameterTest.this::outerClassMethod).getClass();
+    }
+
+    public void testLambdaClassConstructor_withMetadata() throws Exception {
+        Class<?> outerClass = loadTestOuterClassWithMetadata();
+        Object outer = outerClass.newInstance();
+        Class<?> innerClass = (Class<?>) outerClass.getDeclaredMethod(
+                "getLambdaClassWith1ParameterConstructor").invoke(outer);
+        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
+
+        // There should be no parameter metadata for lambda classes.
+        checkLambdaClassConstructor(outerClass, constructor);
+    }
+
+    // This behavior is likely to be quite brittle and may not be specified.
+    private void checkLambdaClassConstructor(Class<?> outerClass, Constructor<?> constructor) {
+        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
+        helper.checkStandardParametersBehavior()
+                .checkParametersToString("[" + outerClass.getName() + " arg0]")
                 .checkParametersMetadataNotAvailable()
                 .checkParametersNoVarArgs();
 
         helper.getParameterTestHelper(0)
-                .checkGetType(ParameterTest.class)
-                .checkGetParameterizedType("class libcore.java.lang.reflect.ParameterTest");
-
-        // Unclear what the implicit / synthetic parameter behavior should be.
-    }
-
-    private Class<?> getLambdaClassWith1ParameterConstructor() {
-        return ((Callable<String>) ParameterTest.this::outerClassMethod).getClass();
+                .checkGetType(outerClass)
+                .checkGetParameterizedType("class " + outerClass.getName() + "");
     }
 
     private static class NonIdenticalParameters {
-        void method0(String p1) {}
-        void method1(String p1) {}
+        @SuppressWarnings("unused")
+        void method0(String p0) {}
+        @SuppressWarnings("unused")
+        void method1(String p0) {}
     }
 
     public void testEquals_checksExecutable() throws Exception {
@@ -519,6 +832,103 @@ public class ParameterTest extends TestCase {
         assertFalse(method0P0.equals(method1P0));
         assertFalse(method1P0.equals(method0P0));
         assertTrue(method0P0.equals(method0P0));
+    }
+
+    public void testManyParameters_withMetadata() throws Exception {
+        int expectedParameterCount = 300;
+        Class<?>[] parameterTypes = new Class[expectedParameterCount];
+        Arrays.fill(parameterTypes, int.class);
+        Method method = getMetadataVariationsMethod("manyParameters", parameterTypes);
+        Parameter[] parameters = method.getParameters();
+        assertEquals(expectedParameterCount, parameters.length);
+
+        NumberFormat format = NumberFormat.getIntegerInstance();
+        format.setMinimumIntegerDigits(3);
+        for (int i = 0; i < parameters.length; i++) {
+            assertEquals(true, parameters[i].isNamePresent());
+            assertEquals(Modifier.FINAL, parameters[i].getModifiers());
+            assertEquals("a" + format.format(i), parameters[i].getName());
+        }
+    }
+
+    public void testEmptyMethodParametersAnnotation_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("emptyMethodParametersAnnotation");
+        assertEquals(0, method.getParameters().length);
+    }
+
+    public void testTooManyAccessFlags_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("tooManyAccessFlags", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testTooFewAccessFlags_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod(
+                "tooFewAccessFlags", String.class, String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testTooManyNames_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("tooManyNames", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testTooFewNames_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("tooFewNames", String.class, String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testTooManyBoth_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("tooManyBoth", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testTooFewBoth_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("tooFewBoth", String.class, String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testNullName_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("nullName", String.class);
+        Parameter parameter0 = method.getParameters()[0];
+        assertEquals("arg0", parameter0.getName());
+        assertEquals(Modifier.FINAL, parameter0.getModifiers());
+    }
+
+    public void testEmptyName_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("emptyName", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testNameWithSemicolon_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("nameWithSemicolon", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testNameWithSlash_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("nameWithSlash", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testNameWithPeriod_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("nameWithPeriod", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testNameWithOpenSquareBracket_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("nameWithOpenSquareBracket", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testBadAccessModifier_withMetadata() throws Exception {
+        Method method = getMetadataVariationsMethod("badAccessModifier", String.class);
+        checkGetParametersThrowsMalformedParametersException(method);
+    }
+
+    public void testBadlyFormedAnnotation() throws Exception {
+        Method method = getMetadataVariationsMethod("badlyFormedAnnotation", String.class);
+        // Badly formed annotations are treated as if the annotation is entirely absent.
+        Parameter parameter0 = method.getParameters()[0];
+        assertFalse(parameter0.isNamePresent());
     }
 
     /** A non-static method that exists to be called by inner classes, lambdas, etc. */
@@ -533,6 +943,7 @@ public class ParameterTest extends TestCase {
             this.executable = executable;
         }
 
+        @DependsOnParameterMetadata
         ExecutableTestHelper checkParametersToString(String expectedString) {
             assertEquals(expectedString, Arrays.toString(executable.getParameters()));
             return this;
@@ -655,6 +1066,7 @@ public class ParameterTest extends TestCase {
                 return this;
             }
 
+            @DependsOnParameterMetadata
             ParameterTestHelper checkImplicitAndSynthetic(
                     boolean expectedIsImplicit, boolean expectedIsSynthetic) {
                 assertEquals(expectedIsImplicit, parameter.isImplicit());
@@ -667,5 +1079,68 @@ public class ParameterTest extends TestCase {
                 return this;
             }
         }
+    }
+
+    private static ClassLoader createClassLoaderForDexResource(File dexDir, String resourceName)
+            throws Exception {
+        File dexFile = new File(dexDir, resourceName);
+        copyResource(resourceName, dexFile);
+        return new PathClassLoader(dexFile.getAbsolutePath(), ClassLoader.getSystemClassLoader());
+    }
+
+    /**
+     * Copy a resource in the libcore/java/lang/reflect/parameter/ resource path to the indicated
+     * target file.
+     */
+    private static void copyResource(String resourceName, File destination) throws Exception {
+        assertFalse(destination.exists());
+        ClassLoader classLoader = ParameterTest.class.getClassLoader();
+        assertNotNull(classLoader);
+
+        final String RESOURCE_PATH = "libcore/java/lang/reflect/parameter/";
+        String fullResourcePath = RESOURCE_PATH + resourceName;
+        try (InputStream in = classLoader.getResourceAsStream(fullResourcePath);
+             FileOutputStream out = new FileOutputStream(destination)) {
+            if (in == null) {
+                throw new IllegalStateException("Resource not found: " + fullResourcePath);
+            }
+            Streams.copy(in, out);
+        }
+    }
+
+    /**
+     * Loads an inner class from the ParameterMetadataTestClasses class defined in a separate dex
+     * file. See src/test/java/libcore/java/lang/reflect/parameter/ for the associated source code.
+     */
+    private Class<?> loadTestInnerClassWithMetadata(String name) throws Exception {
+        return classesWithMetadataClassLoader.loadClass(
+                "libcore.java.lang.reflect.parameter.ParameterMetadataTestClasses$" + name);
+    }
+
+    /**
+     * Loads the ParameterMetadataTestClasses class defined in a separate dex file.
+     * See src/test/java/libcore/java/lang/reflect/parameter/ for the associated source code.
+     */
+    private Class<?> loadTestOuterClassWithMetadata() throws Exception {
+        return classesWithMetadataClassLoader.loadClass(
+                "libcore.java.lang.reflect.parameter.ParameterMetadataTestClasses");
+    }
+
+    /**
+     * Loads a method from the MetadataVariations class defined in a separate dex file. See
+     * src/test/java/libcore/java/lang/reflect/parameter/ for the associated source code.
+     */
+    private Method getMetadataVariationsMethod(String methodName, Class<?>... parameterTypes)
+            throws Exception {
+        Class<?> metadataVariationsClass = metadataVariationsClassLoader.loadClass(
+                "libcore.java.lang.reflect.parameter.MetadataVariations");
+        return metadataVariationsClass.getDeclaredMethod(methodName, parameterTypes);
+    }
+
+    private static void checkGetParametersThrowsMalformedParametersException(Method method) {
+        try {
+            method.getParameters();
+            fail();
+        } catch (MalformedParametersException expected) {}
     }
 }
