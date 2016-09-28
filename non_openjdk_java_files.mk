@@ -32,6 +32,7 @@ non_openjdk_javadoc_files := \
   dalvik/src/main/java/dalvik/annotation/InnerClass.java \
   dalvik/src/main/java/dalvik/annotation/KnownFailure.java \
   dalvik/src/main/java/dalvik/annotation/MemberClasses.java \
+  dalvik/src/main/java/dalvik/annotation/MethodParameters.java \
   dalvik/src/main/java/dalvik/annotation/Signature.java \
   dalvik/src/main/java/dalvik/annotation/TestTarget.java \
   dalvik/src/main/java/dalvik/annotation/TestTargetClass.java \
