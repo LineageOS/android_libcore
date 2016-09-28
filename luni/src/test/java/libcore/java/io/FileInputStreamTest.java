@@ -29,12 +29,18 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStatVfs;
-import junit.framework.TestCase;
 
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public final class FileInputStreamTest extends TestCase {
+public final class FileInputStreamTest extends TestCaseWithRules {
+    @Rule
+    public TestRule guardRule = ResourceLeakageDetector.getRule();
+
     private static final int TOTAL_SIZE = 1024;
     private static final int SKIP_SIZE = 100;
 
@@ -208,8 +214,9 @@ public final class FileInputStreamTest extends TestCase {
     // http://b/26117827
     public void testReadProcVersion() throws IOException {
         File file = new File("/proc/version");
-        FileInputStream input = new FileInputStream(file);
-        assertTrue(input.available() == 0);
+        try (FileInputStream input = new FileInputStream(file)) {
+            assertTrue(input.available() == 0);
+        }
     }
 
     // http://b/25695227
