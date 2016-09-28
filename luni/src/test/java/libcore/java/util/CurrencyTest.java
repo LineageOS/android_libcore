@@ -18,9 +18,13 @@ package libcore.java.util;
 
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 import libcore.util.SerializationTester;
+
+import static java.util.Locale.Category.DISPLAY;
+import static java.util.Locale.Category.FORMAT;
 
 public class CurrencyTest extends junit.framework.TestCase {
     // Regression test to ensure that Currency.getSymbol(Locale) returns the
@@ -33,6 +37,30 @@ public class CurrencyTest extends junit.framework.TestCase {
         // This assumes that AED never becomes a currency important enough to
         // Canada that Canadians give it a localized (to Canada) symbol.
         assertEquals("AED", Currency.getInstance("AED").getSymbol(Locale.CANADA));
+    }
+
+    public void test_getSymbol_locale() {
+        Currency currency = Currency.getInstance("DEM");
+        assertEquals("DEM", currency.getSymbol(Locale.FRANCE));
+        assertEquals("DM", currency.getSymbol(Locale.GERMANY));
+        assertEquals("DEM", currency.getSymbol(Locale.US));
+    }
+
+    /**
+     * Checks that the no-argument version of {@link Currency#getSymbol()} uses the
+     * default DISPLAY locale as opposed to the default locale or the default FORMAT
+     * locale.
+     */
+    public void test_getSymbol_noLocaleArgument() {
+        Currency currency = Currency.getInstance("DEM");
+        Locales locales = getDefaultLocales();
+        try {
+            // Locales(locale, displayLocale, formatLocale)
+            setDefaultLocales(new Locales(Locale.US, Locale.GERMANY, Locale.FRANCE));
+            assertEquals("DM", currency.getSymbol());
+        } finally {
+            setDefaultLocales(locales);
+        }
     }
 
     // Regression test to ensure that Currency.getInstance(String) throws if
@@ -56,11 +84,19 @@ public class CurrencyTest extends junit.framework.TestCase {
         assertTrue(all.toString(), all.contains(Currency.getInstance("USD")));
     }
 
-    public void test_getDisplayName() throws Exception {
-        assertEquals("Swiss Franc", Currency.getInstance("CHF").getDisplayName(Locale.US));
-        assertEquals("Schweizer Franken", Currency.getInstance("CHF").getDisplayName(new Locale("de", "CH")));
-        assertEquals("franc suisse", Currency.getInstance("CHF").getDisplayName(new Locale("fr", "CH")));
-        assertEquals("franco svizzero", Currency.getInstance("CHF").getDisplayName(new Locale("it", "CH")));
+    public void test_getDisplayName_locale_chf() throws Exception {
+        Currency currency = Currency.getInstance("CHF");
+        assertEquals("Swiss Franc", currency.getDisplayName(Locale.US));
+        assertEquals("Schweizer Franken", currency.getDisplayName(new Locale("de", "CH")));
+        assertEquals("franc suisse", currency.getDisplayName(new Locale("fr", "CH")));
+        assertEquals("franco svizzero", currency.getDisplayName(new Locale("it", "CH")));
+    }
+
+    public void test_getDisplayName_locale_dem() throws Exception {
+        Currency currency = Currency.getInstance("DEM");
+        assertEquals("Deutsche Mark", currency.getDisplayName(Locale.GERMANY));
+        assertEquals("German Mark", currency.getDisplayName(Locale.US));
+        assertEquals("mark allemand", currency.getDisplayName(Locale.FRANCE));
     }
 
     public void test_getDisplayName_null() {
@@ -69,6 +105,23 @@ public class CurrencyTest extends junit.framework.TestCase {
             currency.getDisplayName(null);
             fail();
         } catch (NullPointerException expected) {
+        }
+    }
+
+    /**
+     * Checks that the no-argument version of {@link Currency#getDisplayName()} uses
+     * the default DISPLAY locale, as opposed to the default locale or the default
+     * FORMAT locale.
+     */
+    public void test_getDisplayName_noLocaleArgument() {
+        Currency currency = Currency.getInstance("DEM");
+        Locales locales = getDefaultLocales();
+        try {
+            // Locales(uncategorizedLocale, displayLocale, formatLocale)
+            setDefaultLocales(new Locales(Locale.US, Locale.GERMANY, Locale.FRANCE));
+            assertEquals("Deutsche Mark", currency.getDisplayName());
+        } finally {
+            setDefaultLocales(locales);
         }
     }
 
@@ -117,4 +170,54 @@ public class CurrencyTest extends junit.framework.TestCase {
         assertEquals(999, Currency.getInstance("XXX").getNumericCode());
         assertEquals(0, Currency.getInstance("XFU").getNumericCode());
     }
+
+    static Locales getDefaultLocales() {
+        return new Locales(
+                Locale.getDefault(), Locale.getDefault(DISPLAY), Locale.getDefault(FORMAT));
+    }
+
+    static void setDefaultLocales(Locales locales) {
+        // The lines below must set the Locales in this order because setDefault(Locale)
+        // overwrites the other ones.
+        Locale.setDefault(locales.uncategorizedLocale);
+        Locale.setDefault(DISPLAY, locales.displayLocale);
+        Locale.setDefault(FORMAT, locales.formatLocale);
+
+        assertEquals(locales, getDefaultLocales()); // sanity check
+    }
+
+    static class Locales {
+        final Locale uncategorizedLocale;
+        final Locale displayLocale;
+        final Locale formatLocale;
+
+        public Locales(Locale uncategorizedLocale, Locale displayLocale, Locale formatLocale) {
+            this.uncategorizedLocale = uncategorizedLocale;
+            this.displayLocale = displayLocale;
+            this.formatLocale = formatLocale;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Locales)) {
+                return false;
+            }
+            Locales that = (Locales) obj;
+            return uncategorizedLocale.equals(that.uncategorizedLocale)
+                    && displayLocale.equals(that.displayLocale)
+                    && formatLocale.equals(that.formatLocale);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(uncategorizedLocale, displayLocale, formatLocale);
+        }
+
+        @Override
+        public String toString() {
+            return "Locales[displayLocale=" + displayLocale + ", locale=" + uncategorizedLocale +
+                    ", formatLocale=" + formatLocale + ']';
+        }
+    }
+
 }
