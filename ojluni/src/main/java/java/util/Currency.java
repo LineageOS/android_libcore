@@ -286,7 +286,7 @@ public final class Currency implements Serializable {
      */
     public String getDisplayName(Locale locale) {
         // Android-changed: use ICU
-        return icuCurrency.getDisplayName(locale);
+        return icuCurrency.getDisplayName(Objects.requireNonNull(locale));
     }
 
     /**

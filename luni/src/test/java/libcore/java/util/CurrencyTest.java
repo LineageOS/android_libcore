@@ -63,6 +63,15 @@ public class CurrencyTest extends junit.framework.TestCase {
         assertEquals("franco svizzero", Currency.getInstance("CHF").getDisplayName(new Locale("it", "CH")));
     }
 
+    public void test_getDisplayName_null() {
+        Currency currency = Currency.getInstance("CHF");
+        try {
+            currency.getDisplayName(null);
+            fail();
+        } catch (NullPointerException expected) {
+        }
+    }
+
     public void test_getDefaultFractionDigits() throws Exception {
         assertEquals(2, Currency.getInstance("USD").getDefaultFractionDigits());
         assertEquals(0, Currency.getInstance("JPY").getDefaultFractionDigits());
