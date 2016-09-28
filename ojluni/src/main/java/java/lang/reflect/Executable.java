@@ -380,17 +380,18 @@ public abstract class Executable extends AccessibleObject
         Parameter[] tmp = parameters;
 
         if (tmp == null) {
-            // Android-changed: Commented for now.
-            /*
             // Otherwise, go to the JVM to get them
             try {
                 tmp = getParameters0();
             } catch(IllegalArgumentException e) {
                 // Rethrow ClassFormatErrors
-                throw new MalformedParametersException("Invalid constant pool index");
+                // Android-changed: Exception changed to be more descriptive.
+                MalformedParametersException e2 =
+                        new MalformedParametersException(
+                                "Invalid parameter metadata in class file");
+                e2.initCause(e);
+                throw e2;
             }
-            */
-            // Android-changed: End of changes.
 
             // If we get back nothing, then synthesize parameters
             if (tmp == null) {
@@ -418,6 +419,8 @@ public abstract class Executable extends AccessibleObject
 
     private transient volatile boolean hasRealParameterData;
     private transient volatile Parameter[] parameters;
+
+    private native Parameter[] getParameters0();
 
     /**
      * Returns an array of {@code Class} objects that represent the
