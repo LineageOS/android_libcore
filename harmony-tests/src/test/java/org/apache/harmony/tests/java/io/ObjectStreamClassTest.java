@@ -18,6 +18,7 @@
 package org.apache.harmony.tests.java.io;
 
 import dalvik.system.DexFile;
+import dalvik.system.VMRuntime;
 import java.io.Externalizable;
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.io.ObjectStreamClass;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.file.Files;
@@ -227,20 +229,43 @@ public class ObjectStreamClassTest extends TestCase {
 
     // http://b/28106822
     public void testBug28106822() throws Exception {
-        Method getConstructorId = ObjectStreamClass.class.getDeclaredMethod(
-                "getConstructorId", Class.class);
-        getConstructorId.setAccessible(true);
+        int savedTargetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+        try {
+            // Assert behavior up to 24
+            VMRuntime.getRuntime().setTargetSdkVersion(24);
+            Method getConstructorId = ObjectStreamClass.class.getDeclaredMethod(
+                    "getConstructorId", Class.class);
+            getConstructorId.setAccessible(true);
 
-        assertEquals(1189998819991197253L, getConstructorId.invoke(null, Object.class));
-        assertEquals(1189998819991197253L, getConstructorId.invoke(null, String.class));
+            assertEquals(1189998819991197253L, getConstructorId.invoke(null, Object.class));
+            assertEquals(1189998819991197253L, getConstructorId.invoke(null, String.class));
 
-        Method newInstance = ObjectStreamClass.class.getDeclaredMethod("newInstance",
-                Class.class, Long.TYPE);
-        newInstance.setAccessible(true);
+            Method newInstance = ObjectStreamClass.class.getDeclaredMethod("newInstance",
+                    Class.class, Long.TYPE);
+            newInstance.setAccessible(true);
 
-        Object obj = newInstance.invoke(null, String.class, 0 /* ignored */);
-        assertNotNull(obj);
-        assertTrue(obj instanceof String);
+            Object obj = newInstance.invoke(null, String.class, 0 /* ignored */);
+            assertNotNull(obj);
+            assertTrue(obj instanceof String);
+
+            // Assert behavior from API 25
+            VMRuntime.getRuntime().setTargetSdkVersion(25);
+            try {
+                getConstructorId.invoke(null, Object.class);
+                fail();
+            } catch (InvocationTargetException expected) {
+                assertTrue(expected.getCause() instanceof UnsupportedOperationException);
+            }
+            try {
+                newInstance.invoke(null, String.class, 0 /* ignored */);
+                fail();
+            } catch (InvocationTargetException expected) {
+                assertTrue(expected.getCause() instanceof UnsupportedOperationException);
+            }
+
+        } finally {
+            VMRuntime.getRuntime().setTargetSdkVersion(savedTargetSdkVersion);
+        }
     }
 
     // Class without <clinit> method
