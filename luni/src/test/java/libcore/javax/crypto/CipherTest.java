@@ -3546,61 +3546,40 @@ public final class CipherTest extends TestCase {
 
     private static final List<CipherTestParam> RSA_OAEP_CIPHER_TEST_PARAMS = new ArrayList<CipherTestParam>();
     static {
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPWithSHA-1AndMGF1Padding",
-                null,
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA1_MGF1_SHA1));
+        addRsaOaepTest("SHA-1", MGF1ParameterSpec.SHA1, RSA_Vector2_OAEP_SHA1_MGF1_SHA1);
+        addRsaOaepTest("SHA-256", MGF1ParameterSpec.SHA1, RSA_Vector2_OAEP_SHA256_MGF1_SHA1);
+        addRsaOaepTest("SHA-224", MGF1ParameterSpec.SHA224, RSA_Vector2_OAEP_SHA224_MGF1_SHA224);
+        addRsaOaepTest("SHA-256", MGF1ParameterSpec.SHA256, RSA_Vector2_OAEP_SHA256_MGF1_SHA256);
+        addRsaOaepTest("SHA-384", MGF1ParameterSpec.SHA384, RSA_Vector2_OAEP_SHA384_MGF1_SHA384);
+        addRsaOaepTest("SHA-512", MGF1ParameterSpec.SHA512, RSA_Vector2_OAEP_SHA512_MGF1_SHA512);
+    }
+
+    private static void addRsaOaepTest(String digest, MGF1ParameterSpec mgf1Spec, byte[] vector) {
+        if (mgf1Spec.getDigestAlgorithm().equals(digest)) {
+            RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                    "RSA/ECB/OAEPWith" + digest + "AndMGF1Padding",
+                    null,
+                    (PublicKey) getEncryptKey("RSA"),
+                    (PrivateKey) getDecryptKey("RSA"),
+                    RSA_Vector2_Plaintext,
+                    vector));
+
+            RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                    "RSA/ECB/OAEPWith" + digest + "AndMGF1Padding",
+                    new OAEPParameterSpec(digest, "MGF1", mgf1Spec, PSource.PSpecified.DEFAULT),
+                    (PublicKey) getEncryptKey("RSA"),
+                    (PrivateKey) getDecryptKey("RSA"),
+                    RSA_Vector2_Plaintext,
+                    vector));
+        }
+
         RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
                 "RSA/ECB/OAEPPadding",
-                new OAEPParameterSpec("SHA-1", "MGF1", MGF1ParameterSpec.SHA1,
-                        PSource.PSpecified.DEFAULT),
+                new OAEPParameterSpec(digest, "MGF1", mgf1Spec, PSource.PSpecified.DEFAULT),
                 (PublicKey) getEncryptKey("RSA"),
                 (PrivateKey) getDecryptKey("RSA"),
                 RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA1_MGF1_SHA1));
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPPadding",
-                new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA1,
-                        PSource.PSpecified.DEFAULT),
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA256_MGF1_SHA1));
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPWithSHA-224AndMGF1Padding",
-                new OAEPParameterSpec("SHA-224", "MGF1", MGF1ParameterSpec.SHA224,
-                        PSource.PSpecified.DEFAULT),
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA224_MGF1_SHA224));
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPWithSHA-256AndMGF1Padding",
-                new OAEPParameterSpec("SHA-256", "MGF1", MGF1ParameterSpec.SHA256,
-                        PSource.PSpecified.DEFAULT),
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA256_MGF1_SHA256));
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPWithSHA-384AndMGF1Padding",
-                new OAEPParameterSpec("SHA-384", "MGF1", MGF1ParameterSpec.SHA384,
-                        PSource.PSpecified.DEFAULT),
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA384_MGF1_SHA384));
-        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                "RSA/ECB/OAEPWithSHA-512AndMGF1Padding",
-                new OAEPParameterSpec("SHA-512", "MGF1", MGF1ParameterSpec.SHA512,
-                        PSource.PSpecified.DEFAULT),
-                (PublicKey) getEncryptKey("RSA"),
-                (PrivateKey) getDecryptKey("RSA"),
-                RSA_Vector2_Plaintext,
-                RSA_Vector2_OAEP_SHA512_MGF1_SHA512));
+                vector));
     }
 
     public void testCipher_Success() throws Exception {
