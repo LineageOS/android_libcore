@@ -31,8 +31,8 @@ import java.nio.channels.FileChannel;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.nio.ch.FileChannelImpl;
-import sun.misc.IoTrace;
 import libcore.io.IoBridge;
+import libcore.io.IoTracker;
 
 /**
  * A file output stream is an output stream for writing data to a
@@ -82,6 +82,7 @@ class FileOutputStream extends OutputStream
 
     private final CloseGuard guard = CloseGuard.get();
     private final boolean isFdOwner;
+    private final IoTracker tracker = new IoTracker();
 
     /**
      * Creates a file output stream to write to the file with the
@@ -309,15 +310,8 @@ class FileOutputStream extends OutputStream
         if (closed && len > 0) {
             throw new IOException("Stream Closed");
         }
-
-        Object traceContext = IoTrace.fileWriteBegin(path);
-        int bytesWritten = 0;
-        try {
-            IoBridge.write(fd, b, off, len);
-            bytesWritten = len;
-        } finally {
-            IoTrace.fileWriteEnd(traceContext, bytesWritten);
-        }
+        tracker.trackIo(len);
+        IoBridge.write(fd, b, off, len);
     }
 
     /**
