@@ -65,7 +65,6 @@ public enum ElementType {
      * Type parameter declaration
      *
      * @since 1.8
-     * @hide 1.8
      */
     TYPE_PARAMETER,
 
@@ -73,7 +72,6 @@ public enum ElementType {
      * Use of a type
      *
      * @since 1.8
-     * @hide 1.8
      */
     TYPE_USE
 }
