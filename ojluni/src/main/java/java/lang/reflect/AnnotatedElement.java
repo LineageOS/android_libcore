@@ -344,7 +344,7 @@ public interface AnnotatedElement {
      * @throws NullPointerException if the given annotation class is null
      * @since 1.8
      */
-    default <T extends Annotation> Annotation getDeclaredAnnotation(Class<T> annotationClass) {
+    default <T extends Annotation> T getDeclaredAnnotation(Class<T> annotationClass) {
         Objects.requireNonNull(annotationClass);
         // Loop over all directly-present annotations looking for a matching one
         for (Annotation annotation : getDeclaredAnnotations()) {
