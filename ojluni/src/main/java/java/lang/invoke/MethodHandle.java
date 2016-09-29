@@ -448,10 +448,28 @@ public abstract class MethodHandle {
     // asTypeCache is not private so that invokers can easily fetch it
     // Used by the runtime.
 
-    // The kind of this method handle (used by the runtime). This is a well defined
-    // mapping from the MethodHandleInfo.REF_* constants, but is not intended for
-    // public use.
+    /**
+     * The INVOKE* constants and SGET/SPUT and IGET/IPUT constants specify the behaviour of this
+     * method handle with respect to the ArtField* or the ArtMethod* that it operates on. These
+     * behaviours are equivalent to the dex bytecode behaviour on the respective method_id or
+     * field_id in the equivalent instruction.
+     */
+
+    /** @hide */ public static final int INVOKE_VIRTUAL = 0x6e;
+    /** @hide */ public static final int INVOKE_SUPER = 0x6f;
+    /** @hide */ public static final int INVOKE_DIRECT = 0x70;
+    /** @hide */ public static final int INVOKE_STATIC = 0x71;
+    /** @hide */ public static final int INVOKE_INTERFACE = 0x72;
+
+    /** @hide */ public static final int SGET = 0x60;
+    /** @hide */ public static final int SPUT = 0x67;
+    /** @hide */ public static final int IGET = 0x52;
+    /** @hide */ public static final int IPUT = 0x59;
+
+    // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
+    // constants or SGET/SPUT, IGET/IPUT.
     private final int handleKind;
+
     // The ArtMethod* or ArtField* associated with this method handle (used by the runtime).
     private final long artFieldOrMethod;
 
@@ -1261,6 +1279,11 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
     public String toString() {
         // Android-changed: Removed debugging support.
         return "MethodHandle"+type;
+    }
+
+    /** @hide */
+    public int getHandleKind() {
+        return handleKind;
     }
 
     // Android-changed: Removed implementation details :
