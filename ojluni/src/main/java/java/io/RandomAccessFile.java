@@ -31,6 +31,7 @@ import sun.nio.ch.FileChannelImpl;
 import android.system.ErrnoException;
 import dalvik.system.CloseGuard;
 import libcore.io.IoBridge;
+import libcore.io.IoTracker;
 import libcore.io.Libcore;
 import static android.system.OsConstants.*;
 
@@ -81,6 +82,11 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
 
     private Object closeLock = new Object();
     private volatile boolean closed = false;
+    /**
+     * A single tracker to track both read and write. The tracker resets when the operation
+     * performed is different from the operation last performed.
+     */
+    private final IoTracker ioTracker = new IoTracker();
 
     /**
      * Creates a random access file stream to read from, and optionally
@@ -326,6 +332,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception IOException If an I/O error has occurred.
      */
     private int readBytes(byte b[], int off, int len) throws IOException {
+        ioTracker.trackIo(len, IoTracker.Mode.READ);
         return IoBridge.read(fd, b, off, len);
     }
 
@@ -479,6 +486,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception IOException If an I/O error has occurred.
      */
     private void writeBytes(byte b[], int off, int len) throws IOException {
+        ioTracker.trackIo(len, IoTracker.Mode.WRITE);
         IoBridge.write(fd, b, off, len);
         // if we are in "rws" mode, attempt to sync file+metadata
         if (syncMetadata) {
@@ -547,6 +555,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
         }
         try {
             Libcore.os.lseek(fd, offset, SEEK_SET);
+            ioTracker.reset();
         } catch (ErrnoException errnoException) {
             throw errnoException.rethrowAsIOException();
         }

@@ -31,8 +31,8 @@ import java.nio.channels.FileChannel;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.nio.ch.FileChannelImpl;
-import sun.misc.IoTrace;
 import libcore.io.IoBridge;
+import libcore.io.IoTracker;
 
 
 /**
@@ -67,6 +67,7 @@ class FileInputStream extends InputStream
     private final boolean isFdOwner;
 
     private final CloseGuard guard = CloseGuard.get();
+    private final IoTracker tracker = new IoTracker();
 
     /**
      * Creates a <code>FileInputStream</code> by
@@ -196,15 +197,10 @@ class FileInputStream extends InputStream
      * @exception  IOException  if an I/O error occurs.
      */
     public int read() throws IOException {
-        Object traceContext = IoTrace.fileReadBegin(path);
 
         byte[] b = new byte[1];
         int res = -1;
-        try {
-            res = read(b, 0, 1);
-        } finally {
-            IoTrace.fileReadEnd(traceContext, res);
-        }
+        res = read(b, 0, 1);
         return (res != -1) ? b[0] & 0xff : -1;
     }
 
@@ -245,15 +241,8 @@ class FileInputStream extends InputStream
         if (closed && len > 0) {
             throw new IOException("Stream Closed");
         }
-
-        Object traceContext = IoTrace.fileReadBegin(path);
-        int bytesRead = 0;
-        try {
-            bytesRead = IoBridge.read(fd, b, off, len);
-        } finally {
-            IoTrace.fileReadEnd(traceContext, bytesRead == -1 ? 0 : bytesRead);
-        }
-        return bytesRead;
+        tracker.trackIo(len);
+        return IoBridge.read(fd, b, off, len);
     }
 
     /**
