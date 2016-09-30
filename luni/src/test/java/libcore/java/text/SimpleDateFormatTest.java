@@ -527,4 +527,9 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertEquals(Calendar.THURSDAY, parseDate(en, "u", "4").get(Calendar.DAY_OF_WEEK));
         assertEquals(Calendar.MONDAY, parseDate(en, "uu", "1").get(Calendar.DAY_OF_WEEK));
     }
+
+    // http://b/20879084
+    public void testFormatUtc() {
+        assertEquals("UTC", formatDate(Locale.ENGLISH, "z", TimeZone.getTimeZone("Etc/UTC")));
+    }
 }
