@@ -735,6 +735,11 @@ public final class URLTest extends TestCase {
             }
 
             @Override
+            public void onUnbufferedIO() {
+                fail("Blockguard.Policy.onUnbufferedIO");
+            }
+
+            @Override
             public int getPolicyMask() {
                 return 0;
             }
