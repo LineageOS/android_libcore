@@ -378,6 +378,7 @@ non_openjdk_java_files := \
   luni/src/main/java/libcore/io/EventLogger.java \
   luni/src/main/java/libcore/io/ForwardingOs.java \
   luni/src/main/java/libcore/io/IoBridge.java \
+  luni/src/main/java/libcore/io/IoTracker.java \
   luni/src/main/java/libcore/io/IoUtils.java \
   luni/src/main/java/libcore/io/Libcore.java \
   luni/src/main/java/libcore/io/Memory.java \
