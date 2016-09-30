@@ -1502,12 +1502,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/util/SecurityConstants.java \
     ojluni/src/main/java/sun/security/util/SignatureFileVerifier.java \
     ojluni/src/main/java/sun/security/util/UntrustedCertificates.java \
-    ojluni/src/main/java/sun/security/validator/EndEntityChecker.java \
-    ojluni/src/main/java/sun/security/validator/KeyStores.java \
-    ojluni/src/main/java/sun/security/validator/PKIXValidator.java \
-    ojluni/src/main/java/sun/security/validator/SimpleValidator.java \
-    ojluni/src/main/java/sun/security/validator/ValidatorException.java \
-    ojluni/src/main/java/sun/security/validator/Validator.java \
     ojluni/src/main/java/sun/security/x509/AccessDescription.java \
     ojluni/src/main/java/sun/security/x509/AlgorithmId.java \
     ojluni/src/main/java/sun/security/x509/AttributeNameEnumeration.java \
