@@ -202,7 +202,7 @@ public final class Currency implements Serializable {
      *     {@link Locale.Category#DISPLAY DISPLAY} locale
      */
     public String getSymbol() {
-        return icuCurrency.getSymbol();
+        return getSymbol(Locale.getDefault(Locale.Category.DISPLAY));
     }
 
     /**
@@ -270,7 +270,7 @@ public final class Currency implements Serializable {
      * @since 1.7
      */
     public String getDisplayName() {
-        return icuCurrency.getDisplayName();
+        return getDisplayName(Locale.getDefault(Locale.Category.DISPLAY));
     }
 
     /**
