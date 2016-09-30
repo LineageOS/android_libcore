@@ -63,22 +63,23 @@ class FileOutputStream extends OutputStream
     private final FileDescriptor fd;
 
     /**
-     * The path of the referenced file (null if the stream is created with a file descriptor)
-     */
-    private final String path;
-
-    /**
      * True if the file is opened for append.
      */
     private final boolean append;
 
     /**
-     * The associated channel, initalized lazily.
+     * The associated channel, initialized lazily.
      */
     private FileChannel channel;
 
     private final Object closeLock = new Object();
     private volatile boolean closed = false;
+
+    /**
+     * The path of the referenced file
+     * (null if the stream is created with a file descriptor)
+     */
+    private final String path;
 
     private final CloseGuard guard = CloseGuard.get();
     private final boolean isFdOwner;
@@ -272,8 +273,19 @@ class FileOutputStream extends OutputStream
      * @param name name of file to be opened
      * @param append whether the file is to be opened in append mode
      */
-    private native void open(String name, boolean append)
+    private native void open0(String name, boolean append)
         throws FileNotFoundException;
+
+    // wrap native call to allow instrumentation
+    /**
+     * Opens a file, with the specified name, for overwriting or appending.
+     * @param name name of file to be opened
+     * @param append whether the file is to be opened in append mode
+     */
+    private void open(String name, boolean append)
+        throws FileNotFoundException {
+        open0(name, append);
+    }
 
     /**
      * Writes the specified byte to this file output stream. Implements
@@ -363,16 +375,18 @@ class FileOutputStream extends OutputStream
      * @see        java.io.FileDescriptor
      */
      public final FileDescriptor getFD()  throws IOException {
-        if (fd != null) return fd;
+        if (fd != null) {
+            return fd;
+        }
         throw new IOException();
      }
 
     /**
      * Returns the unique {@link java.nio.channels.FileChannel FileChannel}
-     * object associated with this file output stream. </p>
+     * object associated with this file output stream.
      *
      * <p> The initial {@link java.nio.channels.FileChannel#position()
-     * </code>position<code>} of the returned channel will be equal to the
+     * position} of the returned channel will be equal to the
      * number of bytes written to the file so far unless this stream is in
      * append mode, in which case it will be equal to the size of the file.
      * Writing bytes to this stream will increment the channel's position
