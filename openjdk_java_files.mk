@@ -1208,7 +1208,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/Hashing.java \
     ojluni/src/main/java/sun/misc/HexDumpEncoder.java \
     ojluni/src/main/java/sun/misc/InvalidJarIndexException.java \
-    ojluni/src/main/java/sun/misc/IoTrace.java \
     ojluni/src/main/java/sun/misc/IOUtils.java \
     ojluni/src/main/java/sun/misc/JarIndex.java \
     ojluni/src/main/java/sun/misc/JavaIOFileDescriptorAccess.java \
