@@ -1426,7 +1426,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/action/GetIntegerAction.java \
     ojluni/src/main/java/sun/security/action/GetPropertyAction.java \
     ojluni/src/main/java/sun/security/action/LoadLibraryAction.java \
-    ojluni/src/main/java/sun/security/action/PutAllAction.java \
     ojluni/src/main/java/sun/security/jca/GetInstance.java \
     ojluni/src/main/java/sun/security/jca/JCAUtil.java \
     ojluni/src/main/java/sun/security/jca/ProviderConfig.java \
