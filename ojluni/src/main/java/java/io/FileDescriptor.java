@@ -46,6 +46,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see     java.io.FileOutputStream
  * @since   JDK1.0
  */
+// Android-changed: Removed parent reference counting. Creator is responsible for closing
+// the file descriptor.
 public final class FileDescriptor {
 
     private int descriptor;
