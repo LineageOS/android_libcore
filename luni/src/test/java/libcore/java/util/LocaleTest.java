@@ -29,6 +29,31 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 
 public class LocaleTest extends junit.framework.TestCase {
+
+    public void test_extension_absent() throws Exception {
+        Locale locale = Locale.forLanguageTag("en-US");
+        assertFalse(locale.hasExtensions());
+        assertEquals(locale, locale.stripExtensions());
+    }
+
+    public void test_extension_builder() throws Exception {
+        Locale.Builder b = new Locale.Builder();
+        Locale localeWithoutExtension = b.build();
+        b.setExtension('g', "FO_ba-BR_bg");
+        Locale locale = b.build();
+        assertTrue(locale.hasExtensions());
+        assertFalse(locale.stripExtensions().hasExtensions());
+        assertEquals(localeWithoutExtension, locale.stripExtensions());
+    }
+
+    public void test_extension_languageTag() throws Exception {
+        Locale lA = Locale.forLanguageTag("en-Latn-US-x-foo");
+        Locale lB = Locale.forLanguageTag("en-Latn-US");
+        assertTrue(lA.hasExtensions());
+        assertFalse(lB.hasExtensions());
+        assertEquals(lB, lA.stripExtensions());
+    }
+
     // http://b/2611311; if there's no display language/country/variant, use the raw codes.
     public void test_getDisplayName_invalid() throws Exception {
         Locale invalid = new Locale("AaBbCc", "DdEeFf", "GgHhIi");
