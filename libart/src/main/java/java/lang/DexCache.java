@@ -72,6 +72,12 @@ final class DexCache {
     private long strings;
 
     /**
+     * References to MethodType (C array pointer) as they become resolved following
+     * interpreter semantics.
+     */
+    private long resolvedMethodTypes;
+
+    /**
      * The number of elements in the native resolvedFields array.
      */
     private int numResolvedFields;
@@ -90,6 +96,11 @@ final class DexCache {
      * The number of elements in the native strings array.
      */
     private int numStrings;
+
+    /**
+     * The number of elements in the native method types array.
+     */
+    private int numResolvedMethodTypes;
 
     // Only created by the VM.
     private DexCache() {}
