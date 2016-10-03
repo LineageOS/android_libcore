@@ -28,13 +28,17 @@ import android.system.ErrnoException;
 import android.system.GaiException;
 import android.system.StructAddrinfo;
 import dalvik.system.BlockGuard;
+
+import libcore.io.IoBridge;
 import libcore.io.Libcore;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 
 import static android.system.OsConstants.AF_UNSPEC;
 import static android.system.OsConstants.AI_ADDRCONFIG;
 import static android.system.OsConstants.EACCES;
+import static android.system.OsConstants.ECONNREFUSED;
 import static android.system.OsConstants.SOCK_STREAM;
 
 /*
@@ -140,9 +144,12 @@ class Inet6AddressImpl implements InetAddressImpl {
 
     @Override
     public boolean isReachable(InetAddress addr, int timeout, NetworkInterface netif, int ttl) throws IOException {
-        byte[] ifaddr = null;
-        int scope = -1;
-        int netif_scope = -1;
+        // Android-changed: rewritten on the top of IoBridge and Libcore.os
+        // TODO (b/31926888): try ICMP first (http://code.google.com/p/android/issues/detail?id=20106)
+
+        // No good, let's fall back to TCP
+        FileDescriptor fd = IoBridge.socket(true);
+        InetAddress sourceAddr = null;
         if (netif != null) {
             /*
              * Let's make sure we bind to an address of the proper family.
@@ -155,31 +162,32 @@ class Inet6AddressImpl implements InetAddressImpl {
             while (it.hasMoreElements()) {
                 inetaddr = it.nextElement();
                 if (inetaddr.getClass().isInstance(addr)) {
-                    ifaddr = inetaddr.getAddress();
-                    if (inetaddr instanceof Inet6Address) {
-                        netif_scope = ((Inet6Address) inetaddr).getScopeId();
-                    }
+                    sourceAddr = inetaddr;
                     break;
                 }
             }
-            if (ifaddr == null) {
+
+            if (sourceAddr == null) {
                 // Interface doesn't support the address family of
                 // the destination
                 return false;
             }
         }
-        if (addr instanceof Inet6Address)
-            scope = ((Inet6Address) addr).getScopeId();
 
-        BlockGuard.getThreadPolicy().onNetwork();
-
-        // Never throw an IOException from isReachable. If something terrible happens either
-        // with the network interface in question (or with the destination), then just return
-        // false (i.e, state that the address is unreachable.
         try {
-            return isReachable0(addr.getAddress(), scope, timeout, ifaddr, ttl, netif_scope);
-        } catch (IOException ioe) {
-            return false;
+            if (sourceAddr != null) {
+                IoBridge.bind(fd, sourceAddr, 0);
+            }
+            IoBridge.connect(fd, addr, 7 /* Echo-protocol port */, timeout);
+            return true;
+        } catch (IOException e) {
+            // Connection refused by remote (ECONNREFUSED) implies reachable. Otherwise silently
+            // ignore the exception and return false.
+            Throwable cause = e.getCause();
+            return cause instanceof ErrnoException
+                    && ((ErrnoException) cause).errno == ECONNREFUSED;
+        } finally {
+            IoBridge.closeAndSignalBlockedThreads(fd);
         }
     }
 
@@ -216,5 +224,4 @@ class Inet6AddressImpl implements InetAddressImpl {
     }
 
     private native String getHostByAddr0(byte[] addr) throws UnknownHostException;
-    private native boolean isReachable0(byte[] addr, int scope, int timeout, byte[] inf, int ttl, int if_scope) throws IOException;
 }
