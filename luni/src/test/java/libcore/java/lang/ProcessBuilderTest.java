@@ -17,7 +17,6 @@
 package libcore.java.lang;
 
 import android.system.Os;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -38,13 +37,13 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import junit.framework.TestCase;
 import libcore.io.IoUtils;
-import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
 
 import static java.lang.ProcessBuilder.Redirect.INHERIT;
 import static java.lang.ProcessBuilder.Redirect.PIPE;
 
-public class ProcessBuilderTest extends AbstractResourceLeakageDetectorTestCase {
+public class ProcessBuilderTest extends TestCase {
     private static final String TAG = ProcessBuilderTest.class.getSimpleName();
 
     private static String shell() {
