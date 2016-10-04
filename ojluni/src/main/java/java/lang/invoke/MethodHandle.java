@@ -455,16 +455,16 @@ public abstract class MethodHandle {
      * field_id in the equivalent instruction.
      */
 
-    /** @hide */ public static final int INVOKE_VIRTUAL = 0x6e;
-    /** @hide */ public static final int INVOKE_SUPER = 0x6f;
-    /** @hide */ public static final int INVOKE_DIRECT = 0x70;
-    /** @hide */ public static final int INVOKE_STATIC = 0x71;
-    /** @hide */ public static final int INVOKE_INTERFACE = 0x72;
+    /** @hide */ public static final int INVOKE_VIRTUAL = 0;
+    /** @hide */ public static final int INVOKE_SUPER = 1;
+    /** @hide */ public static final int INVOKE_DIRECT = 2;
+    /** @hide */ public static final int INVOKE_STATIC = 3;
+    /** @hide */ public static final int INVOKE_INTERFACE = 4;
 
-    /** @hide */ public static final int SGET = 0x60;
-    /** @hide */ public static final int SPUT = 0x67;
-    /** @hide */ public static final int IGET = 0x52;
-    /** @hide */ public static final int IPUT = 0x59;
+    /** @hide */ public static final int SGET = 5;
+    /** @hide */ public static final int SPUT = 6;
+    /** @hide */ public static final int IGET = 7;
+    /** @hide */ public static final int IPUT = 8;
 
     // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
     // constants or SGET/SPUT, IGET/IPUT.
