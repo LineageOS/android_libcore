@@ -16,6 +16,24 @@
 
 #define LOG_TAG "ICU"
 
+#include <errno.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <string.h>
+#include <string>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <time.h>
+#include <unistd.h>
+
+#include <memory>
+#include <vector>
+
+#include <android/log.h>
+#include <android-base/unique_fd.h>
+
 #include "IcuUtilities.h"
 #include "JNIHelp.h"
 #include "JniConstants.h"
@@ -24,7 +42,6 @@
 #include "ScopedJavaUnicodeString.h"
 #include "ScopedLocalRef.h"
 #include "ScopedUtfChars.h"
-#include "cutils/log.h"
 #include "toStringArray.h"
 #include "unicode/brkiter.h"
 #include "unicode/calendar.h"
@@ -50,22 +67,6 @@
 #include "unicode/ustring.h"
 #include "ureslocs.h"
 #include "valueOf.h"
-
-#include <errno.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <time.h>
-#include <unistd.h>
-#include <memory>
-#include <vector>
-
-#include <android-base/unique_fd.h>
 
 class ScopedResourceBundle {
  public:

@@ -16,20 +16,6 @@
 
 #define LOG_TAG "Posix"
 
-#include "AsynchronousCloseMonitor.h"
-#include "cutils/log.h"
-#include "ExecStrings.h"
-#include "JNIHelp.h"
-#include "JniConstants.h"
-#include "JniException.h"
-#include "NetworkUtilities.h"
-#include "Portability.h"
-#include "ScopedBytes.h"
-#include "ScopedLocalRef.h"
-#include "ScopedPrimitiveArray.h"
-#include "ScopedUtfChars.h"
-#include "toStringArray.h"
-
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -58,10 +44,25 @@
 #include <sys/xattr.h>
 #include <termios.h>
 #include <unistd.h>
+
 #include <memory>
 
+#include <android/log.h>
 #include <android-base/file.h>
 #include <android-base/strings.h>
+
+#include "AsynchronousCloseMonitor.h"
+#include "ExecStrings.h"
+#include "JNIHelp.h"
+#include "JniConstants.h"
+#include "JniException.h"
+#include "NetworkUtilities.h"
+#include "Portability.h"
+#include "ScopedBytes.h"
+#include "ScopedLocalRef.h"
+#include "ScopedPrimitiveArray.h"
+#include "ScopedUtfChars.h"
+#include "toStringArray.h"
 
 #ifndef __unused
 #define __unused __attribute__((__unused__))

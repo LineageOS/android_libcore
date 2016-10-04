@@ -16,6 +16,14 @@
 
 #define LOG_TAG "ExpatParser"
 
+#include <expat.h>
+#include <string.h>
+
+#include <memory>
+
+#include <android/log.h>
+#include <android-base/stringprintf.h>
+
 #include "JNIHelp.h"
 #include "JniConstants.h"
 #include "JniException.h"
@@ -24,15 +32,8 @@
 #include "ScopedStringChars.h"
 #include "ScopedUtfChars.h"
 #include "jni.h"
-#include "cutils/log.h"
 #include "unicode/unistr.h"
 
-#include <memory>
-
-#include <string.h>
-#include <expat.h>
-
-#include <android-base/stringprintf.h>
 
 #define BUCKET_COUNT 128
 
