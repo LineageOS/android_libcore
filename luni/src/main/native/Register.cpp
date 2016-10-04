@@ -16,11 +16,12 @@
 
 #define LOG_TAG "libcore" // We'll be next to "dalvikvm" in the log; make the distinction clear.
 
-#include "cutils/log.h"
+#include <stdlib.h>
+
+#include "android/log.h"
+
 #include "JniConstants.h"
 #include "ScopedLocalFrame.h"
-
-#include <stdlib.h>
 
 // DalvikVM calls this on startup, so we can statically register all our native methods.
 jint JNI_OnLoad(JavaVM* vm, void*) {
