@@ -531,7 +531,7 @@ public class URLConnectionTest extends TestCase {
         try {
             uc2.getInputStream();
             fail();
-        } catch (Throwable expected) {
+        } catch (IOException expected) {
         }
     }
 

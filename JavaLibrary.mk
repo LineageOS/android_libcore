@@ -214,6 +214,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	nist-pkix-tests \
 	sqlite-jdbc
 LOCAL_JAVACFLAGS := $(local_javac_flags)
+LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-tests
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
