@@ -44,7 +44,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
-import java.text.spi.DateFormatSymbolsProvider;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
@@ -52,9 +51,9 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 import libcore.icu.TimeZoneNames;
-import sun.util.LocaleServiceProviderPool;
 
 /**
  * <code>DateFormatSymbols</code> is a public class for encapsulating
@@ -103,15 +102,13 @@ import sun.util.LocaleServiceProviderPool;
  */
 public class DateFormatSymbols implements Serializable, Cloneable {
 
+    // Android-changed: Removed reference to DateFormatSymbolsProvider but suggested getInstance()
+    // be used instead in case Android supports it in future.
     /**
      * Construct a DateFormatSymbols object by loading format data from
      * resources for the default {@link java.util.Locale.Category#FORMAT FORMAT}
-     * locale. This constructor can only
-     * construct instances for the locales supported by the Java
-     * runtime environment, not for those supported by installed
-     * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
-     * implementations. For full locale coverage, use the
-     * {@link #getInstance(Locale) getInstance} method.
+     * locale. It is recommended that the {@link #getInstance(Locale) getInstance} method is used
+     * instead.
      * <p>This is equivalent to calling
      * {@link #DateFormatSymbols(Locale)
      *     DateFormatSymbols(Locale.getDefault(Locale.Category.FORMAT))}.
@@ -127,14 +124,12 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         initializeData(Locale.getDefault(Locale.Category.FORMAT));
     }
 
+    // Android-changed: Removed reference to DateFormatSymbolsProvider but suggested getInstance()
+    // be used instead in case Android supports it in future.
     /**
      * Construct a DateFormatSymbols object by loading format data from
-     * resources for the given locale. This constructor can only
-     * construct instances for the locales supported by the Java
-     * runtime environment, not for those supported by installed
-     * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
-     * implementations. For full locale coverage, use the
-     * {@link #getInstance(Locale) getInstance} method.
+     * resources for the given locale. It is recommended that the
+     * {@link #getInstance(Locale) getInstance} method is used instead.
      *
      * @param locale the desired locale
      * @see #getInstance(Locale)
@@ -361,33 +356,25 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      */
     private String[] tinyStandAloneWeekdays;
 
+    // Android-changed: Removed reference to DateFormatSymbolsProvider.
     /**
      * Returns an array of all locales for which the
      * <code>getInstance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported by the
-     * Java runtime and by installed
-     * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
-     * implementations.  It must contain at least a <code>Locale</code>
-     * instance equal to {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of locales for which localized
      *         <code>DateFormatSymbols</code> instances are available.
      * @since 1.6
      */
     public static Locale[] getAvailableLocales() {
-        LocaleServiceProviderPool pool=
-            LocaleServiceProviderPool.getPool(DateFormatSymbolsProvider.class);
-        return pool.getAvailableLocales();
+        // Android-changed: No support for DateFormatSymbolsProvider.
+        return ICU.getAvailableLocales();
     }
 
+    // Android-changed: Removed reference to DateFormatSymbolsProvider.
     /**
      * Gets the <code>DateFormatSymbols</code> instance for the default
-     * locale.  This method provides access to <code>DateFormatSymbols</code>
-     * instances for locales supported by the Java runtime itself as well
-     * as for those supported by installed
-     * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
-     * implementations.
+     * locale.
      * <p>This is equivalent to calling {@link #getInstance(Locale)
      *     getInstance(Locale.getDefault(Locale.Category.FORMAT))}.
      * @see java.util.Locale#getDefault(java.util.Locale.Category)
@@ -399,23 +386,17 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         return getInstance(Locale.getDefault(Locale.Category.FORMAT));
     }
 
+    // Android-changed: Removed reference to DateFormatSymbolsProvider.
     /**
      * Gets the <code>DateFormatSymbols</code> instance for the specified
-     * locale.  This method provides access to <code>DateFormatSymbols</code>
-     * instances for locales supported by the Java runtime itself as well
-     * as for those supported by installed
-     * {@link java.text.spi.DateFormatSymbolsProvider DateFormatSymbolsProvider}
-     * implementations.
+     * locale.
      * @param locale the given locale.
      * @return a <code>DateFormatSymbols</code> instance.
      * @exception NullPointerException if <code>locale</code> is null
      * @since 1.6
      */
     public static final DateFormatSymbols getInstance(Locale locale) {
-        DateFormatSymbols dfs = getProviderInstance(locale);
-        if (dfs != null) {
-            return dfs;
-        }
+        // Android-changed: Removed used of DateFormatSymbolsProvider.
         return (DateFormatSymbols) getCachedInstance(locale).clone();
     }
 
@@ -426,25 +407,8 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * an application.
      */
     static final DateFormatSymbols getInstanceRef(Locale locale) {
-        DateFormatSymbols dfs = getProviderInstance(locale);
-        if (dfs != null) {
-            return dfs;
-        }
+        // Android-changed: Removed used of DateFormatSymbolsProvider.
         return getCachedInstance(locale);
-    }
-
-    private static DateFormatSymbols getProviderInstance(Locale locale) {
-        DateFormatSymbols providersInstance = null;
-
-        // Check whether a provider can provide an implementation that's closer
-        // to the requested locale than what the Java runtime itself can provide.
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(DateFormatSymbolsProvider.class);
-        if (pool.hasProviders()) {
-            providersInstance = pool.getLocalizedObject(
-                                    DateFormatSymbolsGetter.INSTANCE, locale);
-        }
-        return providersInstance;
     }
 
     /**
@@ -580,6 +544,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         cachedHashCode = 0;
     }
 
+    // Android-changed: Removed reference to TimeZoneNameProvider.
     /**
      * Gets time zone strings.  Use of this method is discouraged; use
      * {@link java.util.TimeZone#getDisplayName() TimeZone.getDisplayName()}
@@ -611,9 +576,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * If {@link #setZoneStrings(String[][]) setZoneStrings} has been called
      * on this <code>DateFormatSymbols</code> instance, then the strings
      * provided by that call are returned. Otherwise, the returned array
-     * contains names provided by the Java runtime and by installed
-     * {@link java.util.spi.TimeZoneNameProvider TimeZoneNameProvider}
-     * implementations.
+     * contains names provided by the runtime.
      *
      * @return the time zone strings.
      * @see #setZoneStrings(String[][])
@@ -1003,24 +966,5 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     private void writeObject(ObjectOutputStream stream) throws IOException {
         internalZoneStrings();
         stream.defaultWriteObject();
-    }
-
-    /**
-     * Obtains a DateFormatSymbols instance from a DateFormatSymbolsProvider
-     * implementation.
-     */
-    private static class DateFormatSymbolsGetter
-        implements LocaleServiceProviderPool.LocalizedObjectGetter<DateFormatSymbolsProvider,
-                                                                   DateFormatSymbols> {
-        private static final DateFormatSymbolsGetter INSTANCE =
-            new DateFormatSymbolsGetter();
-
-        public DateFormatSymbols getObject(DateFormatSymbolsProvider dateFormatSymbolsProvider,
-                                Locale locale,
-                                String key,
-                                Object... params) {
-            assert params.length == 0;
-            return dateFormatSymbolsProvider.getInstance(locale);
-        }
     }
 }

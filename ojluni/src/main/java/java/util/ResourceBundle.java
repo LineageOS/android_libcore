@@ -58,7 +58,6 @@ import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
-import java.util.spi.ResourceBundleControlProvider;
 
 import dalvik.system.VMStack;
 import sun.reflect.CallerSensitive;
@@ -66,6 +65,7 @@ import sun.util.locale.BaseLocale;
 import sun.util.locale.LocaleObjectCache;
 
 
+// Android-changed: Removed reference to ResourceBundleControlProvider.
 /**
  *
  * Resource bundles contain locale-specific objects.  When your program needs a
@@ -204,17 +204,6 @@ import sun.util.locale.LocaleObjectCache;
  * define caching parameters. Refer to the descriptions of the class and the
  * {@link #getBundle(String, Locale, ClassLoader, Control) getBundle}
  * factory method for details.
- *
- * <p><a name="modify_default_behavior">For the {@code getBundle} factory</a>
- * methods that take no {@link Control} instance, their <a
- * href="#default_behavior"> default behavior</a> of resource bundle loading
- * can be modified with <em>installed</em> {@link
- * ResourceBundleControlProvider} implementations. Any installed providers are
- * detected at the {@code ResourceBundle} class loading time. If any of the
- * providers provides a {@link Control} for the given base name, that {@link
- * Control} will be used instead of the default {@link Control}. If there is
- * more than one service provider installed for supporting the same base name,
- * the first one returned from {@link ServiceLoader} will be used.
  *
  * <h3>Cache Management</h3>
  *
@@ -371,6 +360,7 @@ public abstract class ResourceBundle {
      */
     private volatile Set<String> keySet;
 
+    /* Android-changed: Removed used of ResourceBundleControlProvider.
     private static final List<ResourceBundleControlProvider> providers;
 
     static {
@@ -385,6 +375,7 @@ public abstract class ResourceBundle {
         }
         providers = list;
     }
+    */
 
     /**
      * Sole constructor.  (For invocation by subclass constructors, typically
@@ -906,19 +897,14 @@ public abstract class ResourceBundle {
                              control);
     }
 
+    // Android-changed: Removed references to ResourceBundleControlProvider.
     /**
      * Gets a resource bundle using the specified base name, locale, and class
      * loader.
      *
      * <p>This method behaves the same as calling
      * {@link #getBundle(String, Locale, ClassLoader, Control)} passing a
-     * default instance of {@link Control} unless another {@link Control} is
-     * provided with the {@link ResourceBundleControlProvider} SPI. Refer to the
-     * description of <a href="#modify_default_behavior">modifying the default
-     * behavior</a>.
-     *
-     * <p><a name="default_behavior">The following describes the default
-     * behavior</a>.
+     * default instance of {@link Control}.
      *
      * <p><code>getBundle</code> uses the base name, the specified locale, and
      * the default locale (obtained from {@link java.util.Locale#getDefault()
@@ -1314,14 +1300,7 @@ public abstract class ResourceBundle {
     }
 
     private static Control getDefaultControl(String baseName) {
-        if (providers != null) {
-            for (ResourceBundleControlProvider provider : providers) {
-                Control control = provider.getControl(baseName);
-                if (control != null) {
-                    return control;
-                }
-            }
-        }
+        // Android-changed: Removed used of ResourceBundleControlProvider.
         return Control.INSTANCE;
     }
 

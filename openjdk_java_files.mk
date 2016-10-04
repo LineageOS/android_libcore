@@ -1172,17 +1172,6 @@ openjdk_java_files := \
     ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
     ojluni/src/main/java/java/lang/invoke/Stable.java \
     ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
-    ojluni/src/main/java/java/text/spi/BreakIteratorProvider.java \
-    ojluni/src/main/java/java/text/spi/CollatorProvider.java \
-    ojluni/src/main/java/java/text/spi/DateFormatProvider.java \
-    ojluni/src/main/java/java/text/spi/DateFormatSymbolsProvider.java \
-    ojluni/src/main/java/java/text/spi/DecimalFormatSymbolsProvider.java \
-    ojluni/src/main/java/java/text/spi/NumberFormatProvider.java \
-    ojluni/src/main/java/java/util/spi/CurrencyNameProvider.java \
-    ojluni/src/main/java/java/util/spi/LocaleNameProvider.java \
-    ojluni/src/main/java/java/util/spi/LocaleServiceProvider.java \
-    ojluni/src/main/java/java/util/spi/ResourceBundleControlProvider.java \
-    ojluni/src/main/java/java/util/spi/TimeZoneNameProvider.java \
     ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
     ojluni/src/main/java/jdk/net/NetworkPermission.java \
     ojluni/src/main/java/jdk/net/SocketFlow.java \
@@ -1601,7 +1590,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/locale/LocaleSyntaxException.java \
     ojluni/src/main/java/sun/util/locale/LocaleUtils.java \
     ojluni/src/main/java/sun/util/locale/ParseStatus.java \
-    ojluni/src/main/java/sun/util/LocaleServiceProviderPool.java \
     ojluni/src/main/java/sun/util/locale/StringTokenIterator.java \
     ojluni/src/main/java/sun/util/locale/UnicodeLocaleExtension.java \
     ojluni/src/main/java/sun/util/logging/LoggingProxy.java \
