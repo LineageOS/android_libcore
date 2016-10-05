@@ -169,6 +169,7 @@ LOCAL_SRC_FILES += $(core_test_files)
 LOCAL_C_INCLUDES += libcore/include
 LOCAL_SHARED_LIBRARIES += libnativehelper_compat_libc++
 LOCAL_MODULE_TAGS := optional
+LOCAL_STRIP_MODULE := keep_symbols
 LOCAL_MODULE := libjavacoretests
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/NativeCode.mk
 LOCAL_CXX_STL := libc++
