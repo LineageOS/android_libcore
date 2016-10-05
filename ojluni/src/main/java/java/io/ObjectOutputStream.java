@@ -1298,7 +1298,7 @@ public class ObjectOutputStream
         }
 
         bout.setBlockDataMode(true);
-        if (isCustomSubclass()) {
+        if (cl != null && isCustomSubclass()) {
             ReflectUtil.checkPackageAccess(cl);
         }
         annotateProxyClass(cl);
@@ -1327,7 +1327,7 @@ public class ObjectOutputStream
 
         Class<?> cl = desc.forClass();
         bout.setBlockDataMode(true);
-        if (isCustomSubclass()) {
+        if (cl != null && isCustomSubclass()) {
             ReflectUtil.checkPackageAccess(cl);
         }
         annotateClass(cl);
@@ -1562,7 +1562,11 @@ public class ObjectOutputStream
     private void defaultWriteFields(Object obj, ObjectStreamClass desc)
         throws IOException
     {
-        // REMIND: perform conservative isInstance check here?
+        Class<?> cl = desc.forClass();
+        if (cl != null && obj != null && !cl.isInstance(obj)) {
+            throw new ClassCastException();
+        }
+
         desc.checkDefaultSerialize();
 
         int primDataSize = desc.getPrimDataSize();
