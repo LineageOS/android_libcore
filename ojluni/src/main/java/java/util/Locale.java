@@ -46,13 +46,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
-import java.security.AccessController;
 import java.text.MessageFormat;
-import java.util.spi.LocaleNameProvider;
 import libcore.icu.ICU;
 
-import sun.security.action.GetPropertyAction;
-import sun.util.LocaleServiceProviderPool;
 import sun.util.locale.BaseLocale;
 import sun.util.locale.InternalLocaleBuilder;
 import sun.util.locale.LanguageTag;
@@ -61,7 +57,6 @@ import sun.util.locale.LocaleObjectCache;
 import sun.util.locale.LocaleSyntaxException;
 import sun.util.locale.LocaleUtils;
 import sun.util.locale.ParseStatus;
-import sun.util.locale.UnicodeLocaleExtension;
 
 /**
  * A <code>Locale</code> object represents a specific geographical, political,
@@ -945,7 +940,7 @@ public final class Locale implements Cloneable, Serializable {
         setDefault(Category.DISPLAY, newLocale);
         setDefault(Category.FORMAT, newLocale);
         defaultLocale = newLocale;
-        // Android-added
+        // Android-added: Keep ICU state in sync with java.util.
         ICU.setDefaultLocale(newLocale.toLanguageTag());
     }
 
@@ -999,18 +994,15 @@ public final class Locale implements Cloneable, Serializable {
         }
     }
 
+    // Android-changed: Removed references to LocaleServiceProvider.
     /**
      * Returns an array of all installed locales.
-     * The returned array represents the union of locales supported
-     * by the Java runtime environment and by installed
-     * {@link java.util.spi.LocaleServiceProvider LocaleServiceProvider}
-     * implementations.  It must contain at least a <code>Locale</code>
-     * instance equal to {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of installed locales.
      */
     public static Locale[] getAvailableLocales() {
-        return LocaleServiceProviderPool.getAllAvailableLocales();
+        // Android-changed: Removed used of LocaleServiceProviderPool. Switched to use ICU.
+        return ICU.getAvailableLocales();
     }
 
     /**
@@ -1025,7 +1017,7 @@ public final class Locale implements Cloneable, Serializable {
      * @return An array of ISO 3166 two-letter country codes.
      */
     public static String[] getISOCountries() {
-        // Android-changed: Use ICU.
+        // Android-changed: Switched to use ICU.
         return ICU.getISOCountries();
     }
 
@@ -1046,7 +1038,7 @@ public final class Locale implements Cloneable, Serializable {
      * @return Am array of ISO 639 two-letter language codes.
      */
     public static String[] getISOLanguages() {
-        // Android-changed: Use ICU.
+        // Android-changed: Switched to use ICU.
         return ICU.getISOLanguages();
     }
 
