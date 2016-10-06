@@ -40,18 +40,14 @@
 package java.text;
 
 import java.io.InvalidObjectException;
-import java.text.spi.DateFormatProvider;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 import java.util.TimeZone;
-import java.util.spi.LocaleServiceProvider;
-import sun.util.LocaleServiceProviderPool;
+import libcore.icu.ICU;
 
 /**
  * {@code DateFormat} is an abstract class for date/time formatting subclasses which
@@ -596,7 +592,12 @@ public abstract class DateFormat extends Format {
         return getDateTimeInstance(SHORT, SHORT);
     }
 
-    /** @hide */
+    // Android-changed: Added support for overriding locale default 12 / 24 hour preference.
+    /**
+     * {@code null}: use Locale default. {@code true}: force 24-hour format.
+     * {@code false} force 12-hour format.
+     * @hide
+     */
     public static Boolean is24Hour;
 
     /**
@@ -606,24 +607,19 @@ public abstract class DateFormat extends Format {
         DateFormat.is24Hour = is24Hour;
     }
 
+    // Android-changed: Remove reference to DateFormatProvider.
     /**
      * Returns an array of all locales for which the
      * <code>get*Instance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported by the Java
-     * runtime and by installed
-     * {@link java.text.spi.DateFormatProvider DateFormatProvider} implementations.
-     * It must contain at least a <code>Locale</code> instance equal to
-     * {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of locales for which localized
      *         <code>DateFormat</code> instances are available.
      */
     public static Locale[] getAvailableLocales()
     {
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(DateFormatProvider.class);
-        return pool.getAvailableLocales();
+        // Android-changed: Removed used of DateFormatProvider. Switched to use ICU.
+        return ICU.getAvailableLocales();
     }
 
     /**
@@ -803,23 +799,8 @@ public abstract class DateFormat extends Format {
         } else {
             dateStyle = -1;
         }
+        // Android-changed: Removed used of DateFormatProvider.
         try {
-            // Check whether a provider can provide an implementation that's closer
-            // to the requested locale than what the Java runtime itself can provide.
-            LocaleServiceProviderPool pool =
-                LocaleServiceProviderPool.getPool(DateFormatProvider.class);
-            if (pool.hasProviders()) {
-                DateFormat providersInstance = pool.getLocalizedObject(
-                                                    DateFormatGetter.INSTANCE,
-                                                    loc,
-                                                    timeStyle,
-                                                    dateStyle,
-                                                    flags);
-                if (providersInstance != null) {
-                    return providersInstance;
-                }
-            }
-
             return new SimpleDateFormat(timeStyle, dateStyle, loc);
         } catch (MissingResourceException e) {
             return new SimpleDateFormat("M/d/yy h:mm a");
@@ -1045,38 +1026,5 @@ public abstract class DateFormat extends Format {
          * Constant identifying the time zone field.
          */
         public final static Field TIME_ZONE = new Field("time zone", -1);
-    }
-
-    /**
-     * Obtains a DateFormat instance from a DateFormatProvider
-     * implementation.
-     */
-    private static class DateFormatGetter
-        implements LocaleServiceProviderPool.LocalizedObjectGetter<DateFormatProvider, DateFormat> {
-        private static final DateFormatGetter INSTANCE = new DateFormatGetter();
-
-        public DateFormat getObject(DateFormatProvider dateFormatProvider,
-                                Locale locale,
-                                String key,
-                                Object... params) {
-            assert params.length == 3;
-
-            int timeStyle = (Integer)params[0];
-            int dateStyle = (Integer)params[1];
-            int flags = (Integer)params[2];
-
-            switch (flags) {
-            case 1:
-                return dateFormatProvider.getTimeInstance(timeStyle, locale);
-            case 2:
-                return dateFormatProvider.getDateInstance(dateStyle, locale);
-            case 3:
-                return dateFormatProvider.getDateTimeInstance(dateStyle, timeStyle, locale);
-            default:
-                assert false : "should not happen";
-            }
-
-            return null;
-        }
     }
 }
