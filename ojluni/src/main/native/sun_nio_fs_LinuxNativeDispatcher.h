@@ -14,9 +14,6 @@ extern "C" {
 #undef sun_nio_fs_LinuxNativeDispatcher_SUPPORTS_BIRTHTIME
 #define sun_nio_fs_LinuxNativeDispatcher_SUPPORTS_BIRTHTIME 65536L
 
-#define CHECK_NULL(x) if ((x) == NULL) return;
-#define CHECK_NULL_RETURN(x, y) if ((x) == NULL) return y;
-
 /*
  * Class:     sun_nio_fs_LinuxNativeDispatcher
  * Method:    setmntent0
