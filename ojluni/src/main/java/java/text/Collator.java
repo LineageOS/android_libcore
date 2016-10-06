@@ -229,6 +229,7 @@ public abstract class Collator
     public static synchronized
     Collator getInstance(Locale desiredLocale)
     {
+        // Android-changed: Switched to ICU.
         if (desiredLocale == null) {
             throw new NullPointerException("locale == null");
         }
@@ -317,6 +318,7 @@ public abstract class Collator
      */
     public synchronized int getStrength()
     {
+        // Android-changed: Switched to ICU.
         // The value for IDENTICAL in ICU differs from that used in this class.
         int value = icuColl.getStrength();
         return (value == android.icu.text.Collator.IDENTICAL) ? IDENTICAL : value;
@@ -336,6 +338,7 @@ public abstract class Collator
      * PRIMARY, SECONDARY, TERTIARY or IDENTICAL.
      */
     public synchronized void setStrength(int newStrength) {
+        // Android-changed: Switched to ICU.
         // The ICU value for IDENTICAL differs from that defined in this class.
         if (newStrength == IDENTICAL) {
             newStrength = android.icu.text.Collator.IDENTICAL;
@@ -364,6 +367,7 @@ public abstract class Collator
      */
     public synchronized int getDecomposition()
     {
+        // Android-changed: Switched to ICU.
         return decompositionMode_ICU_Java(icuColl.getDecomposition());
     }
     /**
@@ -378,23 +382,21 @@ public abstract class Collator
      * mode.
      */
     public synchronized void setDecomposition(int decompositionMode) {
+        // Android-changed: Switched to ICU.
         icuColl.setDecomposition(decompositionMode_Java_ICU(decompositionMode));
     }
 
+    // Android-changed: Removed references to CollatorProvider.
     /**
      * Returns an array of all locales for which the
      * <code>getInstance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported
-     * by the Java runtime and by installed
-     * {@link java.text.spi.CollatorProvider CollatorProvider} implementations.
-     * It must contain at least a Locale instance equal to
-     * {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of locales for which localized
      *         <code>Collator</code> instances are available.
      */
     public static synchronized Locale[] getAvailableLocales() {
+        // Android-changed: Removed reference to CollatorProvider. Switched to ICU.
         return ICU.getAvailableCollatorLocales();
     }
 
@@ -432,6 +434,7 @@ public abstract class Collator
     public Object clone()
     {
         try {
+            // Android-changed: Switched to ICU.
             Collator clone = (Collator) super.clone();
             clone.icuColl = (android.icu.text.Collator) icuColl.clone();
             return clone;
@@ -459,6 +462,7 @@ public abstract class Collator
             return false;
         }
         Collator other = (Collator) that;
+        // Android-changed: Switched to ICU.
         return icuColl == null ? other.icuColl == null : icuColl.equals(other.icuColl);
     }
 
@@ -476,6 +480,7 @@ public abstract class Collator
      */
     protected Collator()
     {
+        // Android-changed: Switched to ICU.
         icuColl = android.icu.text.RuleBasedCollator.getInstance(Locale.getDefault());
     }
 
