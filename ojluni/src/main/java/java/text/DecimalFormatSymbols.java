@@ -44,13 +44,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamField;
 import java.io.Serializable;
-import java.text.spi.DecimalFormatSymbolsProvider;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
+import libcore.icu.ICU;
 import libcore.icu.LocaleData;
-
-import sun.util.LocaleServiceProviderPool;
 
 /**
  * This class represents the set of symbols (such as the decimal separator,
@@ -68,15 +66,13 @@ import sun.util.LocaleServiceProviderPool;
 
 public class DecimalFormatSymbols implements Cloneable, Serializable {
 
+    // Android-changed: Removed reference to DecimalFormatSymbolsProvider but suggested
+    // getInstance() be used instead in case Android supports it in future.
     /**
      * Create a DecimalFormatSymbols object for the default
      * {@link java.util.Locale.Category#FORMAT FORMAT} locale.
-     * This constructor can only construct instances for the locales
-     * supported by the Java runtime environment, not for those
-     * supported by installed
-     * {@link java.text.spi.DecimalFormatSymbolsProvider DecimalFormatSymbolsProvider}
-     * implementations. For full locale coverage, use the
-     * {@link #getInstance(Locale) getInstance} method.
+     * It is recommended that the {@link #getInstance(Locale) getInstance} method is used
+     * instead.
      * <p>This is equivalent to calling
      * {@link #DecimalFormatSymbols(Locale)
      *     DecimalFormatSymbols(Locale.getDefault(Locale.Category.FORMAT))}.
@@ -87,14 +83,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         initialize( Locale.getDefault(Locale.Category.FORMAT) );
     }
 
+    // Android-changed: Removed reference to DecimalFormatSymbolsProvider but suggested
+    // getInstance() be used instead in case Android supports it in future.
     /**
      * Create a DecimalFormatSymbols object for the given locale.
-     * This constructor can only construct instances for the locales
-     * supported by the Java runtime environment, not for those
-     * supported by installed
-     * {@link java.text.spi.DecimalFormatSymbolsProvider DecimalFormatSymbolsProvider}
-     * implementations. For full locale coverage, use the
-     * {@link #getInstance(Locale) getInstance} method.
+     * It is recommended that the {@link #getInstance(Locale) getInstance} method is used
+     * instead.
      * If the specified locale contains the {@link java.util.Locale#UNICODE_LOCALE_EXTENSION}
      * for the numbering system, the instance is initialized with the specified numbering
      * system if the JRE implementation supports it. For example,
@@ -111,33 +105,25 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         initialize( locale );
     }
 
+    // Android-changed: Removed reference to DecimalFormatSymbolsProvider.
     /**
      * Returns an array of all locales for which the
      * <code>getInstance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported by the Java
-     * runtime and by installed
-     * {@link java.text.spi.DecimalFormatSymbolsProvider DecimalFormatSymbolsProvider}
-     * implementations.  It must contain at least a <code>Locale</code>
-     * instance equal to {@link java.util.Locale#US Locale.US}.
      *
      * @return an array of locales for which localized
      *         <code>DecimalFormatSymbols</code> instances are available.
      * @since 1.6
      */
     public static Locale[] getAvailableLocales() {
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(DecimalFormatSymbolsProvider.class);
-        return pool.getAvailableLocales();
+        // Android-changed: Removed used of DecimalFormatSymbolsProvider. Switched to use ICU.
+        return ICU.getAvailableLocales();
     }
 
+    // Android-changed: Removed reference to DecimalFormatSymbolsProvider.
     /**
      * Gets the <code>DecimalFormatSymbols</code> instance for the default
-     * locale.  This method provides access to <code>DecimalFormatSymbols</code>
-     * instances for locales supported by the Java runtime itself as well
-     * as for those supported by installed
-     * {@link java.text.spi.DecimalFormatSymbolsProvider
-     * DecimalFormatSymbolsProvider} implementations.
+     * locale.
      * <p>This is equivalent to calling
      * {@link #getInstance(Locale)
      *     getInstance(Locale.getDefault(Locale.Category.FORMAT))}.
@@ -150,13 +136,10 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         return getInstance(Locale.getDefault(Locale.Category.FORMAT));
     }
 
+    // Android-changed: Removed reference to DecimalFormatSymbolsProvider.
     /**
      * Gets the <code>DecimalFormatSymbols</code> instance for the specified
-     * locale.  This method provides access to <code>DecimalFormatSymbols</code>
-     * instances for locales supported by the Java runtime itself as well
-     * as for those supported by installed
-     * {@link java.text.spi.DecimalFormatSymbolsProvider
-     * DecimalFormatSymbolsProvider} implementations.
+     * locale.
      * If the specified locale contains the {@link java.util.Locale#UNICODE_LOCALE_EXTENSION}
      * for the numbering system, the instance is initialized with the specified numbering
      * system if the JRE implementation supports it. For example,
@@ -172,19 +155,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
      * @since 1.6
      */
     public static final DecimalFormatSymbols getInstance(Locale locale) {
-
-        // Check whether a provider can provide an implementation that's closer
-        // to the requested locale than what the Java runtime itself can provide.
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(DecimalFormatSymbolsProvider.class);
-        if (pool.hasProviders()) {
-            DecimalFormatSymbols providersInstance = pool.getLocalizedObject(
-                                DecimalFormatSymbolsGetter.INSTANCE, locale);
-            if (providersInstance != null) {
-                return providersInstance;
-            }
-        }
-
+        // Android-changed: Removed used of DecimalFormatSymbolsProvider.
         return new DecimalFormatSymbols(locale);
     }
 
@@ -659,6 +630,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     private void initialize( Locale locale ) {
         this.locale = locale;
 
+        // Android-changed: Removed use of DecimalFormatSymbolsProvider. Switched to ICU.
         // get resource bundle data - try the cache first
         boolean needCacheUpdate = false;
         Object[] data = cachedLocaleData.get(locale);
@@ -1128,24 +1100,4 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     private static final ConcurrentHashMap<Locale, Object[]> cachedLocaleData = new ConcurrentHashMap<Locale, Object[]>(3);
 
     private transient android.icu.text.DecimalFormatSymbols cachedIcuDFS = null;
-
-    /**
-     * Obtains a DecimalFormatSymbols instance from a DecimalFormatSymbolsProvider
-     * implementation.
-     */
-    private static class DecimalFormatSymbolsGetter
-        implements LocaleServiceProviderPool.LocalizedObjectGetter<DecimalFormatSymbolsProvider,
-                                                                   DecimalFormatSymbols> {
-        private static final DecimalFormatSymbolsGetter INSTANCE =
-            new DecimalFormatSymbolsGetter();
-
-        public DecimalFormatSymbols getObject(
-                                DecimalFormatSymbolsProvider decimalFormatSymbolsProvider,
-                                Locale locale,
-                                String key,
-                                Object... params) {
-            assert params.length == 0;
-            return decimalFormatSymbolsProvider.getInstance(locale);
-        }
-    }
 }
