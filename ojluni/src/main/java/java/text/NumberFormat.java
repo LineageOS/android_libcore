@@ -45,18 +45,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.math.RoundingMode;
-import java.text.spi.NumberFormatProvider;
 import java.util.Currency;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.spi.LocaleServiceProvider;
+import libcore.icu.ICU;
 import libcore.icu.LocaleData;
-import sun.util.LocaleServiceProviderPool;
 
 /**
  * <code>NumberFormat</code> is the abstract base class for all number
@@ -548,23 +545,18 @@ public abstract class NumberFormat extends Format  {
         return getInstance(inLocale, PERCENTSTYLE);
     }
 
+    // Android-changed: Removed reference to NumberFormatProvider.
     /**
      * Returns an array of all locales for which the
      * <code>get*Instance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported by the Java
-     * runtime and by installed
-     * {@link java.text.spi.NumberFormatProvider NumberFormatProvider} implementations.
-     * It must contain at least a <code>Locale</code> instance equal to
-     * {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of locales for which localized
      *         <code>NumberFormat</code> instances are available.
      */
     public static Locale[] getAvailableLocales() {
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(NumberFormatProvider.class);
-        return pool.getAvailableLocales();
+        // Android-changed: Removed used of NumberFormatProvider. Switched to use ICU.
+        return ICU.getAvailableLocales();
     }
 
     /**
@@ -829,20 +821,7 @@ public abstract class NumberFormat extends Format  {
 
     private static NumberFormat getInstance(Locale desiredLocale,
                                            int choice) {
-        // Check whether a provider can provide an implementation that's closer
-        // to the requested locale than what the Java runtime itself can provide.
-        LocaleServiceProviderPool pool =
-            LocaleServiceProviderPool.getPool(NumberFormatProvider.class);
-        if (pool.hasProviders()) {
-            NumberFormat providersInstance = pool.getLocalizedObject(
-                                    NumberFormatGetter.INSTANCE,
-                                    desiredLocale,
-                                    choice);
-            if (providersInstance != null) {
-                return providersInstance;
-            }
-        }
-
+        // Android-changed: Removed use of NumberFormatProvider. Switched to use ICU.
         /* try the cache first */
         String[] numberPatterns = (String[])cachedLocaleData.get(desiredLocale);
         if (numberPatterns == null) { /* cache miss */
@@ -1218,37 +1197,5 @@ public abstract class NumberFormat extends Format  {
          * Constant identifying the exponent sign field.
          */
         public static final Field EXPONENT_SIGN = new Field("exponent sign");
-    }
-
-    /**
-     * Obtains a NumberFormat instance from a NumberFormatProvider implementation.
-     */
-    private static class NumberFormatGetter
-        implements LocaleServiceProviderPool.LocalizedObjectGetter<NumberFormatProvider,
-                                                                   NumberFormat> {
-        private static final NumberFormatGetter INSTANCE = new NumberFormatGetter();
-
-        public NumberFormat getObject(NumberFormatProvider numberFormatProvider,
-                                Locale locale,
-                                String key,
-                                Object... params) {
-            assert params.length == 1;
-            int choice = (Integer)params[0];
-
-            switch (choice) {
-            case NUMBERSTYLE:
-                return numberFormatProvider.getNumberInstance(locale);
-            case PERCENTSTYLE:
-                return numberFormatProvider.getPercentInstance(locale);
-            case CURRENCYSTYLE:
-                return numberFormatProvider.getCurrencyInstance(locale);
-            case INTEGERSTYLE:
-                return numberFormatProvider.getIntegerInstance(locale);
-            default:
-                assert false : choice;
-            }
-
-            return null;
-        }
     }
 }

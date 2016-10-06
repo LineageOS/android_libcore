@@ -445,6 +445,7 @@ public abstract class BreakIterator implements Cloneable
      */
     public static BreakIterator getWordInstance(Locale locale)
     {
+        // Android-changed: Switched to ICU.
         return new IcuIteratorWrapper(
                 android.icu.text.BreakIterator.getWordInstance(locale));
     }
@@ -470,6 +471,7 @@ public abstract class BreakIterator implements Cloneable
      */
     public static BreakIterator getLineInstance(Locale locale)
     {
+        // Android-changed: Switched to ICU.
         return new IcuIteratorWrapper(
                 android.icu.text.BreakIterator.getLineInstance(locale));
     }
@@ -495,6 +497,7 @@ public abstract class BreakIterator implements Cloneable
      */
     public static BreakIterator getCharacterInstance(Locale locale)
     {
+        // Android-changed: Switched to ICU.
         return new IcuIteratorWrapper(
                 android.icu.text.BreakIterator.getCharacterInstance(locale));
     }
@@ -520,25 +523,23 @@ public abstract class BreakIterator implements Cloneable
      */
     public static BreakIterator getSentenceInstance(Locale locale)
     {
+        // Android-changed: Switched to ICU.
         return new IcuIteratorWrapper(
                 android.icu.text.BreakIterator.getSentenceInstance(locale));
     }
 
+    // Android-changed: Removed references to BreakIteratorProvider.
     /**
      * Returns an array of all locales for which the
      * <code>get*Instance</code> methods of this class can return
      * localized instances.
-     * The returned array represents the union of locales supported by the Java
-     * runtime and by installed
-     * {@link java.text.spi.BreakIteratorProvider BreakIteratorProvider} implementations.
-     * It must contain at least a <code>Locale</code>
-     * instance equal to {@link java.util.Locale#US Locale.US}.
      *
      * @return An array of locales for which localized
      *         <code>BreakIterator</code> instances are available.
      */
     public static synchronized Locale[] getAvailableLocales()
     {
+        // Android-changed: Switched to ICU.
         return android.icu.text.BreakIterator.getAvailableLocales();
     }
 }
