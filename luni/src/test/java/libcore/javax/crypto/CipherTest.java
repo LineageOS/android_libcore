@@ -3723,14 +3723,14 @@ public final class CipherTest extends TestCase {
                 throw maybe;
             }
         } catch (BadPaddingException maybe) {
-            // BC's OAEP has a bug where it doesn't support empty decrypt
+            // BC's OAEP has a bug where it doesn't support decrypt of a zero-length plaintext
             if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
                 throw maybe;
             }
         }
 
-        // empty decrypt
-        {
+        // decrypt an empty ciphertext; not valid for RSA
+        if (!p.transformation.contains("OAEP")) {
             if ((!isAEAD(p.transformation)
                     && (StandardNames.IS_RI || provider.equals("AndroidOpenSSL") ||
                             (provider.equals("BC") && p.transformation.contains("/CTR/"))))
@@ -3753,11 +3753,6 @@ public final class CipherTest extends TestCase {
                     if (!isAEAD(p.transformation)) {
                         throw maybe;
                     }
-                } catch (BadPaddingException maybe) {
-                    // BC's OAEP has a bug where it doesn't support empty decrypt
-                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
-                        throw maybe;
-                    }
                 }
                 try {
                     c.update(new byte[0]);
@@ -3769,11 +3764,6 @@ public final class CipherTest extends TestCase {
                     }
                 } catch (AEADBadTagException maybe) {
                     if (!isAEAD(p.transformation)) {
-                        throw maybe;
-                    }
-                } catch (BadPaddingException maybe) {
-                    // BC's OAEP has a bug where it doesn't support empty decrypt
-                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
                         throw maybe;
                     }
                 }
