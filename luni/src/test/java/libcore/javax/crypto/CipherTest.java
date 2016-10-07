@@ -406,6 +406,21 @@ public final class CipherTest extends TestCase {
             setExpectedBlockSize("RSA", Cipher.DECRYPT_MODE, 256);
             setExpectedBlockSize("RSA/ECB/NoPadding", Cipher.DECRYPT_MODE, 256);
             setExpectedBlockSize("RSA/ECB/PKCS1Padding", Cipher.DECRYPT_MODE, 256);
+
+            // OAEP padding modes change the output and block size. SHA-1 is the default.
+            setExpectedBlockSize("RSA/ECB/OAEPPadding", Cipher.ENCRYPT_MODE, 214);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", Cipher.ENCRYPT_MODE, 214);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-224AndMGF1Padding", Cipher.ENCRYPT_MODE, 198);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", Cipher.ENCRYPT_MODE, 190);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-384AndMGF1Padding", Cipher.ENCRYPT_MODE, 158);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-512AndMGF1Padding", Cipher.ENCRYPT_MODE, 126);
+
+            setExpectedBlockSize("RSA/ECB/OAEPPadding", Cipher.DECRYPT_MODE, 256);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", Cipher.DECRYPT_MODE, 256);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-224AndMGF1Padding", Cipher.DECRYPT_MODE, 256);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", Cipher.DECRYPT_MODE, 256);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-384AndMGF1Padding", Cipher.DECRYPT_MODE, 256);
+            setExpectedBlockSize("RSA/ECB/OAEPWithSHA-512AndMGF1Padding", Cipher.DECRYPT_MODE, 256);
         }
     }
 
@@ -614,6 +629,7 @@ public final class CipherTest extends TestCase {
         setExpectedOutputSize("RSA", Cipher.DECRYPT_MODE, 256);
         setExpectedOutputSize("RSA/ECB/NoPadding", Cipher.DECRYPT_MODE, 256);
         setExpectedOutputSize("RSA/ECB/PKCS1Padding", Cipher.DECRYPT_MODE, 245);
+        setExpectedOutputSize("RSA/ECB/OAEPPadding", Cipher.DECRYPT_MODE, 256);
 
         // SunJCE returns the full for size even when PKCS1Padding is specified
         setExpectedOutputSize("RSA/ECB/PKCS1Padding", Cipher.DECRYPT_MODE, "SunJCE", 256);
@@ -621,6 +637,21 @@ public final class CipherTest extends TestCase {
         // BC strips the leading 0 for us even when NoPadding is specified
         setExpectedOutputSize("RSA", Cipher.DECRYPT_MODE, "BC", 255);
         setExpectedOutputSize("RSA/ECB/NoPadding", Cipher.DECRYPT_MODE, "BC", 255);
+
+        // OAEP padding modes change the output and block size. SHA-1 is the default.
+        setExpectedOutputSize("RSA/ECB/OAEPPadding", Cipher.DECRYPT_MODE, 214);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", Cipher.DECRYPT_MODE, 214);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-224AndMGF1Padding", Cipher.DECRYPT_MODE, 198);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", Cipher.DECRYPT_MODE, 190);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-384AndMGF1Padding", Cipher.DECRYPT_MODE, 158);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-512AndMGF1Padding", Cipher.DECRYPT_MODE, 126);
+
+        setExpectedOutputSize("RSA/ECB/OAEPPadding", Cipher.ENCRYPT_MODE, 256);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-1AndMGF1Padding", Cipher.ENCRYPT_MODE, 256);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-224AndMGF1Padding", Cipher.ENCRYPT_MODE, 256);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-256AndMGF1Padding", Cipher.ENCRYPT_MODE, 256);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-384AndMGF1Padding", Cipher.ENCRYPT_MODE, 256);
+        setExpectedOutputSize("RSA/ECB/OAEPWithSHA-512AndMGF1Padding", Cipher.ENCRYPT_MODE, 256);
     }
 
     private static void setExpectedOutputSize(String algorithm, int value) {
@@ -3691,6 +3722,17 @@ public final class CipherTest extends TestCase {
 
         c.init(Cipher.ENCRYPT_MODE, p.encryptKey, p.spec);
 
+        // This doesn't quite work on OAEPPadding unless it's the default case,
+        // because its size depends on the message digest algorithms used.
+        if (!p.transformation.endsWith("OAEPPADDING")) {
+            assertEquals(p.transformation + " getBlockSize() ENCRYPT_MODE",
+                    getExpectedBlockSize(p.transformation, Cipher.ENCRYPT_MODE, provider),
+                    c.getBlockSize());
+        }
+        assertTrue(p.transformation + " getOutputSize(0) ENCRYPT_MODE",
+                getExpectedOutputSize(p.transformation, Cipher.ENCRYPT_MODE, provider) <= c
+                        .getOutputSize(0));
+
         if (p.aad != null) {
             c.updateAAD(p.aad);
         }
@@ -3706,6 +3748,18 @@ public final class CipherTest extends TestCase {
         assertNotNull(emptyCipherText);
 
         c.init(Cipher.DECRYPT_MODE, p.decryptKey, p.spec);
+
+        assertEquals(p.transformation + " getBlockSize() DECRYPT_MODE",
+                getExpectedBlockSize(p.transformation, Cipher.DECRYPT_MODE, provider),
+                c.getBlockSize());
+
+        // This doesn't quite work on OAEPPadding unless it's the default case,
+        // because its size depends on the message digest algorithms used.
+        if (!p.transformation.endsWith("OAEPPADDING")) {
+            assertTrue(p.transformation + " getOutputSize(0) DECRYPT_MODE",
+                    getExpectedOutputSize(p.transformation, Cipher.DECRYPT_MODE, provider) <= c
+                            .getOutputSize(0));
+        }
 
         if (!isAEAD(p.transformation)) {
             try {
@@ -3723,14 +3777,14 @@ public final class CipherTest extends TestCase {
                 throw maybe;
             }
         } catch (BadPaddingException maybe) {
-            // BC's OAEP has a bug where it doesn't support empty decrypt
+            // BC's OAEP has a bug where it doesn't support decrypt of a zero-length plaintext
             if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
                 throw maybe;
             }
         }
 
-        // empty decrypt
-        {
+        // decrypt an empty ciphertext; not valid for RSA
+        if (!p.transformation.contains("OAEP")) {
             if ((!isAEAD(p.transformation)
                     && (StandardNames.IS_RI || provider.equals("AndroidOpenSSL") ||
                             (provider.equals("BC") && p.transformation.contains("/CTR/"))))
@@ -3753,11 +3807,6 @@ public final class CipherTest extends TestCase {
                     if (!isAEAD(p.transformation)) {
                         throw maybe;
                     }
-                } catch (BadPaddingException maybe) {
-                    // BC's OAEP has a bug where it doesn't support empty decrypt
-                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
-                        throw maybe;
-                    }
                 }
                 try {
                     c.update(new byte[0]);
@@ -3769,11 +3818,6 @@ public final class CipherTest extends TestCase {
                     }
                 } catch (AEADBadTagException maybe) {
                     if (!isAEAD(p.transformation)) {
-                        throw maybe;
-                    }
-                } catch (BadPaddingException maybe) {
-                    // BC's OAEP has a bug where it doesn't support empty decrypt
-                    if (!("BC".equals(provider) && p.transformation.contains("OAEP"))) {
                         throw maybe;
                     }
                 }
