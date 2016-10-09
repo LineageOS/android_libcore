@@ -17,9 +17,9 @@
 package libcore.tlswire.handshake;
 
 import libcore.tlswire.util.IoUtils;
-import libcore.util.HexEncoding;
 import java.io.DataInput;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -100,6 +100,7 @@ public class HelloExtension {
 
     @Override
     public String toString() {
-        return "HelloExtension{type: " + name + ", data: " + HexEncoding.encode(data) + "}";
+        return "HelloExtension{type: " + name + ", data: " + new BigInteger(1, data).toString(16)
+            + "}";
     }
 }
