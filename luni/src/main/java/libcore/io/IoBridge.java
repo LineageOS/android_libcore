@@ -245,6 +245,7 @@ public final class IoBridge {
     public static final int JAVA_MCAST_BLOCK_SOURCE = 23;
     public static final int JAVA_MCAST_UNBLOCK_SOURCE = 24;
     public static final int JAVA_IP_MULTICAST_TTL = 17;
+    public static final int JAVA_IP_TTL = 25;
 
     /**
      * java.net has its own socket options similar to the underlying Unix ones. We paper over the
@@ -274,6 +275,10 @@ public final class IoBridge {
             // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
             // it doesn't matter which we return.
             return Libcore.os.getsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_HOPS);
+        case IoBridge.JAVA_IP_TTL:
+            // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
+            // it doesn't matter which we return.
+            return Libcore.os.getsockoptInt(fd, IPPROTO_IPV6, IPV6_UNICAST_HOPS);
         case SocketOptions.IP_TOS:
             // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
             // it doesn't matter which we return.
@@ -344,6 +349,10 @@ public final class IoBridge {
             // IPv4 multicast TTL uses a byte.
             Libcore.os.setsockoptByte(fd, IPPROTO_IP, IP_MULTICAST_TTL, (Integer) value);
             Libcore.os.setsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_HOPS, (Integer) value);
+            return;
+        case IoBridge.JAVA_IP_TTL:
+            Libcore.os.setsockoptInt(fd, IPPROTO_IP, IP_TTL, (Integer) value);
+            Libcore.os.setsockoptInt(fd, IPPROTO_IPV6, IPV6_UNICAST_HOPS, (Integer) value);
             return;
         case SocketOptions.IP_TOS:
             Libcore.os.setsockoptInt(fd, IPPROTO_IP, IP_TOS, (Integer) value);
