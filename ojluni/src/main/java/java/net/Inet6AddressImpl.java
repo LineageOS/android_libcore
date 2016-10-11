@@ -27,6 +27,8 @@ package java.net;
 import android.system.ErrnoException;
 import android.system.GaiException;
 import android.system.StructAddrinfo;
+import android.system.StructIcmpHdr;
+
 import dalvik.system.BlockGuard;
 
 import libcore.io.IoBridge;
@@ -35,11 +37,20 @@ import libcore.io.Libcore;
 import java.io.FileDescriptor;
 import java.io.IOException;
 
+import static android.system.OsConstants.AF_INET;
+import static android.system.OsConstants.AF_INET6;
 import static android.system.OsConstants.AF_UNSPEC;
 import static android.system.OsConstants.AI_ADDRCONFIG;
 import static android.system.OsConstants.EACCES;
 import static android.system.OsConstants.ECONNREFUSED;
 import static android.system.OsConstants.NI_NAMEREQD;
+import static android.system.OsConstants.ICMP6_ECHO_REPLY;
+import static android.system.OsConstants.ICMP_ECHOREPLY;
+import static android.system.OsConstants.IPPROTO_ICMP;
+import static android.system.OsConstants.IPPROTO_ICMPV6;
+import static android.system.OsConstants.IPPROTO_IPV6;
+import static android.system.OsConstants.IPV6_UNICAST_HOPS;
+import static android.system.OsConstants.SOCK_DGRAM;
 import static android.system.OsConstants.SOCK_STREAM;
 
 /*
@@ -146,10 +157,6 @@ class Inet6AddressImpl implements InetAddressImpl {
     @Override
     public boolean isReachable(InetAddress addr, int timeout, NetworkInterface netif, int ttl) throws IOException {
         // Android-changed: rewritten on the top of IoBridge and Libcore.os
-        // TODO (b/31926888): try ICMP first (http://code.google.com/p/android/issues/detail?id=20106)
-
-        // No good, let's fall back to TCP
-        FileDescriptor fd = IoBridge.socket(true);
         InetAddress sourceAddr = null;
         if (netif != null) {
             /*
@@ -175,7 +182,23 @@ class Inet6AddressImpl implements InetAddressImpl {
             }
         }
 
+        // Try ICMP first
+        if (icmpEcho(addr, timeout, sourceAddr, ttl)) {
+            return true;
+        }
+
+        // No good, let's fall back to TCP
+        return tcpEcho(addr, timeout, sourceAddr, ttl);
+    }
+
+    private boolean tcpEcho(InetAddress addr, int timeout, InetAddress sourceAddr, int ttl)
+            throws IOException {
+        FileDescriptor fd = null;
         try {
+            fd = IoBridge.socket(AF_INET6, SOCK_STREAM, 0);
+            if (ttl > 0) {
+                IoBridge.setSocketOption(fd, IoBridge.JAVA_IP_TTL, ttl);
+            }
             if (sourceAddr != null) {
                 IoBridge.bind(fd, sourceAddr, 0);
             }
@@ -190,6 +213,65 @@ class Inet6AddressImpl implements InetAddressImpl {
         } finally {
             IoBridge.closeAndSignalBlockedThreads(fd);
         }
+    }
+
+    protected boolean icmpEcho(InetAddress addr, int timeout, InetAddress sourceAddr, int ttl)
+            throws IOException {
+
+        FileDescriptor fd = null;
+        try {
+            boolean isIPv4 = addr instanceof Inet4Address;
+            int domain = isIPv4 ? AF_INET : AF_INET6;
+            int icmpProto = isIPv4 ? IPPROTO_ICMP : IPPROTO_ICMPV6;
+            fd = IoBridge.socket(domain, SOCK_DGRAM, icmpProto);
+
+            if (ttl > 0) {
+                IoBridge.setSocketOption(fd, IoBridge.JAVA_IP_TTL, ttl);
+            }
+            if (sourceAddr != null) {
+                IoBridge.bind(fd, sourceAddr, 0);
+            }
+
+            byte[] packet;
+
+            // ICMP is unreliable, try sending requests every second until timeout.
+            for (int to = timeout, seq = 0; to > 0; ++seq) {
+                int sockTo = to >= 1000 ? 1000 : to;
+
+                IoBridge.setSocketOption(fd, SocketOptions.SO_TIMEOUT, sockTo);
+
+                packet = StructIcmpHdr.IcmpEchoHdr(isIPv4, seq).getBytes();
+                IoBridge.sendto(fd, packet, 0, packet.length, 0, addr, 0);
+                final int icmpId = IoBridge.getSocketLocalPort(fd);
+
+                byte[] received = new byte[packet.length];
+                DatagramPacket receivedPacket = new DatagramPacket(received, packet.length);
+                int size = IoBridge
+                        .recvfrom(true, fd, received, 0, received.length, 0, receivedPacket, false);
+                if (size == packet.length) {
+                    byte expectedType = isIPv4 ? (byte) ICMP_ECHOREPLY
+                            : (byte) ICMP6_ECHO_REPLY;
+                    if (receivedPacket.getAddress().equals(addr)
+                            && received[0] == expectedType
+                            && received[4] == (byte) (icmpId >> 8)
+                            && received[5] == (byte) icmpId
+                            && received[6] == (byte) (seq >> 8)
+                            && received[7] == (byte) seq) {
+                        // This is the packet we're expecting.
+                        return true;
+                    }
+                }
+                to -= sockTo;
+            }
+        } catch (IOException e) {
+            // Silently ignore and fall back.
+        } finally {
+            try {
+                Libcore.os.close(fd);
+            } catch (ErrnoException e) { }
+        }
+
+        return false;
     }
 
     @Override

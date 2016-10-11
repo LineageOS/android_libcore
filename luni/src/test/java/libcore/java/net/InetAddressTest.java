@@ -16,7 +16,6 @@
 
 package libcore.java.net;
 
-import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -195,6 +194,21 @@ public class InetAddressTest extends junit.framework.TestCase {
         }
 
         assertFalse(inetAddress.isReachable(netIf, 256, 500));
+    }
+
+    // IPPROTO_ICMP socket kind requires setting ping_group_range. This is set on boot on Android.
+    // When running on host, make sure you run the command:
+    //   sudo sysctl -w net.ipv4.ping_group_range="0 65535"
+    public void test_isReachable_by_ICMP() throws Exception {
+        InetAddress[] inetAddresses = InetAddress.getAllByName("www.google.com");
+        for (InetAddress ia : inetAddresses) {
+            // ICMP is not reliable, allow 5 attempts before failing.
+            assertTrue(ia.isReachableByICMP(5 * 1000 /* ICMP timeout */));
+        }
+
+        // IPv6 discard prefix. RFC 6666.
+        final InetAddress blackholeAddress = InetAddress.getByName("100::1");
+        assertFalse(blackholeAddress.isReachable(1000));
     }
 
     public void test_isSiteLocalAddress() throws Exception {
