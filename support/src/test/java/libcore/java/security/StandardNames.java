@@ -222,6 +222,10 @@ public final class StandardNames extends Assert {
         provide("Mac", "HmacSHA256");
         provide("Mac", "HmacSHA384");
         provide("Mac", "HmacSHA512");
+        provide("Mac", "PBEWITHHMACSHA224");
+        provide("Mac", "PBEWITHHMACSHA256");
+        provide("Mac", "PBEWITHHMACSHA384");
+        provide("Mac", "PBEWITHHMACSHA512");
         // If adding a new MessageDigest, consider adding it to JarVerifier
         provide("MessageDigest", "MD2");
         provide("MessageDigest", "MD5");
@@ -244,6 +248,10 @@ public final class StandardNames extends Assert {
         provide("SecretKeyFactory", "PBEWithSHA1AndDESede");
         provide("SecretKeyFactory", "PBEWithSHA1AndRC2_40");
         provide("SecretKeyFactory", "PBKDF2WithHmacSHA1");
+        provide("SecretKeyFactory", "PBKDF2WithHmacSHA224");
+        provide("SecretKeyFactory", "PBKDF2WithHmacSHA256");
+        provide("SecretKeyFactory", "PBKDF2WithHmacSHA384");
+        provide("SecretKeyFactory", "PBKDF2WithHmacSHA512");
         provide("SecretKeyFactory", "PBKDF2WithHmacSHA1And8bit");
         provide("SecureRandom", "SHA1PRNG");
         provide("Signature", "MD2withRSA");
