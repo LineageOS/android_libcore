@@ -54,7 +54,6 @@ LOCAL_SRC_FILES := \
     PlainSocketImpl.c \
     PlainDatagramSocketImpl.c \
     DatagramPacket.c \
-    Inet6AddressImpl.c \
     ServerSocketChannelImpl.c \
     SocketInputStream.c \
     SocketOutputStream.c \
