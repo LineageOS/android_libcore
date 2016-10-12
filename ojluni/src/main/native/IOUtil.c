@@ -36,14 +36,6 @@
 #include "nio_util.h"
 #include "JNIHelp.h"
 
-// Android-changed: Added missing CHECK_NULL definition.
-#define CHECK_NULL(value) \
-{ \
-    if (value == NULL) { \
-        JNU_ThrowNullPointerException(env, NULL); \
-        return; \
-    } \
-}
 
 #define NATIVE_METHOD(className, functionName, signature) \
 { #functionName, signature, (void*)(className ## _ ## functionName) }
