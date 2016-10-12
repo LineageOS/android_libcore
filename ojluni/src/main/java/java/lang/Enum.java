@@ -234,26 +234,28 @@ public abstract class Enum<E extends Enum<E>>
      */
     public static <T extends Enum<T>> T valueOf(Class<T> enumType,
                                                 String name) {
-        if (enumType == null)
+        // Android-changed: Use a static BasicLruCache mapping Enum class -> Enum instance array.
+        if (enumType == null) {
             throw new NullPointerException("enumType == null");
-        if (name == null)
-            throw new NullPointerException("Name is null");
+        }
+        if (name == null) {
+            throw new NullPointerException("name == null");
+        }
         T[] values = getSharedConstants(enumType);
-        T result = null;
-        if (values != null) {
-            for (T value : values) {
-                if (name.equals(value.name())) {
-                    result = value;
-                }
-            }
-        } else {
+        if (values == null) {
             throw new IllegalArgumentException(enumType.toString() + " is not an enum type.");
         }
 
-        if (result != null)
-            return result;
+        // Iterate backwards through the array to retain historic Android behavior in the
+        // unexpected / likely invalid case where there are multiple values with the same name.
+        for (int i = values.length - 1; i >= 0; --i) {
+            T value = values[i];
+            if (name.equals(value.name())) {
+                return value;
+            }
+        }
         throw new IllegalArgumentException(
-            "No enum constant " + enumType.getCanonicalName() + "." + name);
+                "No enum constant " + enumType.getCanonicalName() + "." + name);
     }
 
     private static final BasicLruCache<Class<? extends Enum>, Object[]> sharedConstantsCache
