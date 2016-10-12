@@ -39,6 +39,7 @@ import static android.system.OsConstants.AF_UNSPEC;
 import static android.system.OsConstants.AI_ADDRCONFIG;
 import static android.system.OsConstants.EACCES;
 import static android.system.OsConstants.ECONNREFUSED;
+import static android.system.OsConstants.NI_NAMEREQD;
 import static android.system.OsConstants.SOCK_STREAM;
 
 /*
@@ -223,5 +224,15 @@ class Inet6AddressImpl implements InetAddressImpl {
         }
     }
 
-    private native String getHostByAddr0(byte[] addr) throws UnknownHostException;
+    private String getHostByAddr0(byte[] addr) throws UnknownHostException {
+        // Android-changed: Rewritten on the top of Libcore.os
+        InetAddress hostaddr = InetAddress.getByAddress(addr);
+        try {
+            return Libcore.os.getnameinfo(hostaddr, NI_NAMEREQD);
+        } catch (GaiException e) {
+            UnknownHostException uhe = new UnknownHostException(hostaddr.toString());
+            uhe.initCause(e);
+            throw uhe;
+        }
+    }
 }
