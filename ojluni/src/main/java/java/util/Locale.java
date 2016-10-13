@@ -1729,33 +1729,40 @@ public final class Locale implements Cloneable, Serializable {
 
     /**
      * Returns a name for the the locale's script that is appropriate for display to
-     * the user. If possible, the name will be localized for the default locale.  Returns
+     * the user. If possible, the name will be localized for the default
+     * {@link Locale.Category#DISPLAY DISPLAY} locale.  Returns
      * the empty string if this locale doesn't specify a script code.
      *
-     * @return the display name of the script code for the current default locale
+     * @return the display name of the script code for the current default
+     *     {@link Locale.Category#DISPLAY DISPLAY} locale
      * @since 1.7
      */
     public String getDisplayScript() {
-        return getDisplayScript(getDefault());
+        return getDisplayScript(getDefault(Category.DISPLAY));
     }
 
     /**
-     * Returns the name of this locale's script code, localized to {@link Locale}. If the
-     * script code is unknown, the return value of this method is the same as that of
-     * {@link #getScript()}.
+     * Returns a name for the locale's script that is appropriate
+     * for display to the user. If possible, the name will be
+     * localized for the given locale. Returns the empty string if
+     * this locale doesn't specify a script code.
      *
+     * @param inLocale The locale for which to retrieve the display script.
+     * @return the display name of the script code for the current default
+     * {@link Locale.Category#DISPLAY DISPLAY} locale
+     * @throws NullPointerException if <code>inLocale</code> is <code>null</code>
      * @since 1.7
      */
-    public String getDisplayScript(Locale locale) {
+    public String getDisplayScript(Locale inLocale) {
         // Android-changed BEGIN: Use ICU.
         String scriptCode = baseLocale.getScript();
         if (scriptCode.isEmpty()) {
             return "";
         }
 
-        String result = ICU.getDisplayScript(this, locale);
+        String result = ICU.getDisplayScript(this, inLocale);
         if (result == null) { // TODO: do we need to do this, or does ICU do it for us?
-            result = ICU.getDisplayScript(this, Locale.getDefault());
+            result = ICU.getDisplayScript(this, Locale.getDefault(Category.DISPLAY));
         }
 
         return result;
