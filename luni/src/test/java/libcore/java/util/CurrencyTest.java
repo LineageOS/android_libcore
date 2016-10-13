@@ -18,13 +18,9 @@ package libcore.java.util;
 
 import java.util.Currency;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 
 import libcore.util.SerializationTester;
-
-import static java.util.Locale.Category.DISPLAY;
-import static java.util.Locale.Category.FORMAT;
 
 public class CurrencyTest extends junit.framework.TestCase {
     // Regression test to ensure that Currency.getSymbol(Locale) returns the
@@ -53,13 +49,12 @@ public class CurrencyTest extends junit.framework.TestCase {
      */
     public void test_getSymbol_noLocaleArgument() {
         Currency currency = Currency.getInstance("DEM");
-        Locales locales = getDefaultLocales();
+        Locales locales = Locales.getAndSetDefaultForTest(Locale.US, Locale.GERMANY, Locale.FRANCE);
         try {
-            // Locales(locale, displayLocale, formatLocale)
-            setDefaultLocales(new Locales(Locale.US, Locale.GERMANY, Locale.FRANCE));
+            // getAndSetDefaultForTest(uncategorizedLocale, displayLocale, formatLocale)
             assertEquals("DM", currency.getSymbol());
         } finally {
-            setDefaultLocales(locales);
+            locales.setAsDefault();
         }
     }
 
@@ -115,13 +110,12 @@ public class CurrencyTest extends junit.framework.TestCase {
      */
     public void test_getDisplayName_noLocaleArgument() {
         Currency currency = Currency.getInstance("DEM");
-        Locales locales = getDefaultLocales();
+        // getAndSetDefaultForTest(uncategorizedLocale, displayLocale, formatLocale)
+        Locales locales = Locales.getAndSetDefaultForTest(Locale.US, Locale.GERMANY, Locale.FRANCE);
         try {
-            // Locales(uncategorizedLocale, displayLocale, formatLocale)
-            setDefaultLocales(new Locales(Locale.US, Locale.GERMANY, Locale.FRANCE));
             assertEquals("Deutsche Mark", currency.getDisplayName());
         } finally {
-            setDefaultLocales(locales);
+            locales.setAsDefault();
         }
     }
 
@@ -169,55 +163,6 @@ public class CurrencyTest extends junit.framework.TestCase {
         assertEquals(826, Currency.getInstance("GBP").getNumericCode());
         assertEquals(999, Currency.getInstance("XXX").getNumericCode());
         assertEquals(0, Currency.getInstance("XFU").getNumericCode());
-    }
-
-    static Locales getDefaultLocales() {
-        return new Locales(
-                Locale.getDefault(), Locale.getDefault(DISPLAY), Locale.getDefault(FORMAT));
-    }
-
-    static void setDefaultLocales(Locales locales) {
-        // The lines below must set the Locales in this order because setDefault(Locale)
-        // overwrites the other ones.
-        Locale.setDefault(locales.uncategorizedLocale);
-        Locale.setDefault(DISPLAY, locales.displayLocale);
-        Locale.setDefault(FORMAT, locales.formatLocale);
-
-        assertEquals(locales, getDefaultLocales()); // sanity check
-    }
-
-    static class Locales {
-        final Locale uncategorizedLocale;
-        final Locale displayLocale;
-        final Locale formatLocale;
-
-        public Locales(Locale uncategorizedLocale, Locale displayLocale, Locale formatLocale) {
-            this.uncategorizedLocale = uncategorizedLocale;
-            this.displayLocale = displayLocale;
-            this.formatLocale = formatLocale;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (!(obj instanceof Locales)) {
-                return false;
-            }
-            Locales that = (Locales) obj;
-            return uncategorizedLocale.equals(that.uncategorizedLocale)
-                    && displayLocale.equals(that.displayLocale)
-                    && formatLocale.equals(that.formatLocale);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(uncategorizedLocale, displayLocale, formatLocale);
-        }
-
-        @Override
-        public String toString() {
-            return "Locales[displayLocale=" + displayLocale + ", locale=" + uncategorizedLocale +
-                    ", formatLocale=" + formatLocale + ']';
-        }
     }
 
 }

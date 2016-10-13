@@ -799,22 +799,27 @@ public class LocaleTest extends junit.framework.TestCase {
 
         Locale l = b.build();
 
-        // getDisplayScript() test relies on the default locale. We set it here to avoid test
-        // failures if the test device is set to a non-English locale.
-        Locale.setDefault(Locale.US);
-        assertEquals("Latin", l.getDisplayScript());
+        // getAndSetDefaultForTest(uncategorizedLocale, displayLocale, formatLocale)
+        Locales locales = Locales.getAndSetDefaultForTest(Locale.US, Locale.GERMANY, Locale.FRANCE);
+        try {
+            // Check that getDisplayScript() uses the default DISPLAY Locale.
+            assertEquals("Lateinisch", l.getDisplayScript()); // the German word for "Latin"
 
-        assertEquals("Lateinisch", l.getDisplayScript(Locale.GERMAN));
-        // Fallback for navajo, a language for which we don't have data.
-        assertEquals("Latin", l.getDisplayScript(new Locale("nv", "US")));
+            assertEquals("latino", l.getDisplayScript(Locale.ITALY));
 
-        b= new Locale.Builder();
-        b.setLanguage("en").setRegion("US").setScript("Fooo");
+            // Fallback for navajo, a language for which we don't have data.
+            assertEquals("Latin", l.getDisplayScript(new Locale("nv", "US")));
 
-        // Will be equivalent to getScriptCode for scripts that aren't
-        // registered with ISO-15429 (but are otherwise well formed).
-        l = b.build();
-        assertEquals("Fooo", l.getDisplayScript());
+            b = new Locale.Builder();
+            b.setLanguage("en").setRegion("US").setScript("Fooo");
+
+            // Will be equivalent to getScriptCode for scripts that aren't
+            // registered with ISO-15429 (but are otherwise well formed).
+            l = b.build();
+            assertEquals("Fooo", l.getDisplayScript());
+        } finally {
+            locales.setAsDefault();
+        }
     }
 
     public void test_setLanguageTag_malformedTags() {
@@ -1279,6 +1284,7 @@ public class LocaleTest extends junit.framework.TestCase {
     public void test_setDefault_withCategory() {
         final Locale defaultLocale = Locale.getDefault();
         try {
+            // Establish a baseline for the checks further down
             Locale.setDefault(Locale.US);
             assertEquals(Locale.US, Locale.getDefault(Locale.Category.FORMAT));
             assertEquals(Locale.US, Locale.getDefault(Locale.Category.DISPLAY));
@@ -1298,6 +1304,12 @@ public class LocaleTest extends junit.framework.TestCase {
             assertEquals(Locale.FRANCE, Locale.getDefault(Locale.Category.FORMAT));
             assertEquals(Locale.FRANCE, Locale.getDefault(Locale.Category.DISPLAY));
             assertEquals(Locale.FRANCE, Locale.getDefault());
+
+            // Check that setDefault(Locale) sets all three defaults
+            Locale.setDefault(Locale.US);
+            assertEquals(Locale.US, Locale.getDefault(Locale.Category.FORMAT));
+            assertEquals(Locale.US, Locale.getDefault(Locale.Category.DISPLAY));
+            assertEquals(Locale.US, Locale.getDefault());
         } finally {
             Locale.setDefault(defaultLocale);
         }
