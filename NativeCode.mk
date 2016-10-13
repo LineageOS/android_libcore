@@ -80,7 +80,7 @@ core_c_includes := libcore/include $(LOCAL_C_INCLUDES)
 core_shared_libraries := $(LOCAL_SHARED_LIBRARIES)
 core_static_libraries := $(LOCAL_STATIC_LIBRARIES)
 libart_cflags := $(LOCAL_CFLAGS) -Wall -Wextra -Werror
-core_cppflags += -std=gnu++11 -DU_USING_ICU_NAMESPACE=0
+core_cppflags += -DU_USING_ICU_NAMESPACE=0
 # TODO(narayan): Prune down this list of exclusions once the underlying
 # issues have been fixed. Most of these are small changes except for
 # -Wunused-parameter.
