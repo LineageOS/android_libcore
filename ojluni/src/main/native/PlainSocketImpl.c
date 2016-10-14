@@ -76,11 +76,6 @@ jfieldID psi_closePendingID;
 
 extern void setDefaultScopeID(JNIEnv *env, struct sockaddr *him);
 
-/*
- * file descriptor used for dup2
- */
-static int marker_fd = -1;
-
 
 #define SET_NONBLOCKING(fd) {           \
         int flags = fcntl(fd, F_GETFL); \
@@ -156,9 +151,6 @@ static void PlainSocketImpl_initProto(JNIEnv *env) {
     CHECK_NULL(psi_closePendingID);
     IO_fd_fdID = NET_GetFileDescriptorID(env);
     CHECK_NULL(IO_fd_fdID);
-
-    /* Create the marker fd used for dup2 */
-    marker_fd = getMarkerFD();
 }
 
 /* a global reference to the java.net.SocketException class. In
@@ -844,8 +836,13 @@ PlainSocketImpl_socketClose0(JNIEnv *env, jobject this,
         fd = (*env)->GetIntField(env, fdObj, IO_fd_fdID);
     }
     if (fd != -1) {
+        int marker_fd = -1;
+        if (useDeferredClose) {
+            marker_fd = getMarkerFD();
+        }
         if (useDeferredClose && marker_fd >= 0) {
             NET_Dup2(marker_fd, fd);
+            NET_SocketClose(marker_fd);
         } else {
             (*env)->SetIntField(env, fdObj, IO_fd_fdID, -1);
             untagSocket(env, fd);
