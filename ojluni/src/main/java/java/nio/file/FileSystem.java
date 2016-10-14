@@ -335,18 +335,12 @@ public abstract class FileSystem
      * </tr>
      * <tr>
      *   <td><tt>&#47;home&#47;*&#47;*</tt>
-     *   <td>Matches <tt>&#47;home&#47;gus&#47;data</tt> on UNIX platforms</td>
+     *   <td>Matches <tt>&#47;home&#47;gus&#47;data</tt></td>
      * </tr>
      * <tr>
      *   <td><tt>&#47;home&#47;**</tt>
      *   <td>Matches <tt>&#47;home&#47;gus</tt> and
-     *   <tt>&#47;home&#47;gus&#47;data</tt> on UNIX platforms</td>
-     * </tr>
-     * <tr>
-     *   <td><tt>C:&#92;&#92;*</tt>
-     *   <td>Matches <tt>C:&#92;foo</tt> and <tt>C:&#92;bar</tt> on the Windows
-     *   platform (note that the backslash is escaped; as a string literal in the
-     *   Java Language the pattern would be <tt>"C:&#92;&#92;&#92;&#92;*"</tt>) </td>
+     *   <tt>&#47;home&#47;gus&#47;data</tt></td>
      * </tr>
      *
      * </table>
