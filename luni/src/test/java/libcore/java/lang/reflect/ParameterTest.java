@@ -781,42 +781,6 @@ public class ParameterTest extends TestCase {
                 .checkGetParameterizedType("class " + outerClass.getName() + "");
     }
 
-    public void testLambdaClassConstructor() throws Exception {
-        Class<?> outerClass = ParameterTest.class;
-        Class<?> innerClass = getLambdaClassWith1ParameterConstructor();
-        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
-
-        checkLambdaClassConstructor(outerClass, constructor);
-    }
-
-    private Class<?> getLambdaClassWith1ParameterConstructor() {
-        return ((Callable<?>) ParameterTest.this::outerClassMethod).getClass();
-    }
-
-    public void testLambdaClassConstructor_withMetadata() throws Exception {
-        Class<?> outerClass = loadTestOuterClassWithMetadata();
-        Object outer = outerClass.newInstance();
-        Class<?> innerClass = (Class<?>) outerClass.getDeclaredMethod(
-                "getLambdaClassWith1ParameterConstructor").invoke(outer);
-        Constructor<?> constructor = innerClass.getDeclaredConstructor(outerClass);
-
-        // There should be no parameter metadata for lambda classes.
-        checkLambdaClassConstructor(outerClass, constructor);
-    }
-
-    // This behavior is likely to be quite brittle and may not be specified.
-    private void checkLambdaClassConstructor(Class<?> outerClass, Constructor<?> constructor) {
-        ExecutableTestHelper helper = new ExecutableTestHelper(constructor);
-        helper.checkStandardParametersBehavior()
-                .checkParametersToString("[" + outerClass.getName() + " arg0]")
-                .checkParametersMetadataNotAvailable()
-                .checkParametersNoVarArgs();
-
-        helper.getParameterTestHelper(0)
-                .checkGetType(outerClass)
-                .checkGetParameterizedType("class " + outerClass.getName() + "");
-    }
-
     private static class NonIdenticalParameters {
         @SuppressWarnings("unused")
         void method0(String p0) {}
