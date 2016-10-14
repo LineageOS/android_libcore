@@ -139,23 +139,9 @@ static void NativeBN_putULongInt(JNIEnv* env, jclass, jlong a0, jlong java_dw, j
   uint64_t dw = java_dw;
   BIGNUM* a = toBigNum(a0);
 
-  static_assert(sizeof(dw) == sizeof(BN_ULONG) ||
-                sizeof(dw) == 2*sizeof(BN_ULONG), "Unknown BN configuration");
-
-  if (sizeof(dw) == sizeof(BN_ULONG)) {
-    if (!BN_set_word(a, dw)) {
-      throwException(env);
-      return;
-    }
-  } else if (sizeof(dw) == 2 * sizeof(BN_ULONG)) {
-    if (!bn_wexpand(a, 2)) {
-      throwException(env);
-      return;
-    }
-    a->d[0] = dw;
-    a->d[1] = dw >> 32;
-    a->top = 2;
-    bn_correct_top(a);
+  if (!BN_set_u64(a, dw)) {
+    throwException(env);
+    return;
   }
 
   BN_set_negative(a, neg);
