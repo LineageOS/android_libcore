@@ -102,13 +102,13 @@ public class ServerSocketFactoryTest extends TestCase {
             }
             fail("Failed to exhaust backlog after " + max + " connections!");
         } catch (IOException expected) {
+        } finally {
+            for (Socket socket : backlog) {
+                socket.close();
+            }
         }
 
         System.out.println("backlog peaked at " + peak);
-
-        for (Socket socket : backlog) {
-            socket.close();
-        }
 
         /*
          * In 4.5 of UNIX Network Programming, Stevens says:
