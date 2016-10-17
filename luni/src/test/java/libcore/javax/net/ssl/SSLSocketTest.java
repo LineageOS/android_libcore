@@ -2225,11 +2225,9 @@ public class SSLSocketTest extends TestCase {
         final SSLSocket client = (SSLSocket)
             context.clientContext.getSocketFactory().createSocket();
 
-        try {
-            client.setEnabledProtocols(new String[] {"SSLv3"});
-            fail("SSLSocket should not support SSLv3 protocol");
-        } catch (IllegalArgumentException expected) {
-        }
+        // For app compatibility, SSLv3 is stripped out when setting only.
+        client.setEnabledProtocols(new String[] {"SSLv3"});
+        assertEquals(0, client.getEnabledProtocols().length);
 
         try {
             client.setEnabledProtocols(new String[] {"SSL"});
