@@ -22,9 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+#define LOG_TAG "libcore"
 
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <android/log.h>
 
