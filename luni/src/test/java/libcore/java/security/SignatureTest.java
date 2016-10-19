@@ -16,6 +16,7 @@
 
 package libcore.java.security;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -78,6 +79,7 @@ public class SignatureTest extends TestCase {
 
     public void testSignature_getInstance_SuppliedProviderNotRegistered_Success() throws Exception {
         Provider mockProvider = new MockProvider("MockProvider") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
             }
@@ -92,6 +94,7 @@ public class SignatureTest extends TestCase {
 
     public void testSignature_getInstance_DoesNotSupportKeyClass_Success() throws Exception {
         Provider mockProvider = new MockProvider("MockProvider") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
                 put("Signature.FOO SupportedKeyClasses", "None");
@@ -116,6 +119,7 @@ public class SignatureTest extends TestCase {
     public void testSignature_init_DoesNotSupportKeyClass_throwsInvalidKeyException()
             throws Exception {
         Provider mockProvider = new MockProvider("MockProvider") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
                 put("Signature.FOO SupportedKeyClasses", "None");
@@ -136,6 +140,7 @@ public class SignatureTest extends TestCase {
     public void testSignature_getInstance_OnlyUsesSpecifiedProvider_SameNameAndClass_Success()
             throws Exception {
         Provider mockProvider = new MockProvider("MockProvider") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
             }
@@ -145,6 +150,7 @@ public class SignatureTest extends TestCase {
         try {
             {
                 Provider mockProvider2 = new MockProvider("MockProvider") {
+                    @Override
                     public void setup() {
                         put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
                     }
@@ -159,18 +165,21 @@ public class SignatureTest extends TestCase {
 
     public void testSignature_getInstance_DelayedInitialization_KeyType() throws Exception {
         Provider mockProviderSpecific = new MockProvider("MockProviderSpecific") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.SpecificKeyTypes.class.getName());
                 put("Signature.FOO SupportedKeyClasses", MockPrivateKey.class.getName());
             }
         };
         Provider mockProviderSpecific2 = new MockProvider("MockProviderSpecific2") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.SpecificKeyTypes2.class.getName());
                 put("Signature.FOO SupportedKeyClasses", MockPrivateKey2.class.getName());
             }
         };
         Provider mockProviderAll = new MockProvider("MockProviderAll") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MockSignatureSpi.AllKeyTypes.class.getName());
             }
@@ -422,6 +431,7 @@ public class SignatureTest extends TestCase {
 
     public void testSignature_getProvider_Subclass() throws Exception {
         Provider mockProviderNonSpi = new MockProvider("MockProviderNonSpi") {
+            @Override
             public void setup() {
                 put("Signature.FOO", MySignature.class.getName());
             }
@@ -2874,7 +2884,8 @@ public class SignatureTest extends TestCase {
         Signature sig = Signature.getInstance("NONEwithRSA");
         sig.initVerify(pubKey);
         sig.update(Vector1Data);
-        assertFalse("Invalid signature must not verify", sig.verify("Invalid".getBytes()));
+        assertFalse("Invalid signature must not verify",
+                sig.verify("Invalid".getBytes(UTF_8)));
     }
 
     public void testSign_NONEwithRSA_Key_DataTooLarge_Failure() throws Exception {
@@ -2973,7 +2984,8 @@ public class SignatureTest extends TestCase {
         sig.initVerify(pubKey);
         sig.update(Vector1Data);
 
-        assertFalse("Invalid signature should not verify", sig.verify("Invalid sig".getBytes()));
+        assertFalse("Invalid signature should not verify",
+                sig.verify("Invalid sig".getBytes(UTF_8)));
     }
 
     public void testVerify_NONEwithRSA_Key_SignatureTooLarge_Failure() throws Exception {
@@ -3299,13 +3311,13 @@ public class SignatureTest extends TestCase {
 
         Signature ecdsaVerify = Signature.getInstance("SHA1withECDSA");
         ecdsaVerify.initVerify(pub);
-        ecdsaVerify.update("Satoshi Nakamoto".getBytes("UTF-8"));
+        ecdsaVerify.update("Satoshi Nakamoto".getBytes(UTF_8));
         boolean result = ecdsaVerify.verify(SIGNATURE);
         assertEquals(true, result);
 
         ecdsaVerify = Signature.getInstance("SHA1withECDSA");
         ecdsaVerify.initVerify(pub);
-        ecdsaVerify.update("Not Satoshi Nakamoto".getBytes("UTF-8"));
+        ecdsaVerify.update("Not Satoshi Nakamoto".getBytes(UTF_8));
         result = ecdsaVerify.verify(SIGNATURE);
         assertEquals(false, result);
     }
