@@ -16,6 +16,8 @@
 
 package libcore.java.security.cert;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import sun.security.provider.X509Factory;
 import sun.security.x509.X509CRLImpl;
 import tests.support.resource.Support_Resources;
@@ -30,7 +32,6 @@ import java.io.PrintStream;
 import java.security.InvalidKeyException;
 import java.security.Provider;
 import java.security.Security;
-import java.security.SignatureException;
 import java.security.cert.CRL;
 import java.security.cert.CRLReason;
 import java.security.cert.CertificateFactory;
@@ -129,7 +130,7 @@ public class X509CRLTest extends TestCase {
         final InputStream ris = Support_Resources.getStream(name);
         try {
 
-            final BufferedReader buf = new BufferedReader(new InputStreamReader(ris));
+            final BufferedReader buf = new BufferedReader(new InputStreamReader(ris, UTF_8));
 
             String line;
             while ((line = buf.readLine()) != null) {
