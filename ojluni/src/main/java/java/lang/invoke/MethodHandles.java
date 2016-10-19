@@ -1018,8 +1018,63 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          */
         public MethodHandle findSpecial(Class<?> refc, String name, MethodType type,
                                         Class<?> specialCaller) throws NoSuchMethodException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findSpecial is not implemented");
+            if (specialCaller == null) {
+                throw new NullPointerException("specialCaller == null");
+            }
+
+            if (type == null) {
+                throw new NullPointerException("type == null");
+            }
+
+            if (name == null) {
+                throw new NullPointerException("name == null");
+            }
+
+            if (refc == null) {
+                throw new NullPointerException("ref == null");
+            }
+
+            // Make sure that the special caller is identical to the lookup class or that we have
+            // private access.
+            checkSpecialCaller(specialCaller);
+
+            // Even though constructors are invoked using a "special" invoke, handles to them can't
+            // be created using findSpecial. Callers must use findConstructor instead.
+            if ("<init>".equals(name)) {
+                throw new NoSuchMethodException("<init> is constructor.");
+            }
+
+            Method method = refc.getDeclaredMethod(name, type.ptypes());
+            if (Modifier.isPrivate(method.getModifiers())) {
+                // Since this is a private method, we'll need to also make sure that the
+                // lookup class is the same as the refering class. We've already checked that
+                // the specialCaller is the same as the special lookup class, both of these must
+                // be the same as the declaring class(*) in order to access the private method.
+                //
+                // (*) Well, this isn't true for nested classes but OpenJDK doesn't support those
+                // either.
+                if (refc != lookupClass()) {
+                    throw new IllegalAccessException("no private access for invokespecial : "
+                            + refc + ", from" + this);
+                }
+
+                // This is a private method, so there's nothing special to do.
+                MethodType handleType = type.insertParameterTypes(0, refc);
+                return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_DIRECT,
+                        handleType);
+            }
+
+            // This is a public, protected or package-private method, which means we're expecting
+            // invoke-super semantics. We'll have to restrict the receiver type appropriately on the
+            // handle once we check that there really is a "super" relationship between them.
+            if (!method.getDeclaringClass().isAssignableFrom(specialCaller)) {
+                throw new IllegalAccessException(refc + "is not assignable from " + specialCaller);
+            }
+
+            // Note that we restrict the receiver to "specialCaller" instances.
+            MethodType handleType = type.insertParameterTypes(0, specialCaller);
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_SUPER,
+                    handleType);
         }
 
         /**
@@ -1404,17 +1459,21 @@ return mh1;
             return "member is private to package";
         }
 
-        private static final boolean ALLOW_NESTMATE_ACCESS = false;
+        // Android-changed: checkSpecialCaller assumes that ALLOW_NESTMATE_ACCESS = false,
+        // as in upstream OpenJDK.
+        //
+        // private static final boolean ALLOW_NESTMATE_ACCESS = false;
 
         private void checkSpecialCaller(Class<?> specialCaller) throws IllegalAccessException {
-            int allowedModes = this.allowedModes;
-            // Android-changed: No support for TRUSTED lookups.
+            // Android-changed: No support for TRUSTED lookups. Also construct the
+            // IllegalAccessException by hand because the upstream code implicitly assumes
+            // that the lookupClass == specialCaller.
+            //
             // if (allowedModes == TRUSTED)  return;
-            if (!hasPrivateAccess()
-                    || (specialCaller != lookupClass()
-                    && !(ALLOW_NESTMATE_ACCESS &&
-                    VerifyAccess.isSamePackageMember(specialCaller, lookupClass()))))
-                throwMakeAccessException("no private access for invokespecial", this);
+            if (!hasPrivateAccess() || (specialCaller != lookupClass())) {
+                throw new IllegalAccessException("no private access for invokespecial : "
+                        + specialCaller + ", from" + this);
+            }
         }
 
         public void throwMakeAccessException(String message, Object from) throws
