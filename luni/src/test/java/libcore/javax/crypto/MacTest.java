@@ -16,18 +16,17 @@
 
 package libcore.javax.crypto;
 
-import junit.framework.TestCase;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.security.InvalidKeyException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Arrays;
-
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.PBEParameterSpec;
+import junit.framework.TestCase;
 
 public class MacTest extends TestCase {
     private static abstract class MockProvider extends Provider {
@@ -47,6 +46,7 @@ public class MacTest extends TestCase {
     public void testMac_init_DoesNotSupportKeyClass_throwsInvalidKeyException()
             throws Exception {
         Provider mockProvider = new MockProvider("MockProvider") {
+            @Override
             public void setup() {
                 put("Mac.FOO", MockMacSpi.AllKeyTypes.class.getName());
                 put("Mac.FOO SupportedKeyClasses", "none");
@@ -108,7 +108,7 @@ public class MacTest extends TestCase {
     public void test_PBEWITHHMACSHA_Variants() throws Exception {
         byte[] plaintext = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
                 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34 };
-        byte[] salt = "saltsalt".getBytes();
+        byte[] salt = "saltsalt".getBytes(UTF_8);
         char[] password = "password".toCharArray();
         int iterationCount = 100;
         int[] shaVariants = { 1, 224, 256, 384, 512 };

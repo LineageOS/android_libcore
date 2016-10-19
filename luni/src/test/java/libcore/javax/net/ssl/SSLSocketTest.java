@@ -16,6 +16,8 @@
 
 package libcore.javax.net.ssl;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
@@ -125,14 +127,14 @@ public class SSLSocketTest extends TestCase {
 
         String clientToServerString = "this is sent from the client to the server...";
         String serverToClientString = "... and this from the server to the client";
-        byte[] clientToServer = clientToServerString.getBytes();
-        byte[] serverToClient = serverToClientString.getBytes();
+        byte[] clientToServer = clientToServerString.getBytes(UTF_8);
+        byte[] serverToClient = serverToClientString.getBytes(UTF_8);
 
         KeyManager pskKeyManager = PSKKeyManagerProxy.getConscryptPSKKeyManager(
                 new PSKKeyManagerProxy() {
             @Override
             protected SecretKey getKey(String identityHint, String identity, Socket socket) {
-                return new SecretKeySpec("Just an arbitrary key".getBytes(), "RAW");
+                return new SecretKeySpec("Just an arbitrary key".getBytes(UTF_8), "RAW");
             }
         });
         TestSSLContext c = TestSSLContext.createWithAdditionalKeyManagers(
@@ -533,6 +535,7 @@ public class SSLSocketTest extends TestCase {
         executor.shutdown();
         final boolean[] handshakeCompletedListenerCalled = new boolean[1];
         client.addHandshakeCompletedListener(new HandshakeCompletedListener() {
+            @Override
             public void handshakeCompleted(HandshakeCompletedEvent event) {
                 try {
                     SSLSession session = event.getSession();
@@ -655,6 +658,7 @@ public class SSLSocketTest extends TestCase {
         });
         executor.shutdown();
         client.addHandshakeCompletedListener(new HandshakeCompletedListener() {
+            @Override
             public void handshakeCompleted(HandshakeCompletedEvent event) {
                 throw expectedException;
             }
@@ -1108,6 +1112,7 @@ public class SSLSocketTest extends TestCase {
 
         // ...so are a lot of other operations...
         HandshakeCompletedListener l = new HandshakeCompletedListener () {
+            @Override
             public void handshakeCompleted(HandshakeCompletedEvent e) {}
         };
         client.addHandshakeCompletedListener(l);
@@ -1385,10 +1390,10 @@ public class SSLSocketTest extends TestCase {
 
         // Reflection is used so this can compile on the RI
         String expectedClassName = "com.android.org.conscrypt.OpenSSLSocketImpl";
-        Class actualClass = client.getClass();
+        Class<?> actualClass = client.getClass();
         assertEquals(expectedClassName, actualClass.getName());
         Method setSoWriteTimeout = actualClass.getMethod("setSoWriteTimeout",
-                                                         new Class[] { Integer.TYPE });
+                                                         new Class<?>[] { Integer.TYPE });
         setSoWriteTimeout.invoke(client, 1);
 
 
@@ -1953,6 +1958,7 @@ public class SSLSocketTest extends TestCase {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     server.setEnabledProtocols(new String[] { "TLSv1.2" });
                     server.setEnabledCipherSuites(serverCipherSuites);
@@ -1961,6 +1967,7 @@ public class SSLSocketTest extends TestCase {
                 }
             });
         Future<Void> c = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     client.setEnabledProtocols(new String[] { "TLSv1.2" });
                     client.setEnabledCipherSuites(clientCipherSuites);
@@ -1991,6 +1998,7 @@ public class SSLSocketTest extends TestCase {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     server.setEnabledProtocols(new String[] { "TLSv1.2", "TLSv1.1" });
                     server.startHandshake();
@@ -1998,6 +2006,7 @@ public class SSLSocketTest extends TestCase {
                 }
             });
         Future<Void> c = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     client.setEnabledProtocols(new String[] { "TLSv1.1" });
                     client.startHandshake();
@@ -2034,6 +2043,7 @@ public class SSLSocketTest extends TestCase {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     server.setEnabledProtocols(new String[] { "TLSv1.1", "TLSv1" });
                     server.setEnabledCipherSuites(serverCipherSuites);
@@ -2049,6 +2059,7 @@ public class SSLSocketTest extends TestCase {
                 }
             });
         Future<Void> c = executor.submit(new Callable<Void>() {
+                @Override
                 public Void call() throws Exception {
                     client.setEnabledProtocols(new String[] { "TLSv1" });
                     client.setEnabledCipherSuites(clientCipherSuites);
@@ -2083,6 +2094,7 @@ public class SSLSocketTest extends TestCase {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> c = executor.submit(new Callable<Void>() {
+            @Override
             public Void call() throws Exception {
                 try {
                     client.startHandshake();
@@ -2095,6 +2107,7 @@ public class SSLSocketTest extends TestCase {
             }
         });
         Future<Void> s = executor.submit(new Callable<Void>() {
+            @Override
             public Void call() throws Exception {
                 // Wait until the client sends something.
                 byte[] scratch = new byte[8192];
@@ -2134,6 +2147,7 @@ public class SSLSocketTest extends TestCase {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
         Future<Void> s = executor.submit(new Callable<Void>() {
+            @Override
             public Void call() throws Exception {
                 try {
                     server.startHandshake();
@@ -2146,6 +2160,7 @@ public class SSLSocketTest extends TestCase {
             }
         });
         Future<Void> c = executor.submit(new Callable<Void>() {
+            @Override
             public Void call() throws Exception {
                 // Send bogus ClientHello:
                 // TLSv1.2 Record Layer: Handshake Protocol: Client Hello
