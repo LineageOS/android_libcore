@@ -19,8 +19,6 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import dalvik.system.DexClassLoader;
-
 /**
  * Support class for creating a file-based ClassLoader. Delegates to either
  * Dalvik's PathClassLoader or the RI's URLClassLoader, but does so by-name.
