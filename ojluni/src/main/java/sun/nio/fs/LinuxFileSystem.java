@@ -102,7 +102,9 @@ class LinuxFileSystem extends UnixFileSystem {
      */
     @Override
     Iterable<UnixMountEntry> getMountEntries() {
-        return getMountEntries("/etc/mtab");
+        // Android-changed: As /etc/mtab is not available in Android, therefore, using /proc/mounts
+        // instead.
+        return getMountEntries("/proc/mounts");
     }
 
 
