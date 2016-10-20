@@ -256,7 +256,11 @@ public final class SunCertPathBuilder extends CertPathBuilderSpi {
             currentState.updateState(anchor, buildParams);
 
             currentState.algorithmChecker = new AlgorithmChecker(anchor);
+            /**
+             * BEGIN ANDROID-REMOVED: this mechanism for checking untrusted certificates is not used in
+             * Android.
             currentState.untrustedChecker = new UntrustedChecker();
+             * END ANDROID-REMOVED */
             try {
                 depthFirstSearchReverse(null, currentState,
                                         new ReverseBuilder(buildParams),
@@ -303,7 +307,11 @@ public final class SunCertPathBuilder extends CertPathBuilderSpi {
         adjacencyList.clear();
         adjacencyList.add(new LinkedList<Vertex>());
 
+        /**
+         * BEGIN ANDROID-REMOVED: this mechanism for checking untrusted certificates is not used in
+         * Android.
         currentState.untrustedChecker = new UntrustedChecker();
+         * END ANDROID-REMOVED */
 
         depthFirstSearchForward(buildParams.targetSubject(), currentState,
                                 new ForwardBuilder(buildParams,
