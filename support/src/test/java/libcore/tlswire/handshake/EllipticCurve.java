@@ -42,6 +42,7 @@ public enum EllipticCurve {
     SECP192K1(18, "secp192k1"),
     SECP192R1(19, "secp192r1"),
     SECP224K1(20, "secp224k1"),
+    SECP224R1(21, "secp224r1"),
     SECP256K1(22, "secp256k1"),
     SECP256R1(23, "secp256r1"),
     SECP384R1(24, "secp384r1"),
