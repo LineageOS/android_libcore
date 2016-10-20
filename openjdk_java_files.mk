@@ -1467,7 +1467,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilderParameters.java \
     ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilderResult.java \
     ojluni/src/main/java/sun/security/provider/certpath/URICertStore.java \
-    ojluni/src/main/java/sun/security/provider/certpath/UntrustedChecker.java \
     ojluni/src/main/java/sun/security/provider/certpath/Vertex.java \
     ojluni/src/main/java/sun/security/provider/certpath/X509CertPath.java \
     ojluni/src/main/java/sun/security/provider/certpath/X509CertificatePair.java \
@@ -1495,7 +1494,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/util/ResourcesMgr.java \
     ojluni/src/main/java/sun/security/util/SecurityConstants.java \
     ojluni/src/main/java/sun/security/util/SignatureFileVerifier.java \
-    ojluni/src/main/java/sun/security/util/UntrustedCertificates.java \
     ojluni/src/main/java/sun/security/x509/AccessDescription.java \
     ojluni/src/main/java/sun/security/x509/AlgorithmId.java \
     ojluni/src/main/java/sun/security/x509/AttributeNameEnumeration.java \
