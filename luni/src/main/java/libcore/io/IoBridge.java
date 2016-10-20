@@ -610,10 +610,10 @@ public final class IoBridge {
         }
     }
 
-    public static FileDescriptor socket(boolean stream) throws SocketException {
+    public static FileDescriptor socket(int domain, int type, int protocol) throws SocketException {
         FileDescriptor fd;
         try {
-            fd = Libcore.os.socket(AF_INET6, stream ? SOCK_STREAM : SOCK_DGRAM, 0);
+            fd = Libcore.os.socket(domain, type, protocol);
 
             return fd;
         } catch (ErrnoException errnoException) {
