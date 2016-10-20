@@ -440,6 +440,7 @@ LOCAL_DROIDDOC_OPTIONS := \
  -title "libcore" \
  -proofread $(OUT_DOCS)/$(LOCAL_MODULE)-proofread.txt \
  -todo ../$(LOCAL_MODULE)-docs-todo.html \
+ -knowntags ./libcore/known_oj_tags.txt \
  -hdf android.whichdoc offline
 
 LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=build/tools/droiddoc/templates-sdk
