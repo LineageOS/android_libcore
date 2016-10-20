@@ -23,7 +23,9 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <netinet/icmp6.h>
 #include <netinet/in.h>
+#include <netinet/ip_icmp.h>
 #include <netinet/tcp.h>
 #include <poll.h>
 #include <signal.h>
@@ -242,6 +244,10 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "F_SETOWN", F_SETOWN);
     initConstant(env, c, "F_UNLCK", F_UNLCK);
     initConstant(env, c, "F_WRLCK", F_WRLCK);
+    initConstant(env, c, "ICMP_ECHO", ICMP_ECHO);
+    initConstant(env, c, "ICMP_ECHOREPLY", ICMP_ECHOREPLY);
+    initConstant(env, c, "ICMP6_ECHO_REQUEST", ICMP6_ECHO_REQUEST);
+    initConstant(env, c, "ICMP6_ECHO_REPLY", ICMP6_ECHO_REPLY);
 #if defined(IFA_F_DADFAILED)
     initConstant(env, c, "IFA_F_DADFAILED", IFA_F_DADFAILED);
 #endif

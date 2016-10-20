@@ -441,9 +441,10 @@ class InetAddress implements java.io.Serializable {
      * implementation to try to reach the host, but firewalls and server
      * configuration may block requests resulting in a unreachable status
      * while some specific ports may be accessible.
-     * A typical implementation will use ICMP ECHO REQUESTs if the
-     * privilege can be obtained, otherwise it will try to establish
-     * a TCP connection on port 7 (Echo) of the destination host.
+     * <p>
+     * Android implementation attempts ICMP ECHO REQUESTs first, on failure it
+     * will fall back to TCP ECHO REQUESTs. Success on either protocol will
+     * return true.
      * <p>
      * The {@code network interface} and {@code ttl} parameters
      * let the caller specify which network interface the test will go through
@@ -475,6 +476,13 @@ class InetAddress implements java.io.Serializable {
             throw new IllegalArgumentException("timeout can't be negative");
 
         return impl.isReachable(this, timeout, netif, ttl);
+    }
+
+    /**
+     * @hide For testing only
+     */
+    public boolean isReachableByICMP(int timeout) throws IOException {
+        return ((Inet6AddressImpl) impl).icmpEcho(this, timeout, null, 0);
     }
 
     /**
