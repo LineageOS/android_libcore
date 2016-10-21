@@ -29,11 +29,16 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import junit.framework.TestCase;
 import libcore.io.IoUtils;
 import libcore.io.Streams;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public final class GZIPInputStreamTest extends TestCase {
+public final class GZIPInputStreamTest extends TestCaseWithRules {
+    @Rule
+    public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
 
     private static final byte[] HELLO_WORLD_GZIPPED = new byte[] {
         31, -117, 8, 0, 0, 0, 0, 0, 0, 0,  // 10 byte header
@@ -194,17 +199,15 @@ public final class GZIPInputStreamTest extends TestCase {
 
     public static byte[] gunzip(byte[] bytes) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        InputStream in = new GZIPInputStream(bis);
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        byte[] buffer = new byte[1024];
-        int count;
-        while ((count = in.read(buffer)) != -1) {
-            out.write(buffer, 0, count);
+        try (InputStream in = new GZIPInputStream(bis)) {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int count;
+            while ((count = in.read(buffer)) != -1) {
+                out.write(buffer, 0, count);
+            }
+
+            return out.toByteArray();
         }
-
-        byte[] outArray = out.toByteArray();
-        in.close();
-
-        return outArray;
     }
 }

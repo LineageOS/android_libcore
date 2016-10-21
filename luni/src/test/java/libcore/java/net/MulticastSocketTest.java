@@ -16,17 +16,20 @@
 
 package libcore.java.net;
 
-import junit.framework.TestCase;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public final class MulticastSocketTest extends TestCase {
+public final class MulticastSocketTest extends TestCaseWithRules {
+    @Rule
+    public TestRule guardRule = ResourceLeakageDetector.getRule();
 
     private static final int SO_TIMEOUT = 1000;
 

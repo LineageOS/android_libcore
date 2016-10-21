@@ -15,6 +15,10 @@
  */
 package libcore.junit.util;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Method;
 import java.util.function.BiConsumer;
 import org.junit.rules.RuleChain;
@@ -115,7 +119,13 @@ public class ResourceLeakageDetector {
 
         @Override
         public Statement apply(Statement base, Description description) {
-            return leakageDetectorRule.apply(base, description);
+            // Make the resource leakage detector rule optional based on the presence of an
+            // annotation.
+            if (description.getAnnotation(DisableResourceLeakageDetection.class) != null) {
+                return base;
+            } else {
+                return leakageDetectorRule.apply(base, description);
+            }
         }
 
         /**
@@ -125,8 +135,9 @@ public class ResourceLeakageDetector {
          * <p>This helps ensure that classes which own resources protected using {@code CloseGuard}
          * support leakage detection.
          *
-         * <p>This must only be called from within the test currently being run otherwise it will
-         * fail if the resource leakage detected mechanism is disabled, e.g. in CTS.
+         * <p>This must only be called from within the test currently being run that is not
+         * annotated with {@link DisableResourceLeakageDetection} otherwise it will fail if the
+         * resource leakage detected mechanism is disabled, e.g. in CTS.
          *
          * <p>Use as follows:
          * <pre>
@@ -146,5 +157,24 @@ public class ResourceLeakageDetector {
         public void assertUnreleasedResourceCount(Object owner, int expectedCount) {
             FINALIZER_CHECKER.accept(owner, expectedCount);
         }
+    }
+
+    /**
+     * An annotation that indicates that the test should not be run with resource leakage detection
+     * enabled.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface DisableResourceLeakageDetection {
+
+        /**
+         * The explanation as to why resource leakage detection is disabled for this test.
+         */
+        String why();
+
+        /**
+         * The bug reference to the bug that was opened to fix the issue.
+         */
+        String bug();
     }
 }
