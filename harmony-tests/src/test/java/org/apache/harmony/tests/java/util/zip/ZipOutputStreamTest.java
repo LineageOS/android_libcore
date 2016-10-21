@@ -26,8 +26,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import libcore.junit.util.ResourceLeakageDetector.DisableResourceLeakageDetection;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public class ZipOutputStreamTest extends junit.framework.TestCase {
+public class ZipOutputStreamTest extends TestCaseWithRules {
+    @Rule
+    public TestRule guardRule = ResourceLeakageDetector.getRule();
 
     ZipOutputStream zos;
 
@@ -41,7 +48,6 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
      * java.util.zip.ZipOutputStream#close()
      */
     public void test_close() throws Exception {
-        zos = new ZipOutputStream(bos);
         zos.putNextEntry(new ZipEntry("XX"));
         zos.closeEntry();
         zos.close();
@@ -115,6 +121,11 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
     /**
      * java.util.zip.ZipOutputStream#setComment(java.lang.String)
      */
+    @DisableResourceLeakageDetection(
+            why = "InflaterOutputStream.close() does not work properly if finish() throws an"
+                    + " exception; finish() throws an exception if the output is invalid; this is"
+                    + " an issue with the ZipOutputStream created in setUp()",
+            bug = "31797037")
     public void test_setCommentLjava_lang_String() {
         // There is no way to get the comment back, so no way to determine if
         // the comment is set correct
@@ -168,6 +179,10 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
     /**
      * java.util.zip.ZipOutputStream#write(byte[], int, int)
      */
+    @DisableResourceLeakageDetection(
+            why = "InflaterOutputStream.close() does not work properly if finish() throws an"
+                    + " exception; finish() throws an exception if the output is invalid.",
+            bug = "31797037")
     public void test_write$BII() throws IOException {
         ZipEntry ze = new ZipEntry("test");
         zos.putNextEntry(ze);
@@ -241,6 +256,11 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
     /**
      * java.util.zip.ZipOutputStream#write(byte[], int, int)
      */
+    @DisableResourceLeakageDetection(
+            why = "InflaterOutputStream.close() does not work properly if finish() throws an"
+                    + " exception; finish() throws an exception if the output is invalid; this is"
+                    + " an issue with the ZipOutputStream created in setUp()",
+            bug = "31797037")
     public void test_write$BII_2() throws IOException {
         // Regression for HARMONY-577
         File f1 = File.createTempFile("testZip1", "tst");
@@ -279,11 +299,13 @@ public class ZipOutputStreamTest extends junit.framework.TestCase {
     @Override
     protected void tearDown() throws Exception {
         try {
-            if (zos != null) {
-                zos.close();
-            }
+            // Close the ZipInputStream first as that does not fail.
             if (zis != null) {
                 zis.close();
+            }
+            if (zos != null) {
+                // This will throw a ZipException if nothing is written to the ZipOutputStream.
+                zos.close();
             }
         } catch (Exception e) {
         }

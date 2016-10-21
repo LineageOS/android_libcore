@@ -16,7 +16,6 @@
 
 package libcore.java.util.zip;
 
-import junit.framework.TestCase;
 import libcore.io.Streams;
 import tests.support.resource.Support_Resources;
 
@@ -29,8 +28,14 @@ import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public final class ZipInputStreamTest extends TestCase {
+public final class ZipInputStreamTest extends TestCaseWithRules {
+    @Rule
+    public TestRule guardRule = ResourceLeakageDetector.getRule();
 
     public void testShortMessage() throws IOException {
         byte[] data = "Hello World".getBytes("UTF-8");

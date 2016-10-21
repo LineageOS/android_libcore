@@ -16,8 +16,6 @@
 
 package libcore.java.net;
 
-import junit.framework.TestCase;
-
 import java.lang.reflect.Field;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -26,8 +24,14 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
-public class DatagramSocketTest extends TestCase {
+public class DatagramSocketTest extends TestCaseWithRules {
+  @Rule
+  public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
 
   public void testInitialState() throws Exception {
     DatagramSocket ds = new DatagramSocket();
