@@ -24,9 +24,16 @@ import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import libcore.io.Streams;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 import tests.support.resource.Support_Resources;
 
-public class ZipEntryTest extends junit.framework.TestCase {
+public class ZipEntryTest extends TestCaseWithRules {
+    @Rule
+    public TestRule guardRule = ResourceLeakageDetector.getRule();
+
     // zip file hyts_ZipFile.zip must be included as a resource
     private ZipEntry zentry;
     private ZipFile zfile;
