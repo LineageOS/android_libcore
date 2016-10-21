@@ -2725,14 +2725,8 @@ public final class URLConnectionTest extends TestCase {
         }
     }
 
-    public void testSslFallback_allSupportedProtocols() throws Exception {
-        TestSSLContext testSSLContext = createDefaultTestSSLContext();
-
-        String[] allSupportedProtocols = { "TLSv1.2", "TLSv1.1", "TLSv1" };
-        SSLSocketFactory serverSocketFactory =
-                new LimitedProtocolsSocketFactory(
-                        testSSLContext.serverContext.getSocketFactory(),
-                        allSupportedProtocols);
+    private void checkSslFallback(SSLSocketFactory serverSocketFactory,
+            SSLSocketFactory clientSocketFactoryDelegate) throws Exception {
         server.useHttps(serverSocketFactory, false);
         server.enqueue(new MockResponse().setSocketPolicy(FAIL_HANDSHAKE));
         server.enqueue(new MockResponse().setSocketPolicy(FAIL_HANDSHAKE));
@@ -2743,8 +2737,7 @@ public final class URLConnectionTest extends TestCase {
         // Keeps track of the client sockets created so that we can interrogate them.
         final boolean disableFallbackScsv = true;
         FallbackTestClientSocketFactory clientSocketFactory = new FallbackTestClientSocketFactory(
-                new LimitedProtocolsSocketFactory(
-                        testSSLContext.clientContext.getSocketFactory(), allSupportedProtocols),
+                clientSocketFactoryDelegate,
                 disableFallbackScsv);
         connection.setSSLSocketFactory(clientSocketFactory);
         assertEquals("This required fallbacks",
@@ -2773,45 +2766,23 @@ public final class URLConnectionTest extends TestCase {
         assertSslSocket(clientSocket3, true /* expectedWasFallbackScsvSet */, "TLSv1");
     }
 
+    public void testSslFallback_allSupportedProtocols() throws Exception {
+        String[] allSupportedProtocols = { "TLSv1.2", "TLSv1.1", "TLSv1" };
+        TestSSLContext testSSLContext = createDefaultTestSSLContext();
+        SSLSocketFactory serverSocketFactory =
+                new LimitedProtocolsSocketFactory(
+                        testSSLContext.serverContext.getSocketFactory(),
+                        allSupportedProtocols);
+        SSLSocketFactory clientSocketFactoryDelegate = new LimitedProtocolsSocketFactory(
+                testSSLContext.clientContext.getSocketFactory(), allSupportedProtocols);
+        checkSslFallback(serverSocketFactory, clientSocketFactoryDelegate);
+    }
+
     public void testSslFallback_defaultProtocols() throws Exception {
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
-
-        server.useHttps(testSSLContext.serverContext.getSocketFactory(), false);
-        server.enqueue(new MockResponse().setSocketPolicy(FAIL_HANDSHAKE));
-        server.enqueue(new MockResponse().setSocketPolicy(FAIL_HANDSHAKE));
-        server.enqueue(new MockResponse().setBody("This required fallbacks"));
-        server.play();
-
-        HttpsURLConnection connection = (HttpsURLConnection) server.getUrl("/").openConnection();
-        // Keeps track of the client sockets created so that we can interrogate them.
-        final boolean disableFallbackScsv = true;
-        FallbackTestClientSocketFactory clientSocketFactory = new FallbackTestClientSocketFactory(
-                testSSLContext.clientContext.getSocketFactory(),
-                disableFallbackScsv);
-        connection.setSSLSocketFactory(clientSocketFactory);
-        assertEquals("This required fallbacks",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
-
-        // Confirm the server accepted a single connection.
-        RecordedRequest retry = server.takeRequest();
-        assertEquals(0, retry.getSequenceNumber());
-        assertEquals("TLSv1", retry.getSslProtocol());
-
-        // Confirm the client fallback looks ok.
-        List<SSLSocket> createdSockets = clientSocketFactory.getCreatedSockets();
-        assertEquals(3, createdSockets.size());
-        TlsFallbackDisabledScsvSSLSocket clientSocket1 =
-                (TlsFallbackDisabledScsvSSLSocket) createdSockets.get(0);
-        assertSslSocket(clientSocket1,
-                false /* expectedWasFallbackScsvSet */, "TLSv1.2", "TLSv1.1", "TLSv1");
-
-        TlsFallbackDisabledScsvSSLSocket clientSocket2 =
-                (TlsFallbackDisabledScsvSSLSocket) createdSockets.get(1);
-        assertSslSocket(clientSocket2, true /* expectedWasFallbackScsvSet */, "TLSv1.1", "TLSv1");
-
-        TlsFallbackDisabledScsvSSLSocket clientSocket3 =
-                (TlsFallbackDisabledScsvSSLSocket) createdSockets.get(2);
-        assertSslSocket(clientSocket3, true /* expectedWasFallbackScsvSet */, "TLSv1");
+        SSLSocketFactory serverSocketFactory = testSSLContext.serverContext.getSocketFactory();
+        SSLSocketFactory clientSocketFactoryDelegate = testSSLContext.clientContext.getSocketFactory();
+        checkSslFallback(serverSocketFactory, clientSocketFactoryDelegate);
     }
 
     private static void assertSslSocket(TlsFallbackDisabledScsvSSLSocket socket,
