@@ -138,53 +138,9 @@ public abstract class ZoneRulesProvider {
     private static final ConcurrentMap<String, ZoneRulesProvider> ZONES = new ConcurrentHashMap<>(512, 0.75f, 2);
 
     static {
-        // if the property java.time.zone.DefaultZoneRulesProvider is
-        // set then its value is the class name of the default provider
-        final List<ZoneRulesProvider> loaded = new ArrayList<>();
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            public Object run() {
-                String prop = System.getProperty("java.time.zone.DefaultZoneRulesProvider");
-                if (prop != null) {
-                    try {
-                        Class<?> c = Class.forName(prop, true, ClassLoader.getSystemClassLoader());
-                        ZoneRulesProvider provider = ZoneRulesProvider.class.cast(c.newInstance());
-                        registerProvider(provider);
-                        loaded.add(provider);
-                    } catch (Exception x) {
-                        throw new Error(x);
-                    }
-                } else {
-                    registerProvider(new TzdbZoneRulesProvider());
-                }
-                return null;
-            }
-        });
-
-        ServiceLoader<ZoneRulesProvider> sl = ServiceLoader.load(ZoneRulesProvider.class, ClassLoader.getSystemClassLoader());
-        Iterator<ZoneRulesProvider> it = sl.iterator();
-        while (it.hasNext()) {
-            ZoneRulesProvider provider;
-            try {
-                provider = it.next();
-            } catch (ServiceConfigurationError ex) {
-                if (ex.getCause() instanceof SecurityException) {
-                    continue;  // ignore the security exception, try the next provider
-                }
-                throw ex;
-            }
-            boolean found = false;
-            for (ZoneRulesProvider p : loaded) {
-                if (p.getClass() == provider.getClass()) {
-                    found = true;
-                }
-            }
-            if (!found) {
-                registerProvider0(provider);
-                loaded.add(provider);
-            }
-        }
-        // CopyOnWriteList could be slow if lots of providers and each added individually
-        PROVIDERS.addAll(loaded);
+        // Android changed: use a single hard-coded provider.
+        ZoneRulesProvider provider = new IcuZoneRulesProvider();
+        registerProvider(provider);
     }
 
     //-------------------------------------------------------------------------
