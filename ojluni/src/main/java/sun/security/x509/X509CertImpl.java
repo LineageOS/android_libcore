@@ -25,12 +25,16 @@
 
 package sun.security.x509;
 
+/* BEGIN android-removed
 import java.io.BufferedReader;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+ * END android-removed */
 import java.io.IOException;
+/* BEGIN android-removed
 import java.io.InputStream;
 import java.io.InputStreamReader;
+* END android-removed */
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.*;
@@ -38,11 +42,12 @@ import java.security.cert.*;
 import java.security.cert.Certificate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.security.auth.x500.X500Principal;
 
 import sun.misc.HexDumpEncoder;
+/* BEGIN android-removed
 import sun.misc.BASE64Decoder;
+ * END android-removed */
 import sun.security.util.*;
 import sun.security.provider.X509Factory;
 
@@ -199,6 +204,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
         }
     }
 
+    /* BEGIN android-removed
     /**
      * unmarshals an X.509 certificate from an input stream.  If the
      * certificate is RFC1421 hex-encoded, then it must begin with
@@ -209,7 +215,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
      *        be either DER-encoded or RFC1421 hex-encoded version of the
      *        DER-encoded certificate.
      * @exception CertificateException on parsing and initialization errors.
-     */
+     *
     public X509CertImpl(InputStream in) throws CertificateException {
 
         DerValue der = null;
@@ -250,7 +256,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
      * @returns DerValue corresponding to decoded HEX-encoded bytes
      * @throws IOException if stream can not be interpreted as RFC1421
      *                     encoded bytes
-     */
+     *
     private DerValue readRFC1421Cert(InputStream in) throws IOException {
         DerValue der = null;
         String line = null;
@@ -263,7 +269,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
                                   ioe1.getMessage());
         }
         if (line.equals(X509Factory.BEGIN_CERT)) {
-            /* stream appears to be hex-encoded bytes */
+            /* stream appears to be hex-encoded bytes *
             BASE64Decoder         decoder   = new BASE64Decoder();
             ByteArrayOutputStream decstream = new ByteArrayOutputStream();
             try {
@@ -285,6 +291,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
         }
         return der;
     }
+    * END android-removed */
 
     /**
      * Construct an initialized X509 Certificate. The certificate is stored
