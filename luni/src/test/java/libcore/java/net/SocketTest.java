@@ -44,9 +44,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
 
-public class SocketTest extends junit.framework.TestCase {
+public class SocketTest extends TestCaseWithRules {
+    @Rule
+    public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
 
     // This hostname is required to resolve to 127.0.0.1 and ::1 for all tests to pass.
     private static final String ALL_LOOPBACK_HOSTNAME = "loopback46.unittest.grpc.io";
@@ -251,14 +257,14 @@ public class SocketTest extends junit.framework.TestCase {
     }
 
     public void test_setTrafficClass() throws Exception {
-        Socket s = new Socket();
+        try (Socket s = new Socket()) {
+            for (int i = 0; i <= 255; ++i) {
+                s.setTrafficClass(i);
 
-        for (int i = 0; i <= 255; ++i) {
-            s.setTrafficClass(i);
-
-            // b/30909505
-            // Linux does not set ECN bits for STREAM sockets, so these bits should be zero.
-            assertEquals(i & ~INET_ECN_MASK, s.getTrafficClass());
+                // b/30909505
+                // Linux does not set ECN bits for STREAM sockets, so these bits should be zero.
+                assertEquals(i & ~INET_ECN_MASK, s.getTrafficClass());
+            }
         }
     }
 
@@ -436,11 +442,9 @@ public class SocketTest extends junit.framework.TestCase {
             });
 
             ServerSocket server = new ServerSocket(0);
-
-            // We shouldn't ask the proxy selector to select() a proxy for us during
-            // connect().
             Socket client = new Socket(InetAddress.getLocalHost(), server.getLocalPort());
             client.close();
+            server.close();
         } finally {
             ProxySelector.setDefault(ps);
         }
