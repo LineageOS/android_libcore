@@ -16,6 +16,7 @@
 
 package libcore.javax.net.ssl;
 
+import java.io.Closeable;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
-import libcore.io.IoUtils;
 import libcore.java.security.StandardNames;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
@@ -190,7 +190,7 @@ public class SSLContextTest extends TestCase {
             assertContentsInOrder(
                     expectedCipherSuites, sslSocket.getSSLParameters().getCipherSuites());
         } finally {
-            IoUtils.closeQuietly(sslSocket);
+            closeQuietly(sslSocket);
         }
 
         SSLServerSocket sslServerSocket =
@@ -199,7 +199,7 @@ public class SSLContextTest extends TestCase {
             assertContentsInOrder(
                     expectedCipherSuites, sslServerSocket.getEnabledCipherSuites());
         } finally {
-            IoUtils.closeQuietly(sslSocket);
+            closeQuietly(sslSocket);
         }
     }
 
@@ -605,6 +605,15 @@ public class SSLContextTest extends TestCase {
         if (!expected.equals(Arrays.asList(actual))) {
             fail("Unexpected element(s). Expected <" + expected
                     + ">, actual <" + Arrays.asList(actual) + ">" );
+        }
+    }
+
+    private static final void closeQuietly(Closeable socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 }
