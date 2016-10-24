@@ -1551,5 +1551,13 @@
   names: [
     "libcore.java.text.OldBidiTest#testUnicode9EmojisAreLtrNeutral"
   ]
+},
+{
+  description: "Hitting timeout",
+  bug: 32363029,
+  result: EXEC_FAILED,
+  names: [
+    "org.apache.harmony.luni.tests.java.net.URLConnectionTest#test_setReadTimeoutI"
+  ]
 }
 ]
