@@ -749,7 +749,7 @@ public final class URLConnectionTest extends TestCase {
         RecordedRequest connect = server.takeRequest();
         assertEquals("Connect line failure on proxy",
                 "CONNECT android.com:443 HTTP/1.1", connect.getRequestLine());
-        assertContains(connect.getHeaders(), "Host: android.com");
+        assertContains(connect.getHeaders(), "Host: android.com:443");
 
         RecordedRequest get = server.takeRequest();
         assertEquals("GET /foo HTTP/1.1", get.getRequestLine());
@@ -788,7 +788,7 @@ public final class URLConnectionTest extends TestCase {
 
         RecordedRequest connect = server.takeRequest();
         assertEquals("CONNECT android.com:443 HTTP/1.1", connect.getRequestLine());
-        assertContains(connect.getHeaders(), "Host: android.com");
+        assertContains(connect.getHeaders(), "Host: android.com:443");
     }
 
     private void initResponseCache() throws IOException {
@@ -969,7 +969,7 @@ public final class URLConnectionTest extends TestCase {
             assertContainsNoneMatching(headers, "Private.*");
             assertContainsNoneMatching(headers, "Proxy\\-Authorization.*");
             assertHeaderPresent(connect1, "User-Agent");
-            assertContains(headers, "Host: android.com");
+            assertContains(headers, "Host: android.com:443");
             assertContains(headers, "Proxy-Connection: Keep-Alive");
         }
 
@@ -979,7 +979,7 @@ public final class URLConnectionTest extends TestCase {
             assertContainsNoneMatching(headers, "Private.*");
             assertHeaderPresent(connect2, "Proxy-Authorization");
             assertHeaderPresent(connect2, "User-Agent");
-            assertContains(headers, "Host: android.com");
+            assertContains(headers, "Host: android.com:443");
             assertContains(headers, "Proxy-Connection: Keep-Alive");
         }
 
@@ -2698,6 +2698,14 @@ public final class URLConnectionTest extends TestCase {
             fail();
         } catch (UnknownHostException expected) {
         }
+    }
+
+    public void testConnectIpv6() throws Exception {
+        server.enqueue(new MockResponse().setBody("testConnectIpv6 body"));
+        server.play();
+        URL url = new URL("http://[::1]:" + server.getPort() + "/");
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        assertContent("testConnectIpv6 body", connection);
     }
 
     // http://code.google.com/p/android/issues/detail?id=16895
