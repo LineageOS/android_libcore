@@ -37,6 +37,7 @@ import java.nio.file.NotDirectoryException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SecureDirectoryStream;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
 import java.nio.file.attribute.PosixFilePermission;
@@ -761,7 +762,7 @@ public class DefaultFileSystemProviderTest {
         // Filter all the directories.
         try (DirectoryStream<Path> directoryStream = provider.newDirectoryStream(path_root,
                 file -> Files.isDirectory(file))) {
-
+            assertTrue(directoryStream instanceof SecureDirectoryStream);
             directoryStream.forEach(path -> pathsSet.add(path));
 
             assertEquals(expectedPathsSet, pathsSet);
