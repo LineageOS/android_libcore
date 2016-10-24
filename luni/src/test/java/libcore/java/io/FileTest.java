@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 import libcore.io.Libcore;
 
@@ -367,5 +370,17 @@ public class FileTest extends junit.framework.TestCase {
 
         assertEquals("/foo/bar", new File("/foo/", "/bar/").getPath());
         assertEquals("/foo/bar", new File("/foo", "/bar//").getPath());
+    }
+
+    public void test_toPath() {
+        File file = new File("testPath");
+        Path filePath = file.toPath();
+        assertEquals(Paths.get("testPath"), filePath);
+
+        File file1 = new File("'\u0000'");
+        try {
+            file1.toPath();
+            fail();
+        } catch (InvalidPathException expected) {}
     }
 }
