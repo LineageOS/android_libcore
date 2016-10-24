@@ -30,6 +30,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.*;
 import java.io.IOException;
+
+import dalvik.system.CloseGuard;
+
 import static sun.nio.fs.UnixNativeDispatcher.*;
 
 /**
@@ -58,6 +61,9 @@ class UnixDirectoryStream
     // directory iterator
     private Iterator<Path> iterator;
 
+    // Android-changed: Add CloseGuard support.
+    private final CloseGuard guard = CloseGuard.get();
+
     /**
      * Initializes a new instance
      */
@@ -65,6 +71,9 @@ class UnixDirectoryStream
         this.dir = dir;
         this.dp = dp;
         this.filter = filter;
+
+        // Android-changed: Add CloseGuard support.
+        guard.open("close");
     }
 
     protected final UnixPath directory() {
@@ -91,6 +100,9 @@ class UnixDirectoryStream
             } catch (UnixException x) {
                 throw new IOException(x.errorString());
             }
+
+            // Android-changed: Add CloseGuard support.
+            guard.close();
             return true;
         } else {
             return false;
@@ -220,5 +232,17 @@ class UnixDirectoryStream
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+
+    /**
+     * Cleans up if the user forgets to close it.
+     */
+    // Android-changed: Add CloseGuard support.
+    protected void finalize() throws IOException {
+        if (guard != null) {
+            guard.warnIfOpen();
+        }
+
+        close();
     }
 }
