@@ -24,108 +24,128 @@
  * questions.
  *
  */
-// AUTOMATICALLY GENERATED FILE - DO NOT EDIT                                  
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
 package sun.nio.fs;
+
+import android.system.OsConstants;
+
+import java.io.ObjectStreamClass;
+
 class UnixConstants {
 
     private UnixConstants() {
     }
 
-    static final int O_RDONLY = 0;
+    // Android-changed (http://b/32203242): Instead of maintaining a separate set of UnixConstants,
+    // use the values from android.system.OsConstants.  AT_SYMLINK_NOFOLLOW is used by fstatat when
+    // a symbolic link is passed. With AT_SYMLINK_NOLLOW, it doesn't dereference and instead return
+    // information about the link, and with it, returns the information about the target. There is
+    // no suitable alternative for the flag in android.system.OsConstant, therefore, left untouched.
+    // With AT_REMOVEDIR, unlinkat works equivalent to rmdir. Again there is no suitable alternative
+    // for the flag in android.system.OsConstant, therefore, left unchanged.
+    static final int O_RDONLY = OsConstants.O_RDONLY;
 
-    static final int O_WRONLY = 1;
+    static final int O_WRONLY = OsConstants.O_WRONLY;
 
-    static final int O_RDWR = 2;
+    static final int O_RDWR = OsConstants.O_RDWR;
 
-    static final int O_APPEND = 0x400;
+    static final int O_APPEND = OsConstants.O_APPEND;
 
-    static final int O_CREAT = 0x40;
+    static final int O_CREAT = OsConstants.O_CREAT;
 
-    static final int O_EXCL = 0x80;
+    static final int O_EXCL = OsConstants.O_EXCL;
 
-    static final int O_TRUNC = 0x200;
+    static final int O_TRUNC = OsConstants.O_TRUNC;
 
-    static final int O_SYNC = 0x101000;
+    static final int O_SYNC = OsConstants.O_SYNC;
 
-    static final int O_DSYNC = 0x1000;
+    static final int O_DSYNC = OsConstants.O_DSYNC;
 
-    static final int O_NOFOLLOW = 0x20000;
+    static final int O_NOFOLLOW = OsConstants.O_NOFOLLOW;
 
-    static final int S_IAMB = 0x1ff;
+    static final int S_IAMB = get_S_IAMB();
 
-    static final int S_IRUSR = 256;
+    static final int S_IRUSR = OsConstants.S_IRUSR;
 
-    static final int S_IWUSR = 128;
+    static final int S_IWUSR = OsConstants.S_IWUSR;
 
-    static final int S_IXUSR = 64;
+    static final int S_IXUSR = OsConstants.S_IXUSR;
 
-    static final int S_IRGRP = 32;
+    static final int S_IRGRP = OsConstants.S_IRGRP;
 
-    static final int S_IWGRP = 16;
+    static final int S_IWGRP = OsConstants.S_IWGRP;
 
-    static final int S_IXGRP = 8;
+    static final int S_IXGRP = OsConstants.S_IXGRP;
 
-    static final int S_IROTH = 4;
+    static final int S_IROTH = OsConstants.S_IROTH;
 
-    static final int S_IWOTH = 2;
+    static final int S_IWOTH = OsConstants.S_IWOTH;
 
-    static final int S_IXOTH = 1;
+    static final int S_IXOTH = OsConstants.S_IXOTH;
 
-    static final int S_IFMT = 0xf000;
+    static final int S_IFMT = OsConstants.S_IFMT;
 
-    static final int S_IFREG = 0x8000;
+    static final int S_IFREG = OsConstants.S_IFREG;
 
-    static final int S_IFDIR = 0x4000;
+    static final int S_IFDIR = OsConstants.S_IFDIR;
 
-    static final int S_IFLNK = 0xa000;
+    static final int S_IFLNK = OsConstants.S_IFLNK;
 
-    static final int S_IFCHR = 0x2000;
+    static final int S_IFCHR = OsConstants.S_IFCHR;
 
-    static final int S_IFBLK = 0x6000;
+    static final int S_IFBLK = OsConstants.S_IFBLK;
 
-    static final int S_IFIFO = 0x1000;
+    static final int S_IFIFO = OsConstants.S_IFIFO;
 
-    static final int R_OK = 4;
+    static final int R_OK = OsConstants.R_OK;
 
-    static final int W_OK = 2;
+    static final int W_OK = OsConstants.W_OK;
 
-    static final int X_OK = 1;
+    static final int X_OK = OsConstants.X_OK;
 
-    static final int F_OK = 0;
+    static final int F_OK = OsConstants.F_OK;
 
-    static final int ENOENT = 2;
+    static final int ENOENT = OsConstants.ENOENT;
 
-    static final int EACCES = 13;
+    static final int EACCES = OsConstants.EACCES;
 
-    static final int EEXIST = 17;
+    static final int EEXIST = OsConstants.EEXIST;
 
-    static final int ENOTDIR = 20;
+    static final int ENOTDIR = OsConstants.ENOTDIR;
 
-    static final int EINVAL = 22;
+    static final int EINVAL = OsConstants.EINVAL;
 
-    static final int EXDEV = 18;
+    static final int EXDEV = OsConstants.EXDEV;
 
-    static final int EISDIR = 21;
+    static final int EISDIR = OsConstants.EISDIR;
 
-    static final int ENOTEMPTY = 39;
+    static final int ENOTEMPTY = OsConstants.ENOTEMPTY;
 
-    static final int ENOSPC = 28;
+    static final int ENOSPC = OsConstants.ENOSPC;
 
-    static final int EAGAIN = 11;
+    static final int EAGAIN = OsConstants.EAGAIN;
 
-    static final int ENOSYS = 38;
+    static final int ENOSYS = OsConstants.ENOSYS;
 
-    static final int ELOOP = 40;
+    static final int ELOOP = OsConstants.ELOOP;
 
-    static final int EROFS = 30;
+    static final int EROFS = OsConstants.EROFS;
 
-    static final int ENODATA = 61;
+    static final int ENODATA = OsConstants.ENODATA;
 
-    static final int ERANGE = 34;
+    static final int ERANGE = OsConstants.ERANGE;
 
-    static final int EMFILE = 24;
+    static final int EMFILE = OsConstants.EMFILE;
 
     static final int AT_SYMLINK_NOFOLLOW = 0x100;
 
     static final int AT_REMOVEDIR = 0x200;
+
+    // S_IAMB are access mode bits, therefore, calculated by taking OR of all the read, write and
+    // execute permissions bits for owner, group and other.
+    private static int get_S_IAMB() {
+        return (OsConstants.S_IRUSR | OsConstants.S_IWUSR | OsConstants.S_IXUSR |
+                OsConstants.S_IRGRP | OsConstants.S_IWGRP | OsConstants.S_IXGRP |
+                OsConstants.S_IROTH | OsConstants.S_IWOTH | OsConstants.S_IXOTH);
+    }
 }
