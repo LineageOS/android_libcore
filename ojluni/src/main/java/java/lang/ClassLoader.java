@@ -351,6 +351,7 @@ public abstract class ClassLoader {
      *          If the class could not be found
      */
     // Android-removed : Remove references to getClassLoadingLock
+    //                   Remove perf counters.
     //
     // <p> Unless overridden, this method synchronizes on the result of
     // {@link #getClassLoadingLock <tt>getClassLoadingLock</tt>} method
@@ -361,7 +362,6 @@ public abstract class ClassLoader {
             // First, check if the class has already been loaded
             Class c = findLoadedClass(name);
             if (c == null) {
-                long t0 = System.nanoTime();
                 try {
                     if (parent != null) {
                         c = parent.loadClass(name, false);
@@ -376,10 +376,7 @@ public abstract class ClassLoader {
                 if (c == null) {
                     // If still not found, then invoke findClass in order
                     // to find the class.
-                    long t1 = System.nanoTime();
                     c = findClass(name);
-
-                    // this is the defining class loader; record the stats
                 }
             }
             return c;
