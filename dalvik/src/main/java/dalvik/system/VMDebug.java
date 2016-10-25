@@ -461,4 +461,11 @@ public final class VMDebug {
 
     private static native String getRuntimeStatInternal(int statId);
     private static native String[] getRuntimeStatsInternal();
+
+    /**
+     * Attaches an agent to the VM.
+     *
+     * @param agent The path to the agent .so file plus optional agent arguments.
+     */
+    public static native void attachAgent(String agent) throws IOException;
 }
