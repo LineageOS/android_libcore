@@ -105,7 +105,7 @@ class PlainSocketImpl extends AbstractPlainSocketImpl
 
     native int socketAvailable() throws IOException;
 
-    native void socketClose0() throws IOException;
+    native void socketClose0(boolean useDeferredClose) throws IOException;
 
     native void socketShutdown(int howto) throws IOException;
 

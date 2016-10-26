@@ -117,6 +117,8 @@ class SocketOutputStream extends FileOutputStream
             } else {
                 throw se;
             }
+        } finally {
+            impl.releaseFD();
         }
     }
 
