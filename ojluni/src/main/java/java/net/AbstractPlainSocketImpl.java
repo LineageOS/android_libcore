@@ -57,7 +57,10 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     private SocketInputStream socketInputStream = null;
     private SocketOutputStream socketOutputStream = null;
 
-    /* lock when accessing fd */
+    /* number of threads using the FileDescriptor */
+    protected int fdUseCount = 0;
+
+    /* lock when increment/decrementing fdUseCount */
     protected final Object fdLock = new Object();
 
     /* indicates a close is pending on the file descriptor */
@@ -82,7 +85,6 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      */
     protected synchronized void create(boolean stream) throws IOException {
         this.stream = stream;
-
         if (!stream) {
             ResourceManager.beforeUdpCreate();
             try {
@@ -336,21 +338,26 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
             }
         }
         try {
-            BlockGuard.getThreadPolicy().onNetwork();
-            socketConnect(address, port, timeout);
-            /* socket may have been closed during poll/select */
-            synchronized (fdLock) {
-                if (closePending) {
-                    throw new SocketException ("Socket closed");
+            acquireFD();
+            try {
+                BlockGuard.getThreadPolicy().onNetwork();
+                socketConnect(address, port, timeout);
+                /* socket may have been closed during poll/select */
+                synchronized (fdLock) {
+                    if (closePending) {
+                        throw new SocketException ("Socket closed");
+                    }
                 }
-            }
-            // If we have a ref. to the Socket, then sets the flags
-            // created, bound & connected to true.
-            // This is normally done in Socket.connect() but some
-            // subclasses of Socket may call impl.connect() directly!
-            if (socket != null) {
-                socket.setBound();
-                socket.setConnected();
+                // If we have a ref. to the Socket, then sets the flags
+                // created, bound & connected to true.
+                // This is normally done in Socket.connect() but some
+                // subclasses of Socket may call impl.connect() directly!
+                if (socket != null) {
+                    socket.setBound();
+                    socket.setConnected();
+                }
+            } finally {
+                releaseFD();
             }
         } catch (IOException e) {
             close();
@@ -391,8 +398,13 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      * @param s the connection
      */
     protected void accept(SocketImpl s) throws IOException {
-        BlockGuard.getThreadPolicy().onNetwork();
-        socketAccept(s);
+        acquireFD();
+        try {
+            BlockGuard.getThreadPolicy().onNetwork();
+            socketAccept(s);
+        } finally {
+            releaseFD();
+        }
     }
 
     /**
@@ -496,12 +508,39 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
                 if (!stream) {
                     ResourceManager.afterUdpClose();
                 }
-                if (closePending) {
-                  return;
+                if (fdUseCount == 0) {
+                    if (closePending) {
+                        return;
+                    }
+                    closePending = true;
+                    /*
+                     * We close the FileDescriptor in two-steps - first the
+                     * "pre-close" which closes the socket but doesn't
+                     * release the underlying file descriptor. This operation
+                     * may be lengthy due to untransmitted data and a long
+                     * linger interval. Once the pre-close is done we do the
+                     * actual socket to release the fd.
+                     */
+                    try {
+                        socketPreClose();
+                    } finally {
+                        socketClose();
+                    }
+                    fd = null;
+                    return;
+                } else {
+                    /*
+                     * If a thread has acquired the fd and a close
+                     * isn't pending then use a deferred close.
+                     * Also decrement fdUseCount to signal the last
+                     * thread that releases the fd to close it.
+                     */
+                    if (!closePending) {
+                        closePending = true;
+                        fdUseCount--;
+                        socketPreClose();
+                    }
                 }
-                closePending = true;
-                socketClose();
-                return;
             }
         }
     }
@@ -567,7 +606,29 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      */
     FileDescriptor acquireFD() {
         synchronized (fdLock) {
+            fdUseCount++;
             return fd;
+        }
+    }
+
+    /*
+     * "Release" the FileDescriptor for this impl.
+     *
+     * If the use count goes to -1 then the socket is closed.
+     */
+    void releaseFD() {
+        synchronized (fdLock) {
+            fdUseCount--;
+            if (fdUseCount == -1) {
+                if (fd != null) {
+                    try {
+                        socketClose();
+                    } catch (IOException e) {
+                    } finally {
+                        fd = null;
+                    }
+                }
+            }
         }
     }
 
@@ -623,12 +684,20 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     }
 
     /*
+     * "Pre-close" a socket by dup'ing the file descriptor - this enables
+     * the socket to be closed without releasing the file descriptor.
+     */
+    private void socketPreClose() throws IOException {
+        socketClose0(true);
+    }
+
+    /*
      * Close the socket (and release the file descriptor).
      */
     protected void socketClose() throws IOException {
         guard.close();
 
-        socketClose0();
+        socketClose0(false);
     }
 
     abstract void socketCreate(boolean isServer) throws IOException;
@@ -642,7 +711,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         throws IOException;
     abstract int socketAvailable()
         throws IOException;
-    abstract void socketClose0()
+    abstract void socketClose0(boolean useDeferredClose)
         throws IOException;
     abstract void socketShutdown(int howto)
         throws IOException;
