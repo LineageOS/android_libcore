@@ -172,6 +172,8 @@ class SocketInputStream extends FileInputStream
             }
         } catch (ConnectionResetException rstExc) {
             gotReset = true;
+        } finally {
+            impl.releaseFD();
         }
 
         /*
@@ -180,12 +182,15 @@ class SocketInputStream extends FileInputStream
          */
         if (gotReset) {
             impl.setConnectionResetPending();
+            impl.acquireFD();
             try {
                 n = socketRead(fd, b, off, length, timeout);
                 if (n > 0) {
                     return n;
                 }
             } catch (ConnectionResetException rstExc) {
+            } finally {
+                impl.releaseFD();
             }
         }
 
