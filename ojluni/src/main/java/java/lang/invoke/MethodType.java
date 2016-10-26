@@ -124,8 +124,8 @@ class MethodType implements java.io.Serializable {
     }
 
     /*trusted*/ MethodTypeForm form() { return form; }
-    /*trusted*/ Class<?> rtype() { return rtype; }
-    /*trusted*/ Class<?>[] ptypes() { return ptypes; }
+    /*trusted*/ /** @hide */ public Class<?> rtype() { return rtype; }
+    /*trusted*/ /** @hide */ public Class<?>[] ptypes() { return ptypes; }
 
     // Android-changed: Removed method setForm. It's unused in the JDK and there's no
     // good reason to allow the form to be set externally.

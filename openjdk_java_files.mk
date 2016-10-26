@@ -1171,6 +1171,7 @@ openjdk_java_files := \
     ojluni/src/main/java/java/lang/invoke/MethodType.java \
     ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
     ojluni/src/main/java/java/lang/invoke/Stable.java \
+    ojluni/src/main/java/java/lang/invoke/Transformers.java \
     ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
     ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
     ojluni/src/main/java/jdk/net/NetworkPermission.java \
