@@ -533,7 +533,9 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
                     } finally {
                         socketClose();
                     }
-                    fd = null;
+                    // Android-changed(http://b/26470377): Some Android code doesn't expect file
+                    // descriptor to be null. socketClose invalidates the fd by closing the fd.
+                    // fd = null;
                     return;
                 } else {
                     /*
@@ -631,8 +633,10 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
                     try {
                         socketClose();
                     } catch (IOException e) {
-                    } finally {
-                        fd = null;
+                        // Android-changed(http://b/26470377): Some Android code doesn't expect file
+                        // descriptor to be null. socketClose invalidates the fd by closing the fd.
+                        // } finally {
+                        //     fd = null;
                     }
                 }
             }
