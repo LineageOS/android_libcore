@@ -2724,8 +2724,6 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         if (!Throwable.class.isAssignableFrom(exType))
             throw new ClassCastException(exType.getName());
 
-        // TODO(narayan): Implement this method.
-        // return MethodHandleImpl.throwException(MethodType.methodType(returnType, exType));
-        throw new UnsupportedOperationException("MethodHandles.throwException is not implemented");
+        return new Transformers.AlwaysThrow(returnType, exType);
     }
 }

@@ -26,7 +26,7 @@
 package java.lang.invoke;
 
 
-import java.util.*;
+import dalvik.system.EmulatedStackFrame;
 
 import static java.lang.invoke.MethodHandleStatics.*;
 
@@ -453,6 +453,10 @@ public abstract class MethodHandle {
      * method handle with respect to the ArtField* or the ArtMethod* that it operates on. These
      * behaviours are equivalent to the dex bytecode behaviour on the respective method_id or
      * field_id in the equivalent instruction.
+     *
+     * INVOKE_TRANSFORM is a special type of handle which doesn't encode any dex bytecode behaviour,
+     * instead it transforms the list of input arguments or performs other higher order operations
+     * before (optionally) delegating to another method handle.
      */
 
     /** @hide */ public static final int INVOKE_VIRTUAL = 0;
@@ -460,11 +464,13 @@ public abstract class MethodHandle {
     /** @hide */ public static final int INVOKE_DIRECT = 2;
     /** @hide */ public static final int INVOKE_STATIC = 3;
     /** @hide */ public static final int INVOKE_INTERFACE = 4;
+    /** @hide */ public static final int INVOKE_TRANSFORM = 5;
 
-    /** @hide */ public static final int SGET = 5;
-    /** @hide */ public static final int SPUT = 6;
-    /** @hide */ public static final int IGET = 7;
-    /** @hide */ public static final int IPUT = 8;
+
+    /** @hide */ public static final int SGET = 6;
+    /** @hide */ public static final int SPUT = 7;
+    /** @hide */ public static final int IGET = 8;
+    /** @hide */ public static final int IPUT = 9;
 
     // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
     // constants or SGET/SPUT, IGET/IPUT.
@@ -1284,6 +1290,22 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
     /** @hide */
     public int getHandleKind() {
         return handleKind;
+    }
+
+    protected void transform(EmulatedStackFrame arguments) throws Throwable {
+        throw new AssertionError("MethodHandle.transform should never be called.");
+    }
+
+    /**
+     * This is the entry point for all transform calls, and dispatches to the protected
+     * transform method. This layer of indirection exists purely for convenience, because
+     * we can invoke-direct on a fixed ArtMethod for all transform variants.
+     *
+     * NOTE: If this extra layer of indirection proves to be a problem, we can get rid
+     * of this layer of indirection at the cost of some additional ugliness.
+     */
+    private void transformInternal(EmulatedStackFrame arguments) throws Throwable {
+        transform(arguments);
     }
 
     // Android-changed: Removed implementation details :
