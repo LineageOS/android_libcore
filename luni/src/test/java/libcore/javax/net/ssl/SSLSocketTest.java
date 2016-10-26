@@ -19,6 +19,7 @@ package libcore.javax.net.ssl;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayInputStream;
+import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -75,8 +76,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
 import junit.framework.TestCase;
-import libcore.io.IoUtils;
-import libcore.io.Streams;
 import libcore.java.security.StandardNames;
 import libcore.java.security.TestKeyStore;
 import libcore.tlswire.handshake.CipherSuite;
@@ -185,13 +184,13 @@ public class SSLSocketTest extends TestCase {
                 // Check that the client can read the message sent by the server
                 server.getOutputStream().write(serverToClient);
                 byte[] clientFromServer = new byte[serverToClient.length];
-                Streams.readFully(client.getInputStream(), clientFromServer);
+                readFully(client.getInputStream(), clientFromServer);
                 assertEquals(serverToClientString, new String(clientFromServer));
 
                 // Check that the server can read the message sent by the client
                 client.getOutputStream().write(clientToServer);
                 byte[] serverFromClient = new byte[clientToServer.length];
-                Streams.readFully(server.getInputStream(), serverFromClient);
+                readFully(server.getInputStream(), serverFromClient);
                 assertEquals(clientToServerString, new String(serverFromClient));
 
                 // Check that the server and the client cannot read anything else
@@ -1836,7 +1835,7 @@ public class SSLSocketTest extends TestCase {
                                 }
                                 return Arrays.copyOf(buffer, bytesRead);
                             } finally {
-                                IoUtils.closeQuietly(socket);
+                                closeQuietly(socket);
                             }
                         }
                     });
@@ -1864,7 +1863,7 @@ public class SSLSocketTest extends TestCase {
                         } catch (IOException expected) {}
                         return null;
                     } finally {
-                        IoUtils.closeQuietly(client);
+                        closeQuietly(client);
                     }
                 }
             });
@@ -1873,9 +1872,9 @@ public class SSLSocketTest extends TestCase {
             return readFirstReceivedChunkFuture.get(10, TimeUnit.SECONDS);
         } finally {
             executorService.shutdownNow();
-            IoUtils.closeQuietly(listeningSocket);
-            IoUtils.closeQuietly(sockets[0]);
-            IoUtils.closeQuietly(sockets[1]);
+            closeQuietly(listeningSocket);
+            closeQuietly(sockets[0]);
+            closeQuietly(sockets[1]);
             if (!executorService.awaitTermination(5, TimeUnit.SECONDS)) {
                 fail("Timed out while waiting for the test to shut down");
             }
@@ -2273,6 +2272,28 @@ public class SSLSocketTest extends TestCase {
             */
             // test.close();
 
+        }
+    }
+
+    private static final void readFully(InputStream in, byte[] dst) throws IOException {
+        int offset = 0;
+        int byteCount = dst.length;
+        while (byteCount > 0) {
+            int bytesRead = in.read(dst, offset, byteCount);
+            if (bytesRead < 0) {
+                throw new EOFException();
+            }
+            offset += bytesRead;
+            byteCount -= bytesRead;
+        }
+    }
+
+    private static final void closeQuietly(Closeable socket) {
+        if (socket != null) {
+            try {
+                socket.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
