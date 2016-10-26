@@ -56,8 +56,8 @@ import org.junit.Rule;
 import org.junit.rules.TestRule;
 
 public class URLConnectionTest extends TestCaseWithRules {
-    @Rule
-    public TestRule guardRule = ResourceLeakageDetector.getRule();
+    //@Rule
+    //public TestRule guardRule = ResourceLeakageDetector.getRule();
 
     private static final String testString = "Hello World";
 
