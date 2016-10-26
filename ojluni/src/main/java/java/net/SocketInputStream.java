@@ -130,7 +130,7 @@ class SocketInputStream extends FileInputStream
      * <i>length</i> bytes of data.
      * @param b the buffer into which the data is read
      * @param off the start offset of the data
-     * @param len the maximum number of bytes read
+     * @param length the maximum number of bytes read
      * @return the actual number of bytes read, -1 is
      *          returned when the end of the stream is reached.
      * @exception IOException If an I/O error has occurred.
@@ -172,6 +172,8 @@ class SocketInputStream extends FileInputStream
             }
         } catch (ConnectionResetException rstExc) {
             gotReset = true;
+        } finally {
+            impl.releaseFD();
         }
 
         /*
@@ -180,12 +182,15 @@ class SocketInputStream extends FileInputStream
          */
         if (gotReset) {
             impl.setConnectionResetPending();
+            impl.acquireFD();
             try {
                 n = socketRead(fd, b, off, length, timeout);
                 if (n > 0) {
                     return n;
                 }
             } catch (ConnectionResetException rstExc) {
+            } finally {
+                impl.releaseFD();
             }
         }
 
