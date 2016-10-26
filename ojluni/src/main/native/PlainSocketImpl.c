@@ -845,7 +845,6 @@ PlainSocketImpl_socketClose0(JNIEnv *env, jobject this,
             NET_SocketClose(marker_fd);
         } else {
             (*env)->SetIntField(env, fdObj, IO_fd_fdID, -1);
-            untagSocket(env, fd);
             NET_SocketClose(fd);
         }
     }

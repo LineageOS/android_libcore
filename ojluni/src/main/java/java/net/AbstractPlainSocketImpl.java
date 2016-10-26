@@ -33,6 +33,7 @@ import java.io.FileDescriptor;
 
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
+import dalvik.system.SocketTagger;
 import sun.net.ConnectionResetException;
 import sun.net.NetHooks;
 import sun.net.ResourceManager;
@@ -507,6 +508,12 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
             if (fd != null && fd.valid()) {
                 if (!stream) {
                     ResourceManager.afterUdpClose();
+                }
+                // Android-changed: Socket should be untagged before the preclose. After preclose,
+                // socket will dup2-ed to marker_fd, therefore, it won't describe the same file.
+                // If closingPending is true, then the socket has been preclosed.
+                if (!closePending) {
+                    SocketTagger.get().untag(fd);
                 }
                 if (fdUseCount == 0) {
                     if (closePending) {
