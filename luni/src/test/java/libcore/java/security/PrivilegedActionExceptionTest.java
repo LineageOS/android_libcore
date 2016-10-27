@@ -16,12 +16,14 @@
 
 package libcore.java.security;
 
-import org.junit.Test;
-
-import java.security.PrivilegedActionException;
-
 import static org.junit.Assert.assertSame;
 
+import java.security.PrivilegedActionException;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+import org.junit.Test;
+
+@RunWith(JUnit4.class)
 public class PrivilegedActionExceptionTest {
 
     /**
