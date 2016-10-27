@@ -110,6 +110,8 @@ public class Collections {
     private static final int REPLACEALL_THRESHOLD     =   11;
     private static final int INDEXOFSUBLIST_THRESHOLD =   35;
 
+    // Android-changed: Warn about Collections.sort() being built on top
+    // of List.sort() when it used to be the other way round in Nougat.
     /**
      * Sorts the specified list into ascending order, according to the
      * {@linkplain Comparable natural ordering} of its elements.
@@ -124,34 +126,12 @@ public class Collections {
      *
      * <p>The specified list must be modifiable, but need not be resizable.
      *
-     * <p>Implementation note: This implementation is a stable, adaptive,
-     * iterative mergesort that requires far fewer than n lg(n) comparisons
-     * when the input array is partially sorted, while offering the
-     * performance of a traditional mergesort when the input array is
-     * randomly ordered.  If the input array is nearly sorted, the
-     * implementation requires approximately n comparisons.  Temporary
-     * storage requirements vary from a small constant for nearly sorted
-     * input arrays to n/2 object references for randomly ordered input
-     * arrays.
-     *
-     * <p>The implementation takes equal advantage of ascending and
-     * descending order in its input array, and can take advantage of
-     * ascending and descending order in different parts of the same
-     * input array.  It is well-suited to merging two or more sorted arrays:
-     * simply concatenate the arrays and sort the resulting array.
-     *
-     * <p>The implementation was adapted from Tim Peters's list sort for Python
-     * (<a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">
-     * TimSort</a>).  It uses techniques from Peter McIlroy's "Optimistic
-     * Sorting and Information Theoretic Complexity", in Proceedings of the
-     * Fourth Annual ACM-SIAM Symposium on Discrete Algorithms, pp 467-474,
-     * January 1993.
-     *
-     * <p>This implementation dumps the specified list into an array, sorts
-     * the array, and iterates over the list resetting each element
-     * from the corresponding position in the array.  This avoids the
-     * n<sup>2</sup> log(n) performance that would result from attempting
-     * to sort a linked list in place.
+     * @implNote
+     * This implementation defers to the {@link List#sort(Comparator)}
+     * method using the specified list and a {@code null} comparator.
+     * Note that in Android 7 (Nougat), {@code Collections.sort()} used to
+     * be implemented on top of {@link List#toArray()},
+     * {@link ListIterator#next()} and {@link ListIterator#set(Object)}.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be sorted.
@@ -166,27 +146,11 @@ public class Collections {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
-        // Android-changed BEGIN: List.sort() is implemented on top of
-        // Collections.sort() rather than the other way around. For backwards
-        // compatibility, Collections.sort() never changes a List's modCount,
-        // but List.sort() implementations may.
-        // was: list.sort(null);
-
-        if (list.getClass() == ArrayList.class) {
-            Arrays.sort(((ArrayList) list).elementData, 0, list.size());
-            return;
-        }
-
-        Object[] a = list.toArray();
-        Arrays.sort(a);
-        ListIterator<T> i = list.listIterator();
-        for (int j=0; j<a.length; j++) {
-            i.next();
-            i.set((T)a[j]);
-        }
-        // Android-changed END
+        list.sort(null);
     }
 
+    // Android-changed: Warn about Collections.sort() being built on top
+    // of List.sort() when it used to be the other way round in Nougat.
     /**
      * Sorts the specified list according to the order induced by the
      * specified comparator.  All elements in the list must be <i>mutually
@@ -199,34 +163,12 @@ public class Collections {
      *
      * <p>The specified list must be modifiable, but need not be resizable.
      *
-     * <p>Implementation note: This implementation is a stable, adaptive,
-     * iterative mergesort that requires far fewer than n lg(n) comparisons
-     * when the input array is partially sorted, while offering the
-     * performance of a traditional mergesort when the input array is
-     * randomly ordered.  If the input array is nearly sorted, the
-     * implementation requires approximately n comparisons.  Temporary
-     * storage requirements vary from a small constant for nearly sorted
-     * input arrays to n/2 object references for randomly ordered input
-     * arrays.
-     *
-     * <p>The implementation takes equal advantage of ascending and
-     * descending order in its input array, and can take advantage of
-     * ascending and descending order in different parts of the same
-     * input array.  It is well-suited to merging two or more sorted arrays:
-     * simply concatenate the arrays and sort the resulting array.
-     *
-     * <p>The implementation was adapted from Tim Peters's list sort for Python
-     * (<a href="http://svn.python.org/projects/python/trunk/Objects/listsort.txt">
-     * TimSort</a>).  It uses techniques from Peter McIlroy's "Optimistic
-     * Sorting and Information Theoretic Complexity", in Proceedings of the
-     * Fourth Annual ACM-SIAM Symposium on Discrete Algorithms, pp 467-474,
-     * January 1993.
-     *
-     * <p>This implementation dumps the specified list into an array, sorts
-     * the array, and iterates over the list resetting each element
-     * from the corresponding position in the array.  This avoids the
-     * n<sup>2</sup> log(n) performance that would result from attempting
-     * to sort a linked list in place.
+     * @implNote
+     * This implementation defers to the {@link List#sort(Comparator)}
+     * method using the specified list and comparator.
+     * Note that in Android 7 (Nougat), {@code Collections.sort()} used to
+     * be implemented on top of {@link List#toArray()},
+     * {@link ListIterator#next()} and {@link ListIterator#set(Object)}.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be sorted.
@@ -243,25 +185,7 @@ public class Collections {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> void sort(List<T> list, Comparator<? super T> c) {
-        // Android-changed BEGIN: List.sort() is implemented on top of
-        // Collections.sort() rather than the other way around. For backwards
-        // compatibility, Collections.sort() never changes a List's modCount,
-        // but List.sort() implementations may.
-        // was: list.sort(c);
-
-        if (list.getClass() == ArrayList.class) {
-            Arrays.sort(((ArrayList) list).elementData, 0, list.size(), (Comparator) c);
-            return;
-        }
-
-        Object[] a = list.toArray();
-        Arrays.sort(a, (Comparator)c);
-        ListIterator<T> i = list.listIterator();
-        for (int j=0; j<a.length; j++) {
-            i.next();
-            i.set((T)a[j]);
-        }
-        // Android-changed END
+        list.sort(c);
     }
 
 
