@@ -174,6 +174,7 @@ public class PKCS12AttributeTest extends TestCase {
                 Arrays.toString(att.getEncoded()));
     }
 
+    @SuppressWarnings("SelfEquals")
     public void test_Equals() {
         PKCS12Attribute att = new PKCS12Attribute(
                 PKCS9_EMAIL_ADDRESS_OID, EXAMPLE_EMAIL_ADDRESS);
