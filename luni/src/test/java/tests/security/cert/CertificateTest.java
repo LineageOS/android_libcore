@@ -174,7 +174,7 @@ public class CertificateTest extends TestCase {
         byte[] actualEncoding = actual.getEncoded();
         assertTrue(Arrays.equals(expectedEncoding, actualEncoding));
 
-        assertFalse(expectedEncoding[4] == 200);
+        assertFalse(expectedEncoding[4] == (byte) 200);
         expectedEncoding[4] = (byte) 200;
         try {
             cf.generateCertificate(new ByteArrayInputStream(expectedEncoding));
