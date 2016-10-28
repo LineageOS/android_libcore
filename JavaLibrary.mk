@@ -240,7 +240,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	sqlite-jdbc \
 	tzdata-testing
 LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR
+LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-tests
 include $(BUILD_STATIC_JAVA_LIBRARY)
