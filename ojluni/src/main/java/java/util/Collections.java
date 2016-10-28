@@ -4687,11 +4687,11 @@ public class Collections {
      * Returns an immutable set containing only the specified object.
      * The returned set is serializable.
      *
-     * @param  <E> the class of the objects in the set
+     * @param  <T> the class of the objects in the set
      * @param o the sole object to be stored in the returned set.
      * @return an immutable set containing only the specified object.
      */
-    public static <E> Set<E> singleton(E o) {
+    public static <T> Set<T> singleton(T o) {
         return new SingletonSet<>(o);
     }
 
@@ -4808,12 +4808,12 @@ public class Collections {
      * Returns an immutable list containing only the specified object.
      * The returned list is serializable.
      *
-     * @param  <E> the class of the objects in the list
+     * @param  <T> the class of the objects in the list
      * @param o the sole object to be stored in the returned list.
      * @return an immutable list containing only the specified object.
      * @since 1.3
      */
-    public static <E> List<E> singletonList(E o) {
+    public static <T> List<T> singletonList(T o) {
         return new SingletonList<>(o);
     }
 
