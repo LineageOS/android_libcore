@@ -1832,17 +1832,9 @@ public class OldSocketTest extends OldSocketTestCase {
         }
     }
 
-    @DisableResourceLeakageDetection(
-            why = "Socket.sendUrgentData() creates a new PlainSocketImpl when called on a socket"
-                    + " that has already been closed; that cannot be released as calling close()"
-                    + " again does nothing.",
-            bug = "31818400")
+    // Calling sendUrgentData on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
     public void test_sendUrgentDataI_leaky() throws IOException {
-        // This test looks like it is trying to ensure that you cannot sendUrgentData after the
-        // socket has been closed but calling sendUrgentData(0) on a closed socket causes it to
-        // allocate a new AbstractPlainSocketImpl which is most probably a bug as it results in a
-        // leak.
-        // Bug: 31818400
         Socket theSocket = new Socket();
         theSocket.close();
         try {
