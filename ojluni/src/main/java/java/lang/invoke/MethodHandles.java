@@ -872,7 +872,7 @@ assertEquals("", (String) MH_newString.invokeExact());
             Method method = refc.getDeclaredMethod(name, type.ptypes());
             final int modifiers = method.getModifiers();
             if (Modifier.isStatic(modifiers)) {
-                throw new IllegalAccessException("Method" + method + " is static.");
+                throw new IllegalAccessException("Method " + method + " is static");
             }
 
             checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
@@ -1095,8 +1095,51 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findGetter(Class<?> refc, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findGetter is not implemented");
+            return findAccessor(refc, name, type, MethodHandle.IGET);
+        }
+
+        private MethodHandle findAccessor(Class<?> refc, String name, Class<?> type, int kind)
+                throws NoSuchFieldException, IllegalAccessException {
+            final Field field = refc.getField(name);
+            checkAccess(refc, field.getDeclaringClass(), field.getModifiers(), field.getName());
+
+            final Class<?> fieldType = field.getType();
+            if (fieldType != type) {
+                throw new NoSuchFieldException(
+                    "Field has wrong type: " + fieldType + " != " + type);
+            }
+
+            final boolean isStaticKind = kind == MethodHandle.SGET || kind == MethodHandle.SPUT;
+            final int modifiers = field.getModifiers();
+            if (Modifier.isStatic(modifiers) != isStaticKind) {
+                String reason = "Field " + field + " is " +
+                        (isStaticKind ? "not " : "") + "static";
+                throw new IllegalAccessException(reason);
+            }
+
+            final boolean isSetterKind = kind == MethodHandle.IPUT || kind == MethodHandle.SPUT;
+            if (Modifier.isFinal(modifiers) && isSetterKind) {
+                throw new IllegalAccessException("Field " + field + " is final");
+            }
+
+            final MethodType methodType;
+            switch (kind) {
+                case MethodHandle.SGET:
+                    methodType = MethodType.methodType(fieldType);
+                    break;
+                case MethodHandle.SPUT:
+                    methodType = MethodType.methodType(void.class, fieldType);
+                    break;
+                case MethodHandle.IGET:
+                    methodType = MethodType.methodType(fieldType, refc);
+                    break;
+                case MethodHandle.IPUT:
+                    methodType = MethodType.methodType(void.class, refc, fieldType);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Invalid kind " + kind);
+            }
+            return new MethodHandleImpl(field.getArtField(), kind, methodType);
         }
 
         /**
@@ -1117,8 +1160,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findSetter(Class<?> refc, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findSetter is not implemented");
+            return findAccessor(refc, name, type, MethodHandle.IPUT);
         }
 
         /**
@@ -1141,8 +1183,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findStaticGetter(Class<?> refc, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findStaticGetter is not implemented");
+            return findAccessor(refc, name, type, MethodHandle.SGET);
         }
 
         /**
@@ -1165,8 +1206,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findStaticSetter(Class<?> refc, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.findStaticSetter is not implemented");
+            return findAccessor(refc, name, type, MethodHandle.SPUT);
         }
 
         /**
