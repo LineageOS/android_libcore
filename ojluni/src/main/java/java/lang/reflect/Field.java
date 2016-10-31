@@ -870,4 +870,9 @@ class Field extends AccessibleObject implements Member {
     public int getOffset() {
         return offset;
     }
+
+    /**
+     * @hide - export for use by {@code java.lang.invoke.*}
+     */
+    public native long getArtField();
 }
