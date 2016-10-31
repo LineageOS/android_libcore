@@ -465,12 +465,10 @@ public abstract class MethodHandle {
     /** @hide */ public static final int INVOKE_STATIC = 3;
     /** @hide */ public static final int INVOKE_INTERFACE = 4;
     /** @hide */ public static final int INVOKE_TRANSFORM = 5;
-
-
-    /** @hide */ public static final int SGET = 6;
-    /** @hide */ public static final int SPUT = 7;
-    /** @hide */ public static final int IGET = 8;
-    /** @hide */ public static final int IPUT = 9;
+    /** @hide */ public static final int IGET = 6;
+    /** @hide */ public static final int IPUT = 7;
+    /** @hide */ public static final int SGET = 8;
+    /** @hide */ public static final int SPUT = 9;
 
     // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
     // constants or SGET/SPUT, IGET/IPUT.
