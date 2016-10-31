@@ -46,7 +46,7 @@ import javax.security.auth.x500.X500Principal;
 
 import sun.misc.HexDumpEncoder;
 /* BEGIN android-removed
-import sun.misc.BASE64Decoder;
+import java.util.Base64;
  * END android-removed */
 import sun.security.util.*;
 import sun.security.provider.X509Factory;
@@ -270,7 +270,6 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
         }
         if (line.equals(X509Factory.BEGIN_CERT)) {
             /* stream appears to be hex-encoded bytes *
-            BASE64Decoder         decoder   = new BASE64Decoder();
             ByteArrayOutputStream decstream = new ByteArrayOutputStream();
             try {
                 while ((line = certBufferedReader.readLine()) != null) {
@@ -278,7 +277,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
                         der = new DerValue(decstream.toByteArray());
                         break;
                     } else {
-                        decstream.write(decoder.decodeBuffer(line));
+                        decstream.write(Base64.getMimeDecoder().decode(line));
                     }
                 }
             } catch (IOException ioe2) {
@@ -1978,12 +1977,12 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
     private ConcurrentHashMap<String,String> fingerprints =
             new ConcurrentHashMap<>(2);
 
+    /* BEGIN android-removed
     public String getFingerprint(String algorithm) {
-        if (!fingerprints.containsKey(algorithm)) {
-            fingerprints.put(algorithm, getCertificateFingerPrint(algorithm));
-        }
-        return fingerprints.get(algorithm);
+        return fingerprints.computeIfAbsent(algorithm,
+                x -> getCertificateFingerPrint(x));
     }
+     * END android-removed */
 
     /**
      * Gets the requested finger print of the certificate. The result
