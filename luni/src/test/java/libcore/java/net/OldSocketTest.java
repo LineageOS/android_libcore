@@ -1983,7 +1983,13 @@ public class OldSocketTest extends OldSocketTestCase {
                         + e.toString());
             }
         }
+    }
 
+    // Calling sendUrgentData on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
+    public void test_sendUrgentDataI_leaky() throws IOException {
+        Socket theSocket = new Socket();
+        theSocket.close();
         try {
             Socket theSocket = new Socket();
             theSocket.close();

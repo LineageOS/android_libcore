@@ -1052,6 +1052,13 @@ class Socket implements java.io.Closeable {
      * @since 1.4
      */
     public void sendUrgentData (int data) throws IOException  {
+        // Android-changed: If the socket is closed, sendUrgentData should not create a new impl.
+        // Fail early to avoid leaking resources.
+        // http://b/31818400
+        if (isClosed()) {
+            throw new SocketException("Socket is closed");
+        }
+
         if (!getImpl().supportsUrgentData ()) {
             throw new SocketException ("Urgent data not supported");
         }
