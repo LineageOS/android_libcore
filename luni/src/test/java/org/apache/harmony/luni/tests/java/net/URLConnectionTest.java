@@ -219,6 +219,7 @@ public class URLConnectionTest extends TestCaseWithRules {
         super.setUp();
 
         server = new Support_TestWebServer();
+        server.setDelay(10);
         port = server.initServer();
         url = new URL("http://localhost:" + port + "/test1");
         uc = url.openConnection();
