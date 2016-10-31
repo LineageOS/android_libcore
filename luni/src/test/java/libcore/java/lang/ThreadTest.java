@@ -19,6 +19,7 @@ package libcore.java.lang;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -256,6 +257,56 @@ public final class ThreadTest extends TestCase {
         afterPark.set(true);
         watchdog.interrupt();
         watchdog.join();
+    }
+
+    /**
+     * Check that call Thread.start for already started thread
+     * throws {@code IllegalThreadStateException}
+     */
+    public void testThreadDoubleStart() {
+        final ReentrantLock lock = new ReentrantLock();
+        Thread thread = new Thread() {
+            public void run() {
+                // Lock should be acquired by the main thread and
+                // this thread should block on this operation.
+                lock.lock();
+            }
+        };
+        // Acquire lock to ensure that new thread is not finished
+        // when we call start() second time.
+        lock.lock();
+        try {
+            thread.start();
+            try {
+                thread.start();
+                fail();
+            } catch (IllegalThreadStateException expected) {
+            }
+        } finally {
+            lock.unlock();
+        }
+        try {
+            thread.join();
+        } catch (InterruptedException ignored) {
+        }
+    }
+
+    /**
+     * Check that call Thread.start for already finished thread
+     * throws {@code IllegalThreadStateException}
+     */
+    public void testThreadRestart() {
+        Thread thread = new Thread();
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException ignored) {
+        }
+        try {
+            thread.start();
+            fail();
+        } catch (IllegalThreadStateException expected) {
+        }
     }
 
     // This method returns {@code null} if all tests pass, or a non-null String containing

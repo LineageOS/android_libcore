@@ -716,7 +716,8 @@ class Thread implements Runnable {
          *
          * A zero status value corresponds to state "NEW".
          */
-        if (threadStatus != 0)
+        // Android-changed: throw if 'started' is true
+        if (threadStatus != 0 || started)
             throw new IllegalThreadStateException();
 
         /* Notify the group that this thread is about to be started
