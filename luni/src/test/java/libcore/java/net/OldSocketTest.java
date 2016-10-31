@@ -1845,6 +1845,19 @@ public class OldSocketTest extends OldSocketTestCase {
         }
     }
 
+    // Calling getTrafficClass on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
+    public void test_getTrafficClass_leaky() throws IOException {
+        Socket theSocket = new Socket();
+        theSocket.close();
+        try {
+            theSocket.getTrafficClass();
+            fail();
+        } catch (IOException ioe) {
+            //expected
+        }
+    }
+
     private String readShortString(InputStream theInput) throws IOException {
         int totalBytesRead = 0;
         byte[] myBytes = new byte[100];
