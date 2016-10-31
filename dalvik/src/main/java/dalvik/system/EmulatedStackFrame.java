@@ -26,7 +26,59 @@ import java.lang.invoke.MethodType;
  * @hide
  */
 public class EmulatedStackFrame {
-    public EmulatedStackFrame() {
-        throw new AssertionError("not implemented yet.");
+    /**
+     * The type of this stack frame, i.e, the types of its arguments and the type of its
+     * return value.
+     */
+    private final MethodType type;
+
+    /**
+     * All reference arguments and reference return values that belong to this argument array.
+     *
+     * If the return type is a reference, it will be the last element of this array.
+     */
+    private final Object[] references;
+
+    /**
+     * Contains all primitive values on the stack. Primitive values always take 4 or 8 bytes of
+     * space and all {@code short}, {@code char} and {@code boolean} arguments are promoted to ints.
+     *
+     * Reference values do not appear on the stack frame but they appear (in order)
+     * in the {@code references} array. No additional slots or space for reference arguments or
+     * return values are reserved in the stackFrame.
+     *
+     * By convention, if the return value is a primitive, it will occupy the last 4 or 8 bytes
+     * of the stack frame, depending on the type.
+     *
+     * The size of this array is known at the time of creation of this {@code EmulatedStackFrame}
+     * and is determined by the {@code MethodType} of the frame.
+     *
+     * Example :
+     * <pre>
+     *     Function : String foo(String a, String b, int c, long d) { }
+     *
+     *     EmulatedStackFrame :
+     *     references = { a, b, [return_value] }
+     *     stackFrame = { c0, c1, c2, c3, d0, d1, d2, d3, d4, d5, d6, d7 }
+     *
+     *     Function : int foo(String a)
+     *
+     *     EmulatedStackFrame :
+     *     references = { a }
+     *     stackFrame = { rv0, rv1, rv2, rv3 }  // rv is the return value.
+     *
+     * </pre>
+     *
+     */
+    private final byte[] stackFrame;
+
+    /**
+     * EmulatedStackFrame instances are currently only constructed by the runtime.
+     */
+    // TODO(narayan): Future changes will allow managed code to construct EmulatedStackFrames.
+    private EmulatedStackFrame(MethodType type, Object[] references, byte[] stackFrame) {
+        this.type = type;
+        this.references = references;
+        this.stackFrame = stackFrame;
     }
 }
