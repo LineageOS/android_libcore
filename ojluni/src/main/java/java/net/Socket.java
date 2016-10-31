@@ -1382,6 +1382,11 @@ class Socket implements java.io.Closeable {
      * @see #setTrafficClass(int)
      */
     public int getTrafficClass() throws SocketException {
+        // Android-changed: throw SocketException if the socket is already closed. http://b/31818400
+        if (isClosed()) {
+            throw new SocketException("Socket is closed");
+        }
+
         return ((Integer) (getImpl().getOption(SocketOptions.IP_TOS))).intValue();
     }
 

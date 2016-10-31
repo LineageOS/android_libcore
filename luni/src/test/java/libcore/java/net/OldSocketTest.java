@@ -1998,6 +1998,19 @@ public class OldSocketTest extends OldSocketTestCase {
         }
     }
 
+    // Calling getTrafficClass on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
+    public void test_getTrafficClass_leaky() throws IOException {
+        Socket theSocket = new Socket();
+        theSocket.close();
+        try {
+            theSocket.getTrafficClass();
+            fail();
+        } catch (IOException ioe) {
+            //expected
+        }
+    }
+
     public void test_setPerformancePreference_Int_Int_Int() throws Exception {
         Socket theSocket = new Socket();
         theSocket.setPerformancePreferences(1, 1, 1);
