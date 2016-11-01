@@ -16,6 +16,8 @@
 
 package libcore.java.io;
 
+import android.system.ErrnoException;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
@@ -307,23 +309,17 @@ public class FileTest extends junit.framework.TestCase {
 
     // http://b/25878034
     //
-    // SELinux prevents stat(2) from working on some parts of the system partition, and there
-    // isn't currently a CTS test that enforces this for the system partition as a whole (and it
-    // isn't clear that there can be one). This particular file has a special label
-    // (see file_contexts) that makes sure it isn't unstattable but then again this file might
-    // disappear soon or be absent on some devices.
-    //
-    // TODO: This isn't a very good test. uncrypt is scheduled to disappear somewhere
-    // in the near future. Is there a better candidate file ?
-    public void testExistsOnSystem() {
-        File sh = new File("/system/bin/uncrypt");
+    // The test makes sure that #exists doesn't use stat. To implement the same, it installs
+    // SECCOMP filter. The SECCOMP filter is designed to not allow stat(fstatat64/newfstatat) calls
+    // and whenever a thread makes the system call, android.system.ErrnoException
+    // (EPERM - Operation not permitted) will be raised.
+    public void testExistsOnSystem() throws ErrnoException {
+        assertEquals("SECCOMP filter is not installed.", 0, installSeccompFilter());
+        File sh = new File("/sdcard");
         assertTrue(sh.exists());
-        try {
-            android.system.Os.stat(sh.getAbsolutePath());
-            fail();
-        } catch (android.system.ErrnoException expected) {
-        }
     }
+
+    private static native int installSeccompFilter();
 
     // http://b/25859957
     //
