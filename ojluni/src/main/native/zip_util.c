@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -382,17 +382,18 @@ findEND64(jzfile *zip, void *end64buf, jlong endpos)
     return end64pos;
 }
 
+// Android-changed: Commented-out an unused function
 /*
  * Returns a hash code value for a C-style NUL-terminated string.
  */
-static unsigned int
-hash(const char *s)
-{
-    int h = 0;
-    while (*s != '\0')
-        h = 31*h + *s++;
-    return h;
-}
+// static unsigned int
+// hash(const char *s)
+// {
+//     int h = 0;
+//     while (*s != '\0')
+//         h = 31*h + *s++;
+//     return h;
+// }
 
 /*
  * Returns a hash code value for a string of a specified length.
@@ -536,7 +537,7 @@ if (1) { zip->msg = message; goto Catch; } else ((void)0)
 
 /*
  * Reads zip file central directory. Returns the file position of first
- * CEN header, otherwise returns -1 if an error occured. If zip->msg != NULL
+ * CEN header, otherwise returns -1 if an error occurred. If zip->msg != NULL
  * then the error was a zip format error and zip->msg has the error text.
  * Always pass in -1 for knownTotal; it's used for a recursive call.
  */
@@ -661,7 +662,10 @@ readCEN(jzfile *zip, jint knownTotal)
     entries  = zip->entries  = calloc(total, sizeof(entries[0]));
     tablelen = zip->tablelen = ((total/2) | 1); // Odd -> fewer collisions
     table    = zip->table    = malloc(tablelen * sizeof(table[0]));
-    if (entries == NULL || table == NULL) goto Catch;
+    /* According to ISO C it is perfectly legal for malloc to return zero
+     * if called with a zero argument. We check this for 'entries' but not
+     * for 'table' because 'tablelen' can't be zero (see computation above). */
+    if ((entries == NULL && total != 0) || table == NULL) goto Catch;
     for (j = 0; j < tablelen; j++)
         table[j] = ZIP_ENDCHAIN;
 
@@ -1055,6 +1059,7 @@ newEntry(jzfile *zip, jzcell *zc, AccessHint accessHint)
     if ((ze->name = malloc(nlen + 1)) == NULL) goto Catch;
     memcpy(ze->name, cen + CENHDR, nlen);
     ze->name[nlen] = '\0';
+    ze->nlen = nlen;
     if (elen > 0) {
         char *extra = cen + CENHDR + nlen;
 
@@ -1152,7 +1157,34 @@ ZIP_FreeEntry(jzfile *jz, jzentry *ze)
 jzentry *
 ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
 {
-    unsigned int hsh = hash(name);
+    if (ulen == 0) {
+        return ZIP_GetEntry2(zip, name, strlen(name), JNI_FALSE);
+    }
+    return ZIP_GetEntry2(zip, name, ulen, JNI_TRUE);
+}
+
+jboolean equals(char* name1, int len1, char* name2, int len2) {
+    if (len1 != len2) {
+        return JNI_FALSE;
+    }
+    while (len1-- > 0) {
+        if (*name1++ != *name2++) {
+            return JNI_FALSE;
+        }
+    }
+    return JNI_TRUE;
+}
+
+/*
+ * Returns the zip entry corresponding to the specified name, or
+ * NULL if not found.
+ * This method supports embedded null character in "name", use ulen
+ * for the length of "name".
+ */
+jzentry *
+ZIP_GetEntry2(jzfile *zip, char *name, jint ulen, jboolean addSlash)
+{
+    unsigned int hsh = hashN(name, ulen);
     jint idx;
     jzentry *ze = 0;
 
@@ -1173,7 +1205,7 @@ ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
 
         /* Check the cached entry first */
         ze = zip->cache;
-        if (ze && strcmp(ze->name,name) == 0) {
+        if (ze && equals(ze->name, ze->nlen, name, ulen)) {
             /* Cache hit!  Remove and return the cached entry. */
             zip->cache = 0;
             ZIP_Unlock(zip);
@@ -1199,7 +1231,7 @@ ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
                  * we keep searching.
                  */
                 ze = newEntry(zip, zc, ACCESS_RANDOM);
-                if (ze && strcmp(ze->name, name)==0) {
+                if (ze && equals(ze->name, ze->nlen, name, ulen)) {
                     break;
                 }
                 if (ze != 0) {
@@ -1218,8 +1250,8 @@ ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
             break;
         }
 
-        /* If no real length was passed in, we are done */
-        if (ulen == 0) {
+        /* If no need to try appending slash, we are done */
+        if (!addSlash) {
             break;
         }
 
@@ -1229,11 +1261,11 @@ ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
         }
 
         /* Add slash and try once more */
-        name[ulen] = '/';
-        name[ulen+1] = '\0';
+        name[ulen++] = '/';
+        name[ulen] = '\0';
         hsh = hash_append(hsh, '/');
         idx = zip->table[hsh % zip->tablelen];
-        ulen = 0;
+        addSlash = JNI_FALSE;
     }
 
 Finally:
