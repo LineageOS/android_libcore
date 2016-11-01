@@ -36,6 +36,11 @@ import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+
 public final class GZIPInputStreamTest extends TestCaseWithRules {
     @Rule
     public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
@@ -194,6 +199,42 @@ public final class GZIPInputStreamTest extends TestCaseWithRules {
             assertTrue(Arrays.equals(bytes, unzipped));
         } finally {
             IoUtils.closeQuietly(gzip);
+        }
+    }
+
+    /**
+     * Test a openJdk8 fix for case where GZIPInputStream.readTrailer may accidently
+     * close the input stream if trailing bytes looks "close" enough. Wrapping GZIP in
+     * a ZipOutputStream will do that. */
+    public void testNoCloseInReadTrailerDueToRead() throws IOException {
+        final int numBytes = 128;
+        byte[] data = new byte[numBytes];
+        final boolean[] closedHolder = new boolean[]{false};
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+            zipOutputStream.putNextEntry(new ZipEntry("entry1"));
+            try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(zipOutputStream)) {
+                gzipOutputStream.write(data);
+            }
+        }
+
+        final byte[] compressedData = byteArrayOutputStream.toByteArray();
+        InputStream byteArrayInputStream =
+            new ByteArrayInputStream(compressedData) {
+                @Override
+                public void close() throws IOException {
+                    closedHolder[0] = true;
+                }
+            };
+
+        try (ZipInputStream zipInputStream = new ZipInputStream(byteArrayInputStream)) {
+            zipInputStream.getNextEntry();
+            try (InputStream in = new GZIPInputStream(zipInputStream)) {
+                assertEquals(numBytes, in.skip(numBytes+1));
+                assertFalse(closedHolder[0]);
+            }
+            assertTrue(closedHolder[0]);
         }
     }
 
