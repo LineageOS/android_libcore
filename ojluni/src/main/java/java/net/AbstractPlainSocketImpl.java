@@ -509,43 +509,42 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
                 if (!stream) {
                     ResourceManager.afterUdpClose();
                 }
-                // Android-changed: Socket should be untagged before the preclose. After preclose,
+                // Android-changed:
+                // Socket should be untagged before the preclose. After preclose,
                 // socket will dup2-ed to marker_fd, therefore, it won't describe the same file.
                 // If closingPending is true, then the socket has been preclosed.
+                //
+                // Also, close the CloseGuard when the #close is called.
                 if (!closePending) {
-                    SocketTagger.get().untag(fd);
-                }
-                if (fdUseCount == 0) {
-                    if (closePending) {
-                        return;
-                    }
                     closePending = true;
-                    /*
-                     * We close the FileDescriptor in two-steps - first the
-                     * "pre-close" which closes the socket but doesn't
-                     * release the underlying file descriptor. This operation
-                     * may be lengthy due to untransmitted data and a long
-                     * linger interval. Once the pre-close is done we do the
-                     * actual socket to release the fd.
-                     */
-                    try {
-                        socketPreClose();
-                    } finally {
-                        socketClose();
-                    }
-                    // Android-changed(http://b/26470377): Some Android code doesn't expect file
-                    // descriptor to be null. socketClose invalidates the fd by closing the fd.
-                    // fd = null;
-                    return;
-                } else {
-                    /*
-                     * If a thread has acquired the fd and a close
-                     * isn't pending then use a deferred close.
-                     * Also decrement fdUseCount to signal the last
-                     * thread that releases the fd to close it.
-                     */
-                    if (!closePending) {
-                        closePending = true;
+                    SocketTagger.get().untag(fd);
+                    guard.close();
+
+                    if (fdUseCount == 0) {
+                        /*
+                         * We close the FileDescriptor in two-steps - first the
+                         * "pre-close" which closes the socket but doesn't
+                         * release the underlying file descriptor. This operation
+                         * may be lengthy due to untransmitted data and a long
+                         * linger interval. Once the pre-close is done we do the
+                         * actual socket to release the fd.
+                         */
+                        try {
+                            socketPreClose();
+                        } finally {
+                            socketClose();
+                        }
+                        // Android-changed(http://b/26470377): Some Android code doesn't expect file
+                        // descriptor to be null. socketClose invalidates the fd by closing the fd.
+                        // fd = null;
+                        return;
+                    } else {
+                        /*
+                         * If a thread has acquired the fd and a close
+                         * isn't pending then use a deferred close.
+                         * Also decrement fdUseCount to signal the last
+                         * thread that releases the fd to close it.
+                         */
                         fdUseCount--;
                         socketPreClose();
                     }
@@ -557,6 +556,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     void reset() throws IOException {
         if (fd != null && fd.valid()) {
             socketClose();
+            // Android-changed: Notified the CloseGuard object as the fd has been released.
+            guard.close();
         }
         super.reset();
     }
@@ -706,8 +707,6 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      * Close the socket (and release the file descriptor).
      */
     protected void socketClose() throws IOException {
-        guard.close();
-
         socketClose0(false);
     }
 
