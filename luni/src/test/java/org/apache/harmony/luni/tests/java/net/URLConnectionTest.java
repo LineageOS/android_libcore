@@ -219,7 +219,6 @@ public class URLConnectionTest extends TestCaseWithRules {
         super.setUp();
 
         server = new Support_TestWebServer();
-        server.setDelay(10);
         port = server.initServer();
         url = new URL("http://localhost:" + port + "/test1");
         uc = url.openConnection();
@@ -1156,16 +1155,27 @@ public class URLConnectionTest extends TestCaseWithRules {
             // correct
         }
         assertEquals(100, uc.getReadTimeout());
+    }
+
+    public void test_setReadTimeoutI_SocketTimeoutException() throws Exception {
+        // Create another Support_TestWebServer but with a time delay, so that we can ensure that
+        // subsequent read() of shorter timeout period will definitely fail.
+        Support_TestWebServer localServer = new Support_TestWebServer();
+        localServer.setDelay(10 /* responseDelayMillis */);
+        final int localPort = localServer.initServer();
+
+        // "/test2" will cause the server to return an 8k binary file but only after 10ms delay.
+        URLConnection uc = new URL("http", "localhost", localPort, "test2").openConnection();
 
         byte[] ba = new byte[600];
 
-        uc2.setReadTimeout(1);
-        uc2.setDoInput(true);
-        uc2.connect();
+        uc.setReadTimeout(1);
+        uc.setDoInput(true);
+        uc.connect();
 
         try {
             // Either of the getInputStream() or the read(...) call can time out.
-            try (InputStream inputStream = uc2.getInputStream()) {
+            try (InputStream inputStream = uc.getInputStream()) {
                 inputStream.read(ba, 0, 600);
             }
             fail("SocketTimeoutException expected");
@@ -1174,6 +1184,9 @@ public class URLConnectionTest extends TestCaseWithRules {
         } catch (UnknownServiceException e) {
             fail("" + e.getMessage());
         }
+
+        localServer.close();
+        ((HttpURLConnection) uc).disconnect();
     }
 
     /**
