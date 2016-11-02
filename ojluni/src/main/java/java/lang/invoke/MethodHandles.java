@@ -2106,18 +2106,11 @@ assertEquals("yz", (String) d0.invokeExact(123, "x", "y", "z"));
         int dropped = dropArgumentChecks(oldType, pos, valueTypes);
 
         MethodType newType = oldType.insertParameterTypes(pos, valueTypes);
-        // if (dropped == 0)  return target;
-        // BoundMethodHandle result = target.rebind();
-        // LambdaForm lform = result.form;
-        // int insertFormArg = 1 + pos;
-        // for (Class<?> ptype : valueTypes) {
-        //     lform = lform.editor().addArgumentForm(insertFormArg++, BasicType.basicType(ptype));
-        // }
-        // result = result.copyWith(newType, lform);
-        // return result;
+        if (dropped == 0) {
+            return target;
+        }
 
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.dropArguments is not implemented");
+        return new Transformers.DropArguments(newType, target, pos, valueTypes.size());
     }
 
     private static int dropArgumentChecks(MethodType oldType, int pos, List<Class<?>> valueTypes) {
@@ -2599,16 +2592,6 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         MethodType combinerType = combiner.type();
         Class<?> rtype = foldArgumentChecks(foldPos, targetType, combinerType);
 
-        // BoundMethodHandle result = target.rebind();
-        // boolean dropResult = (rtype == void.class);
-        // // Note:  This may cache too many distinct LFs. Consider backing off to varargs code.
-        // LambdaForm lform = result.editor().foldArgumentsForm(1 + foldPos, dropResult, combinerType.basicType());
-        // MethodType newType = targetType;
-        // if (!dropResult)
-        //     newType = newType.dropParameterTypes(foldPos, foldPos + 1);
-        // result = result.copyWithExtendL(newType, lform, combiner);
-        // return result;
-
         // TODO(narayan): Implement this method.
         throw new UnsupportedOperationException("MethodHandles.foldArguments is not implemented");
     }
@@ -2683,9 +2666,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
             gtype = test.type();
         }
 
-        // TODO(narayan): Implement this method.
-        // return MethodHandleImpl.makeGuardWithTest(test, target, fallback);
-        throw new UnsupportedOperationException("MethodHandles.guardWithTest is not implemented");
+        return new Transformers.GuardWithTest(test, target, fallback);
     }
 
     static RuntimeException misMatchedTypes(String what, MethodType t1, MethodType t2) {
@@ -2753,13 +2734,9 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
             int hpc = hargs.size(), tpc = targs.size();
             if (hpc >= tpc || !targs.subList(0, hpc).equals(hargs))
                 throw misMatchedTypes("target and handler types", ttype, htype);
-            handler = dropArguments(handler, 1+hpc, targs.subList(hpc, tpc));
-            htype = handler.type();
         }
 
-        // TODO(narayan): Implement this method.
-        // return MethodHandleImpl.makeGuardWithCatch(target, exType, handler);
-        throw new UnsupportedOperationException("MethodHandles.catchException is not implemented");
+        return new Transformers.CatchException(target, handler, exType);
     }
 
     /**
