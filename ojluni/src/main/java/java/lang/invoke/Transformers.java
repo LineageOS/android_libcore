@@ -46,9 +46,14 @@ public class Transformers {
     private static final Method TRANSFORM_INTERNAL;
 
     /** @hide */
-    public static abstract class Transformer extends MethodHandle {
+    public static abstract class Transformer extends MethodHandle implements Cloneable {
         protected Transformer(MethodType type) {
             super(TRANSFORM_INTERNAL.getArtMethod(), MethodHandle.INVOKE_TRANSFORM, type);
+        }
+
+        @Override
+        public Object clone() throws CloneNotSupportedException {
+            return super.clone();
         }
     }
 
