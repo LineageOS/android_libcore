@@ -29,6 +29,7 @@ import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStatVfs;
+import android.util.MutableInt;
 
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -212,10 +213,21 @@ public final class FileInputStreamTest extends TestCaseWithRules {
     }
 
     // http://b/26117827
-    public void testReadProcVersion() throws IOException {
-        File file = new File("/proc/version");
+    //
+    // Return 0 (the conservative estimate) for files for which ioctl is not implemented.
+    public void test_available_on_nonIOCTL_supported_file() throws Exception {
+        File file = new File("/dev/zero");
         try (FileInputStream input = new FileInputStream(file)) {
-            assertTrue(input.available() == 0);
+            assertEquals(0, input.available());
+        }
+
+        try (FileInputStream input = new FileInputStream(file)) {
+            android.system.Os.ioctlInt(input.getFD(), OsConstants.FIONREAD, new MutableInt(0));
+            fail();
+        } catch (ErrnoException expected) {
+            assertEquals("FIONREAD should have returned ENOTTY for the file. If it doesn't return"
+                    + " FIONREAD, the test is no longer valid.", OsConstants.ENOTTY,
+                    expected.errno);
         }
     }
 
