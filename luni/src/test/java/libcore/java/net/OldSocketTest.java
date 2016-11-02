@@ -1991,8 +1991,6 @@ public class OldSocketTest extends OldSocketTestCase {
         Socket theSocket = new Socket();
         theSocket.close();
         try {
-            Socket theSocket = new Socket();
-            theSocket.close();
             theSocket.sendUrgentData(0);
             fail("IOException was not thrown.");
         } catch(IOException ioe) {
