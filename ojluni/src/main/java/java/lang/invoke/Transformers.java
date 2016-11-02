@@ -64,13 +64,155 @@ public class Transformers {
         private final Class<? extends Throwable> exceptionType;
 
         public AlwaysThrow(Class<?> nominalReturnType, Class<? extends  Throwable> exType) {
-            super(MethodType.methodType(nominalReturnType));
+            super(MethodType.methodType(nominalReturnType, exType));
             this.exceptionType = exType;
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
-            throw exceptionType.newInstance();
+            throw emulatedStackFrame.getReference(0, exceptionType);
+        }
+    }
+
+    /**
+     * Implements {@code MethodHandles.dropArguments}.
+     */
+    public static class DropArguments extends Transformer {
+        private final MethodHandle delegate;
+
+        private final EmulatedStackFrame.Range range1;
+
+        /**
+         * Note that {@code range2} will be null if the arguments that are being dropped
+         * are the last {@code n}.
+         */
+        /* @Nullable */ private final EmulatedStackFrame.Range range2;
+
+        public DropArguments(MethodType type, MethodHandle delegate,
+                             int startPos, int numDropped) {
+            super(type);
+
+            this.delegate = delegate;
+
+            // We pre-calculate the ranges of values we have to copy through to the delegate
+            // handle at the time of instantiation so that the actual invoke is performant.
+            this.range1 = EmulatedStackFrame.Range.of(type, 0, startPos);
+            final int numArgs = type.ptypes().length;
+            if (startPos + numDropped < numArgs) {
+                this.range2 = EmulatedStackFrame.Range.of(type, startPos + numDropped, numArgs);
+            } else {
+                this.range2 = null;
+            }
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(delegate.type());
+
+            emulatedStackFrame.copyRangeTo(calleeFrame, range1,
+                    0 /* referencesStart */, 0 /* stackFrameStart */);
+
+            if (range2 != null) {
+                final int referencesStart = range1.numReferences;
+                final int stackFrameStart = range1.numBytes;
+
+                emulatedStackFrame.copyRangeTo(calleeFrame, range2,
+                        referencesStart, stackFrameStart);
+            }
+
+            delegate.invoke(calleeFrame);
+            calleeFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
+
+    /**
+     * Implements {@code MethodHandles.catchException}.
+     */
+    public static class CatchException extends Transformer {
+        private final MethodHandle target;
+        private final MethodHandle handler;
+        private final Class<?> exType;
+
+        private final EmulatedStackFrame.Range handlerArgsRange;
+
+        public CatchException(MethodHandle target, MethodHandle handler, Class<?> exType) {
+            super(target.type());
+
+            this.target = target;
+            this.handler = handler;
+            this.exType = exType;
+
+            // We only copy the first "count" args, dropping others if required. Note that
+            // we subtract one because the first handler arg is the exception thrown by the
+            // target.
+            handlerArgsRange = EmulatedStackFrame.Range.of(target.type(), 0,
+                    (handler.type().parameterCount() - 1));
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            try {
+                target.invoke(emulatedStackFrame);
+            } catch (Throwable th) {
+                if (th.getClass() == exType) {
+                    // We've gotten an exception of the appropriate type, so we need to call
+                    // the handler. Create a new frame of the appropriate size.
+                    EmulatedStackFrame fallback = EmulatedStackFrame.create(handler.type());
+
+                    // The first argument to the handler is the actual exception.
+                    fallback.setReference(0, th);
+
+                    // We then copy other arguments that need to be passed through to the handler.
+                    // Note that we might drop arguments at the end, if needed. Note that
+                    // referencesStart == 1 because the first argument is the exception type.
+                    emulatedStackFrame.copyRangeTo(fallback, handlerArgsRange,
+                            1 /* referencesStart */, 0 /* stackFrameStart */);
+
+                    // Perform the invoke and return the appropriate value.
+                    handler.invoke(fallback);
+                    fallback.copyReturnValueTo(emulatedStackFrame);
+                } else {
+                    // The exception is not of the expected type, we throw it.
+                    throw th;
+                }
+            }
+        }
+    }
+
+    /**
+     * Implements {@code MethodHandles.GuardWithTest}.
+     */
+    public static class GuardWithTest extends Transformer {
+        private final MethodHandle test;
+        private final MethodHandle target;
+        private final MethodHandle fallback;
+
+        private final EmulatedStackFrame.Range testArgsRange;
+
+        public GuardWithTest(MethodHandle test, MethodHandle target, MethodHandle fallback) {
+            super(target.type());
+
+            this.test = test;
+            this.target = target;
+            this.fallback = fallback;
+
+            // The test method might have a subset of the arguments of the handle / target.
+            testArgsRange = EmulatedStackFrame.Range.of(target.type(), 0, test.type().parameterCount());
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            EmulatedStackFrame testFrame = EmulatedStackFrame.create(test.type());
+            emulatedStackFrame.copyRangeTo(testFrame, testArgsRange, 0, 0);
+
+            // We know that the return value for test is going to be boolean.class, so we don't have
+            // to do the copyReturnValue dance.
+            final boolean value = (boolean) test.invoke(testFrame);
+            if (value) {
+                target.invoke(emulatedStackFrame);
+            } else {
+                fallback.invoke(emulatedStackFrame);
+            }
         }
     }
 }
