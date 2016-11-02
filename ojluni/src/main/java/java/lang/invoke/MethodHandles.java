@@ -769,13 +769,6 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
         MethodHandle findStatic(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
             // TODO: Support varargs methods. The returned method handle must be a var-args
             // collector in that case.
-            if (refc == MethodHandle.class) {
-                MethodHandle mh = findVirtualForMH(name, type);
-                if (mh != null) {
-                    return mh;
-                }
-            }
-
             Method method = refc.getDeclaredMethod(name, type.ptypes());
             final int modifiers = method.getModifiers();
             if (!Modifier.isStatic(modifiers)) {
@@ -869,12 +862,34 @@ assertEquals("", (String) MH_newString.invokeExact());
             // TODO: Support varargs methods. The returned method handle must be a var-args
             // collector in that case.
 
-            Method method = refc.getDeclaredMethod(name, type.ptypes());
-            final int modifiers = method.getModifiers();
-            if (Modifier.isStatic(modifiers)) {
-                throw new IllegalAccessException("Method " + method + " is static");
+            // Special case : when we're looking up a virtual method on the MethodHandles class
+            // itself, we can return one of our specialized invokers.
+            if (refc == MethodHandle.class) {
+                MethodHandle mh = findVirtualForMH(name, type);
+                if (mh != null) {
+                    return mh;
+                }
             }
 
+            Method method;
+            try {
+                method = refc.getInstanceMethod(name, type.ptypes());
+            } catch (NoSuchMethodException nsme) {
+                // This is pretty ugly and a consequence of the MethodHandles API. We have to throw
+                // an IAE and not an NSME if the method exists but is static (even though the RI's
+                // IAE has a message that says "no such method"). We confine the ugliness and
+                // slowness to the failure case, and allow getInstanceMethod to remain fairly
+                // general.
+                try {
+                    Method m = refc.getDeclaredMethod(name, type.ptypes());
+                    if (Modifier.isStatic(m.getModifiers())) {
+                        throw new IllegalAccessException("Method" + m + " is static");
+                    }
+                } catch (NoSuchMethodException ignored) {
+                }
+
+                throw nsme;
+            }
             checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
 
             // Insert the leading reference parameter.
