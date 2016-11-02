@@ -69,7 +69,7 @@ public class Support_TestWebServer implements Support_HttpConstants {
     /* Switch on/off logging */
     boolean mLog = false;
 
-    /* Minimum delay before sending response */
+    /* Minimum delay before sending each response */
     int mDelay = 0;
 
     /* If set, this will keep connections alive after a request has been
@@ -327,7 +327,7 @@ public class Support_TestWebServer implements Support_HttpConstants {
             this.s = s;
         }
 
-        public Worker setDelay(int delay) {
+        Worker setDelay(int delay) {
             this.delay = delay;
             return this;
         }
@@ -606,6 +606,15 @@ public class Support_TestWebServer implements Support_HttpConstants {
                 // Reset test number prior to outputing data
                 testNum = -1;
 
+                // Delay before sending response
+                if (mDelay > 0) {
+                    try {
+                        Thread.sleep(mDelay);
+                    } catch (InterruptedException e) {
+                        // Ignored
+                    }
+                }
+
                 // Write out the data
                 printStatus(ps);
                 printHeaders(ps);
@@ -807,14 +816,6 @@ public class Support_TestWebServer implements Support_HttpConstants {
          * @param ps The PrintStream to write to
          */
         void send404(PrintStream ps) throws IOException {
-            if (delay > 0) {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    // Ignored
-                }
-            }
-
             ps.println("Not Found\n\n"+
                        "The requested resource was not found.\n");
         }
@@ -836,14 +837,6 @@ public class Support_TestWebServer implements Support_HttpConstants {
         }
 
         void sendFile(PrintStream ps, byte[] bytes) throws IOException {
-            if (delay > 0) {
-                try {
-                    Thread.sleep(delay);
-                } catch (InterruptedException e) {
-                    // Ignored
-                }
-            }
-
             if (chunked) {
                 int offset = 0;
                 while (offset < bytes.length) {
