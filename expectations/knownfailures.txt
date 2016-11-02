@@ -1532,8 +1532,7 @@
   result: EXEC_FAILED,
   names: [
     "dalvik.system.BlockGuardTest#testFileInputStream",
-    "org.apache.harmony.tests.java.lang.ProcessManagerTest#testCloseNonStandardFds",
-    "libcore.java.io.FileInputStreamTest#testReadProcVersion"
+    "org.apache.harmony.tests.java.lang.ProcessManagerTest#testCloseNonStandardFds"
   ]
 },
 {
