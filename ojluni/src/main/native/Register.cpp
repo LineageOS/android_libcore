@@ -51,7 +51,6 @@ extern void register_java_lang_Math(JNIEnv*);
 extern void register_java_lang_System(JNIEnv*);
 extern void register_java_lang_Thread(JNIEnv*);
 extern void register_java_lang_UNIXProcess(JNIEnv*);
-extern void register_java_net_AbstractPlainDatagramSocketImpl(JNIEnv*);
 extern void register_java_net_DatagramPacket(JNIEnv*);
 extern void register_java_net_Inet4Address(JNIEnv*);
 extern void register_java_net_Inet6Address(JNIEnv*);
@@ -124,7 +123,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) { JNIEnv* env;
     // register_java_net_InetAddress depends on java_lang_Float & Math being
     // fully registered (getMethodId on InetAddress class triggers its
     // <clinit> which depends on java.lang.Float)
-    register_java_net_AbstractPlainDatagramSocketImpl(env);
     register_java_net_InetAddress(env);
     register_java_net_Inet4Address(env);
     register_java_net_Inet6Address(env);
