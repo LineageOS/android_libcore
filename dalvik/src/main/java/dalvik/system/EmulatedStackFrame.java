@@ -72,13 +72,167 @@ public class EmulatedStackFrame {
      */
     private final byte[] stackFrame;
 
-    /**
-     * EmulatedStackFrame instances are currently only constructed by the runtime.
-     */
-    // TODO(narayan): Future changes will allow managed code to construct EmulatedStackFrames.
     private EmulatedStackFrame(MethodType type, Object[] references, byte[] stackFrame) {
         this.type = type;
         this.references = references;
         this.stackFrame = stackFrame;
+    }
+
+    /**
+     * Represents a range of arguments on an {@code EmulatedStackFrame}.
+     */
+    public static final class Range {
+        public final int referencesStart;
+        public final int numReferences;
+
+        public final int stackFrameStart;
+        public final int numBytes;
+
+        private Range(int referencesStart, int numReferences, int stackFrameStart, int numBytes) {
+            this.referencesStart = referencesStart;
+            this.numReferences = numReferences;
+            this.stackFrameStart = stackFrameStart;
+            this.numBytes = numBytes;
+        }
+
+
+        public static Range of(MethodType frameType, int startArg, int endArg) {
+            final Class<?>[] ptypes = frameType.ptypes();
+
+            int referencesStart = 0;
+            int numReferences = 0;
+            int stackFrameStart = 0;
+            int numBytes = 0;
+
+            for (int i = 0; i < startArg; ++i) {
+                Class<?> cl = ptypes[i];
+                if (!cl.isPrimitive()) {
+                    referencesStart++;
+                } else {
+                    stackFrameStart += getSize(cl);
+                }
+            }
+
+            for (int i = startArg; i < endArg; ++i) {
+                Class<?> cl = ptypes[i];
+                if (!cl.isPrimitive()) {
+                    numReferences++;
+                } else {
+                    numBytes += getSize(cl);
+                }
+            }
+
+            return new Range(referencesStart, numReferences, stackFrameStart, numBytes);
+        }
+    }
+
+    /**
+     * Creates an emulated stack frame for a given {@code MethodType}.
+     */
+    public static EmulatedStackFrame create(MethodType frameType) {
+        int numRefs = 0;
+        int frameSize = 0;
+        for (Class<?> ptype : frameType.ptypes()) {
+            if (!ptype.isPrimitive()) {
+                numRefs++;
+            } else {
+                frameSize += getSize(ptype);
+            }
+        }
+
+        final Class<?> rtype = frameType.rtype();
+        if (!rtype.isPrimitive()) {
+            numRefs++;
+        } else {
+            frameSize += getSize(rtype);
+        }
+
+        return new EmulatedStackFrame(frameType, new Object[numRefs], new byte[frameSize]);
+    }
+
+    /**
+     * Sets the {@code idx} to {@code reference}. Type checks are performed.
+     */
+    public void setReference(int idx, Object reference) {
+        final Class<?>[] ptypes = type.ptypes();
+        if (idx < 0 || idx >= ptypes.length) {
+            throw new IllegalArgumentException("Invalid index: " + idx);
+        }
+
+        if (!ptypes[idx].isInstance(reference)) {
+            throw new IllegalStateException("reference is not of type: " + type.ptypes()[idx]);
+        }
+
+        references[idx] = reference;
+    }
+
+    /**
+     * Gets the reference at {@code idx}, checking that it's of type {@code referenceType}.
+     */
+    public <T> T getReference(int idx, Class<T> referenceType) {
+        if (referenceType != type.ptypes()[idx]) {
+            throw new IllegalArgumentException("Argument: " + idx +
+                    " is not of type " + referenceType);
+        }
+
+        return (T) references[idx];
+    }
+
+    /**
+     * Copies a specified range of arguments, given by {@code fromRange} to a specified
+     * EmulatedStackFrame {@code other}, with references starting at {@code referencesStart}
+     * and primitives starting at {@code primitivesStart}.
+     */
+    public void copyRangeTo(EmulatedStackFrame other, Range fromRange, int referencesStart,
+                            int primitivesStart) {
+        if (fromRange.numReferences > 0) {
+            System.arraycopy(references, fromRange.referencesStart,
+                    other.references, referencesStart, fromRange.numReferences);
+        }
+
+        if (fromRange.numBytes > 0) {
+            System.arraycopy(stackFrame, fromRange.stackFrameStart,
+                    other.stackFrame, primitivesStart, fromRange.numBytes);
+        }
+    }
+
+    /**
+     * Copies the return value from this stack frame to {@code other}.
+     */
+    public void copyReturnValueTo(EmulatedStackFrame other) {
+        final Class<?> returnType = type.returnType();
+        if (!returnType.isPrimitive()) {
+            other.references[other.references.length - 1] = references[references.length - 1];
+        } else if (!is64BitPrimitive(returnType)) {
+            System.arraycopy(stackFrame, stackFrame.length - 4,
+                    other.stackFrame, other.stackFrame.length - 4, 4);
+        } else {
+            System.arraycopy(stackFrame, stackFrame.length - 8,
+                    other.stackFrame, other.stackFrame.length - 8, 8);
+        }
+    }
+
+    /**
+     * Returns true iff. the input {@code type} needs 64 bits (8 bytes) of storage on an
+     * {@code EmulatedStackFrame}.
+     */
+    private static boolean is64BitPrimitive(Class<?> type) {
+        return type == double.class || type == long.class;
+    }
+
+    /**
+     * Returns the size (in bytes) occupied by a given primitive type on an
+     * {@code EmulatedStackFrame}.
+     */
+    private static int getSize(Class<?> type) {
+        if (!type.isPrimitive()) {
+            throw new IllegalArgumentException("type.isPrimitive() == false: " + type);
+        }
+
+        if (is64BitPrimitive(type)) {
+            return 8;
+        } else {
+            return 4;
+        }
     }
 }
