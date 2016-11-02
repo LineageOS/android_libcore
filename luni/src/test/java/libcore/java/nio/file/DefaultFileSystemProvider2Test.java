@@ -19,8 +19,12 @@ package libcore.java.nio.file;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.NonReadableChannelException;
 import java.nio.file.CopyOption;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.DirectoryStream;
@@ -29,18 +33,34 @@ import java.nio.file.FileStore;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.NotLinkException;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.FileTime;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.spi.FileSystemProvider;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static java.nio.file.StandardOpenOption.APPEND;
+import static java.nio.file.StandardOpenOption.CREATE;
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
+import static java.nio.file.StandardOpenOption.WRITE;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertTrue;
 import static libcore.java.nio.file.FilesSetup.DATA_FILE;
@@ -53,6 +73,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
+@RunWith(JUnitParamsRunner.class)
 public class DefaultFileSystemProvider2Test {
 
     @Rule
@@ -361,5 +382,250 @@ public class DefaultFileSystemProvider2Test {
             provider.setAttribute(filesSetup.getDataFilePath(), null, 10);
             fail();
         } catch (NullPointerException expected) {}
+    }
+
+    @Test
+    public void test_newFileChannel() throws IOException {
+        Set<OpenOption> openOptions = new HashSet<>();
+
+        // When file doesn't exist/
+        try {
+            // With CREATE & WRITE in OpenOptions.
+            openOptions.add(CREATE);
+            openOptions.add(WRITE);
+            provider.newFileChannel(filesSetup.getTestPath(), openOptions);
+            assertTrue(Files.exists(filesSetup.getTestPath()));
+            Files.delete(filesSetup.getTestPath());
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        try {
+            // With CREATE & APPEND in OpenOption.
+            assertFalse(Files.exists(filesSetup.getTestPath()));
+            openOptions.add(CREATE);
+            openOptions.add(APPEND);
+            provider.newFileChannel(filesSetup.getTestPath(), openOptions);
+            assertTrue(Files.exists(filesSetup.getTestPath()));
+            Files.delete(filesSetup.getTestPath());
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // When file exists.
+        try {
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            assertEquals(filesSetup.TEST_FILE_DATA, readFromFileChannel(fc));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        try {
+            // When file exists and READ in OpenOptions.
+            openOptions.add(READ);
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            assertEquals(filesSetup.TEST_FILE_DATA, readFromFileChannel(fc));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // Reading from a file opened with WRITE.
+        try {
+            openOptions.add(WRITE);
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            assertEquals(filesSetup.TEST_FILE_DATA, readFromFileChannel(fc));
+            fail();
+        } catch (NonReadableChannelException expected) {
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // Writing to an exiting file.
+        try {
+            openOptions.add(WRITE);
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            writeToFileChannel(fc, filesSetup.TEST_FILE_DATA_2);
+            fc.close();
+            assertEquals(overlayString1OnString2(TEST_FILE_DATA_2, TEST_FILE_DATA),
+                    readFromFile(filesSetup.getDataFilePath()));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // APPEND to an existing file.
+        try {
+            openOptions.add(WRITE);
+            openOptions.add(TRUNCATE_EXISTING);
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            writeToFileChannel(fc, filesSetup.TEST_FILE_DATA_2);
+            fc.close();
+            assertEquals(TEST_FILE_DATA_2, readFromFile(filesSetup.getDataFilePath()));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // TRUNCATE an existing file.
+        try {
+            openOptions.add(WRITE);
+            openOptions.add(APPEND);
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions);
+            writeToFileChannel(fc, filesSetup.TEST_FILE_DATA_2);
+            fc.close();
+            assertEquals(TEST_FILE_DATA + TEST_FILE_DATA_2, readFromFile(filesSetup.getDataFilePath()));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+    }
+
+    @Test
+    @Parameters(method = "parameters_test_newFileChannel_NoSuchFileException")
+    public void test_newFileChannel_NoSuchFileException(Set<? extends OpenOption> openOptions)
+            throws IOException {
+        try {
+            provider.newFileChannel(filesSetup.getTestPath(), openOptions);
+            fail();
+        } catch (NoSuchFileException expected) {}
+    }
+
+    @SuppressWarnings("unused")
+    private Object[] parameters_test_newFileChannel_NoSuchFileException() {
+        return new Object[] {
+                new Object[] { EnumSet.noneOf(StandardOpenOption.class) },
+                new Object[] { EnumSet.of(READ) },
+                new Object[] { EnumSet.of(WRITE) },
+                new Object[] { EnumSet.of(TRUNCATE_EXISTING) },
+                new Object[] { EnumSet.of(APPEND) },
+                new Object[] { EnumSet.of(CREATE, READ) },
+                new Object[] { EnumSet.of(CREATE, TRUNCATE_EXISTING) },
+                new Object[] { EnumSet.of(CREATE, READ) },
+        };
+    }
+
+    @Test
+    public void test_newFileChannel_withFileAttributes() throws IOException {
+        Set<OpenOption> openOptions = new HashSet<>();
+        FileTime fileTime = FileTime.fromMillis(System.currentTimeMillis());
+        Files.setAttribute(filesSetup.getDataFilePath(), "basic:lastModifiedTime", fileTime);
+        FileAttribute<FileTime> unsupportedAttr = new MockFileAttribute<>(
+                "basic:lastModifiedTime", fileTime);
+
+        Set<PosixFilePermission> perm = PosixFilePermissions.fromString("rwx------");
+        FileAttribute<Set<PosixFilePermission>> supportedAttr =
+                PosixFilePermissions.asFileAttribute(perm);
+
+        try {
+            // When file doesn't exists and with OpenOption CREATE & WRITE.
+            openOptions.clear();
+            openOptions.add(CREATE);
+            openOptions.add(WRITE);
+            provider.newFileChannel(filesSetup.getTestPath(), openOptions, unsupportedAttr);
+            fail();
+        } catch (UnsupportedOperationException expected) {
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        try {
+            // With OpenOption CREATE & WRITE.
+            openOptions.clear();
+            openOptions.add(CREATE);
+            openOptions.add(WRITE);
+            provider.newFileChannel(filesSetup.getTestPath(), openOptions, supportedAttr);
+            assertEquals(supportedAttr.value(), Files.getAttribute(filesSetup.getTestPath(),
+                    supportedAttr.name()));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // When file exists.
+        try {
+            provider.newFileChannel(filesSetup.getDataFilePath(), openOptions,
+                    unsupportedAttr);
+            fail();
+        } catch (UnsupportedOperationException expected) {
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+
+        // When file exists. No change in permissions.
+        try {
+            Set<PosixFilePermission> originalPermissions= (Set<PosixFilePermission>)
+                    Files.getAttribute(filesSetup.getDataFilePath(), supportedAttr.name());
+            FileChannel fc = provider.newFileChannel(filesSetup.getDataFilePath(), openOptions,
+                    supportedAttr);
+            assertEquals(originalPermissions, Files.getAttribute(filesSetup.getDataFilePath(),
+                    supportedAttr.name()));
+        } finally {
+            filesSetup.reset();
+            openOptions.clear();
+        }
+    }
+
+
+    @Test
+    public void test_newFileChannel_NPE() throws IOException {
+        try {
+            provider.newByteChannel(null, new HashSet<>(), new MockFileAttribute<>());
+            fail();
+        } catch (NullPointerException expected) {}
+
+        try {
+            provider.newByteChannel(filesSetup.getTestPath(), null, new MockFileAttribute<>());
+            fail();
+        } catch (NullPointerException expected) {}
+
+        try {
+            provider.newByteChannel(filesSetup.getTestPath(), new HashSet<>(), null);
+            fail();
+        } catch (NullPointerException expected) {}
+    }
+
+    String readFromFileChannel(FileChannel fc) throws IOException {
+        ByteBuffer bb = ByteBuffer.allocate(20);
+        fc.read(bb);
+        return new String(bb.array(), "UTF-8").trim();
+    }
+
+    void writeToFileChannel(FileChannel fc, String data) throws IOException {
+        fc.write(ByteBuffer.wrap(data.getBytes()));
+    }
+
+    String overlayString1OnString2(String s1, String s2) {
+        return s1 + s2.substring(s1.length());
+    }
+
+    static class MockFileAttribute<T> implements FileAttribute {
+
+        String name;
+        T value;
+
+        MockFileAttribute() {
+        }
+
+        MockFileAttribute(String name, T value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        public String name() {
+            return name;
+        }
+
+        @Override
+        public T value() {
+            return value;
+        }
     }
 }
