@@ -2067,7 +2067,38 @@ public final class Class<T> implements java.io.Serializable,
                 return result;
             }
         }
-        // search iftable which has a flattened and uniqued list of interfaces
+
+        return findInterfaceMethod(name, parameterTypes);
+    }
+
+    /**
+     * Returns an instance method that's defined on this class or any super classes, regardless
+     * of its access flags. Constructors are excluded.
+     *
+     * This function does not perform access checks and its semantics don't match any dex byte code
+     * instruction or public reflection API. This is used by {@code MethodHandles.findVirtual}
+     * which will perform access checks on the returned method.
+     *
+     * @hide
+     */
+    public Method getInstanceMethod(String name, Class<?>[] parameterTypes)
+            throws NoSuchMethodException, IllegalAccessException {
+        for (Class<?> c = this; c != null; c = c.getSuperclass()) {
+            Method result = c.getDeclaredMethodInternal(name, parameterTypes);
+            if (result != null && !Modifier.isStatic(result.getModifiers())) {
+                return result;
+            }
+        }
+
+        Method method = findInterfaceMethod(name, parameterTypes);
+        if (method != null) {
+            return method;
+        }
+
+        throw new NoSuchMethodException(name + " "  + Arrays.toString(parameterTypes));
+    }
+
+    private Method findInterfaceMethod(String name, Class<?>[] parameterTypes) {
         Object[] iftable = ifTable;
         if (iftable != null) {
             // Search backwards so more specific interfaces are searched first. This ensures that
@@ -2081,6 +2112,7 @@ public final class Class<T> implements java.io.Serializable,
                 }
             }
         }
+
         return null;
     }
 
