@@ -45,23 +45,24 @@ non_openjdk_javadoc_files := \
   dalvik/src/main/java/dalvik/system/AllocationLimitError.java \
   dalvik/src/main/java/dalvik/system/BaseDexClassLoader.java \
   dalvik/src/main/java/dalvik/system/BlockGuard.java \
+  libart/src/main/java/dalvik/system/ClassExt.java \
   dalvik/src/main/java/dalvik/system/CloseGuard.java \
   dalvik/src/main/java/dalvik/system/DalvikLogHandler.java \
   dalvik/src/main/java/dalvik/system/DalvikLogging.java \
   dalvik/src/main/java/dalvik/system/DexClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexFile.java \
-  dalvik/src/main/java/dalvik/system/InMemoryDexClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexPathList.java \
   dalvik/src/main/java/dalvik/system/EmulatedStackFrame.java \
+  dalvik/src/main/java/dalvik/system/InMemoryDexClassLoader.java \
   dalvik/src/main/java/dalvik/system/NativeStart.java \
   dalvik/src/main/java/dalvik/system/PathClassLoader.java \
   dalvik/src/main/java/dalvik/system/PotentialDeadlockError.java \
   dalvik/src/main/java/dalvik/system/SocketTagger.java \
   dalvik/src/main/java/dalvik/system/TemporaryDirectory.java \
+  libart/src/main/java/dalvik/system/TransactionAbortError.java \
   dalvik/src/main/java/dalvik/system/VMDebug.java \
   libart/src/main/java/dalvik/system/VMRuntime.java \
   libart/src/main/java/dalvik/system/VMStack.java \
-  libart/src/main/java/dalvik/system/TransactionAbortError.java \
   dalvik/src/main/java/dalvik/system/ZygoteHooks.java \
   libart/src/main/java/java/lang/AndroidHardcodedSystemProperties.java \
   libart/src/main/java/java/lang/Daemons.java \

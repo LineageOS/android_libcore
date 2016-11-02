@@ -56,6 +56,7 @@ import libcore.util.BasicLruCache;
 import libcore.util.CollectionUtils;
 import libcore.util.EmptyArray;
 
+import dalvik.system.ClassExt;
 import dalvik.system.VMStack;
 import sun.reflect.CallerSensitive;
 
@@ -121,11 +122,17 @@ public final class Class<T> implements java.io.Serializable,
      * this will be String[][]). null for non-array classes.
      */
     private transient Class<?> componentType;
+
     /**
      * DexCache of resolved constant pool entries. Will be null for certain runtime-generated classes
      * e.g. arrays and primitive classes.
      */
     private transient DexCache dexCache;
+
+    /**
+     * Extra data that only some classes possess. This is allocated lazily as needed.
+     */
+    private transient ClassExt extData;
 
     /**
      * The interface table (iftable_) contains pairs of a interface class and an array of the
@@ -150,12 +157,6 @@ public final class Class<T> implements java.io.Serializable,
     private transient Class<? super T> superClass;
 
     /**
-     * If class verify fails, we must return same error on subsequent tries. We may store either
-     * the class of the error, or an actual instance of Throwable here.
-     */
-    private transient Object verifyError;
-
-    /**
      * Virtual method table (vtable), for use by "invoke-virtual". The vtable from the superclass
      * is copied in, and virtual methods from our class either replace those from the super or are
      * appended. For abstract classes, methods may be created in the vtable that aren't in
@@ -165,9 +166,6 @@ public final class Class<T> implements java.io.Serializable,
 
     /** Short-cut to dexCache.strings */
     private transient long dexCacheStrings;
-
-    /** access flags; low 16 bits are defined by VM spec */
-    private transient int accessFlags;
 
     /**
      * Instance fields. These describe the layout of the contents of an Object. Note that only the
@@ -184,6 +182,9 @@ public final class Class<T> implements java.io.Serializable,
 
     /** Static fields */
     private transient long sFields;
+
+    /** access flags; low 16 bits are defined by VM spec */
+    private transient int accessFlags;
 
     /** Class flags to help the GC with object scanning. */
     private transient int classFlags;
