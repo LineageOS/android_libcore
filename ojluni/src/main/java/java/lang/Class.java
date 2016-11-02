@@ -2090,12 +2090,7 @@ public final class Class<T> implements java.io.Serializable,
             }
         }
 
-        Method method = findInterfaceMethod(name, parameterTypes);
-        if (method != null) {
-            return method;
-        }
-
-        throw new NoSuchMethodException(name + " "  + Arrays.toString(parameterTypes));
+        return findInterfaceMethod(name, parameterTypes);
     }
 
     private Method findInterfaceMethod(String name, Class<?>[] parameterTypes) {

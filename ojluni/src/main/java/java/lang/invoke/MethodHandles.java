@@ -871,10 +871,8 @@ assertEquals("", (String) MH_newString.invokeExact());
                 }
             }
 
-            Method method;
-            try {
-                method = refc.getInstanceMethod(name, type.ptypes());
-            } catch (NoSuchMethodException nsme) {
+            Method method = refc.getInstanceMethod(name, type.ptypes());
+            if (method == null) {
                 // This is pretty ugly and a consequence of the MethodHandles API. We have to throw
                 // an IAE and not an NSME if the method exists but is static (even though the RI's
                 // IAE has a message that says "no such method"). We confine the ugliness and
@@ -888,8 +886,10 @@ assertEquals("", (String) MH_newString.invokeExact());
                 } catch (NoSuchMethodException ignored) {
                 }
 
-                throw nsme;
+                throw new NoSuchMethodException(name + " "  + Arrays.toString(type.ptypes()));
             }
+
+            // We have a valid method, perform access checks.
             checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
 
             // Insert the leading reference parameter.
