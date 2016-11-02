@@ -25,6 +25,7 @@ import junit.framework.TestCase;
 import dalvik.system.PathClassLoader;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.Method;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -123,6 +124,85 @@ public class ClassTest extends TestCase {
       } catch (NoSuchMethodException e) {
           fail("Got exception");
       }
+    }
+
+    public static class TestGetVirtualMethod_Super {
+        protected String protectedMethod() {
+            return "protectedMethod";
+        }
+
+        public String publicMethod() {
+            return "publicMethod";
+        }
+
+        /* package */ String packageMethod() {
+            return "packageMethod";
+        }
+    }
+
+    public static class TestGetVirtualMethod extends TestGetVirtualMethod_Super {
+        public static void staticMethod(String foo) {
+        }
+
+        public String publicMethod2() {
+            return "publicMethod2";
+        }
+
+        protected String protectedMethod2() {
+            return "protectedMethod2";
+        }
+
+        private String privateMethod() {
+            return "privateMethod";
+        }
+
+        /* package */ String packageMethod2() {
+            return "packageMethod2";
+        }
+    }
+
+    public void test_getVirtualMethod() throws Exception {
+        final Class<?>[] noArgs = new Class<?>[] { };
+
+        TestGetVirtualMethod instance = new TestGetVirtualMethod();
+        TestGetVirtualMethod_Super super_instance = new TestGetVirtualMethod_Super();
+
+        // Package private methods from the queried class as well as super classes
+        // must be returned.
+        Method m = TestGetVirtualMethod.class.getInstanceMethod("packageMethod2", noArgs);
+        assertNotNull(m);
+        assertEquals("packageMethod2", m.invoke(instance));
+        m = TestGetVirtualMethod.class.getInstanceMethod("packageMethod", noArgs);
+        assertNotNull(m);
+        assertEquals("packageMethod", m.invoke(instance));
+
+
+        // Protected methods from both the queried class as well as super classes must
+        // be returned.
+        m = TestGetVirtualMethod.class.getInstanceMethod("protectedMethod2", noArgs);
+        assertNotNull(m);
+        assertEquals("protectedMethod2", m.invoke(instance));
+        m = TestGetVirtualMethod.class.getInstanceMethod("protectedMethod", noArgs);
+        assertNotNull(m);
+        assertEquals("protectedMethod", m.invoke(instance));
+
+        // Public methods from the queried classes and all its super classes must be
+        // returned.
+        m = TestGetVirtualMethod.class.getInstanceMethod("publicMethod2", noArgs);
+        assertNotNull(m);
+        assertEquals("publicMethod2", m.invoke(instance));
+        m = TestGetVirtualMethod.class.getInstanceMethod("publicMethod", noArgs);
+        assertNotNull(m);
+        assertEquals("publicMethod", m.invoke(instance));
+
+        m = TestGetVirtualMethod.class.getInstanceMethod("privateMethod", noArgs);
+        assertNotNull(m);
+
+        try {
+            TestGetVirtualMethod.class.getInstanceMethod("staticMethod", noArgs);
+            fail();
+        } catch (NoSuchMethodException expected) {
+        }
     }
 
     public void test_toString() throws Exception {
