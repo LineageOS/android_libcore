@@ -1205,9 +1205,9 @@ public class OldSocketTest extends OldSocketTestCase {
         try (Socket theSocket = new Socket();
              ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.bind(theAddress);
-            theSocket.connect(theAddress, 100000);
+            theSocket.connect(serverSocket.getLocalSocketAddress(), 100000);
             try {
-                theSocket.connect(theAddress, 100000);
+                theSocket.connect(serverSocket.getLocalSocketAddress(), 100000);
                 fail("No exception when we try to connect on a connected socket: ");
             } catch (Exception e) {
                 assertTrue(
