@@ -17,6 +17,8 @@
 package dalvik.system;
 
 import java.lang.invoke.MethodType;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Provides typed (read-only) access to method arguments and a slot to store a return value.
@@ -80,6 +82,8 @@ public class EmulatedStackFrame {
 
     /**
      * Represents a range of arguments on an {@code EmulatedStackFrame}.
+     *
+     * @hide
      */
     public static final class Range {
         public final int referencesStart;
@@ -233,6 +237,215 @@ public class EmulatedStackFrame {
             return 8;
         } else {
             return 4;
+        }
+    }
+
+    /**
+     * Base class for readers and writers to stack frames.
+     *
+     * @hide
+     */
+    public static class StackFrameAccessor {
+        /**
+         * The current offset into the references array.
+         */
+        protected int referencesOffset;
+
+        /**
+         * The index of the current argument being processed. For a function of arity N,
+         * values [0, N) correspond to input arguments, and the special index {@code -2}
+         * maps to the return value. All other indices are invalid.
+         */
+        protected int argumentIdx;
+
+        /**
+         * Wrapper for {@code EmulatedStackFrame.this.stackFrame}.
+         */
+        protected ByteBuffer frameBuf;
+
+        /**
+         * The number of arguments that this stack frame expects.
+         */
+        private int numArgs;
+
+        /**
+         * The stack frame we're currently accessing.
+         */
+        protected EmulatedStackFrame frame;
+
+        /**
+         * The value of {@code argumentIdx} when this accessor's cursor is pointing to the
+         * frame's return value.
+         */
+        private static final int RETURN_VALUE_IDX = -2;
+
+        protected StackFrameAccessor() {
+            referencesOffset = 0;
+            argumentIdx = 0;
+
+            frameBuf = null;
+            numArgs = 0;
+        }
+
+        /**
+         * Attaches this accessor to a given {@code EmulatedStackFrame} to read or write
+         * values to it. Also resets all state associated with the current accessor.
+         */
+        public StackFrameAccessor attach(EmulatedStackFrame stackFrame) {
+            frame = stackFrame;
+            frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
+            numArgs = frame.type.ptypes().length;
+
+            referencesOffset = 0;
+            argumentIdx = 0;
+
+            return this;
+        }
+
+        protected void checkType(Class<?> type) {
+            if (argumentIdx >= numArgs || argumentIdx == (RETURN_VALUE_IDX + 1)) {
+                throw new IllegalArgumentException("Invalid argument index: " + argumentIdx);
+            }
+
+            final Class<?> expectedType = (argumentIdx == RETURN_VALUE_IDX) ?
+                    frame.type.rtype() : frame.type.ptypes()[argumentIdx];
+
+            if (expectedType != type) {
+                throw new IllegalArgumentException("Incorrect type: " + type +
+                        ", expected: " + expectedType);
+            }
+        }
+
+        /**
+         * Positions the cursor at the return value location, either in the references array
+         * or in the stack frame array. The next put* or next* call will result in a read or
+         * write to the return value.
+         */
+        public void makeReturnValueAccessor() {
+            Class<?> rtype = frame.type.rtype();
+            argumentIdx = RETURN_VALUE_IDX;
+
+            // Position the cursor appropriately. The return value is either the last element
+            // of the references array, or the last 4 or 8 bytes of the stack frame.
+            if (rtype.isPrimitive()) {
+                frameBuf.position(frameBuf.capacity() - getSize(rtype));
+            } else {
+                referencesOffset = frame.references.length - 1;
+            }
+        }
+    }
+
+    /**
+     * Provides sequential write access to an emulated stack frame. Allows writes to
+     * argument slots as well as return value slots.
+     */
+    public static class StackFrameWriter extends StackFrameAccessor {
+        public void putNextByte(byte value) {
+            checkType(byte.class);
+            argumentIdx++;
+            frameBuf.putInt(value);
+        }
+
+        public void putNextInt(int value) {
+            checkType(int.class);
+            argumentIdx++;
+            frameBuf.putInt(value);
+        }
+
+        public void putNextLong(long value) {
+            checkType(long.class);
+            argumentIdx++;
+            frameBuf.putLong(value);
+        }
+
+        public void putNextChar(char value) {
+            checkType(char.class);
+            argumentIdx++;
+            frameBuf.putInt((int) value);
+        }
+
+        public void putNextBoolean(boolean value) {
+            checkType(boolean.class);
+            argumentIdx++;
+            frameBuf.putInt(value ? 1 : 0);
+        }
+
+        public void putNextShort(short value) {
+            checkType(short.class);
+            argumentIdx++;
+            frameBuf.putInt((int) value);
+        }
+
+        public void putNextFloat(float value) {
+            checkType(float.class);
+            argumentIdx++;
+            frameBuf.putFloat(value);
+        }
+
+        public void putNextDouble(double value) {
+            checkType(double.class);
+            argumentIdx++;
+            frameBuf.putDouble(value);
+        }
+
+        public void putNextReference(Object value, Class<?> expectedType) {
+            checkType(expectedType);
+            argumentIdx++;
+            frame.references[referencesOffset++] = value;
+        }
+    }
+
+    /**
+     * Provides sequential read access to an emulated stack frame. Allows reads to
+     * argument slots as well as to return value slots.
+     */
+    public static class StackFrameReader extends StackFrameAccessor {
+        public int nextInt() {
+            checkType(int.class);
+            argumentIdx++;
+            return frameBuf.getInt();
+        }
+
+        public long nextLong() {
+            checkType(long.class);
+            argumentIdx++;
+            return frameBuf.getLong();
+        }
+
+        public char nextChar() {
+            checkType(char.class);
+            argumentIdx++;
+            return (char) frameBuf.getInt();
+        }
+
+        public boolean nextBoolean() {
+            checkType(boolean.class);
+            argumentIdx++;
+            return (frameBuf.getInt() != 0);
+        }
+
+        public short nextShort() {
+            checkType(short.class);
+            argumentIdx++;
+            return (short) frameBuf.getInt();
+        }
+
+        public float nextFloat() {
+            checkType(float.class);
+            argumentIdx++;
+            return frameBuf.getFloat();
+        }
+
+        public double nextDouble() {
+            checkType(double.class);
+            argumentIdx++;
+            return frameBuf.getDouble();
+        }
+
+        public <T> T nextReference(Class<T> expectedType) {
+            checkType(expectedType);
+            argumentIdx++;
+            return (T) frame.references[referencesOffset++];
         }
     }
 }
