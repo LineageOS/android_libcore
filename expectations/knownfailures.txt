@@ -1531,7 +1531,6 @@
   bug: 29495646,
   result: EXEC_FAILED,
   names: [
-    "dalvik.system.BlockGuardTest#testFileInputStream",
     "org.apache.harmony.tests.java.lang.ProcessManagerTest#testCloseNonStandardFds"
   ]
 },
