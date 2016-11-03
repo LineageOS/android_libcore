@@ -27,9 +27,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by narayan on 1/7/16.
- */
 public class BlockGuardTest extends TestCase {
 
     private BlockGuard.Policy oldPolicy;
@@ -104,22 +101,33 @@ public class BlockGuardTest extends TestCase {
     }
 
     public void testFileInputStream() throws Exception {
-        File f = new File("/proc/version");
-        recorder.clear();
+        // The file itself doesn't matter: it just has to exist and allow the creation of the
+        // FileInputStream. The BlockGuard should have the same behavior towards a normal file and
+        // system file.
+        File tmpFile = File.createTempFile("inputFile", ".txt");
+        try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
+            fos.write("01234567890".getBytes());
+        }
 
-        FileInputStream fis = new FileInputStream(f);
-        recorder.expectAndClear("onReadFromDisk");
+        try {
+            recorder.clear();
 
-        fis.read(new byte[4],0, 4);
-        recorder.expectAndClear("onReadFromDisk");
+            FileInputStream fis = new FileInputStream(tmpFile);
+            recorder.expectAndClear("onReadFromDisk");
 
-        fis.read();
-        recorder.expectAndClear("onReadFromDisk");
+            fis.read(new byte[4], 0, 4);
+            recorder.expectAndClear("onReadFromDisk");
 
-        fis.skip(1);
-        recorder.expectAndClear("onReadFromDisk");
+            fis.read();
+            recorder.expectAndClear("onReadFromDisk");
 
-        fis.close();
+            fis.skip(1);
+            recorder.expectAndClear("onReadFromDisk");
+
+            fis.close();
+        } finally {
+            tmpFile.delete();
+        }
     }
 
     public void testFileOutputStream() throws Exception {
