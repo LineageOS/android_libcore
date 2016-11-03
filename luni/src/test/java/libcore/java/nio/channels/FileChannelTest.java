@@ -24,7 +24,19 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.spi.FileSystemProvider;
+import java.util.HashSet;
+import java.util.Set;
 import libcore.io.IoUtils;
+
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class FileChannelTest extends junit.framework.TestCase {
     public void testReadOnlyByteArrays() throws Exception {
@@ -254,5 +266,56 @@ public class FileChannelTest extends junit.framework.TestCase {
         assertEquals(bytes.length, fc.size());
 
         return fc;
+    }
+
+    /**
+     * The test verifies that FileChannel#open(Path, Set<OpenOption>, FileAttribute ...) returns the
+     * same object returned by #newFileChannel(Path, Set<OpenOption>, FileAttribute ...) method
+     * in given Paths's FileSystemProvider.
+     */
+    public void test_open_Path_Set_FileAttributes() throws IOException {
+        Path mockPath = mock(Path.class);
+        FileSystem mockFileSystem = mock(FileSystem.class);
+        FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+        FileChannel mockFileChannel = mock(FileChannel.class);
+
+        FileAttribute mockFileAttribute1 = mock(FileAttribute.class);
+        FileAttribute mockFileAttribute2 = mock(FileAttribute.class);
+
+        Set<StandardOpenOption> standardOpenOptions = new HashSet<>();
+        standardOpenOptions.add(READ);
+        standardOpenOptions.add(WRITE);
+
+        when(mockPath.getFileSystem()).thenReturn(mockFileSystem);
+        when(mockFileSystem.provider()).thenReturn(mockFileSystemProvider);
+        when(mockFileSystemProvider.newFileChannel(mockPath, standardOpenOptions,
+                mockFileAttribute1, mockFileAttribute2)).thenReturn(mockFileChannel);
+
+        assertEquals(mockFileChannel, FileChannel.open(mockPath, standardOpenOptions,
+                mockFileAttribute1, mockFileAttribute2));
+    }
+
+    /**
+     * The test verifies that FileChannel#open(Path, OpenOption ...) returns the
+     * same object returned by #newFileChannel(Path, OpenOption ...) method
+     * in given Paths's FileSystemProvider.
+     */
+    public void test_open_Path_OpenOptions() throws IOException {
+
+        Path mockPath = mock(Path.class);
+        FileSystem mockFileSystem = mock(FileSystem.class);
+        FileSystemProvider mockFileSystemProvider = mock(FileSystemProvider.class);
+        FileChannel mockFileChannel = mock(FileChannel.class);
+
+        Set<StandardOpenOption> standardOpenOptions = new HashSet<>();
+        standardOpenOptions.add(READ);
+        standardOpenOptions.add(WRITE);
+
+        when(mockPath.getFileSystem()).thenReturn(mockFileSystem);
+        when(mockFileSystem.provider()).thenReturn(mockFileSystemProvider);
+        when(mockFileSystemProvider.newFileChannel(mockPath, standardOpenOptions))
+                .thenReturn(mockFileChannel);
+
+        assertEquals(mockFileChannel, FileChannel.open(mockPath, READ, WRITE));
     }
 }
