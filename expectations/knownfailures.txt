@@ -1527,14 +1527,6 @@
   ]
 },
 {
-  description: "/proc/version is not accessible",
-  bug: 29495646,
-  result: EXEC_FAILED,
-  names: [
-    "org.apache.harmony.tests.java.lang.ProcessManagerTest#testCloseNonStandardFds"
-  ]
-},
-{
   description: "URLClassLoader doesn't work on Android for jar files",
   bug: 28535349,
   result: EXEC_FAILED,
