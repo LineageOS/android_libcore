@@ -176,7 +176,6 @@ public class ClassTest extends TestCase {
         assertNotNull(m);
         assertEquals("packageMethod", m.invoke(instance));
 
-
         // Protected methods from both the queried class as well as super classes must
         // be returned.
         m = TestGetVirtualMethod.class.getInstanceMethod("protectedMethod2", noArgs);
@@ -198,11 +197,7 @@ public class ClassTest extends TestCase {
         m = TestGetVirtualMethod.class.getInstanceMethod("privateMethod", noArgs);
         assertNotNull(m);
 
-        try {
-            TestGetVirtualMethod.class.getInstanceMethod("staticMethod", noArgs);
-            fail();
-        } catch (NoSuchMethodException expected) {
-        }
+        assertNull(TestGetVirtualMethod.class.getInstanceMethod("staticMethod", noArgs));
     }
 
     public void test_toString() throws Exception {
