@@ -443,10 +443,18 @@ public abstract class MethodHandle {
     @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
     @interface PolymorphicSignature { }
 
+    /**
+     * The type of this method handle, this corresponds to the exact type of the method
+     * being invoked.
+     */
     private final MethodType type;
-    /*private*/ MethodHandle asTypeCache;
-    // asTypeCache is not private so that invokers can easily fetch it
-    // Used by the runtime.
+
+    /**
+     * The nominal type of this method handle, will be non-null if a method handle declares
+     * a different type from its "real" type, which is either the type of the method being invoked
+     * or the type of the emulated stackframe expected by an underyling adapter.
+     */
+    private MethodType nominalType;
 
     /**
      * The INVOKE* constants and SGET/SPUT and IGET/IPUT constants specify the behaviour of this
@@ -472,10 +480,10 @@ public abstract class MethodHandle {
 
     // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
     // constants or SGET/SPUT, IGET/IPUT.
-    private final int handleKind;
+    protected final int handleKind;
 
     // The ArtMethod* or ArtField* associated with this method handle (used by the runtime).
-    private final long artFieldOrMethod;
+    protected final long artFieldOrMethod;
 
     protected MethodHandle(long artFieldOrMethod, int handleKind, MethodType type) {
         this.artFieldOrMethod = artFieldOrMethod;
@@ -489,6 +497,10 @@ public abstract class MethodHandle {
      * @return the method handle type
      */
     public MethodType type() {
+        if (nominalType != null) {
+            return nominalType;
+        }
+
         return type;
     }
 
@@ -743,28 +755,14 @@ public abstract class MethodHandle {
         if (newType == type) {
             return this;
         }
-        // Return 'this.asTypeCache' if the conversion is already memoized.
-        MethodHandle atc = asTypeCached(newType);
-        if (atc != null) {
-            return atc;
-        }
-        return asTypeUncached(newType);
-    }
 
-    private MethodHandle asTypeCached(MethodType newType) {
-        MethodHandle atc = asTypeCache;
-        if (atc != null && newType == atc.type) {
-            return atc;
+        if (!type.isConvertibleTo(newType)) {
+            throw new WrongMethodTypeException("cannot convert " + this + " to " + newType);
         }
-        return null;
-    }
 
-    /** Override this to change asType behavior. */
-    /*non-public*/ MethodHandle asTypeUncached(MethodType newType) {
-        if (!type.isConvertibleTo(newType))
-            throw new WrongMethodTypeException("cannot convert "+this+" to "+newType);
-        // Android-changed, TODO(narayan): Not implemented yet.
-        throw new UnsupportedOperationException("asTypeUncached(MethodType)");
+        MethodHandle mh = duplicate();
+        mh.nominalType = newType;
+        return mh;
     }
 
     /**
@@ -1293,6 +1291,18 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
     protected void transform(EmulatedStackFrame arguments) throws Throwable {
         throw new AssertionError("MethodHandle.transform should never be called.");
     }
+
+    /**
+     * Creates a copy of this method handle, copying all relevant data.
+     */
+    protected MethodHandle duplicate() {
+        try {
+            return (MethodHandle) this.clone();
+        } catch (CloneNotSupportedException cnse) {
+            throw new AssertionError("Subclass of Transformer is not cloneable");
+        }
+    }
+
 
     /**
      * This is the entry point for all transform calls, and dispatches to the protected
