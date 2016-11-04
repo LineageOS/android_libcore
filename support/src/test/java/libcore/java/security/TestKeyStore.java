@@ -145,6 +145,11 @@ public final class TestKeyStore extends Assert {
             // algorithm come from the default providers
             Security.insertProviderAt(new BouncyCastleProvider(),
                                       Security.getProviders().length+1);
+        } else if (!BouncyCastleProvider.class.getName().startsWith("com.android")) {
+            // If we run outside of the Android system, we need to make sure
+            // that the BouncyCastleProvider's static field keyInfoConverters
+            // is initialized. This happens in the default constructor only.
+            new BouncyCastleProvider();
         }
     }
 
