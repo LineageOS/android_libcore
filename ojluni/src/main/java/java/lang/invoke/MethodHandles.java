@@ -1060,6 +1060,12 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             }
 
             Method method = refc.getDeclaredMethod(name, type.ptypes());
+            return findSpecial(method, type, refc, specialCaller);
+        }
+
+        private MethodHandle findSpecial(Method method, MethodType type,
+                                         Class<?> refc, Class<?> specialCaller)
+                throws IllegalAccessException {
             if (Modifier.isPrivate(method.getModifiers())) {
                 // Since this is a private method, we'll need to also make sure that the
                 // lookup class is the same as the refering class. We've already checked that
@@ -1114,14 +1120,22 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
         }
 
         private MethodHandle findAccessor(Class<?> refc, String name, Class<?> type, int kind)
-                throws NoSuchFieldException, IllegalAccessException {
-            final Field field = refc.getField(name);
-            checkAccess(refc, field.getDeclaringClass(), field.getModifiers(), field.getName());
-
+            throws NoSuchFieldException, IllegalAccessException {
+            final Field field = refc.getDeclaredField(name);
             final Class<?> fieldType = field.getType();
             if (fieldType != type) {
                 throw new NoSuchFieldException(
-                    "Field has wrong type: " + fieldType + " != " + type);
+                        "Field has wrong type: " + fieldType + " != " + type);
+            }
+
+            return findAccessor(field, refc, type, kind, true /* performAccessChecks */);
+        }
+
+        private MethodHandle findAccessor(Field field, Class<?> refc, Class<?> fieldType, int kind,
+                                          boolean performAccessChecks)
+                throws IllegalAccessException {
+            if (!performAccessChecks) {
+                checkAccess(refc, field.getDeclaringClass(), field.getModifiers(), field.getName());
             }
 
             final boolean isStaticKind = kind == MethodHandle.SGET || kind == MethodHandle.SPUT;
@@ -1304,8 +1318,27 @@ return mh1;
          * @throws NullPointerException if the argument is null
          */
         public MethodHandle unreflect(Method m) throws IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.unreflect is not implemented");
+            if (m == null) {
+                throw new NullPointerException("m == null");
+            }
+
+            MethodType methodType = MethodType.methodType(m.getReturnType(),
+                    m.getParameterTypes());
+
+            // We should only perform access checks if setAccessible hasn't been called yet.
+            if (!m.isAccessible()) {
+                checkAccess(m.getDeclaringClass(), m.getDeclaringClass(), m.getModifiers(),
+                        m.getName());
+            }
+
+            if (Modifier.isStatic(m.getModifiers())) {
+                return new MethodHandleImpl(m.getArtMethod(), MethodHandle.INVOKE_STATIC,
+                        methodType);
+            } else {
+                methodType = methodType.insertParameterTypes(0, m.getDeclaringClass());
+                return new MethodHandleImpl(m.getArtMethod(), MethodHandle.INVOKE_VIRTUAL,
+                        methodType);
+            }
         }
 
         /**
@@ -1338,8 +1371,21 @@ return mh1;
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle unreflectSpecial(Method m, Class<?> specialCaller) throws IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.unreflectSpecial is not implemented");
+            if (m == null) {
+                throw new NullPointerException("m == null");
+            }
+
+            if (specialCaller == null) {
+                throw new NullPointerException("specialCaller == null");
+            }
+
+            if (!m.isAccessible()) {
+                checkSpecialCaller(specialCaller);
+            }
+
+            final MethodType methodType = MethodType.methodType(m.getReturnType(),
+                    m.getParameterTypes());
+            return findSpecial(m, methodType, m.getDeclaringClass() /* refc */, specialCaller);
         }
 
         /**
@@ -1367,8 +1413,18 @@ return mh1;
          * @throws NullPointerException if the argument is null
          */
         public MethodHandle unreflectConstructor(Constructor<?> c) throws IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.unreflectConstructor is not implemented");
+            if (c == null) {
+                throw new NullPointerException("c == null");
+            }
+
+            if (!c.isAccessible()) {
+                checkAccess(c.getDeclaringClass(), c.getDeclaringClass(), c.getModifiers(),
+                        c.getName());
+            }
+
+            MethodType methodType = MethodType.methodType(c.getDeclaringClass(),
+                    c.getParameterTypes());
+            return new MethodHandleImpl(c.getArtMethod(), MethodHandle.INVOKE_DIRECT, methodType);
         }
 
         /**
@@ -1390,8 +1446,9 @@ return mh1;
          * @throws NullPointerException if the argument is null
          */
         public MethodHandle unreflectGetter(Field f) throws IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.unreflectGetter is not implemented");
+            return findAccessor(f, f.getDeclaringClass(), f.getType(),
+                    Modifier.isStatic(f.getModifiers()) ? MethodHandle.SGET : MethodHandle.IGET,
+                    f.isAccessible() /* performAccessChecks */);
         }
 
         /**
@@ -1413,8 +1470,9 @@ return mh1;
          * @throws NullPointerException if the argument is null
          */
         public MethodHandle unreflectSetter(Field f) throws IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.unreflectSetter is not implemented");
+            return findAccessor(f, f.getDeclaringClass(), f.getType(),
+                    Modifier.isStatic(f.getModifiers()) ? MethodHandle.SPUT : MethodHandle.IPUT,
+                    f.isAccessible() /* performAccessChecks */);
         }
 
         /**
