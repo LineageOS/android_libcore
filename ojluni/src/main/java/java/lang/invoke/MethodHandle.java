@@ -1258,8 +1258,7 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
     public MethodHandle bindTo(Object x) {
         x = type.leadingReferenceParameter().cast(x);  // throw CCE if needed
 
-        // Android-changed, TODO(narayan): Not implemented yet.
-        throw new UnsupportedOperationException("bindTo(Object)");
+        return new Transformers.BindTo(this, x);
     }
 
     /**
