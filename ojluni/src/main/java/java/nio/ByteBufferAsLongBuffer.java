@@ -49,6 +49,7 @@ class ByteBufferAsLongBuffer extends LongBuffer {                 // package-pri
         if (bb instanceof DirectByteBuffer) {
             this.address = bb.address + off;
         }
+        this.bb.order(order);
         this.order = order;
         offset = off;
     }
