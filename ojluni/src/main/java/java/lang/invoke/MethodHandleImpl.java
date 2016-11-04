@@ -29,9 +29,13 @@ import java.lang.reflect.Modifier;
  *
  * @hide
  */
-public class MethodHandleImpl extends MethodHandle {
-
+public class MethodHandleImpl extends MethodHandle implements Cloneable {
     MethodHandleImpl(long artFieldOrMethod, int handleKind, MethodType type) {
         super(artFieldOrMethod, handleKind, type);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }
