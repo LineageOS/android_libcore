@@ -216,6 +216,19 @@ public class EmulatedStackFrame {
         }
     }
 
+    public void setReturnValueTo(Object reference) {
+        final Class<?> returnType = type.returnType();
+        if (returnType.isPrimitive()) {
+            throw new IllegalStateException("return type is not a reference type: " + returnType);
+        }
+
+        if (reference != null && !returnType.isInstance(reference)) {
+            throw new IllegalArgumentException("reference is not type " + returnType);
+        }
+
+        references[references.length - 1] = reference;
+    }
+
     /**
      * Returns true iff. the input {@code type} needs 64 bits (8 bytes) of storage on an
      * {@code EmulatedStackFrame}.
