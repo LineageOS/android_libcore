@@ -17,6 +17,7 @@
 package libcore.java.io;
 
 import android.system.ErrnoException;
+import android.system.OsConstants;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -27,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 import libcore.io.Libcore;
+
+import static android.system.Os.stat;
 
 public class FileTest extends junit.framework.TestCase {
 
@@ -313,10 +316,21 @@ public class FileTest extends junit.framework.TestCase {
     // SECCOMP filter. The SECCOMP filter is designed to not allow stat(fstatat64/newfstatat) calls
     // and whenever a thread makes the system call, android.system.ErrnoException
     // (EPERM - Operation not permitted) will be raised.
-    public void testExistsOnSystem() throws ErrnoException {
-        assertEquals("SECCOMP filter is not installed.", 0, installSeccompFilter());
-        File sh = new File("/sdcard");
-        assertTrue(sh.exists());
+    public void testExistsOnSystem() throws ErrnoException, IOException {
+        File tmpFile = File.createTempFile("testExistsOnSystem", ".tmp");
+        try {
+            assertEquals("SECCOMP filter is not installed.", 0, installSeccompFilter());
+            try {
+                // Verify that SECCOMP filter obstructs stat.
+                stat(tmpFile.getAbsolutePath());
+                fail();
+            } catch (ErrnoException expected) {
+                assertEquals(OsConstants.EPERM, expected.errno);
+            }
+            assertTrue(tmpFile.exists());
+        } finally {
+            tmpFile.delete();
+        }
     }
 
     private static native int installSeccompFilter();
