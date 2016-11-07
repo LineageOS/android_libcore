@@ -21,6 +21,8 @@
 package java.lang.invoke;
 
 import dalvik.system.EmulatedStackFrame;
+import dalvik.system.EmulatedStackFrame.StackFrameReader;
+import dalvik.system.EmulatedStackFrame.StackFrameWriter;
 
 import java.lang.reflect.Method;
 
@@ -217,6 +219,172 @@ public class Transformers {
                 target.invoke(emulatedStackFrame);
             } else {
                 fallback.invoke(emulatedStackFrame);
+            }
+        }
+    }
+
+    /**
+     * Implementation of MethodHandles.arrayElementGetter for reference types.
+     */
+    public static class ReferenceArrayElementGetter extends Transformer {
+        private final Class<?> arrayClass;
+        private final StackFrameReader reader;
+        private final StackFrameWriter writer;
+
+        public ReferenceArrayElementGetter(Class<?> arrayClass) {
+            super(MethodType.methodType(arrayClass.getComponentType(),
+                    new Class<?>[]{arrayClass, int.class}));
+            this.arrayClass = arrayClass;
+            reader = new StackFrameReader();
+            writer = new StackFrameWriter();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            reader.attach(emulatedStackFrame);
+            writer.attach(emulatedStackFrame);
+
+            // Read the array object and the index from the stack frame.
+            final Object[] array = (Object[]) reader.nextReference(arrayClass);
+            final int index = reader.nextInt();
+
+            // Write the array element back to the stack frame.
+            writer.makeReturnValueAccessor();
+            writer.putNextReference(array[index], arrayClass.getComponentType());
+        }
+    }
+
+    /**
+     * Implementation of MethodHandles.arrayElementSetter for reference types.
+     */
+    public static class ReferenceArrayElementSetter extends Transformer {
+        private final Class<?> arrayClass;
+        private final StackFrameReader reader;
+
+        public ReferenceArrayElementSetter(Class<?> arrayClass) {
+            super(MethodType.methodType(void.class,
+                    new Class<?>[] { arrayClass, int.class, arrayClass.getComponentType() }));
+            this.arrayClass = arrayClass;
+            reader = new StackFrameReader();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            reader.attach(emulatedStackFrame);
+
+            // Read the array object, index and the value to write from the stack frame.
+            final Object[] array = (Object[]) reader.nextReference(arrayClass);
+            final int index = reader.nextInt();
+            final Object value = reader.nextReference(arrayClass.getComponentType());
+
+            array[index] = value;
+        }
+    }
+
+    /**
+     * Implementation of MethodHandles.identity() for reference types.
+     */
+    public static class ReferenceIdentity extends Transformer {
+        private final Class<?> type;
+        private final StackFrameReader reader;
+        private final StackFrameWriter writer;
+
+
+        public ReferenceIdentity(Class<?> type) {
+            super(MethodType.methodType(type, type));
+            this.type = type;
+
+            reader = new StackFrameReader();
+            writer = new StackFrameWriter();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            reader.attach(emulatedStackFrame);
+            writer.attach(emulatedStackFrame);
+            writer.makeReturnValueAccessor();
+
+            writer.putNextReference(reader.nextReference(type), type);
+        }
+    }
+
+    /**
+     * Implementation of MethodHandles.constant.
+     */
+    public static class Constant extends Transformer {
+        private final Class<?> type;
+
+        // NOTE: This implementation turned out to be more awkward than expected becuase
+        // of the type system. We could simplify this considerably at the cost of making
+        // the emulated stack frame API uglier or by transitioning into JNI.
+        //
+        // We could consider implementing this in terms of bind() once that's implemented.
+        // This would then just become : MethodHandles.identity(type).bind(value).
+        private int asInt;
+        private long asLong;
+        private float asFloat;
+        private double asDouble;
+        private Object asReference;
+
+        private char typeChar;
+
+        private final EmulatedStackFrame.StackFrameWriter writer;
+
+        public Constant(Class<?> type, Object value) {
+            super(MethodType.methodType(type));
+            this.type = type;
+
+            if (!type.isPrimitive()) {
+                asReference = value;
+                typeChar = 'L';
+            } else if (type == int.class) {
+                asInt = (int) value;
+                typeChar = 'I';
+            } else if (type == char.class) {
+                asInt = (int) (char) value;
+                typeChar = 'C';
+            } else if (type == short.class) {
+                asInt = (int) (short) value;
+                typeChar = 'S';
+            } else if (type == byte.class) {
+                asInt = (int) (byte) value;
+                typeChar = 'B';
+            } else if (type == boolean.class) {
+                asInt = ((boolean) value) ? 1 : 0;
+                typeChar = 'Z';
+            } else if (type == long.class) {
+                asLong = (long) value;
+                typeChar = 'J';
+            } else if (type == float.class) {
+                asFloat = (float) value;
+                typeChar = 'F';
+            } else if (type == double.class) {
+                asDouble = (double) value;
+                typeChar = 'D';
+            } else {
+                throw new AssertionError("unknown type: " + typeChar);
+            }
+
+            writer = new EmulatedStackFrame.StackFrameWriter();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            writer.attach(emulatedStackFrame);
+            writer.makeReturnValueAccessor();
+
+            switch (typeChar) {
+                case 'L' : { writer.putNextReference(asReference, type); break; }
+                case 'I' : { writer.putNextInt(asInt); break; }
+                case 'C' : { writer.putNextChar((char) asInt); break; }
+                case 'S' : { writer.putNextShort((short) asInt); break; }
+                case 'B' : { writer.putNextByte((byte) asInt); break; }
+                case 'Z' : { writer.putNextBoolean(asInt == 1); break; }
+                case 'J' : { writer.putNextLong(asLong); break; }
+                case 'F' : { writer.putNextFloat(asFloat); break; }
+                case 'D' : { writer.putNextDouble(asDouble); break; }
+                default:
+                    throw new AssertionError("Unexpected typeChar: " + typeChar);
             }
         }
     }

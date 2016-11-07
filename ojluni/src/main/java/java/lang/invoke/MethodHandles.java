@@ -1609,11 +1609,32 @@ return mh1;
      */
     public static
     MethodHandle arrayElementGetter(Class<?> arrayClass) throws IllegalArgumentException {
-        // return MethodHandleImpl.makeArrayElementAccessor(arrayClass, false);
+        final Class<?> componentType = arrayClass.getComponentType();
+        if (componentType == null) {
+            throw new IllegalArgumentException("Not an array type: " + arrayClass);
+        }
 
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.arrayElementGetter is not implemented");
+        if (componentType.isPrimitive()) {
+            try {
+                return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class,
+                        "arrayElementGetter",
+                        MethodType.methodType(componentType, arrayClass, int.class));
+            } catch (NoSuchMethodException | IllegalAccessException exception) {
+                throw new AssertionError(exception);
+            }
+        }
+
+        return new Transformers.ReferenceArrayElementGetter(arrayClass);
     }
+
+    public static byte arrayElementGetter(byte[] array, int i) { return array[i]; }
+    public static boolean arrayElementGetter(boolean[] array, int i) { return array[i]; }
+    public static char arrayElementGetter(char[] array, int i) { return array[i]; }
+    public static short arrayElementGetter(short[] array, int i) { return array[i]; }
+    public static int arrayElementGetter(int[] array, int i) { return array[i]; }
+    public static long arrayElementGetter(long[] array, int i) { return array[i]; }
+    public static float arrayElementGetter(float[] array, int i) { return array[i]; }
+    public static double arrayElementGetter(double[] array, int i) { return array[i]; }
 
     /**
      * Produces a method handle giving write access to elements of an array.
@@ -1627,11 +1648,34 @@ return mh1;
      */
     public static
     MethodHandle arrayElementSetter(Class<?> arrayClass) throws IllegalArgumentException {
-        // return MethodHandleImpl.makeArrayElementAccessor(arrayClass, true);
+        final Class<?> componentType = arrayClass.getComponentType();
+        if (componentType == null) {
+            throw new IllegalArgumentException("Not an array type: " + arrayClass);
+        }
 
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.arrayElementSetter is not implemented");
+        if (componentType.isPrimitive()) {
+            try {
+                return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class,
+                        "arrayElementSetter",
+                        MethodType.methodType(void.class, arrayClass, int.class, componentType));
+            } catch (NoSuchMethodException | IllegalAccessException exception) {
+                throw new AssertionError(exception);
+            }
+        }
+
+        return new Transformers.ReferenceArrayElementSetter(arrayClass);
+
     }
+
+    public static void arrayElementSetter(byte[] array, int i, byte val) { array[i] = val; }
+    public static void arrayElementSetter(boolean[] array, int i, boolean val) { array[i] = val; }
+    public static void arrayElementSetter(char[] array, int i, char val) { array[i] = val; }
+    public static void arrayElementSetter(short[] array, int i, short val) { array[i] = val; }
+    public static void arrayElementSetter(int[] array, int i, int val) { array[i] = val; }
+    public static void arrayElementSetter(long[] array, int i, long val) { array[i] = val; }
+    public static void arrayElementSetter(float[] array, int i, float val) { array[i] = val; }
+    public static void arrayElementSetter(double[] array, int i, double val) { array[i] = val; }
+
 
     /// method handle invocation (reflective style)
 
@@ -1967,14 +2011,9 @@ assert((int)twice.invokeExact(21) == 42);
                 throw newIllegalArgumentException("void type");
             Wrapper w = Wrapper.forPrimitiveType(type);
             value = w.convert(value, type);
-            if (w.zero().equals(value))
-                return zero(w, type);
-            return insertArguments(identity(type), 0, value);
-        } else {
-            if (value == null)
-                return zero(Wrapper.OBJECT, type);
-            return identity(type).bindTo(value);
         }
+
+        return new Transformers.Constant(type, value);
     }
 
     /**
@@ -1986,55 +2025,30 @@ assert((int)twice.invokeExact(21) == 42);
      */
     public static
     MethodHandle identity(Class<?> type) {
-        Wrapper btw = (type.isPrimitive() ? Wrapper.forPrimitiveType(type) : Wrapper.OBJECT);
-        int pos = btw.ordinal();
-        MethodHandle ident = IDENTITY_MHS[pos];
-        if (ident == null) {
-            ident = setCachedMethodHandle(IDENTITY_MHS, pos, makeIdentity(btw.primitiveType()));
+        if (type == null) {
+            throw new NullPointerException("type == null");
         }
-        if (ident.type().returnType() == type)
-            return ident;
-        // something like identity(Foo.class); do not bother to intern these
-        assert(btw == Wrapper.OBJECT);
-        return makeIdentity(type);
-    }
-    private static final MethodHandle[] IDENTITY_MHS = new MethodHandle[Wrapper.values().length];
-    private static MethodHandle makeIdentity(Class<?> ptype) {
-        // MethodType mtype = MethodType.methodType(ptype, ptype);
-        // LambdaForm lform = LambdaForm.identityForm(BasicType.basicType(ptype));
-        // return MethodHandleImpl.makeIntrinsic(mtype, lform, Intrinsic.IDENTITY);
 
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.makeIdentity is not implemented");
-    }
-
-    private static MethodHandle zero(Wrapper btw, Class<?> rtype) {
-        int pos = btw.ordinal();
-        MethodHandle zero = ZERO_MHS[pos];
-        if (zero == null) {
-            zero = setCachedMethodHandle(ZERO_MHS, pos, makeZero(btw.primitiveType()));
+        if (type.isPrimitive()) {
+            try {
+                return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class, "identity",
+                        MethodType.methodType(type, type));
+            } catch (NoSuchMethodException | IllegalAccessException e) {
+                throw new AssertionError(e);
+            }
         }
-        if (zero.type().returnType() == rtype)
-            return zero;
-        assert(btw == Wrapper.OBJECT);
-        return makeZero(rtype);
-    }
-    private static final MethodHandle[] ZERO_MHS = new MethodHandle[Wrapper.values().length];
-    private static MethodHandle makeZero(Class<?> rtype) {
-        // MethodType mtype = MethodType.methodType(rtype);
-        // LambdaForm lform = LambdaForm.zeroForm(BasicType.basicType(rtype));
-        // return MethodHandleImpl.makeIntrinsic(mtype, lform, Intrinsic.ZERO);
 
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.makeZero is not implemented");
+        return new Transformers.ReferenceIdentity(type);
     }
 
-    synchronized private static MethodHandle setCachedMethodHandle(MethodHandle[] cache, int pos, MethodHandle value) {
-        // Simulate a CAS, to avoid racy duplication of results.
-        MethodHandle prev = cache[pos];
-        if (prev != null) return prev;
-        return cache[pos] = value;
-    }
+    public static byte identity(byte val) { return val; }
+    public static boolean identity(boolean val) { return val; }
+    public static char identity(char val) { return val; }
+    public static short identity(short val) { return val; }
+    public static int identity(int val) { return val; }
+    public static long identity(long val) { return val; }
+    public static float identity(float val) { return val; }
+    public static double identity(double val) { return val; }
 
     /**
      * Provides a target method handle with one or more <em>bound arguments</em>
