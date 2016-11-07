@@ -132,10 +132,13 @@ public final class TestKeyStore extends Assert {
     private static TestKeyStore ROOT_CA;
     private static TestKeyStore INTERMEDIATE_CA;
     private static TestKeyStore INTERMEDIATE_CA_2;
+    private static TestKeyStore INTERMEDIATE_CA_EC;
 
     private static TestKeyStore SERVER;
     private static TestKeyStore CLIENT;
     private static TestKeyStore CLIENT_CERTIFICATE;
+    private static TestKeyStore CLIENT_EC_RSA_CERTIFICATE;
+    private static TestKeyStore CLIENT_EC_EC_CERTIFICATE;
 
     private static TestKeyStore CLIENT_2;
 
@@ -209,6 +212,15 @@ public final class TestKeyStore extends Assert {
                 .ca(true)
                 .certificateSerialNumber(BigInteger.valueOf(1))
                 .build();
+        INTERMEDIATE_CA_EC = new Builder()
+                .aliasPrefix("IntermediateCA-EC")
+                .keyAlgorithms("EC")
+                .subject("CN=Test Intermediate Certificate Authority ECDSA")
+                .ca(true)
+                .signer(ROOT_CA.getPrivateKey("RSA", "RSA"))
+                .rootCa(ROOT_CA.getRootCertificate("RSA"))
+                .certificateSerialNumber(BigInteger.valueOf(2))
+                .build();
         INTERMEDIATE_CA = new Builder()
                 .aliasPrefix("IntermediateCA")
                 .subject("CN=Test Intermediate Certificate Authority")
@@ -225,6 +237,20 @@ public final class TestKeyStore extends Assert {
                 .certificateSerialNumber(BigInteger.valueOf(3))
                 .build();
         CLIENT = new TestKeyStore(createClient(INTERMEDIATE_CA.keyStore), null, null);
+        CLIENT_EC_RSA_CERTIFICATE = new Builder()
+                .aliasPrefix("client-ec")
+                .keyAlgorithms("EC")
+                .subject("emailAddress=test-ec@user")
+                .signer(INTERMEDIATE_CA.getPrivateKey("RSA", "RSA"))
+                .rootCa(INTERMEDIATE_CA.getRootCertificate("RSA"))
+                .build();
+        CLIENT_EC_EC_CERTIFICATE = new Builder()
+                .aliasPrefix("client-ec")
+                .keyAlgorithms("EC")
+                .subject("emailAddress=test-ec@user")
+                .signer(INTERMEDIATE_CA_EC.getPrivateKey("EC", "RSA"))
+                .rootCa(INTERMEDIATE_CA_EC.getRootCertificate("RSA"))
+                .build();
         CLIENT_CERTIFICATE = new Builder()
                 .aliasPrefix("client")
                 .subject("emailAddress=test@user")
@@ -294,6 +320,24 @@ public final class TestKeyStore extends Assert {
     public static TestKeyStore getClientCertificate() {
         initCerts();
         return CLIENT_CERTIFICATE;
+    }
+
+    /**
+     * Return a client keystore with a matched RSA certificate and
+     * private key as well as a CA certificate.
+     */
+    public static TestKeyStore getClientEcRsaCertificate() {
+        initCerts();
+        return CLIENT_EC_RSA_CERTIFICATE;
+    }
+
+    /**
+     * Return a client keystore with a matched RSA certificate and
+     * private key as well as a CA certificate.
+     */
+    public static TestKeyStore getClientEcEcCertificate() {
+        initCerts();
+        return CLIENT_EC_EC_CERTIFICATE;
     }
 
     /**
