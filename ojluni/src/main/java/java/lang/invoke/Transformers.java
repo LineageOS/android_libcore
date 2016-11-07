@@ -473,4 +473,74 @@ public class Transformers {
             stackFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
+
+    /**
+     * Implements MethodHandle.filterReturnValue.
+     */
+    public static class FilterReturnValue extends Transformer {
+        private final MethodHandle target;
+        private final MethodHandle filter;
+
+        private final EmulatedStackFrame.StackFrameReader returnValueReader;
+        private final EmulatedStackFrame.StackFrameWriter filterWriter;
+
+        private final EmulatedStackFrame.Range allArgs;
+
+        public FilterReturnValue(MethodHandle target, MethodHandle filter) {
+            super(MethodType.methodType(filter.type().rtype(), target.type().ptypes()));
+
+            this.target = target;
+            this.filter = filter;
+
+            returnValueReader = new EmulatedStackFrame.StackFrameReader();
+            filterWriter = new EmulatedStackFrame.StackFrameWriter();
+
+            allArgs = EmulatedStackFrame.Range.all(type());
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            // Create a new frame with the target's type and copy all arguments over.
+            // This frame differs in return type with |emulatedStackFrame| but will have
+            // the same parameter shapes.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            emulatedStackFrame.copyRangeTo(targetFrame, allArgs, 0, 0);
+
+            target.invoke(targetFrame);
+
+            // Perform the invoke.
+            returnValueReader.attach(targetFrame);
+            returnValueReader.makeReturnValueAccessor();
+
+            // Create an emulated frame for the filter and copy all its arguments across.
+            EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
+            filterWriter.attach(filterFrame);
+
+            final Class<?> returnType = target.type().rtype();
+            if (!returnType.isPrimitive()) {
+                filterWriter.putNextReference(returnValueReader.nextReference(returnType),
+                        returnType);
+            } else if (returnType == boolean.class) {
+                filterWriter.putNextBoolean(returnValueReader.nextBoolean());
+            } else if (returnType == byte.class) {
+                filterWriter.putNextByte(returnValueReader.nextByte());
+            } else if (returnType == char.class) {
+                filterWriter.putNextChar(returnValueReader.nextChar());
+            } else if (returnType == short.class) {
+                filterWriter.putNextShort(returnValueReader.nextShort());
+            } else if (returnType == int.class) {
+                filterWriter.putNextInt(returnValueReader.nextInt());
+            } else if (returnType == long.class) {
+                filterWriter.putNextLong(returnValueReader.nextLong());
+            } else if (returnType == float.class) {
+                filterWriter.putNextFloat(returnValueReader.nextFloat());
+            } else if (returnType == double.class) {
+                filterWriter.putNextDouble(returnValueReader.nextDouble());
+            }
+
+            // Invoke the filter and copy its return value back to the original frame.
+            filter.invoke(filterFrame);
+            filterFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
 }
