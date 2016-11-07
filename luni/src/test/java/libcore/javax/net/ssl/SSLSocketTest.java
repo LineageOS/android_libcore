@@ -27,19 +27,36 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.AlgorithmParameters;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.InvalidParameterException;
+import java.security.Key;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
+import java.security.Provider;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.SignatureSpi;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.ECParameterSpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -50,7 +67,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.CipherSpi;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.ShortBufferException;
 import javax.crypto.spec.SecretKeySpec;
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
@@ -896,6 +919,355 @@ public class SSLSocketTest extends TestCase {
         client.close();
         server.close();
         c.close();
+    }
+
+    public void test_SSLSocket_clientAuth_OpaqueKey_RSA() throws Exception {
+        run_SSLSocket_clientAuth_OpaqueKey(TestKeyStore.getClientCertificate());
+    }
+
+    public void test_SSLSocket_clientAuth_OpaqueKey_EC_RSA() throws Exception {
+        run_SSLSocket_clientAuth_OpaqueKey(TestKeyStore.getClientEcRsaCertificate());
+    }
+
+    public void test_SSLSocket_clientAuth_OpaqueKey_EC_EC() throws Exception {
+        run_SSLSocket_clientAuth_OpaqueKey(TestKeyStore.getClientEcEcCertificate());
+    }
+
+    private void run_SSLSocket_clientAuth_OpaqueKey(TestKeyStore keyStore) throws Exception {
+        try {
+            Security.insertProviderAt(new OpaqueProvider(), 1);
+
+            final TestSSLContext c = TestSSLContext.create(keyStore, TestKeyStore.getServer());
+            SSLContext clientContext = SSLContext.getInstance("TLS");
+            final X509KeyManager delegateKeyManager = (X509KeyManager) c.clientKeyManagers[0];
+            X509KeyManager keyManager = new X509KeyManager() {
+                @Override
+                public String chooseClientAlias(String[] keyType, Principal[] issuers,
+                        Socket socket) {
+                    return delegateKeyManager.chooseClientAlias(keyType, issuers, socket);
+                }
+
+                @Override
+                public String chooseServerAlias(String keyType, Principal[] issuers,
+                        Socket socket) {
+                    return delegateKeyManager.chooseServerAlias(keyType, issuers, socket);
+                }
+
+                @Override
+                public X509Certificate[] getCertificateChain(String alias) {
+                    return delegateKeyManager.getCertificateChain(alias);
+                }
+
+                @Override
+                public String[] getClientAliases(String keyType, Principal[] issuers) {
+                    return delegateKeyManager.getClientAliases(keyType, issuers);
+                }
+
+                @Override
+                public String[] getServerAliases(String keyType, Principal[] issuers) {
+                    return delegateKeyManager.getServerAliases(keyType, issuers);
+                }
+
+                @Override
+                public PrivateKey getPrivateKey(String alias) {
+                    PrivateKey privKey = delegateKeyManager.getPrivateKey(alias);
+                    if (privKey instanceof RSAPrivateKey) {
+                        return new OpaqueDelegatingRSAPrivateKey((RSAPrivateKey) privKey);
+                    } else if (privKey instanceof ECPrivateKey) {
+                        return new OpaqueDelegatingECPrivateKey((ECPrivateKey) privKey);
+                    } else {
+                        return null;
+                    }
+                }
+            };
+            clientContext.init(new KeyManager[] {
+                    keyManager
+            }, new TrustManager[] {
+                    c.clientTrustManager
+            }, null);
+            SSLSocket client = (SSLSocket) clientContext.getSocketFactory().createSocket(c.host,
+                    c.port);
+            final SSLSocket server = (SSLSocket) c.serverSocket.accept();
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    server.setNeedClientAuth(true);
+                    server.startHandshake();
+                    return null;
+                }
+            });
+            executor.shutdown();
+            client.startHandshake();
+            assertNotNull(client.getSession().getLocalCertificates());
+            TestKeyStore.assertChainLength(client.getSession().getLocalCertificates());
+            TestSSLContext.assertClientCertificateChain(c.clientTrustManager,
+                    client.getSession().getLocalCertificates());
+            future.get();
+            client.close();
+            server.close();
+            c.close();
+        } finally {
+            Security.removeProvider(OpaqueProvider.NAME);
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public static class OpaqueProvider extends Provider {
+        public static final String NAME = "OpaqueProvider";
+
+        public OpaqueProvider() {
+            super(NAME, 1.0, "test provider");
+
+            put("Signature.NONEwithRSA", OpaqueSignatureSpi.RSA.class.getName());
+            put("Signature.NONEwithECDSA", OpaqueSignatureSpi.ECDSA.class.getName());
+            put("Cipher.RSA/ECB/NoPadding", OpaqueCipherSpi.class.getName());
+        }
+    }
+
+    protected static class OpaqueSignatureSpi extends SignatureSpi {
+        private final String algorithm;
+
+        private Signature delegate;
+
+        protected OpaqueSignatureSpi(String algorithm) {
+            this.algorithm = algorithm;
+        }
+
+        public final static class RSA extends OpaqueSignatureSpi {
+            public RSA() {
+                super("NONEwithRSA");
+            }
+        }
+
+        public final static class ECDSA extends OpaqueSignatureSpi {
+            public ECDSA() {
+                super("NONEwithECDSA");
+            }
+        }
+
+        @Override
+        protected void engineInitVerify(PublicKey publicKey) throws InvalidKeyException {
+            fail("Cannot verify");
+        }
+
+        @Override
+        protected void engineInitSign(PrivateKey privateKey) throws InvalidKeyException {
+            DelegatingPrivateKey opaqueKey = (DelegatingPrivateKey) privateKey;
+            try {
+                delegate = Signature.getInstance(algorithm);
+            } catch (NoSuchAlgorithmException e) {
+                throw new InvalidKeyException(e);
+            }
+            delegate.initSign(opaqueKey.getDelegate());
+        }
+
+        @Override
+        protected void engineUpdate(byte b) throws SignatureException {
+            delegate.update(b);
+        }
+
+        @Override
+        protected void engineUpdate(byte[] b, int off, int len) throws SignatureException {
+            delegate.update(b, off, len);
+        }
+
+        @Override
+        protected byte[] engineSign() throws SignatureException {
+            return delegate.sign();
+        }
+
+        @Override
+        protected boolean engineVerify(byte[] sigBytes) throws SignatureException {
+            return delegate.verify(sigBytes);
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected void engineSetParameter(String param, Object value)
+                throws InvalidParameterException {
+            delegate.setParameter(param, value);
+        }
+
+        @SuppressWarnings("deprecation")
+        @Override
+        protected Object engineGetParameter(String param) throws InvalidParameterException {
+            return delegate.getParameter(param);
+        }
+    }
+
+    public static class OpaqueCipherSpi extends CipherSpi {
+        private Cipher delegate;
+
+        public OpaqueCipherSpi() {
+        }
+
+        @Override
+        protected void engineSetMode(String mode) throws NoSuchAlgorithmException {
+            fail();
+        }
+
+        @Override
+        protected void engineSetPadding(String padding) throws NoSuchPaddingException {
+            fail();
+        }
+
+        @Override
+        protected int engineGetBlockSize() {
+            return delegate.getBlockSize();
+        }
+
+        @Override
+        protected int engineGetOutputSize(int inputLen) {
+            return delegate.getOutputSize(inputLen);
+        }
+
+        @Override
+        protected byte[] engineGetIV() {
+            return delegate.getIV();
+        }
+
+        @Override
+        protected AlgorithmParameters engineGetParameters() {
+            return delegate.getParameters();
+        }
+
+        @Override
+        protected void engineInit(int opmode, Key key, SecureRandom random)
+                throws InvalidKeyException {
+            getCipher();
+            delegate.init(opmode, key, random);
+        }
+
+        protected void getCipher() throws InvalidKeyException {
+            try {
+                delegate = Cipher.getInstance("RSA/ECB/NoPadding");
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException e) {
+                throw new InvalidKeyException(e);
+            }
+        }
+
+        @Override
+        protected void engineInit(int opmode, Key key, AlgorithmParameterSpec params,
+                SecureRandom random)
+                throws InvalidKeyException, InvalidAlgorithmParameterException {
+            getCipher();
+            delegate.init(opmode, key, params, random);
+        }
+
+        @Override
+        protected void engineInit(int opmode, Key key, AlgorithmParameters params,
+                SecureRandom random)
+                throws InvalidKeyException, InvalidAlgorithmParameterException {
+            getCipher();
+            delegate.init(opmode, key, params, random);
+        }
+
+        @Override
+        protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
+            return delegate.update(input, inputOffset, inputLen);
+        }
+
+        @Override
+        protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output,
+                int outputOffset) throws ShortBufferException {
+            return delegate.update(input, inputOffset, inputLen, output, outputOffset);
+        }
+
+        @Override
+        protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen)
+                throws IllegalBlockSizeException, BadPaddingException {
+            return delegate.update(input, inputOffset, inputLen);
+        }
+
+        @Override
+        protected int engineDoFinal(byte[] input, int inputOffset, int inputLen, byte[] output,
+                int outputOffset)
+                throws ShortBufferException, IllegalBlockSizeException, BadPaddingException {
+            return delegate.doFinal(input, inputOffset, inputLen, output, outputOffset);
+        }
+    }
+
+    private interface DelegatingPrivateKey {
+        PrivateKey getDelegate();
+    }
+
+    @SuppressWarnings("serial")
+    private static class OpaqueDelegatingECPrivateKey implements ECPrivateKey, DelegatingPrivateKey {
+        private final ECPrivateKey delegate;
+
+        public OpaqueDelegatingECPrivateKey(ECPrivateKey delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public PrivateKey getDelegate() {
+            return delegate;
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return delegate.getAlgorithm();
+        }
+
+        @Override
+        public String getFormat() {
+            return null;
+        }
+
+        @Override
+        public byte[] getEncoded() {
+            return null;
+        }
+
+        @Override
+        public ECParameterSpec getParams() {
+            return delegate.getParams();
+        }
+
+        @Override
+        public BigInteger getS() {
+            return null;
+        }
+    }
+
+    @SuppressWarnings("serial")
+    private static class OpaqueDelegatingRSAPrivateKey implements RSAPrivateKey, DelegatingPrivateKey {
+        private final RSAPrivateKey delegate;
+
+        public OpaqueDelegatingRSAPrivateKey(RSAPrivateKey delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public BigInteger getPrivateExponent() {
+            return null;
+        }
+
+        @Override
+        public String getAlgorithm() {
+            return delegate.getAlgorithm();
+        }
+
+        @Override
+        public String getFormat() {
+            return null;
+        }
+
+        @Override
+        public byte[] getEncoded() {
+            return null;
+        }
+
+        @Override
+        public BigInteger getModulus() {
+            return delegate.getModulus();
+        }
+
+        @Override
+        public PrivateKey getDelegate() {
+            return delegate;
+        }
     }
 
     public void test_SSLSocket_TrustManagerRuntimeException() throws Exception {
