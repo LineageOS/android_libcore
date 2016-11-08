@@ -201,8 +201,8 @@ public class DistributionPointName {
         }
         DistributionPointName other = (DistributionPointName)obj;
 
-        return equals(this.fullName, other.fullName) &&
-               equals(this.relativeName, other.relativeName);
+        return Objects.equals(this.fullName, other.fullName) &&
+               Objects.equals(this.relativeName, other.relativeName);
     }
 
     /**
@@ -238,12 +238,5 @@ public class DistributionPointName {
         }
 
         return sb.toString();
-    }
-
-    /*
-     * Utility function for a.equals(b) where both a and b may be null.
-     */
-    private static boolean equals(Object a, Object b) {
-        return (a == null) ? (b == null) : a.equals(b);
     }
 }
