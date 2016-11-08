@@ -27,8 +27,18 @@ import sun.security.x509.AlgorithmId;
 public class AlgorithmIdTest extends TestCase {
 
     public void test_get_String() throws Exception {
+        assertEquals("1.3.14.3.2.26", AlgorithmId.get("SHA-1").getOID().toString());
+        assertEquals("1.3.14.3.2.26", AlgorithmId.get("SHA1").getOID().toString());
         assertEquals("2.16.840.1.101.3.4.2.4", AlgorithmId.get("SHA-224").getOID().toString());
+
+        // Would throw NoSuchAlgorithmException in N
         assertEquals("2.16.840.1.101.3.4.2.4", AlgorithmId.get("SHA224").getOID().toString());
+
+        assertEquals("2.16.840.1.101.3.4.2.1", AlgorithmId.get("SHA-256").getOID().toString());
+
+        // Would throw NoSuchAlgorithmException in N
+        assertEquals("2.16.840.1.101.3.4.2.1", AlgorithmId.get("SHA256").getOID().toString());
+
         assertEquals(
                 "2.16.840.1.101.3.4.3.1", AlgorithmId.get("SHA224WithDSA").getOID().toString());
         assertEquals(
@@ -41,14 +51,19 @@ public class AlgorithmIdTest extends TestCase {
     }
 
     public void test_getName() throws Exception {
-        assertEquals("SHA224", getOidName("2.16.840.1.101.3.4.2.4"));
+        // Was "SHA" in N
+        assertEquals("SHA-1", getOidName("1.3.14.3.2.26"));
+        assertEquals("SHA-224", getOidName("2.16.840.1.101.3.4.2.4"));
+        // Was "SHA256" in N
+        assertEquals("SHA-256", getOidName("2.16.840.1.101.3.4.2.1"));
+        // Were SHA224WITHDSA, etc in N
         assertEquals("SHA224withDSA", getOidName("2.16.840.1.101.3.4.3.1"));
         assertEquals("SHA256withDSA", getOidName("2.16.840.1.101.3.4.3.2"));
         assertEquals("SHA224withRSA", getOidName("1.2.840.113549.1.1.14"));
+
     }
 
     private String getOidName(String oid) throws Exception {
         return new AlgorithmId(new ObjectIdentifier(oid)).getName();
     }
 }
-
