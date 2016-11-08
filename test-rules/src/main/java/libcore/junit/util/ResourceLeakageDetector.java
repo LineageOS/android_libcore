@@ -27,9 +27,24 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 /**
- * Provides support for testing classes that own resources which must not leak.
+ * Provides support for testing classes that own resources (using {@code CloseGuard} mechanism)
+ * which must not leak.
  *
  * <p><strong>This will not detect any resource leakages in OpenJDK</strong></p>
+ *
+ * <p>Typical usage for developers that want to ensure that their tests do not leak resources:
+ * <pre>
+ * public class ResourceTest {
+ *  {@code @Rule}
+ *   public LeakageDetectorRule leakageDetectorRule = ResourceLeakageDetector.getRule();
+ *
+ *  ...
+ * }
+ * </pre>
+ *
+ * <p>Developers that need to test the resource itself to ensure it is properly protected can
+ * use {@link LeakageDetectorRule#assertUnreleasedResourceCount(Object, int)
+ * assertUnreleasedResourceCount(Object, int)}.
  */
 public class ResourceLeakageDetector {
     private static final LeakageDetectorRule LEAKAGE_DETECTOR_RULE;
@@ -99,19 +114,17 @@ public class ResourceLeakageDetector {
      * is no way to clear the cached data then it should be relatively simple to move the code that
      * invokes the caching mechanism to outside the scope of this rule. i.e.
      *
-     * <pre>{@code
-     *     @Rule
+     * <pre>
+     *    {@code @Rule}
      *     public final TestRule ruleChain = org.junit.rules.RuleChain
      *         .outerRule(new ...invoke caching mechanism...)
-     *         .around(CloseGuardSupport.getRule());
-     * }</pre>
-     *
-     * @return a {@link TestRule} that detects resource leakages, or one that does nothing if
-     * resource leakage detection is not supported.
+     *         .around(ResourceLeakageDetector.getRule());
+     * </pre>
      */
     public static class LeakageDetectorRule implements TestRule {
 
         private final TestRule leakageDetectorRule;
+        private boolean leakageDetectionEnabledForTest;
 
         private LeakageDetectorRule(TestRule leakageDetectorRule) {
             this.leakageDetectorRule = leakageDetectorRule;
@@ -122,8 +135,10 @@ public class ResourceLeakageDetector {
             // Make the resource leakage detector rule optional based on the presence of an
             // annotation.
             if (description.getAnnotation(DisableResourceLeakageDetection.class) != null) {
+                leakageDetectionEnabledForTest = false;
                 return base;
             } else {
+                leakageDetectionEnabledForTest = true;
                 return leakageDetectorRule.apply(base, description);
             }
         }
@@ -135,27 +150,60 @@ public class ResourceLeakageDetector {
          * <p>This helps ensure that classes which own resources protected using {@code CloseGuard}
          * support leakage detection.
          *
-         * <p>This must only be called from within the test currently being run that is not
-         * annotated with {@link DisableResourceLeakageDetection} otherwise it will fail if the
-         * resource leakage detected mechanism is disabled, e.g. in CTS.
+         * <p>This must only be called as part of the currently running test and the test must not
+         * be annotated with {@link DisableResourceLeakageDetection} as that will disable leakage
+         * detection. Attempting to use it with leakage detection disabled by the annotation will
+         * result in a test failure.
          *
-         * <p>Use as follows:
+         * <p>Use as follows, 'open' and 'close' refer to the methods in {@code CloseGuard}:
          * <pre>
-         *     Object object = ...create and 'open' an object encapsulating a protected resource...;
-         *     // Check to make sure that the object reports a resource leak when it is finalized.
-         *     assertUnreleasedResourceCount(object, 1);
+         * public class ResourceTest {
+         *  {@code @Rule}
+         *   public LeakageDetectorRule leakageDetectorRule = ResourceLeakageDetector.getRule();
          *
-         *     object = ... create, 'open' and then 'close' another object ...;
-         *     // Check to make sure that the object does not have any unreleased resources.
-         *     assertUnreleasedResourceCount(object, 0);
+         *  {@code @Test}
+         *   public void testAutoCloseableResourceIsProtected() {
+         *     try (AutoCloseable object = ...open a protected resource...) {
+         *       leakageDetectorRule.assertUnreleasedResourceCount(object, 1);
+         *     }
+         *   }
+         *
+         *  {@code @Test}
+         *   public void testResourceIsProtected() {
+         *     NonAutoCloseable object = ...open a protected resource...;
+         *     leakageDetectorRule.assertUnreleasedResourceCount(object, 1);
+         *     object.release();
+         *   }
+         * }
          * </pre>
          *
-         * @param owner the object that owns the resource and uses {@code CloseGuard} object to detect
-         * when the resource is not released.
-         * @param expectedCount the expected number of unreleased resources.
+         * <p>There are two test method templates, the one to use depends on whether the resource is
+         * {@link AutoCloseable} or not. Each method tests the following:</p>
+         * <ul>
+         * <li>The {@code @Rule} will ensure that the test method does not leak any resources. That
+         * will make sure that if it actually is protected by {@code CloseGuard} that it correctly
+         * closes it. It does not actually ensure that it is protected.
+         * <li>The call to this method will ensure that the resource is actually protected by
+         * {@code CloseGuard}.
+         * </ul>
+         *
+         * <p>The above tests will work on the reference implementation as this method does nothing
+         * when {@code CloseGuard} is not supported.
+         *
+         * @param owner the object that owns the resource and uses {@code CloseGuard} object to
+         *         detect when the resource is not released.
+         * @param expectedCount the expected number of unreleased resources, i.e. the number of
+         *         {@code CloseGuard} objects owned by the resource, and on which it calls
+         *         {@code CloseGuard.warnIfOpen()} in its {@link #finalize()} method; usually 1.
          */
         public void assertUnreleasedResourceCount(Object owner, int expectedCount) {
-            FINALIZER_CHECKER.accept(owner, expectedCount);
+            if (leakageDetectionEnabledForTest) {
+                FINALIZER_CHECKER.accept(owner, expectedCount);
+            } else {
+                throw new IllegalStateException(
+                        "Does not work when leakage detection has been disabled; remove the "
+                                + "@DisableResourceLeakageDetection from the test method");
+            }
         }
     }
 
