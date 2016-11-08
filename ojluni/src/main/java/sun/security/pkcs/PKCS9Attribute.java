@@ -310,7 +310,8 @@ public class PKCS9Attribute implements DerEncoder {
     private static final Byte[][] PKCS9_VALUE_TAGS = {
         null,
         {new Byte(DerValue.tag_IA5String)},   // EMailAddress
-        {new Byte(DerValue.tag_IA5String)},   // UnstructuredName
+        {new Byte(DerValue.tag_IA5String),   // UnstructuredName
+         new Byte(DerValue.tag_PrintableString)},
         {new Byte(DerValue.tag_ObjectId)},    // ContentType
         {new Byte(DerValue.tag_OctetString)}, // MessageDigest
         {new Byte(DerValue.tag_UtcTime)},     // SigningTime
@@ -488,8 +489,8 @@ public class PKCS9Attribute implements DerEncoder {
 
         if (val.length != 2)
             throw new IOException("PKCS9Attribute doesn't have two components");
-
         // get the oid
+
         oid = val[0].getOID();
         byte[] content = val[1].toByteArray();
         DerValue[] elems = new DerInputStream(content).getSet(1);
