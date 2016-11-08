@@ -1473,6 +1473,8 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/provider/certpath/X509CertificatePair.java \
     ojluni/src/main/java/sun/security/provider/X509Factory.java \
     ojluni/src/main/java/sun/security/timestamp/TimestampToken.java \
+    ojluni/src/main/java/sun/security/util/AbstractAlgorithmConstraints.java \
+    ojluni/src/main/java/sun/security/util/AlgorithmDecomposer.java \
     ojluni/src/main/java/sun/security/util/BitArray.java \
     ojluni/src/main/java/sun/security/util/ByteArrayLexOrder.java \
     ojluni/src/main/java/sun/security/util/ByteArrayTagOrder.java \
