@@ -1994,9 +1994,7 @@ assert((int)twice.invokeExact(21) == 42);
         MethodType oldType = target.type();
         permuteArgumentChecks(reorder, newType, oldType);
 
-
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.permuteArguments is not implemented");
+        return new Transformers.PermuteArguments(newType, target, reorder);
     }
 
     // Android-changed: findFirstDupOrDrop is unused and removed.
