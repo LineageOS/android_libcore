@@ -947,16 +947,47 @@ assertEquals("[x, y, z]", pb.command().toString());
             // TODO: Support varargs methods. The returned method handle must be a var-args
             // collector in that case.
 
-            if (type.returnType() != void.class) {
-                throw new NoSuchElementException("Unable to find constructor of type: " + type);
-            }
-
+            // The queried |type| is (PT1,PT2,..)V
             Constructor constructor = refc.getDeclaredConstructor(type.ptypes());
+            if (constructor == null) {
+                throw new NoSuchMethodException(
+                    "No constructor for " + constructor.getDeclaringClass() + " matching " + type);
+            }
             checkAccess(refc, constructor.getDeclaringClass(), constructor.getModifiers(),
                     constructor.getName());
 
-            MethodType handleType = type.changeReturnType(refc);
-            return new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, handleType);
+            return makeMethodHandleForConstructor(constructor);
+        }
+
+        private MethodHandle makeMethodHandleForConstructor(Constructor constructor) {
+            Class<?> refc = constructor.getDeclaringClass();
+            MethodType constructorType =
+                    MethodType.methodType(refc, constructor.getParameterTypes());
+
+            // String constructors have optimized StringFactoryForm that matches returned type.
+            if (refc == String.class) {
+                // String <init> method is translated to a StringFactory method during execution.
+                return new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT,
+                                            constructorType);
+            }
+
+            // Other constructors use transform to perform allocation and then invoking
+            // the appropriate <init> method.
+            MethodType initType = initMethodType(constructorType);
+            MethodHandle initHandle = new MethodHandleImpl(
+                constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, initType);
+            return new Transformers.Construct(initHandle, constructorType);
+        }
+
+        private static MethodType initMethodType(MethodType constructorType) {
+            // Constructor method types are (PT1,PT2,...)C.
+            // Class <init> method types are (C,PT1,PT2,...)V.
+            assert constructorType.rtype() != void.class;
+            Class<?> [] initPtypes = new Class<?> [constructorType.ptypes().length + 1];
+            initPtypes[0] = constructorType.rtype();
+            System.arraycopy(constructorType.ptypes(), 0, initPtypes, 1,
+                             constructorType.ptypes().length);
+            return MethodType.methodType(void.class, initPtypes);
         }
 
         /**
@@ -1422,9 +1453,7 @@ return mh1;
                         c.getName());
             }
 
-            MethodType methodType = MethodType.methodType(c.getDeclaringClass(),
-                    c.getParameterTypes());
-            return new MethodHandleImpl(c.getArtMethod(), MethodHandle.INVOKE_DIRECT, methodType);
+            return makeMethodHandleForConstructor(c);
         }
 
         /**
