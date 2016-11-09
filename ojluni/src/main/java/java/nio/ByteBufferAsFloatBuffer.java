@@ -49,6 +49,7 @@ class ByteBufferAsFloatBuffer extends FloatBuffer {       // package-private
         if (bb instanceof DirectByteBuffer) {
             this.address = bb.address + off;
         }
+        this.bb.order(order);
         this.order = order;
         offset = off;
     }
