@@ -23,8 +23,9 @@ package java.lang.invoke;
 import dalvik.system.EmulatedStackFrame;
 import dalvik.system.EmulatedStackFrame.StackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameWriter;
-
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import sun.misc.Unsafe;
 
 /**
  * @hide Public for testing only.
@@ -386,6 +387,52 @@ public class Transformers {
                 default:
                     throw new AssertionError("Unexpected typeChar: " + typeChar);
             }
+        }
+    }
+
+    /*package*/ static class Construct extends Transformer {
+        private final MethodHandle constructorHandle;
+        private final EmulatedStackFrame.Range callerRange;
+
+        /*package*/ Construct(MethodHandle constructorHandle, MethodType returnedType) {
+            super(returnedType);
+            this.constructorHandle = constructorHandle;
+            // TODO(oth): Change to Range.all when available.
+            this.callerRange = EmulatedStackFrame.Range.of(type(), 0, type().ptypes().length);
+        }
+
+        private static boolean isAbstract(Class<?> klass) {
+            return (klass.getModifiers() & Modifier.ABSTRACT) == Modifier.ABSTRACT;
+        }
+
+        private static void checkInstantiable(Class<?> klass) throws InstantiationException {
+            if (isAbstract(klass)) {
+                String s = klass.isInterface() ? "interface " : "abstract class ";
+                throw new InstantiationException("Can't instantiate " + s + klass);
+            }
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final Class<?> receiverType = type().rtype();
+            checkInstantiable(receiverType);
+
+            // Allocate memory for receiver.
+            Object receiver = Unsafe.getUnsafe().allocateInstance(receiverType);
+
+            // The MethodHandle type for the caller has the form of
+            // {rtype=T,ptypes=A1..An}. The constructor MethodHandle is of
+            // the form {rtype=void,ptypes=T,A1...An}. So the frame for
+            // the constructor needs to have a slot with the receiver
+            // in position 0.
+            EmulatedStackFrame constructorFrame =
+                    EmulatedStackFrame.create(constructorHandle.type());
+            constructorFrame.setReference(0, receiver);
+            emulatedStackFrame.copyRangeTo(constructorFrame, callerRange, 1, 0);
+            constructorHandle.invoke(constructorFrame);
+
+            // Set return result for caller.
+            emulatedStackFrame.setReturnValueTo(receiver);
         }
     }
 }
