@@ -37,8 +37,8 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * These transformations are quite general, and include such patterns as
  * {@linkplain #asType conversion},
  * {@linkplain #bindTo insertion},
- * {@code java.lang.invoke.MethodHandles#dropArguments deletion},
- * and {@code java.lang.invoke.MethodHandles#filterArguments substitution}.
+ * {@linkplain java.lang.invoke.MethodHandles#dropArguments deletion},
+ * and {@linkplain java.lang.invoke.MethodHandles#filterArguments substitution}.
  *
  * <h1>Method handle contents</h1>
  * Method handles are dynamically and strongly typed according to their parameter and return types.
@@ -195,11 +195,11 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * Java code can create a method handle that directly accesses
  * any method, constructor, or field that is accessible to that code.
  * This is done via a reflective, capability-based API called
- * {@code java.lang.invoke.MethodHandles.Lookup MethodHandles.Lookup}
+ * {@link java.lang.invoke.MethodHandles.Lookup MethodHandles.Lookup}
  * For example, a static method handle can be obtained
- * from {@code java.lang.invoke.MethodHandles.Lookup#findStatic Lookup.findStatic}.
+ * from {@link java.lang.invoke.MethodHandles.Lookup#findStatic Lookup.findStatic}.
  * There are also conversion methods from Core Reflection API objects,
- * such as {@code java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect}.
+ * such as {@link java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect}.
  * <p>
  * Like classes and strings, method handles that correspond to accessible
  * fields, methods, and constructors can also be represented directly
@@ -330,12 +330,12 @@ mh.invokeExact(System.out, "Hello, world.");
  * untransformed descriptors, without reporting linkage errors.
  *
  * <h1>Interoperation between method handles and the Core Reflection API</h1>
- * Using factory methods in the {@code java.lang.invoke.MethodHandles.Lookup Lookup} API,
+ * Using factory methods in the {@link java.lang.invoke.MethodHandles.Lookup Lookup} API,
  * any class member represented by a Core Reflection API object
  * can be converted to a behaviorally equivalent method handle.
  * For example, a reflective {@link java.lang.reflect.Method Method} can
  * be converted to a method handle using
- * {@code java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect}.
+ * {@link java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect}.
  * The resulting method handles generally provide more direct and efficient
  * access to the underlying class members.
  * <p>
@@ -364,9 +364,9 @@ mh.invokeExact(System.out, "Hello, world.");
  * {@code Class.getDeclaredMethod}, may be regarded as placeholders only.
  * <p>
  * In order to obtain an invoker method for a particular type descriptor,
- * use {@code java.lang.invoke.MethodHandles#exactInvoker MethodHandles.exactInvoker},
- * or {@code java.lang.invoke.MethodHandles#invoker MethodHandles.invoker}.
- * The {@code java.lang.invoke.MethodHandles.Lookup#findVirtual Lookup.findVirtual}
+ * use {@link java.lang.invoke.MethodHandles#exactInvoker MethodHandles.exactInvoker},
+ * or {@link java.lang.invoke.MethodHandles#invoker MethodHandles.invoker}.
+ * The {@link java.lang.invoke.MethodHandles.Lookup#findVirtual Lookup.findVirtual}
  * API is also able to return a method handle
  * to call {@code invokeExact} or plain {@code invoke},
  * for any specified type descriptor .
@@ -415,12 +415,9 @@ mh.invokeExact(System.out, "Hello, world.");
  * In particular, a method handle&rsquo;s type must not have an arity of the exact maximum 255.
  *
  * @see MethodType
+ * @see MethodHandles
  * @author John Rose, JSR 292 EG
  */
-// Android-changed, TODO(narayan): Replace @code with @linkplain once MethodHandles
-// is ready for use.
-// @see MethodHandles
-// Android-changed, TODO(narayan): Bring back @see once the MethodHandles class is ready for use..
 public abstract class MethodHandle {
     // Android-changed:
     //
@@ -514,15 +511,13 @@ public abstract class MethodHandle {
      * it will appear as a single native method, taking an object array and returning an object.
      * If this native method is invoked directly via
      * {@link java.lang.reflect.Method#invoke java.lang.reflect.Method.invoke}, via JNI,
-     * or indirectly via {@code java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect},
+     * or indirectly via {@link java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect},
      * it will throw an {@code UnsupportedOperationException}.
      * @param args the signature-polymorphic parameter list, statically represented using varargs
      * @return the signature-polymorphic result, statically represented using {@code Object}
      * @throws WrongMethodTypeException if the target's type is not identical with the caller's symbolic type descriptor
      * @throws Throwable anything thrown by the underlying method propagates unchanged through the method handle call
      */
-    // Android-changed, TODO(narayan): Replace @code with @linkplain once MethodHandles
-    // is ready for use.
     public final native @PolymorphicSignature Object invokeExact(Object... args) throws Throwable;
 
     /**
@@ -552,7 +547,7 @@ public abstract class MethodHandle {
      * it will appear as a single native method, taking an object array and returning an object.
      * If this native method is invoked directly via
      * {@link java.lang.reflect.Method#invoke java.lang.reflect.Method.invoke}, via JNI,
-     * or indirectly via {@code java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect},
+     * or indirectly via {@link java.lang.invoke.MethodHandles.Lookup#unreflect Lookup.unreflect},
      * it will throw an {@code UnsupportedOperationException}.
      * @param args the signature-polymorphic parameter list, statically represented using varargs
      * @return the signature-polymorphic result, statically represented using {@code Object}
@@ -560,8 +555,6 @@ public abstract class MethodHandle {
      * @throws ClassCastException if the target's type can be adjusted to the caller, but a reference cast fails
      * @throws Throwable anything thrown by the underlying method propagates unchanged through the method handle call
      */
-    // Android-changed, TODO(narayan): Replace @code with @link once MethodHandles
-    // is ready for use.
     public final native @PolymorphicSignature Object invoke(Object... args) throws Throwable;
 
     // Android-changed: Removed implementation details.
@@ -620,9 +613,8 @@ public abstract class MethodHandle {
      * @throws ClassCastException if an argument cannot be converted by reference casting
      * @throws WrongMethodTypeException if the target's type cannot be adjusted to take the given number of {@code Object} arguments
      * @throws Throwable anything thrown by the target method invocation
+     * @see MethodHandles#spreadInvoker
      */
-    // @see MethodHandles#spreadInvoker
-    // Android-changed, TODO(narayan): Bring back @see once the MethodHandles class is ready for use.
     public Object invokeWithArguments(Object... arguments) throws Throwable {
         // TODO(narayan): Implement invokeWithArguments.
         throw new UnsupportedOperationException("invokeWithArguments(Object...)");
@@ -746,9 +738,8 @@ public abstract class MethodHandle {
      *           necessary return value conversions
      * @throws NullPointerException if {@code newType} is a null reference
      * @throws WrongMethodTypeException if the conversion cannot be made
+     * @see MethodHandles#explicitCastArguments
      */
-    //  @see MethodHandles#explicitCastArguments
-    // Android-changed, TODO(narayan): Bring back @see once the MethodHandles class is ready for use.
     public MethodHandle asType(MethodType newType) {
         // Fast path alternative to a heavyweight {@code asType} call.
         // Return 'this' if the conversion will be a no-op.
@@ -1164,7 +1155,7 @@ assertEquals("[three, thee, tee]", Arrays.toString((Object[])ls.get(0)));
      * Such method handles arise from the following sources:
      * <ul>
      * <li>a call to {@linkplain #asVarargsCollector asVarargsCollector}
-     * <li>a call to a {@code java.lang.invoke.MethodHandles.Lookup lookup method}
+     * <li>a call to a {@linkplain java.lang.invoke.MethodHandles.Lookup lookup method}
      *     which resolves to a variable arity Java method or constructor
      * <li>an {@code ldc} instruction of a {@code CONSTANT_MethodHandle}
      *     which resolves to a variable arity Java method or constructor
@@ -1173,8 +1164,6 @@ assertEquals("[three, thee, tee]", Arrays.toString((Object[])ls.get(0)));
      * @see #asVarargsCollector
      * @see #asFixedArity
      */
-    // Android-changed, TODO(narayan): Replace @code with @linkplain once MethodHandles
-    // is ready for use.
     public boolean isVarargsCollector() {
         return false;
     }
@@ -1252,9 +1241,8 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
      *         leading parameter type that is a reference type
      * @throws ClassCastException if {@code x} cannot be converted
      *         to the leading parameter type of the target
+     * @see MethodHandles#insertArguments
      */
-    // @see MethodHandles#insertArguments
-    // Android-changed, TODO(narayan): Bring back @see once the MethodHandles class is ready for use.
     public MethodHandle bindTo(Object x) {
         x = type.leadingReferenceParameter().cast(x);  // throw CCE if needed
 
