@@ -435,4 +435,42 @@ public class Transformers {
             emulatedStackFrame.setReturnValueTo(receiver);
         }
     }
+
+    /**
+     * Implements MethodHandle.bindTo.
+     *
+     * @hide
+     */
+    public static class BindTo extends Transformer {
+        private final MethodHandle delegate;
+        private final Object receiver;
+
+        private final EmulatedStackFrame.Range range;
+
+        public BindTo(MethodHandle delegate, Object receiver) {
+            super(delegate.type().dropParameterTypes(0, 1));
+
+            this.delegate = delegate;
+            this.receiver = receiver;
+
+            this.range = EmulatedStackFrame.Range.all(this.type());
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            // Create a new emulated stack frame with the full type (including the leading
+            // receiver reference).
+            EmulatedStackFrame stackFrame = EmulatedStackFrame.create(delegate.type());
+
+            // The first reference argument must be the receiver.
+            stackFrame.setReference(0, receiver);
+            // Copy all other arguments.
+            emulatedStackFrame.copyRangeTo(stackFrame, range,
+                    1 /* referencesStart */, 0 /* stackFrameStart */);
+
+            // Perform the invoke.
+            delegate.invoke(stackFrame);
+            stackFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
 }

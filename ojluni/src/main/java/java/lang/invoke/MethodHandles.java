@@ -1318,8 +1318,15 @@ return mh1;
          * @see #findVirtual
          */
         public MethodHandle bind(Object receiver, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO(narayan): Implement this method.
-            throw new UnsupportedOperationException("MethodHandles.Lookup.bind is not implemented");
+            // TODO: Support varargs methods. The returned method handle must be a var-args
+            // collector in that case.
+            //
+            // if (handle.isVarargsCollector()) {
+            //    bound = mh1.asVarargsCollector(mt1.parameterType(mt1.parameterCount() - 1));
+            // }
+
+            MethodHandle handle = lookup().findVirtual(receiver.getClass(), name, type);
+            return handle.bindTo(receiver);
         }
 
         /**
