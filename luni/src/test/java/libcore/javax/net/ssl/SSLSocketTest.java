@@ -53,7 +53,9 @@ import java.security.SignatureSpi;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.security.interfaces.ECKey;
 import java.security.interfaces.ECPrivateKey;
+import java.security.interfaces.RSAKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.ECParameterSpec;
@@ -1193,7 +1195,8 @@ public class SSLSocketTest extends TestCase {
     }
 
     @SuppressWarnings("serial")
-    private static class OpaqueDelegatingECPrivateKey implements ECPrivateKey, DelegatingPrivateKey {
+    private static class OpaqueDelegatingECPrivateKey
+            implements ECKey, PrivateKey, DelegatingPrivateKey {
         private final ECPrivateKey delegate;
 
         public OpaqueDelegatingECPrivateKey(ECPrivateKey delegate) {
@@ -1224,24 +1227,15 @@ public class SSLSocketTest extends TestCase {
         public ECParameterSpec getParams() {
             return delegate.getParams();
         }
-
-        @Override
-        public BigInteger getS() {
-            return null;
-        }
     }
 
     @SuppressWarnings("serial")
-    private static class OpaqueDelegatingRSAPrivateKey implements RSAPrivateKey, DelegatingPrivateKey {
+    private static class OpaqueDelegatingRSAPrivateKey
+            implements RSAKey, PrivateKey, DelegatingPrivateKey {
         private final RSAPrivateKey delegate;
 
         public OpaqueDelegatingRSAPrivateKey(RSAPrivateKey delegate) {
             this.delegate = delegate;
-        }
-
-        @Override
-        public BigInteger getPrivateExponent() {
-            return null;
         }
 
         @Override
