@@ -656,6 +656,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
 
         String[] numberElements = (String[]) data[0];
 
+        // Android-changed: Added maybeStripMarkers
         decimalSeparator = numberElements[0].charAt(0);
         groupingSeparator = numberElements[1].charAt(0);
         patternSeparator = numberElements[2].charAt(0);
@@ -709,10 +710,11 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         }
     }
 
+    // Android-changed: maybeStripMarkers added in b/26207216, fixed in b/32465689.
     /**
      * Attempts to strip RTL, LTR and Arabic letter markers from {@code symbol}. If the symbol's
-     * length is 1, then the first char of the symbol is returned. If the symbol's length is 2 and
-     * the first char is a marker, then the second char is returned. In all other cases,
+     * length is 1, then the first char of the symbol is returned. If the symbol's length is more
+     * than 1 and the first char is a marker, then this marker is ignored. In all other cases,
      * {@code fallback} is returned.
      */
     private static char maybeStripMarkers(String symbol, char fallback) {
@@ -721,9 +723,9 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             return symbol.charAt(0);
         }
 
-        if (length == 2) {
+        if (length > 1) {
             char first = symbol.charAt(0);
-            if (first =='\u200E' || first =='\u200F' || first =='\u061C'); {
+            if (first =='\u200E' || first =='\u200F' || first =='\u061C') {
                 return symbol.charAt(1);
             }
         }
