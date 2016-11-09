@@ -99,6 +99,9 @@ public class EmulatedStackFrame {
             this.numBytes = numBytes;
         }
 
+        public static Range all(MethodType frameType) {
+            return of(frameType, 0, frameType.parameterCount());
+        }
 
         public static Range of(MethodType frameType, int startArg, int endArg) {
             final Class<?>[] ptypes = frameType.ptypes();
@@ -163,7 +166,7 @@ public class EmulatedStackFrame {
             throw new IllegalArgumentException("Invalid index: " + idx);
         }
 
-        if (!ptypes[idx].isInstance(reference)) {
+        if (reference != null && !ptypes[idx].isInstance(reference)) {
             throw new IllegalStateException("reference is not of type: " + type.ptypes()[idx]);
         }
 
