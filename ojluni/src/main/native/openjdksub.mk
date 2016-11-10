@@ -69,7 +69,6 @@ LOCAL_SRC_FILES := \
     Character.cpp \
     Register.cpp \
     socket_tagger_util.cpp \
-    AbstractPlainDatagramSocketImpl.c \
 
 LOCAL_C_INCLUDES += \
        libcore/$(srcdir) \
