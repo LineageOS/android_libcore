@@ -964,15 +964,19 @@ assertEquals("[x, y, z]", pb.command().toString());
             MethodType constructorType =
                     MethodType.methodType(refc, constructor.getParameterTypes());
 
-            // String constructors have optimized StringFactoryForm that matches returned type.
+            // String constructors have optimized StringFactoryForm
+            // that matches returned type. These effectively combine the
+            // memory allocation and initialization calls into a single
+            // method.
             if (refc == String.class) {
                 // String <init> method is translated to a StringFactory method during execution.
                 return new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT,
                                             constructorType);
             }
 
-            // Other constructors use transform to perform allocation and then invoking
-            // the appropriate <init> method.
+            // Constructors for all other classes use a Construct transformer as there are no
+            // methods combining the allocation and calls to <init>. The Construct.tranform()
+            // performs the the memory allocation and then calls the <init> method.
             MethodType initType = initMethodType(constructorType);
             MethodHandle initHandle = new MethodHandleImpl(
                 constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, initType);
@@ -980,13 +984,20 @@ assertEquals("[x, y, z]", pb.command().toString());
         }
 
         private static MethodType initMethodType(MethodType constructorType) {
-            // Constructor method types are (PT1,PT2,...)C.
-            // Class <init> method types are (C,PT1,PT2,...)V.
+            // Returns a MethodType appropriate for class <init>
+            // methods. Constructor MethodTypes have the form
+            // (PT1,PT2,...)C and class <init> MethodTypes have the
+            // form (C,PT1,PT2,...)V.
             assert constructorType.rtype() != void.class;
+
+            // Insert constructorType C as the first parameter type in
+            // the MethodType for <init>.
             Class<?> [] initPtypes = new Class<?> [constructorType.ptypes().length + 1];
             initPtypes[0] = constructorType.rtype();
             System.arraycopy(constructorType.ptypes(), 0, initPtypes, 1,
                              constructorType.ptypes().length);
+
+            // Set the return type for the <init> MethodType to be void.
             return MethodType.methodType(void.class, initPtypes);
         }
 
