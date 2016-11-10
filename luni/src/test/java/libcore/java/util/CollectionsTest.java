@@ -18,11 +18,16 @@ package libcore.java.util;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.ConcurrentModificationException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -105,36 +110,60 @@ public final class CollectionsTest extends TestCase {
         }
     }
 
-    public static final class ArrayListInheritor<T> extends ArrayList<T> {
-        public ArrayListInheritor(int capacity) {
-            super(capacity);
+    static final class ArrayListInheritor<T> extends ArrayList<T> {
+        private int numSortCalls = 0;
+        public ArrayListInheritor(Collection<T> initialElements) {
+            super(initialElements);
+        }
+
+        @Override
+        public void sort(Comparator<? super T> c) {
+            super.sort(c);
+            numSortCalls++;
+        }
+
+        public int numSortCalls() {
+            return numSortCalls;
         }
     }
 
-    public void testSort_leavesModcountUnmodified() {
-        // This tests the fast path for ArrayLists where we can get away without
-        // a copy.
-        ArrayList<String> list = new ArrayList<String>(16);
-        list.add("coven");
-        list.add("asylum");
-        list.add("murder house");
-        list.add("freak show");
+    public void testSort_delegatesToListSort() {
+        ArrayListInheritor<String> list = new ArrayListInheritor<>(Arrays.asList("a", "c", "b"));
+        assertEquals(0, list.numSortCalls());
+        Collections.sort(list);
+        assertEquals(1, list.numSortCalls());
+    }
 
+    public void testSort_modcountUnmodifiedForLinkedList() {
+        LinkedList<String> list = new LinkedList<>(Arrays.asList("red", "green", "blue", "violet"));
         Iterator<String> it = list.iterator();
         it.next();
         Collections.sort(list);
+        it.next(); // does not throw ConcurrentModificationException
+    }
+
+    public void testSort_modcountModifiedForArrayListAndSubclasses() {
+        List<String> testData = Arrays.asList("red", "green", "blue", "violet");
+
+        ArrayList<String> list = new ArrayList<>(testData);
+        Iterator<String> it = list.iterator();
         it.next();
+        Collections.sort(list);
+        try {
+            it.next();
+            fail();
+        } catch (ConcurrentModificationException expected) {
+        }
 
-        list = new ArrayListInheritor<String>(16);
-        list.add("apples");
-        list.add("oranges");
-        list.add("pineapples");
-        list.add("bacon");
-
+        list = new ArrayListInheritor<>(testData);
         it = list.iterator();
         it.next();
         Collections.sort(list);
-        it.next();
+        try {
+            it.next();
+            fail();
+        } catch (ConcurrentModificationException expected) {
+        }
     }
 
     /**
