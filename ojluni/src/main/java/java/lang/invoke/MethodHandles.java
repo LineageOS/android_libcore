@@ -2597,15 +2597,7 @@ System.out.println((int) f0.invokeExact("x", "y")); // 2
         MethodType filterType = filter.type();
         filterReturnValueChecks(targetType, filterType);
 
-        // BoundMethodHandle result = target.rebind();
-        // BasicType rtype = BasicType.basicType(filterType.returnType());
-        // LambdaForm lform = result.editor().filterReturnForm(rtype, false);
-        // MethodType newType = targetType.changeReturnType(filterType.returnType());
-        // result = result.copyWithExtendL(newType, lform, filter);
-        // return result;
-
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.filterReturnValue is not implemented");
+        return new Transformers.FilterReturnValue(target, filter);
     }
 
     private static void filterReturnValueChecks(MethodType targetType, MethodType filterType) throws RuntimeException {
