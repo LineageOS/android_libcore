@@ -543,4 +543,98 @@ public class Transformers {
             filterFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
+
+    /*
+     * Implements MethodHandles.permuteArguments.
+     *
+     * @hide
+     */
+    public static class PermuteArguments extends Transformer {
+        private final MethodHandle target;
+        private final int[] reorder;
+
+        private final EmulatedStackFrame.StackFrameWriter writer;
+        private final EmulatedStackFrame.StackFrameReader reader;
+
+        public PermuteArguments(MethodType type, MethodHandle target, int[] reorder) {
+            super(type);
+
+            this.target = target;
+            this.reorder = reorder;
+
+            writer = new EmulatedStackFrame.StackFrameWriter();
+            reader = new EmulatedStackFrame.StackFrameReader();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            reader.attach(emulatedStackFrame);
+            final Class<?>[] ptypes = type().ptypes();
+
+            // In the interests of simplicity, we box / unbox arguments while performing
+            // the permutation. We first iterate through the incoming stack frame and box
+            // each argument. We then unbox and write out the argument to the target frame
+            // according to the specified reordering.
+            Object[] arguments = new Object[reorder.length];
+
+            for (int i = 0; i < ptypes.length; ++i) {
+                final Class<?> ptype = ptypes[i];
+                if (!ptype.isPrimitive()) {
+                    arguments[i] = reader.nextReference(ptype);
+                } else if (ptype == boolean.class) {
+                    arguments[i] = reader.nextBoolean();
+                } else if (ptype == byte.class) {
+                    arguments[i] = reader.nextByte();
+                } else if (ptype == char.class) {
+                    arguments[i] = reader.nextChar();
+                } else if (ptype == short.class) {
+                    arguments[i] = reader.nextShort();
+                } else if (ptype == int.class) {
+                    arguments[i] = reader.nextInt();
+                } else if (ptype == long.class) {
+                    arguments[i] = reader.nextLong();
+                } else if (ptype == float.class) {
+                    arguments[i] = reader.nextFloat();
+                } else if (ptype == double.class) {
+                    arguments[i] = reader.nextDouble();
+                } else {
+                    throw new AssertionError("Unexpected type: " + ptype);
+                }
+            }
+
+            EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(target.type());
+            writer.attach(calleeFrame);
+
+            for (int i = 0; i < ptypes.length; ++i) {
+                int idx = reorder[i];
+                final Class<?> ptype = ptypes[idx];
+                final Object argument = arguments[idx];
+
+                if (!ptype.isPrimitive()) {
+                    writer.putNextReference(argument, ptype);
+                } else if (ptype == boolean.class) {
+                    writer.putNextBoolean((boolean) argument);
+                } else if (ptype == byte.class) {
+                    writer.putNextByte((byte) argument);
+                } else if (ptype == char.class) {
+                    writer.putNextChar((char) argument);
+                } else if (ptype == short.class) {
+                    writer.putNextShort((short) argument);
+                } else if (ptype == int.class) {
+                    writer.putNextInt((int) argument);
+                } else if (ptype == long.class) {
+                    writer.putNextLong((long) argument);
+                } else if (ptype == float.class) {
+                    writer.putNextFloat((float) argument);
+                } else if (ptype == double.class) {
+                    writer.putNextDouble((double) argument);
+                } else {
+                    throw new AssertionError("Unexpected type: " + ptype);
+                }
+            }
+
+            target.invoke(calleeFrame);
+            calleeFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
 }
