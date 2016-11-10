@@ -536,9 +536,14 @@ public final class String
      *          object.
      */
     public int length() {
-        // For the compression purposes (save the characters as 8-bit if all characters
-        // are ASCII), the first bit of "count" used as the compression flag.
-        return (count & Integer.MAX_VALUE);
+        final boolean STRING_COMPRESSION_ENABLED = false;
+        if (STRING_COMPRESSION_ENABLED) {
+            // For the compression purposes (save the characters as 8-bit if all characters
+            // are ASCII), the least significant bit of "count" is used as the compression flag.
+            return (count >>> 1);
+        } else {
+            return count;
+        }
     }
 
     /**
@@ -550,7 +555,8 @@ public final class String
      * @since 1.6
      */
     public boolean isEmpty() {
-        return length() == 0;
+        // Empty string has {@code count == 0} with or without string compression enabled.
+        return count == 0;
     }
 
     /**
