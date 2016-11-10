@@ -416,6 +416,12 @@ public class EmulatedStackFrame {
      * argument slots as well as to return value slots.
      */
     public static class StackFrameReader extends StackFrameAccessor {
+        public byte nextByte() {
+            checkType(byte.class);
+            argumentIdx++;
+            return (byte) frameBuf.getInt();
+        }
+
         public int nextInt() {
             checkType(int.class);
             argumentIdx++;
