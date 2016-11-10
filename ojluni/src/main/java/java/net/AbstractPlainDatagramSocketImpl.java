@@ -24,6 +24,8 @@
  */
 package java.net;
 
+import libcore.io.IoBridge;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.Enumeration;
@@ -62,14 +64,6 @@ abstract class AbstractPlainDatagramSocketImpl extends DatagramSocketImpl
      * flag set if the native connect() call not to be used
      */
     private final static boolean connectDisabled = os.contains("OS X");
-
-    /**
-     * Load net library into runtime.
-     * TODO(yikong): Move clinit code to registration function
-     */
-    static {
-        init();
-    }
 
     /**
      * Creates a datagram socket
@@ -396,6 +390,12 @@ abstract class AbstractPlainDatagramSocketImpl extends DatagramSocketImpl
         return connectDisabled;
     }
 
-    native int dataAvailable();
-    private static native void init();
+    // Android-changed: rewritten on the top of IoBridge
+    int dataAvailable() {
+        try {
+            return IoBridge.available(fd);
+        } catch (IOException e) {
+            return -1;
+        }
+    }
 }
