@@ -226,7 +226,7 @@ public class EmulatedStackFrame {
         }
 
         if (reference != null && !returnType.isInstance(reference)) {
-            throw new IllegalArgumentException("reference is not type " + returnType);
+            throw new IllegalArgumentException("reference is not of type " + returnType);
         }
 
         references[references.length - 1] = reference;
