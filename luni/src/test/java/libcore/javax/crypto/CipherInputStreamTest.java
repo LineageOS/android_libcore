@@ -21,17 +21,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Provider;
+import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
+import javax.crypto.CipherSpi;
 import javax.crypto.SecretKey;
+import javax.crypto.ShortBufferException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import junit.framework.TestCase;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 
 public final class CipherInputStreamTest extends TestCase {
@@ -218,5 +225,66 @@ public final class CipherInputStreamTest extends TestCase {
         cis.close();
 
         verify(mockIs, times(1)).close();
+    }
+
+    /**
+     * CipherSpi that increments it's engineGetOutputSize output when
+     * engineUpdate is called.
+     */
+    public static class CipherSpiWithGrowingOutputSize extends MockCipherSpi {
+        private int outputSizeDelta = 0;
+
+        @Override
+        protected int engineGetOutputSize(int inputLen) {
+            return inputLen + outputSizeDelta;
+        }
+
+        @Override
+        protected int engineUpdate(byte[] input, int inputOffset, int inputLen, byte[] output,
+                int outputOffset) throws ShortBufferException {
+            int expectedOutputSize = inputLen + outputSizeDelta++;
+            if ((output.length - outputOffset) < expectedOutputSize) {
+                throw new ShortBufferException();
+            }
+            return expectedOutputSize;
+        }
+
+        @Override
+        protected byte[] engineUpdate(byte[] input, int inputOffset, int inputLen) {
+            int expectedOutputSize = inputLen + outputSizeDelta++;
+            return new byte[expectedOutputSize];
+        }
+
+        @Override
+        protected byte[] engineDoFinal(byte[] input, int inputOffset, int inputLen) {
+            return input;
+        }
+    }
+
+    private static class MockProvider extends Provider {
+        public MockProvider() {
+            super("MockProvider", 1.0, "Mock provider used for testing");
+            put("Cipher.GrowingOutputSize",
+                CipherSpiWithGrowingOutputSize.class.getName());
+        }
+    }
+
+    // http://b/32643789, check that CipherSpi.engineGetOutputSize is called and applied
+    // to output buffer size before calling CipherSpi.egineUpdate(byte[],int,int,byte[],int).
+    public void testCipherOutputSizeChange() throws Exception {
+        Provider mockProvider = new MockProvider();
+
+        Cipher cipher = Cipher.getInstance("GrowingOutputSize", mockProvider);
+
+        cipher.init(Cipher.DECRYPT_MODE, key, iv);
+        InputStream mockEncryptedInputStream = new ByteArrayInputStream(new byte[1024]);
+        try (InputStream is = new CipherInputStream(mockEncryptedInputStream, cipher)) {
+            byte[] buffer = new byte[1024];
+            // engineGetOutputSize returns 512+0, engineUpdate expects buf >= 512
+            assertEquals(512, is.read(buffer));
+            // engineGetOutputSize returns 512+1, engineUpdate expects buf >= 513
+            // and will throw ShortBufferException buffer is smaller.
+            assertEquals(513, is.read(buffer));
+        }
     }
 }
