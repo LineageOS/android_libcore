@@ -16,6 +16,7 @@
 
 package libcore.java.lang;
 
+import android.system.ErrnoException;
 import android.system.Os;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -46,10 +47,22 @@ import static java.lang.ProcessBuilder.Redirect.PIPE;
 public class ProcessBuilderTest extends TestCase {
     private static final String TAG = ProcessBuilderTest.class.getSimpleName();
 
+    /**
+     * Returns the path to a command that is in /system/bin/ on Android but
+     * /bin/ elsewhere.
+     *
+     * @param desktopPath the command path outside Android; must start with /bin/.
+     */
+    private static String commandPath(String desktopPath) {
+        if (!desktopPath.startsWith("/bin/")) {
+            throw new IllegalArgumentException(desktopPath);
+        }
+        String devicePath = System.getenv("ANDROID_ROOT") + desktopPath;
+        return new File(devicePath).exists() ? devicePath : desktopPath;
+    }
+
     private static String shell() {
-        String deviceSh = System.getenv("ANDROID_ROOT") + "/bin/sh";
-        String desktopSh = "/bin/sh";
-        return new File(deviceSh).exists() ? deviceSh : desktopSh;
+        return commandPath("/bin/sh");
     }
 
     private static void assertRedirectErrorStream(boolean doRedirect,
@@ -87,8 +100,10 @@ public class ProcessBuilderTest extends TestCase {
      * stdin / stdout / stderr file descriptors.
      */
     public void testRedirectInherit() throws Exception {
+        // We can't run shell() here because that exits when run with INHERITed
+        // file descriptors from this process; "sleep" is less picky.
         Process process = new ProcessBuilder()
-                .command(shell())
+                .command(commandPath("/bin/sleep"), "5") // in seconds
                 .redirectInput(Redirect.INHERIT)
                 .redirectOutput(Redirect.INHERIT)
                 .redirectError(Redirect.INHERIT)
@@ -106,6 +121,9 @@ public class ProcessBuilderTest extends TestCase {
                     Os.stat("/proc/" + childPid + "/fd/2").st_ino);
 
             assertEquals(parentInodes, childInodes);
+        } catch (ErrnoException e) {
+            // Either (a) Os.fstat on our PID, or (b) Os.stat on our child's PID, failed.
+            throw new AssertionError("stat failed; child process: " + process, e);
         } finally {
             process.destroy();
         }
