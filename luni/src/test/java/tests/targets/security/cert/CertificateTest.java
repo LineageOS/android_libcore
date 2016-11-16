@@ -31,6 +31,7 @@ import java.security.cert.PKIXCertPathValidatorResult;
 import java.security.cert.PKIXParameters;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import junit.framework.TestCase;
 import libcore.java.security.StandardNames;
@@ -739,6 +740,15 @@ public class CertificateTest extends TestCase {
         PKIXParameters params;
         params = new PKIXParameters(keyStore);
         params.setRevocationEnabled(false);
+
+        // All the tests are using pre-generated certificates with set expirations.
+        // In order to avoid the test failing when the certificates expire,
+        // explicitly set the time to check their validity against.
+        Calendar calendar = Calendar.getInstance();
+        calendar.clear();
+        calendar.set(2016, Calendar.JANUARY, 1);
+        params.setDate(calendar.getTime());
+
         return params;
     }
 }
