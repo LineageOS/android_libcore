@@ -774,7 +774,7 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
             if (!Modifier.isStatic(modifiers)) {
                 throw new IllegalAccessException("Method" + method + " is not static");
             }
-
+            checkReturnType(method, type);
             checkAccess(refc, method.getDeclaringClass(), modifiers, method.getName());
             return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_STATIC, type);
         }
@@ -888,6 +888,7 @@ assertEquals("", (String) MH_newString.invokeExact());
 
                 throw new NoSuchMethodException(name + " "  + Arrays.toString(type.ptypes()));
             }
+            checkReturnType(method, type);
 
             // We have a valid method, perform access checks.
             checkAccess(refc, method.getDeclaringClass(), method.getModifiers(), method.getName());
@@ -1096,12 +1097,14 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             checkSpecialCaller(specialCaller);
 
             // Even though constructors are invoked using a "special" invoke, handles to them can't
-            // be created using findSpecial. Callers must use findConstructor instead.
-            if ("<init>".equals(name)) {
-                throw new NoSuchMethodException("<init> is constructor.");
+            // be created using findSpecial. Callers must use findConstructor instead. Similarly,
+            // there is no path for calling static class initializers.
+            if (name.startsWith("<")) {
+                throw new NoSuchMethodException(name + " is not a valid method name.");
             }
 
             Method method = refc.getDeclaredMethod(name, type.ptypes());
+            checkReturnType(method, type);
             return findSpecial(method, type, refc, specialCaller);
         }
 
@@ -1641,6 +1644,13 @@ return mh1;
             message = message + ": "+ toString();
             if (from != null)  message += ", from " + from;
             throw new IllegalAccessException(message);
+        }
+
+        private void checkReturnType(Method method, MethodType methodType)
+                throws NoSuchMethodException {
+            if (method.getReturnType() != methodType.rtype()) {
+                throw new NoSuchMethodException(method.getName() + methodType);
+            }
         }
     }
 
