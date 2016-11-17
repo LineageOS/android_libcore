@@ -1014,6 +1014,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/util/zip/ZipFile.java \
     ojluni/src/main/java/java/util/zip/ZipInputStream.java \
     ojluni/src/main/java/java/util/zip/ZipOutputStream.java \
+    ojluni/src/main/java/java/util/zip/ZipUtils.java \
     ojluni/src/main/java/java/util/zip/ZStreamRef.java \
     ojluni/src/main/java/javax/crypto/AEADBadTagException.java \
     ojluni/src/main/java/javax/crypto/BadPaddingException.java \
