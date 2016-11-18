@@ -38,8 +38,9 @@ import java.util.Locale;
 import java.util.Objects;
 
 // ----- BEGIN android -----
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
+import libcore.net.http.HttpDate;
 // ----- END android -----
 
 /**
@@ -115,16 +116,17 @@ public final class HttpCookie implements Cloneable {
     // this value serves as a hint as 'not specify max-age'
     private final static long MAX_AGE_UNSPECIFIED = -1;
 
+    // Android-changed: Use libcore.net.http.HttpDate for parsing.
     // date formats used by Netscape's cookie draft
     // as well as formats seen on various sites
-    private final static String[] COOKIE_DATE_FORMATS = {
+    /*private final static String[] COOKIE_DATE_FORMATS = {
         "EEE',' dd-MMM-yyyy HH:mm:ss 'GMT'",
         "EEE',' dd MMM yyyy HH:mm:ss 'GMT'",
         "EEE MMM dd yyyy HH:mm:ss 'GMT'Z",
         "EEE',' dd-MMM-yy HH:mm:ss 'GMT'",
         "EEE',' dd MMM yy HH:mm:ss 'GMT'",
         "EEE MMM dd yy HH:mm:ss 'GMT'Z"
-    };
+    };*/
 
     // constant strings represent set-cookie header token
     private final static String SET_COOKIE = "set-cookie:";
@@ -1001,7 +1003,15 @@ public final class HttpCookie implements Cloneable {
                                    String attrName,
                                    String attrValue) {
                     if (cookie.getMaxAge() == MAX_AGE_UNSPECIFIED) {
-                        cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
+                        // Android-changed: Use HttpDate for date parsing,
+                        // it accepts broader set of date formats.
+                        // cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
+                        Date date = HttpDate.parse(attrValue);
+                        if (date != null) {
+                            cookie.setMaxAge((date.getTime() - System.currentTimeMillis()) / 1000);
+                        } else {
+                            cookie.setMaxAge(0);
+                        }
                     }
                 }
             });
@@ -1064,7 +1074,8 @@ public final class HttpCookie implements Cloneable {
      * @return  delta seconds between this cookie's creation time and the time
      *          specified by dateString
      */
-    private long expiryDate2DeltaSeconds(String dateString) {
+    // Android-changed: not used.
+    /*private long expiryDate2DeltaSeconds(String dateString) {
         Calendar cal = new GregorianCalendar(GMT);
         for (int i = 0; i < COOKIE_DATE_FORMATS.length; i++) {
             SimpleDateFormat df = new SimpleDateFormat(COOKIE_DATE_FORMATS[i],
@@ -1093,7 +1104,7 @@ public final class HttpCookie implements Cloneable {
             }
         }
         return 0;
-    }
+    }*/
 
     /*
      * try to guess the cookie version through set-cookie header string
