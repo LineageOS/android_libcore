@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.security.Permission;
 import java.util.Date;
 
+// Android-changed: top-level documentation substantially changed/rewritten.
 /**
  * A URLConnection with support for HTTP-specific features. See
  * <A HREF="http://www.w3.org/pub/WWW/Protocols/"> the spec </A> for
@@ -136,10 +137,7 @@ import java.util.Date;
  * <p>To reduce latency, this class may reuse the same underlying {@code Socket}
  * for multiple request/response pairs. As a result, HTTP connections may be
  * held open longer than necessary. Calls to {@link #disconnect()} may return
- * the socket to a pool of connected sockets. This behavior can be disabled by
- * setting the {@code http.keepAlive} system property to {@code false} before
- * issuing any HTTP requests. The {@code http.maxConnections} property may be
- * used to control how many idle connections to each server will be held.
+ * the socket to a pool of connected sockets.
  *
  * <p>By default, this implementation of {@code HttpURLConnection} requests that
  * servers use gzip compression and it automatically decompresses the data for
