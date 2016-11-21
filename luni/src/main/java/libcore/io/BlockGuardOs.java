@@ -285,13 +285,19 @@ public class BlockGuardOs extends ForwardingOs {
     }
 
     @Override public FileDescriptor socket(int domain, int type, int protocol) throws ErrnoException {
-        return tagSocket(os.socket(domain, type, protocol));
+        final FileDescriptor fd = os.socket(domain, type, protocol);
+        if (domain != AF_UNIX && domain != AF_NETLINK) {
+            tagSocket(fd);
+        }
+        return fd;
     }
 
     @Override public void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException {
         os.socketpair(domain, type, protocol, fd1, fd2);
-        tagSocket(fd1);
-        tagSocket(fd2);
+        if (domain != AF_UNIX && domain != AF_NETLINK) {
+            tagSocket(fd1);
+            tagSocket(fd2);
+        }
     }
 
     @Override public StructStat stat(String path) throws ErrnoException {
