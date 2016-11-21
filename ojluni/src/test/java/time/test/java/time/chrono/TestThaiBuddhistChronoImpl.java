@@ -89,7 +89,8 @@ public class TestThaiBuddhistChronoImpl {
     //-----------------------------------------------------------------------
     // Verify  ThaiBuddhist Calendar matches java.util.Calendar for range
     //-----------------------------------------------------------------------
-    @Test(dataProvider="RangeVersusCalendar")
+    // Android changed: Android doesn't support the Buddhist calendar, disable this test.
+    @Test(dataProvider="RangeVersusCalendar", enabled = false)
     public void test_ThaiBuddhistChrono_vsCalendar(LocalDate isoStartDate, LocalDate isoEndDate) {
         Locale locale = Locale.forLanguageTag("th-TH--u-ca-buddhist");
         assertEquals(locale.toString(), "th_TH", "Unexpected locale");
