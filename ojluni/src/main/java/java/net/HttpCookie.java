@@ -108,7 +108,8 @@ public final class HttpCookie implements Cloneable {
     public final String header;
 
     //
-    // Hold the creation time (in seconds) of the http cookie for later
+    // Android-changed: Fixed units, s/seconds/milliseconds/, in comment below.
+    // Hold the creation time (in milliseconds) of the http cookie for later
     // expiration calculation
     private final long whenCreated;
 
@@ -1006,12 +1007,18 @@ public final class HttpCookie implements Cloneable {
                         // Android-changed: Use HttpDate for date parsing,
                         // it accepts broader set of date formats.
                         // cookie.setMaxAge(cookie.expiryDate2DeltaSeconds(attrValue));
+                        // Android-changed: Altered max age calculation to avoid setting
+                        // it to MAX_AGE_UNSPECIFIED (-1) if "expires" is one second in past.
                         Date date = HttpDate.parse(attrValue);
+                        long maxAgeInSeconds = 0;
                         if (date != null) {
-                            cookie.setMaxAge((date.getTime() - System.currentTimeMillis()) / 1000);
-                        } else {
-                            cookie.setMaxAge(0);
+                            maxAgeInSeconds = (date.getTime() - cookie.whenCreated) / 1000;
+                            // If "expires" is in the past, remove the cookie.
+                            if (maxAgeInSeconds < 0) {
+                                maxAgeInSeconds = 0;
+                            }
                         }
+                        cookie.setMaxAge(maxAgeInSeconds);
                     }
                 }
             });
