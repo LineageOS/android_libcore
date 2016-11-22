@@ -17,6 +17,7 @@
 package libcore.io;
 
 import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructStat;
@@ -110,6 +111,12 @@ public class BlockGuardOs extends ForwardingOs {
     @Override public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException {
         BlockGuard.getThreadPolicy().onNetwork();
         os.connect(fd, address, port);
+    }
+
+    @Override public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException,
+            SocketException {
+        BlockGuard.getThreadPolicy().onNetwork();
+        os.connect(fd, address);
     }
 
     @Override public void fchmod(FileDescriptor fd, int mode) throws ErrnoException {
@@ -328,5 +335,50 @@ public class BlockGuardOs extends ForwardingOs {
     @Override public int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts) throws ErrnoException, InterruptedIOException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         return os.writev(fd, buffers, offsets, byteCounts);
+    }
+
+    @Override public void execv(String filename, String[] argv) throws ErrnoException {
+        BlockGuard.getThreadPolicy().onReadFromDisk();
+        os.execv(filename, argv);
+    }
+
+    @Override public void execve(String filename, String[] argv, String[] envp)
+            throws ErrnoException {
+        BlockGuard.getThreadPolicy().onReadFromDisk();
+        os.execve(filename, argv, envp);
+    }
+
+    @Override public byte[] getxattr(String path, String name) throws ErrnoException {
+        BlockGuard.getThreadPolicy().onReadFromDisk();
+        return os.getxattr(path, name);
+    }
+
+    @Override public void msync(long address, long byteCount, int flags) throws ErrnoException {
+        if ((flags & OsConstants.MS_SYNC) != 0) {
+            BlockGuard.getThreadPolicy().onWriteToDisk();
+        }
+        os.msync(address, byteCount, flags);
+    }
+
+    @Override public void removexattr(String path, String name) throws ErrnoException {
+        BlockGuard.getThreadPolicy().onWriteToDisk();
+        os.removexattr(path, name);
+    }
+
+    @Override public void setxattr(String path, String name, byte[] value, int flags)
+            throws ErrnoException {
+        BlockGuard.getThreadPolicy().onWriteToDisk();
+        os.setxattr(path, name, value, flags);
+    }
+
+    @Override public int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount,
+            int flags, SocketAddress address) throws ErrnoException, SocketException {
+        BlockGuard.getThreadPolicy().onNetwork();
+        return os.sendto(fd, bytes, byteOffset, byteCount, flags, address);
+    }
+
+    @Override public void unlink(String pathname) throws ErrnoException {
+        BlockGuard.getThreadPolicy().onWriteToDisk();
+        os.unlink(pathname);
     }
 }
