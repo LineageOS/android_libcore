@@ -24,6 +24,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
@@ -143,6 +145,46 @@ public class DatagramSocketTest extends TestCaseWithRules {
       } catch (SocketException expected) {
       }
       s2.disconnect();
+    }
+  }
+
+  // DatagramSocket should ignore packets received from other sources prior to connect().
+  // CVE-2014-6512
+  // b/31586706
+  public void testExplicitFilter() throws Exception {
+    final byte[] data = new byte[]{1, 2, 3, 4};
+
+    try (DatagramSocket dgramSocket = new DatagramSocket();
+         DatagramSocket otherSocket = new DatagramSocket()) {
+      otherSocket.connect(dgramSocket.getLocalSocketAddress());
+      otherSocket.send(new DatagramPacket(data, data.length));
+
+      dgramSocket.setSoTimeout(100);
+      dgramSocket.connect(new InetSocketAddress(0));
+
+      // Packet from otherSocket was sent to ds before ds is connected, and it was stored in
+      // dgramSocket's local buffer. After connect(), dgramSocket should discard this packet
+      // from the buffer since it is not sent from the connected socket address.
+      try {
+        DatagramPacket recv = new DatagramPacket(new byte[data.length], data.length);
+        dgramSocket.receive(recv);
+        fail();
+      } catch (SocketTimeoutException expected) { }
+    }
+
+    try (DatagramSocket dgramSocket = new DatagramSocket();
+         DatagramSocket srcSocket = new DatagramSocket()) {
+      srcSocket.connect(dgramSocket.getLocalSocketAddress());
+      srcSocket.send(new DatagramPacket(data, data.length));
+
+      dgramSocket.setSoTimeout(100);
+      dgramSocket.connect(srcSocket.getLocalSocketAddress());
+
+      // If the packet is sent from the connected address, even though that is before connect(), it
+      // should not be dropped and receive() should succeed.
+      DatagramPacket recv = new DatagramPacket(new byte[data.length], data.length);
+      dgramSocket.receive(recv);
+      assertTrue(Arrays.equals(recv.getData(), data));
     }
   }
 
