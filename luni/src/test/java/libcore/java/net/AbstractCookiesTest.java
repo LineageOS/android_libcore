@@ -1568,4 +1568,31 @@ public abstract class AbstractCookiesTest extends TestCase {
         assertTrue(cookie.getMaxAge() > 100000000000L);
     }
 
+    // http://b/33034917. Android supports clearing cookie by re-adding is with
+    // a "max-age=0".
+    public void testClearingWithMaxAge0() throws Exception {
+        CookieManager cm = new CookieManager(createCookieStore(), null);
+
+        URI uri = URI.create("https://test.com");
+        Map<String, List<String>> header = new HashMap<>();
+        List<String> value = new ArrayList<>();
+
+        value.add("cookie=1234567890test; domain=.test.com; path=/; " +
+                  "expires=Fri, 31 Dec 9999 04:01:25 GMT-0000");
+        header.put("Set-Cookie", value);
+        cm.put(uri, header);
+
+        List<HttpCookie> cookies = cm.getCookieStore().getCookies();
+        assertEquals(1, cookies.size());
+
+        value.clear();
+        header.clear();
+        value.add("cookie=1234567890test; domain=.test.com; path=/; " +
+                  "max-age=0");
+        header.put("Set-Cookie", value);
+        cm.put(uri, header);
+
+        cookies = cm.getCookieStore().getCookies();
+        assertEquals(0, cookies.size());
+    }
 }

@@ -76,9 +76,11 @@ public class InMemoryCookieStore implements CookieStore {
 
         lock.lock();
         try {
-            if (cookie.getMaxAge() != 0) {
-                addIndex(uriIndex, getEffectiveURI(uri), cookie);
-            }
+            // Android-changed: http://b/33034917, android supports clearing cookies
+            // by adding the cookie with max-age: 0.
+            //if (cookie.getMaxAge() != 0) {
+            addIndex(uriIndex, getEffectiveURI(uri), cookie);
+            //}
         } finally {
             lock.unlock();
         }
