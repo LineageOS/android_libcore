@@ -36,6 +36,7 @@ import java.security.SecureRandom;
 import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.InvalidParameterSpecException;
 import java.security.spec.MGF1ParameterSpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -1423,29 +1424,7 @@ public final class CipherTest extends TestCase {
         }
 
         AlgorithmParameters encParams = c.getParameters();
-        if (encryptSpec == null) {
-            assertNull(cipherID + " getParameters()", encParams);
-        } else if (encryptSpec instanceof GCMParameterSpec) {
-            GCMParameterSpec gcmDecryptSpec = (GCMParameterSpec) encParams
-                    .getParameterSpec(GCMParameterSpec.class);
-            assertEquals(cipherID + " getIV()",
-                    Arrays.toString(((GCMParameterSpec) encryptSpec).getIV()),
-                    Arrays.toString(gcmDecryptSpec.getIV()));
-            assertEquals(cipherID + " getTLen()", ((GCMParameterSpec) encryptSpec).getTLen(),
-                    gcmDecryptSpec.getTLen());
-        } else if (encryptSpec instanceof IvParameterSpec) {
-            IvParameterSpec ivDecryptSpec = (IvParameterSpec) encParams
-                    .getParameterSpec(IvParameterSpec.class);
-            assertEquals(cipherID + " getIV()",
-                    Arrays.toString(((IvParameterSpec) encryptSpec).getIV()),
-                    Arrays.toString(ivDecryptSpec.getIV()));
-        } else if (encryptSpec instanceof PBEParameterSpec) {
-            // Bouncycastle seems to be undecided about whether it returns this
-            // or not
-            if (!"BC".equals(providerName)) {
-                assertNotNull(cipherID + " getParameters()", encParams);
-            }
-        }
+        assertCorrectAlgorithmParameters(providerName, cipherID, encryptSpec, encParams);
 
         final AlgorithmParameterSpec decryptSpec = getDecryptAlgorithmParameterSpec(encryptSpec, c);
         int decryptMode = getDecryptMode(algorithm);
@@ -1485,28 +1464,7 @@ public final class CipherTest extends TestCase {
         }
 
         AlgorithmParameters decParams = c.getParameters();
-        if (decryptSpec == null) {
-            assertNull(cipherID + " getParameters()", decParams);
-        } else if (decryptSpec instanceof GCMParameterSpec) {
-            GCMParameterSpec gcmDecryptSpec = (GCMParameterSpec) decParams
-                    .getParameterSpec(GCMParameterSpec.class);
-            assertEquals(cipherID + " getIV()",
-                    Arrays.toString(((GCMParameterSpec) decryptSpec).getIV()),
-                    Arrays.toString(gcmDecryptSpec.getIV()));
-            assertEquals(cipherID + " getTLen()", ((GCMParameterSpec) decryptSpec).getTLen(),
-                    gcmDecryptSpec.getTLen());
-        } else if (decryptSpec instanceof IvParameterSpec) {
-            IvParameterSpec ivDecryptSpec = (IvParameterSpec) decParams
-                    .getParameterSpec(IvParameterSpec.class);
-            assertEquals(cipherID + " getIV()",
-                    Arrays.toString(((IvParameterSpec) decryptSpec).getIV()),
-                    Arrays.toString(ivDecryptSpec.getIV()));
-        } else if (decryptSpec instanceof PBEParameterSpec) {
-            // Bouncycastle seems to be undecided about whether it returns this or not
-            if (!"BC".equals(providerName)) {
-                assertNotNull(cipherID + " getParameters()", decParams);
-            }
-        }
+        assertCorrectAlgorithmParameters(providerName, cipherID, decryptSpec, decParams);
 
         assertNull(cipherID, c.getExemptionMechanism());
 
@@ -1560,6 +1518,74 @@ public final class CipherTest extends TestCase {
             assertEquals(cipherID,
                          Arrays.toString(decryptedPlainText),
                          Arrays.toString(decryptedPlainText2));
+        }
+    }
+
+    private void assertCorrectAlgorithmParameters(String providerName, String cipherID,
+            final AlgorithmParameterSpec spec, AlgorithmParameters params)
+            throws InvalidParameterSpecException, Exception {
+        if (spec == null) {
+            return;
+        }
+
+        // Bouncycastle has a bug where PBE algorithms sometimes return null parameters.
+        if ("BC".equals(providerName) && isPBE(cipherID) && params == null) {
+            return;
+        }
+
+        assertNotNull(cipherID + " getParameters() should not be null", params);
+
+        if (spec instanceof GCMParameterSpec) {
+            GCMParameterSpec gcmDecryptSpec = (GCMParameterSpec) params
+                    .getParameterSpec(GCMParameterSpec.class);
+            assertEquals(cipherID + " getIV()", Arrays.toString(((GCMParameterSpec) spec).getIV()),
+                    Arrays.toString(gcmDecryptSpec.getIV()));
+            assertEquals(cipherID + " getTLen()", ((GCMParameterSpec) spec).getTLen(),
+                    gcmDecryptSpec.getTLen());
+        } else if (spec instanceof IvParameterSpec) {
+            IvParameterSpec ivDecryptSpec = (IvParameterSpec) params
+                    .getParameterSpec(IvParameterSpec.class);
+            assertEquals(cipherID + " getIV()", Arrays.toString(((IvParameterSpec) spec).getIV()),
+                    Arrays.toString(ivDecryptSpec.getIV()));
+        } else if (spec instanceof PBEParameterSpec) {
+            // Bouncycastle seems to be undecided about whether it returns this
+            // or not
+            if (!"BC".equals(providerName)) {
+                assertNotNull(cipherID + " getParameters()", params);
+            }
+        } else if (spec instanceof OAEPParameterSpec) {
+            assertOAEPParametersEqual((OAEPParameterSpec) spec,
+                    params.getParameterSpec(OAEPParameterSpec.class));
+        } else {
+            fail("Unhandled algorithm specification class: " + spec.getClass().getName());
+        }
+    }
+
+    private static void assertOAEPParametersEqual(OAEPParameterSpec expectedOaepSpec,
+            OAEPParameterSpec actualOaepSpec) throws Exception {
+        assertEquals(expectedOaepSpec.getDigestAlgorithm(), actualOaepSpec.getDigestAlgorithm());
+
+        assertEquals(expectedOaepSpec.getMGFAlgorithm(), actualOaepSpec.getMGFAlgorithm());
+        if ("MGF1".equals(expectedOaepSpec.getMGFAlgorithm())) {
+            MGF1ParameterSpec expectedMgf1Spec = (MGF1ParameterSpec) expectedOaepSpec
+                    .getMGFParameters();
+            MGF1ParameterSpec actualMgf1Spec = (MGF1ParameterSpec) actualOaepSpec
+                    .getMGFParameters();
+            assertEquals(expectedMgf1Spec.getDigestAlgorithm(),
+                    actualMgf1Spec.getDigestAlgorithm());
+        } else {
+            fail("Unknown MGF algorithm: " + expectedOaepSpec.getMGFAlgorithm());
+        }
+
+        if (expectedOaepSpec.getPSource() instanceof PSource.PSpecified
+                && actualOaepSpec.getPSource() instanceof PSource.PSpecified) {
+            assertEquals(
+                    Arrays.toString(
+                            ((PSource.PSpecified) expectedOaepSpec.getPSource()).getValue()),
+                    Arrays.toString(
+                            (((PSource.PSpecified) actualOaepSpec.getPSource()).getValue())));
+        } else {
+            fail("Unknown PSource type");
         }
     }
 
@@ -3699,25 +3725,23 @@ public final class CipherTest extends TestCase {
             pSource = new PSource.PSpecified(label);
         }
 
-        if (mgf1Spec.getDigestAlgorithm().equals(digest)) {
-            if (label == null) {
-                RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
-                        "RSA/ECB/OAEPWith" + digest + "AndMGF1Padding",
-                        null,
-                        (PublicKey) getEncryptKey("RSA"),
-                        (PrivateKey) getDecryptKey("RSA"),
-                        RSA_Vector2_Plaintext,
-                        vector));
-            }
-
+        if (mgf1Spec.getDigestAlgorithm().equals(digest) && label == null) {
             RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
                     "RSA/ECB/OAEPWith" + digest + "AndMGF1Padding",
-                    new OAEPParameterSpec(digest, "MGF1", mgf1Spec, pSource),
+                    null,
                     (PublicKey) getEncryptKey("RSA"),
                     (PrivateKey) getDecryptKey("RSA"),
                     RSA_Vector2_Plaintext,
                     vector));
         }
+
+        RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
+                "RSA/ECB/OAEPWith" + digest + "AndMGF1Padding",
+                new OAEPParameterSpec(digest, "MGF1", mgf1Spec, pSource),
+                (PublicKey) getEncryptKey("RSA"),
+                (PrivateKey) getDecryptKey("RSA"),
+                RSA_Vector2_Plaintext,
+                vector));
 
         RSA_OAEP_CIPHER_TEST_PARAMS.add(new OAEPCipherTestParam(
                 "RSA/ECB/OAEPPadding",
@@ -3867,6 +3891,10 @@ public final class CipherTest extends TestCase {
 
         c = Cipher.getInstance(p.transformation, provider);
         c.init(Cipher.ENCRYPT_MODE, p.encryptKey, p.spec);
+        if (!(p instanceof OAEPCipherTestParam) || p.spec != null) {
+            assertCorrectAlgorithmParameters(provider, p.transformation, p.spec, c.getParameters());
+        }
+
         byte[] emptyCipherText = c.doFinal();
         assertNotNull(emptyCipherText);
 
