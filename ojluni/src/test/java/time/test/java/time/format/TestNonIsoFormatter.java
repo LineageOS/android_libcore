@@ -76,20 +76,25 @@ public class TestNonIsoFormatter {
         return new Object[][] {
             // Chronology, Format Locale, Numbering Locale, ChronoLocalDate, expected string
             { JAPANESE, Locale.JAPANESE, Locale.JAPANESE, JAPANESE.date(IsoDate),
-              "\u5e73\u621025\u5e742\u670811\u65e5" }, // Japanese Heisei 25-02-11
+              "\u5e73\u621025\u5e742\u670811\u65e5\u6708\u66dc\u65e5" }, // Japanese Heisei 25-02-11
+            // Android-changed: requesting arabic numbering actually produces arabic digits. Also
+            // new CLDR patterns include the era. Test Arabic locale with ASCII digits below.
             { HIJRAH, ARABIC, ARABIC, HIJRAH.date(IsoDate),
+              "\u0627\u0644\u0627\u062b\u0646\u064a\u0646\u060c \u0661 \u0631\u0628\u064a\u0639 "
+              + "\u0627\u0644\u0622\u062e\u0631\u060c \u0661\u0664\u0663\u0664 \u0647\u0640" }, // Hijrah AH 1434-04-01 (Mon)
+            { HIJRAH, ARABIC, Locale.ENGLISH, HIJRAH.date(IsoDate),
               "\u0627\u0644\u0627\u062b\u0646\u064a\u0646\u060c 1 \u0631\u0628\u064a\u0639 "
-              + "\u0627\u0644\u0622\u062e\u0631 1434" }, // Hijrah AH 1434-04-01 (Mon)
+              + "\u0627\u0644\u0622\u062e\u0631\u060c 1434 \u0647\u0640" }, // Hijrah AH 1434-04-01 (Mon)
             { MINGUO, Locale.TAIWAN, Locale.TAIWAN, MINGUO.date(IsoDate),
-              "\u6c11\u570b102\u5e742\u670811\u65e5\u661f\u671f\u4e00" }, // Minguo ROC 102-02-11 (Mon)
+              "\u6c11\u570b102\u5e742\u670811\u65e5 \u661f\u671f\u4e00" }, // Minguo ROC 102-02-11 (Mon)
             { BUDDHIST, thTH, thTH, BUDDHIST.date(IsoDate),
-              "\u0e27\u0e31\u0e19\u0e08\u0e31\u0e19\u0e17\u0e23\u0e4c\u0e17\u0e35\u0e48"
-              + " 11 \u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c"
-              + " \u0e1e.\u0e28. 2556" }, // ThaiBuddhist BE 2556-02-11
+              "\u0e27\u0e31\u0e19\u0e08\u0e31\u0e19\u0e17\u0e23\u0e4c\u0e17\u0e35\u0e48 "
+              + "11 \u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c "
+              + "\u0e1e.\u0e28. 2556" }, // ThaiBuddhist BE 2556-02-11
             { BUDDHIST, thTH, thTHTH, BUDDHIST.date(IsoDate),
               "\u0e27\u0e31\u0e19\u0e08\u0e31\u0e19\u0e17\u0e23\u0e4c\u0e17\u0e35\u0e48 \u0e51\u0e51 "
-              + "\u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c \u0e1e.\u0e28. "
-              + "\u0e52\u0e55\u0e55\u0e56" }, // ThaiBuddhist BE 2556-02-11 (with Thai digits)
+              + "\u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c "
+              + "\u0e1e.\u0e28. \u0e52\u0e55\u0e55\u0e56" }, // ThaiBuddhist BE 2556-02-11 (with Thai digits)
         };
     }
 
@@ -108,23 +113,24 @@ public class TestNonIsoFormatter {
     Object[][] chronoNamesData() {
         return new Object[][] {
             // Chronology, Locale, Chronology Name
-            { ISO8601,  Locale.ENGLISH, "ISO" },    // No data in CLDR; Use Id.
+            // Android-changed: CLDR data has changed.
+            { ISO8601,  Locale.ENGLISH, "ISO-8601 Calendar" },
             { BUDDHIST, Locale.ENGLISH, "Buddhist Calendar" },
-            { HIJRAH,   Locale.ENGLISH, "Islamic Umm al-Qura Calendar" }, // JDK-8015986
+            { HIJRAH,   Locale.ENGLISH, "Islamic Calendar (Umm al-Qura)" },
             { JAPANESE, Locale.ENGLISH, "Japanese Calendar" },
             { MINGUO,   Locale.ENGLISH, "Minguo Calendar" },
 
-            { ISO8601,  Locale.JAPANESE, "ISO" },    // No data in CLDR; Use Id.
+            { ISO8601,  Locale.JAPANESE, "ISO-8601" },
             { JAPANESE, Locale.JAPANESE, "\u548c\u66a6" },
-            { BUDDHIST, Locale.JAPANESE, "\u30bf\u30a4\u4ecf\u6559\u66a6" },
+            { BUDDHIST, Locale.JAPANESE, "\u4ecf\u66a6" },
 
-            { ISO8601,  thTH, "ISO" },    // No data in CLDR; Use Id.
+            { ISO8601,  thTH, "\u0e1b\u0e0f\u0e34\u0e17\u0e34\u0e19 ISO-8601" },
             { JAPANESE, thTH, "\u0e1b\u0e0f\u0e34\u0e17\u0e34\u0e19\u0e0d\u0e35\u0e48\u0e1b\u0e38\u0e48\u0e19" },
             { BUDDHIST, thTH, "\u0e1b\u0e0f\u0e34\u0e17\u0e34\u0e19\u0e1e\u0e38\u0e17\u0e18" },
 
-            { HIJRAH,   ARABIC, "\u0644\u062a\u0642\u0648\u064a\u0645 "
-                                + "\u0627\u0644\u0647\u062c\u0631\u064a\u060c "
-                                + "\u0623\u0645 \u0627\u0644\u0642\u0631\u0649" }, // JDK-8015986
+            { HIJRAH,   ARABIC, "\u0627\u0644\u062a\u0642\u0648\u064a\u0645 "
+                                + "\u0627\u0644\u0625\u0633\u0644\u0627\u0645\u064a "
+                                + "(\u0623\u0645 \u0627\u0644\u0642\u0631\u0649)" }, // JDK-8015986
         };
     }
 
