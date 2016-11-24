@@ -93,12 +93,31 @@ public class CalendarDataUtility {
         return retrieveFieldValueName(id, field, value, style, locale);
     }
 
+    // ALL_STYLES implies SHORT_FORMAT and all of these values.
+    private static int[] REST_OF_STYLES = {
+            SHORT_STANDALONE, LONG_FORMAT, LONG_STANDALONE,
+            NARROW_FORMAT, NARROW_STANDALONE
+    };
+
     public static Map<String, Integer> retrieveFieldValueNames(String id, int field, int style,
             Locale locale) {
-        // TODO: support ALL_STYLES
         // Android-changed: delegate to ICU.
+        Map<String, Integer> names;
+        if (style == ALL_STYLES) {
+            names = retrieveFieldValueNamesImpl(id, field, SHORT_FORMAT, locale);
+            for (int st : REST_OF_STYLES) {
+                names.putAll(retrieveFieldValueNamesImpl(id, field, st, locale));
+            }
+        } else {
+            // specific style
+            names = retrieveFieldValueNamesImpl(id, field, style, locale);
+        }
+        return names.isEmpty() ? null : names;
+    }
+
+    private static Map<String, Integer> retrieveFieldValueNamesImpl(String id, int field, int style,
+            Locale locale) {
         String[] names = getNames(id, field, style, locale);
-        Map<String, Integer> result = new LinkedHashMap<>();
         int skipped = 0;
         int offset = 0;
         if (field == Calendar.ERA) {
@@ -116,11 +135,18 @@ public class CalendarDataUtility {
                     break;
             }
         }
+        Map<String, Integer> result = new LinkedHashMap<>();
         for (int i = skipped; i < names.length; i++) {
             if (names[i].isEmpty()) {
                 continue;
             }
-            result.put(names[i], i + offset);
+
+            if (result.put(names[i], i + offset) != null) {
+                // Duplicate names indicate that the names would be ambiguous. Skip this style for
+                // ALL_STYLES. In other cases this results in null being returned in
+                // retrieveValueNames(), which is required by Calendar.getDisplayNames().
+                return new LinkedHashMap<>();
+            }
         }
         return result;
     }
@@ -200,7 +226,7 @@ public class CalendarDataUtility {
         }
     }
 
-    static String normalizeCalendarType(String requestID) {
+    private static String normalizeCalendarType(String requestID) {
         String type;
         // Android-changed: normalize "gregory" to "gregorian", not the other way around.
         // See android.icu.text.DateFormatSymbols.CALENDAR_CLASSES for reference.

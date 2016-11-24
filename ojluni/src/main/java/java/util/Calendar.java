@@ -2034,6 +2034,11 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
      * @since 1.6
      */
     public String getDisplayName(int field, int style, Locale locale) {
+        // Android-changed: Android has traditionally treated ALL_STYLES as SHORT, even though
+        // it's not documented to be a valid value for style.
+        if (style == ALL_STYLES) {
+            style = SHORT;
+        }
         if (!checkDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale,
                             ERA_MASK|MONTH_MASK|DAY_OF_WEEK_MASK|AM_PM_MASK)) {
             return null;
@@ -2172,6 +2177,10 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         int baseStyle = getBaseStyle(style); // Ignore the standalone mask
         if (field < 0 || field >= fields.length ||
             baseStyle < minStyle || baseStyle > maxStyle) {
+            throw new IllegalArgumentException();
+        }
+        // Android-changed: 3 is not a valid base style (1, 2 and 4 are, though), throw if used.
+        if (baseStyle == 3) {
             throw new IllegalArgumentException();
         }
         if (locale == null) {
