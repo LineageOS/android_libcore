@@ -14,7 +14,12 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-# Subprojects with separate makefiles
-subdirs := tools tools2 update_test_app update update2
-subdir_makefiles := $(call all-named-subdir-makefiles,$(subdirs))
-include $(subdir_makefiles)
+# Library of tools classes for tzdata updates. Not required on device, except in tests.
+include $(CLEAR_VARS)
+LOCAL_MODULE := tzdata_tools
+LOCAL_MODULE_TAGS := optional
+LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
+LOCAL_JAVACFLAGS := -encoding UTF-8
+LOCAL_STATIC_JAVA_LIBRARIES := tzdata_update
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+include $(BUILD_STATIC_JAVA_LIBRARY)
