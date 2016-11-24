@@ -33,9 +33,6 @@ public final class ConfigBundle {
     /** The name of the file inside the bundle containing the TZ data version. */
     public static final String TZ_DATA_VERSION_FILE_NAME = "tzdata_version";
 
-    /** The name of the file inside the bundle containing the expected device checksums. */
-    public static final String CHECKSUMS_FILE_NAME = "checksums";
-
     /** The name of the file inside the bundle containing bionic/libcore TZ data. */
     public static final String ZONEINFO_FILE_NAME = "tzdata";
 

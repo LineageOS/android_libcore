@@ -23,11 +23,9 @@ import java.io.IOException;
 import libcore.tzdata.update2.tools.TzDataBundleBuilder;
 
 /**
- * Tests for {@link libcore.tzdata.update.TzDataBundleInstaller}.
+ * Tests for {@link TzDataBundleInstaller}.
  */
 public class TzDataBundleInstallerTest extends TestCase {
-
-    private static final File SYSTEM_ZONE_INFO_FILE = new File("/system/usr/share/zoneinfo/tzdata");
 
     private TzDataBundleInstaller installer;
     private File tempDir;
@@ -106,35 +104,6 @@ public class TzDataBundleInstallerTest extends TestCase {
         assertTzDataInstalled(tzData);
     }
 
-    /**
-     * Tests that a bundle with a checksum entry that references a missing file will not update the
-     * content.
-     */
-    public void testChecksumBundleEntry_fileMissing() throws Exception {
-        ConfigBundle badUpdate =
-                createValidTzDataBundleBuilder("2030b")
-                        .addChecksum("/fileDoesNotExist", 1234)
-                        .build();
-        assertFalse(install(badUpdate));
-        assertNoContentInstalled();
-    }
-
-    /**
-     * Tests that a bundle with a checksum entry with a bad checksum will not update the
-     * content.
-     */
-    public void testChecksumBundleEntry_incorrectChecksum() throws Exception {
-        File fileToChecksum = SYSTEM_ZONE_INFO_FILE;
-        long badChecksum = FileUtils.calculateChecksum(fileToChecksum) + 1;
-        ConfigBundle badUpdate =
-                createValidTzDataBundleBuilder("2030b")
-                        .clearChecksumEntries()
-                        .addChecksum(fileToChecksum.getPath(), badChecksum)
-                        .build();
-        assertFalse(install(badUpdate));
-        assertNoContentInstalled();
-    }
-
     private boolean install(ConfigBundle configBundle) throws Exception {
         return installer.install(configBundle.getBundleBytes());
     }
@@ -147,10 +116,6 @@ public class TzDataBundleInstallerTest extends TestCase {
     private TzDataBundleBuilder createValidTzDataBundleBuilder(String tzDataVersion)
             throws IOException {
 
-        // The file to include in the installation-time checksum check.
-        File fileToChecksum = SYSTEM_ZONE_INFO_FILE;
-        long checksum = FileUtils.calculateChecksum(fileToChecksum);
-
         File bionicTzData = new File(tempDir, "zoneinfo");
         createFile(bionicTzData);
 
@@ -158,7 +123,6 @@ public class TzDataBundleInstallerTest extends TestCase {
         createFile(icuData);
 
         return new TzDataBundleBuilder()
-                .addChecksum(fileToChecksum.getPath(), checksum)
                 .setTzDataVersion(tzDataVersion)
                 .addBionicTzData(bionicTzData)
                 .addIcuTzData(icuData);
@@ -169,9 +133,6 @@ public class TzDataBundleInstallerTest extends TestCase {
 
         File currentTzDataDir = new File(testInstallDir, TzDataBundleInstaller.CURRENT_TZ_DATA_DIR_NAME);
         assertTrue(currentTzDataDir.exists());
-
-        File checksumFile = new File(currentTzDataDir, ConfigBundle.CHECKSUMS_FILE_NAME);
-        assertTrue(checksumFile.exists());
 
         File versionFile = new File(currentTzDataDir,
                 ConfigBundle.TZ_DATA_VERSION_FILE_NAME);
@@ -186,18 +147,6 @@ public class TzDataBundleInstallerTest extends TestCase {
         // Also check no working directory is left lying around.
         File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
         assertFalse(workingDir.exists());
-    }
-
-    private void assertNoContentInstalled() {
-        File currentTzDataDir = new File(testInstallDir, TzDataBundleInstaller.CURRENT_TZ_DATA_DIR_NAME);
-        assertFalse(currentTzDataDir.exists());
-
-        // Also check no working directories are left lying around.
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
-        assertFalse(workingDir.exists());
-
-        File oldDataDir = new File(testInstallDir, TzDataBundleInstaller.OLD_TZ_DATA_DIR_NAME);
-        assertFalse(oldDataDir.exists());
     }
 
     private static void createFile(File file) {

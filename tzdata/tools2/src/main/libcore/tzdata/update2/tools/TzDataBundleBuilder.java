@@ -30,20 +30,11 @@ import libcore.tzdata.update2.ConfigBundle;
 public final class TzDataBundleBuilder {
 
     private String tzDataVersion;
-    private StringBuilder checksumsFileContent = new StringBuilder();
     private File zoneInfoFile;
     private File icuTzDataFile;
 
     public TzDataBundleBuilder setTzDataVersion(String tzDataVersion) {
         this.tzDataVersion = tzDataVersion;
-        return this;
-    }
-
-    public TzDataBundleBuilder addChecksum(String fileName, long checksum) {
-        checksumsFileContent.append(Long.toString(checksum))
-                .append(',')
-                .append(fileName)
-                .append('\n');
         return this;
     }
 
@@ -72,12 +63,6 @@ public final class TzDataBundleBuilder {
     }
 
     // For use in tests.
-    public TzDataBundleBuilder clearChecksumEntries() {
-        checksumsFileContent.setLength(0);
-        return this;
-    }
-
-    // For use in tests.
     public TzDataBundleBuilder clearBionicTzData() {
         this.zoneInfoFile = null;
         return this;
@@ -89,8 +74,6 @@ public final class TzDataBundleBuilder {
     public ConfigBundle buildUnvalidated() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            addZipEntry(zos, ConfigBundle.CHECKSUMS_FILE_NAME,
-                    checksumsFileContent.toString().getBytes(StandardCharsets.UTF_8));
             if (tzDataVersion != null) {
                 addZipEntry(zos, ConfigBundle.TZ_DATA_VERSION_FILE_NAME,
                         tzDataVersion.getBytes(StandardCharsets.UTF_8));
