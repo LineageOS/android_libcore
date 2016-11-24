@@ -74,6 +74,8 @@ public final class TzDataBundleBuilder {
     public ConfigBundle buildUnvalidated() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            addZipEntry(zos, ConfigBundle.BUNDLE_VERSION_FILE_NAME,
+                    ConfigBundle.BUNDLE_VERSION_BYTES);
             if (tzDataVersion != null) {
                 addZipEntry(zos, ConfigBundle.TZ_DATA_VERSION_FILE_NAME,
                         tzDataVersion.getBytes(StandardCharsets.UTF_8));
