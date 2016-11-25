@@ -351,7 +351,7 @@ public final class Os {
   public static int poll(StructPollfd[] fds, int timeoutMs) throws ErrnoException { return Libcore.os.poll(fds, timeoutMs); }
 
   /**
-   * See <a href="http://man7.org/linux/man-pages/man2/posix_fallocate.2.html">posix_fallocate(2)</a>.
+   * See <a href="http://man7.org/linux/man-pages/man3/posix_fallocate.3.html">posix_fallocate(3)</a>.
    */
   public static void posix_fallocate(FileDescriptor fd, long offset, long length) throws ErrnoException { Libcore.os.posix_fallocate(fd, offset, length); }
 
