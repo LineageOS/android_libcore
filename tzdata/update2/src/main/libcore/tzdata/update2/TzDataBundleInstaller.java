@@ -19,7 +19,9 @@ import android.util.Slog;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import libcore.util.ZoneInfoDB;
 
 /**
  * A bundle-validation / extraction class. Separate from the services code that uses it for easier
@@ -32,10 +34,12 @@ public final class TzDataBundleInstaller {
     static final String OLD_TZ_DATA_DIR_NAME = "old";
 
     private final String logTag;
+    private final File systemTzDataFile;
     private final File installDir;
 
-    public TzDataBundleInstaller(String logTag, File installDir) {
+    public TzDataBundleInstaller(String logTag, File systemTzDataFile, File installDir) {
         this.logTag = logTag;
+        this.systemTzDataFile = systemTzDataFile;
         this.installDir = installDir;
     }
 
@@ -69,7 +73,10 @@ public final class TzDataBundleInstaller {
                 return false;
             }
 
-            // TODO(nfuller): Add IANA version check. http://b/31008728
+            if (!checkBundleRulesNewerThanSystem(systemTzDataFile, unpackedContentDir)) {
+                Slog.i(logTag, "Update not applied: Bundle rules version check failed");
+                return false;
+            }
 
             // TODO(nfuller): Add deeper validity checks / canarying before applying.
             // http://b/31008728
@@ -132,5 +139,37 @@ public final class TzDataBundleInstaller {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Returns true if the the bundle IANA rules version is >= system IANA rules version.
+     */
+    private boolean checkBundleRulesNewerThanSystem(
+            File systemTzDataFile, File unpackedContentDir) throws IOException {
+        Slog.i(logTag, "Reading bundle rules version");
+        File bundleRulesFile =
+                new File(unpackedContentDir, ConfigBundle.TZ_DATA_VERSION_FILE_NAME);
+        // Read the first 5 bytes of the bundle rules version file. It is expected to be longer but
+        // should always starts with the IANA release version, e.g. 2016g.
+        byte[] rulesBytes = FileUtils.readBytes(bundleRulesFile, 5 /* maxBytes */);
+        if (rulesBytes.length != 5) {
+            Slog.i(logTag, "Bundle rules version file too short.");
+            return false;
+        }
+        // We don't inspect the rulesVersion and just assume it's valid ASCII containing the IANA
+        // rules version: it should be in the form "20\d\d[a-zA-Z]", e.g. 2016g. If we got this far
+        // (i.e. through a signature check) then it should be ok.
+        String rulesVersion = new String(rulesBytes, StandardCharsets.US_ASCII);
+
+        // We only check the /system tzdata file and assume that other data like ICU is in sync.
+        // There is a CTS test that checks ICU and bionic/libcore are in sync.
+        Slog.i(logTag, "Reading /system rules version");
+        if (!systemTzDataFile.exists()) {
+            Slog.i(logTag, "tzdata file cannot be found in /system");
+            return false;
+        }
+        String systemRulesVersion = ZoneInfoDB.TzData.getRulesVersion(systemTzDataFile);
+        // rulesVersion >= systemRulesVersion
+        return rulesVersion.compareTo(systemRulesVersion) >= 0;
     }
 }
