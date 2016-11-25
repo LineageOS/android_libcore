@@ -462,6 +462,13 @@ public abstract class MethodHandle {
      * INVOKE_TRANSFORM is a special type of handle which doesn't encode any dex bytecode behaviour,
      * instead it transforms the list of input arguments or performs other higher order operations
      * before (optionally) delegating to another method handle.
+     *
+     * INVOKE_CALLSITE_TRANSFORM is a variation on INVOKE_TRANSFORM where the method type of
+     * a MethodHandle dynamically varies based on the callsite. This is used by
+     * the VarargsCollector implementation which places any number of trailing arguments
+     * into an array before invoking an arity method. The "any number of trailing arguments" means
+     * it would otherwise generate WrongMethodTypeExceptions as the callsite method type and
+     * VarargsCollector method type appear incompatible.
      */
 
     /** @hide */ public static final int INVOKE_VIRTUAL = 0;
@@ -470,10 +477,11 @@ public abstract class MethodHandle {
     /** @hide */ public static final int INVOKE_STATIC = 3;
     /** @hide */ public static final int INVOKE_INTERFACE = 4;
     /** @hide */ public static final int INVOKE_TRANSFORM = 5;
-    /** @hide */ public static final int IGET = 6;
-    /** @hide */ public static final int IPUT = 7;
-    /** @hide */ public static final int SGET = 8;
-    /** @hide */ public static final int SPUT = 9;
+    /** @hide */ public static final int INVOKE_CALLSITE_TRANSFORM = 6;
+    /** @hide */ public static final int IGET = 7;
+    /** @hide */ public static final int IPUT = 8;
+    /** @hide */ public static final int SGET = 9;
+    /** @hide */ public static final int SPUT = 10;
 
     // The kind of this method handle (used by the runtime). This is one of the INVOKE_*
     // constants or SGET/SPUT, IGET/IPUT.
@@ -1145,8 +1153,7 @@ assertEquals("[three, thee, tee]", Arrays.toString((Object[])ls.get(0)));
         if (isVarargsCollector() && lastMatch)
             return this;
 
-        // Android-changed, TODO(narayan): Not implemented yet.
-        throw new UnsupportedOperationException("asVarargsCollector(Class<?>)");
+        return new Transformers.VarargsCollector(this);
     }
 
     /**
@@ -1212,8 +1219,13 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
      * @see #isVarargsCollector
      */
     public MethodHandle asFixedArity() {
-        assert(!isVarargsCollector());
-        return this;
+        // Android-changed: implementation specific.
+        MethodHandle mh = this;
+        if (mh.isVarargsCollector()) {
+            mh = ((Transformers.VarargsCollector) mh).asFixedArity();
+        }
+        assert(!mh.isVarargsCollector());
+        return mh;
     }
 
     /**
