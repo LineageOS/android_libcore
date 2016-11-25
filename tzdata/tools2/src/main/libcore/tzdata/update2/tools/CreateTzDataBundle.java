@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
 import libcore.tzdata.update2.ConfigBundle;
-import libcore.tzdata.update2.FileUtils;
 
 /**
  * A command-line tool for creating a TZ data update bundle.
@@ -53,33 +52,6 @@ public class CreateTzDataBundle {
                 .setTzDataVersion(getMandatoryProperty(p, "tzdata.version"))
                 .addBionicTzData(getMandatoryPropertyFile(p, "bionic.file"))
                 .addIcuTzData(getMandatoryPropertyFile(p, "icu.file"));
-
-        int i = 1;
-        while (true) {
-            String localFileNameProperty = "checksum.file.local." + i;
-            String localFileName = p.getProperty(localFileNameProperty);
-            String onDeviceFileNameProperty = "checksum.file.ondevice." + i;
-            String onDeviceFileName = p.getProperty(onDeviceFileNameProperty);
-            boolean foundLocalFileNameProperty = localFileName != null;
-            boolean foundOnDeviceFileNameProperty = onDeviceFileName != null;
-            if (!foundLocalFileNameProperty && !foundOnDeviceFileNameProperty) {
-                break;
-            } else if (foundLocalFileNameProperty != foundOnDeviceFileNameProperty) {
-                System.out.println("Properties file must specify both, or neither of: "
-                        + localFileNameProperty + " and " + onDeviceFileNameProperty);
-                System.exit(5);
-            }
-
-            long checksum = FileUtils.calculateChecksum(new File(localFileName));
-            builder.addChecksum(onDeviceFileName, checksum);
-            i++;
-        }
-        if (i == 1) {
-            // For safety we enforce >= 1 checksum entry. The installer does not require it.
-            System.out.println("There must be at least one checksum file");
-            System.exit(6);
-        }
-        System.out.println("Update contains checksums for " + (i-1) + " files");
 
         ConfigBundle bundle = builder.build();
         File outputFile = new File(args[1]);
