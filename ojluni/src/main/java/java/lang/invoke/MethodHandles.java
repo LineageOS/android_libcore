@@ -767,6 +767,8 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
          */
         public
         MethodHandle findStatic(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
+            // TODO: Support varargs methods. The returned method handle must be a var-args
+            // collector in that case.
             Method method = refc.getDeclaredMethod(name, type.ptypes());
             final int modifiers = method.getModifiers();
             if (!Modifier.isStatic(modifiers)) {
@@ -774,9 +776,8 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
             }
             checkReturnType(method, type);
             checkAccess(refc, method.getDeclaringClass(), modifiers, method.getName());
-            return createMethodHandle(method, MethodHandle.INVOKE_STATIC, type);
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_STATIC, type);
         }
-
         private MethodHandle findVirtualForMH(String name, MethodType type) {
             // these names require special lookups because of the implicit MethodType argument
             if ("invoke".equals(name))
@@ -784,16 +785,6 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
             if ("invokeExact".equals(name))
                 return exactInvoker(type);
             return null;
-        }
-
-        private static MethodHandle createMethodHandle(Method method, int handleKind,
-                                                       MethodType methodType) {
-            MethodHandle mh = new MethodHandleImpl(method.getArtMethod(), handleKind, methodType);
-            if (method.isVarArgs()) {
-                return new Transformers.VarargsCollector(mh);
-            } else {
-                return mh;
-            }
         }
 
         /**
@@ -904,7 +895,8 @@ assertEquals("", (String) MH_newString.invokeExact());
 
             // Insert the leading reference parameter.
             MethodType handleType = type.insertParameterTypes(0, refc);
-            return createMethodHandle(method, MethodHandle.INVOKE_VIRTUAL, handleType);
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_VIRTUAL,
+                    handleType);
         }
 
         /**
@@ -965,33 +957,31 @@ assertEquals("[x, y, z]", pb.command().toString());
             checkAccess(refc, constructor.getDeclaringClass(), constructor.getModifiers(),
                     constructor.getName());
 
-            return createMethodHandleForConstructor(constructor);
+            return makeMethodHandleForConstructor(constructor);
         }
 
-        private MethodHandle createMethodHandleForConstructor(Constructor constructor) {
+        private MethodHandle makeMethodHandleForConstructor(Constructor constructor) {
             Class<?> refc = constructor.getDeclaringClass();
             MethodType constructorType =
                     MethodType.methodType(refc, constructor.getParameterTypes());
-            MethodHandle mh;
+
+            // String constructors have optimized StringFactoryForm
+            // that matches returned type. These effectively combine the
+            // memory allocation and initialization calls into a single
+            // method.
             if (refc == String.class) {
-                // String constructors have optimized StringFactory methods
-                // that matches returned type. These factory methods combine the
-                // memory allocation and initialization calls for String objects.
-                mh = new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT,
-                                          constructorType);
-            } else {
-                // Constructors for all other classes use a Construct transformer to perform
-                // their memory allocation and call to <init>.
-                MethodType initType = initMethodType(constructorType);
-                MethodHandle initHandle = new MethodHandleImpl(
-                    constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, initType);
-                mh = new Transformers.Construct(initHandle, constructorType);
+                // String <init> method is translated to a StringFactory method during execution.
+                return new MethodHandleImpl(constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT,
+                                            constructorType);
             }
 
-            if (constructor.isVarArgs()) {
-                mh = new Transformers.VarargsCollector(mh);
-            }
-            return mh;
+            // Constructors for all other classes use a Construct transformer as there are no
+            // methods combining the allocation and calls to <init>. The Construct.tranform()
+            // performs the the memory allocation and then calls the <init> method.
+            MethodType initType = initMethodType(constructorType);
+            MethodHandle initHandle = new MethodHandleImpl(
+                constructor.getArtMethod(), MethodHandle.INVOKE_DIRECT, initType);
+            return new Transformers.Construct(initHandle, constructorType);
         }
 
         private static MethodType initMethodType(MethodType constructorType) {
@@ -1136,7 +1126,8 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
 
                 // This is a private method, so there's nothing special to do.
                 MethodType handleType = type.insertParameterTypes(0, refc);
-                return createMethodHandle(method, MethodHandle.INVOKE_DIRECT, handleType);
+                return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_DIRECT,
+                        handleType);
             }
 
             // This is a public, protected or package-private method, which means we're expecting
@@ -1148,7 +1139,8 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
 
             // Note that we restrict the receiver to "specialCaller" instances.
             MethodType handleType = type.insertParameterTypes(0, specialCaller);
-            return createMethodHandle(method, MethodHandle.INVOKE_SUPER, handleType);
+            return new MethodHandleImpl(method.getArtMethod(), MethodHandle.INVOKE_SUPER,
+                    handleType);
         }
 
         /**
@@ -1392,10 +1384,12 @@ return mh1;
             }
 
             if (Modifier.isStatic(m.getModifiers())) {
-                return createMethodHandle(m, MethodHandle.INVOKE_STATIC, methodType);
+                return new MethodHandleImpl(m.getArtMethod(), MethodHandle.INVOKE_STATIC,
+                        methodType);
             } else {
                 methodType = methodType.insertParameterTypes(0, m.getDeclaringClass());
-                return createMethodHandle(m, MethodHandle.INVOKE_VIRTUAL, methodType);
+                return new MethodHandleImpl(m.getArtMethod(), MethodHandle.INVOKE_VIRTUAL,
+                        methodType);
             }
         }
 
@@ -1480,7 +1474,7 @@ return mh1;
                         c.getName());
             }
 
-            return createMethodHandleForConstructor(c);
+            return makeMethodHandleForConstructor(c);
         }
 
         /**
@@ -1727,6 +1721,7 @@ return mh1;
         }
 
         return new Transformers.ReferenceArrayElementSetter(arrayClass);
+
     }
 
     public static void arrayElementSetter(byte[] array, int i, byte val) { array[i] = val; }
