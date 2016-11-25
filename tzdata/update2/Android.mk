@@ -24,7 +24,7 @@ LOCAL_JAVACFLAGS := -encoding UTF-8
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
-# Tests for tzdata_update code
+# Tests for tzdata_update2 code
 include $(CLEAR_VARS)
 LOCAL_MODULE := tzdata_update2-tests
 LOCAL_MODULE_TAGS := optional

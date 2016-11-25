@@ -62,20 +62,16 @@ public final class TzDataBundleInstaller {
                 return false;
             }
 
-            if (verifySystemChecksums(unpackedContentDir)) {
-                FileUtils.makeDirectoryWorldAccessible(unpackedContentDir);
+            FileUtils.makeDirectoryWorldAccessible(unpackedContentDir);
 
-                if (currentTzDataDir.exists()) {
-                    Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
-                    FileUtils.rename(currentTzDataDir, oldTzDataDir);
-                }
-                Slog.i(logTag, "Moving " + unpackedContentDir + " to " + currentTzDataDir);
-                FileUtils.rename(unpackedContentDir, currentTzDataDir);
-                Slog.i(logTag, "Update applied: " + currentTzDataDir + " successfully created");
-                return true;
+            if (currentTzDataDir.exists()) {
+                Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
+                FileUtils.rename(currentTzDataDir, oldTzDataDir);
             }
-            Slog.i(logTag, "Update not applied: System checksum did not match");
-            return false;
+            Slog.i(logTag, "Moving " + unpackedContentDir + " to " + currentTzDataDir);
+            FileUtils.rename(unpackedContentDir, currentTzDataDir);
+            Slog.i(logTag, "Update applied: " + currentTzDataDir + " successfully created");
+            return true;
         } finally {
             deleteBestEffort(oldTzDataDir);
             deleteBestEffort(unpackedContentDir);
@@ -104,38 +100,7 @@ public final class TzDataBundleInstaller {
         Slog.i(logTag, "Verifying bundle contents");
         return FileUtils.filesExist(unpackedContentDir,
                 ConfigBundle.TZ_DATA_VERSION_FILE_NAME,
-                ConfigBundle.CHECKSUMS_FILE_NAME,
                 ConfigBundle.ZONEINFO_FILE_NAME,
                 ConfigBundle.ICU_DATA_FILE_NAME);
-    }
-
-    private boolean verifySystemChecksums(File unpackedContentDir) throws IOException {
-        Slog.i(logTag, "Verifying system file checksums");
-        File checksumsFile = new File(unpackedContentDir, ConfigBundle.CHECKSUMS_FILE_NAME);
-        for (String line : FileUtils.readLines(checksumsFile)) {
-            int delimiterPos = line.indexOf(',');
-            if (delimiterPos <= 0 || delimiterPos == line.length() - 1) {
-                throw new IOException("Bad checksum entry: " + line);
-            }
-            long expectedChecksum;
-            try {
-                expectedChecksum = Long.parseLong(line.substring(0, delimiterPos));
-            } catch (NumberFormatException e) {
-                throw new IOException("Invalid checksum value: " + line);
-            }
-            String filePath = line.substring(delimiterPos + 1);
-            File file = new File(filePath);
-            if (!file.exists()) {
-                Slog.i(logTag, "Failed checksum test for file: " + file + ": file not found");
-                return false;
-            }
-            long actualChecksum = FileUtils.calculateChecksum(file);
-            if (actualChecksum != expectedChecksum) {
-                Slog.i(logTag, "Failed checksum test for file: " + file
-                        + ": required=" + expectedChecksum + ", actual=" + actualChecksum);
-                return false;
-            }
-        }
-        return true;
     }
 }
