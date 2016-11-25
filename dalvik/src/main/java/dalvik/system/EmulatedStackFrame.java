@@ -81,11 +81,6 @@ public class EmulatedStackFrame {
     }
 
     /**
-     * Returns the {@code MethodType} that the frame was created for.
-     */
-    public final MethodType getMethodType() { return type; }
-
-    /**
      * Represents a range of arguments on an {@code EmulatedStackFrame}.
      *
      * @hide
