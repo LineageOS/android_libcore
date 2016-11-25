@@ -51,20 +51,6 @@ public class FileUtilsTest extends TestCase {
         super.tearDown();
     }
 
-    public void testCalculateChecksum() throws Exception {
-        final String content = "Content";
-        File file1 = createTextFile(content);
-        File file2 = createTextFile(content);
-        File file3 = createTextFile(content + "!");
-
-        long file1CheckSum = FileUtils.calculateChecksum(file1);
-        long file2CheckSum = FileUtils.calculateChecksum(file2);
-        long file3Checksum = FileUtils.calculateChecksum(file3);
-
-        assertEquals(file1CheckSum, file2CheckSum);
-        assertTrue(file1CheckSum != file3Checksum);
-    }
-
     public void testDeleteRecursive() throws Exception {
         File dir = createTempDir();
         File file1 = createRegularFile(dir, "file1");

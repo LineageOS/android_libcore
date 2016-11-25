@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.zip.CRC32;
 
 /**
  * Utility methods for files operations.
@@ -100,22 +99,6 @@ public final class FileUtils {
         if (!file.setReadable(true, false /* ownerOnly */)) {
             throw new IOException("Unable to make " + file + " world-readable");
         }
-    }
-
-    /**
-     * Calculates the checksum from the contents of a file.
-     */
-    public static long calculateChecksum(File file) throws IOException {
-        final int BUFFER_SIZE = 8196;
-        CRC32 crc32 = new CRC32();
-        try (FileInputStream fis = new FileInputStream(file)) {
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int count;
-            while ((count = fis.read(buffer)) != -1) {
-                crc32.update(buffer, 0, count);
-            }
-        }
-        return crc32.getValue();
     }
 
     public static void rename(File from, File to) throws IOException {
