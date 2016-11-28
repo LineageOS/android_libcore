@@ -15,16 +15,11 @@
  */
 package libcore.tzdata.update2;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Utility methods for files operations.
@@ -162,19 +157,20 @@ public final class FileUtils {
     }
 
     /**
-     * Read all lines from a UTF-8 encoded file, returning them as a list of strings.
+     * Reads up to {@code maxBytes} bytes from the specified file. The returned array can be
+     * shorter than {@code maxBytes} if the file is shorter.
      */
-    public static List<String> readLines(File file) throws IOException {
-        FileInputStream in = new FileInputStream(file);
-        try (BufferedReader fileReader = new BufferedReader(
-                new InputStreamReader(in, StandardCharsets.UTF_8));
-        ) {
-            List<String> lines = new ArrayList<>();
-            String line;
-            while ((line = fileReader.readLine()) != null) {
-                lines.add(line);
-            }
-            return lines;
+    public static byte[] readBytes(File file, int maxBytes) throws IOException {
+        if (maxBytes <= 0) {
+            throw new IllegalArgumentException("maxBytes ==" + maxBytes);
+        }
+
+        try (FileInputStream in = new FileInputStream(file)) {
+            byte[] max = new byte[maxBytes];
+            int bytesRead = in.read(max, 0, maxBytes);
+            byte[] toReturn = new byte[bytesRead];
+            System.arraycopy(max, 0, toReturn, 0, bytesRead);
+            return toReturn;
         }
     }
 }
