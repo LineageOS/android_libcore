@@ -180,8 +180,8 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(call all-java-files-under, dalvik/test-rules/src/main test-rules/src/main)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := core-test-rules-hostdex
-LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex core-junit-hostdex
-LOCAL_STATIC_JAVA_LIBRARIES := junit4-target-hostdex
+LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex
+LOCAL_STATIC_JAVA_LIBRARIES := junit-hostdex
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -359,7 +359,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_SRC_FILES := $(test_src_files)
     LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex okhttp-hostdex bouncycastle-hostdex core-junit-hostdex junit4-target-hostdex core-tests-support-hostdex mockito-api-hostdex
+    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex okhttp-hostdex bouncycastle-hostdex junit-hostdex core-tests-support-hostdex mockito-api-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := sqlite-jdbc-host mockwebserver-host nist-pkix-tests-host core-test-rules-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
@@ -375,7 +375,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_SRC_FILES := $(call all-test-java-files-under,support)
     LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex core-junit-hostdex junit4-target-hostdex bouncycastle-hostdex
+    LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex junit-hostdex bouncycastle-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-bcpkix-hostdex bouncycastle-ocsp-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
