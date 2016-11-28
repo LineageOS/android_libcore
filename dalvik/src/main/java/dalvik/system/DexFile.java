@@ -412,6 +412,8 @@ public final class DexFile {
             throws FileNotFoundException, IOException;
 
     /**
+     * No dexopt should (or can) be done to update the apk/jar.
+     *
      * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
@@ -419,48 +421,53 @@ public final class DexFile {
     public static final int NO_DEXOPT_NEEDED = 0;
 
     /**
+     * dex2oat should be run to update the apk/jar from scratch.
+     *
      * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
-    public static final int DEX2OAT_NEEDED = 1;
+    public static final int DEX2OAT_FROM_SCRATCH = 1;
 
     /**
+     * dex2oat should be run to update the apk/jar because the existing code
+     * is out of date with respect to the boot image.
+     *
      * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
-    public static final int PATCHOAT_NEEDED = 2;
+    public static final int DEX2OAT_FOR_BOOT_IMAGE = 2;
 
     /**
+     * dex2oat should be run to update the apk/jar because the existing code
+     * is out of date with respect to the target compiler filter.
+     *
      * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
-    public static final int SELF_PATCHOAT_NEEDED = 3;
+    public static final int DEX2OAT_FOR_FILTER = 3;
 
     /**
-     * Returns whether the given filter is a valid filter.
+     * dex2oat should be run to update the apk/jar because the existing code
+     * is not relocated to match the boot image and does not have the
+     * necessary patch information to use patchoat.
+     *
+     * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
-    public native static boolean isValidCompilerFilter(String filter);
+    public static final int DEX2OAT_FOR_RELOCATION = 4;
 
     /**
-     * Returns whether the given filter is based on profiles.
+     * patchoat should be run to update the apk/jar.
+     *
+     * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
-    public native static boolean isProfileGuidedCompilerFilter(String filter);
-
-    /**
-     * Returns the version of the compiler filter that is not based on profiles.
-     * If the input is not a valid filter, or the filter is already not based on
-     * profiles, this returns the input.
-     *
-     * @hide
-     */
-    public native static String getNonProfileGuidedCompilerFilter(String filter);
+    public static final int PATCHOAT_FOR_RELOCATION = 5;
 
     /**
      * Returns the VM's opinion of what kind of dexopt is needed to make the
@@ -473,12 +480,11 @@ public final class DexFile {
      * @param newProfile flag that describes whether a profile corresponding
      *        to the dex file has been recently updated and should be considered
      *        in the state of the file.
-     * @return NO_DEXOPT_NEEDED if the apk/jar is already up to date.
-     *         DEX2OAT_NEEDED if dex2oat should be called on the apk/jar file.
-     *         PATCHOAT_NEEDED if patchoat should be called on the apk/jar
-     *         file to patch the odex file along side the apk/jar.
-     *         SELF_PATCHOAT_NEEDED if selfpatchoat should be called on the
-     *         apk/jar file to patch the oat file in the dalvik cache.
+     * @return NO_DEXOPT_NEEDED, DEX2OAT_*, or PATCHOAT_*. See documentation
+     *         of the particular status code for more information on its
+     *         meaning. Returns a positive status code if the status refers to
+     *         the oat file in the oat location. Returns a negative status
+     *         code if the status refers to the oat file in the odex location.
      * @throws java.io.FileNotFoundException if fileName is not readable,
      *         not a file, or not present.
      * @throws java.io.IOException if fileName is not a valid apk/jar file or
@@ -509,4 +515,28 @@ public final class DexFile {
      */
     public static native String getDexFileOutputPath(String fileName, String instructionSet)
         throws FileNotFoundException;
+
+    /**
+     * Returns whether the given filter is a valid filter.
+     *
+     * @hide
+     */
+    public native static boolean isValidCompilerFilter(String filter);
+
+    /**
+     * Returns whether the given filter is based on profiles.
+     *
+     * @hide
+     */
+    public native static boolean isProfileGuidedCompilerFilter(String filter);
+
+    /**
+     * Returns the version of the compiler filter that is not based on profiles.
+     * If the input is not a valid filter, or the filter is already not based on
+     * profiles, this returns the input.
+     *
+     * @hide
+     */
+    public native static String getNonProfileGuidedCompilerFilter(String filter);
+
 }
