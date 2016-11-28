@@ -21,11 +21,10 @@ import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructStat;
 
-import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,21 +225,38 @@ public class FileUtilsTest extends TestCase {
         assertFalse(FileUtils.filesExist(dir, "subDir/doesNotExist"));
     }
 
-    public void testReadLines() throws Exception {
-        File file = createTextFile("One\nTwo\nThree\n");
+    public void testReadBytes() throws Exception {
+        File dir = createTempDir();
 
-        List<String> lines = FileUtils.readLines(file);
-        assertEquals(3, lines.size());
-        assertEquals(lines, Arrays.asList("One", "Two", "Three"));
+        try {
+            FileUtils.readBytes(new File(dir, "doesNotExist"), 0);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+
+        try {
+            FileUtils.readBytes(new File(dir, "doesNotExist"), 10);
+            fail();
+        } catch (FileNotFoundException expected) {
+        }
+
+        byte[] contents = "One\nTwo\nThree\n".getBytes(StandardCharsets.US_ASCII);
+        File file = createFile(contents);
+        byte[] oneByte = FileUtils.readBytes(file, 1);
+        assertEquals(1, oneByte.length);
+        assertEquals(contents[0], oneByte[0]);
+
+        byte[] allBytes = FileUtils.readBytes(file, contents.length);
+        assertTrue(Arrays.equals(contents, allBytes));
+
+        byte[] exhaustedFileRead = FileUtils.readBytes(file, contents.length + 1);
+        assertTrue(Arrays.equals(contents, exhaustedFileRead));
     }
 
-    private File createTextFile(String contents) throws IOException {
+    private File createFile(byte[] contents) throws IOException {
         File file = File.createTempFile(getClass().getSimpleName(), ".txt");
         try (FileOutputStream fos = new FileOutputStream(file)) {
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(fos, StandardCharsets.UTF_8));
-            writer.write(contents);
-            writer.close();
+            fos.write(contents);
         }
         return file;
     }
