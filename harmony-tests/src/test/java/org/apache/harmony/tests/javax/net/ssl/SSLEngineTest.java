@@ -310,7 +310,7 @@ public class SSLEngineTest extends TestCase {
         doHandshake();
 
         ByteBuffer bbs = ByteBuffer.wrap(new byte[] {1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,3,1,2,31,2,3,1,2,3,1,2,3,1,2,3});
-        ByteBuffer bbd = ByteBuffer.allocate(100);
+        ByteBuffer bbd = ByteBuffer.allocate(clientEngine.engine.getSession().getApplicationBufferSize());
         try {
             clientEngine.engine.unwrap(bbs, new ByteBuffer[] { bbd }, 0, 1);
             fail("SSLException wasn't thrown");
