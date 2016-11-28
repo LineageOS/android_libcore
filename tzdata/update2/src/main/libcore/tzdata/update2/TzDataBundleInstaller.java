@@ -19,6 +19,7 @@ import android.util.Slog;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * A bundle-validation / extraction class. Separate from the services code that uses it for easier
@@ -54,14 +55,26 @@ public final class TzDataBundleInstaller {
         File currentTzDataDir = new File(installDir, CURRENT_TZ_DATA_DIR_NAME);
         File workingDir = new File(installDir, WORKING_DIR_NAME);
 
-        Slog.i(logTag, "Applying time zone update");
+        Slog.i(logTag, "Unpacking / verifying time zone update");
         File unpackedContentDir = unpackBundle(content, workingDir);
         try {
+            if (!checkBundleVersion(unpackedContentDir)) {
+                Slog.i(logTag, "Update not applied: Bundle format version is incorrect.");
+                return false;
+            }
+            // This check should not fail if the bundle version check passes, but we're being
+            // intentionally paranoid.
             if (!checkBundleFilesExist(unpackedContentDir)) {
                 Slog.i(logTag, "Update not applied: Bundle is missing files");
                 return false;
             }
 
+            // TODO(nfuller): Add IANA version check. http://b/31008728
+
+            // TODO(nfuller): Add deeper validity checks / canarying before applying.
+            // http://b/31008728
+
+            Slog.i(logTag, "Applying time zone update");
             FileUtils.makeDirectoryWorldAccessible(unpackedContentDir);
 
             if (currentTzDataDir.exists()) {
@@ -102,5 +115,22 @@ public final class TzDataBundleInstaller {
                 ConfigBundle.TZ_DATA_VERSION_FILE_NAME,
                 ConfigBundle.ZONEINFO_FILE_NAME,
                 ConfigBundle.ICU_DATA_FILE_NAME);
+    }
+
+    private boolean checkBundleVersion(File unpackedContentDir) throws IOException {
+        Slog.i(logTag, "Verifying bundle format version");
+        if (!FileUtils.filesExist(unpackedContentDir, ConfigBundle.BUNDLE_VERSION_FILE_NAME)) {
+            Slog.i(logTag, "Bundle format version file does not exist.");
+            return false;
+        }
+
+        File bundleVersionFile =
+                new File(unpackedContentDir, ConfigBundle.BUNDLE_VERSION_FILE_NAME);
+        byte[] versionBytes = FileUtils.readBytes(bundleVersionFile, 10);
+        if (!Arrays.equals(versionBytes, ConfigBundle.BUNDLE_VERSION_BYTES)) {
+            Slog.i(logTag, "Incompatible bundle format version: " + Arrays.toString(versionBytes));
+            return false;
+        }
+        return true;
     }
 }
