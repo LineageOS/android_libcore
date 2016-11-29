@@ -1013,8 +1013,8 @@ public final class HttpCookie implements Cloneable {
                         long maxAgeInSeconds = 0;
                         if (date != null) {
                             maxAgeInSeconds = (date.getTime() - cookie.whenCreated) / 1000;
-                            // If "expires" is in the past, remove the cookie.
-                            if (maxAgeInSeconds < 0) {
+                            // Avoid MAX_AGE_UNSPECIFIED
+                            if (maxAgeInSeconds == MAX_AGE_UNSPECIFIED) {
                                 maxAgeInSeconds = 0;
                             }
                         }
