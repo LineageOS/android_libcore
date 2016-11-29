@@ -31,10 +31,14 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.channels.DatagramChannel;
+import libcore.io.Libcore;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
+
+import static android.system.OsConstants.IPPROTO_IP;
+import static android.system.OsConstants.IP_MULTICAST_ALL;
 
 public class DatagramSocketTest extends TestCaseWithRules {
     @Rule
@@ -97,8 +101,14 @@ public class DatagramSocketTest extends TestCaseWithRules {
     /**
      * java.net.DatagramSocket#DatagramSocket()
      */
-    public void test_Constructor() throws SocketException {
-        new DatagramSocket().close();
+    public void test_Constructor() throws Exception {
+        try (DatagramSocket ds = new DatagramSocket()) {
+            // Datagram sockets bound to the wildcard INADDR_ANY address should by default only
+            // receive messages from groups they explicitly joined.
+            boolean multicastAllEnabled = Libcore.os.getsockoptInt(ds.getFileDescriptor$(),
+                    IPPROTO_IP, IP_MULTICAST_ALL) == 1;
+            assertFalse(multicastAllEnabled);
+        }
     }
 
     /**
