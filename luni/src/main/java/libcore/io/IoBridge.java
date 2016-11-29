@@ -123,7 +123,8 @@ public final class IoBridge {
         try {
             connectErrno(fd, inetAddress, port, timeoutMs);
         } catch (ErrnoException errnoException) {
-            throw new ConnectException(connectDetail(inetAddress, port, timeoutMs, errnoException), errnoException);
+            throw new ConnectException(connectDetail(fd, inetAddress, port, timeoutMs,
+                    errnoException), errnoException);
         } catch (SocketException ex) {
             throw ex; // We don't want to doubly wrap these.
         } catch (SocketTimeoutException ex) {
@@ -169,21 +170,44 @@ public final class IoBridge {
             remainingTimeoutMs =
                     (int) TimeUnit.NANOSECONDS.toMillis(finishTimeNanos - System.nanoTime());
             if (remainingTimeoutMs <= 0) {
-                throw new SocketTimeoutException(connectDetail(inetAddress, port, timeoutMs, null));
+                throw new SocketTimeoutException(connectDetail(fd, inetAddress, port, timeoutMs,
+                        null));
             }
         } while (!IoBridge.isConnected(fd, inetAddress, port, timeoutMs, remainingTimeoutMs));
         IoUtils.setBlocking(fd, true); // 4. set the socket back to blocking.
     }
 
-    private static String connectDetail(InetAddress inetAddress, int port, int timeoutMs, ErrnoException cause) {
-        String detail = "failed to connect to " + inetAddress + " (port " + port + ")";
+    private static String connectDetail(FileDescriptor fd, InetAddress inetAddress, int port,
+            int timeoutMs, Exception cause) {
+        // Figure out source address from fd.
+        InetSocketAddress localAddress = null;
+        try {
+            localAddress = getLocalInetSocketAddress(fd);
+        } catch (SocketException ignored) { }
+
+        StringBuilder sb = new StringBuilder("failed to connect")
+              .append(" to ")
+              .append(inetAddress)
+              .append(" (port ")
+              .append(port)
+              .append(")");
+        if (localAddress != null) {
+            sb.append(" from ")
+              .append(localAddress.getAddress())
+              .append(" (port ")
+              .append(localAddress.getPort())
+              .append(")");
+        }
         if (timeoutMs > 0) {
-            detail += " after " + timeoutMs + "ms";
+            sb.append(" after ")
+              .append(timeoutMs)
+              .append("ms");
         }
         if (cause != null) {
-            detail += ": " + cause.getMessage();
+            sb.append(": ")
+              .append(cause.getMessage());
         }
-        return detail;
+        return sb.toString();
     }
 
     /**
@@ -230,7 +254,7 @@ public final class IoBridge {
             }
             cause = errnoException;
         }
-        String detail = connectDetail(inetAddress, port, timeoutMs, cause);
+        String detail = connectDetail(fd, inetAddress, port, timeoutMs, cause);
         if (cause.errno == ETIMEDOUT) {
             throw new SocketTimeoutException(detail, cause);
         }
@@ -621,21 +645,9 @@ public final class IoBridge {
         }
     }
 
-    public static InetAddress getSocketLocalAddress(FileDescriptor fd) throws SocketException {
+    public static InetSocketAddress getLocalInetSocketAddress(FileDescriptor fd) throws SocketException {
         try {
-            SocketAddress sa = Libcore.os.getsockname(fd);
-            InetSocketAddress isa = (InetSocketAddress) sa;
-            return isa.getAddress();
-        } catch (ErrnoException errnoException) {
-            throw errnoException.rethrowAsSocketException();
-        }
-    }
-
-    public static int getSocketLocalPort(FileDescriptor fd) throws SocketException {
-        try {
-            SocketAddress sa = Libcore.os.getsockname(fd);
-            InetSocketAddress isa = (InetSocketAddress) sa;
-            return isa.getPort();
+            return (InetSocketAddress) Libcore.os.getsockname(fd);
         } catch (ErrnoException errnoException) {
             throw errnoException.rethrowAsSocketException();
         }
