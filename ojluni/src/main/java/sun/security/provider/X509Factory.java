@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -64,8 +64,10 @@ public class X509Factory extends CertificateFactorySpi {
 
     private static final int ENC_MAX_LENGTH = 4096 * 1024; // 4 MB MAX
 
-    private static final Cache certCache = Cache.newSoftMemoryCache(750);
-    private static final Cache crlCache = Cache.newSoftMemoryCache(750);
+    private static final Cache<Object, X509CertImpl> certCache
+        = Cache.newSoftMemoryCache(750);
+    private static final Cache<Object, X509CRLImpl> crlCache
+        = Cache.newSoftMemoryCache(750);
 
     /**
      * Generates an X.509 certificate object and initializes it with
@@ -78,6 +80,7 @@ public class X509Factory extends CertificateFactorySpi {
      *
      * @exception CertificateException on parsing errors.
      */
+    @Override
     public Certificate engineGenerateCertificate(InputStream is)
         throws CertificateException
     {
@@ -90,7 +93,7 @@ public class X509Factory extends CertificateFactorySpi {
         try {
             byte[] encoding = readOneBlock(is);
             if (encoding != null) {
-                X509CertImpl cert = (X509CertImpl)getFromCache(certCache, encoding);
+                X509CertImpl cert = getFromCache(certCache, encoding);
                 if (cert != null) {
                     return cert;
                 }
@@ -101,8 +104,8 @@ public class X509Factory extends CertificateFactorySpi {
                 throw new IOException("Empty input");
             }
         } catch (IOException ioe) {
-            throw (CertificateException)new CertificateException
-            ("Could not parse certificate: " + ioe.toString()).initCause(ioe);
+            throw new CertificateException("Could not parse certificate: " +
+                    ioe.toString(), ioe);
         }
     }
 
@@ -138,6 +141,12 @@ public class X509Factory extends CertificateFactorySpi {
      * It is useful for certificates that cannot be created via
      * generateCertificate() and for converting other X509Certificate
      * implementations to an X509CertImpl.
+     *
+     * @param c The source X509Certificate
+     * @return An X509CertImpl object that is either a cached certificate or a
+     *      newly built X509CertImpl from the provided X509Certificate
+     * @throws CertificateException if failures occur while obtaining the DER
+     *      encoding for certificate data.
      */
     public static synchronized X509CertImpl intern(X509Certificate c)
             throws CertificateException {
@@ -151,7 +160,7 @@ public class X509Factory extends CertificateFactorySpi {
         } else {
             encoding = c.getEncoded();
         }
-        X509CertImpl newC = (X509CertImpl)getFromCache(certCache, encoding);
+        X509CertImpl newC = getFromCache(certCache, encoding);
         if (newC != null) {
             return newC;
         }
@@ -168,6 +177,12 @@ public class X509Factory extends CertificateFactorySpi {
     /**
      * Return an interned X509CRLImpl for the given certificate.
      * For more information, see intern(X509Certificate).
+     *
+     * @param c The source X509CRL
+     * @return An X509CRLImpl object that is either a cached CRL or a
+     *      newly built X509CRLImpl from the provided X509CRL
+     * @throws CRLException if failures occur while obtaining the DER
+     *      encoding for CRL data.
      */
     public static synchronized X509CRLImpl intern(X509CRL c)
             throws CRLException {
@@ -181,7 +196,7 @@ public class X509Factory extends CertificateFactorySpi {
         } else {
             encoding = c.getEncoded();
         }
-        X509CRLImpl newC = (X509CRLImpl)getFromCache(crlCache, encoding);
+        X509CRLImpl newC = getFromCache(crlCache, encoding);
         if (newC != null) {
             return newC;
         }
@@ -198,18 +213,17 @@ public class X509Factory extends CertificateFactorySpi {
     /**
      * Get the X509CertImpl or X509CRLImpl from the cache.
      */
-    private static synchronized Object getFromCache(Cache cache,
+    private static synchronized <K,V> V getFromCache(Cache<K,V> cache,
             byte[] encoding) {
         Object key = new Cache.EqualByteArray(encoding);
-        Object value = cache.get(key);
-        return value;
+        return cache.get(key);
     }
 
     /**
      * Add the X509CertImpl or X509CRLImpl to the cache.
      */
-    private static synchronized void addToCache(Cache cache, byte[] encoding,
-            Object value) {
+    private static synchronized <V> void addToCache(Cache<Object, V> cache,
+            byte[] encoding, V value) {
         if (encoding.length > ENC_MAX_LENGTH) {
             return;
         }
@@ -228,6 +242,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @exception CertificateException if an exception occurs while decoding
      * @since 1.4
      */
+    @Override
     public CertPath engineGenerateCertPath(InputStream inStream)
         throws CertificateException
     {
@@ -259,6 +274,7 @@ public class X509Factory extends CertificateFactorySpi {
      *   the encoding requested is not supported
      * @since 1.4
      */
+    @Override
     public CertPath engineGenerateCertPath(InputStream inStream,
         String encoding) throws CertificateException
     {
@@ -291,6 +307,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @exception CertificateException if an exception occurs
      * @since 1.4
      */
+    @Override
     public CertPath
         engineGenerateCertPath(List<? extends Certificate> certificates)
         throws CertificateException
@@ -310,6 +327,7 @@ public class X509Factory extends CertificateFactorySpi {
      *         <code>CertPath</code> encodings (as <code>String</code>s)
      * @since 1.4
      */
+    @Override
     public Iterator<String> engineGetCertPathEncodings() {
         return(X509CertPath.getEncodingsStatic());
     }
@@ -325,6 +343,7 @@ public class X509Factory extends CertificateFactorySpi {
      *
      * @exception CertificateException on parsing errors.
      */
+    @Override
     public Collection<? extends java.security.cert.Certificate>
             engineGenerateCertificates(InputStream is)
             throws CertificateException {
@@ -350,6 +369,7 @@ public class X509Factory extends CertificateFactorySpi {
      *
      * @exception CRLException on parsing errors.
      */
+    @Override
     public CRL engineGenerateCRL(InputStream is)
         throws CRLException
     {
@@ -361,7 +381,7 @@ public class X509Factory extends CertificateFactorySpi {
         try {
             byte[] encoding = readOneBlock(is);
             if (encoding != null) {
-                X509CRLImpl crl = (X509CRLImpl)getFromCache(crlCache, encoding);
+                X509CRLImpl crl = getFromCache(crlCache, encoding);
                 if (crl != null) {
                     return crl;
                 }
@@ -387,6 +407,7 @@ public class X509Factory extends CertificateFactorySpi {
      *
      * @exception CRLException on parsing errors.
      */
+    @Override
     public Collection<? extends java.security.cert.CRL> engineGenerateCRLs(
             InputStream is) throws CRLException
     {
@@ -511,14 +532,14 @@ public class X509Factory extends CertificateFactorySpi {
                     hyphen = 0;
                     last = next;
                 }
-                if (hyphen == 5 && (last==-1 || last=='\r' || last=='\n')) {
+                if (hyphen == 5 && (last == -1 || last == '\r' || last == '\n')) {
                     break;
                 }
             }
 
             // Step 2: Read the rest of header, determine the line end
             int end;
-            StringBuffer header = new StringBuffer("-----");
+            StringBuilder header = new StringBuilder("-----");
             while (true) {
                 int next = is.read();
                 if (next == -1) {
@@ -561,7 +582,7 @@ public class X509Factory extends CertificateFactorySpi {
             }
 
             // Step 4: Consume the footer
-            StringBuffer footer = new StringBuffer("-");
+            StringBuilder footer = new StringBuilder("-");
             while (true) {
                 int next = is.read();
                 // Add next == '\n' for maximum safety, in case endline
@@ -623,7 +644,7 @@ public class X509Factory extends CertificateFactorySpi {
 
         int n = is.read();
         if (n == -1) {
-            throw new IOException("BER/DER length info ansent");
+            throw new IOException("BER/DER length info absent");
         }
         bout.write(n);
 
