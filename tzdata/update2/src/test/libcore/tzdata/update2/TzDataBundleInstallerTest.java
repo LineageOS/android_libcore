@@ -163,7 +163,7 @@ public class TzDataBundleInstallerTest extends TestCase {
      * Tests that an update will be unpacked even if there is a partial update from a previous run.
      */
     public void testInstallWithWorkingDir() throws Exception {
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
+        File workingDir = installer.getWorkingDir();
         assertTrue(workingDir.mkdir());
         createFile(new File(workingDir, "myFile"));
 
@@ -176,7 +176,7 @@ public class TzDataBundleInstallerTest extends TestCase {
      * Tests that a bundle without a bundle version file will be rejected.
      */
     public void testInstallWithMissingBundleVersionFile() throws Exception {
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
+        File workingDir = installer.getWorkingDir();
         assertTrue(workingDir.mkdir());
 
         ConfigBundle tzData = createTzDataBundleWithoutFormatVersionFile(NEW_RULES_VERSION);
@@ -214,11 +214,32 @@ public class TzDataBundleInstallerTest extends TestCase {
      * Tests that a bundle with an incorrect bundle version will be rejected.
      */
     public void testInstallWithInvalidBundleVersionFile() throws Exception {
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
-        assertTrue(workingDir.mkdir());
-
         ConfigBundle tzData = createTzDataBundleWithInvalidBundleVersion(NEW_RULES_VERSION);
         assertFalse(installer.install(tzData.getBundleBytes()));
+        assertNoContentInstalled();
+    }
+
+    public void testUninstall_noExistingDataBundle() throws Exception {
+        assertFalse(installer.uninstall());
+        assertNoContentInstalled();
+    }
+
+    public void testUninstall_existingDataBundle() throws Exception {
+        File currentDataDir = installer.getCurrentTzDataDir();
+        assertTrue(currentDataDir.mkdir());
+
+        assertTrue(installer.uninstall());
+        assertNoContentInstalled();
+    }
+
+    public void testUninstall_oldDirsAlreadyExists() throws Exception {
+        File oldTzDataDir = installer.getOldTzDataDir();
+        assertTrue(oldTzDataDir.mkdir());
+
+        File currentDataDir = installer.getCurrentTzDataDir();
+        assertTrue(currentDataDir.mkdir());
+
+        assertTrue(installer.uninstall());
         assertNoContentInstalled();
     }
 
@@ -278,8 +299,7 @@ public class TzDataBundleInstallerTest extends TestCase {
     private void assertTzDataInstalled(ConfigBundle expectedTzData) throws Exception {
         assertTrue(testInstallDir.exists());
 
-        File currentTzDataDir =
-                new File(testInstallDir, TzDataBundleInstaller.CURRENT_TZ_DATA_DIR_NAME);
+        File currentTzDataDir = installer.getCurrentTzDataDir();
         assertTrue(currentTzDataDir.exists());
 
         File bundleVersionFile = new File(currentTzDataDir,
@@ -297,19 +317,19 @@ public class TzDataBundleInstallerTest extends TestCase {
         assertTrue(icuFile.exists());
 
         // Also check no working directory is left lying around.
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
+        File workingDir = installer.getWorkingDir();
         assertFalse(workingDir.exists());
     }
 
     private void assertNoContentInstalled() {
-        File currentTzDataDir = new File(testInstallDir, TzDataBundleInstaller.CURRENT_TZ_DATA_DIR_NAME);
+        File currentTzDataDir = installer.getCurrentTzDataDir();
         assertFalse(currentTzDataDir.exists());
 
         // Also check no working directories are left lying around.
-        File workingDir = new File(testInstallDir, TzDataBundleInstaller.WORKING_DIR_NAME);
+        File workingDir = installer.getWorkingDir();
         assertFalse(workingDir.exists());
 
-        File oldDataDir = new File(testInstallDir, TzDataBundleInstaller.OLD_TZ_DATA_DIR_NAME);
+        File oldDataDir = installer.getOldTzDataDir();
         assertFalse(oldDataDir.exists());
     }
 
