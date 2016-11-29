@@ -29,18 +29,37 @@ import libcore.util.ZoneInfoDB;
  */
 public final class TzDataBundleInstaller {
 
-    static final String CURRENT_TZ_DATA_DIR_NAME = "current";
-    static final String WORKING_DIR_NAME = "working";
-    static final String OLD_TZ_DATA_DIR_NAME = "old";
+    private static final String CURRENT_TZ_DATA_DIR_NAME = "current";
+    private static final String WORKING_DIR_NAME = "working";
+    private static final String OLD_TZ_DATA_DIR_NAME = "old";
 
     private final String logTag;
     private final File systemTzDataFile;
-    private final File installDir;
+    private final File oldTzDataDir;
+    private final File currentTzDataDir;
+    private final File workingDir;
 
     public TzDataBundleInstaller(String logTag, File systemTzDataFile, File installDir) {
         this.logTag = logTag;
         this.systemTzDataFile = systemTzDataFile;
-        this.installDir = installDir;
+        oldTzDataDir = new File(installDir, OLD_TZ_DATA_DIR_NAME);
+        currentTzDataDir = new File(installDir, CURRENT_TZ_DATA_DIR_NAME);
+        workingDir = new File(installDir, WORKING_DIR_NAME);
+    }
+
+    // VisibleForTesting
+    File getOldTzDataDir() {
+        return oldTzDataDir;
+    }
+
+    // VisibleForTesting
+    File getCurrentTzDataDir() {
+        return currentTzDataDir;
+    }
+
+    // VisibleForTesting
+    File getWorkingDir() {
+        return workingDir;
     }
 
     /**
@@ -51,29 +70,28 @@ public final class TzDataBundleInstaller {
      * If the installation completed successfully this method returns {@code true}.
      */
     public boolean install(byte[] content) throws IOException {
-        File oldTzDataDir = new File(installDir, OLD_TZ_DATA_DIR_NAME);
         if (oldTzDataDir.exists()) {
             FileUtils.deleteRecursive(oldTzDataDir);
         }
-
-        File currentTzDataDir = new File(installDir, CURRENT_TZ_DATA_DIR_NAME);
-        File workingDir = new File(installDir, WORKING_DIR_NAME);
+        if (workingDir.exists()) {
+            FileUtils.deleteRecursive(workingDir);
+        }
 
         Slog.i(logTag, "Unpacking / verifying time zone update");
-        File unpackedContentDir = unpackBundle(content, workingDir);
+        unpackBundle(content, workingDir);
         try {
-            if (!checkBundleVersion(unpackedContentDir)) {
+            if (!checkBundleVersion(workingDir)) {
                 Slog.i(logTag, "Update not applied: Bundle format version is incorrect.");
                 return false;
             }
             // This check should not fail if the bundle version check passes, but we're being
             // intentionally paranoid.
-            if (!checkBundleFilesExist(unpackedContentDir)) {
+            if (!checkBundleFilesExist(workingDir)) {
                 Slog.i(logTag, "Update not applied: Bundle is missing files");
                 return false;
             }
 
-            if (!checkBundleRulesNewerThanSystem(systemTzDataFile, unpackedContentDir)) {
+            if (!checkBundleRulesNewerThanSystem(systemTzDataFile, workingDir)) {
                 Slog.i(logTag, "Update not applied: Bundle rules version check failed");
                 return false;
             }
@@ -82,19 +100,52 @@ public final class TzDataBundleInstaller {
             // http://b/31008728
 
             Slog.i(logTag, "Applying time zone update");
-            FileUtils.makeDirectoryWorldAccessible(unpackedContentDir);
+            FileUtils.makeDirectoryWorldAccessible(workingDir);
 
             if (currentTzDataDir.exists()) {
                 Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
                 FileUtils.rename(currentTzDataDir, oldTzDataDir);
             }
-            Slog.i(logTag, "Moving " + unpackedContentDir + " to " + currentTzDataDir);
-            FileUtils.rename(unpackedContentDir, currentTzDataDir);
+            Slog.i(logTag, "Moving " + workingDir + " to " + currentTzDataDir);
+            FileUtils.rename(workingDir, currentTzDataDir);
             Slog.i(logTag, "Update applied: " + currentTzDataDir + " successfully created");
             return true;
         } finally {
             deleteBestEffort(oldTzDataDir);
-            deleteBestEffort(unpackedContentDir);
+            deleteBestEffort(workingDir);
+        }
+    }
+
+    /**
+     * Uninstall the current timezone update in /data, returning the device to using data from
+     * /system. Returns {@code true} if uninstallation was successful, {@code false} if there was
+     * nothing installed in /data to uninstall.
+     *
+     * <p>Errors encountered during uninstallation will throw an {@link IOException}.
+     */
+    public boolean uninstall() throws IOException {
+        Slog.i(logTag, "Uninstalling time zone update");
+
+        // Make sure we don't have a dir where we're going to move the currently installed data to.
+        if (oldTzDataDir.exists()) {
+            // If we can't remove this, an exception is thrown and we don't continue.
+            FileUtils.deleteRecursive(oldTzDataDir);
+        }
+
+        if (!currentTzDataDir.exists()) {
+            Slog.i(logTag, "Nothing to uninstall at " + currentTzDataDir);
+            return false;
+        }
+
+        try {
+            Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
+            // Move currentTzDataDir out of the way in one operation so we can't partially delete
+            // the contents, which would leave a partial install.
+            FileUtils.rename(currentTzDataDir, oldTzDataDir);
+            return true;
+        } finally {
+            // Do our best to delete the now uninstalled timezone data.
+            deleteBestEffort(oldTzDataDir);
         }
     }
 
@@ -109,11 +160,10 @@ public final class TzDataBundleInstaller {
         }
     }
 
-    private File unpackBundle(byte[] content, File targetDir) throws IOException {
+    private void unpackBundle(byte[] content, File targetDir) throws IOException {
         Slog.i(logTag, "Unpacking update content to: " + targetDir);
         ConfigBundle bundle = new ConfigBundle(content);
         bundle.extractTo(targetDir);
-        return targetDir;
     }
 
     private boolean checkBundleFilesExist(File unpackedContentDir) throws IOException {
