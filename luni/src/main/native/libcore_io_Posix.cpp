@@ -422,7 +422,7 @@ static jobject makeStructPasswd(JNIEnv* env, const struct passwd& pw) {
             pw_name, static_cast<jint>(pw.pw_uid), static_cast<jint>(pw.pw_gid), pw_dir, pw_shell);
 }
 
-static jobject makeStructStat(JNIEnv* env, const struct stat& sb) {
+static jobject makeStructStat(JNIEnv* env, const struct stat64& sb) {
     static jmethodID ctor = env->GetMethodID(JniConstants::structStatClass, "<init>",
             "(JJIJIIJJJJJJJ)V");
     return env->NewObject(JniConstants::structStatClass, ctor,
@@ -671,9 +671,9 @@ static jobject doStat(JNIEnv* env, jstring javaPath, bool isLstat) {
     if (path.c_str() == NULL) {
         return NULL;
     }
-    struct stat sb;
-    int rc = isLstat ? TEMP_FAILURE_RETRY(lstat(path.c_str(), &sb))
-                     : TEMP_FAILURE_RETRY(stat(path.c_str(), &sb));
+    struct stat64 sb;
+    int rc = isLstat ? TEMP_FAILURE_RETRY(lstat64(path.c_str(), &sb))
+                     : TEMP_FAILURE_RETRY(stat64(path.c_str(), &sb));
     if (rc == -1) {
         throwErrnoException(env, isLstat ? "lstat" : "stat");
         return NULL;
@@ -916,8 +916,8 @@ static void Posix_fdatasync(JNIEnv* env, jobject, jobject javaFd) {
 
 static jobject Posix_fstat(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
-    struct stat sb;
-    int rc = TEMP_FAILURE_RETRY(fstat(fd, &sb));
+    struct stat64 sb;
+    int rc = TEMP_FAILURE_RETRY(fstat64(fd, &sb));
     if (rc == -1) {
         throwErrnoException(env, "fstat");
         return NULL;
@@ -1494,7 +1494,7 @@ static void Posix_mlock(JNIEnv* env, jobject, jlong address, jlong byteCount) {
 static jlong Posix_mmap(JNIEnv* env, jobject, jlong address, jlong byteCount, jint prot, jint flags, jobject javaFd, jlong offset) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     void* suggestedPtr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
-    void* ptr = mmap(suggestedPtr, byteCount, prot, flags, fd, offset);
+    void* ptr = mmap64(suggestedPtr, byteCount, prot, flags, fd, offset);
     if (ptr == MAP_FAILED) {
         throwErrnoException(env, "mmap");
     }
