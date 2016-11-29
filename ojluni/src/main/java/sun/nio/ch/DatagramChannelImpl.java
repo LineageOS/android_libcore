@@ -28,16 +28,35 @@ package sun.nio.ch;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramSocket;
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
+import java.net.PortUnreachableException;
+import java.net.ProtocolFamily;
+import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.nio.channels.spi.*;
-import java.util.*;
-import sun.net.ExtendedOptionsImpl;
+import java.nio.channels.AlreadyBoundException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.MembershipKey;
+import java.nio.channels.NotYetConnectedException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.UnsupportedAddressTypeException;
+import java.nio.channels.spi.SelectorProvider;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import dalvik.system.BlockGuard;
-import sun.net.ResourceManager;
+import dalvik.system.CloseGuard;
 import sun.net.ExtendedOptionsImpl;
+import sun.net.ResourceManager;
 
 /**
  * An implementation of DatagramChannels.
@@ -108,6 +127,8 @@ class DatagramChannelImpl
 
     // -- End of fields protected by stateLock
 
+    // Android-changed: Add CloseGuard support.
+    private final CloseGuard guard = CloseGuard.get();
 
     public DatagramChannelImpl(SelectorProvider sp)
         throws IOException
@@ -120,6 +141,11 @@ class DatagramChannelImpl
             this.fd = Net.socket(family, false);
             this.fdVal = IOUtil.fdVal(fd);
             this.state = ST_UNCONNECTED;
+            // Android-changed: Add CloseGuard support.
+            // Net#socket will set |fd| if it succeeds.
+            if (fd != null && fd.valid()) {
+                guard.open("close");
+            }
         } catch (IOException ioe) {
             ResourceManager.afterUdpClose();
             throw ioe;
@@ -147,6 +173,11 @@ class DatagramChannelImpl
         this.fd = Net.socket(family, false);
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
+        // Android-changed: Add CloseGuard support.
+        // Net#socket will set |fd| if it succeeds.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
     }
 
     public DatagramChannelImpl(SelectorProvider sp, FileDescriptor fd)
@@ -159,6 +190,10 @@ class DatagramChannelImpl
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
         this.localAddress = Net.localAddress(fd);
+        // Android-changed: Add CloseGuard support.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
     }
 
     public DatagramSocket socket() {
@@ -1017,6 +1052,8 @@ class DatagramChannelImpl
 
     protected void implCloseSelectableChannel() throws IOException {
         synchronized (stateLock) {
+            // Android-changed: Add CloseGuard support.
+            guard.close();
             if (state != ST_KILLED)
                 nd.preClose(fd);
             ResourceManager.afterUdpClose();
@@ -1049,10 +1086,15 @@ class DatagramChannelImpl
         }
     }
 
-    protected void finalize() throws IOException {
-        // fd is null if constructor threw exception
-        if (fd != null)
-            close();
+    protected void finalize() throws Throwable {
+        try {
+            guard.warnIfOpen();
+            // fd is null if constructor threw exception
+            if (fd != null)
+                close();
+        } finally {
+            super.finalize();
+        }
     }
 
     /**

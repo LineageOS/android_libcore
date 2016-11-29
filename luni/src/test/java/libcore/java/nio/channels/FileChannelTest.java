@@ -16,6 +16,11 @@
 
 package libcore.java.nio.channels;
 
+import static java.nio.file.StandardOpenOption.READ;
+import static java.nio.file.StandardOpenOption.WRITE;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -32,13 +37,16 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.HashSet;
 import java.util.Set;
 import libcore.io.IoUtils;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import libcore.junit.util.ResourceLeakageDetector.LeakageDetectorRule;
+import org.junit.Rule;
 
-import static java.nio.file.StandardOpenOption.READ;
-import static java.nio.file.StandardOpenOption.WRITE;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+public class FileChannelTest extends TestCaseWithRules {
 
-public class FileChannelTest extends junit.framework.TestCase {
+    @Rule
+    public LeakageDetectorRule guardRule = ResourceLeakageDetector.getRule();
+
     public void testReadOnlyByteArrays() throws Exception {
         ByteBuffer readOnly = ByteBuffer.allocate(1).asReadOnlyBuffer();
         File tmp = File.createTempFile("FileChannelTest", "tmp");
@@ -252,6 +260,23 @@ public class FileChannelTest extends junit.framework.TestCase {
         fosFromFd.close();
     }
 
+    public void test_closeGuardSupport_open_without_append() throws IOException {
+        File tmpFile = File.createTempFile("file", "txt");
+        try (FileInputStream fis = new FileInputStream(tmpFile)) {
+            try (FileChannel fc = fis.getChannel()) {
+                guardRule.assertUnreleasedResourceCount(fc, 1);
+            }
+        }
+    }
+
+    public void test_closeGuardSupport_open_with_append() throws IOException {
+        File tmpFile = File.createTempFile("file", "txt");
+        try (FileOutputStream fos = new FileOutputStream(tmpFile)) {
+            try (FileChannel fc = fos.getChannel()) {
+                guardRule.assertUnreleasedResourceCount(fc, 1);
+            }
+        }
+    }
 
     private static FileChannel createFileContainingBytes(byte[] bytes) throws IOException {
         File tmp = File.createTempFile("FileChannelTest", "tmp");
