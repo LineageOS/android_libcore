@@ -18,6 +18,7 @@ package libcore.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.TimeZone;
 
@@ -30,8 +31,9 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   // An empty override file should fall back to the default file.
   public void testEmptyOverrideFile() throws Exception {
     ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(TZDATA_IN_ROOT);
+    String emptyFilePath = makeEmptyFile().getPath();
     ZoneInfoDB.TzData dataWithEmptyOverride =
-        new ZoneInfoDB.TzData(makeEmptyFile(), TZDATA_IN_ROOT);
+        new ZoneInfoDB.TzData(emptyFilePath, TZDATA_IN_ROOT);
     assertEquals(data.getVersion(), dataWithEmptyOverride.getVersion());
     assertEquals(data.getAvailableIDs().length, dataWithEmptyOverride.getAvailableIDs().length);
   }
@@ -39,15 +41,17 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   // A corrupt override file should fall back to the default file.
   public void testCorruptOverrideFile() throws Exception {
     ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(TZDATA_IN_ROOT);
+    String corruptFilePath = makeCorruptFile().getPath();
     ZoneInfoDB.TzData dataWithCorruptOverride =
-        new ZoneInfoDB.TzData(makeCorruptFile(), TZDATA_IN_ROOT);
+        new ZoneInfoDB.TzData(corruptFilePath, TZDATA_IN_ROOT);
     assertEquals(data.getVersion(), dataWithCorruptOverride.getVersion());
     assertEquals(data.getAvailableIDs().length, dataWithCorruptOverride.getAvailableIDs().length);
   }
 
   // Given no tzdata files we can use, we should fall back to built-in "GMT".
   public void testNoGoodFile() throws Exception {
-    ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(makeEmptyFile());
+    String emptyFilePath = makeEmptyFile().getPath();
+    ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(emptyFilePath);
     assertEquals("missing", data.getVersion());
     assertEquals(1, data.getAvailableIDs().length);
     assertEquals("GMT", data.getAvailableIDs()[0]);
@@ -67,13 +71,14 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     in.close();
 
     ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(TZDATA_IN_ROOT);
-    String goodFile = makeTemporaryFile(content);
+    File goodFile = makeTemporaryFile(content);
     try {
-      ZoneInfoDB.TzData dataWithOverride = new ZoneInfoDB.TzData(goodFile, TZDATA_IN_ROOT);
+      ZoneInfoDB.TzData dataWithOverride =
+              new ZoneInfoDB.TzData(goodFile.getPath(), TZDATA_IN_ROOT);
       assertEquals("9999z", dataWithOverride.getVersion());
       assertEquals(data.getAvailableIDs().length, dataWithOverride.getAvailableIDs().length);
     } finally {
-      new File(goodFile).delete();
+      goodFile.delete();
     }
   }
 
@@ -107,19 +112,60 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     assertTrue(data.hasTimeZone("Europe/London"));
   }
 
-  private static String makeCorruptFile() throws Exception {
+  public void testGetRulesVersion() throws Exception {
+    ZoneInfoDB.TzData data = new ZoneInfoDB.TzData(TZDATA_IN_ROOT);
+
+    String rulesVersion = ZoneInfoDB.TzData.getRulesVersion(new File(TZDATA_IN_ROOT));
+    assertEquals(data.getVersion(), rulesVersion);
+  }
+
+  public void testGetRulesVersion_corruptFile() throws Exception {
+    File corruptFilePath = makeCorruptFile();
+    try {
+      ZoneInfoDB.TzData.getRulesVersion(corruptFilePath);
+      fail();
+    } catch (IOException expected) {
+    }
+  }
+
+  public void testGetRulesVersion_emptyFile() throws Exception {
+    File emptyFilePath = makeEmptyFile();
+    try {
+      ZoneInfoDB.TzData.getRulesVersion(emptyFilePath);
+      fail();
+    } catch (IOException expected) {
+    }
+  }
+
+  public void testGetRulesVersion_missingFile() throws Exception {
+    File missingFile = makeMissingFile();
+    try {
+      ZoneInfoDB.TzData.getRulesVersion(missingFile);
+      fail();
+    } catch (IOException expected) {
+    }
+  }
+
+  private static File makeMissingFile() throws Exception {
+    File file = File.createTempFile("temp-", ".txt");
+    assertTrue(file.delete());
+    assertFalse(file.exists());
+    return file;
+  }
+
+  private static File makeCorruptFile() throws Exception {
     return makeTemporaryFile("invalid content".getBytes());
   }
 
-  private static String makeEmptyFile() throws Exception {
+  private static File makeEmptyFile() throws Exception {
     return makeTemporaryFile(new byte[0]);
   }
 
-  private static String makeTemporaryFile(byte[] content) throws Exception {
+  private static File makeTemporaryFile(byte[] content) throws Exception {
     File f = File.createTempFile("temp-", ".txt");
     FileOutputStream fos = new FileOutputStream(f);
     fos.write(content);
     fos.close();
-    return f.getPath();
+    return f;
   }
 }

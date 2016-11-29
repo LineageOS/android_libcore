@@ -17,6 +17,9 @@
 package libcore.util;
 
 import android.system.ErrnoException;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -264,6 +267,29 @@ public final class ZoneInfoDB {
         mappedFile.close();
       }
       super.finalize();
+    }
+
+    /**
+     * Returns the String describing the IANA version of the rules contained in the specified TzData
+     * file. This method just reads the header of the file, and so is less expensive than mapping
+     * the whole file into memory (and provides no guarantees about validity).
+     */
+    public static String getRulesVersion(File tzDataFile) throws IOException {
+      try (FileInputStream is = new FileInputStream(tzDataFile)) {
+
+        final int bytesToRead = 12;
+        byte[] tzdataVersion = new byte[bytesToRead];
+        int bytesRead = is.read(tzdataVersion, 0, bytesToRead);
+        if (bytesRead != bytesToRead) {
+          throw new IOException("File too short: only able to read " + bytesRead + " bytes.");
+        }
+
+        String magic = new String(tzdataVersion, 0, 6, StandardCharsets.US_ASCII);
+        if (!magic.equals("tzdata") || tzdataVersion[11] != 0) {
+          throw new IOException("bad tzdata magic: " + Arrays.toString(tzdataVersion));
+        }
+        return new String(tzdataVersion, 6, 5, StandardCharsets.US_ASCII);
+      }
     }
   }
 
