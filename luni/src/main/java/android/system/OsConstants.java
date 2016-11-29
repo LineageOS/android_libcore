@@ -313,6 +313,7 @@ public final class OsConstants {
     public static final int IPV6_TCLASS = placeholder();
     public static final int IPV6_UNICAST_HOPS = placeholder();
     public static final int IPV6_V6ONLY = placeholder();
+    /** @hide */ public static final int IP_MULTICAST_ALL = placeholder();
     public static final int IP_MULTICAST_IF = placeholder();
     public static final int IP_MULTICAST_LOOP = placeholder();
     public static final int IP_MULTICAST_TTL = placeholder();
