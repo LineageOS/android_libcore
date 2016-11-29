@@ -335,6 +335,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #endif
     initConstant(env, c, "IPV6_UNICAST_HOPS", IPV6_UNICAST_HOPS);
     initConstant(env, c, "IPV6_V6ONLY", IPV6_V6ONLY);
+    initConstant(env, c, "IP_MULTICAST_ALL", IP_MULTICAST_ALL);
     initConstant(env, c, "IP_MULTICAST_IF", IP_MULTICAST_IF);
     initConstant(env, c, "IP_MULTICAST_LOOP", IP_MULTICAST_LOOP);
     initConstant(env, c, "IP_MULTICAST_TTL", IP_MULTICAST_TTL);
