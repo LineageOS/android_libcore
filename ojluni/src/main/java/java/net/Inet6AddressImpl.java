@@ -242,7 +242,7 @@ class Inet6AddressImpl implements InetAddressImpl {
 
                 packet = StructIcmpHdr.IcmpEchoHdr(isIPv4, seq).getBytes();
                 IoBridge.sendto(fd, packet, 0, packet.length, 0, addr, 0);
-                final int icmpId = IoBridge.getSocketLocalPort(fd);
+                final int icmpId = IoBridge.getLocalInetSocketAddress(fd).getPort();
 
                 byte[] received = new byte[packet.length];
                 DatagramPacket receivedPacket = new DatagramPacket(received, packet.length);
