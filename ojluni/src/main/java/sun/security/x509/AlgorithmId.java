@@ -510,6 +510,14 @@ public class AlgorithmId implements Serializable, DerEncoder {
         if (name.equalsIgnoreCase("EC")) {
             return EC_oid;
         }
+        if (name.equalsIgnoreCase("ECDH")) {
+            return AlgorithmId.ECDH_oid;
+        }
+
+        // Secret key algorithms
+        if (name.equalsIgnoreCase("AES")) {
+            return AlgorithmId.AES_oid;
+        }
 
         // Common signature types
         if (name.equalsIgnoreCase("MD5withRSA")
@@ -705,8 +713,15 @@ public class AlgorithmId implements Serializable, DerEncoder {
     public static final ObjectIdentifier DSA_oid;
     public static final ObjectIdentifier DSA_OIW_oid;
     public static final ObjectIdentifier EC_oid = oid(1, 2, 840, 10045, 2, 1);
+    public static final ObjectIdentifier ECDH_oid = oid(1, 3, 132, 1, 12);
     public static final ObjectIdentifier RSA_oid;
     public static final ObjectIdentifier RSAEncryption_oid;
+
+    /*
+     * COMMON SECRET KEY TYPES
+     */
+    public static final ObjectIdentifier AES_oid =
+                                            oid(2, 16, 840, 1, 101, 3, 4, 1);
 
     /*
      * COMMON SIGNATURE ALGORITHMS
@@ -938,6 +953,10 @@ public class AlgorithmId implements Serializable, DerEncoder {
         nameTable.put(DSA_oid, "DSA");
         nameTable.put(DSA_OIW_oid, "DSA");
         nameTable.put(EC_oid, "EC");
+        nameTable.put(ECDH_oid, "ECDH");
+
+        nameTable.put(AES_oid, "AES");
+
         nameTable.put(sha1WithECDSA_oid, "SHA1withECDSA");
         nameTable.put(sha224WithECDSA_oid, "SHA224withECDSA");
         nameTable.put(sha256WithECDSA_oid, "SHA256withECDSA");
