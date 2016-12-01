@@ -48,6 +48,13 @@ public class AlgorithmIdTest extends TestCase {
                 "2.16.840.1.101.3.4.3.1", AlgorithmId.get("sHA224withDSA").getOID().toString());
         assertEquals(
                 "2.16.840.1.101.3.4.3.2", AlgorithmId.get("sHA256withDSA").getOID().toString());
+
+        // Used to be 2.16.840.1.101.3.4.42 until N because BouncyCastle accepts this alias. It
+        // started with a typo they once had and for compatibility they still support it. Since we
+        // scan the aliases, we were picking it as the canonical OID for AES. See:
+        // http://www.docjar.org/html/api/org/bouncycastle/jce/provider/symmetric/AESMappings.java.html
+        assertEquals("2.16.840.1.101.3.4.1", AlgorithmId.get("AES").getOID().toString());
+        assertEquals("1.3.132.1.12", AlgorithmId.get("ECDH").getOID().toString());
     }
 
     public void test_getName() throws Exception {
@@ -61,6 +68,15 @@ public class AlgorithmIdTest extends TestCase {
         assertEquals("SHA256withDSA", getOidName("2.16.840.1.101.3.4.3.2"));
         assertEquals("SHA224withRSA", getOidName("1.2.840.113549.1.1.14"));
 
+        assertEquals("AES", getOidName("2.16.840.1.101.3.4.1"));
+        // AES is also the result of 2.16.840.1.101.3.4.42 because BouncyCastle accepts this alias.
+        // It started with a typo they once had and for compatibility they still support it. Since
+        // we scan the aliases, we were picking it. See:
+        // http://www.docjar.org/html/api/org/bouncycastle/jce/provider/symmetric/AESMappings.java.html
+        assertEquals("AES", getOidName("2.16.840.1.101.3.4.42"));
+
+        // ECDH not present before and in N
+        assertEquals("ECDH", getOidName("1.3.132.1.12"));
     }
 
     private String getOidName(String oid) throws Exception {
