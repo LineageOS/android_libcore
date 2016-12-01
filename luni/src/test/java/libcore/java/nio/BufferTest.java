@@ -1429,4 +1429,41 @@ public class BufferTest extends TestCase {
         assertFalse(bigEndian.asFloatBuffer().slice().get() ==
                 littleEndian.asFloatBuffer().slice().get());
     }
+
+    // http://b/32655865
+    public void test_ByteBufferAsXBuffer_ByteOrder_2() {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(10);
+        byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        // Fill a ByteBuffer with different bytes that make it easy to tell byte ordering issues.
+        for (int i = 0; i < 10; i++) {
+            byteBuffer.put((byte)i);
+        }
+        byteBuffer.rewind();
+
+        // Create BIG_ENDIAN views of the buffer.
+        ShortBuffer sb_be = byteBuffer.asShortBuffer();
+        LongBuffer lb_be = byteBuffer.asLongBuffer();
+        IntBuffer ib_be = byteBuffer.asIntBuffer();
+        DoubleBuffer db_be = byteBuffer.asDoubleBuffer();
+        CharBuffer cb_be = byteBuffer.asCharBuffer();
+        FloatBuffer fb_be = byteBuffer.asFloatBuffer();
+
+        // Change the order of the underlying buffer.
+        byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+
+        // Create LITTLE_ENDIAN views of the buffer.
+        ShortBuffer sb_le = byteBuffer.asShortBuffer();
+        LongBuffer lb_le = byteBuffer.asLongBuffer();
+        IntBuffer ib_le = byteBuffer.asIntBuffer();
+        DoubleBuffer db_le = byteBuffer.asDoubleBuffer();
+        CharBuffer cb_le = byteBuffer.asCharBuffer();
+        FloatBuffer fb_le = byteBuffer.asFloatBuffer();
+
+        assertFalse(sb_be.get() == sb_le.get());
+        assertFalse(lb_be.get() == lb_le.get());
+        assertFalse(ib_be.get() == ib_le.get());
+        assertFalse(db_be.get() == db_le.get());
+        assertFalse(cb_be.get() == cb_le.get());
+        assertFalse(fb_be.get() == fb_le.get());
+    }
 }
