@@ -500,7 +500,9 @@ NET_AllocSockaddr(struct sockaddr **him, int *len) {
         }
 }
 
-#if defined(__linux__) && defined(AF_INET6)
+#if 0
+// Android-changed: Stripped out unused code. http://b/33250070
+// #if defined(__linux__) && defined(AF_INET6)
 
 
 /* following code creates a list of addresses from the kernel
@@ -1398,9 +1400,12 @@ NET_Wait(JNIEnv *env, jint fd, jint flags, jint timeout)
     return timeout;
 }
 
+#if 0
+// Stripped out unused code.
 // http://b/27301951
 __attribute__((destructor))
 static void netUtilCleanUp() {
     if (loRoutes != 0) free(loRoutes);
     if (localifs != 0) free(localifs);
 }
+#endif
