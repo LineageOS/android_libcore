@@ -379,8 +379,8 @@ public class AVA implements DerEncoder {
 
         // encode as PrintableString unless value contains
         // non-PrintableString chars
-        if (this.oid.equals(PKCS9Attribute.EMAIL_ADDRESS_OID) ||
-            (this.oid.equals(X500Name.DOMAIN_COMPONENT_OID) &&
+        if (this.oid.equals((Object)PKCS9Attribute.EMAIL_ADDRESS_OID) ||
+            (this.oid.equals((Object)X500Name.DOMAIN_COMPONENT_OID) &&
                 PRESERVE_OLD_DC_ENCODING == false)) {
             // EmailAddress and DomainComponent must be IA5String
             return new DerValue(DerValue.tag_IA5String,
@@ -396,7 +396,7 @@ public class AVA implements DerEncoder {
     private DerValue parseString
         (Reader in, int c, int format, StringBuilder temp) throws IOException {
 
-        List<Byte> embeddedHex = new ArrayList<Byte>();
+        List<Byte> embeddedHex = new ArrayList<>();
         boolean isPrintableString = true;
         boolean escape = false;
         boolean leadingChar = true;
@@ -514,8 +514,8 @@ public class AVA implements DerEncoder {
 
         // encode as PrintableString unless value contains
         // non-PrintableString chars
-        if (this.oid.equals(PKCS9Attribute.EMAIL_ADDRESS_OID) ||
-            (this.oid.equals(X500Name.DOMAIN_COMPONENT_OID) &&
+        if (this.oid.equals((Object)PKCS9Attribute.EMAIL_ADDRESS_OID) ||
+            (this.oid.equals((Object)X500Name.DOMAIN_COMPONENT_OID) &&
                 PRESERVE_OLD_DC_ENCODING == false)) {
             // EmailAddress and DomainComponent must be IA5String
             return new DerValue(DerValue.tag_IA5String, temp.toString());
