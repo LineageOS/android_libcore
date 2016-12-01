@@ -37,8 +37,8 @@ import libcore.io.MemoryMappedFile;
  * @hide - used to implement TimeZone
  */
 public final class ZoneInfoDB {
-  private static final TzData DATA =
-      new TzData(System.getenv("ANDROID_DATA") + "/misc/zoneinfo/current/tzdata",
+  private static final TzData DATA = TzData.loadTzDataWithFallback(
+          System.getenv("ANDROID_DATA") + "/misc/zoneinfo/current/tzdata",
           System.getenv("ANDROID_ROOT") + "/usr/share/zoneinfo/tzdata");
 
   public static class TzData {
@@ -83,10 +83,16 @@ public final class ZoneInfoDB {
       }
     };
 
-    public TzData(String... paths) {
+    /**
+     * Loads the data at the specified paths in order, returning the first valid one as a
+     * {@link TzData} object. If there is no valid one found a basic fallback instance is created
+     * containing just GMT.
+     */
+    public static TzData loadTzDataWithFallback(String... paths) {
       for (String path : paths) {
-        if (loadData(path)) {
-          return;
+        TzData tzData = new TzData();
+        if (tzData.loadData(path)) {
+          return tzData;
         }
       }
 
@@ -94,10 +100,28 @@ public final class ZoneInfoDB {
       // This is actually implemented in TimeZone itself, so if this is the only time zone
       // we report, we won't be asked any more questions.
       System.logE("Couldn't find any tzdata!");
-      version = "missing";
-      zoneTab = "# Emergency fallback data.\n";
-      ids = new String[] { "GMT" };
-      byteOffsets = rawUtcOffsetsCache = new int[1];
+      return TzData.createFallback();
+    }
+
+    /**
+     * Loads the data at the specified path and returns the {@link TzData} object if it is valid,
+     * otherwise {@code null}.
+     */
+    public static TzData loadTzData(String path) {
+      TzData tzData = new TzData();
+      if (tzData.loadData(path)) {
+        return tzData;
+      }
+      return null;
+    }
+
+    private static TzData createFallback() {
+      TzData tzData = new TzData();
+      tzData.populateFallback();
+      return tzData;
+    }
+
+    private TzData() {
     }
 
     /**
@@ -115,6 +139,13 @@ public final class ZoneInfoDB {
       return it;
     }
 
+    private void populateFallback() {
+      version = "missing";
+      zoneTab = "# Emergency fallback data.\n";
+      ids = new String[] { "GMT" };
+      byteOffsets = rawUtcOffsetsCache = new int[1];
+    }
+
     private boolean loadData(String path) {
       try {
         mappedFile = MemoryMappedFile.mmapRO(path);
@@ -125,6 +156,11 @@ public final class ZoneInfoDB {
         readHeader();
         return true;
       } catch (Exception ex) {
+        try {
+          mappedFile.close();
+        } catch (ErrnoException ignored) {
+        }
+
         // Something's wrong with the file.
         // Log the problem and return false so we try the next choice.
         System.logE("tzdata file \"" + path + "\" was present but invalid!", ex);
