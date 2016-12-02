@@ -19,7 +19,11 @@ package libcore.java.nio.channels;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import android.system.ErrnoException;
+import android.system.StructPollfd;
+
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -35,6 +39,8 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.MembershipKey;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
+import static android.system.OsConstants.POLLIN;
 
 /**
  * Tests associated with multicast behavior of DatagramChannel.
@@ -774,6 +780,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         // Send a message. It should be received.
         String msg1 = "Hello1";
         sendMessage(sendingChannel, msg1, groupSocketAddress);
+        blockUntilAvailableOrTimeout(receivingChannel.socket(), 1000);
         InetSocketAddress sourceAddress1 = (InetSocketAddress) receivingChannel.receive(receiveBuffer);
         assertEquals(sourceAddress1, sendingAddress);
         assertEquals(msg1, new String(receiveBuffer.array(), 0, receiveBuffer.position()));
@@ -784,6 +791,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         // Send a message. It should be filtered.
         String msg2 = "Hello2";
         sendMessage(sendingChannel, msg2, groupSocketAddress);
+        blockUntilAvailableOrTimeout(receivingChannel.socket(), 1000);
         receiveBuffer.position(0);
         InetSocketAddress sourceAddress2 = (InetSocketAddress) receivingChannel.receive(receiveBuffer);
         assertNull(sourceAddress2);
@@ -794,6 +802,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         // Send a message. It should be received.
         String msg3 = "Hello3";
         sendMessage(sendingChannel, msg3, groupSocketAddress);
+        blockUntilAvailableOrTimeout(receivingChannel.socket(), 1000);
         receiveBuffer.position(0);
         InetSocketAddress sourceAddress3 = (InetSocketAddress) receivingChannel.receive(receiveBuffer);
         assertEquals(sourceAddress3, sendingAddress);
@@ -1237,5 +1246,13 @@ public class DatagramChannelMulticastTest extends TestCase {
         throw new AssertionFailedError("Unable to find local IPv6 address for " + networkInterface);
     }
 
+    private static void blockUntilAvailableOrTimeout(DatagramSocket s, int timeout) {
+        try {
+            StructPollfd[] pollFds = new StructPollfd[]{ new StructPollfd() };
+            pollFds[0].fd = s.getFileDescriptor$();
+            pollFds[0].events = (short) POLLIN;
+            android.system.Os.poll(pollFds, timeout);
+        } catch (ErrnoException ignored) { }
+    }
 }
 
