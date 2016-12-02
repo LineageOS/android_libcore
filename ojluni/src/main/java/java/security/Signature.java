@@ -1019,6 +1019,12 @@ public abstract class Signature extends SignatureSpi {
 
         // The provider implementation (delegate)
         // filled in once the provider is selected
+        // BEGIN android-added
+        // (Not necessarily Android specific)
+        // Invariant to be preserved: sigSpi cannot be changed once it was assigned to something
+        // different than null and lock is null. That is the case when sigSpi is specified in the
+        // constructor.
+        // END android-added
         private SignatureSpi sigSpi;
 
         // lock for mutex during provider selection
@@ -1306,6 +1312,9 @@ public abstract class Signature extends SignatureSpi {
 
         @Override
         public SignatureSpi getCurrentSpi() {
+            if (lock == null) {
+                return sigSpi;
+            }
             synchronized (lock) {
                 return sigSpi;
             }
