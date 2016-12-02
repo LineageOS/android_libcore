@@ -327,7 +327,7 @@ public class SignerInfo implements DerEncoder {
                        authenticatedAttributes.getAttributeValue(
                          PKCS9Attribute.CONTENT_TYPE_OID);
                 if (contentType == null ||
-                    !contentType.equals(content.contentType))
+                    !contentType.equals((Object)content.contentType))
                     return null;  // contentType does not match, bad SignerInfo
 
                 // now, check message digest
