@@ -32,9 +32,9 @@ public final class ClassExt {
      * These entries are associated with the obsolete ArtMethod pointers at the same indexes in the
      * obsoleteMethods array.
      *
-     * Transient as this field has native components and is a logical part of the 'Class' type.
+     * This field has native components and is a logical part of the 'Class' type.
      */
-    private transient Object[] obsoleteDexCaches;
+    private Object[] obsoleteDexCaches;
 
     /**
      * An array of all native obsolete ArtMethod pointers.
@@ -43,9 +43,9 @@ public final class ClassExt {
      *
      * This field is actually either an int[] or a long[] depending on size of a pointer.
      *
-     * Transient as this field contains native pointers and is a logical part of the 'Class' type.
+     * This field contains native pointers and is a logical part of the 'Class' type.
      */
-    private transient Object obsoleteMethods;
+    private Object obsoleteMethods;
 
     /**
      * If set, the original DexCache associated with the related class.
@@ -56,17 +56,17 @@ public final class ClassExt {
      *
      * Needed in order to implement retransformation of classes.
      *
-     * Transient as this field has native components and is a logical part of the 'Class' type.
+     * This field has native components and is a logical part of the 'Class' type.
      */
-    private transient Object originalDexCache;
+    private Object originalDexCache;
 
     /**
      * If class verify fails, we must return same error on subsequent tries. We may store either
      * the class of the error, or an actual instance of Throwable here.
      *
-     * Transient as this field is a logical part of the 'Class' type.
+     * This field is a logical part of the 'Class' type.
      */
-    private transient Object verifyError;
+    private Object verifyError;
 
     /**
     * Private constructor.
