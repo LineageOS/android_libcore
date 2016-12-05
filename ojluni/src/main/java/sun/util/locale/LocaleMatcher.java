@@ -213,7 +213,7 @@ public final class LocaleMatcher {
                 continue;
             }
 
-            String rangeForRegex = range.replaceAll("\\x2A", "\\\\p{Alnum}*");
+            String rangeForRegex = range.replace("*", "\\p{Alnum}*");
             while (rangeForRegex.length() > 0) {
                 for (String tag : tags) {
                     tag = tag.toLowerCase();
@@ -242,7 +242,7 @@ public final class LocaleMatcher {
     }
 
     public static List<LanguageRange> parse(String ranges) {
-        ranges = ranges.replaceAll(" ", "").toLowerCase();
+        ranges = ranges.replace(" ", "").toLowerCase();
         if (ranges.startsWith("accept-language:")) {
             ranges = ranges.substring(16); // delete unnecessary prefix
         }
@@ -331,6 +331,21 @@ public final class LocaleMatcher {
         return list;
     }
 
+    /**
+     * A faster alternative approach to String.replaceFirst(), if the given
+     * string is a literal String, not a regex.
+     */
+    private static String replaceFirstSubStringMatch(String range,
+            String substr, String replacement) {
+        int pos = range.indexOf(substr);
+        if (pos == -1) {
+            return range;
+        } else {
+            return range.substring(0, pos) + replacement
+                    + range.substring(pos + substr.length());
+        }
+    }
+
     private static String[] getEquivalentsForLanguage(String range) {
         String r = range;
 
@@ -339,13 +354,16 @@ public final class LocaleMatcher {
                 String equiv = LocaleEquivalentMaps.singleEquivMap.get(r);
                 // Return immediately for performance if the first matching
                 // subtag is found.
-                return new String[] {range.replaceFirst(r, equiv)};
+                return new String[]{replaceFirstSubStringMatch(range,
+                    r, equiv)};
             } else if (LocaleEquivalentMaps.multiEquivsMap.containsKey(r)) {
                 String[] equivs = LocaleEquivalentMaps.multiEquivsMap.get(r);
+                String[] result = new String[equivs.length];
                 for (int i = 0; i < equivs.length; i++) {
-                    equivs[i] = range.replaceFirst(r, equivs[i]);
+                    result[i] = replaceFirstSubStringMatch(range,
+                            r, equivs[i]);
                 }
-                return equivs;
+                return result;
             }
 
             // Truncate the last subtag simply.
@@ -373,7 +391,9 @@ public final class LocaleMatcher {
 
                 int len = index + subtag.length();
                 if (range.length() == len || range.charAt(len) == '-') {
-                    return range.replaceFirst(subtag, LocaleEquivalentMaps.regionVariantEquivMap.get(subtag));
+                    return replaceFirstSubStringMatch(range, subtag,
+                            LocaleEquivalentMaps.regionVariantEquivMap
+                                    .get(subtag));
                 }
             }
         }
