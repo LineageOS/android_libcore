@@ -15,7 +15,7 @@
  *  limitations under the License.
  */
 
-package libcore.io;
+package libcore.java.util;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -26,10 +26,16 @@ import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import java.util.Base64;
+import java.util.Base64.Decoder;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-public final class Base64Test extends TestCase {
+/**
+ * Additional tests for {@link java.util.Base64} derived from old tests for
+ * the removed class {@code libcore.io.Base64}.
+ */
+public final class LibcoreIoDerivedBase64Test extends TestCase {
 
     public void testEncodeDecode() throws Exception {
         assertEncodeDecode("");
@@ -59,7 +65,7 @@ public final class Base64Test extends TestCase {
         for (int i = 0; i < toEncode.length; i++) {
             inputBytes[i] = (byte) toEncode[i];
         }
-        String encoded = Base64.encode(inputBytes);
+        String encoded = encode(inputBytes);
         assertEquals(expectedEncoded, encoded);
 
         // Check we can round-trip the encoded bytes to
@@ -69,7 +75,7 @@ public final class Base64Test extends TestCase {
     }
 
     public void testDecode_empty() throws Exception {
-        byte[] decoded = Base64.decode(new byte[0]);
+        byte[] decoded = decode(new byte[0]);
         assertEquals(0, decoded.length);
     }
 
@@ -78,26 +84,26 @@ public final class Base64Test extends TestCase {
         assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxk"));
 
         // The following are missing the final bytes
-        assertEquals("hello, wo", decodeToString("aGVsbG8sIHdvcmx"));
-        assertEquals("hello, wo", decodeToString("aGVsbG8sIHdvcm"));
-        assertEquals("hello, wo", decodeToString("aGVsbG8sIHdvc"));
-        assertEquals("hello, wo", decodeToString("aGVsbG8sIHdv"));
+        assertEquals("hello, worl", decodeToString("aGVsbG8sIHdvcmx"));
+        assertEquals("hello, wor",  decodeToString("aGVsbG8sIHdvcm"));
+        assertEquals(null,          decodeToString("aGVsbG8sIHdvc"));
+        assertEquals("hello, wo",   decodeToString("aGVsbG8sIHdv"));
     }
 
     public void testDecode_extraChars() throws Exception {
         // Characters outside of alphabet before padding.
-        assertEquals("hello, world", decodeToString(" aGVsbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGV sbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxk "));
+        assertEquals(null, decodeToString(" aGVsbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGV sbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxk "));
         assertEquals(null, decodeToString("*aGVsbG8sIHdvcmxk"));
         assertEquals(null, decodeToString("aGV*sbG8sIHdvcmxk"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxk*"));
-        assertEquals("hello, world", decodeToString("\r\naGVsbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGV\r\nsbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxk\r\n"));
-        assertEquals("hello, world", decodeToString("\naGVsbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGV\nsbG8sIHdvcmxk"));
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxk\n"));
+        assertEquals(null, decodeToString("\r\naGVsbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGV\r\nsbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxk\r\n"));
+        assertEquals(null, decodeToString("\naGVsbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGV\nsbG8sIHdvcmxk"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxk\n"));
 
         // padding 0
         assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxk"));
@@ -111,49 +117,49 @@ public final class Base64Test extends TestCase {
         // padding 1
         assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE="));
         // Missing padding
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxkPyE"));
+        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE"));
         // Characters outside alphabet before padding.
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE ="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE ="));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE*="));
         // Trailing characters, otherwise valid.
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE= "));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE= "));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=*"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=X"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=XY"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=XYZ"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=XYZA"));
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE=\n"));
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE=\r\n"));
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE= "));
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE=="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=\n"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=\r\n"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE= "));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE=="));
         // Whitespace characters outside alphabet intermixed with (too much) padding.
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE =="));
-        assertEquals("hello, world?!", decodeToString("aGVsbG8sIHdvcmxkPyE = = "));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE =="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkPyE = = "));
 
         // padding 2
         assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg=="));
         // Missing padding
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxkLg"));
+        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg"));
         // Partially missing padding
-        assertEquals("hello, world", decodeToString("aGVsbG8sIHdvcmxkLg="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg="));
         // Characters outside alphabet before padding.
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg =="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg =="));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg*=="));
         // Trailing characters, otherwise valid.
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg== "));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg== "));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==*"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==X"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==XY"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==XYZ"));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==XYZA"));
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg==\n"));
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg==\r\n"));
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg== "));
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg==="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==\n"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==\r\n"));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg== "));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg==="));
         // Characters outside alphabet inside padding.
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg= ="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg= ="));
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg=*="));
-        assertEquals("hello, world.", decodeToString("aGVsbG8sIHdvcmxkLg=\r\n="));
+        assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg=\r\n="));
         // Characters inside alphabet inside padding.
         assertEquals(null, decodeToString("aGVsbG8sIHdvcmxkLg=X="));
 
@@ -206,7 +212,7 @@ public final class Base64Test extends TestCase {
      */
     private static String decodeToString(String in) throws Exception {
         byte[] bytes = asciiToBytes(in);
-        byte[] out = Base64.decode(bytes);
+        byte[] out = decode(bytes);
         if (out == null) {
             return null;
         }
@@ -251,8 +257,21 @@ public final class Base64Test extends TestCase {
 
     /** Decodes an ASCII string, returning an int array. */
     private static int[] decodeToInts(String in) throws Exception {
-        byte[] bytes = Base64.decode(asciiToBytes(in));
+        byte[] bytes = decode(asciiToBytes(in));
         return bytesToInts(bytes);
+    }
+
+    private static byte[] decode(byte[] encoded) {
+        Decoder decoder = Base64.getDecoder();
+        try {
+            return decoder.decode(encoded);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private static String encode(byte[] data) {
+        return Base64.getEncoder().encodeToString(data);
     }
 
     /**
@@ -268,16 +287,6 @@ public final class Base64Test extends TestCase {
             ints[i] = bytes[i] & 0xff;
         }
         return ints;
-    }
-
-    /** Assert that decoding 'in' throws ArrayIndexOutOfBoundsException. */
-    private static void assertDecodeBad(String in) throws Exception {
-        try {
-            byte[] result = Base64.decode(asciiToBytes(in));
-            fail("should have failed to decode. Actually received: " +
-                    (result == null ? result : Arrays.toString(bytesToInts(result))));
-        } catch (ArrayIndexOutOfBoundsException e) {
-        }
     }
 
     private static void assertArrayEquals(int[] expected, int[] actual) {
