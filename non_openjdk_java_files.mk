@@ -374,7 +374,6 @@ non_openjdk_java_files := \
   luni/src/main/java/libcore/internal/StringPool.java \
   luni/src/main/java/libcore/io/AsynchronousCloseMonitor.java \
   luni/src/main/java/libcore/io/ClassPathURLStreamHandler.java \
-  luni/src/main/java/libcore/io/Base64.java \
   luni/src/main/java/libcore/io/BlockGuardOs.java \
   luni/src/main/java/libcore/io/BufferIterator.java \
   luni/src/main/java/libcore/io/DropBox.java \
