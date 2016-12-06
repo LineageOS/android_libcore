@@ -25,18 +25,24 @@
 
 package sun.security.provider;
 
+/* BEGIN android-removed
 import java.io.*;
 import java.util.*;
+ * END android-removed */
 import java.security.cert.*;
 import sun.security.x509.X509CertImpl;
 import sun.security.x509.X509CRLImpl;
+/* BEGIN android-removed
 import sun.security.pkcs.PKCS7;
 import sun.security.provider.certpath.X509CertPath;
 import sun.security.provider.certpath.X509CertificatePair;
 import sun.security.util.DerValue;
+ * END android-removed */
 import sun.security.util.Cache;
-import sun.misc.BASE64Decoder;
+/* BEGIN android-removed
+import java.util.Base64;
 import sun.security.pkcs.ParsingException;
+ * END android-removed */
 
 /**
  * This class defines a certificate factory for X.509 v3 certificates &
@@ -57,10 +63,15 @@ import sun.security.pkcs.ParsingException;
  * @see sun.security.x509.X509CRLImpl
  */
 
-public class X509Factory extends CertificateFactorySpi {
+// BEGIN android-changed
+// Was: public class X509Factory extends CertificateFactorySpi {
+public class X509Factory {
+// END android-changed
 
+    /* BEGIN android-removed
     public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     public static final String END_CERT = "-----END CERTIFICATE-----";
+     * END android-removed */
 
     private static final int ENC_MAX_LENGTH = 4096 * 1024; // 4 MB MAX
 
@@ -69,6 +80,7 @@ public class X509Factory extends CertificateFactorySpi {
     private static final Cache<Object, X509CRLImpl> crlCache
         = Cache.newSoftMemoryCache(750);
 
+    /* BEGIN android-removed
     /**
      * Generates an X.509 certificate object and initializes it with
      * the data read from the input stream <code>is</code>.
@@ -79,7 +91,7 @@ public class X509Factory extends CertificateFactorySpi {
      * from the input stream.
      *
      * @exception CertificateException on parsing errors.
-     */
+     *
     @Override
     public Certificate engineGenerateCertificate(InputStream is)
         throws CertificateException
@@ -112,7 +124,7 @@ public class X509Factory extends CertificateFactorySpi {
     /**
      * Read from the stream until length bytes have been read or EOF has
      * been reached. Return the number of bytes actually read.
-     */
+     *
     private static int readFully(InputStream in, ByteArrayOutputStream bout,
             int length) throws IOException {
         int read = 0;
@@ -128,6 +140,7 @@ public class X509Factory extends CertificateFactorySpi {
         }
         return read;
     }
+     * END android-removed */
 
     /**
      * Return an interned X509CertImpl for the given certificate.
@@ -231,6 +244,7 @@ public class X509Factory extends CertificateFactorySpi {
         cache.put(key, value);
     }
 
+    /* BEGIN android-removed
     /**
      * Generates a <code>CertPath</code> object and initializes it with
      * the data read from the <code>InputStream</code> inStream. The data
@@ -241,7 +255,7 @@ public class X509Factory extends CertificateFactorySpi {
      *   <code>InputStream</code>
      * @exception CertificateException if an exception occurs while decoding
      * @since 1.4
-     */
+     *
     @Override
     public CertPath engineGenerateCertPath(InputStream inStream)
         throws CertificateException
@@ -273,7 +287,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @exception CertificateException if an exception occurs while decoding or
      *   the encoding requested is not supported
      * @since 1.4
-     */
+     *
     @Override
     public CertPath engineGenerateCertPath(InputStream inStream,
         String encoding) throws CertificateException
@@ -306,7 +320,7 @@ public class X509Factory extends CertificateFactorySpi {
      *   certificates
      * @exception CertificateException if an exception occurs
      * @since 1.4
-     */
+     *
     @Override
     public CertPath
         engineGenerateCertPath(List<? extends Certificate> certificates)
@@ -326,7 +340,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @return an <code>Iterator</code> over the names of the supported
      *         <code>CertPath</code> encodings (as <code>String</code>s)
      * @since 1.4
-     */
+     *
     @Override
     public Iterator<String> engineGetCertPathEncodings() {
         return(X509CertPath.getEncodingsStatic());
@@ -342,7 +356,7 @@ public class X509Factory extends CertificateFactorySpi {
      * initialized with the data from the input stream.
      *
      * @exception CertificateException on parsing errors.
-     */
+     *
     @Override
     public Collection<? extends java.security.cert.Certificate>
             engineGenerateCertificates(InputStream is)
@@ -368,7 +382,7 @@ public class X509Factory extends CertificateFactorySpi {
      * from the input stream.
      *
      * @exception CRLException on parsing errors.
-     */
+     *
     @Override
     public CRL engineGenerateCRL(InputStream is)
         throws CRLException
@@ -406,7 +420,7 @@ public class X509Factory extends CertificateFactorySpi {
      * initialized with the data from the input stream.
      *
      * @exception CRLException on parsing errors.
-     */
+     *
     @Override
     public Collection<? extends java.security.cert.CRL> engineGenerateCRLs(
             InputStream is) throws CRLException
@@ -425,16 +439,35 @@ public class X509Factory extends CertificateFactorySpi {
      * Parses the data in the given input stream as a sequence of DER
      * encoded X.509 certificates (in binary or base 64 encoded format) OR
      * as a single PKCS#7 encoded blob (in binary or base64 encoded format).
-     */
+     *
     private Collection<? extends java.security.cert.Certificate>
         parseX509orPKCS7Cert(InputStream is)
         throws CertificateException, IOException
     {
+        int peekByte;
+        byte[] data;
+        PushbackInputStream pbis = new PushbackInputStream(is);
         Collection<X509CertImpl> coll = new ArrayList<>();
-        byte[] data = readOneBlock(is);
-        if (data == null) {
+
+        // Test the InputStream for end-of-stream.  If the stream's
+        // initial state is already at end-of-stream then return
+        // an empty collection.  Otherwise, push the byte back into the
+        // stream and let readOneBlock look for the first certificate.
+        peekByte = pbis.read();
+        if (peekByte == -1) {
             return new ArrayList<>(0);
+        } else {
+            pbis.unread(peekByte);
+            data = readOneBlock(pbis);
         }
+
+        // If we end up with a null value after reading the first block
+        // then we know the end-of-stream has been reached and no certificate
+        // data has been found.
+        if (data == null) {
+            throw new CertificateException("No certificate data found");
+        }
+
         try {
             PKCS7 pkcs7 = new PKCS7(data);
             X509Certificate[] certs = pkcs7.getCertificates();
@@ -442,13 +475,13 @@ public class X509Factory extends CertificateFactorySpi {
             if (certs != null) {
                 return Arrays.asList(certs);
             } else {
-                // no crls provided
+                // no certificates provided
                 return new ArrayList<>(0);
             }
         } catch (ParsingException e) {
             while (data != null) {
                 coll.add(new X509CertImpl(data));
-                data = readOneBlock(is);
+                data = readOneBlock(pbis);
             }
         }
         return coll;
@@ -458,16 +491,35 @@ public class X509Factory extends CertificateFactorySpi {
      * Parses the data in the given input stream as a sequence of DER encoded
      * X.509 CRLs (in binary or base 64 encoded format) OR as a single PKCS#7
      * encoded blob (in binary or base 64 encoded format).
-     */
+     *
     private Collection<? extends java.security.cert.CRL>
         parseX509orPKCS7CRL(InputStream is)
         throws CRLException, IOException
     {
+        int peekByte;
+        byte[] data;
+        PushbackInputStream pbis = new PushbackInputStream(is);
         Collection<X509CRLImpl> coll = new ArrayList<>();
-        byte[] data = readOneBlock(is);
-        if (data == null) {
+
+        // Test the InputStream for end-of-stream.  If the stream's
+        // initial state is already at end-of-stream then return
+        // an empty collection.  Otherwise, push the byte back into the
+        // stream and let readOneBlock look for the first CRL.
+        peekByte = pbis.read();
+        if (peekByte == -1) {
             return new ArrayList<>(0);
+        } else {
+            pbis.unread(peekByte);
+            data = readOneBlock(pbis);
         }
+
+        // If we end up with a null value after reading the first block
+        // then we know the end-of-stream has been reached and no CRL
+        // data has been found.
+        if (data == null) {
+            throw new CRLException("No CRL data found");
+        }
+
         try {
             PKCS7 pkcs7 = new PKCS7(data);
             X509CRL[] crls = pkcs7.getCRLs();
@@ -481,7 +533,7 @@ public class X509Factory extends CertificateFactorySpi {
         } catch (ParsingException e) {
             while (data != null) {
                 coll.add(new X509CRLImpl(data));
-                data = readOneBlock(is);
+                data = readOneBlock(pbis);
             }
         }
         return coll;
@@ -498,7 +550,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @param is the InputStream
      * @returns byte block or null if end of stream
      * @throws IOException If any parsing error
-     */
+     *
     private static byte[] readOneBlock(InputStream is) throws IOException {
 
         // The first character of a BLOCK.
@@ -595,8 +647,7 @@ public class X509Factory extends CertificateFactorySpi {
 
             checkHeaderFooter(header.toString(), footer.toString());
 
-            BASE64Decoder decoder = new BASE64Decoder();
-            return decoder.decodeBuffer(new String(data, 0, pos));
+            return Base64.getMimeDecoder().decode(new String(data, 0, pos));
         }
     }
 
@@ -627,7 +678,7 @@ public class X509Factory extends CertificateFactorySpi {
      * @param tag   Tag already read (-1 mean not read)
      * @returns     The current tag, used to check EOC in indefinite-length BER
      * @throws IOException Any parsing error
-     */
+     *
     private static int readBERInternal(InputStream is,
             ByteArrayOutputStream bout, int tag) throws IOException {
 
@@ -716,4 +767,5 @@ public class X509Factory extends CertificateFactorySpi {
         }
         return tag;
     }
+     * END android-removed */
 }
