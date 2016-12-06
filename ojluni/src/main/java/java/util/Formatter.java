@@ -4191,6 +4191,14 @@ public final class Formatter implements Closeable, Flushable {
                     grpSep = dfs.getGroupingSeparator();
                     DecimalFormat df = (DecimalFormat) NumberFormat.getIntegerInstance(l);
                     grpSize = df.getGroupingSize();
+                    // Android-changed: http://b/33245708 : Some locales have a group separator but
+                    // also patterns without groups. If we do not clear the group separator in these
+                    // cases a divide by zero is thrown when determining where to place the
+                    // separators.
+                    if (!df.isGroupingUsed() || df.getGroupingSize() == 0) {
+                        grpSep = '\0';
+                    }
+                    // Android-changed: end http://b/33245708.
                 }
             }
 
