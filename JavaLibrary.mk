@@ -171,8 +171,8 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(call all-java-files-under, dalvik/test-rules/src/main test-rules/src/main)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := core-test-rules
-LOCAL_JAVA_LIBRARIES := core-all core-junit
-LOCAL_STATIC_JAVA_LIBRARIES := junit4-target
+LOCAL_JAVA_LIBRARIES := core-all
+LOCAL_STATIC_JAVA_LIBRARIES := junit
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
 # Build libcore test rules for host
@@ -206,7 +206,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(test_src_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp core-junit junit4-target bouncycastle mockito-target
+LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp junit bouncycastle mockito-target
 LOCAL_STATIC_JAVA_LIBRARIES := \
 	core-test-rules \
 	core-tests-support \
@@ -227,7 +227,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(call all-test-java-files-under,support)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart core-junit junit4-target bouncycastle
+LOCAL_JAVA_LIBRARIES := core-oj core-libart junit bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-bcpkix bouncycastle-ocsp
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE := core-tests-support
@@ -241,7 +241,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES :=  $(call all-test-java-files-under, jsr166-tests)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart core-junit junit4-target
+LOCAL_JAVA_LIBRARIES := core-oj core-libart junit
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE := jsr166-tests
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
