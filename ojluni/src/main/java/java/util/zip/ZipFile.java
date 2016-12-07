@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
@@ -203,9 +204,15 @@ class ZipFile implements ZipConstants, Closeable {
                                                Integer.toHexString(mode));
         }
 
-        // Android-changed: Error out early if the file is too short.
-        if (file.length() < ZipConstants.ENDHDR) {
-            throw new ZipException("File too short to be a zip file: " + file.length());
+
+        // Android-changed: Error out early if the file is too short or non-existent.
+        long length = file.length();
+        if (length < ZipConstants.ENDHDR) {
+            if (length == 0 && !file.exists()) {
+                throw new FileNotFoundException("File doesn't exist: " + file);
+            } else {
+                throw new ZipException("File too short to be a zip file: " + file.length());
+            }
         }
         String name = file.getPath();
 
@@ -770,6 +777,14 @@ class ZipFile implements ZipConstants, Closeable {
     public boolean startsWithLocHeader() {
         return locsig;
     }
+
+    /** @hide */
+    // @VisibleForTesting
+    public int getFileDescriptor() {
+        return getFileDescriptor(jzfile);
+    }
+
+    private static native int getFileDescriptor(long jzfile);
 
     private static native long open(String name, int mode, long lastModified,
                                     boolean usemmap) throws IOException;
