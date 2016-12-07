@@ -35,7 +35,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.PortUnreachableException;
-import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketOptions;
 import java.net.SocketTimeoutException;
@@ -642,6 +641,29 @@ public final class IoBridge {
             return fd;
         } catch (ErrnoException errnoException) {
             throw errnoException.rethrowAsSocketException();
+        }
+    }
+
+    /**
+     * Wait for some event on a file descriptor, blocks until the event happened or timeout period
+     * passed. See poll(2) and @link{android.system.Os.Poll}.
+     *
+     * @throws SocketException if poll(2) fails.
+     * @throws SocketTimeoutException if the event has not happened before timeout period has passed.
+     */
+    public static void poll(FileDescriptor fd, int events, int timeout)
+            throws SocketException, SocketTimeoutException {
+        StructPollfd[] pollFds = new StructPollfd[]{ new StructPollfd() };
+        pollFds[0].fd = fd;
+        pollFds[0].events = (short) events;
+
+        try {
+            int ret = android.system.Os.poll(pollFds, timeout);
+            if (ret == 0) {
+                throw new SocketTimeoutException("Poll timed out");
+            }
+        } catch (ErrnoException e) {
+            e.rethrowAsSocketException();
         }
     }
 
