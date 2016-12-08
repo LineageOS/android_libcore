@@ -451,23 +451,13 @@ public final class DexFile {
 
     /**
      * dex2oat should be run to update the apk/jar because the existing code
-     * is not relocated to match the boot image and does not have the
-     * necessary patch information to use patchoat.
+     * is not relocated to match the boot image.
      *
      * See {@link #getDexOptNeeded(String, String, int)}.
      *
      * @hide
      */
     public static final int DEX2OAT_FOR_RELOCATION = 4;
-
-    /**
-     * patchoat should be run to update the apk/jar.
-     *
-     * See {@link #getDexOptNeeded(String, String, int)}.
-     *
-     * @hide
-     */
-    public static final int PATCHOAT_FOR_RELOCATION = 5;
 
     /**
      * Returns the VM's opinion of what kind of dexopt is needed to make the
@@ -480,7 +470,7 @@ public final class DexFile {
      * @param newProfile flag that describes whether a profile corresponding
      *        to the dex file has been recently updated and should be considered
      *        in the state of the file.
-     * @return NO_DEXOPT_NEEDED, DEX2OAT_*, or PATCHOAT_*. See documentation
+     * @return NO_DEXOPT_NEEDED, or DEX2OAT_*. See documentation
      *         of the particular status code for more information on its
      *         meaning. Returns a positive status code if the status refers to
      *         the oat file in the oat location. Returns a negative status
