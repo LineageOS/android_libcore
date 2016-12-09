@@ -606,6 +606,7 @@ public class TabulatorsTest extends OpTestCase {
     @Test(dataProvider = "StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class)
     public void testComposeFinisher(String name, TestData.OfRef<Integer> data) throws ReflectiveOperationException {
         List<Integer> asList = exerciseTerminalOps(data, s -> s.collect(toList()));
+        // Android-changed: Added a cast to workaround an ECJ bug. http://b/33371837
         List<Integer> asImmutableList = exerciseTerminalOps(data, s -> (List<Integer>) s.collect(collectingAndThen(toList(), Collections::unmodifiableList)));
         assertEquals(asList, asImmutableList);
         try {
