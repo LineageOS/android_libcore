@@ -152,7 +152,6 @@ public class SignatureFileVerifier {
         return false;
     }
 
-    /* BEGIN android-removed
     /**
      * Yet another utility method used by JarVerifier and JarSigner
      * to determine what files are signature related, which includes
@@ -162,7 +161,7 @@ public class SignatureFileVerifier {
      *
      * @param s file name
      * @return true if the input file name is signature related
-     *
+     */
     public static boolean isSigningRelated(String name) {
         name = name.toUpperCase(Locale.ENGLISH);
         if (!name.startsWith("META-INF/")) {
@@ -198,7 +197,6 @@ public class SignatureFileVerifier {
         }
         return false;
     }
-     * END android-removed*/
 
     /** get digest from cache */
 
@@ -267,6 +265,7 @@ public class SignatureFileVerifier {
             throw new SecurityException("cannot verify signature block file " +
                                         name);
         }
+
 
         CodeSigner[] newSigners = getSigners(infos, block);
 
@@ -459,6 +458,7 @@ public class SignatureFileVerifier {
 
                     if (digest != null) {
                         boolean ok = false;
+
                         byte[] expected =
                             Base64.getMimeDecoder().decode((String)se.getValue());
                         byte[] computed;
