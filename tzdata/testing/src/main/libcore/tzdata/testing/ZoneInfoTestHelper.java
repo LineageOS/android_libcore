@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package libcore.util;
+package libcore.tzdata.testing;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;

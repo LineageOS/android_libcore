@@ -96,6 +96,20 @@ public final class TzDataBundleInstaller {
                 return false;
             }
 
+            File zoneInfoFile = new File(workingDir, ConfigBundle.ZONEINFO_FILE_NAME);
+            ZoneInfoDB.TzData tzData = ZoneInfoDB.TzData.loadTzData(zoneInfoFile.getPath());
+            if (tzData == null) {
+                Slog.i(logTag, "Update not applied: " + zoneInfoFile + " could not be loaded");
+                return false;
+            }
+            try {
+                tzData.validate();
+            } catch (IOException e) {
+                Slog.i(logTag, "Update not applied: " + zoneInfoFile + " failed validation", e);
+                return false;
+            } finally {
+                tzData.close();
+            }
             // TODO(nfuller): Add deeper validity checks / canarying before applying.
             // http://b/31008728
 
