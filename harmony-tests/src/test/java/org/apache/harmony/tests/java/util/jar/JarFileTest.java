@@ -36,6 +36,7 @@ import java.security.SignatureSpi;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -1122,6 +1123,47 @@ public class JarFileTest extends TestCase {
                 fail("Should not call this provider");
                 return null;
             }
+        }
+    }
+
+    /**
+     * java.util.jar.JarFile#stream()
+     */
+    public void test_stream() throws Exception {
+        /*
+         * Note only (and all of) the following should be contained in the file
+         * META-INF/ META-INF/MANIFEST.MF Blah.txt  foo/ foo/bar/ foo/bar/A.class
+         */
+        Support_Resources.copyFile(resources, null, jarName);
+        JarFile jarFile = new JarFile(new File(resources, jarName));
+
+        final List<String> names = new ArrayList<>();
+        jarFile.stream().forEach((ZipEntry entry) -> names.add(entry.getName()));
+        assertEquals(Arrays.asList("META-INF/", "META-INF/MANIFEST.MF", "Blah.txt", "foo/", "foo/bar/",
+                                   "foo/bar/A.class"), names);
+        jarFile.close();
+    }
+
+
+    /**
+     * hyts_metainf.jar contains an additional entry in META-INF (META-INF/bad_checksum.txt),
+     * that has been altered since jar signing - we expect to detect a mismatching digest.
+     */
+    public void test_metainf_verification() throws Exception {
+        String jarFilename = "hyts_metainf.jar";
+        Support_Resources.copyFile(resources, null, jarFilename);
+        try (JarFile jarFile = new JarFile(new File(resources, jarFilename))) {
+
+            JarEntry jre = new JarEntry("META-INF/bad_checksum.txt");
+            InputStream in = jarFile.getInputStream(jre);
+
+            byte[] buffer = new byte[1024];
+            try {
+                while (in.available() > 0) {
+                    in.read(buffer);
+                }
+                fail("SecurityException expected");
+            } catch (SecurityException expected) {}
         }
     }
 }
