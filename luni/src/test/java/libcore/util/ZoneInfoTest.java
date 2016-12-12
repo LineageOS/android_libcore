@@ -495,6 +495,11 @@ public class ZoneInfoTest extends TestCase {
     }
 
     @Override
+    public int pos() {
+      return buffer.position();
+    }
+
+    @Override
     public void readByteArray(byte[] dst, int dstOffset, int byteCount) {
       buffer.get(dst, dstOffset, byteCount);
     }
