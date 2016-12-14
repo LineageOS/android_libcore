@@ -105,9 +105,7 @@ public abstract class Reference<T> {
      * <p> This method is invoked only by Java code; when the garbage collector
      * clears references it does so directly, without invoking this method.
      */
-    public void clear() {
-        this.referent = null;
-    }
+    public native void clear();
 
 
     /* -- Queue operations -- */
