@@ -20,7 +20,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.TimeZone;
+
+import static libcore.util.ZoneInfoDB.TzData.SIZEOF_INDEX_ENTRY;
 
 public class ZoneInfoDBTest extends junit.framework.TestCase {
 
@@ -64,23 +65,145 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     RandomAccessFile in = new RandomAccessFile(TZDATA_IN_ROOT, "r");
     byte[] content = new byte[(int) in.length()];
     in.readFully(content);
+    in.close();
+
     // Bump the version number to one long past where humans will be extinct.
     content[6] = '9';
     content[7] = '9';
     content[8] = '9';
     content[9] = '9';
     content[10] = 'z';
-    in.close();
 
-    ZoneInfoDB.TzData data = ZoneInfoDB.TzData.loadTzData(TZDATA_IN_ROOT);
     File goodFile = makeTemporaryFile(content);
     try {
       ZoneInfoDB.TzData dataWithOverride =
               ZoneInfoDB.TzData.loadTzDataWithFallback(goodFile.getPath(), TZDATA_IN_ROOT);
       assertEquals("9999z", dataWithOverride.getVersion());
+      ZoneInfoDB.TzData data = ZoneInfoDB.TzData.loadTzData(TZDATA_IN_ROOT);
       assertEquals(data.getAvailableIDs().length, dataWithOverride.getAvailableIDs().length);
     } finally {
       goodFile.delete();
+    }
+  }
+
+  public void testLoadTzData_badHeader() throws Exception {
+    RandomAccessFile in = new RandomAccessFile(TZDATA_IN_ROOT, "r");
+    byte[] content = new byte[(int) in.length()];
+    in.readFully(content);
+    in.close();
+
+    // Break the header.
+    content[0] = 'a';
+    checkInvalidDataDetected(content);
+  }
+
+  public void testLoadTzData_validTestData() throws Exception {
+    byte[] data = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid().build();
+    File testFile = makeTemporaryFile(data);
+    try {
+      assertNotNull(ZoneInfoDB.TzData.loadTzData(testFile.getPath()));
+    } finally {
+      testFile.delete();
+    }
+  }
+
+  public void testLoadTzData_invalidOffsets() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+
+    // Sections must be in the correct order: section sizing is calculated using them.
+    builder.setIndexOffsetOverride(10);
+    builder.setDataOffsetOverride(30);
+
+    byte[] data = builder.build();
+    // The offsets must all be under the total size of the file for this test to be valid.
+    assertTrue(30 < data.length);
+    checkInvalidDataDetected(data);
+  }
+
+  public void testLoadTzData_zoneTabOutsideFile() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+
+    // Sections must be in the correct order: section sizing is calculated using them.
+    builder.setIndexOffsetOverride(10);
+    builder.setDataOffsetOverride(10 + SIZEOF_INDEX_ENTRY);
+    builder.setZoneTabOffsetOverride(3000); // This is invalid if it is outside of the file.
+
+    byte[] data = builder.build();
+    // The zoneTab offset must be outside of the file for this test to be valid.
+    assertTrue(3000 > data.length);
+    checkInvalidDataDetected(data);
+  }
+
+  public void testLoadTzData_nonDivisibleIndex() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+
+    // Sections must be in the correct order: section sizing is calculated using them.
+    int indexOffset = 10;
+    builder.setIndexOffsetOverride(indexOffset);
+    int dataOffset = indexOffset + ZoneInfoDB.TzData.SIZEOF_INDEX_ENTRY - 1;
+    builder.setDataOffsetOverride(dataOffset);
+    builder.setZoneTabOffsetOverride(dataOffset + 40);
+
+    byte[] data = builder.build();
+    // The zoneTab offset must be outside of the file for this test to be valid.
+    assertTrue(3000 > data.length);
+    checkInvalidDataDetected(data);
+  }
+
+  public void testLoadTzData_badId() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    builder.clearZicData();
+    byte[] validZicData =
+            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+    builder.addZicData("", validZicData); // "" is an invalid ID
+
+    checkInvalidDataDetected(builder.build());
+  }
+
+  public void testLoadTzData_badIdOrder() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    builder.clearZicData();
+    byte[] validZicData =
+            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+    builder.addZicData("Europe/Zurich", validZicData);
+    builder.addZicData("Europe/London", validZicData);
+
+    checkInvalidDataDetected(builder.build());
+  }
+
+  public void testLoadTzData_duplicateId() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    builder.clearZicData();
+    byte[] validZicData =
+            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+    builder.addZicData("Europe/London", validZicData);
+    builder.addZicData("Europe/London", validZicData);
+
+    checkInvalidDataDetected(builder.build());
+  }
+
+  public void testLoadTzData_badZicLength() throws Exception {
+    ZoneInfoTestHelper.TzDataBuilder builder
+            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    builder.clearZicData();
+    byte[] invalidZicData = "This is too short".getBytes();
+    builder.addZicData("Europe/London", invalidZicData);
+
+    checkInvalidDataDetected(builder.build());
+  }
+
+  private static void checkInvalidDataDetected(byte[] data) throws Exception {
+    File testFile = makeTemporaryFile(data);
+    try {
+      assertNull(ZoneInfoDB.TzData.loadTzData(testFile.getPath()));
+    } finally {
+      testFile.delete();
     }
   }
 

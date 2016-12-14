@@ -42,6 +42,22 @@ public final class ZoneInfoDB {
           System.getenv("ANDROID_ROOT") + "/usr/share/zoneinfo/tzdata");
 
   public static class TzData {
+
+    // The database reserves 40 bytes for each id.
+    private static final int SIZEOF_TZNAME = 40;
+
+    // The database uses 32-bit (4 byte) integers.
+    private static final int SIZEOF_TZINT = 4;
+
+    // Each index entry takes up this number of bytes.
+    public static final int SIZEOF_INDEX_ENTRY = SIZEOF_TZNAME + 3 * SIZEOF_TZINT;
+
+    /**
+     * {@code true} if {@link #close()} has been called meaning the instance cannot provide any
+     * data.
+     */
+    private boolean closed;
+
     /**
      * Rather than open, read, and close the big data file each time we look up a time zone,
      * we map the big data file during startup, and then just use the MemoryMappedFile.
@@ -74,12 +90,11 @@ public final class ZoneInfoDB {
         new BasicLruCache<String, ZoneInfo>(CACHE_SIZE) {
       @Override
       protected ZoneInfo create(String id) {
-        BufferIterator it = getBufferIterator(id);
-        if (it == null) {
-          return null;
+        try {
+          return makeTimeZoneUncached(id);
+        } catch (IOException e) {
+          throw new IllegalStateException("Unable to load timezone for ID=" + id, e);
         }
-
-        return ZoneInfo.makeTimeZone(id, it);
       }
     };
 
@@ -128,14 +143,17 @@ public final class ZoneInfoDB {
      * Visible for testing.
      */
     public BufferIterator getBufferIterator(String id) {
+      checkNotClosed();
+
       // Work out where in the big data file this time zone is.
       int index = Arrays.binarySearch(ids, id);
       if (index < 0) {
         return null;
       }
 
+      int byteOffset = byteOffsets[index];
       BufferIterator it = mappedFile.bigEndianIterator();
-      it.skip(byteOffsets[index]);
+      it.skip(byteOffset);
       return it;
     }
 
@@ -146,6 +164,11 @@ public final class ZoneInfoDB {
       byteOffsets = rawUtcOffsetsCache = new int[1];
     }
 
+    /**
+     * Loads the data file at the specified path. If the data is valid {@code true} will be
+     * returned and the {@link TzData} instance can be used. If {@code false} is returned then the
+     * TzData instance is left in a closed state and must be discarded.
+     */
     private boolean loadData(String path) {
       try {
         mappedFile = MemoryMappedFile.mmapRO(path);
@@ -156,10 +179,7 @@ public final class ZoneInfoDB {
         readHeader();
         return true;
       } catch (Exception ex) {
-        try {
-          mappedFile.close();
-        } catch (ErrnoException ignored) {
-        }
+        close();
 
         // Something's wrong with the file.
         // Log the problem and return false so we try the next choice.
@@ -168,27 +188,47 @@ public final class ZoneInfoDB {
       }
     }
 
-    private void readHeader() {
+    private void readHeader() throws IOException {
       // byte[12] tzdata_version  -- "tzdata2012f\0"
       // int index_offset
       // int data_offset
       // int zonetab_offset
       BufferIterator it = mappedFile.bigEndianIterator();
 
-      byte[] tzdata_version = new byte[12];
-      it.readByteArray(tzdata_version, 0, tzdata_version.length);
-      String magic = new String(tzdata_version, 0, 6, StandardCharsets.US_ASCII);
-      if (!magic.equals("tzdata") || tzdata_version[11] != 0) {
-        throw new RuntimeException("bad tzdata magic: " + Arrays.toString(tzdata_version));
+      try {
+        byte[] tzdata_version = new byte[12];
+        it.readByteArray(tzdata_version, 0, tzdata_version.length);
+        String magic = new String(tzdata_version, 0, 6, StandardCharsets.US_ASCII);
+        if (!magic.equals("tzdata") || tzdata_version[11] != 0) {
+          throw new IOException("bad tzdata magic: " + Arrays.toString(tzdata_version));
+        }
+        version = new String(tzdata_version, 6, 5, StandardCharsets.US_ASCII);
+
+        final int fileSize = mappedFile.size();
+        int index_offset = it.readInt();
+        validateOffset(index_offset, fileSize);
+        int data_offset = it.readInt();
+        validateOffset(data_offset, fileSize);
+        int zonetab_offset = it.readInt();
+        validateOffset(zonetab_offset, fileSize);
+
+        if (index_offset >= data_offset || data_offset >= zonetab_offset) {
+          throw new IOException("Invalid offset: index_offset=" + index_offset
+                  + ", data_offset=" + data_offset + ", zonetab_offset=" + zonetab_offset
+                  + ", fileSize=" + fileSize);
+        }
+
+        readIndex(it, index_offset, data_offset);
+        readZoneTab(it, zonetab_offset, fileSize - zonetab_offset);
+      } catch (IndexOutOfBoundsException e) {
+        throw new IOException("Invalid read from data file", e);
       }
-      version = new String(tzdata_version, 6, 5, StandardCharsets.US_ASCII);
+    }
 
-      int index_offset = it.readInt();
-      int data_offset = it.readInt();
-      int zonetab_offset = it.readInt();
-
-      readIndex(it, index_offset, data_offset);
-      readZoneTab(it, zonetab_offset, (int) mappedFile.size() - zonetab_offset);
+    private static void validateOffset(int offset, int size) throws IOException {
+      if (offset < 0 || offset >= size) {
+        throw new IOException("Invalid offset=" + offset + ", size=" + size);
+      }
     }
 
     private void readZoneTab(BufferIterator it, int zoneTabOffset, int zoneTabSize) {
@@ -198,62 +238,79 @@ public final class ZoneInfoDB {
       zoneTab = new String(bytes, 0, bytes.length, StandardCharsets.US_ASCII);
     }
 
-    private void readIndex(BufferIterator it, int indexOffset, int dataOffset) {
+    private void readIndex(BufferIterator it, int indexOffset, int dataOffset) throws IOException {
       it.seek(indexOffset);
-
-      // The database reserves 40 bytes for each id.
-      final int SIZEOF_TZNAME = 40;
-      // The database uses 32-bit (4 byte) integers.
-      final int SIZEOF_TZINT = 4;
 
       byte[] idBytes = new byte[SIZEOF_TZNAME];
       int indexSize = (dataOffset - indexOffset);
-      int entryCount = indexSize / (SIZEOF_TZNAME + 3*SIZEOF_TZINT);
-
-      char[] idChars = new char[entryCount * SIZEOF_TZNAME];
-      int[] idEnd = new int[entryCount];
-      int idOffset = 0;
+      if (indexSize % SIZEOF_INDEX_ENTRY != 0) {
+        throw new IOException("Index size is not divisible by " + SIZEOF_INDEX_ENTRY
+                + ", indexSize=" + indexSize);
+      }
+      int entryCount = indexSize / SIZEOF_INDEX_ENTRY;
 
       byteOffsets = new int[entryCount];
+      ids = new String[entryCount];
 
       for (int i = 0; i < entryCount; i++) {
+        // Read the fixed length timezone ID.
         it.readByteArray(idBytes, 0, idBytes.length);
 
+        // Read the offset into the file where the data for ID can be found.
         byteOffsets[i] = it.readInt();
-        byteOffsets[i] += dataOffset; // TODO: change the file format so this is included.
+        byteOffsets[i] += dataOffset;
 
         int length = it.readInt();
         if (length < 44) {
-          throw new AssertionError("length in index file < sizeof(tzhead)");
+          throw new IOException("length in index file < sizeof(tzhead)");
         }
         it.skip(4); // Skip the unused 4 bytes that used to be the raw offset.
 
-        // Don't include null chars in the String
-        int len = idBytes.length;
-        for (int j = 0; j < len; j++) {
-          if (idBytes[j] == 0) {
-            break;
-          }
-          idChars[idOffset++] = (char) (idBytes[j] & 0xFF);
+        // Calculate the true length of the ID.
+        int len = 0;
+        while (idBytes[len] != 0 && len < idBytes.length) {
+          len++;
         }
-
-        idEnd[i] = idOffset;
-      }
-
-      // We create one string containing all the ids, and then break that into substrings.
-      // This way, all ids share a single char[] on the heap.
-      String allIds = new String(idChars, 0, idOffset);
-      ids = new String[entryCount];
-      for (int i = 0; i < entryCount; i++) {
-        ids[i] = allIds.substring(i == 0 ? 0 : idEnd[i - 1], idEnd[i]);
+        if (len == 0) {
+          throw new IOException("Invalid ID at index=" + i);
+        }
+        ids[i] = new String(idBytes, 0, len, StandardCharsets.US_ASCII);
+        if (i > 0) {
+          if (ids[i].compareTo(ids[i - 1]) <= 0) {
+            throw new IOException("Index not sorted or contains multiple entries with the same ID"
+                    + ", index=" + i + ", ids[i]=" + ids[i] + ", ids[i - 1]=" + ids[i - 1]);
+          }
+        }
       }
     }
 
+    public void validate() throws IOException {
+      checkNotClosed();
+      // Validate the data in the tzdata file by loading each and every zone.
+      for (String id : getAvailableIDs()) {
+        ZoneInfo zoneInfo = makeTimeZoneUncached(id);
+        if (zoneInfo == null) {
+          throw new IOException("Unable to find data for ID=" + id);
+        }
+      }
+    }
+
+    ZoneInfo makeTimeZoneUncached(String id) throws IOException {
+      BufferIterator it = getBufferIterator(id);
+      if (it == null) {
+        return null;
+      }
+
+      return ZoneInfo.readTimeZone(id, it, System.currentTimeMillis());
+    }
+
     public String[] getAvailableIDs() {
+      checkNotClosed();
       return ids.clone();
     }
 
     public String[] getAvailableIDs(int rawUtcOffset) {
+      checkNotClosed();
       List<String> matches = new ArrayList<String>();
       int[] rawUtcOffsets = getRawUtcOffsets();
       for (int i = 0; i < rawUtcOffsets.length; ++i) {
@@ -281,28 +338,60 @@ public final class ZoneInfoDB {
     }
 
     public String getVersion() {
+      checkNotClosed();
       return version;
     }
 
     public String getZoneTab() {
+      checkNotClosed();
       return zoneTab;
     }
 
     public ZoneInfo makeTimeZone(String id) throws IOException {
+      checkNotClosed();
       ZoneInfo zoneInfo = cache.get(id);
       // The object from the cache is cloned because TimeZone / ZoneInfo are mutable.
       return zoneInfo == null ? null : (ZoneInfo) zoneInfo.clone();
     }
 
     public boolean hasTimeZone(String id) throws IOException {
+      checkNotClosed();
       return cache.get(id) != null;
     }
 
-    @Override protected void finalize() throws Throwable {
-      if (mappedFile != null) {
-        mappedFile.close();
+    public void close() {
+      if (!closed) {
+        closed = true;
+
+        // Clear state that takes up appreciable heap.
+        ids = null;
+        byteOffsets = null;
+        rawUtcOffsetsCache = null;
+        mappedFile = null;
+        cache.evictAll();
+
+        // Remove the mapped file (if needed).
+        if (mappedFile != null) {
+          try {
+            mappedFile.close();
+          } catch (ErrnoException ignored) {
+          }
+        }
       }
-      super.finalize();
+    }
+
+    private void checkNotClosed() throws IllegalStateException {
+      if (closed) {
+        throw new IllegalStateException("TzData is closed");
+      }
+    }
+
+    @Override protected void finalize() throws Throwable {
+      try {
+        close();
+      } finally {
+        super.finalize();
+      }
     }
 
     /**
