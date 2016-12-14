@@ -360,6 +360,15 @@ public class LocaleLanguageRangeTest extends TestCase {
         }
     }
 
+    // Based on a test case that was contributed back to upstream maintainers through
+    // https://bugs.openjdk.java.net/browse/JDK-8166994
+    public void testParse_multiEquivalent_consistency() {
+        List<String> parsed = rangesToStrings(LanguageRange.parse("ccq-xx"));
+
+        assertEquals(parsed, rangesToStrings(LanguageRange.parse("ccq-xx"))); // consistency
+        assertEquals(Arrays.asList("ccq-xx", "ybd-xx", "rki-xx"), parsed); // expected result
+    }
+
     /**
      * Tests parsing a Locale range matching an entry from
      * {@link sun.util.locale.LocaleEquivalentMaps#singleEquivMap}.
