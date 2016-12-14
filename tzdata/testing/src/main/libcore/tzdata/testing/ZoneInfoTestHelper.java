@@ -33,7 +33,7 @@ public class ZoneInfoTestHelper {
     /**
      * Constructs valid and invalid zic data for tests.
      */
-    public static class ZoneInfoDataBuilder {
+    public static class ZicDataBuilder {
 
         private int magic = 0x545a6966; // Default, valid magic.
         private Integer transitionCountOverride; // Used to override the correct transition count.
@@ -43,19 +43,19 @@ public class ZoneInfoTestHelper {
         private int[] isDsts; // Whether a type uses DST, one per type.
         private int[] offsetsSeconds; // The UTC offset, one per type.
 
-        public ZoneInfoDataBuilder() {}
+        public ZicDataBuilder() {}
 
-        public ZoneInfoDataBuilder setMagic(int magic) {
+        public ZicDataBuilder setMagic(int magic) {
             this.magic = magic;
             return this;
         }
 
-        public ZoneInfoDataBuilder setTypeCountOverride(int typesCountOverride) {
+        public ZicDataBuilder setTypeCountOverride(int typesCountOverride) {
             this.typesCountOverride = typesCountOverride;
             return this;
         }
 
-        public ZoneInfoDataBuilder setTransitionCountOverride(int transitionCountOverride) {
+        public ZicDataBuilder setTransitionCountOverride(int transitionCountOverride) {
             this.transitionCountOverride = transitionCountOverride;
             return this;
         }
@@ -63,7 +63,7 @@ public class ZoneInfoTestHelper {
         /**
          * See {@link #setTransitions(int[][])} and {@link #setTypes(int[][])}.
          */
-        public ZoneInfoDataBuilder setTransitionsAndTypes(
+        public ZicDataBuilder setTransitionsAndTypes(
                 int[][] transitionPairs, int[][] typePairs) {
             setTransitions(transitionPairs);
             setTypes(typePairs);
@@ -77,7 +77,7 @@ public class ZoneInfoTestHelper {
          *   { transitionTimeSeconds2, typeIndex1 },
          * }
          */
-        public ZoneInfoDataBuilder setTransitions(int[][] transitionPairs) {
+        public ZicDataBuilder setTransitions(int[][] transitionPairs) {
             int[] transitions = new int[transitionPairs.length];
             byte[] types = new byte[transitionPairs.length];
             for (int i = 0; i < transitionPairs.length; i++) {
@@ -97,7 +97,7 @@ public class ZoneInfoTestHelper {
          *   { typeIsDst2, offsetSeconds2 },
          * }
          */
-        public ZoneInfoDataBuilder setTypes(int[][] typePairs) {
+        public ZicDataBuilder setTypes(int[][] typePairs) {
             int[] isDsts = new int[typePairs.length];
             int[] offsetSeconds = new int[typePairs.length];
             for (int i = 0; i < typePairs.length; i++) {
@@ -110,7 +110,7 @@ public class ZoneInfoTestHelper {
         }
 
         /** Initializes to a minimum viable ZoneInfo data. */
-        public ZoneInfoDataBuilder initializeToValid() {
+        public ZicDataBuilder initializeToValid() {
             setTransitions(new int[0][0]);
             setTypes(new int[][] {
                     { 3600, 0}
@@ -159,7 +159,7 @@ public class ZoneInfoTestHelper {
     }
 
     /**
-     * Constructs valid and invalid TzData files for tests. See also ZoneCompactor class in
+     * Constructs valid and invalid tzdata files for tests. See also ZoneCompactor class in
      * external/icu which is the real thing.
      */
     public static class TzDataBuilder {
@@ -212,7 +212,7 @@ public class ZoneInfoTestHelper {
 
         public TzDataBuilder initializeToValid() {
             setHeaderMagic("tzdata9999a");
-            addZicData("Europe/Elbonia", new ZoneInfoDataBuilder().initializeToValid().build());
+            addZicData("Europe/Elbonia", new ZicDataBuilder().initializeToValid().build());
             setZoneTab("ZoneTab data");
             return this;
         }

@@ -146,7 +146,7 @@ public final class FileUtils {
         FileUtils.doDelete(toDelete);
     }
 
-    public static boolean filesExist(File rootDir, String... fileNames) throws IOException {
+    public static boolean filesExist(File rootDir, String... fileNames) {
         for (String fileName : fileNames) {
             File file = new File(rootDir, fileName);
             if (!file.exists()) {

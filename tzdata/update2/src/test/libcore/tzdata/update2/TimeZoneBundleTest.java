@@ -31,9 +31,9 @@ import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 
 /**
- * Tests for {@link ConfigBundle}.
+ * Tests for {@link TimeZoneBundle}.
  */
-public class ConfigBundleTest extends TestCase {
+public class TimeZoneBundleTest extends TestCase {
 
     private final List<File> testFiles = new ArrayList<>();
 
@@ -61,7 +61,7 @@ public class ConfigBundleTest extends TestCase {
         File targetDir = new File(dir, "target");
         TestInputStream inputStream =
                 new TestInputStream(new ByteArrayInputStream(baos.toByteArray()));
-        ConfigBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
+        TimeZoneBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
         inputStream.assertClosed();
         assertFilesExist(
                 new File(targetDir, "leadingSlash"),
@@ -95,7 +95,7 @@ public class ConfigBundleTest extends TestCase {
         TestInputStream inputStream = new TestInputStream(
                 new ByteArrayInputStream(baos.toByteArray()));
         try {
-            ConfigBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
+            TimeZoneBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
             fail();
         } catch (IOException expected) {
         }

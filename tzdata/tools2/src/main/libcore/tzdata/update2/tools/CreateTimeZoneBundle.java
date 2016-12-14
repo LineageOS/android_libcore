@@ -23,18 +23,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
-import libcore.tzdata.update2.ConfigBundle;
+import libcore.tzdata.update2.TimeZoneBundle;
 
 /**
- * A command-line tool for creating a TZ data update bundle.
+ * A command-line tool for creating a timezone update bundle.
  *
  * Args:
  * tzdata.properties file - the file describing the bundle (see template file in tzdata/tools)
  * output file - the name of the file to be generated
  */
-public class CreateTzDataBundle {
+public class CreateTimeZoneBundle {
 
-    private CreateTzDataBundle() {}
+    private CreateTimeZoneBundle() {}
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
@@ -49,14 +49,15 @@ public class CreateTzDataBundle {
         }
         Properties p = loadProperties(f);
         TzDataBundleBuilder builder = new TzDataBundleBuilder()
-                .setTzDataVersion(getMandatoryProperty(p, "tzdata.version"))
-                .addBionicTzData(getMandatoryPropertyFile(p, "bionic.file"))
-                .addIcuTzData(getMandatoryPropertyFile(p, "icu.file"));
+                .setRulesVersion(getMandatoryProperty(p, "rules.version"))
+                .setAndroidRevision(getMandatoryProperty(p, "android.revision"))
+                .setTzData(getMandatoryPropertyFile(p, "bionic.file"))
+                .setIcuData(getMandatoryPropertyFile(p, "icu.file"));
 
-        ConfigBundle bundle = builder.build();
+        TimeZoneBundle bundle = builder.build();
         File outputFile = new File(args[1]);
         try (OutputStream os = new FileOutputStream(outputFile)) {
-            os.write(bundle.getBundleBytes());
+            os.write(bundle.getBytes());
         }
         System.out.println("Wrote: " + outputFile);
     }
@@ -93,7 +94,7 @@ public class CreateTzDataBundle {
 
     private static void printUsage() {
         System.out.println("Usage:");
-        System.out.println("\t" + CreateTzDataBundle.class.getName() +
+        System.out.println("\t" + CreateTimeZoneBundle.class.getName() +
                 " <tzupdate.properties file> <output file>");
     }
 }
