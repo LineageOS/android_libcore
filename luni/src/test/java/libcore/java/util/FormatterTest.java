@@ -192,7 +192,7 @@ public class FormatterTest extends junit.framework.TestCase {
     // pattern without grouping (e.g. a group size of zero). This would throw divide by zero when
     // working out where to place the separator.
     public void testGroupingSizeZero() {
-        Locale localeWithoutGrouping = new Locale("hy");
+        Locale localeWithoutGrouping = new Locale("en", "US", "POSIX");
         DecimalFormat decimalFormat =
                 (DecimalFormat) NumberFormat.getInstance(localeWithoutGrouping);
 

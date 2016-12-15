@@ -110,10 +110,26 @@ public class DecimalFormatSymbolsTest extends junit.framework.TestCase {
 
     // http://b/18785260
     public void testMultiCharMinusSignAndPercentage() {
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.forLanguageTag("ar-AR"));
+        DecimalFormatSymbols dfs;
 
-        assertEquals('٪', dfs.getPercent());
+        // There have during the years been numerous bugs and workarounds around the decimal format
+        // symbols used for Arabic and Farsi. Most of the problems have had to do with bidi control
+        // characters and the Unicode bidi algorithm, which have not worked well together with code
+        // assuming that these symbols can be represented as a single Java char.
+        //
+        // This test case exists to verify that java.text.DecimalFormatSymbols in Android gets some
+        // kind of sensible values for these symbols (and not, as bugs have caused in the past,
+        // empty strings or only bidi control characters without any actual symbols).
+        //
+        // It is expected that the symbols may change with future CLDR updates.
+
+        dfs = new DecimalFormatSymbols(Locale.forLanguageTag("ar"));
+        assertEquals('%', dfs.getPercent());
         assertEquals('-', dfs.getMinusSign());
+
+        dfs = new DecimalFormatSymbols(Locale.forLanguageTag("fa"));
+        assertEquals('٪', dfs.getPercent());
+        assertEquals('−', dfs.getMinusSign());
     }
 
 
