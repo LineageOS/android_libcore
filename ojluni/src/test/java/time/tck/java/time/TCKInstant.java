@@ -106,7 +106,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -121,10 +121,13 @@ public class TCKInstant extends AbstractDateTimeTest {
     private static final ZoneId ZONE_PARIS = ZoneId.of("Europe/Paris");
     private static final ZoneOffset OFFSET_PTWO = ZoneOffset.ofHours(2);
 
-    private Instant TEST_12345_123456789;
+    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static Instant TEST_12345_123456789;
 
-    @BeforeMethod
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TEST_12345_123456789 = Instant.ofEpochSecond(12345, 123456789);
     }
 

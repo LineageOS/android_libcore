@@ -139,7 +139,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.java.time.MockSimplePeriod;
@@ -156,10 +156,14 @@ public class TCKOffsetDateTime extends AbstractDateTimeTest {
     private static final ZoneOffset OFFSET_PTWO = ZoneOffset.ofHours(2);
     private static final ZoneOffset OFFSET_MONE = ZoneOffset.ofHours(-1);
     private static final ZoneOffset OFFSET_MTWO = ZoneOffset.ofHours(-2);
-    private OffsetDateTime TEST_2008_6_30_11_30_59_000000500;
 
-    @BeforeMethod
-    public void setUp() {
+    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static OffsetDateTime TEST_2008_6_30_11_30_59_000000500;
+
+    @BeforeClass
+    public static void setUp() {
         TEST_2008_6_30_11_30_59_000000500 = OffsetDateTime.of(2008, 6, 30, 11, 30, 59, 500, OFFSET_PONE);
     }
 
