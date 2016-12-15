@@ -105,7 +105,7 @@ public final class FinalizerReference<T> extends Reference<T> {
                 // return the zombie.
                 if (r.getReferent() == sentinel) {
                     FinalizerReference<Sentinel> sentinelReference = (FinalizerReference<Sentinel>) r;
-                    sentinelReference.clear();
+                    sentinelReference.clearReferent();
                     sentinelReference.zombie = sentinel;
                     // Make a single element list, then enqueue the reference on the daemon unenqueued
                     // list. This is required instead of enqueuing directly on the finalizer queue
