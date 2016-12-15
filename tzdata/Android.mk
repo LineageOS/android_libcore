@@ -14,7 +14,4 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-# Subprojects with separate makefiles
-subdirs := tools tools2 update_test_app update update2
-subdir_makefiles := $(call all-named-subdir-makefiles,$(subdirs))
-include $(subdir_makefiles)
+include $(call all-subdir-makefiles)

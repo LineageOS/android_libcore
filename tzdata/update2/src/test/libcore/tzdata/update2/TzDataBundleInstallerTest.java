@@ -22,11 +22,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import libcore.io.Streams;
+import libcore.tzdata.testing.ZoneInfoTestHelper;
 import libcore.tzdata.update2.tools.TzDataBundleBuilder;
 
 /**
@@ -334,12 +334,10 @@ public class TzDataBundleInstallerTest extends TestCase {
     }
 
     private void createTzDataFile(File file, String rulesVersion) {
-        byte[] bytes = new byte[12];
-        // This just writes the part of the header that contains the rules version, which is enough
-        // to satisfy the installer.
-        byte[] headerBytes = ("tzdata" + rulesVersion).getBytes(StandardCharsets.US_ASCII);
-        System.arraycopy(headerBytes, 0, bytes, 0, headerBytes.length);
-
+        byte[] bytes = new ZoneInfoTestHelper.TzDataBuilder()
+                .initializeToValid()
+                .setHeaderMagic("tzdata" + rulesVersion)
+                .build();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(bytes);
         } catch (IOException e) {

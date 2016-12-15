@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
+import libcore.tzdata.testing.ZoneInfoTestHelper;
+
 import static libcore.util.ZoneInfoDB.TzData.SIZEOF_INDEX_ENTRY;
 
 public class ZoneInfoDBTest extends junit.framework.TestCase {
