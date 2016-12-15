@@ -580,9 +580,9 @@ public final class IoBridge {
     public static int recvfrom(boolean isRead, FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, DatagramPacket packet, boolean isConnected) throws IOException {
         int result;
         try {
-            InetSocketAddress srcAddress = (packet != null && !isConnected) ? new InetSocketAddress() : null;
+            InetSocketAddress srcAddress = packet != null ? new InetSocketAddress() : null;
             result = Libcore.os.recvfrom(fd, bytes, byteOffset, byteCount, flags, srcAddress);
-            result = postRecvfrom(isRead, packet, isConnected, srcAddress, result);
+            result = postRecvfrom(isRead, packet, srcAddress, result);
         } catch (ErrnoException errnoException) {
             result = maybeThrowAfterRecvfrom(isRead, isConnected, errnoException);
         }
@@ -592,25 +592,23 @@ public final class IoBridge {
     public static int recvfrom(boolean isRead, FileDescriptor fd, ByteBuffer buffer, int flags, DatagramPacket packet, boolean isConnected) throws IOException {
         int result;
         try {
-            InetSocketAddress srcAddress = (packet != null && !isConnected) ? new InetSocketAddress() : null;
+            InetSocketAddress srcAddress = packet != null ? new InetSocketAddress() : null;
             result = Libcore.os.recvfrom(fd, buffer, flags, srcAddress);
-            result = postRecvfrom(isRead, packet, isConnected, srcAddress, result);
+            result = postRecvfrom(isRead, packet, srcAddress, result);
         } catch (ErrnoException errnoException) {
             result = maybeThrowAfterRecvfrom(isRead, isConnected, errnoException);
         }
         return result;
     }
 
-    private static int postRecvfrom(boolean isRead, DatagramPacket packet, boolean isConnected, InetSocketAddress srcAddress, int byteCount) {
+    private static int postRecvfrom(boolean isRead, DatagramPacket packet, InetSocketAddress srcAddress, int byteCount) {
         if (isRead && byteCount == 0) {
             return -1;
         }
         if (packet != null) {
             packet.setReceivedLength(byteCount);
-            if (!isConnected) {
-                packet.setAddress(srcAddress.getAddress());
-                packet.setPort(srcAddress.getPort());
-            }
+            packet.setAddress(srcAddress.getAddress());
+            packet.setPort(srcAddress.getPort());
         }
         return byteCount;
     }
