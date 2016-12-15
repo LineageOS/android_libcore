@@ -212,7 +212,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	core-tests-support \
 	mockwebserver \
 	nist-pkix-tests \
-	sqlite-jdbc
+	sqlite-jdbc \
+	tzdata-testing
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -360,7 +361,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
     LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex okhttp-hostdex bouncycastle-hostdex junit-hostdex core-tests-support-hostdex mockito-api-hostdex
-    LOCAL_STATIC_JAVA_LIBRARIES := sqlite-jdbc-host mockwebserver-host nist-pkix-tests-host core-test-rules-hostdex
+    LOCAL_STATIC_JAVA_LIBRARIES := sqlite-jdbc-host mockwebserver-host nist-pkix-tests-host core-test-rules-hostdex tzdata-testing-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
