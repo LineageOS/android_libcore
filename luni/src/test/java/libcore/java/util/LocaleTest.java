@@ -157,8 +157,8 @@ public class LocaleTest extends junit.framework.TestCase {
         Locale tl_PH = new Locale("tl", "PH");
         assertEquals("Tagalog", tl.getDisplayLanguage(Locale.ENGLISH));
         assertEquals("Tagalog", tl_PH.getDisplayLanguage(Locale.ENGLISH));
-        assertEquals("tl", tl.getDisplayLanguage(tl));
-        assertEquals("tl", tl_PH.getDisplayLanguage(tl_PH));
+        assertEquals("Tagalog", tl.getDisplayLanguage(tl));
+        assertEquals("Tagalog", tl_PH.getDisplayLanguage(tl_PH));
 
         Locale es_MX = new Locale("es", "MX");
         assertEquals("tagalo", tl.getDisplayLanguage(es_MX));
