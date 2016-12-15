@@ -14,22 +14,20 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-# Library of support classes for tzdata updates. Shared between update generation and
-# on-device code.
+# Library of test-support classes for tzdata updates. Shared between CTS and other tests.
 include $(CLEAR_VARS)
-LOCAL_MODULE := tzdata_update2
+LOCAL_MODULE := tzdata-testing
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
 LOCAL_JAVACFLAGS := -encoding UTF-8
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
-# Tests for tzdata_update2 code
+# Host version of the above library. For libcore host testing.
 include $(CLEAR_VARS)
-LOCAL_MODULE := tzdata_update2-tests
+LOCAL_MODULE := tzdata-testing-hostdex
 LOCAL_MODULE_TAGS := optional
-LOCAL_SRC_FILES := $(call all-java-files-under, src/test)
+LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_STATIC_JAVA_LIBRARIES := tzdata_update2 tzdata_tools2 tzdata-testing
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
-include $(BUILD_STATIC_JAVA_LIBRARY)
+include $(BUILD_HOST_DALVIK_STATIC_JAVA_LIBRARY)
