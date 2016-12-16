@@ -7,12 +7,6 @@ import junit.framework.TestCase;
 public final class Annotations57649Test extends TestCase {
   // https://code.google.com/p/android/issues/detail?id=57649
   public void test57649() throws Exception {
-    // This test consumes a lot of RAM and doesn't release it. Disable on low ram devices.
-    // See b/32004484
-    if (isLowRamDevice()) {
-      return;
-    }
-
     Thread a = runTest(A.class);
     Thread b = runTest(B.class);
     a.join();
@@ -27,10 +21,6 @@ public final class Annotations57649Test extends TestCase {
     }, c.toString());
     t.start();
     return t;
-  }
-
-  private static boolean isLowRamDevice() {
-    return Boolean.parseBoolean(System.getProperty("android.cts.device.lowram", "false"));
   }
 
   @Retention(RetentionPolicy.RUNTIME) @interface A0 {}
