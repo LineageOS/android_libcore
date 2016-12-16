@@ -164,9 +164,6 @@ public final class Class<T> implements java.io.Serializable,
      */
     private transient Object vtable;
 
-    /** Short-cut to dexCache.strings */
-    private transient long dexCacheStrings;
-
     /**
      * Instance fields. These describe the layout of the contents of an Object. Note that only the
      * fields directly declared by this class are listed in iFields; fields declared by a
