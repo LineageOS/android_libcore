@@ -198,10 +198,21 @@ class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
         } catch (IOException ignored) { }
     }
 
-    protected native void socketSetOption0(int opt, Object val)
-        throws SocketException;
+    protected void socketSetOption0(int opt, Object val) throws SocketException {
+        if (isClosed()) {
+            throw new SocketException("Socket closed");
+        }
 
-    protected native Object socketGetOption(int opt) throws SocketException;
+        IoBridge.setSocketOption(fd, opt, val);
+    }
+
+    protected Object socketGetOption(int opt) throws SocketException {
+        if (isClosed()) {
+            throw new SocketException("Socket closed");
+        }
+
+        return IoBridge.getSocketOption(fd, opt);
+    }
 
     protected void connect0(InetAddress address, int port) throws SocketException {
         if (isClosed()) {
