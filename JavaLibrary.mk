@@ -255,6 +255,7 @@ endif
 # Make the core-ojtests library.
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
+    LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
     LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
     LOCAL_STATIC_JAVA_LIBRARIES := testng
@@ -275,7 +276,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     # Temporarily filter out java.time tests until they stabilize (b/28832222)
     LOCAL_SRC_FILES := $(filter-out ojluni/src/test/java/time/% %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files)) # Do not include anything from the boot* directories. Those directories need a custom bootclasspath to run.
     # Include source code as part of JAR
-    LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist
+    LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist $(test_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
     LOCAL_JAVA_LIBRARIES := \
         bouncycastle \
