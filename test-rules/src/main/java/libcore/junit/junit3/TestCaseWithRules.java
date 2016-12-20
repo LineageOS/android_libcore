@@ -29,15 +29,15 @@ import org.junit.runners.model.MultipleFailureException;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
-import static org.junit.internal.runners.rules.RuleFieldValidator.RULE_VALIDATOR;
+import static org.junit.internal.runners.rules.RuleMemberValidator.RULE_VALIDATOR;
 
 /**
  * A {@link TestCase} that supports the @Rule annotation from JUnit 4.
  *
  * <p>It supports both {@link TestRule} and {@link MethodRule} based rules when used with the
- * {@code @Rule} annotation on public fields. The rules encapsulate the {@link TestCase#runBare()}
- * method and so are run before the {@link TestCase#setUp()} and after the
- * {@link TestCase#tearDown()} methods.
+ * {@code @Rule} annotation on public fields and methods. The rules encapsulate the
+ * {@link TestCase#runBare()} method and so are run before the {@link TestCase#setUp()} and after
+ * the {@link TestCase#tearDown()} methods.
  *
  * <p>Classes that extend this must have a single no argument constructor.
  */
