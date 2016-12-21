@@ -38,10 +38,12 @@ import java.nio.channels.IllegalBlockingModeException;
 import java.nio.channels.SocketChannel;
 import java.security.Permission;
 import libcore.junit.util.ResourceLeakageDetector.DisableResourceLeakageDetection;
-import tests.net.StuckServer;
 import tests.support.Support_Configuration;
 
 public class OldSocketTest extends OldSocketTestCase {
+
+    private static final InetSocketAddress UNREACHABLE_ADDRESS
+            = new InetSocketAddress("192.0.2.0", 0); // RFC 6666
 
     ServerSocket ss;
 
@@ -910,7 +912,7 @@ public class OldSocketTest extends OldSocketTestCase {
         byte[] theBytes = { 0, 0, 0, 0 };
         SocketAddress theAddress = new InetSocketAddress(InetAddress.getLocalHost(), 0);
         SocketAddress nonConnectableAddress = new InetSocketAddress(InetAddress.getByAddress(theBytes), 0);
-        SocketAddress nonReachableAddress = new InetSocketAddress(StuckServer.UNREACHABLE_ADDRESS, 0);
+        SocketAddress nonReachableAddress = UNREACHABLE_ADDRESS;
         SocketAddress invalidType = new mySocketAddress();
 
         Socket theSocket = null;
@@ -1067,7 +1069,7 @@ public class OldSocketTest extends OldSocketTestCase {
         byte[] theBytes = { 0, 0, 0, 0 };
         SocketAddress theAddress = new InetSocketAddress(InetAddress.getLocalHost(), 0);
         SocketAddress nonConnectableAddress = new InetSocketAddress(InetAddress.getByAddress(theBytes), 0);
-        SocketAddress nonReachableAddress = new InetSocketAddress(StuckServer.UNREACHABLE_ADDRESS, 0);
+        SocketAddress nonReachableAddress = UNREACHABLE_ADDRESS;
         SocketAddress invalidType = new mySocketAddress();
 
         try (Socket theSocket = new Socket()) {
@@ -1294,8 +1296,7 @@ public class OldSocketTest extends OldSocketTestCase {
         }
 
         // now try to set options while we are connecting
-        SocketAddress nonReachableAddress =
-                new InetSocketAddress(StuckServer.UNREACHABLE_ADDRESS, 0);
+        SocketAddress nonReachableAddress = UNREACHABLE_ADDRESS;
         try (Socket theSocket = new Socket()) {
             SocketConnector connector = new SocketConnector(5000, theSocket, nonReachableAddress);
             connector.start();
