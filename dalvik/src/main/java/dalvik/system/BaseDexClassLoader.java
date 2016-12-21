@@ -27,6 +27,20 @@ import java.util.List;
  * {@link ClassLoader} implementations.
  */
 public class BaseDexClassLoader extends ClassLoader {
+
+    /**
+     * Hook for customizing how dex files loads are reported.
+     *
+     * This enables the framework to monitor the use of dex files. The
+     * goal is to simplify the mechanism for optimizing foreign dex files and
+     * enable further optimizations of secondary dex files.
+     *
+     * The reporting happens only when new instances of BaseDexClassLoader
+     * are constructed and will be active only after this field is set with
+     * {@link BaseDexClassLoader#setReporter}.
+     */
+    /* @NonNull */ private static volatile Reporter reporter = null;
+
     private final DexPathList pathList;
 
     /**
@@ -46,6 +60,10 @@ public class BaseDexClassLoader extends ClassLoader {
             String librarySearchPath, ClassLoader parent) {
         super(parent);
         this.pathList = new DexPathList(this, dexPath, librarySearchPath, optimizedDirectory);
+
+        if (reporter != null) {
+            reporter.report(this.pathList.getDexPaths());
+        }
     }
 
     @Override
@@ -143,5 +161,31 @@ public class BaseDexClassLoader extends ClassLoader {
 
     @Override public String toString() {
         return getClass().getName() + "[" + pathList + "]";
+    }
+
+    /**
+     * Sets the reporter for dex load notifications.
+     * Once set, all new instances of BaseDexClassLoader will report upon
+     * constructions the loaded dex files.
+     *
+     * @param newReporter the new Reporter. Setting null will cancel reporting.
+     * @hide
+     */
+    public static void setReporter(Reporter newReporter) {
+        reporter = newReporter;
+    }
+
+    /**
+     * @hide
+     */
+    public static Reporter getReporter() {
+        return reporter;
+    }
+
+    /**
+     * @hide
+     */
+    public interface Reporter {
+        public void report(List<String> dexPaths);
     }
 }
