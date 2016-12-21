@@ -482,6 +482,23 @@ import static android.system.OsConstants.S_ISDIR;
     }
 
     /**
+     * Returns the list of all individual dex files paths from the current list.
+     * The list will contain only file paths (i.e. no directories).
+     */
+    /*package*/ List<String> getDexPaths() {
+        List<String> dexPaths = new ArrayList<String>();
+        for (Element e : dexElements) {
+            String dexPath = e.getDexPath();
+            if (dexPath != null) {
+                // Add the element to the list only if it is a file.
+                // A null dex path signals the element is a resource directory.
+                dexPaths.add(dexPath);
+            }
+        }
+        return dexPaths;
+    }
+
+    /**
      * Element of the dex/resource path. Note: should be called DexElement, but apps reflect on
      * this.
      */
@@ -537,6 +554,19 @@ import static android.system.OsConstants.S_ISDIR;
                 this.path = zip;
                 this.dexFile = dexFile;
             }
+        }
+
+        /*
+         * Returns the dex path of this element or null if the element refers to a directory.
+         */
+        private String getDexPath() {
+            if (path != null) {
+                return path.isDirectory() ? null : path.getAbsolutePath();
+            } else if (dexFile != null) {
+                // DexFile.getName() returns the path of the dex file.
+                return dexFile.getName();
+            }
+            return null;
         }
 
         @Override
