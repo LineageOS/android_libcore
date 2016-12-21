@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License
  */
-package javax.crypto.spec;
+package libcore.javax.crypto.spec;
 
 import java.security.AlgorithmParameters;
 import java.security.Key;
@@ -23,6 +23,9 @@ import junit.framework.TestCase;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.PBEParameterSpec;
 
 public class AlgorithmParametersTestPBES2 extends TestCase {
 
