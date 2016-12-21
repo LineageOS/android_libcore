@@ -198,4 +198,25 @@ public class DatagramSocketTest extends TestCaseWithRules {
     f.setAccessible(true);
     f.set(impl, null);
   }
+
+  public void testAddressSameIfUnchanged() throws Exception {
+    try (DatagramSocket ds = new DatagramSocket();
+         DatagramSocket srcDs = new DatagramSocket()) {
+      ds.setSoTimeout(1000);
+      srcDs.connect(ds.getLocalSocketAddress());
+      srcDs.send(new DatagramPacket(new byte[16], 16));
+      srcDs.send(new DatagramPacket(new byte[16], 16));
+
+      DatagramPacket p = new DatagramPacket(new byte[16], 16);
+      ds.receive(p);
+      InetAddress packetAddr = p.getAddress();
+
+      // This time the packet should have the same address as source address, and it's address
+      // should remain the same object.
+      ds.receive(p);
+      InetAddress newPacketAddr = p.getAddress();
+      assertTrue(packetAddr.isLoopbackAddress());
+      assertSame(packetAddr, newPacketAddr);
+    }
+  }
 }
