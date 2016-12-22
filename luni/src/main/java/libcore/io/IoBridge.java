@@ -97,7 +97,12 @@ public final class IoBridge {
         try {
             Libcore.os.bind(fd, address, port);
         } catch (ErrnoException errnoException) {
-            throw new BindException(errnoException.getMessage(), errnoException);
+            if (errnoException.errno == EADDRINUSE || errnoException.errno == EADDRNOTAVAIL ||
+                errnoException.errno == EPERM || errnoException.errno == EACCES) {
+                throw new BindException(errnoException.getMessage(), errnoException);
+            } else {
+                throw new SocketException(errnoException.getMessage(), errnoException);
+            }
         }
     }
 
@@ -562,10 +567,11 @@ public final class IoBridge {
         return result;
     }
 
-    private static int maybeThrowAfterSendto(boolean isDatagram, ErrnoException errnoException) throws SocketException {
+    private static int maybeThrowAfterSendto(boolean isDatagram, ErrnoException errnoException)
+            throws IOException {
         if (isDatagram) {
-            if (errnoException.errno == ECONNRESET || errnoException.errno == ECONNREFUSED) {
-                return 0;
+            if (errnoException.errno == ECONNREFUSED) {
+                throw new PortUnreachableException("ICMP Port Unreachable");
             }
         } else {
             if (errnoException.errno == EAGAIN) {
@@ -574,7 +580,7 @@ public final class IoBridge {
                 return 0;
             }
         }
-        throw errnoException.rethrowAsSocketException();
+        throw errnoException.rethrowAsIOException();
     }
 
     public static int recvfrom(boolean isRead, FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, DatagramPacket packet, boolean isConnected) throws IOException {
@@ -607,8 +613,12 @@ public final class IoBridge {
         }
         if (packet != null) {
             packet.setReceivedLength(byteCount);
-            packet.setAddress(srcAddress.getAddress());
             packet.setPort(srcAddress.getPort());
+
+            // packet.address should only be changed when it is different from srcAddress.
+            if (!srcAddress.getAddress().equals(packet.getAddress())) {
+                packet.setAddress(srcAddress.getAddress());
+            }
         }
         return byteCount;
     }
@@ -622,7 +632,7 @@ public final class IoBridge {
             }
         } else {
             if (isConnected && errnoException.errno == ECONNREFUSED) {
-                throw new PortUnreachableException("", errnoException);
+                throw new PortUnreachableException("ICMP Port Unreachable", errnoException);
             } else if (errnoException.errno == EAGAIN) {
                 throw new SocketTimeoutException(errnoException);
             } else {
