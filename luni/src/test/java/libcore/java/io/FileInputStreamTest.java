@@ -264,6 +264,11 @@ public final class FileInputStreamTest extends TestCaseWithRules {
                 assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
                 assertEquals(lastByte, fis.skip(lastByte));
             }
+
+            FileInputStream fis = new FileInputStream(largeFile);
+            long lastByte = 3 * 1024 * 1024 * 1024L - 1;
+            assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
+            assertEquals(lastByte, fis.skip(lastByte));
         } finally {
             // Proactively cleanup - it's a pretty large file.
             assertTrue(largeFile.delete());
