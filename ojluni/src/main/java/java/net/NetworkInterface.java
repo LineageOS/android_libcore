@@ -412,6 +412,7 @@ public final class NetworkInterface {
 
             ni.addrs = addrs.toArray(new InetAddress[addrs.size()]);
             ni.bindings = binds.toArray(new InterfaceAddress[binds.size()]);
+            ni.childs = new ArrayList<>(0);
             nis.put(name, ni);
         }
 
