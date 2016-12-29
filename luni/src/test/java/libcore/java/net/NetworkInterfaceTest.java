@@ -30,6 +30,7 @@ import java.net.SocketException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -214,6 +215,16 @@ public class NetworkInterfaceTest extends TestCase {
         Collections.list(nifs).forEach(ni -> actualNiNames.add(ni.getName()));
 
         assertEquals(expectedNiNames, actualNiNames);
+    }
+
+    // Calling getSubInterfaces on interfaces with no subinterface should not throw NPE.
+    // http://b/33844501
+    public void testGetSubInterfaces() throws Exception {
+        List<NetworkInterface> nifs = Collections.list(NetworkInterface.getNetworkInterfaces());
+
+        for (NetworkInterface nif : nifs) {
+            nif.getSubInterfaces();
+        }
     }
 
     // Is ifName a name of a Ethernet device?
