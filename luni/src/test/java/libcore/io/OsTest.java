@@ -28,6 +28,8 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -43,6 +45,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
+
 import static android.system.OsConstants.*;
 
 public class OsTest extends TestCase {
@@ -760,6 +763,22 @@ public class OsTest extends TestCase {
       assertEquals(xs, Libcore.os.readlink(path));
     } finally {
       assertTrue("Could not delete symlink: " + path, new File(path).delete());
+    }
+  }
+
+  // Address should be correctly set for empty packets. http://b/33481605
+  public void test_recvfrom_EmptyPacket() throws Exception {
+    try (DatagramSocket ds = new DatagramSocket();
+         DatagramSocket srcSock = new DatagramSocket()) {
+      srcSock.send(new DatagramPacket(new byte[0], 0, ds.getLocalSocketAddress()));
+
+      byte[] recvBuf = new byte[16];
+      InetSocketAddress address = new InetSocketAddress();
+      int recvCount =
+          android.system.Os.recvfrom(ds.getFileDescriptor$(), recvBuf, 0, 16, 0, address);
+      assertEquals(0, recvCount);
+      assertTrue(address.getAddress().isLoopbackAddress());
+      assertEquals(srcSock.getLocalPort(), address.getPort());
     }
   }
 }
