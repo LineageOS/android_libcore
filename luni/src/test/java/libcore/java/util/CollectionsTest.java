@@ -36,6 +36,8 @@ import java.util.Spliterator;
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
+import dalvik.system.VMRuntime;
+
 public final class CollectionsTest extends TestCase {
 
     private static final Object NOT_A_STRING = new Object();
@@ -127,42 +129,90 @@ public final class CollectionsTest extends TestCase {
         }
     }
 
-    public void testSort_delegatesToListSort() {
-        ArrayListInheritor<String> list = new ArrayListInheritor<>(Arrays.asList("a", "c", "b"));
-        assertEquals(0, list.numSortCalls());
-        Collections.sort(list);
-        assertEquals(1, list.numSortCalls());
+    /**
+     * Tests that when targetSdk {@code <= 25}, Collections.sort() does not delegate
+     * to List.sort().
+     */
+    public void testSort_nougatOrEarlier_doesNotDelegateToListSort() {
+        runOnTargetSdk(25, () -> { // Nougat MR1 / MR2
+            ArrayListInheritor<String> list = new ArrayListInheritor<>(
+                    Arrays.asList("a", "c", "b"));
+            assertEquals(0, list.numSortCalls());
+            Collections.sort(list);
+            assertEquals(0, list.numSortCalls());
+        });
+    }
+
+    public void testSort_postNougat_delegatesToListSort() {
+        runOnTargetSdkAtLeast(26, () -> {
+            ArrayListInheritor<String> list = new ArrayListInheritor<>(
+                    Arrays.asList("a", "c", "b"));
+            assertEquals(0, list.numSortCalls());
+            Collections.sort(list);
+            assertEquals(1, list.numSortCalls());
+        });
     }
 
     public void testSort_modcountUnmodifiedForLinkedList() {
-        LinkedList<String> list = new LinkedList<>(Arrays.asList("red", "green", "blue", "violet"));
-        Iterator<String> it = list.iterator();
-        it.next();
-        Collections.sort(list);
-        it.next(); // does not throw ConcurrentModificationException
+        runOnTargetSdkAtLeast(26, () -> {
+            LinkedList<String> list = new LinkedList<>(Arrays.asList(
+                    "red", "green", "blue", "violet"));
+            Iterator<String> it = list.iterator();
+            it.next();
+            Collections.sort(list);
+            it.next(); // does not throw ConcurrentModificationException
+        });
     }
 
     public void testSort_modcountModifiedForArrayListAndSubclasses() {
-        List<String> testData = Arrays.asList("red", "green", "blue", "violet");
+        runOnTargetSdkAtLeast(26, () -> {
+            List<String> testData = Arrays.asList("red", "green", "blue", "violet");
 
-        ArrayList<String> list = new ArrayList<>(testData);
-        Iterator<String> it = list.iterator();
-        it.next();
-        Collections.sort(list);
-        try {
+            ArrayList<String> list = new ArrayList<>(testData);
+            Iterator<String> it = list.iterator();
             it.next();
-            fail();
-        } catch (ConcurrentModificationException expected) {
-        }
+            Collections.sort(list);
+            try {
+                it.next();
+                fail();
+            } catch (ConcurrentModificationException expected) {
+            }
 
-        list = new ArrayListInheritor<>(testData);
-        it = list.iterator();
-        it.next();
-        Collections.sort(list);
-        try {
+            list = new ArrayListInheritor<>(testData);
+            it = list.iterator();
             it.next();
-            fail();
-        } catch (ConcurrentModificationException expected) {
+            Collections.sort(list);
+            try {
+                it.next();
+                fail();
+            } catch (ConcurrentModificationException expected) {
+            }
+        });
+    }
+
+    /**
+     * Runs the given runnable on this thread with the targetSdkVersion temporarily set
+     * to the specified value, unless the current value is already higher.
+     */
+    private static void runOnTargetSdkAtLeast(int minimumTargetSdkForTest, Runnable runnable) {
+        int targetSdkForTest = Math.max(minimumTargetSdkForTest,
+                VMRuntime.getRuntime().getTargetSdkVersion());
+        runOnTargetSdk(targetSdkForTest, runnable);
+    }
+
+    /**
+     * Runs the given runnable on this thread with the targetSdkVersion temporarily set
+     * to the specified value. This helps test behavior that depends on an API level
+     * other than the current one (e.g. between releases).
+     */
+    private static void runOnTargetSdk(int targetSdkForTest, Runnable runnable) {
+        VMRuntime runtime = VMRuntime.getRuntime();
+        int targetSdk = runtime.getTargetSdkVersion();
+        try {
+            runtime.setTargetSdkVersion(targetSdkForTest);
+            runnable.run();
+        } finally {
+            runtime.setTargetSdkVersion(targetSdk);
         }
     }
 
