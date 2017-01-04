@@ -27,12 +27,13 @@ package java.lang.invoke;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.lang.invoke.MethodHandles.Lookup;
 import static java.lang.invoke.MethodHandleStatics.*;
 
 /**
  * A symbolic reference obtained by cracking a direct method handle
  * into its consitutent symbolic parts.
- * To crack a direct method handle, call {@code Lookup#revealDirect Lookup.revealDirect}.
+ * To crack a direct method handle, call {@link Lookup#revealDirect Lookup.revealDirect}.
  * <h1><a name="directmh"></a>Direct Method Handles</h1>
  * A <em>direct method handle</em> represents a method, constructor, or field without
  * any intervening argument bindings or other transformations.
@@ -43,16 +44,16 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * <li>By executing an {@code ldc} instruction on a {@code CONSTANT_MethodHandle} constant.
  *     (See the Java Virtual Machine Specification, sections 4.4.8 and 5.4.3.)
  * <li>By calling one of the <a href="MethodHandles.Lookup.html#lookups">Lookup Factory Methods</a>,
- *     such as {@code Lookup#findVirtual Lookup.findVirtual},
+ *     such as {@link Lookup#findVirtual Lookup.findVirtual},
  *     to resolve a symbolic reference into a method handle.
  *     A symbolic reference consists of a class, name string, and type.
- * <li>By calling the factory method {@code Lookup#unreflect Lookup.unreflect}
- *     or {@code Lookup#unreflectSpecial Lookup.unreflectSpecial}
+ * <li>By calling the factory method {@link Lookup#unreflect Lookup.unreflect}
+ *     or {@link Lookup#unreflectSpecial Lookup.unreflectSpecial}
  *     to convert a {@link Method} into a method handle.
- * <li>By calling the factory method {@code Lookup#unreflectConstructor Lookup.unreflectConstructor}
+ * <li>By calling the factory method {@link Lookup#unreflectConstructor Lookup.unreflectConstructor}
  *     to convert a {@link Constructor} into a method handle.
- * <li>By calling the factory method {@code Lookup#unreflectGetter Lookup.unreflectGetter}
- *     or {@code Lookup#unreflectSetter Lookup.unreflectSetter}
+ * <li>By calling the factory method {@link Lookup#unreflectGetter Lookup.unreflectGetter}
+ *     or {@link Lookup#unreflectSetter Lookup.unreflectSetter}
  *     to convert a {@link Field} into a method handle.
  * </ul>
  *
@@ -65,7 +66,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * <p>
  * If the underlying method is <a href="MethodHandles.Lookup.html#callsens">caller sensitive</a>,
  * the direct method handle will have been "bound" to a particular caller class, the
- * {@code java.lang.invoke.MethodHandles.Lookup#lookupClass() lookup class}
+ * {@linkplain java.lang.invoke.MethodHandles.Lookup#lookupClass() lookup class}
  * of the lookup object used to create it.
  * Cracking this method handle with a different lookup class will fail
  * even if the underlying method is public (like {@code Class.forName}).
@@ -73,7 +74,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * The requirement of lookup object matching provides a "fast fail" behavior
  * for programs which may otherwise trust erroneous revelation of a method
  * handle with symbolic information (or caller binding) from an unexpected scope.
- * Use {@code java.lang.invoke.MethodHandles#reflectAs} to override this limitation.
+ * Use {@link java.lang.invoke.MethodHandles#reflectAs} to override this limitation.
  *
  * <h1><a name="refkinds"></a>Reference kinds</h1>
  * The <a href="MethodHandles.Lookup.html#lookups">Lookup Factory Methods</a>
@@ -120,7 +121,6 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * </table>
  * @since 1.8
  */
-// TODO(narayan) : Change @code back to @link once MethodHandles has been imported.
 public
 interface MethodHandleInfo {
     /**
@@ -198,14 +198,7 @@ interface MethodHandleInfo {
      * @exception NullPointerException if either argument is {@code null}
      * @exception IllegalArgumentException if the underlying member is not accessible to the given lookup object
      */
-    // TODO(narayan): change the second argument back to MethodHandles.Lookup once that
-    // class has been introduced.
-    //
-    // public <T extends Member> T reflectAs(Class<T> expected, Lookup lookup);
-    //
-    // We need to temporarily keep the existing version because of a circular dependency between
-    // the two classes.
-    public <T extends Member> T reflectAs(Class<T> expected, Object lookup);
+    public <T extends Member> T reflectAs(Class<T> expected, Lookup lookup);
 
     /**
      * Returns the access modifiers of the underlying member.
