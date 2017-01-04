@@ -1718,8 +1718,13 @@ static jint Posix_recvfromBytes(JNIEnv* env, jobject, jobject javaFd, jobject ja
     sockaddr* from = (javaInetSocketAddress != NULL) ? reinterpret_cast<sockaddr*>(&ss) : NULL;
     socklen_t* fromLength = (javaInetSocketAddress != NULL) ? &sl : 0;
     jint recvCount = NET_FAILURE_RETRY(env, ssize_t, recvfrom, javaFd, bytes.get() + byteOffset, byteCount, flags, from, fromLength);
-    if (recvCount > 0) {
-        fillInetSocketAddress(env, javaInetSocketAddress, ss);
+    if (recvCount >= 0) {
+        // The socket may have performed orderly shutdown and recvCount would return 0 (see man 2
+        // recvfrom), in which case ss.ss_family == AF_UNIX and fillInetSocketAddress would fail.
+        // Don't fill in the address if recvfrom didn't succeed. http://b/33483694
+        if (ss.ss_family == AF_INET || ss.ss_family == AF_INET6) {
+            fillInetSocketAddress(env, javaInetSocketAddress, ss);
+        }
     }
     return recvCount;
 }
