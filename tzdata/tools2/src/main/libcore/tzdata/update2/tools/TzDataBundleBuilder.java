@@ -19,86 +19,145 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import libcore.tzdata.update2.ConfigBundle;
+import libcore.tzdata.update2.BundleException;
+import libcore.tzdata.update2.BundleVersion;
+import libcore.tzdata.update2.TimeZoneBundle;
 
 /**
- * A class for creating a {@link ConfigBundle} containing timezone update data.
+ * A class for creating a {@link TimeZoneBundle} containing timezone update data. Used in real
+ * bundle creation code and tests.
  */
+//TODO(nfuller): Rename to TimeZoneBundleBuilder.
 public final class TzDataBundleBuilder {
 
-    private String tzDataVersion;
-    private File zoneInfoFile;
-    private File icuTzDataFile;
+    private String bundleFormatVersion = BundleVersion.FULL_BUNDLE_FORMAT_VERSION;
+    private String rulesVersion;
+    private String androidRevision;
+    private byte[] tzData;
+    private byte[] icuData;
 
-    public TzDataBundleBuilder setTzDataVersion(String tzDataVersion) {
-        this.tzDataVersion = tzDataVersion;
+    // For use in tests.
+    public TzDataBundleBuilder setBundleVersionForTests(String bundleVersion) {
+        this.bundleFormatVersion = bundleVersion;
         return this;
     }
 
-    public TzDataBundleBuilder addBionicTzData(File zoneInfoFile) {
-        this.zoneInfoFile = zoneInfoFile;
+    public TzDataBundleBuilder setRulesVersion(String rulesVersion) {
+        this.rulesVersion = rulesVersion;
         return this;
     }
 
-    public TzDataBundleBuilder addIcuTzData(File icuTzDataFile) {
-        this.icuTzDataFile = icuTzDataFile;
+    public TzDataBundleBuilder setAndroidRevision(String androidRevision) {
+        this.androidRevision = androidRevision;
         return this;
     }
 
-    /**
-     * Builds a {@link libcore.tzdata.update2.ConfigBundle}.
-     */
-    public ConfigBundle build() throws IOException {
-        if (tzDataVersion == null) {
-            throw new IllegalStateException("Missing tzDataVersion");
-        }
-        if (zoneInfoFile == null) {
-            throw new IllegalStateException("Missing zoneInfo file");
-        }
+    public TzDataBundleBuilder clearVersionForTests() {
+        // This has the effect of omitting the version file in buildUnvalidated().
+        this.bundleFormatVersion = null;
+        return this;
+    }
 
-        return buildUnvalidated();
+    public TzDataBundleBuilder setTzData(File tzDataFile) throws IOException {
+        return setTzData(readFileAsByteArray(tzDataFile));
+    }
+
+    public TzDataBundleBuilder setTzData(byte[] tzData) {
+        this.tzData = tzData;
+        return this;
     }
 
     // For use in tests.
-    public TzDataBundleBuilder clearBionicTzData() {
-        this.zoneInfoFile = null;
+    public TzDataBundleBuilder clearTzDataForTests() {
+        this.tzData = null;
+        return this;
+    }
+
+    public TzDataBundleBuilder setIcuData(File icuDataFile) throws IOException {
+        return setIcuData(readFileAsByteArray(icuDataFile));
+    }
+
+    public TzDataBundleBuilder setIcuData(byte[] icuData) {
+        this.icuData = icuData;
+        return this;
+    }
+
+    // For use in tests.
+    public TzDataBundleBuilder clearIcuDataForTests() {
+        this.icuData = null;
         return this;
     }
 
     /**
      * For use in tests. Use {@link #build()}.
      */
-    public ConfigBundle buildUnvalidated() throws IOException {
+    public TimeZoneBundle buildUnvalidated() throws BundleException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            addZipEntry(zos, ConfigBundle.BUNDLE_VERSION_FILE_NAME,
-                    ConfigBundle.BUNDLE_VERSION_BYTES);
-            if (tzDataVersion != null) {
-                addZipEntry(zos, ConfigBundle.TZ_DATA_VERSION_FILE_NAME,
-                        tzDataVersion.getBytes(StandardCharsets.UTF_8));
+            if (bundleFormatVersion != null && rulesVersion != null && androidRevision != null) {
+                BundleVersion bundleVersion =
+                        new BundleVersion(bundleFormatVersion, rulesVersion, androidRevision);
+                addZipEntry(zos, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME, bundleVersion.getBytes());
             }
-            if (zoneInfoFile != null) {
-                addZipEntry(zos, ConfigBundle.ZONEINFO_FILE_NAME,
-                        readFileAsByteArray(zoneInfoFile));
+
+            if (tzData != null) {
+                addZipEntry(zos, TimeZoneBundle.TZDATA_FILE_NAME, tzData);
             }
-            if (icuTzDataFile != null) {
-                addZipEntry(zos, ConfigBundle.ICU_DATA_FILE_NAME,
-                        readFileAsByteArray(icuTzDataFile));
+            if (icuData != null) {
+                addZipEntry(zos, TimeZoneBundle.ICU_DATA_FILE_NAME, icuData);
             }
+        } catch (IOException e) {
+            throw new BundleException("Unable to create zip file", e);
         }
-        return new ConfigBundle(baos.toByteArray());
+        return new TimeZoneBundle(baos.toByteArray());
+    }
+
+    /**
+     * Builds a {@link TimeZoneBundle}.
+     */
+    public TimeZoneBundle build() throws BundleException {
+        if (bundleFormatVersion == null) {
+            throw new IllegalStateException("Missing bundleVersion");
+        }
+        if (!BundleVersion.BUNDLE_FORMAT_VERSION_PATTERN.matcher(bundleFormatVersion).matches()) {
+            throw new IllegalStateException("bundleVersion invalid: " + bundleFormatVersion);
+        }
+
+        if (rulesVersion == null) {
+            throw new IllegalStateException("Missing rulesVersion");
+        }
+        if (!BundleVersion.RULES_VERSION_PATTERN.matcher(rulesVersion).matches()) {
+            throw new IllegalStateException("rulesVersion invalid: " + rulesVersion);
+        }
+
+        if (androidRevision == null) {
+            throw new IllegalStateException("Missing androidRevision");
+        }
+        if (!BundleVersion.ANDROID_REVISION_PATTERN.matcher(androidRevision).matches()) {
+            throw new IllegalStateException("androidRevision invalid: " + androidRevision);
+        }
+        if (icuData == null) {
+            throw new IllegalStateException("Missing icuData");
+        }
+        if (tzData == null) {
+            throw new IllegalStateException("Missing tzData");
+        }
+        return buildUnvalidated();
     }
 
     private static void addZipEntry(ZipOutputStream zos, String name, byte[] content)
-            throws IOException {
-        ZipEntry zipEntry = new ZipEntry(name);
-        zipEntry.setSize(content.length);
-        zos.putNextEntry(zipEntry);
-        zos.write(content);
-        zos.closeEntry();
+            throws BundleException {
+        try {
+            ZipEntry zipEntry = new ZipEntry(name);
+            zipEntry.setSize(content.length);
+            zos.putNextEntry(zipEntry);
+            zos.write(content);
+            zos.closeEntry();
+        } catch (IOException e) {
+            throw new BundleException("Unable to add zip entry", e);
+        }
     }
 
     /**
