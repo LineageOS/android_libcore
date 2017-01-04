@@ -31,13 +31,12 @@ import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 import libcore.io.Streams;
 import libcore.tzdata.testing.ZoneInfoTestHelper;
-import libcore.tzdata.update2.tools.TzDataBundleBuilder;
+import libcore.tzdata.update2.tools.TimeZoneBundleBuilder;
 
 /**
  * Tests for {@link TimeZoneBundleInstaller}.
  */
-//TODO(nfuller): Rename to TimeZoneBundleBuilder.
-public class TzDataBundleInstallerTest extends TestCase {
+public class TimeZoneBundleInstallerTest extends TestCase {
 
     // OLDER_RULES_VERSION < SYSTEM_RULES_VERSION < NEW_RULES_VERSION < NEWER_RULES_VERSION
     private static final String OLDER_RULES_VERSION = "2030a";
@@ -63,7 +62,7 @@ public class TzDataBundleInstallerTest extends TestCase {
         createFile(testSystemTzDataFile, systemTzDataBytes);
 
         installer = new TimeZoneBundleInstaller(
-                "TzDataBundleInstallerTest", testSystemTzDataFile, testInstallDir);
+                "TimeZoneBundleInstallerTest", testSystemTzDataFile, testInstallDir);
     }
 
     private static File createDirectory(String prefix) throws Exception {
@@ -91,7 +90,7 @@ public class TzDataBundleInstallerTest extends TestCase {
     public void testBadSystemFile() throws Exception {
         File doesNotExist = new File(testSystemTzDataDir, "doesNotExist");
         TimeZoneBundleInstaller brokenSystemInstaller = new TimeZoneBundleInstaller(
-                "TzDataBundleInstallerTest", doesNotExist, testInstallDir);
+                "TimeZoneBundleInstallerTest", doesNotExist, testInstallDir);
         TimeZoneBundle tzData = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
 
         assertFalse(brokenSystemInstaller.install(tzData.getBytes()));
@@ -289,13 +288,13 @@ public class TzDataBundleInstallerTest extends TestCase {
         return createValidTimeZoneBundleBuilder(rulesVersion, androidRevision).build();
     }
 
-    private static TzDataBundleBuilder createValidTimeZoneBundleBuilder(
+    private static TimeZoneBundleBuilder createValidTimeZoneBundleBuilder(
             String rulesVersion, String androidRevision) throws Exception {
 
         byte[] bionicTzData = createTzData(rulesVersion);
         byte[] icuData = new byte[] { 'a' };
 
-        return new TzDataBundleBuilder()
+        return new TimeZoneBundleBuilder()
                 .setRulesVersion(rulesVersion)
                 .setAndroidRevision(androidRevision)
                 .setTzData(bionicTzData)

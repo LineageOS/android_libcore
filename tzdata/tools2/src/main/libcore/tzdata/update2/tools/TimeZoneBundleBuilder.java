@@ -29,8 +29,7 @@ import libcore.tzdata.update2.TimeZoneBundle;
  * A class for creating a {@link TimeZoneBundle} containing timezone update data. Used in real
  * bundle creation code and tests.
  */
-//TODO(nfuller): Rename to TimeZoneBundleBuilder.
-public final class TzDataBundleBuilder {
+public final class TimeZoneBundleBuilder {
 
     private String bundleFormatVersion = BundleVersion.FULL_BUNDLE_FORMAT_VERSION;
     private String rulesVersion;
@@ -39,53 +38,53 @@ public final class TzDataBundleBuilder {
     private byte[] icuData;
 
     // For use in tests.
-    public TzDataBundleBuilder setBundleVersionForTests(String bundleVersion) {
+    public TimeZoneBundleBuilder setBundleVersionForTests(String bundleVersion) {
         this.bundleFormatVersion = bundleVersion;
         return this;
     }
 
-    public TzDataBundleBuilder setRulesVersion(String rulesVersion) {
+    public TimeZoneBundleBuilder setRulesVersion(String rulesVersion) {
         this.rulesVersion = rulesVersion;
         return this;
     }
 
-    public TzDataBundleBuilder setAndroidRevision(String androidRevision) {
+    public TimeZoneBundleBuilder setAndroidRevision(String androidRevision) {
         this.androidRevision = androidRevision;
         return this;
     }
 
-    public TzDataBundleBuilder clearVersionForTests() {
+    public TimeZoneBundleBuilder clearVersionForTests() {
         // This has the effect of omitting the version file in buildUnvalidated().
         this.bundleFormatVersion = null;
         return this;
     }
 
-    public TzDataBundleBuilder setTzData(File tzDataFile) throws IOException {
+    public TimeZoneBundleBuilder setTzData(File tzDataFile) throws IOException {
         return setTzData(readFileAsByteArray(tzDataFile));
     }
 
-    public TzDataBundleBuilder setTzData(byte[] tzData) {
+    public TimeZoneBundleBuilder setTzData(byte[] tzData) {
         this.tzData = tzData;
         return this;
     }
 
     // For use in tests.
-    public TzDataBundleBuilder clearTzDataForTests() {
+    public TimeZoneBundleBuilder clearTzDataForTests() {
         this.tzData = null;
         return this;
     }
 
-    public TzDataBundleBuilder setIcuData(File icuDataFile) throws IOException {
+    public TimeZoneBundleBuilder setIcuData(File icuDataFile) throws IOException {
         return setIcuData(readFileAsByteArray(icuDataFile));
     }
 
-    public TzDataBundleBuilder setIcuData(byte[] icuData) {
+    public TimeZoneBundleBuilder setIcuData(byte[] icuData) {
         this.icuData = icuData;
         return this;
     }
 
     // For use in tests.
-    public TzDataBundleBuilder clearIcuDataForTests() {
+    public TimeZoneBundleBuilder clearIcuDataForTests() {
         this.icuData = null;
         return this;
     }
