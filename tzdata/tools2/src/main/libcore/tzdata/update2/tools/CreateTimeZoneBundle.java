@@ -48,7 +48,7 @@ public class CreateTimeZoneBundle {
             System.exit(2);
         }
         Properties p = loadProperties(f);
-        TzDataBundleBuilder builder = new TzDataBundleBuilder()
+        TimeZoneBundleBuilder builder = new TimeZoneBundleBuilder()
                 .setRulesVersion(getMandatoryProperty(p, "rules.version"))
                 .setAndroidRevision(getMandatoryProperty(p, "android.revision"))
                 .setTzData(getMandatoryPropertyFile(p, "bionic.file"))
