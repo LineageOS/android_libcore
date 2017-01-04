@@ -20,54 +20,37 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * A configuration bundle. This is a thin wrapper around some in-memory bytes representing a zip
+ * A timezone bundle. This is a thin wrapper around some in-memory bytes representing a zip
  * archive and logic for its safe extraction.
  */
-public final class ConfigBundle {
-
-    /**
-     * The name of the file inside the bundle containing the bundle format version.
-     * The content is ASCII bytes representing a version number. The number is
-     * incremented when any of the other contents of the bundle changes in a way that is not
-     * backwards compatible.
-     */
-    public static final String BUNDLE_VERSION_FILE_NAME = "bundle_version";
-
-    /**
-     * The current bundle version. Increment this number when making incompatible changes to the
-     * bundle structure, or the files contained within.
-     */
-    public static final byte[] BUNDLE_VERSION_BYTES = "1".getBytes(StandardCharsets.US_ASCII);
-
-    /**
-     * The name of the file inside the bundle containing the TZ data version.
-     * The content is ASCII bytes representing a version derived from the IANA rules version the
-     * bundle is based on with an Android-specific suffix to denote minor versioning. e.g.
-     * "2016g 001"
-     */
-    public static final String TZ_DATA_VERSION_FILE_NAME = "tzdata_version";
+public final class TimeZoneBundle {
 
     /** The name of the file inside the bundle containing bionic/libcore TZ data. */
-    public static final String ZONEINFO_FILE_NAME = "tzdata";
+    public static final String TZDATA_FILE_NAME = "tzdata";
 
     /** The name of the file inside the bundle containing ICU TZ data. */
     public static final String ICU_DATA_FILE_NAME = "icu/icu_tzdata.dat";
+
+    /**
+     * The name of the file inside the bundle containing the bundle version information.
+     * The content is ASCII bytes representing a set of version numbers. See {@link BundleVersion}.
+     */
+    public static final String BUNDLE_VERSION_FILE_NAME = "bundle_version";
 
     private static final int BUFFER_SIZE = 8192;
 
     private final byte[] bytes;
 
-    public ConfigBundle(byte[] bytes) {
+    public TimeZoneBundle(byte[] bytes) {
         this.bytes = bytes;
     }
 
-    public byte[] getBundleBytes() {
+    public byte[] getBytes() {
         return bytes;
     }
 
@@ -128,7 +111,7 @@ public final class ConfigBundle {
             return false;
         }
 
-        ConfigBundle that = (ConfigBundle) o;
+        TimeZoneBundle that = (TimeZoneBundle) o;
 
         if (!Arrays.equals(bytes, that.bytes)) {
             return false;

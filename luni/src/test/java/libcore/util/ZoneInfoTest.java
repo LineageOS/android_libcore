@@ -351,15 +351,17 @@ public class ZoneInfoTest extends TestCase {
   }
 
   public void testReadTimeZone_valid() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid();
     assertNotNull(createZoneInfo(getName(), System.currentTimeMillis(), builder.build()));
   }
 
   public void testReadTimeZone_badMagic() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
-    builder.setMagic(0xdeadbeef); // Bad magic.
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setMagic(0xdeadbeef); // Bad magic.
     try {
       createZoneInfo(getName(), System.currentTimeMillis(), builder.build());
       fail();
@@ -370,9 +372,10 @@ public class ZoneInfoTest extends TestCase {
    * Checks to make sure that ZoneInfo rejects more than 256 types.
    */
   public void testReadTimeZone_TooManyTypes() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
-    builder.setTypeCountOverride(257);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTypeCountOverride(257);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), System.currentTimeMillis(), bytes);
@@ -385,9 +388,10 @@ public class ZoneInfoTest extends TestCase {
    * Checks to make sure that ZoneInfo rejects more than 2000 transitions.
    */
   public void testReadTimeZone_TooManyTransitions() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
-    builder.setTransitionCountOverride(2001);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTransitionCountOverride(2001);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), System.currentTimeMillis(), bytes);
@@ -400,9 +404,10 @@ public class ZoneInfoTest extends TestCase {
    * Checks to make sure that ZoneInfo rejects a negative type count.
    */
   public void testReadTimeZone_NegativeTypes() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
-    builder.setTypeCountOverride(-1);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTypeCountOverride(-1);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), System.currentTimeMillis(), bytes);
@@ -415,9 +420,10 @@ public class ZoneInfoTest extends TestCase {
    * Checks to make sure that ZoneInfo rejects a negative transition count.
    */
   public void testReadTimeZone_NegativeTransitions() throws Exception {
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.initializeToValid();
-    builder.setTransitionCountOverride(-1);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTransitionCountOverride(-1);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), System.currentTimeMillis(), bytes);
@@ -437,8 +443,10 @@ public class ZoneInfoTest extends TestCase {
             { 1800, 1 },
     };
 
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.setTransitionsAndTypes(transitions, types);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTransitionsAndTypes(transitions, types);
 
     byte[] bytes = builder.build();
     try {
@@ -459,8 +467,10 @@ public class ZoneInfoTest extends TestCase {
             { 1800, 1 },
     };
 
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.setTransitionsAndTypes(transitions, types);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTransitionsAndTypes(transitions, types);
 
     byte[] bytes = builder.build();
     try {
@@ -481,8 +491,10 @@ public class ZoneInfoTest extends TestCase {
             { 1800, 2 }, // Invalid isDst - must be 0 or 1
     };
 
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.setTransitionsAndTypes(transitions, types);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .initializeToValid()
+                    .setTransitionsAndTypes(transitions, types);
 
     byte[] bytes = builder.build();
     try {
@@ -548,8 +560,9 @@ public class ZoneInfoTest extends TestCase {
   private ZoneInfo createZoneInfo(String name, int[][] transitions, int[][] types,
       long currentTimeMillis) throws Exception {
 
-    ZoneInfoTestHelper.ZoneInfoDataBuilder builder = new ZoneInfoTestHelper.ZoneInfoDataBuilder();
-    builder.setTransitionsAndTypes(transitions, types);
+    ZoneInfoTestHelper.ZicDataBuilder builder =
+            new ZoneInfoTestHelper.ZicDataBuilder()
+                    .setTransitionsAndTypes(transitions, types);
     return createZoneInfo(name, currentTimeMillis, builder.build());
   }
 

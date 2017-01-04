@@ -110,8 +110,8 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_invalidOffsets() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
 
     // Sections must be in the correct order: section sizing is calculated using them.
     builder.setIndexOffsetOverride(10);
@@ -124,8 +124,9 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_zoneTabOutsideFile() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder()
+                    .initializeToValid();
 
     // Sections must be in the correct order: section sizing is calculated using them.
     builder.setIndexOffsetOverride(10);
@@ -139,8 +140,8 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_nonDivisibleIndex() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
 
     // Sections must be in the correct order: section sizing is calculated using them.
     int indexOffset = 10;
@@ -156,22 +157,22 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_badId() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
     builder.clearZicData();
     byte[] validZicData =
-            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+            new ZoneInfoTestHelper.ZicDataBuilder().initializeToValid().build();
     builder.addZicData("", validZicData); // "" is an invalid ID
 
     checkInvalidDataDetected(builder.build());
   }
 
   public void testLoadTzData_badIdOrder() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
     builder.clearZicData();
     byte[] validZicData =
-            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+            new ZoneInfoTestHelper.ZicDataBuilder().initializeToValid().build();
     builder.addZicData("Europe/Zurich", validZicData);
     builder.addZicData("Europe/London", validZicData);
 
@@ -179,11 +180,11 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_duplicateId() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
     builder.clearZicData();
     byte[] validZicData =
-            new ZoneInfoTestHelper.ZoneInfoDataBuilder().initializeToValid().build();
+            new ZoneInfoTestHelper.ZicDataBuilder().initializeToValid().build();
     builder.addZicData("Europe/London", validZicData);
     builder.addZicData("Europe/London", validZicData);
 
@@ -191,8 +192,8 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testLoadTzData_badZicLength() throws Exception {
-    ZoneInfoTestHelper.TzDataBuilder builder
-            = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
+    ZoneInfoTestHelper.TzDataBuilder builder =
+            new ZoneInfoTestHelper.TzDataBuilder().initializeToValid();
     builder.clearZicData();
     byte[] invalidZicData = "This is too short".getBytes();
     builder.addZicData("Europe/London", invalidZicData);
