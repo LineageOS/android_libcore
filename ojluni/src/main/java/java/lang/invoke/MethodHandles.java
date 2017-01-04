@@ -868,9 +868,6 @@ assertEquals("", (String) MH_newString.invokeExact());
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findVirtual(Class<?> refc, String name, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO: Support varargs methods. The returned method handle must be a var-args
-            // collector in that case.
-
             // Special case : when we're looking up a virtual method on the MethodHandles class
             // itself, we can return one of our specialized invokers.
             if (refc == MethodHandle.class) {
@@ -953,9 +950,6 @@ assertEquals("[x, y, z]", pb.command().toString());
          * @throws NullPointerException if any argument is null
          */
         public MethodHandle findConstructor(Class<?> refc, MethodType type) throws NoSuchMethodException, IllegalAccessException {
-            // TODO: Support varargs methods. The returned method handle must be a var-args
-            // collector in that case.
-
             // The queried |type| is (PT1,PT2,..)V
             Constructor constructor = refc.getDeclaredConstructor(type.ptypes());
             if (constructor == null) {
