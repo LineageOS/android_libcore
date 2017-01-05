@@ -1203,8 +1203,9 @@ public final class Math {
      * @return  the absolute value of the argument.
      */
     public static float abs(float a) {
-        // Note, as a "quality of implementation" rather than pure "spec compliance" we require that
-        // Math.abs() clears the sign bit (but changes nothing else) for all numbers, including NaN.
+        // Note, as a "quality of implementation", rather than pure "spec compliance",
+        // we require that Math.abs() clears the sign bit (but changes nothing else)
+        // for all numbers, including NaN (signaling NaN may become quiet though).
         return Float.intBitsToFloat(0x7fffffff & Float.floatToRawIntBits(a));
     }
 
@@ -1224,8 +1225,9 @@ public final class Math {
      * @return  the absolute value of the argument.
      */
     public static double abs(double a) {
-        // Note, as a "quality of implementation" rather than pure "spec compliance" we require that
-        // Math.abs() clears the sign bit (but changes nothing else) for all numbers, including NaN.
+        // Note, as a "quality of implementation", rather than pure "spec compliance",
+        // we require that Math.abs() clears the sign bit (but changes nothing else)
+        // for all numbers, including NaN (signaling NaN may become quiet though).
         return Double.longBitsToDouble(0x7fffffffffffffffL & Double.doubleToRawLongBits(a));
     }
 
