@@ -100,21 +100,22 @@ public class CopyOnWriteArrayList<E>
     final transient Object lock = new Object();
 
     /** The array, accessed only via getArray/setArray. */
-    private transient volatile Object[] array;
+    // Android-changed: renamed array -> elements for backwards compatibility b/33916927
+    private transient volatile Object[] elements;
 
     /**
      * Gets the array.  Non-private so as to also be accessible
      * from CopyOnWriteArraySet class.
      */
     final Object[] getArray() {
-        return array;
+        return elements;
     }
 
     /**
      * Sets the array.
      */
     final void setArray(Object[] a) {
-        array = a;
+        elements = a;
     }
 
     /**
