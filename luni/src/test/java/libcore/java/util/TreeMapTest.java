@@ -612,6 +612,33 @@ public class TreeMapTest extends TestCase {
         return bound == '[' || bound == '(';
     }
 
+    // http://b//26336181
+    //
+    // Note that this is only worth working around because these bogus comparators worked
+    // somewhat-fine on M and below provided that :
+    //
+    // (1) put was called with distinct elements (i.e, with no two elements equal() to each other)
+    // (2) get or get-like methods are never called
+    //
+    // These comparators are clearly bogus but are somewhat common.
+    public void testTreeMapWithBogusComparator() {
+        TreeMap<String, String> treeMap = new TreeMap<String, String>(
+                new Comparator<String>() {
+                    @Override
+                    public int compare(String o1, String o2) {
+                        if (o1.equals(o2)) {
+                            throw new IllegalArgumentException("Expected unequal elements");
+                        }
+
+                        return o1.compareTo(o2);
+                    }
+                }
+        );
+
+        treeMap.put("candy", "floss");
+        treeMap.put("cheddar", "cheese");
+    }
+
     public void test_spliterator_keySet() {
         TreeMap<String, String> treeMap = new TreeMap<>();
         treeMap.put("a", "1");
