@@ -179,7 +179,9 @@ endif # LIBCORE_SKIP_TESTS
 
 # Set of gtest unit tests.
 include $(CLEAR_VARS)
-LOCAL_CFLAGS += $(libart_cflags)
+# Add -fno-builtin so that the compiler doesn't attempt to inline
+# memcpy calls that are not really aligned.
+LOCAL_CFLAGS += $(libart_cflags) -fno-builtin
 LOCAL_CPPFLAGS += $(core_cppflags)
 LOCAL_SRC_FILES += \
   luni/src/test/native/libcore_io_Memory_test.cpp \
