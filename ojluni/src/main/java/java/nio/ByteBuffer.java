@@ -555,14 +555,14 @@ public abstract class ByteBuffer
             // isDirect() doesn't imply !hasArray(), ByteBuffer.allocateDirect allocated buffer will
             // have a backing, non-gc-movable byte array. JNI allocated direct byte buffers WILL NOT
             // have a backing array.
-            final Object srcObject = src.isDirect() ? src : src.array();
+            final Object srcObject = src.isDirect() ? src : src.hb;
             int srcOffset = src.position();
             if (!src.isDirect()) {
                 srcOffset += src.offset;
             }
 
             final ByteBuffer dst = this;
-            final Object dstObject = dst.isDirect() ? dst : dst.array();
+            final Object dstObject = dst.isDirect() ? dst : dst.hb;
             int dstOffset = dst.position();
             if (!dst.isDirect()) {
                 dstOffset += dst.offset;
