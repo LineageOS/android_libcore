@@ -47,9 +47,9 @@
 
 #include <memory>
 
-#include <android/log.h>
 #include <android-base/file.h>
 #include <android-base/strings.h>
+#include <log/log.h>
 
 #include "AsynchronousCloseMonitor.h"
 #include "ExecStrings.h"
