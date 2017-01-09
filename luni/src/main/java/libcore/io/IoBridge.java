@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.PortUnreachableException;
+import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketOptions;
 import java.net.SocketTimeoutException;
@@ -290,15 +291,14 @@ public final class IoBridge {
     private static Object getSocketOptionErrno(FileDescriptor fd, int option) throws ErrnoException, SocketException {
         switch (option) {
         case SocketOptions.IP_MULTICAST_IF:
-            // This is IPv4-only.
-            return Libcore.os.getsockoptInAddr(fd, IPPROTO_IP, IP_MULTICAST_IF);
         case SocketOptions.IP_MULTICAST_IF2:
-            // This is IPv6-only.
             return Libcore.os.getsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_IF);
         case SocketOptions.IP_MULTICAST_LOOP:
             // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
             // it doesn't matter which we return.
-            return booleanFromInt(Libcore.os.getsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP));
+            // NOTE: getsockopt's return value means "isEnabled", while OpenJDK code java.net
+            // requires a value that means "isDisabled" so we NEGATE the system call value here.
+            return !booleanFromInt(Libcore.os.getsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP));
         case IoBridge.JAVA_IP_MULTICAST_TTL:
             // Since setting this from java.net always sets IPv4 and IPv6 to the same value,
             // it doesn't matter which we return.
@@ -333,6 +333,8 @@ public final class IoBridge {
             return (int) Libcore.os.getsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO).toMillis();
         case SocketOptions.TCP_NODELAY:
             return booleanFromInt(Libcore.os.getsockoptInt(fd, IPPROTO_TCP, TCP_NODELAY));
+        case SocketOptions.SO_BINDADDR:
+            return ((InetSocketAddress) Libcore.os.getsockname(fd)).getAddress();
         default:
             throw new SocketException("Unknown socket option: " + option);
         }
@@ -361,7 +363,15 @@ public final class IoBridge {
     private static void setSocketOptionErrno(FileDescriptor fd, int option, Object value) throws ErrnoException, SocketException {
         switch (option) {
         case SocketOptions.IP_MULTICAST_IF:
-            throw new UnsupportedOperationException("Use IP_MULTICAST_IF2 on Android");
+            NetworkInterface nif = NetworkInterface.getByInetAddress((InetAddress) value);
+            if (nif == null) {
+                throw new SocketException(
+                        "bad argument for IP_MULTICAST_IF : address not bound to any interface");
+            }
+            // Although IPv6 was cleaned up to use int, IPv4 uses an ip_mreqn containing an int.
+            Libcore.os.setsockoptIpMreqn(fd, IPPROTO_IP, IP_MULTICAST_IF, nif.getIndex());
+            Libcore.os.setsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_IF, nif.getIndex());
+            return;
         case SocketOptions.IP_MULTICAST_IF2:
             // Although IPv6 was cleaned up to use int, IPv4 uses an ip_mreqn containing an int.
             Libcore.os.setsockoptIpMreqn(fd, IPPROTO_IP, IP_MULTICAST_IF, (Integer) value);
@@ -369,8 +379,11 @@ public final class IoBridge {
             return;
         case SocketOptions.IP_MULTICAST_LOOP:
             // Although IPv6 was cleaned up to use int, IPv4 multicast loopback uses a byte.
-            Libcore.os.setsockoptByte(fd, IPPROTO_IP, IP_MULTICAST_LOOP, booleanToInt((Boolean) value));
-            Libcore.os.setsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, booleanToInt((Boolean) value));
+            // NOTE: setsockopt's arguement value means "isEnabled", while OpenJDK code java.net
+            // uses a value that means "isDisabled" so we NEGATE the system call value here.
+            int enable = booleanToInt(!((Boolean) value));
+            Libcore.os.setsockoptByte(fd, IPPROTO_IP, IP_MULTICAST_LOOP, enable);
+            Libcore.os.setsockoptInt(fd, IPPROTO_IPV6, IPV6_MULTICAST_LOOP, enable);
             return;
         case IoBridge.JAVA_IP_MULTICAST_TTL:
             // Although IPv6 was cleaned up to use int, and IPv4 non-multicast TTL uses int,

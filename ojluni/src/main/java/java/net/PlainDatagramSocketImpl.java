@@ -40,7 +40,6 @@ import static android.system.OsConstants.SOCK_DGRAM;
 import static libcore.io.IoBridge.JAVA_IP_MULTICAST_TTL;
 import static libcore.io.IoBridge.JAVA_MCAST_JOIN_GROUP;
 import static libcore.io.IoBridge.JAVA_MCAST_LEAVE_GROUP;
-import static libcore.io.IoBridge.setSocketOption;
 import static sun.net.ExtendedOptionsImpl.*;
 
 /*
@@ -51,9 +50,10 @@ import static sun.net.ExtendedOptionsImpl.*;
 
 class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
 {
-    static {
-        init();
-    }
+    // Android-removed: init method has been removed
+    // static {
+    //     init();
+    // }
 
     protected <T> void setOption(SocketOption<T> name, T value) throws IOException {
         if (!name.equals(ExtendedSocketOptions.SO_FLOW_SLA)) {
@@ -189,7 +189,7 @@ class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
 
     protected void datagramSocketCreate() throws SocketException {
         fd = IoBridge.socket(AF_INET6, SOCK_DGRAM, 0);
-        setSocketOption(fd, SO_BROADCAST, true);
+        IoBridge.setSocketOption(fd, SO_BROADCAST, true);
     }
 
     protected void datagramSocketClose() {
@@ -198,10 +198,21 @@ class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
         } catch (IOException ignored) { }
     }
 
-    protected native void socketSetOption0(int opt, Object val)
-        throws SocketException;
+    protected void socketSetOption0(int opt, Object val) throws SocketException {
+        if (isClosed()) {
+            throw new SocketException("Socket closed");
+        }
 
-    protected native Object socketGetOption(int opt) throws SocketException;
+        IoBridge.setSocketOption(fd, opt, val);
+    }
+
+    protected Object socketGetOption(int opt) throws SocketException {
+        if (isClosed()) {
+            throw new SocketException("Socket closed");
+        }
+
+        return IoBridge.getSocketOption(fd, opt);
+    }
 
     protected void connect0(InetAddress address, int port) throws SocketException {
         if (isClosed()) {
@@ -224,8 +235,9 @@ class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
         } catch (SocketException ignored) { }
     }
 
-    /**
-     * Perform class load-time initializations.
-     */
-    private native static void init();
+    // Android-removed: JNI has been removed
+    // /**
+    //  * Perform class load-time initializations.
+    //  */
+    // private native static void init();
 }
