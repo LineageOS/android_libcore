@@ -146,6 +146,7 @@ public final class DexFile {
         }
 
         mCookie = openDexFile(sourceName, outputName, flags, loader, elements);
+        mInternalCookie = mCookie;
         mFileName = sourceName;
         //System.out.println("DEX FILE cookie is " + mCookie + " sourceName=" + sourceName + " outputName=" + outputName);
     }
