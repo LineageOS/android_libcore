@@ -24,16 +24,20 @@
  */
 package java.net;
 
+import android.system.ErrnoException;
 import android.system.StructGroupReq;
 
 import java.io.IOException;
 import libcore.io.IoBridge;
+import libcore.io.Libcore;
 import libcore.util.EmptyArray;
 
 import jdk.net.*;
 
 import static android.system.OsConstants.AF_INET6;
 import static android.system.OsConstants.AF_UNSPEC;
+import static android.system.OsConstants.IPPROTO_IP;
+import static android.system.OsConstants.IP_MULTICAST_ALL;
 import static android.system.OsConstants.MSG_PEEK;
 import static android.system.OsConstants.POLLIN;
 import static android.system.OsConstants.SOCK_DGRAM;
@@ -190,6 +194,12 @@ class PlainDatagramSocketImpl extends AbstractPlainDatagramSocketImpl
     protected void datagramSocketCreate() throws SocketException {
         fd = IoBridge.socket(AF_INET6, SOCK_DGRAM, 0);
         IoBridge.setSocketOption(fd, SO_BROADCAST, true);
+
+        try {
+            Libcore.os.setsockoptInt(fd, IPPROTO_IP, IP_MULTICAST_ALL, 0);
+        } catch (ErrnoException errnoException) {
+            throw errnoException.rethrowAsSocketException();
+        }
     }
 
     protected void datagramSocketClose() {
