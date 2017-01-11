@@ -28,7 +28,7 @@
 #include <string.h>
 #include <time.h>
 
-#include <android/log.h>
+#include <log/log.h>
 
 #include "io_util.h"
 #include "jni.h"
