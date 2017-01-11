@@ -35,6 +35,7 @@ import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
 /** @hide */
+// Not final because it is extended in tests.
 public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
 
     /**
@@ -47,7 +48,7 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
      *
      * A single MemoryRef instance is shared across all slices and duplicates of a given buffer.
      */
-    static class MemoryRef {
+    final static class MemoryRef {
         byte[] buffer;
         long allocatedAddress;
         final int offset;
@@ -90,7 +91,7 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     }
 
     // Invoked only by JNI: NewDirectByteBuffer(void*, long)
-    //
+    @SuppressWarnings("unused")
     private DirectByteBuffer(long addr, int cap) {
         super(-1, 0, cap, cap);
         memoryRef = new MemoryRef(addr);
@@ -111,7 +112,6 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     }
 
     // For duplicates and slices
-    //
     DirectByteBuffer(MemoryRef memoryRef,         // package-private
                      int mark, int pos, int lim, int cap,
                      int off) {
@@ -129,16 +129,17 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     }
 
     @Override
-    public Object attachment() {
+    public final Object attachment() {
         return memoryRef;
     }
 
     @Override
-    public Cleaner cleaner() {
+    public final Cleaner cleaner() {
         return cleaner;
     }
 
-    public ByteBuffer slice() {
+    @Override
+    public final ByteBuffer slice() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -151,7 +152,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return new DirectByteBuffer(memoryRef, -1, 0, rem, rem, off, isReadOnly);
     }
 
-    public ByteBuffer duplicate() {
+    @Override
+    public final ByteBuffer duplicate() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -164,7 +166,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
                 isReadOnly);
     }
 
-    public ByteBuffer asReadOnlyBuffer() {
+    @Override
+    public final ByteBuffer asReadOnlyBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -178,7 +181,7 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     }
 
     @Override
-    public long address() {
+    public final long address() {
         return address;
     }
 
@@ -190,20 +193,24 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return Memory.peekByte(a);
     }
 
-    public byte get() {
+    @Override
+    public final byte get() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return get(ix(nextGetIndex()));
     }
 
-    public byte get(int i) {
+    @Override
+    public final byte get(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return get(ix(checkIndex(i)));
     }
 
+    // This method is not declared final because it is overridden in tests.
+    @Override
     public ByteBuffer get(byte[] dst, int dstOffset, int length) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
@@ -221,12 +228,13 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer put(long a, byte x) {
+    private ByteBuffer put(long a, byte x) {
         Memory.pokeByte(a, x);
         return this;
     }
 
-    public ByteBuffer put(byte x) {
+    @Override
+    public final ByteBuffer put(byte x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -237,7 +245,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer put(int i, byte x) {
+    @Override
+    public final ByteBuffer put(int i, byte x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -248,6 +257,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
+    // This method is not declared final because it is overridden in tests.
+    @Override
     public ByteBuffer put(byte[] src, int srcOffset, int length) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
@@ -268,7 +279,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer compact() {
+    @Override
+    public final ByteBuffer compact() {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -286,30 +298,30 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public boolean isDirect() {
+    @Override
+    public final boolean isDirect() {
         return true;
     }
 
-    public boolean isReadOnly() {
+    @Override
+    public final boolean isReadOnly() {
         return isReadOnly;
     }
 
-    byte _get(int i) {                          // package-private
+    // Used by java.nio.Bits
+    @Override
+    final byte _get(int i) {                          // package-private
         return get(i);
     }
 
-    void _put(int i, byte b) {                  // package-private
+    // Used by java.nio.Bits
+    @Override
+    final void _put(int i, byte b) {                  // package-private
         put(i, b);
     }
 
-    private char getChar(long a) {
-        if (!memoryRef.isAccessible) {
-            throw new IllegalStateException("buffer is inaccessible");
-        }
-        return (char) Memory.peekShort(position, !nativeByteOrder);
-    }
-
-    public char getChar() {
+    @Override
+    public final char getChar() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -322,31 +334,33 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return x;
     }
 
-    public char getChar(int i) {
+    @Override
+    public final char getChar(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         checkIndex(i, SizeOf.CHAR);
-        char x = (char) Memory.peekShort(ix(i), !nativeByteOrder);
-        return x;
+        return (char) Memory.peekShort(ix(i), !nativeByteOrder);
     }
 
+    @Override
     char getCharUnchecked(int i) {
         return (char) Memory.peekShort(ix(i), !nativeByteOrder);
     }
 
+    @Override
     void getUnchecked(int pos, char[] dst, int dstOffset, int length) {
         Memory.peekCharArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
-
 
     private ByteBuffer putChar(long a, char x) {
         Memory.pokeShort(a, (short) x, !nativeByteOrder);
         return this;
     }
 
-    public ByteBuffer putChar(char x) {
+    @Override
+    public final ByteBuffer putChar(char x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -357,7 +371,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putChar(int i, char x) {
+    @Override
+    public final ByteBuffer putChar(int i, char x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -368,16 +383,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
+    @Override
     void putCharUnchecked(int i, char x) {
         putChar(ix(i), x);
     }
 
+    @Override
     void putUnchecked(int pos, char[] src, int srcOffset, int length) {
         Memory.pokeCharArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-    public CharBuffer asCharBuffer() {
+    @Override
+    public final CharBuffer asCharBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -386,49 +404,53 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         assert (off <= lim);
         int rem = (off <= lim ? lim - off : 0);
         int size = rem >> 1;
-        return (CharBuffer) (new ByteBufferAsCharBuffer(this,
+        return new ByteBufferAsCharBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
     private short getShort(long a) {
         return Memory.peekShort(a, !nativeByteOrder);
     }
 
-    public short getShort() {
+    @Override
+    public final short getShort() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getShort(ix(nextGetIndex(SizeOf.SHORT)));
     }
 
-    public short getShort(int i) {
+    @Override
+    public final short getShort(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getShort(ix(checkIndex(i, SizeOf.SHORT)));
     }
 
+    @Override
     short getShortUnchecked(int i) {
         return getShort(ix(i));
     }
 
+    @Override
     void getUnchecked(int pos, short[] dst, int dstOffset, int length) {
         Memory.peekShortArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
-
 
     private ByteBuffer putShort(long a, short x) {
         Memory.pokeShort(a, x, !nativeByteOrder);
         return this;
     }
 
-    public ByteBuffer putShort(short x) {
+    @Override
+    public final ByteBuffer putShort(short x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -439,7 +461,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putShort(int i, short x) {
+    @Override
+    public final ByteBuffer putShort(int i, short x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -450,16 +473,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
+    @Override
     void putShortUnchecked(int i, short x) {
         putShort(ix(i), x);
     }
 
+    @Override
     void putUnchecked(int pos, short[] src, int srcOffset, int length) {
         Memory.pokeShortArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-    public ShortBuffer asShortBuffer() {
+    @Override
+    public final ShortBuffer asShortBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -468,19 +494,20 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         assert (off <= lim);
         int rem = (off <= lim ? lim - off : 0);
         int size = rem >> 1;
-        return (ShortBuffer) (new ByteBufferAsShortBuffer(this,
+        return new ByteBufferAsShortBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
     private int getInt(long a) {
         return Memory.peekInt(a, !nativeByteOrder);
     }
 
+    @Override
     public int getInt() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
@@ -488,6 +515,7 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return getInt(ix(nextGetIndex(SizeOf.INT)));
     }
 
+    @Override
     public int getInt(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
@@ -495,11 +523,13 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return getInt(ix(checkIndex(i, (SizeOf.INT))));
     }
 
-    int getIntUnchecked(int i) {
+    @Override
+    final int getIntUnchecked(int i) {
         return getInt(ix(i));
     }
 
-    void getUnchecked(int pos, int[] dst, int dstOffset, int length) {
+    @Override
+    final void getUnchecked(int pos, int[] dst, int dstOffset, int length) {
         Memory.peekIntArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
@@ -509,7 +539,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putInt(int x) {
+    @Override
+    public final ByteBuffer putInt(int x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -520,7 +551,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putInt(int i, int x) {
+    @Override
+    public final ByteBuffer putInt(int i, int x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -531,17 +563,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    void putIntUnchecked(int i, int x) {
+    @Override
+    final void putIntUnchecked(int i, int x) {
         putInt(ix(i), x);
     }
 
-    void putUnchecked(int pos, int[] src, int srcOffset, int length) {
+    @Override
+    final void putUnchecked(int pos, int[] src, int srcOffset, int length) {
         Memory.pokeIntArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-
-    public IntBuffer asIntBuffer() {
+    @Override
+    public final IntBuffer asIntBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -550,38 +584,42 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         assert (off <= lim);
         int rem = (off <= lim ? lim - off : 0);
         int size = rem >> 2;
-        return (IntBuffer) (new ByteBufferAsIntBuffer(this,
+        return new ByteBufferAsIntBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
     private long getLong(long a) {
         return Memory.peekLong(a, !nativeByteOrder);
     }
 
-    public long getLong() {
+    @Override
+    public final long getLong() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getLong(ix(nextGetIndex(SizeOf.LONG)));
     }
 
-    public long getLong(int i) {
+    @Override
+    public final long getLong(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getLong(ix(checkIndex(i, SizeOf.LONG)));
     }
 
-    long getLongUnchecked(int i) {
+    @Override
+    final long getLongUnchecked(int i) {
         return getLong(ix(i));
     }
 
-    void getUnchecked(int pos, long[] dst, int dstOffset, int length) {
+    @Override
+    final void getUnchecked(int pos, long[] dst, int dstOffset, int length) {
         Memory.peekLongArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
@@ -591,7 +629,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putLong(long x) {
+    @Override
+    public final ByteBuffer putLong(long x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -602,7 +641,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putLong(int i, long x) {
+    @Override
+    public final ByteBuffer putLong(int i, long x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -613,17 +653,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    void putLongUnchecked(int i, long x) {
+    @Override
+    final void putLongUnchecked(int i, long x) {
         putLong(ix(i), x);
     }
 
-    void putUnchecked(int pos, long[] src, int srcOffset, int length) {
+    @Override
+    final void putUnchecked(int pos, long[] src, int srcOffset, int length) {
         Memory.pokeLongArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-
-    public LongBuffer asLongBuffer() {
+    @Override
+    public final LongBuffer asLongBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -632,13 +674,13 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         assert (off <= lim);
         int rem = (off <= lim ? lim - off : 0);
         int size = rem >> 3;
-        return (LongBuffer) (new ByteBufferAsLongBuffer(this,
+        return new ByteBufferAsLongBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
     private float getFloat(long a) {
@@ -646,25 +688,29 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return Float.intBitsToFloat(x);
     }
 
-    public float getFloat() {
+    @Override
+    public final float getFloat() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getFloat(ix(nextGetIndex(SizeOf.FLOAT)));
     }
 
-    public float getFloat(int i) {
+    @Override
+    public final float getFloat(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getFloat(ix(checkIndex(i, SizeOf.FLOAT)));
     }
 
-    float getFloatUnchecked(int i) {
+    @Override
+    final float getFloatUnchecked(int i) {
         return getFloat(ix(i));
     }
 
-    void getUnchecked(int pos, float[] dst, int dstOffset, int length) {
+    @Override
+    final void getUnchecked(int pos, float[] dst, int dstOffset, int length) {
         Memory.peekFloatArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
@@ -675,7 +721,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putFloat(float x) {
+    @Override
+    public final ByteBuffer putFloat(float x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -686,7 +733,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putFloat(int i, float x) {
+    @Override
+    public final ByteBuffer putFloat(int i, float x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -697,16 +745,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    void putFloatUnchecked(int i, float x) {
+    @Override
+    final void putFloatUnchecked(int i, float x) {
         putFloat(ix(i), x);
     }
 
-    void putUnchecked(int pos, float[] src, int srcOffset, int length) {
+    @Override
+    final void putUnchecked(int pos, float[] src, int srcOffset, int length) {
         Memory.pokeFloatArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-    public FloatBuffer asFloatBuffer() {
+    @Override
+    public final FloatBuffer asFloatBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -715,13 +766,13 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         assert (off <= lim);
         int rem = (off <= lim ? lim - off : 0);
         int size = rem >> 2;
-        return (FloatBuffer) (new ByteBufferAsFloatBuffer(this,
+        return new ByteBufferAsFloatBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
     private double getDouble(long a) {
@@ -729,25 +780,29 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return Double.longBitsToDouble(x);
     }
 
-    public double getDouble() {
+    @Override
+    public final double getDouble() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getDouble(ix(nextGetIndex(SizeOf.DOUBLE)));
     }
 
-    public double getDouble(int i) {
+    @Override
+    public final double getDouble(int i) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
         return getDouble(ix(checkIndex(i, SizeOf.DOUBLE)));
     }
 
-    double getDoubleUnchecked(int i) {
+    @Override
+    final double getDoubleUnchecked(int i) {
         return getDouble(ix(i));
     }
 
-    void getUnchecked(int pos, double[] dst, int dstOffset, int length) {
+    @Override
+    final void getUnchecked(int pos, double[] dst, int dstOffset, int length) {
         Memory.peekDoubleArray(ix(pos),
                 dst, dstOffset, length, !nativeByteOrder);
     }
@@ -758,7 +813,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putDouble(double x) {
+    @Override
+    public final ByteBuffer putDouble(double x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -769,7 +825,8 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    public ByteBuffer putDouble(int i, double x) {
+    @Override
+    public final ByteBuffer putDouble(int i, double x) {
         if (isReadOnly) {
             throw new ReadOnlyBufferException();
         }
@@ -780,16 +837,19 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         return this;
     }
 
-    void putDoubleUnchecked(int i, double x) {
+    @Override
+    final void putDoubleUnchecked(int i, double x) {
         putDouble(ix(i), x);
     }
 
-    void putUnchecked(int pos, double[] src, int srcOffset, int length) {
+    @Override
+    final void putUnchecked(int pos, double[] src, int srcOffset, int length) {
         Memory.pokeDoubleArray(ix(pos),
                 src, srcOffset, length, !nativeByteOrder);
     }
 
-    public DoubleBuffer asDoubleBuffer() {
+    @Override
+    public final DoubleBuffer asDoubleBuffer() {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
         }
@@ -799,20 +859,22 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
         int rem = (off <= lim ? lim - off : 0);
 
         int size = rem >> 3;
-        return (DoubleBuffer) (new ByteBufferAsDoubleBuffer(this,
+        return new ByteBufferAsDoubleBuffer(this,
                 -1,
                 0,
                 size,
                 size,
                 off,
-                order()));
+                order());
     }
 
-    public boolean isAccessible() {
+    @Override
+    public final boolean isAccessible() {
         return memoryRef.isAccessible;
     }
 
-    public void setAccessible(boolean value) {
+    @Override
+    public final void setAccessible(boolean value) {
         memoryRef.isAccessible = value;
     }
 }
