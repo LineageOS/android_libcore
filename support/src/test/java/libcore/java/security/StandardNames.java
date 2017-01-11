@@ -1021,8 +1021,7 @@ public final class StandardNames extends Assert {
     public static final List<String> ELLIPTIC_CURVES_DEFAULT = Arrays.asList(
             "x25519 (29)",
             "secp256r1 (23)",
-            "secp384r1 (24)",
-            "secp521r1 (25)"
+            "secp384r1 (24)"
             );
 
     private static final Set<String> PERMITTED_DEFAULT_KEY_EXCHANGE_ALGS =
