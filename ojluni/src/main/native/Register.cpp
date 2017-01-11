@@ -127,6 +127,8 @@ jint JNI_OnLoad(JavaVM* vm, void*) { JNIEnv* env;
     register_java_net_Inet4Address(env);
     register_java_net_Inet6Address(env);
     register_java_net_PlainSocketImpl(env);
+    register_java_net_PlainDatagramSocketImpl(env);
+    register_java_net_DatagramPacket(env);
     register_java_net_SocketInputStream(env);
     register_java_net_SocketOutputStream(env);
     register_java_nio_Bits(env);
