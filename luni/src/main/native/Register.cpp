@@ -18,7 +18,7 @@
 
 #include <stdlib.h>
 
-#include "android/log.h"
+#include "log/log.h"
 
 #include "JniConstants.h"
 #include "ScopedLocalFrame.h"

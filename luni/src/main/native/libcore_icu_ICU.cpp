@@ -31,8 +31,8 @@
 #include <memory>
 #include <vector>
 
-#include <android/log.h>
 #include <android-base/unique_fd.h>
+#include <log/log.h>
 
 #include "IcuUtilities.h"
 #include "JNIHelp.h"
