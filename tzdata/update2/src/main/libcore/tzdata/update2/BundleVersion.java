@@ -84,8 +84,8 @@ public class BundleVersion {
     }
 
     public static BundleVersion extractFromBytes(byte[] bytes) throws BundleException {
+        String bundleVersion = new String(bytes, StandardCharsets.US_ASCII);
         try {
-            String bundleVersion = new String(bytes, StandardCharsets.US_ASCII);
             if (!BUNDLE_VERSION_PATTERN.matcher(bundleVersion).matches()) {
                 throw new BundleException("Invalid bundle version string: " + bundleVersion);
             }
@@ -94,21 +94,13 @@ public class BundleVersion {
             String androidRevision = bundleVersion.substring(14);
             return new BundleVersion(bundleFormatVersion, rulesVersion, androidRevision);
         } catch (IndexOutOfBoundsException e) {
-            throw new BundleException("Data too short");
+            // The use of the regexp above should make this impossible.
+            throw new BundleException("Bundle version string too short:" + bundleVersion);
         }
     }
 
     public String getBundleFormatMajorVersion() {
         return bundleFormatVersion.substring(0, 3);
-    }
-
-    @Override
-    public String toString() {
-        return "BundleVersion{" +
-                "bundleFormatVersion='" + bundleFormatVersion + '\'' +
-                ", rulesVersion='" + rulesVersion + '\'' +
-                ", androidRevision='" + androidRevision + '\'' +
-                '}';
     }
 
     public byte[] getBytes() {
@@ -120,5 +112,34 @@ public class BundleVersion {
             String bundleFormatVersion, String rulesVersion, String androidRevision) {
         return (bundleFormatVersion + "|" + rulesVersion + "|" + androidRevision)
                 .getBytes(StandardCharsets.US_ASCII);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BundleVersion that = (BundleVersion) o;
+
+        if (!bundleFormatVersion.equals(that.bundleFormatVersion)) {
+            return false;
+        }
+        if (!rulesVersion.equals(that.rulesVersion)) {
+            return false;
+        }
+        return androidRevision.equals(that.androidRevision);
+    }
+
+    @Override
+    public String toString() {
+        return "BundleVersion{" +
+                "bundleFormatVersion='" + bundleFormatVersion + '\'' +
+                ", rulesVersion='" + rulesVersion + '\'' +
+                ", androidRevision='" + androidRevision + '\'' +
+                '}';
     }
 }
