@@ -87,18 +87,22 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     }
 
     /** Tests the an update on a device will fail if the /system tzdata file cannot be found. */
-    public void testBadSystemFile() throws Exception {
+    public void testInstall_badSystemFile() throws Exception {
         File doesNotExist = new File(testSystemTzDataDir, "doesNotExist");
         TimeZoneBundleInstaller brokenSystemInstaller = new TimeZoneBundleInstaller(
                 "TimeZoneBundleInstallerTest", doesNotExist, testInstallDir);
         TimeZoneBundle tzData = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
 
-        assertFalse(brokenSystemInstaller.install(tzData.getBytes()));
+        try {
+            brokenSystemInstaller.install(tzData.getBytes());
+            fail();
+        } catch (IOException expected) {}
+
         assertNoContentInstalled();
     }
 
     /** Tests the first successful update on a device */
-    public void testSuccessfulFirstUpdate() throws Exception {
+    public void testInstall_successfulFirstUpdate() throws Exception {
         TimeZoneBundle bundle = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
 
         assertTrue(installer.install(bundle.getBytes()));
@@ -108,7 +112,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests we can install an update the same version as is in /system.
      */
-    public void testSuccessfulFirstUpdate_sameVersionAsSystem() throws Exception {
+    public void testInstall_successfulFirstUpdate_sameVersionAsSystem() throws Exception {
         TimeZoneBundle bundle = createValidTimeZoneBundle(SYSTEM_RULES_VERSION, "001");
         assertTrue(installer.install(bundle.getBytes()));
         assertBundleInstalled(bundle);
@@ -117,7 +121,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests we cannot install an update older than the version in /system.
      */
-    public void testUnsuccessfulFirstUpdate_olderVersionThanSystem() throws Exception {
+    public void testInstall_unsuccessfulFirstUpdate_olderVersionThanSystem() throws Exception {
         TimeZoneBundle bundle = createValidTimeZoneBundle(OLDER_RULES_VERSION, "001");
         assertFalse(installer.install(bundle.getBytes()));
         assertNoContentInstalled();
@@ -126,7 +130,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests an update on a device when there is a prior update already applied.
      */
-    public void testSuccessfulFollowOnUpdate_newerVersion() throws Exception {
+    public void testInstall_successfulFollowOnUpdate_newerVersion() throws Exception {
         TimeZoneBundle bundle1 = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
         assertTrue(installer.install(bundle1.getBytes()));
         assertBundleInstalled(bundle1);
@@ -144,7 +148,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
      * Tests an update on a device when there is a prior update already applied, but the follow
      * on update is older than in /system.
      */
-    public void testUnsuccessfulFollowOnUpdate_olderVersion() throws Exception {
+    public void testInstall_unsuccessfulFollowOnUpdate_olderVersion() throws Exception {
         TimeZoneBundle bundle1 = createValidTimeZoneBundle(NEW_RULES_VERSION, "002");
         assertTrue(installer.install(bundle1.getBytes()));
         assertBundleInstalled(bundle1);
@@ -155,7 +159,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     }
 
     /** Tests that a bundle with a missing file will not update the content. */
-    public void testMissingTzDataFile() throws Exception {
+    public void testInstall_missingTzDataFile() throws Exception {
         TimeZoneBundle installedBundle = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
         assertTrue(installer.install(installedBundle.getBytes()));
         assertBundleInstalled(installedBundle);
@@ -169,7 +173,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     }
 
     /** Tests that a bundle with a missing file will not update the content. */
-    public void testMissingIcuFile() throws Exception {
+    public void testInstall_missingIcuFile() throws Exception {
         TimeZoneBundle installedBundle = createValidTimeZoneBundle(NEW_RULES_VERSION, "001");
         assertTrue(installer.install(installedBundle.getBytes()));
         assertBundleInstalled(installedBundle);
@@ -185,7 +189,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that an update will be unpacked even if there is a partial update from a previous run.
      */
-    public void testInstallWithWorkingDir() throws Exception {
+    public void testInstall_withWorkingDir() throws Exception {
         File workingDir = installer.getWorkingDir();
         assertTrue(workingDir.mkdir());
         createFile(new File(workingDir, "myFile"), new byte[] { 'a' });
@@ -198,7 +202,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that a bundle without a bundle version file will be rejected.
      */
-    public void testInstallWithMissingBundleVersionFile() throws Exception {
+    public void testInstall_withMissingBundleVersionFile() throws Exception {
         // Create a bundle without a version file.
         TimeZoneBundle bundle = createValidTimeZoneBundleBuilder(NEW_RULES_VERSION, "001")
                 .clearVersionForTests()
@@ -210,7 +214,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that a bundle with an newer bundle version will be rejected.
      */
-    public void testInstallWithNewerBundleVersion() throws Exception {
+    public void testInstall_withNewerBundleVersion() throws Exception {
         // Create a bundle that will appear to be newer than the one currently supported.
         TimeZoneBundle bundle = createValidTimeZoneBundleBuilder(NEW_RULES_VERSION, "001")
                 .setBundleVersionForTests("002.001")
@@ -222,7 +226,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that a bundle with a badly formed bundle version will be rejected.
      */
-    public void testInstallWithBadlyFormedBundleVersion() throws Exception {
+    public void testInstall_withBadlyFormedBundleVersion() throws Exception {
         // Create a bundle that has an invalid major bundle version. It should be 3 numeric
         // characters, "." and 3 more numeric characters.
         String invalidBundleVersion = "A01.001";
@@ -236,7 +240,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that a bundle with a badly formed android revision will be rejected.
      */
-    public void testInstallWithBadlyFormedAndroidRevision() throws Exception {
+    public void testInstall_withBadlyFormedAndroidRevision() throws Exception {
         // Create a bundle that has an invalid Android revision. It should be 3 numeric characters.
         String invalidAndroidRevision = "A01";
         byte[] versionBytes = BundleVersion.getBytes(BundleVersion.FULL_BUNDLE_FORMAT_VERSION,
@@ -249,7 +253,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /**
      * Tests that a bundle with a badly formed android revision will be rejected.
      */
-    public void testInstallWithBadlyFormedRulesVersion() throws Exception {
+    public void testInstall_withBadlyFormedRulesVersion() throws Exception {
         // Create a bundle that has an invalid rules version. It should be in the form "2016c".
         final String invalidRulesVersion = "203Bc";
         byte[] versionBytes = BundleVersion.getBytes(BundleVersion.FULL_BUNDLE_FORMAT_VERSION,
@@ -281,6 +285,10 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
         assertTrue(installer.uninstall());
         assertNoContentInstalled();
+    }
+
+    public void testGetSystemRulesVersion() throws Exception {
+        assertEquals(SYSTEM_RULES_VERSION, installer.getSystemRulesVersion());
     }
 
     private static TimeZoneBundle createValidTimeZoneBundle(
@@ -317,6 +325,9 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         File icuFile = new File(currentTzDataDir, TimeZoneBundle.ICU_DATA_FILE_NAME);
         assertTrue(icuFile.exists());
 
+        // Assert getInstalledBundleVersion() is reporting correctly.
+        assertEquals(expectedBundle.getBundleVersion(), installer.getInstalledBundleVersion());
+
         try (ZipInputStream zis = new ZipInputStream(
                 new ByteArrayInputStream(expectedBundle.getBytes()))) {
             ZipEntry entry;
@@ -348,7 +359,9 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         assertTrue(Arrays.equals(expectedBytes, actualBytes));
     }
 
-    private void assertNoContentInstalled() {
+    private void assertNoContentInstalled() throws Exception {
+        assertNull(installer.getInstalledBundleVersion());
+
         File currentTzDataDir = installer.getCurrentTzDataDir();
         assertFalse(currentTzDataDir.exists());
 

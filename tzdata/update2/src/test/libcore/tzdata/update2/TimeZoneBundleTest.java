@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,19 @@ public class TimeZoneBundleTest extends TestCase {
             tempFile.delete();
         }
         super.tearDown();
+    }
+
+    public void testGetBundleVersion() throws Exception {
+        BundleVersion bundleVersion =
+                new BundleVersion(BundleVersion.FULL_BUNDLE_FORMAT_VERSION, "2016c", "001");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(baos)) {
+            addZipEntry(zipOutputStream, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME,
+                    bundleVersion.getBytes());
+        }
+
+        TimeZoneBundle bundle = new TimeZoneBundle(baos.toByteArray());
+        assertEquals(bundleVersion, bundle.getBundleVersion());
     }
 
     public void testExtractZipSafely_goodZip() throws Exception {
@@ -104,10 +118,15 @@ public class TimeZoneBundleTest extends TestCase {
 
     private static void addZipEntry(ZipOutputStream zipOutputStream, String name)
             throws IOException {
+        addZipEntry(zipOutputStream, name, "a".getBytes(StandardCharsets.US_ASCII));
+    }
+
+    private static void addZipEntry(ZipOutputStream zipOutputStream, String name, byte[] content)
+            throws IOException {
         ZipEntry zipEntry = new ZipEntry(name);
         zipOutputStream.putNextEntry(zipEntry);
         if (!zipEntry.isDirectory()) {
-            zipOutputStream.write('a');
+            zipOutputStream.write(content);
         }
     }
 
