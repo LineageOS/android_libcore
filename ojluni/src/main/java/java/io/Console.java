@@ -559,19 +559,4 @@ public final class Console implements Flushable
                      cs));
         rcb = new char[1024];
     }
-
-    /**
-     * Android-changed: Added method for internal use only, and also in use
-     * by tests.
-     *
-     * @hide
-     */
-    public static synchronized Console getConsole() {
-        if (istty()) {
-            if (cons == null)
-                cons = new Console();
-            return cons;
-        }
-        return null;
-    }
 }
