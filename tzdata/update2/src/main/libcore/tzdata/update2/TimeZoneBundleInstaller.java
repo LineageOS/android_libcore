@@ -18,13 +18,13 @@ package libcore.tzdata.update2;
 import android.util.Slog;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 import libcore.util.ZoneInfoDB;
 
 /**
  * A bundle-validation / extraction class. Separate from the services code that uses it for easier
- * testing.
+ * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
 public final class TimeZoneBundleInstaller {
 
@@ -65,7 +65,7 @@ public final class TimeZoneBundleInstaller {
      * Install the supplied content.
      *
      * <p>Errors during unpacking or installation will throw an {@link IOException}.
-     * If the content is invalid this method returns {@code false}.
+     * If the bundle content is invalid this method returns {@code false}.
      * If the installation completed successfully this method returns {@code true}.
      */
     public boolean install(byte[] content) throws IOException {
@@ -79,12 +79,13 @@ public final class TimeZoneBundleInstaller {
         Slog.i(logTag, "Unpacking / verifying time zone update");
         unpackBundle(content, workingDir);
         try {
-            if (!checkBundleFilesExist(workingDir)) {
-                Slog.i(logTag, "Update not applied: Bundle is missing files");
+            BundleVersion bundleVersion;
+            try {
+                bundleVersion = readBundleVersion(workingDir);
+            } catch (BundleException e) {
+                Slog.i(logTag, "Invalid bundle version: " + e.getMessage());
                 return false;
             }
-
-            BundleVersion bundleVersion = readBundleVersion(workingDir);
             if (bundleVersion == null) {
                 Slog.i(logTag, "Update not applied: Bundle version could not be loaded");
                 return false;
@@ -92,6 +93,11 @@ public final class TimeZoneBundleInstaller {
             if (!checkBundleFormatVersion(bundleVersion)) {
                 Slog.i(logTag, "Update not applied: Bundle format version check failed: "
                         + bundleVersion);
+                return false;
+            }
+
+            if (!checkBundleDataFilesExist(workingDir)) {
+                Slog.i(logTag, "Update not applied: Bundle is missing required data file(s)");
                 return false;
             }
 
@@ -167,6 +173,30 @@ public final class TimeZoneBundleInstaller {
         }
     }
 
+    /**
+     * Reads the currently installed bundle version. Returns {@code null} if there is no bundle
+     * installed.
+     *
+     * @throws IOException if there was a problem reading data from /data
+     * @throws BundleException if there was a problem with the installed bundle format/structure
+     */
+    public BundleVersion getInstalledBundleVersion() throws BundleException, IOException {
+        if (!currentTzDataDir.exists()) {
+            return null;
+        }
+        return readBundleVersion(currentTzDataDir);
+    }
+
+    /**
+     * Reads the timezone rules version present in /system. i.e. the version that would be present
+     * after a factory reset.
+     *
+     * @throws IOException if there was a problem reading data
+     */
+    public String getSystemRulesVersion() throws IOException {
+        return readSystemRulesVersion(systemTzDataFile);
+    }
+
     private void deleteBestEffort(File dir) {
         if (dir.exists()) {
             try {
@@ -184,27 +214,23 @@ public final class TimeZoneBundleInstaller {
         bundle.extractTo(targetDir);
     }
 
-    private boolean checkBundleFilesExist(File unpackedContentDir) throws IOException {
+    private boolean checkBundleDataFilesExist(File unpackedContentDir) throws IOException {
         Slog.i(logTag, "Verifying bundle contents");
         return FileUtils.filesExist(unpackedContentDir,
-                TimeZoneBundle.BUNDLE_VERSION_FILE_NAME,
                 TimeZoneBundle.TZDATA_FILE_NAME,
                 TimeZoneBundle.ICU_DATA_FILE_NAME);
     }
 
-    private BundleVersion readBundleVersion(File unpackedContentDir) throws IOException {
+    private BundleVersion readBundleVersion(File bundleDir) throws BundleException, IOException {
         Slog.i(logTag, "Reading bundle format version");
         File bundleVersionFile =
-                new File(unpackedContentDir, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME);
+                new File(bundleDir, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME);
+        if (!bundleVersionFile.exists()) {
+            throw new BundleException("No bundle version file found: " + bundleVersionFile);
+        }
         byte[] versionBytes =
                 FileUtils.readBytes(bundleVersionFile, BundleVersion.BUNDLE_VERSION_FILE_LENGTH);
-        try {
-            return BundleVersion.extractFromBytes(versionBytes);
-        } catch (BundleException e) {
-            Slog.i(logTag, "Invalid bundle version bytes: " + Arrays.toString(versionBytes)
-                    + ": " + e.getMessage());
-            return null;
-        }
+        return BundleVersion.extractFromBytes(versionBytes);
     }
 
     private boolean checkBundleFormatVersion(BundleVersion bundleVersion) {
@@ -221,11 +247,7 @@ public final class TimeZoneBundleInstaller {
         // We only check the /system tzdata file and assume that other data like ICU is in sync.
         // There is a CTS test that checks ICU and bionic/libcore are in sync.
         Slog.i(logTag, "Reading /system rules version");
-        if (!systemTzDataFile.exists()) {
-            Slog.i(logTag, "tzdata file cannot be found in /system");
-            return false;
-        }
-        String systemRulesVersion = ZoneInfoDB.TzData.getRulesVersion(systemTzDataFile);
+        String systemRulesVersion = readSystemRulesVersion(systemTzDataFile);
 
         String bundleRulesVersion = bundleVersion.rulesVersion;
         // canApply = bundleRulesVersion >= systemRulesVersion
@@ -233,7 +255,18 @@ public final class TimeZoneBundleInstaller {
         if (!canApply) {
             Slog.i(logTag, "Failed rules version check: bundleRulesVersion="
                     + bundleRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
+        } else {
+            Slog.i(logTag, "Passed rules version check: bundleRulesVersion="
+                    + bundleRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
         }
         return canApply;
+    }
+
+    private String readSystemRulesVersion(File systemTzDataFile) throws IOException {
+        if (!systemTzDataFile.exists()) {
+            Slog.i(logTag, "tzdata file cannot be found in /system");
+            throw new FileNotFoundException("system tzdata does not exist: " + systemTzDataFile);
+        }
+        return ZoneInfoDB.TzData.getRulesVersion(systemTzDataFile);
     }
 }
