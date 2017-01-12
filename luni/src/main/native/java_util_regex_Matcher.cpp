@@ -23,6 +23,7 @@
 #include "JniConstants.h"
 #include "JniException.h"
 #include "ScopedPrimitiveArray.h"
+#include "ScopedJavaUnicodeString.h"
 #include "jni.h"
 #include "unicode/parseerr.h"
 #include "unicode/regex.h"
@@ -207,7 +208,25 @@ static void Matcher_useTransparentBoundsImpl(JNIEnv* env, jclass, jlong addr, jb
     matcher->useTransparentBounds(value);
 }
 
+static jint Matcher_getMatchedGroupIndex0(JNIEnv* env, jclass, jlong patternAddr, jstring javaGroupName) {
+  icu::RegexPattern* pattern = reinterpret_cast<icu::RegexPattern*>(static_cast<uintptr_t>(patternAddr));
+  ScopedJavaUnicodeString groupName(env, javaGroupName);
+  UErrorCode status = U_ZERO_ERROR;
+
+  jint result = pattern->groupNumberFromName(groupName.unicodeString(), status);
+  if (U_SUCCESS(status)) {
+    return result;
+  }
+  if (status == U_REGEX_INVALID_CAPTURE_GROUP_NAME) {
+    return -1;
+  }
+  maybeThrowIcuException(env, "RegexPattern::groupNumberFromName", status);
+  return -1;
+}
+
+
 static JNINativeMethod gMethods[] = {
+    NATIVE_METHOD(Matcher, getMatchedGroupIndex0, "(JLjava/lang/String;)I"),
     NATIVE_METHOD(Matcher, findImpl, "(JLjava/lang/String;I[I)Z"),
     NATIVE_METHOD(Matcher, findNextImpl, "(JLjava/lang/String;[I)Z"),
     NATIVE_METHOD(Matcher, getNativeFinalizer, "()J"),
