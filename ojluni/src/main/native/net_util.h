@@ -93,6 +93,8 @@ extern jfieldID psi_addressID;
 extern jfieldID psi_portID;
 extern jfieldID psi_localportID;
 
+/* Android-removed: DatagramSocket moved away from JNI */
+#if 0
 /* DatagramPacket fields */
 extern jfieldID dp_addressID;
 extern jfieldID dp_portID;
@@ -100,6 +102,7 @@ extern jfieldID dp_bufID;
 extern jfieldID dp_offsetID;
 extern jfieldID dp_lengthID;
 extern jfieldID dp_bufLengthID;
+#endif
 
 /* Inet6Address fields */
 extern jclass ia6_class;
