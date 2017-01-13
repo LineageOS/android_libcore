@@ -154,7 +154,20 @@ public final class URLConnectionTest extends TestCase {
         // allow (but strip) trailing \n, \r and \r\n
         // assertForbiddenRequestHeaderValue("\r");
         // End of workaround
-        assertEquals("a valid\tvalue", setAndReturnRequestHeaderValue("a valid\tvalue"));
+
+        // '\t' in header values can either be (a) forbidden or (b) allowed.
+        // The original version of Android N (API 23) implemented behavior
+        // (a), but OEMs can backport a fix that changes the behavior to (b).
+        // Therefore, this test has been relaxed for Android N CTS to allow
+        // either behavior. It is planned that future versions of Android only
+        // allow behavior (b).
+        try {
+            // throws IAE in case (a), passes in case (b)
+            assertEquals("a valid\tvalue", setAndReturnRequestHeaderValue("a valid\tvalue"));
+        } catch (IllegalArgumentException tolerated) {
+            // verify case (a)
+            assertForbiddenRequestHeaderValue("\t");
+        }
         assertForbiddenRequestHeaderValue("\u001f");
         assertForbiddenRequestHeaderValue("\u007f");
 
