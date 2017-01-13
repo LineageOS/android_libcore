@@ -812,11 +812,9 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/time/zone/Ser.java \
     ojluni/src/main/java/java/time/zone/ZoneOffsetTransition.java \
     ojluni/src/main/java/java/time/zone/ZoneRulesException.java \
-    ojluni/src/main/java/java/time/zone/TzdbZoneRulesProvider.java \
     ojluni/src/main/java/java/time/zone/ZoneOffsetTransitionRule.java \
     ojluni/src/main/java/java/time/zone/ZoneRules.java \
     ojluni/src/main/java/java/time/zone/package-info.java \
-    ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java \
     ojluni/src/main/java/java/time/OffsetTime.java \
     ojluni/src/main/java/java/time/Year.java \
     ojluni/src/main/java/java/time/Clock.java \
@@ -1339,6 +1337,8 @@ openjdk_java_files := \
     ojluni/src/main/java/com/sun/nio/file/ExtendedWatchEventModifier.java \
     ojluni/src/main/java/com/sun/nio/file/SensitivityWatchEventModifier.java \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
+    ojluni/src/main/java/java/time/zone/IcuZoneRulesProvider.java \
+    ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
