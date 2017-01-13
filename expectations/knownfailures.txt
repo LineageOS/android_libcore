@@ -1541,5 +1541,14 @@
   names: [
     "libcore.java.text.OldBidiTest#testUnicode9EmojisAreLtrNeutral"
   ]
+},
+{
+  description: "Test failures due to incomplete java.time implementation.",
+  bug: 28832222,
+  result: EXEC_FAILED,
+  names: [
+    "org.apache.harmony.tests.java.util.CalendarTest#test_getDisplayNameIILjava_util_Locale",
+    "org.apache.harmony.tests.java.util.CalendarTest#test_getDisplayNamesIILjava_util_Locale"
+  ]
 }
 ]
