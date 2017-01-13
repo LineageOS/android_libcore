@@ -61,6 +61,10 @@
  */
 package java.time.temporal;
 
+import android.icu.text.DateTimePatternGenerator;
+import android.icu.util.Calendar;
+import android.icu.util.ULocale;
+
 import static java.time.temporal.ChronoField.DAY_OF_MONTH;
 import static java.time.temporal.ChronoField.DAY_OF_WEEK;
 import static java.time.temporal.ChronoField.DAY_OF_YEAR;
@@ -84,12 +88,8 @@ import java.time.format.ResolverStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import sun.util.locale.provider.CalendarDataUtility;
-import sun.util.locale.provider.LocaleProviderAdapter;
-import sun.util.locale.provider.LocaleResources;
 
 /**
  * Localized definitions of the day-of-week, week-of-month and week-of-year fields.
@@ -284,12 +284,12 @@ public final class WeekFields implements Serializable {
      */
     public static WeekFields of(Locale locale) {
         Objects.requireNonNull(locale, "locale");
-        locale = new Locale(locale.getLanguage(), locale.getCountry());  // elminate variants
-
-        int calDow = CalendarDataUtility.retrieveFirstDayOfWeek(locale);
-        DayOfWeek dow = DayOfWeek.SUNDAY.plus(calDow - 1);
-        int minDays = CalendarDataUtility.retrieveMinimalDaysInFirstWeek(locale);
-        return WeekFields.of(dow, minDays);
+        // Android changed: get Week data from ICU4J
+        ULocale ulocale = ULocale.forLocale(locale);
+        String region = ULocale.getRegionForSupplementalData(ulocale, /* inferRegion */ true);
+        Calendar.WeekData weekData = Calendar.getWeekDataForRegion(region);
+        DayOfWeek dow = DayOfWeek.SUNDAY.plus(weekData.firstDayOfWeek - 1);
+        return WeekFields.of(dow, weekData.minimalDaysInFirstWeek);
     }
 
     /**
@@ -1032,10 +1032,12 @@ public final class WeekFields implements Serializable {
         public String getDisplayName(Locale locale) {
             Objects.requireNonNull(locale, "locale");
             if (rangeUnit == YEARS) {  // only have values for week-of-year
-                LocaleResources lr = LocaleProviderAdapter.getResourceBundleBased()
-                        .getLocaleResources(locale);
-                ResourceBundle rb = lr.getJavaTimeFormatData();
-                return rb.containsKey("field.week") ? rb.getString("field.week") : name;
+                // Android changed: Use ICU name values.
+                DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
+                        .getFrozenInstance(ULocale.forLocale(locale));
+                String icuName = dateTimePatternGenerator
+                        .getAppendItemName(DateTimePatternGenerator.WEEK_OF_YEAR);
+                return icuName != null && !icuName.isEmpty() ? icuName : name;
             }
             return name;
         }

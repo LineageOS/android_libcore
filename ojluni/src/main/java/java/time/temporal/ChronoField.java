@@ -56,6 +56,17 @@
  */
 package java.time.temporal;
 
+import android.icu.text.DateTimePatternGenerator;
+import android.icu.util.ULocale;
+import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.Year;
+import java.time.ZoneOffset;
+import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.Chronology;
+import java.util.Locale;
+import java.util.Objects;
+
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.ERAS;
 import static java.time.temporal.ChronoUnit.FOREVER;
@@ -69,18 +80,6 @@ import static java.time.temporal.ChronoUnit.NANOS;
 import static java.time.temporal.ChronoUnit.SECONDS;
 import static java.time.temporal.ChronoUnit.WEEKS;
 import static java.time.temporal.ChronoUnit.YEARS;
-
-import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.Year;
-import java.time.ZoneOffset;
-import java.time.chrono.ChronoLocalDate;
-import java.time.chrono.Chronology;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.ResourceBundle;
-import sun.util.locale.provider.LocaleProviderAdapter;
-import sun.util.locale.provider.LocaleResources;
 
 /**
  * A standard set of fields.
@@ -620,11 +619,39 @@ public enum ChronoField implements TemporalField {
             return name;
         }
 
-        LocaleResources lr = LocaleProviderAdapter.getResourceBundleBased()
-                                    .getLocaleResources(locale);
-        ResourceBundle rb = lr.getJavaTimeFormatData();
-        String key = "field." + displayNameKey;
-        return rb.containsKey(key) ? rb.getString(key) : name;
+        // Android changed: use ICU names.
+        DateTimePatternGenerator generator = DateTimePatternGenerator
+                .getFrozenInstance(ULocale.forLocale(locale));
+        String icuName = generator.getAppendItemName(getIcuFieldNumber(this));
+        return icuName != null && !icuName.isEmpty() ? icuName : name;
+    }
+
+    /**
+     * @return the field id according to {@link DateTimePatternGenerator} for the field.
+     */
+    private static int getIcuFieldNumber(ChronoField field) {
+        switch (field) {
+            case SECOND_OF_MINUTE:
+                return DateTimePatternGenerator.SECOND;
+            case MINUTE_OF_HOUR:
+                return DateTimePatternGenerator.MINUTE;
+            case HOUR_OF_DAY:
+                return DateTimePatternGenerator.HOUR;
+            case AMPM_OF_DAY:
+                return DateTimePatternGenerator.DAYPERIOD;
+            case DAY_OF_WEEK:
+                return DateTimePatternGenerator.WEEKDAY;
+            case DAY_OF_MONTH:
+                return DateTimePatternGenerator.DAY;
+            case MONTH_OF_YEAR:
+                return DateTimePatternGenerator.MONTH;
+            case YEAR:
+                return DateTimePatternGenerator.YEAR;
+            case ERA:
+                return DateTimePatternGenerator.ERA;
+            default:
+                throw new IllegalArgumentException("Unexpected ChronoField " + field.name());
+        }
     }
 
     @Override
