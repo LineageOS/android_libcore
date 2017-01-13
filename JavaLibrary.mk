@@ -270,7 +270,8 @@ endif
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
     # Filter out SerializedLambdaTest because it depends on stub classes and won't actually run.
-    LOCAL_SRC_FILES := $(filter-out %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files)) # Do not include anything from the boot* directories. Those directories need a custom bootclasspath to run.
+    # Temporarily filter out java.time tests until they stabilize (b/28832222)
+    LOCAL_SRC_FILES := $(filter-out ojluni/src/test/java/time/% %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files)) # Do not include anything from the boot* directories. Those directories need a custom bootclasspath to run.
     # Include source code as part of JAR
     LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist
     LOCAL_NO_STANDARD_LIBRARIES := true
