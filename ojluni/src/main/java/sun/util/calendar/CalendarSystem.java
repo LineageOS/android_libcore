@@ -26,20 +26,11 @@
 
 package sun.util.calendar;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
+import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -170,31 +161,10 @@ public abstract class CalendarSystem {
      *                                  Unicode escape sequences
      */
     public static Properties getCalendarProperties() throws IOException {
-        Properties calendarProps = null;
-        try {
-            String homeDir = AccessController.doPrivileged(
-                new sun.security.action.GetPropertyAction("java.home"));
-            final String fname = homeDir + File.separator + "lib" + File.separator
-                                 + "calendars.properties";
-            calendarProps = AccessController.doPrivileged(new PrivilegedExceptionAction<Properties>() {
-                @Override
-                public Properties run() throws IOException {
-                    Properties props = new Properties();
-                    try (FileInputStream fis = new FileInputStream(fname)) {
-                        props.load(fis);
-                    }
-                    return props;
-                }
-            });
-        } catch (PrivilegedActionException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
-            } else if (cause instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) cause;
-            }
-            // Should not happen
-            throw new InternalError(cause);
+        // Android changed: load from resources.
+        Properties calendarProps = new Properties();
+        try (InputStream is = ClassLoader.getSystemResourceAsStream("calendars.properties")) {
+            calendarProps.load(is);
         }
         return calendarProps;
     }

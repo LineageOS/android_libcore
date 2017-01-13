@@ -118,23 +118,12 @@ public class LocalGregorianCalendar extends BaseCalendar {
     }
 
     static LocalGregorianCalendar getLocalGregorianCalendar(String name) {
-        Properties calendarProps = null;
+        // Android changed: use getCalendarProperties()
+        Properties calendarProps;
         try {
-            String homeDir = AccessController.doPrivileged(
-                new sun.security.action.GetPropertyAction("java.home"));
-            final String fname = homeDir + File.separator + "lib" + File.separator
-                                 + "calendars.properties";
-            calendarProps = (Properties) AccessController.doPrivileged(new PrivilegedExceptionAction() {
-                public Object run() throws IOException {
-                    Properties props = new Properties();
-                    try (FileInputStream fis = new FileInputStream(fname)) {
-                        props.load(fis);
-                    }
-                    return props;
-                }
-            });
-        } catch (PrivilegedActionException e) {
-            throw new RuntimeException(e.getException());
+            calendarProps = getCalendarProperties();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         // Parse calendar.*.eras
