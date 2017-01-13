@@ -19,6 +19,7 @@ package libcore.java.util;
 import junit.framework.TestCase;
 
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -147,7 +148,15 @@ public class TimeZoneTest extends TestCase {
     // http://code.google.com/p/android/issues/detail?id=24036
     public void testNullId() throws Exception {
         try {
-            TimeZone.getTimeZone(null);
+            TimeZone.getTimeZone((String) null);
+            fail();
+        } catch (NullPointerException expected) {
+        }
+    }
+
+    public void testNullZoneId() throws Exception {
+        try {
+            TimeZone.getTimeZone((ZoneId) null);
             fail();
         } catch (NullPointerException expected) {
         }

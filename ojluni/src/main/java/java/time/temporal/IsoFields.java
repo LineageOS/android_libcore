@@ -56,6 +56,9 @@
  */
 package java.time.temporal;
 
+import android.icu.text.DateTimePatternGenerator;
+import android.icu.util.ULocale;
+
 import static java.time.DayOfWeek.THURSDAY;
 import static java.time.DayOfWeek.WEDNESDAY;
 import static java.time.temporal.ChronoField.DAY_OF_WEEK;
@@ -79,10 +82,6 @@ import java.time.format.ResolverStyle;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ResourceBundle;
-
-import sun.util.locale.provider.LocaleProviderAdapter;
-import sun.util.locale.provider.LocaleResources;
 
 /**
  * Fields and units specific to the ISO-8601 calendar system,
@@ -419,10 +418,12 @@ public final class IsoFields {
             @Override
             public String getDisplayName(Locale locale) {
                 Objects.requireNonNull(locale, "locale");
-                LocaleResources lr = LocaleProviderAdapter.getResourceBundleBased()
-                                            .getLocaleResources(locale);
-                ResourceBundle rb = lr.getJavaTimeFormatData();
-                return rb.containsKey("field.week") ? rb.getString("field.week") : toString();
+                // Android changed: Use ICU name values.
+                DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
+                        .getFrozenInstance(ULocale.forLocale(locale));
+                String icuName = dateTimePatternGenerator
+                        .getAppendItemName(DateTimePatternGenerator.WEEK_OF_YEAR);
+                return icuName != null && !icuName.isEmpty() ? icuName : toString();
             }
 
             @Override
