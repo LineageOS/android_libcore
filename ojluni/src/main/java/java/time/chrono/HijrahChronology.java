@@ -876,21 +876,12 @@ public final class HijrahChronology extends AbstractChronology implements Serial
      * @throws Exception if access to the property resource fails
      */
     private static Properties readConfigProperties(final String resource) throws Exception {
-        try {
-            return AccessController
-                    .doPrivileged((java.security.PrivilegedExceptionAction<Properties>)
-                        () -> {
-                        String libDir = System.getProperty("java.home") + File.separator + "lib";
-                        File file = new File(libDir, resource);
-                        Properties props = new Properties();
-                        try (InputStream is = new FileInputStream(file)) {
-                            props.load(is);
-                        }
-                        return props;
-                    });
-        } catch (PrivilegedActionException pax) {
-            throw pax.getException();
+        // Android changed: Load system resources.
+        Properties props = new Properties();
+        try (InputStream is = ClassLoader.getSystemResourceAsStream(resource)) {
+            props.load(is);
         }
+        return props;
     }
 
     /**
