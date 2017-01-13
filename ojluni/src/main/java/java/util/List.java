@@ -415,7 +415,8 @@ public interface List<E> extends Collection<E> {
     }
 
     // Android-changed: Warn about Collections.sort() being built on top
-    // of List.sort() when it used to be the other way round in Nougat.
+    // of List.sort() rather than the other way round when targeting an
+    // API version > 25.
     /**
      * Sorts this list according to the order induced by the specified
      * {@link Comparator}.
@@ -431,13 +432,24 @@ public interface List<E> extends Collection<E> {
      *
      * <p>This list must be modifiable, but need not be resizable.
      *
-     * <p>Because {@link Collections#sort(List)} delegates to this method,
-     * implementations of {@link #sort(Comparator)} this method} must not
-     * delegate to {@link Collections#sort(List) that method}. Note the
-     * opposite was the case in Android 7 (Nougat) but it was changed for
-     * later versions. To be compatible with all versions of Android,
-     * {@link #sort(Comparator)} implementations that call
-     * {@link Collections#sort(List)} should instead call {@code super.sort(c)}.
+     * <p>For apps running on and targeting Android versions greater than
+     * Nougat (API level {@code > 25}), {@link Collections#sort(List)}
+     * delegates to this method. Such apps must not call
+     * {@link Collections#sort(List)} from this method. Instead, prefer
+     * not overriding this method at all. If you must override it, consider
+     * this implementation:
+     * <pre>
+     * &#064;Override
+     * public void sort(Comparator&lt;? super E&gt; c) {
+     *   Object[] elements = toArray();
+     *    Arrays.sort(elements, c);
+     *    ListIterator&lt;E&gt; iterator = (ListIterator&lt;Object&gt;) listIterator();
+     *    for (Object element : elements) {
+     *      iterator.next();
+     *      iterator.set((E) element);
+     *    }
+     * }
+     * </pre>
      *
      * @implSpec
      * The default implementation obtains an array containing all elements in
