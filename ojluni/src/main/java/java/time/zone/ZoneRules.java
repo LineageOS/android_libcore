@@ -82,6 +82,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+// Android changed: remove mention of ZoneRulesProvider.
 /**
  * The rules defining how the zone offset varies for a single time-zone.
  * <p>
@@ -90,7 +91,6 @@ import java.util.concurrent.ConcurrentMap;
  * {@link ZoneOffsetTransitionRule} is used for future transitions that are based
  * on the result of an algorithm.
  * <p>
- * The rules are loaded via {@link ZoneRulesProvider} using a {@link ZoneId}.
  * The same rules may be shared internally between multiple zone IDs.
  * <p>
  * Serializing an instance of {@code ZoneRules} will store the entire set of rules.
