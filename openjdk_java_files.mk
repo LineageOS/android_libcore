@@ -752,6 +752,92 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/text/RuleBasedCollator.java \
     ojluni/src/main/java/java/text/SimpleDateFormat.java \
     ojluni/src/main/java/java/text/StringCharacterIterator.java \
+    ojluni/src/main/java/java/time/YearMonth.java \
+    ojluni/src/main/java/java/time/LocalDate.java \
+    ojluni/src/main/java/java/time/Ser.java \
+    ojluni/src/main/java/java/time/DayOfWeek.java \
+    ojluni/src/main/java/java/time/chrono/HijrahChronology.java \
+    ojluni/src/main/java/java/time/chrono/Ser.java \
+    ojluni/src/main/java/java/time/chrono/IsoEra.java \
+    ojluni/src/main/java/java/time/chrono/JapaneseEra.java \
+    ojluni/src/main/java/java/time/chrono/ChronoPeriodImpl.java \
+    ojluni/src/main/java/java/time/chrono/ChronoLocalDate.java \
+    ojluni/src/main/java/java/time/chrono/Chronology.java \
+    ojluni/src/main/java/java/time/chrono/ChronoLocalDateTimeImpl.java \
+    ojluni/src/main/java/java/time/chrono/ThaiBuddhistChronology.java \
+    ojluni/src/main/java/java/time/chrono/MinguoChronology.java \
+    ojluni/src/main/java/java/time/chrono/JapaneseChronology.java \
+    ojluni/src/main/java/java/time/chrono/Era.java \
+    ojluni/src/main/java/java/time/chrono/ChronoZonedDateTimeImpl.java \
+    ojluni/src/main/java/java/time/chrono/JapaneseDate.java \
+    ojluni/src/main/java/java/time/chrono/AbstractChronology.java \
+    ojluni/src/main/java/java/time/chrono/ChronoLocalDateImpl.java \
+    ojluni/src/main/java/java/time/chrono/HijrahEra.java \
+    ojluni/src/main/java/java/time/chrono/HijrahDate.java \
+    ojluni/src/main/java/java/time/chrono/ThaiBuddhistDate.java \
+    ojluni/src/main/java/java/time/chrono/IsoChronology.java \
+    ojluni/src/main/java/java/time/chrono/MinguoEra.java \
+    ojluni/src/main/java/java/time/chrono/ChronoZonedDateTime.java \
+    ojluni/src/main/java/java/time/chrono/package-info.java \
+    ojluni/src/main/java/java/time/chrono/ChronoPeriod.java \
+    ojluni/src/main/java/java/time/chrono/ThaiBuddhistEra.java \
+    ojluni/src/main/java/java/time/chrono/ChronoLocalDateTime.java \
+    ojluni/src/main/java/java/time/chrono/MinguoDate.java \
+    ojluni/src/main/java/java/time/DateTimeException.java \
+    ojluni/src/main/java/java/time/ZoneRegion.java \
+    ojluni/src/main/java/java/time/LocalTime.java \
+    ojluni/src/main/java/java/time/Duration.java \
+    ojluni/src/main/java/java/time/LocalDateTime.java \
+    ojluni/src/main/java/java/time/OffsetDateTime.java \
+    ojluni/src/main/java/java/time/overview.html \
+    ojluni/src/main/java/java/time/Instant.java \
+    ojluni/src/main/java/java/time/temporal/ValueRange.java \
+    ojluni/src/main/java/java/time/temporal/TemporalAmount.java \
+    ojluni/src/main/java/java/time/temporal/ChronoField.java \
+    ojluni/src/main/java/java/time/temporal/TemporalAccessor.java \
+    ojluni/src/main/java/java/time/temporal/TemporalAdjusters.java \
+    ojluni/src/main/java/java/time/temporal/ChronoUnit.java \
+    ojluni/src/main/java/java/time/temporal/UnsupportedTemporalTypeException.java \
+    ojluni/src/main/java/java/time/temporal/TemporalQueries.java \
+    ojluni/src/main/java/java/time/temporal/TemporalAdjuster.java \
+    ojluni/src/main/java/java/time/temporal/TemporalField.java \
+    ojluni/src/main/java/java/time/temporal/TemporalQuery.java \
+    ojluni/src/main/java/java/time/temporal/Temporal.java \
+    ojluni/src/main/java/java/time/temporal/TemporalUnit.java \
+    ojluni/src/main/java/java/time/temporal/package-info.java \
+    ojluni/src/main/java/java/time/temporal/JulianFields.java \
+    ojluni/src/main/java/java/time/temporal/WeekFields.java \
+    ojluni/src/main/java/java/time/temporal/IsoFields.java \
+    ojluni/src/main/java/java/time/ZoneOffset.java \
+    ojluni/src/main/java/java/time/zone/Ser.java \
+    ojluni/src/main/java/java/time/zone/ZoneOffsetTransition.java \
+    ojluni/src/main/java/java/time/zone/ZoneRulesException.java \
+    ojluni/src/main/java/java/time/zone/ZoneOffsetTransitionRule.java \
+    ojluni/src/main/java/java/time/zone/ZoneRules.java \
+    ojluni/src/main/java/java/time/zone/package-info.java \
+    ojluni/src/main/java/java/time/OffsetTime.java \
+    ojluni/src/main/java/java/time/Year.java \
+    ojluni/src/main/java/java/time/Clock.java \
+    ojluni/src/main/java/java/time/format/Parsed.java \
+    ojluni/src/main/java/java/time/format/DateTimeTextProvider.java \
+    ojluni/src/main/java/java/time/format/DateTimeParseException.java \
+    ojluni/src/main/java/java/time/format/DateTimeFormatterBuilder.java \
+    ojluni/src/main/java/java/time/format/ResolverStyle.java \
+    ojluni/src/main/java/java/time/format/FormatStyle.java \
+    ojluni/src/main/java/java/time/format/DecimalStyle.java \
+    ojluni/src/main/java/java/time/format/DateTimePrintContext.java \
+    ojluni/src/main/java/java/time/format/package-info.java \
+    ojluni/src/main/java/java/time/format/ZoneName.java \
+    ojluni/src/main/java/java/time/format/TextStyle.java \
+    ojluni/src/main/java/java/time/format/DateTimeFormatter.java \
+    ojluni/src/main/java/java/time/format/DateTimeParseContext.java \
+    ojluni/src/main/java/java/time/format/SignStyle.java \
+    ojluni/src/main/java/java/time/Period.java \
+    ojluni/src/main/java/java/time/ZonedDateTime.java \
+    ojluni/src/main/java/java/time/package-info.java \
+    ojluni/src/main/java/java/time/Month.java \
+    ojluni/src/main/java/java/time/ZoneId.java \
+    ojluni/src/main/java/java/time/MonthDay.java \
     ojluni/src/main/java/java/util/AbstractCollection.java \
     ojluni/src/main/java/java/util/AbstractList.java \
     ojluni/src/main/java/java/util/AbstractMap.java \
@@ -1251,6 +1337,8 @@ openjdk_java_files := \
     ojluni/src/main/java/com/sun/nio/file/ExtendedWatchEventModifier.java \
     ojluni/src/main/java/com/sun/nio/file/SensitivityWatchEventModifier.java \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
+    ojluni/src/main/java/java/time/zone/IcuZoneRulesProvider.java \
+    ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
@@ -1685,6 +1773,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/locale/ParseStatus.java \
     ojluni/src/main/java/sun/util/locale/StringTokenIterator.java \
     ojluni/src/main/java/sun/util/locale/UnicodeLocaleExtension.java \
+    ojluni/src/main/java/sun/util/locale/provider/CalendarDataUtility.java \
     ojluni/src/main/java/sun/util/logging/LoggingProxy.java \
     ojluni/src/main/java/sun/util/logging/LoggingSupport.java \
     ojluni/src/main/java/sun/util/logging/PlatformLogger.java \
