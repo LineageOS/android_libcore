@@ -41,6 +41,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import dalvik.system.VMRuntime;
+
 /**
  * This class consists exclusively of static methods that operate on or return
  * collections.  It contains polymorphic algorithms that operate on
@@ -129,9 +131,11 @@ public class Collections {
      * @implNote
      * This implementation defers to the {@link List#sort(Comparator)}
      * method using the specified list and a {@code null} comparator.
-     * Note that in Android 7 (Nougat), {@code Collections.sort()} used to
-     * be implemented on top of {@link List#toArray()},
-     * {@link ListIterator#next()} and {@link ListIterator#set(Object)}.
+     * Do not call this method from {@code List.sort()} since that can lead
+     * to infinite recursion. Apps targeting APIs {@code <= 25} observe
+     * backwards compatibility behavior where this method was implemented
+     * on top of {@link List#toArray()}, {@link ListIterator#next()} and
+     * {@link ListIterator#set(Object)}.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be sorted.
@@ -146,7 +150,10 @@ public class Collections {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
-        list.sort(null);
+        // Android-changed: Call sort(list, null) here to be consistent
+        // with that method's (Android-changed) behavior.
+        sort(list, null);
+        // list.sort(null);
     }
 
     // Android-changed: Warn about Collections.sort() being built on top
@@ -166,9 +173,11 @@ public class Collections {
      * @implNote
      * This implementation defers to the {@link List#sort(Comparator)}
      * method using the specified list and comparator.
-     * Note that in Android 7 (Nougat), {@code Collections.sort()} used to
-     * be implemented on top of {@link List#toArray()},
-     * {@link ListIterator#next()} and {@link ListIterator#set(Object)}.
+     * Do not call this method from {@code List.sort()} since that can lead
+     * to infinite recursion. Apps targeting APIs {@code <= 25} observe
+     * backwards compatibility behavior where this method was implemented
+     * on top of {@link List#toArray()}, {@link ListIterator#next()} and
+     * {@link ListIterator#set(Object)}.
      *
      * @param  <T> the class of the objects in the list
      * @param  list the list to be sorted.
@@ -185,7 +194,26 @@ public class Collections {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> void sort(List<T> list, Comparator<? super T> c) {
-        list.sort(c);
+        // Android-changed: Introduced compatibility behavior for apps
+        // targeting API levels <= 25.
+        int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+        if (targetSdkVersion > 25) {
+            list.sort(c);
+        } else {
+            // Compatibility behavior for API <= 25. http://b/33482884
+            if (list.getClass() == ArrayList.class) {
+                Arrays.sort((T[]) ((ArrayList) list).elementData, 0, list.size(), c);
+                return;
+            }
+
+            Object[] a = list.toArray();
+            Arrays.sort(a, (Comparator) c);
+            ListIterator<T> i = list.listIterator();
+            for (int j = 0; j < a.length; j++) {
+                i.next();
+                i.set((T) a[j]);
+            }
+        }
     }
 
 
