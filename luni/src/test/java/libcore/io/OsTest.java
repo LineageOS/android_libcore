@@ -751,19 +751,21 @@ public class OsTest extends TestCase {
   }
 
   public void test_readlink() throws Exception {
-    String tmpDir = System.getProperty("java.io.tmpdir");
-    String path =  tmpDir + "/symlink";
-    try {
-      // ext2 and ext4 have PAGE_SIZE limits on symlink targets.
-      String xs = "";
-      for (int i = 0; i < (4096 - 1); ++i) xs += "x";
+    File path = new File(IoUtils.createTemporaryDirectory("test_readlink"), "symlink");
 
-      Libcore.os.symlink(xs, path);
+    // ext2 and ext4 have PAGE_SIZE limits on symlink targets.
+    // If file encryption is enabled, there's extra overhead to store the
+    // size of the encrypted symlink target. There's also an off-by-one
+    // in current kernels (and marlin/sailfish where we're seeing this
+    // failure are still on 3.18, far from current). Given that we don't
+    // really care here, just use 2048 instead. http://b/33306057.
+    int size = 2048;
+    String xs = "";
+    for (int i = 0; i < size - 1; ++i) xs += "x";
 
-      assertEquals(xs, Libcore.os.readlink(path));
-    } finally {
-      assertTrue("Could not delete symlink: " + path, new File(path).delete());
-    }
+    Libcore.os.symlink(xs, path.getPath());
+
+    assertEquals(xs, Libcore.os.readlink(path.getPath()));
   }
 
   // Address should be correctly set for empty packets. http://b/33481605
