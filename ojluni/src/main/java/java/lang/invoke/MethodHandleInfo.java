@@ -33,7 +33,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
 /**
  * A symbolic reference obtained by cracking a direct method handle
  * into its consitutent symbolic parts.
- * To crack a direct method handle, call {@link Lookup#revealDirect Lookup.revealDirect}.
+ * To crack a direct method handle, call {@code Lookup#revealDirect Lookup.revealDirect}.
  * <h1><a name="directmh"></a>Direct Method Handles</h1>
  * A <em>direct method handle</em> represents a method, constructor, or field without
  * any intervening argument bindings or other transformations.
@@ -74,7 +74,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * The requirement of lookup object matching provides a "fast fail" behavior
  * for programs which may otherwise trust erroneous revelation of a method
  * handle with symbolic information (or caller binding) from an unexpected scope.
- * Use {@link java.lang.invoke.MethodHandles#reflectAs} to override this limitation.
+ * Use {@code java.lang.invoke.MethodHandles#reflectAs} to override this limitation.
  *
  * <h1><a name="refkinds"></a>Reference kinds</h1>
  * The <a href="MethodHandles.Lookup.html#lookups">Lookup Factory Methods</a>
@@ -121,6 +121,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * </table>
  * @since 1.8
  */
+// TODO: Change @code to @link once reflectAs / revealDirect are unhidden.
 public
 interface MethodHandleInfo {
     /**

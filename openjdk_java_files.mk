@@ -239,6 +239,17 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/VerifyError.java \
     ojluni/src/main/java/java/lang/VirtualMachineError.java \
     ojluni/src/main/java/java/lang/Void.java \
+    ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandle.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandles.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java \
+    ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java \
+    ojluni/src/main/java/java/lang/invoke/MethodType.java \
+    ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
+    ojluni/src/main/java/java/lang/invoke/Stable.java \
+    ojluni/src/main/java/java/lang/invoke/Transformers.java \
+    ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
     ojluni/src/main/java/java/net/AbstractPlainDatagramSocketImpl.java \
     ojluni/src/main/java/java/net/AbstractPlainSocketImpl.java \
     ojluni/src/main/java/java/net/Authenticator.java \
@@ -1341,17 +1352,6 @@ openjdk_java_files := \
     ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
-    ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
-    ojluni/src/main/java/java/lang/invoke/MethodHandle.java \
-    ojluni/src/main/java/java/lang/invoke/MethodHandles.java \
-    ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java \
-    ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java \
-    ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java \
-    ojluni/src/main/java/java/lang/invoke/MethodType.java \
-    ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
-    ojluni/src/main/java/java/lang/invoke/Stable.java \
-    ojluni/src/main/java/java/lang/invoke/Transformers.java \
-    ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
     ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
     ojluni/src/main/java/jdk/net/NetworkPermission.java \
     ojluni/src/main/java/jdk/net/SocketFlow.java \
