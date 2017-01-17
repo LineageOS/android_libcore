@@ -210,8 +210,10 @@ LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp junit bouncycastle mockito-ta
 LOCAL_STATIC_JAVA_LIBRARIES := \
 	core-test-rules \
 	core-tests-support \
+	mockftpserver \
 	mockwebserver \
 	nist-pkix-tests \
+	slf4j-jdk14 \
 	sqlite-jdbc \
 	tzdata-testing
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -376,8 +378,10 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
         okhttp-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := \
         core-test-rules-hostdex \
+        mockftpserver-hostdex \
         mockwebserver-host \
         nist-pkix-tests-host \
+        slf4j-jdk14-hostdex \
         sqlite-jdbc-host \
         tzdata-testing-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
