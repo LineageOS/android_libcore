@@ -864,8 +864,12 @@ assertEquals("[A, B, C]", (String) caToString2.invokeExact('A', "BC".toCharArray
     public MethodHandle asSpreader(Class<?> arrayType, int arrayLength) {
         MethodType postSpreadType = asSpreaderChecks(arrayType, arrayLength);
 
-        // Android-changed, TODO(narayan): Implement asSpreader, remove @hide.
-        throw new UnsupportedOperationException("asSpreader(Class<?>, int)");
+        final int targetParamCount = postSpreadType.parameterCount();
+        MethodType dropArrayArgs = postSpreadType.dropParameterTypes(
+                (targetParamCount - arrayLength), targetParamCount);
+        MethodType adapterType = dropArrayArgs.appendParameterTypes(arrayType);
+
+        return new Transformers.Spreader(this, adapterType, arrayLength);
     }
 
     /**
