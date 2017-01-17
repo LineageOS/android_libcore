@@ -52,8 +52,6 @@ LOCAL_SRC_FILES := \
     Inet4Address.c \
     linux_close.cpp \
     PlainSocketImpl.c \
-    PlainDatagramSocketImpl.c \
-    DatagramPacket.c \
     ServerSocketChannelImpl.c \
     SocketInputStream.c \
     SocketOutputStream.c \

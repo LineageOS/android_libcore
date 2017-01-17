@@ -43,12 +43,13 @@ package java.net;
 public final
 class DatagramPacket {
 
-    /**
-     * Perform class initialization
-     */
-    static {
-        init();
-    }
+    // Android-removed: init method has been removed
+    // /**
+    //  * Perform class initialization
+    //  */
+    // static {
+    //     init();
+    // }
 
     /*
      * The fields of this class are package-private since DatagramSocketImpl
@@ -385,8 +386,9 @@ class DatagramPacket {
         this.bufLength = this.length;
     }
 
-    /**
-     * Perform class load-time initializations.
-     */
-    private native static void init();
+    // Android-removed: JNI has been removed
+    // /**
+    //  * Perform class load-time initializations.
+    //  */
+    // private native static void init();
 }

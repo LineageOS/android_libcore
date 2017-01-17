@@ -968,4 +968,28 @@ public class DatagramSocketTest extends TestCaseWithRules {
         ds.close();
         assertEquals(new String("01234"), new String(recvBuffer, 0, recvBuffer.length, "UTF-8"));
     }
+
+    // Receive twice reusing the same DatagramPacket.
+    // http://b/33957878
+    public void testReceiveTwice() throws Exception {
+        try (DatagramSocket ds = new DatagramSocket();
+             DatagramSocket sds = new DatagramSocket()) {
+            sds.connect(ds.getLocalSocketAddress());
+            DatagramPacket p = new DatagramPacket(new byte[16], 16);
+
+            byte[] smallPacketBytes = "01234".getBytes("UTF-8");
+            DatagramPacket smallPacket =
+                    new DatagramPacket(smallPacketBytes, smallPacketBytes.length);
+            sds.send(smallPacket);
+            ds.receive(p);
+            assertPacketDataEquals(smallPacket, p);
+
+            byte[] largePacketBytes = "0123456789".getBytes("UTF-8");
+            DatagramPacket largerPacket =
+                    new DatagramPacket(largePacketBytes, largePacketBytes.length);
+            sds.send(largerPacket);
+            ds.receive(p);
+            assertPacketDataEquals(largerPacket, p);
+        }
+    }
 }
