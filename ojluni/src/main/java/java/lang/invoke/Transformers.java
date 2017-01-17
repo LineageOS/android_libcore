@@ -988,4 +988,46 @@ public class Transformers {
             return MethodType.methodType(callerType.rtype(), ptypes);
         }
     }
+
+    /**
+     * Implements MethodHandles.invoker & MethodHandles.exactInvoker.
+     */
+    static class Invoker extends Transformer {
+        private final MethodType targetType;
+        private final boolean isExactInvoker;
+        private final EmulatedStackFrame.Range copyRange;
+
+        Invoker(MethodType targetType, boolean isExactInvoker) {
+            super(targetType.insertParameterTypes(0, MethodHandle.class));
+            this.targetType = targetType;
+            this.isExactInvoker = isExactInvoker;
+            copyRange = EmulatedStackFrame.Range.of(type(), 1, type().parameterCount());
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            // We need to artifically throw a WrongMethodTypeException here because we
+            // can't call invokeExact on the target inside the transformer.
+            if (isExactInvoker) {
+                // TODO: We should do the comparison by hand if this new type creation
+                // on every invoke proves too expensive.
+                MethodType callType = emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
+                if (!targetType.equals(callType)) {
+                    throw new WrongMethodTypeException("Wrong type, Expected: " + targetType
+                            + " was: " + callType);
+                }
+            }
+
+            // The first argument to the stack frame is the handle that needs to be invoked.
+            MethodHandle target = emulatedStackFrame.getReference(0, MethodHandle.class);
+
+            // All other arguments must be copied to the target frame.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(targetType);
+            emulatedStackFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
+
+            // Finally, invoke the handle and copy the return value.
+            target.invoke(targetFrame);
+            targetFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
 }

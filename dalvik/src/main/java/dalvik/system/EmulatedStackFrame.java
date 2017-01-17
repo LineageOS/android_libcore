@@ -35,6 +35,12 @@ public class EmulatedStackFrame {
     private final MethodType type;
 
     /**
+     * The type of the callsite that produced this stack frame. This contains the types of
+     * the original arguments, before any conversions etc. were performed.
+     */
+    private final MethodType callsiteType;
+
+    /**
      * All reference arguments and reference return values that belong to this argument array.
      *
      * If the return type is a reference, it will be the last element of this array.
@@ -74,8 +80,10 @@ public class EmulatedStackFrame {
      */
     private final byte[] stackFrame;
 
-    private EmulatedStackFrame(MethodType type, Object[] references, byte[] stackFrame) {
+    private EmulatedStackFrame(MethodType type, MethodType callsiteType, Object[] references,
+                               byte[] stackFrame) {
         this.type = type;
+        this.callsiteType = callsiteType;
         this.references = references;
         this.stackFrame = stackFrame;
     }
@@ -84,6 +92,11 @@ public class EmulatedStackFrame {
      * Returns the {@code MethodType} that the frame was created for.
      */
     public final MethodType getMethodType() { return type; }
+
+    /**
+     * Returns the {@code MethodType} corresponding to the callsite of the
+     */
+    public final MethodType getCallsiteType() { return callsiteType; }
 
     /**
      * Represents a range of arguments on an {@code EmulatedStackFrame}.
@@ -159,7 +172,8 @@ public class EmulatedStackFrame {
             frameSize += getSize(rtype);
         }
 
-        return new EmulatedStackFrame(frameType, new Object[numRefs], new byte[frameSize]);
+        return new EmulatedStackFrame(frameType, frameType, new Object[numRefs],
+                new byte[frameSize]);
     }
 
     /**
