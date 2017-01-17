@@ -1436,36 +1436,10 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/www/MeteredStream.java \
     ojluni/src/main/java/sun/net/www/ParseUtil.java \
     ojluni/src/main/java/sun/net/www/URLConnection.java \
-    ojluni/src/main/java/sun/net/www/http/ChunkedInputStream.java \
-    ojluni/src/main/java/sun/net/www/http/ChunkedOutputStream.java \
-    ojluni/src/main/java/sun/net/www/http/HttpCapture.java \
-    ojluni/src/main/java/sun/net/www/http/HttpCaptureInputStream.java \
-    ojluni/src/main/java/sun/net/www/http/HttpCaptureOutputStream.java \
-    ojluni/src/main/java/sun/net/www/http/HttpClient.java \
-    ojluni/src/main/java/sun/net/www/http/Hurryable.java \
-    ojluni/src/main/java/sun/net/www/http/KeepAliveCache.java \
-    ojluni/src/main/java/sun/net/www/http/KeepAliveStream.java \
-    ojluni/src/main/java/sun/net/www/http/KeepAliveStreamCleaner.java \
-    ojluni/src/main/java/sun/net/www/http/PosterOutputStream.java \
     ojluni/src/main/java/sun/net/www/protocol/file/FileURLConnection.java \
     ojluni/src/main/java/sun/net/www/protocol/file/Handler.java \
     ojluni/src/main/java/sun/net/www/protocol/ftp/FtpURLConnection.java \
     ojluni/src/main/java/sun/net/www/protocol/ftp/Handler.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthCache.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthCacheImpl.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthCacheValue.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthScheme.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthenticationHeader.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/AuthenticationInfo.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/BasicAuthentication.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/DigestAuthentication.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/Handler.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/HttpAuthenticator.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/HttpCallerInfo.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/HttpURLConnection.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/NTLMAuthenticationProxy.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/NegotiateAuthentication.java \
-    ojluni/src/main/java/sun/net/www/protocol/http/Negotiator.java \
     ojluni/src/main/java/sun/net/www/protocol/jar/Handler.java \
     ojluni/src/main/java/sun/net/www/protocol/jar/JarFileFactory.java \
     ojluni/src/main/java/sun/net/www/protocol/jar/JarURLConnection.java \
