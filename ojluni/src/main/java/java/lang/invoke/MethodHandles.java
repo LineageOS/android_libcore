@@ -1829,9 +1829,7 @@ return invoker;
      */
     static public
     MethodHandle exactInvoker(MethodType type) {
-        // return type.invokers().exactInvoker();
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.exactInvoker is not implemented");
+        return new Transformers.Invoker(type, true /* isExactInvoker */);
     }
 
     /**
@@ -1870,9 +1868,7 @@ return invoker;
      */
     static public
     MethodHandle invoker(MethodType type) {
-        // return type.invokers().genericInvoker();
-        // TODO(narayan): Implement this method.
-        throw new UnsupportedOperationException("MethodHandles.invoker is not implemented");
+        return new Transformers.Invoker(type, false /* isExactInvoker */);
     }
 
     // Android-changed: Basic invokers are not supported.
