@@ -132,9 +132,12 @@ public class MethodHandles {
      * @exception IllegalArgumentException if the target is not a direct method handle
      * @exception ClassCastException if the member is not of the expected type
      * @since 1.8
+     *
+     * @hide
      */
     public static <T extends Member> T
     reflectAs(Class<T> expected, MethodHandle target) {
+        // TODO: Implement reflectAs, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.reflectAs is not implemented.");
     }
 
@@ -149,7 +152,7 @@ public class MethodHandles {
      * is known as the {@linkplain #lookupClass lookup class}.
      * <p>
      * A lookup class which needs to create method handles will call
-     * {@link MethodHandles#lookup MethodHandles.lookup} to create a factory for itself.
+     * {@link #lookup MethodHandles.lookup} to create a factory for itself.
      * When the {@code Lookup} factory object is created, the identity of the lookup class is
      * determined, and securely stored in the {@code Lookup} object.
      * The lookup class (or its delegates) may then use factory methods
@@ -365,10 +368,10 @@ public class MethodHandles {
      * The accesses permitted to a given lookup object may be limited,
      * according to its set of {@link #lookupModes lookupModes},
      * to a subset of members normally accessible to the lookup class.
-     * For example, the {@link MethodHandles#publicLookup publicLookup}
+     * For example, the {@link #publicLookup publicLookup}
      * method produces a lookup object which is only allowed to access
      * public members in public classes.
-     * The caller sensitive method {@link MethodHandles#lookup lookup}
+     * The caller sensitive method {@link #lookup lookup}
      * produces a lookup object with full capabilities relative to
      * its caller class, to emulate all supported bytecode behaviors.
      * Also, the {@link Lookup#in Lookup.in} method may produce a lookup object
@@ -467,7 +470,7 @@ public class MethodHandles {
      * differently behaving method handles.
      * <p>
      * In cases where the lookup object is
-     * {@link MethodHandles#publicLookup() publicLookup()},
+     * {@link #publicLookup publicLookup()},
      * or some other lookup object without
      * <a href="MethodHandles.Lookup.html#privacc">private access</a>,
      * the lookup class is disregarded.
@@ -496,6 +499,8 @@ public class MethodHandles {
      * Nearly all other methods in the JSR 292 API rely on lookup
      * objects to check access requests.
      */
+    // Android-changed: Change link targets from MethodHandles#[public]Lookup to
+    // #[public]Lookup to work around complaints from javadoc.
     public static final
     class Lookup {
         /** The class on behalf of whom the lookup is being performed. */
@@ -1542,9 +1547,11 @@ return mh1;
          * @exception NullPointerException if the target is {@code null}
          * @see MethodHandleInfo
          * @since 1.8
+         *
+         * @hide
          */
         public MethodHandleInfo revealDirect(MethodHandle target) {
-            // TODO(narayan): Implement this method.
+            // TODO(narayan): Implement revealDirect, remove @hide.
             //
             // Notes: Only works for direct method handles. Must check access.
             //
@@ -1684,14 +1691,14 @@ return mh1;
         return new Transformers.ReferenceArrayElementGetter(arrayClass);
     }
 
-    public static byte arrayElementGetter(byte[] array, int i) { return array[i]; }
-    public static boolean arrayElementGetter(boolean[] array, int i) { return array[i]; }
-    public static char arrayElementGetter(char[] array, int i) { return array[i]; }
-    public static short arrayElementGetter(short[] array, int i) { return array[i]; }
-    public static int arrayElementGetter(int[] array, int i) { return array[i]; }
-    public static long arrayElementGetter(long[] array, int i) { return array[i]; }
-    public static float arrayElementGetter(float[] array, int i) { return array[i]; }
-    public static double arrayElementGetter(double[] array, int i) { return array[i]; }
+    /** @hide */ public static byte arrayElementGetter(byte[] array, int i) { return array[i]; }
+    /** @hide */ public static boolean arrayElementGetter(boolean[] array, int i) { return array[i]; }
+    /** @hide */ public static char arrayElementGetter(char[] array, int i) { return array[i]; }
+    /** @hide */ public static short arrayElementGetter(short[] array, int i) { return array[i]; }
+    /** @hide */ public static int arrayElementGetter(int[] array, int i) { return array[i]; }
+    /** @hide */ public static long arrayElementGetter(long[] array, int i) { return array[i]; }
+    /** @hide */ public static float arrayElementGetter(float[] array, int i) { return array[i]; }
+    /** @hide */ public static double arrayElementGetter(double[] array, int i) { return array[i]; }
 
     /**
      * Produces a method handle giving write access to elements of an array.
@@ -1723,13 +1730,21 @@ return mh1;
         return new Transformers.ReferenceArrayElementSetter(arrayClass);
     }
 
+    /** @hide */
     public static void arrayElementSetter(byte[] array, int i, byte val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(boolean[] array, int i, boolean val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(char[] array, int i, char val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(short[] array, int i, short val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(int[] array, int i, int val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(long[] array, int i, long val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(float[] array, int i, float val) { array[i] = val; }
+    /** @hide */
     public static void arrayElementSetter(double[] array, int i, double val) { array[i] = val; }
 
 
@@ -1780,6 +1795,8 @@ return invoker;
      *                  the range from 0 to {@code type.parameterCount()} inclusive,
      *                  or if the resulting method handle's type would have
      *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     *
+     * @hide
      */
     static public
     MethodHandle spreadInvoker(MethodType type, int leadingArgCount) {
@@ -1788,7 +1805,7 @@ return invoker;
         type = type.asSpreaderType(Object[].class, type.parameterCount() - leadingArgCount);
         // return type.invokers().spreadInvoker(leadingArgCount);
 
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement spreadInvoker, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.spreadInvoker is not implemented");
     }
 
@@ -1923,6 +1940,8 @@ return invoker;
      * @throws NullPointerException if either argument is null
      * @throws WrongMethodTypeException if the conversion cannot be made
      * @see MethodHandle#asType
+     *
+     * @hide
      */
     public static
     MethodHandle explicitCastArguments(MethodHandle target, MethodType newType) {
@@ -1935,7 +1954,7 @@ return invoker;
         }
 
         // return MethodHandleImpl.makePairwiseConvert(target, newType, false);
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement explicitCastArguments, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.explicitCastArguments is not implemented");
     }
 
@@ -2091,14 +2110,14 @@ assert((int)twice.invokeExact(21) == 42);
         return new Transformers.ReferenceIdentity(type);
     }
 
-    public static byte identity(byte val) { return val; }
-    public static boolean identity(boolean val) { return val; }
-    public static char identity(char val) { return val; }
-    public static short identity(short val) { return val; }
-    public static int identity(int val) { return val; }
-    public static long identity(long val) { return val; }
-    public static float identity(float val) { return val; }
-    public static double identity(double val) { return val; }
+    /** @hide */ public static byte identity(byte val) { return val; }
+    /** @hide */ public static boolean identity(boolean val) { return val; }
+    /** @hide */ public static char identity(char val) { return val; }
+    /** @hide */ public static short identity(short val) { return val; }
+    /** @hide */ public static int identity(int val) { return val; }
+    /** @hide */ public static long identity(long val) { return val; }
+    /** @hide */ public static float identity(float val) { return val; }
+    /** @hide */ public static double identity(double val) { return val; }
 
     /**
      * Provides a target method handle with one or more <em>bound arguments</em>
@@ -2129,6 +2148,8 @@ assert((int)twice.invokeExact(21) == 42);
      *         before calling the original method handle
      * @throws NullPointerException if the target or the {@code values} array is null
      * @see MethodHandle#bindTo
+     *
+     * @hide
      */
     public static
     MethodHandle insertArguments(MethodHandle target, int pos, Object... values) {
@@ -2149,7 +2170,7 @@ assert((int)twice.invokeExact(21) == 42);
         // }
         // return result;
 
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement insertArguments, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.insertArguments is not implemented");
     }
 
@@ -2363,6 +2384,8 @@ assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
      *          or if the {@code pos+filters.length} is greater than {@code target.type().parameterCount()},
      *          or if the resulting method handle's type would have
      *          <a href="MethodHandle.html#maxarity">too many parameters</a>
+     *
+     * @hide
      */
     public static
     MethodHandle filterArguments(MethodHandle target, int pos, MethodHandle... filters) {
@@ -2389,7 +2412,7 @@ assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
         // result = result.copyWithExtendL(newType, lform, filter);
         // return result;
 
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement filterArguments, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.filterArgument is not implemented");
     }
 
@@ -2513,6 +2536,8 @@ assertEquals("[top, [[up, down, strange], charm], bottom]",
      * @see MethodHandles#foldArguments
      * @see MethodHandles#filterArguments
      * @see MethodHandles#filterReturnValue
+     *
+     * @hide
      */
     public static
     MethodHandle collectArguments(MethodHandle target, int pos, MethodHandle filter) {
@@ -2530,7 +2555,7 @@ assertEquals("[top, [[up, down, strange], charm], bottom]",
         // lform = result.editor().collectArgumentsForm(1 + pos, collectorType.basicType());
         // return result.copyWithExtendL(newType, lform, filter);
 
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement collectArguments, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.collectArguments is not implemented");
     }
 
@@ -2698,6 +2723,8 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      *          of the target
      *          (skipping one matching the {@code combiner}'s return type)
      *          are not identical with the argument types of {@code combiner}
+     *
+     * @hide
      */
     public static
     MethodHandle foldArguments(MethodHandle target, MethodHandle combiner) {
@@ -2706,7 +2733,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         MethodType combinerType = combiner.type();
         Class<?> rtype = foldArgumentChecks(foldPos, targetType, combinerType);
 
-        // TODO(narayan): Implement this method.
+        // TODO(narayan): Implement foldArguments, remove @hide.
         throw new UnsupportedOperationException("MethodHandles.foldArguments is not implemented");
     }
 
