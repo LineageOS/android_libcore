@@ -588,12 +588,6 @@ public class SSLContextTest extends TestCase {
             fail("SSLv3 should not be supported");
         } catch (NoSuchAlgorithmException expected) {
         }
-
-        try {
-            SSLContext context = SSLContext.getInstance("SSL");
-            fail("SSL should not be supported");
-        } catch (NoSuchAlgorithmException expected) {
-        }
     }
 
     private static void assertContentsInOrder(List<String> expected, String... actual) {

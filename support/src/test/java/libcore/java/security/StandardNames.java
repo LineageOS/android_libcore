@@ -614,6 +614,7 @@ public final class StandardNames extends Assert {
             provideSslContextEnabledProtocols("TLSv1.2", TLSVersion.SSLv3, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("Default", TLSVersion.SSLv3, TLSVersion.TLSv1);
         } else {
+            provideSslContextEnabledProtocols("SSL", TLSVersion.TLSv1, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLS", TLSVersion.TLSv1, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLSv1", TLSVersion.TLSv1, TLSVersion.TLSv12);
             provideSslContextEnabledProtocols("TLSv1.1", TLSVersion.TLSv1, TLSVersion.TLSv12);
@@ -625,6 +626,7 @@ public final class StandardNames extends Assert {
     public static final String SSL_CONTEXT_PROTOCOLS_DEFAULT = "Default";
     public static final Set<String> SSL_CONTEXT_PROTOCOLS = new HashSet<String>(Arrays.asList(
         SSL_CONTEXT_PROTOCOLS_DEFAULT,
+        "SSL",
         "TLS",
         "TLSv1",
         "TLSv1.1",
