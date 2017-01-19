@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -210,6 +210,7 @@ public class LogRecord implements java.io.Serializable {
      * the message string before formatting it.  The result may
      * be null if the message is not localizable, or if no suitable
      * ResourceBundle is available.
+     * @return the localization resource bundle
      */
     public ResourceBundle getResourceBundle() {
         return resourceBundle;
@@ -230,6 +231,7 @@ public class LogRecord implements java.io.Serializable {
      * This is the name for the ResourceBundle that should be
      * used to localize the message string before formatting it.
      * The result may be null if the message is not localizable.
+     * @return the localization resource bundle name
      */
     public String getResourceBundleName() {
         return resourceBundleName;
@@ -280,6 +282,7 @@ public class LogRecord implements java.io.Serializable {
      * <p>
      * Sequence numbers are normally assigned in the LogRecord constructor,
      * so it should not normally be necessary to use this method.
+     * @param seq the sequence number
      */
     public void setSequenceNumber(long seq) {
         sequenceNumber = seq;
@@ -509,7 +512,13 @@ public class LogRecord implements java.io.Serializable {
         // If necessary, try to regenerate the resource bundle.
         if (resourceBundleName != null) {
             try {
-                resourceBundle = ResourceBundle.getBundle(resourceBundleName);
+                // use system class loader to ensure the ResourceBundle
+                // instance is a different instance than null loader uses
+                final ResourceBundle bundle =
+                        ResourceBundle.getBundle(resourceBundleName,
+                                Locale.getDefault(),
+                                ClassLoader.getSystemClassLoader());
+                resourceBundle = bundle;
             } catch (MissingResourceException ex) {
                 try {
                     resourceBundle = ResourceBundle.getBundle(resourceBundleName, Locale.getDefault(),
