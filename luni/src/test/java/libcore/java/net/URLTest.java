@@ -784,4 +784,11 @@ public final class URLTest extends TestCase {
         assertEquals(host, url.getHost());
         assertEquals(fragment, url.getRef());
     }
+
+    // http://b/33351987
+    public void testMultipleUserField() throws Exception {
+        final String host = "http://multiple@users@url.com";
+        URL url = new URL(host);
+        assertNull(url.getUserInfo());
+    }
 }
