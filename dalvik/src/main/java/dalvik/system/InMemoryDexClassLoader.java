@@ -20,12 +20,11 @@ import java.nio.ByteBuffer;
 import sun.misc.Cleaner;
 
 /**
- * {@link ClassLoader} implementation for loading Dex file from
- * memory.
- *
- * @hide
+ * A {@link ClassLoader} implementation that loads classes from a
+ * buffer containing a DEX file. This can be used to execute code that
+ * has not been written to the local file system.
  */
-public class InMemoryDexClassLoader extends ClassLoader {
+public final class InMemoryDexClassLoader extends ClassLoader {
     private final DexData dexData;
 
     /**
