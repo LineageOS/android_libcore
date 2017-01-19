@@ -331,7 +331,7 @@ public class Files2Test {
 
     @Test
     public void test_getLastModifiedTime() throws IOException, InterruptedException {
-        String touchCmd[] = { "touch", "-d", "2015-10-09T00:00:00",
+        String touchCmd[] = { "touch", "-d", "2015-10-09T00:00:00Z",
                 filesSetup.getTestDir() + "/" + DATA_FILE };
         execCmdAndWaitForTermination(touchCmd);
         assertEquals("2015-10-09T00:00:00Z",
