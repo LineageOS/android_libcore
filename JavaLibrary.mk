@@ -182,7 +182,7 @@ LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := core-test-rules-hostdex
 LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex
 LOCAL_STATIC_JAVA_LIBRARIES := junit-hostdex
-include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
+include $(BUILD_HOST_DALVIK_STATIC_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(non_openjdk_java_files) $(android_icu4j_src_files)
