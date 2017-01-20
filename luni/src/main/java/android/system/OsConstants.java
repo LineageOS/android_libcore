@@ -449,6 +449,7 @@ public final class OsConstants {
     public static final int SO_BINDTODEVICE = placeholder();
     public static final int SO_BROADCAST = placeholder();
     public static final int SO_DEBUG = placeholder();
+    /** @hide */ public static final int SO_DOMAIN = placeholder();
     public static final int SO_DONTROUTE = placeholder();
     public static final int SO_ERROR = placeholder();
     public static final int SO_KEEPALIVE = placeholder();
@@ -456,6 +457,7 @@ public final class OsConstants {
     public static final int SO_OOBINLINE = placeholder();
     public static final int SO_PASSCRED = placeholder();
     public static final int SO_PEERCRED = placeholder();
+    /** @hide */ public static final int SO_PROTOCOL = placeholder();
     public static final int SO_RCVBUF = placeholder();
     public static final int SO_RCVLOWAT = placeholder();
     public static final int SO_RCVTIMEO = placeholder();
