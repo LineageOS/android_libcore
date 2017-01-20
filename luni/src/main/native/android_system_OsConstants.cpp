@@ -503,6 +503,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #endif
     initConstant(env, c, "SO_BROADCAST", SO_BROADCAST);
     initConstant(env, c, "SO_DEBUG", SO_DEBUG);
+#if defined(SO_DOMAIN)
+    initConstant(env, c, "SO_DOMAIN", SO_DOMAIN);
+#endif
     initConstant(env, c, "SO_DONTROUTE", SO_DONTROUTE);
     initConstant(env, c, "SO_ERROR", SO_ERROR);
     initConstant(env, c, "SO_KEEPALIVE", SO_KEEPALIVE);
@@ -513,6 +516,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #endif
 #if defined(SO_PEERCRED)
     initConstant(env, c, "SO_PEERCRED", SO_PEERCRED);
+#endif
+#if defined(SO_PROTOCOL)
+    initConstant(env, c, "SO_PROTOCOL", SO_PROTOCOL);
 #endif
     initConstant(env, c, "SO_RCVBUF", SO_RCVBUF);
     initConstant(env, c, "SO_RCVLOWAT", SO_RCVLOWAT);
