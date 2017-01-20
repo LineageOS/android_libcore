@@ -48,17 +48,18 @@ public final class ClassExt {
     private Object obsoleteMethods;
 
     /**
-     * If set, the original DexCache associated with the related class.
+     * If set, the bytes of the original dex-file associated with the related class.
      *
-     * In this instance 'original' means the dex-cache (and associated dex-file) for this class when
-     * it was first loaded after all non-retransformation capable transformations had been performed
-     * but before any retransformation capable ones had been done.
+     * In this instance 'original' means either (1) the dex-file loaded for this class when it was
+     * first loaded after all non-retransformation capable transformations had been performed but
+     * before any retransformation capable ones had been done or (2) the most recent dex-file bytes
+     * given for a class redefinition.
      *
      * Needed in order to implement retransformation of classes.
      *
-     * This field has native components and is a logical part of the 'Class' type.
+     * This field is a logical part of the 'Class' type.
      */
-    private Object originalDexCache;
+    private byte[] originalDexFile;
 
     /**
      * If class verify fails, we must return same error on subsequent tries. We may store either
