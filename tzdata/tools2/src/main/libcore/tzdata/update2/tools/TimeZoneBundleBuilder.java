@@ -31,31 +31,28 @@ import libcore.tzdata.update2.TimeZoneBundle;
  */
 public final class TimeZoneBundleBuilder {
 
-    private String bundleFormatVersion = BundleVersion.FULL_BUNDLE_FORMAT_VERSION;
-    private String rulesVersion;
-    private String androidRevision;
+    private BundleVersion bundleVersion;
     private byte[] tzData;
     private byte[] icuData;
 
-    // For use in tests.
-    public TimeZoneBundleBuilder setBundleVersionForTests(String bundleVersion) {
-        this.bundleFormatVersion = bundleVersion;
-        return this;
-    }
-
-    public TimeZoneBundleBuilder setRulesVersion(String rulesVersion) {
-        this.rulesVersion = rulesVersion;
-        return this;
-    }
-
-    public TimeZoneBundleBuilder setAndroidRevision(String androidRevision) {
-        this.androidRevision = androidRevision;
+    public TimeZoneBundleBuilder setBundleVersion(BundleVersion bundleVersion) {
+        this.bundleVersion = bundleVersion;
         return this;
     }
 
     public TimeZoneBundleBuilder clearVersionForTests() {
         // This has the effect of omitting the version file in buildUnvalidated().
-        this.bundleFormatVersion = null;
+        this.bundleVersion = null;
+        return this;
+    }
+
+    public TimeZoneBundleBuilder replaceFormatVersionForTests(int majorVersion, int minorVersion) {
+        try {
+            bundleVersion = new BundleVersion(
+                    majorVersion, minorVersion, bundleVersion.rulesVersion, bundleVersion.revision);
+        } catch (BundleException e) {
+            throw new IllegalArgumentException();
+        }
         return this;
     }
 
@@ -95,10 +92,8 @@ public final class TimeZoneBundleBuilder {
     public TimeZoneBundle buildUnvalidated() throws BundleException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            if (bundleFormatVersion != null && rulesVersion != null && androidRevision != null) {
-                BundleVersion bundleVersion =
-                        new BundleVersion(bundleFormatVersion, rulesVersion, androidRevision);
-                addZipEntry(zos, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME, bundleVersion.getBytes());
+            if (bundleVersion != null) {
+                addZipEntry(zos, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME, bundleVersion.toBytes());
             }
 
             if (tzData != null) {
@@ -117,25 +112,8 @@ public final class TimeZoneBundleBuilder {
      * Builds a {@link TimeZoneBundle}.
      */
     public TimeZoneBundle build() throws BundleException {
-        if (bundleFormatVersion == null) {
+        if (bundleVersion == null) {
             throw new IllegalStateException("Missing bundleVersion");
-        }
-        if (!BundleVersion.BUNDLE_FORMAT_VERSION_PATTERN.matcher(bundleFormatVersion).matches()) {
-            throw new IllegalStateException("bundleVersion invalid: " + bundleFormatVersion);
-        }
-
-        if (rulesVersion == null) {
-            throw new IllegalStateException("Missing rulesVersion");
-        }
-        if (!BundleVersion.RULES_VERSION_PATTERN.matcher(rulesVersion).matches()) {
-            throw new IllegalStateException("rulesVersion invalid: " + rulesVersion);
-        }
-
-        if (androidRevision == null) {
-            throw new IllegalStateException("Missing androidRevision");
-        }
-        if (!BundleVersion.ANDROID_REVISION_PATTERN.matcher(androidRevision).matches()) {
-            throw new IllegalStateException("androidRevision invalid: " + androidRevision);
         }
         if (icuData == null) {
             throw new IllegalStateException("Missing icuData");
