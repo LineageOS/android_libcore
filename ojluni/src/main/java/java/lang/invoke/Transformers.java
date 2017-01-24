@@ -21,6 +21,7 @@
 package java.lang.invoke;
 
 import dalvik.system.EmulatedStackFrame;
+import dalvik.system.EmulatedStackFrame.Range;
 import dalvik.system.EmulatedStackFrame.StackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameWriter;
 import java.lang.reflect.Array;
@@ -1028,6 +1029,274 @@ public class Transformers {
             // Finally, invoke the handle and copy the return value.
             target.invoke(targetFrame);
             targetFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+    }
+
+
+    /**
+     * Implements MethodHandle.asSpreader / MethodHandles.spreadInvoker.
+     */
+    static class Spreader extends Transformer {
+        /** The method handle we're delegating to. */
+        private final MethodHandle target;
+
+        /**
+         * The offset of the trailing array argument in the list of arguments to
+         * this transformer. The array argument is always the last argument.
+         */
+        private final int arrayOffset;
+
+        /**
+         * The type char of the component type of the array.
+         */
+        private final char arrayTypeChar;
+
+        /**
+         * The number of input arguments that will be present in the array. In other words,
+         * this is the expected array length.
+         */
+        private final int numArrayArgs;
+
+        /**
+         * Range of arguments to copy verbatim from the input frame, This will cover all
+         * arguments that aren't a part of the trailing array.
+         */
+        private final Range copyRange;
+        private final StackFrameWriter writer;
+
+        Spreader(MethodHandle target, MethodType spreaderType, int numArrayArgs) {
+            super(spreaderType);
+            this.target = target;
+            // Copy all arguments except the last argument (which is the trailing array argument
+            // that needs to be spread).
+            arrayOffset = spreaderType.parameterCount() - 1;
+
+            // Get and cache the component type of the input array.
+            final Class<?> componentType = spreaderType.ptypes()[arrayOffset].getComponentType();
+            if (componentType == null) {
+                throw new AssertionError("Trailing argument must be an array.");
+            }
+            arrayTypeChar = Wrapper.basicTypeChar(componentType);
+
+            this.numArrayArgs = numArrayArgs;
+            // Copy all args except for the last argument.
+            this.copyRange = EmulatedStackFrame.Range.of(spreaderType, 0, arrayOffset);
+            this.writer = new StackFrameWriter();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            // Create a new stack frame for the callee.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+
+            // Copy all arguments except for the trailing array argument.
+            callerFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
+
+            // Attach the writer, prepare to spread the trailing array arguments into
+            // the callee frame.
+            writer.attach(targetFrame,
+                    arrayOffset,
+                    copyRange.numReferences,
+                    copyRange.numBytes);
+
+            // Get the array reference and check that its length is as expected.
+            Object arrayObj = callerFrame.getReference(
+                    copyRange.numReferences, this.type().ptypes()[arrayOffset]);
+            final int arrayLength = Array.getLength(arrayObj);
+            if (arrayLength != numArrayArgs) {
+                throw new IllegalArgumentException("Invalid array length: " + arrayLength);
+            }
+
+            final MethodType type = target.type();
+            switch (arrayTypeChar) {
+                case 'L':
+                    spreadArray((Object[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'I':
+                    spreadArray((int[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'J':
+                    spreadArray((long[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'B':
+                    spreadArray((byte[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'S':
+                    spreadArray((short[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'C':
+                    spreadArray((char[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'Z':
+                    spreadArray((boolean[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'F':
+                    spreadArray((float[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+                case 'D':
+                    spreadArray((double[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                    break;
+
+            }
+
+            target.invoke(targetFrame);
+            targetFrame.copyReturnValueTo(callerFrame);
+        }
+
+        public static void spreadArray(Object[] array, StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                Object o = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(o, argumentType); break; }
+                    case 'I': { writer.putNextInt((int) o); break; }
+                    case 'J': { writer.putNextLong((long) o); break; }
+                    case 'B': { writer.putNextByte((byte) o); break; }
+                    case 'S': { writer.putNextShort((short) o); break; }
+                    case 'C': { writer.putNextChar((char) o); break; }
+                    case 'Z': { writer.putNextBoolean((boolean) o); break; }
+                    case 'F': { writer.putNextFloat((float) o); break; }
+                    case 'D': { writer.putNextDouble((double) o); break; }
+                }
+            }
+        }
+
+        public static void spreadArray(int[] array, StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                int j = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(j, argumentType); break; }
+                    case 'I': { writer.putNextInt(j); break; }
+                    case 'J': { writer.putNextLong(j); break; }
+                    case 'F': { writer.putNextFloat(j); break; }
+                    case 'D': { writer.putNextDouble(j); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(long[] array, StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                long l = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(l, argumentType); break; }
+                    case 'J': { writer.putNextLong(l); break; }
+                    case 'F': { writer.putNextFloat((float) l); break; }
+                    case 'D': { writer.putNextDouble((double) l); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(byte[] array,
+                                       StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                byte b = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(b, argumentType); break; }
+                    case 'I': { writer.putNextInt(b); break; }
+                    case 'J': { writer.putNextLong(b); break; }
+                    case 'B': { writer.putNextByte(b); break; }
+                    case 'S': { writer.putNextShort(b); break; }
+                    case 'F': { writer.putNextFloat(b); break; }
+                    case 'D': { writer.putNextDouble(b); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(short[] array,
+                                       StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                short s = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(s, argumentType); break; }
+                    case 'I': { writer.putNextInt(s); break; }
+                    case 'J': { writer.putNextLong(s); break; }
+                    case 'S': { writer.putNextShort(s); break; }
+                    case 'F': { writer.putNextFloat(s); break; }
+                    case 'D': { writer.putNextDouble(s); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(char[] array,
+                                       StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                char c = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(c, argumentType); break; }
+                    case 'I': { writer.putNextInt(c); break; }
+                    case 'J': { writer.putNextLong(c); break; }
+                    case 'C': { writer.putNextChar(c); break; }
+                    case 'F': { writer.putNextFloat(c); break; }
+                    case 'D': { writer.putNextDouble(c); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(boolean[] array,
+                                       StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                boolean z = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(z, argumentType); break; }
+                    case 'Z': { writer.putNextBoolean(z); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(double[] array,
+                                       StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                double d = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(d, argumentType); break; }
+                    case 'D': { writer.putNextDouble(d); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
+        }
+
+        public static void spreadArray(float[] array, StackFrameWriter writer, MethodType type,
+                                       int numArgs, int offset) {
+            final Class<?>[] ptypes = type.ptypes();
+            for (int i = 0; i < numArgs; ++i) {
+                Class<?> argumentType = ptypes[i + offset];
+                float f = array[i];
+                switch (Wrapper.basicTypeChar(argumentType)) {
+                    case 'L': { writer.putNextReference(f, argumentType); break; }
+                    case 'D': { writer.putNextDouble((double) f); break; }
+                    case 'F': { writer.putNextFloat(f); break; }
+                    default : { throw new AssertionError(); }
+                }
+            }
         }
     }
 }
