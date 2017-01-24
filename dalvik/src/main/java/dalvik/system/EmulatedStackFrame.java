@@ -198,7 +198,7 @@ public class EmulatedStackFrame {
     public <T> T getReference(int idx, Class<T> referenceType) {
         if (referenceType != type.ptypes()[idx]) {
             throw new IllegalArgumentException("Argument: " + idx +
-                    " is not of type " + referenceType);
+                    " is of type " + type.ptypes()[idx] + " expected " + referenceType + "");
         }
 
         return (T) references[idx];
@@ -327,12 +327,21 @@ public class EmulatedStackFrame {
          * values to it. Also resets all state associated with the current accessor.
          */
         public StackFrameAccessor attach(EmulatedStackFrame stackFrame) {
+            return attach(stackFrame, 0 /* argumentIdx */, 0 /* referencesOffset */,
+                    0 /* frameOffset */);
+        }
+
+        public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
+                                         int referencesOffset, int frameOffset) {
             frame = stackFrame;
             frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
             numArgs = frame.type.ptypes().length;
+            if (frameOffset != 0) {
+                frameBuf.position(frameOffset);
+            }
 
-            referencesOffset = 0;
-            argumentIdx = 0;
+            this.referencesOffset = referencesOffset;
+            this.argumentIdx = argumentIdx;
 
             return this;
         }

@@ -1802,11 +1802,11 @@ return invoker;
     MethodHandle spreadInvoker(MethodType type, int leadingArgCount) {
         if (leadingArgCount < 0 || leadingArgCount > type.parameterCount())
             throw newIllegalArgumentException("bad argument count", leadingArgCount);
-        type = type.asSpreaderType(Object[].class, type.parameterCount() - leadingArgCount);
-        // return type.invokers().spreadInvoker(leadingArgCount);
 
-        // TODO(narayan): Implement spreadInvoker, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.spreadInvoker is not implemented");
+        MethodHandle invoker = MethodHandles.invoker(type);
+        int spreadArgCount = type.parameterCount() - leadingArgCount;
+        invoker = invoker.asSpreader(Object[].class, spreadArgCount);
+        return invoker;
     }
 
     /**
