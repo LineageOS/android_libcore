@@ -670,6 +670,7 @@ public class TreeMapTest extends TestCase {
                 keys.spliterator().characteristics());
         SpliteratorTester.runSortedTests(keys);
         SpliteratorTester.runOrderedTests(keys);
+        SpliteratorTester.assertSupportsTrySplit(keys);
     }
 
     public void test_spliterator_values() {
@@ -703,6 +704,7 @@ public class TreeMapTest extends TestCase {
                 values.spliterator().characteristics());
         SpliteratorTester.runSizedTests(values, 16);
         SpliteratorTester.runOrderedTests(values);
+        SpliteratorTester.assertSupportsTrySplit(values);
     }
 
     public void test_spliterator_entrySet() {
@@ -740,6 +742,7 @@ public class TreeMapTest extends TestCase {
                 entries.spliterator().characteristics());
         SpliteratorTester.runSortedTests(entries, (a, b) -> (a.getKey().compareTo(b.getKey())));
         SpliteratorTester.runOrderedTests(entries);
+        SpliteratorTester.assertSupportsTrySplit(entries);
     }
 
     public void test_replaceAll() throws Exception {

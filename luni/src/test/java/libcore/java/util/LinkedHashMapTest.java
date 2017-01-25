@@ -377,6 +377,7 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
                 Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.SIZED
                         | Spliterator.SUBSIZED,
                 keys.spliterator().characteristics());
+        SpliteratorTester.assertSupportsTrySplit(keys);
     }
 
     public void test_spliterator_values() {
@@ -404,6 +405,7 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
         SpliteratorTester.runSubSizedTests(values, 10);
         assertEquals(Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED,
                 values.spliterator().characteristics());
+        SpliteratorTester.assertSupportsTrySplit(values);
     }
 
     public void test_spliterator_entrySet() {
