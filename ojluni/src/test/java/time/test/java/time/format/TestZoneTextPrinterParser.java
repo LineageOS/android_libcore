@@ -136,18 +136,31 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
 
     @DataProvider(name="preferredZones")
     Object[][] data_preferredZones() {
+        // Android-changed: Differences in time zone name handling.
+        // Android and java.time (via the RI) have differences in how they handle Time Zone Names.
+        // - Android doesn't use IANA abbreviates (usually 3-letter abbreviations) except where they
+        //   are widely used in a given locale (so CST will not resolve to "Chinese Standard Time").
+        // - Android doesn't provide long names for zones like "CET". Only the Olson IDs like
+        //   "Europe/London" have names attached to them.
+        // - When no preferred zones are provided then no guarantee is made about the specific zone
+        //   returned.
+        // - Android uses the display name "Taipei Standard Time" as CLDR does.
+        // Basically Android time zone parsing sticks strictly to what can be done with the data
+        // provided by IANA and CLDR and avoids introducing additional values (like specific order
+        // and additional names) to those.
         return new Object[][] {
-            {"America/New_York", "Eastern Standard Time", none,      Locale.ENGLISH, TextStyle.FULL},
+            // {"America/New_York", "Eastern Standard Time", none,      Locale.ENGLISH, TextStyle.FULL},
 //          {"EST",              "Eastern Standard Time", preferred, Locale.ENGLISH, TextStyle.FULL},
-            {"Europe/Paris",     "Central European Time", none,      Locale.ENGLISH, TextStyle.FULL},
-            {"CET",              "Central European Time", preferred, Locale.ENGLISH, TextStyle.FULL},
-            {"Asia/Shanghai",    "China Standard Time",   none,      Locale.ENGLISH, TextStyle.FULL},
-            {"Asia/Taipei",      "China Standard Time",   preferred, Locale.ENGLISH, TextStyle.FULL},
-            {"America/Chicago",  "CST",                   none,      Locale.ENGLISH, TextStyle.SHORT},
-            {"Asia/Taipei",      "CST",                   preferred, Locale.ENGLISH, TextStyle.SHORT},
-            {"Australia/South",  "ACST",                  preferred_s, Locale.ENGLISH, TextStyle.SHORT},
-            {"America/Chicago",  "CDT",                   none,        Locale.ENGLISH, TextStyle.SHORT},
-            {"Asia/Shanghai",    "CDT",                   preferred_s, Locale.ENGLISH, TextStyle.SHORT},
+            // {"Europe/Paris",     "Central European Time", none,      Locale.ENGLISH, TextStyle.FULL},
+            // {"CET",              "Central European Time", preferred, Locale.UK, TextStyle.FULL},
+            // {"Asia/Shanghai",    "China Standard Time",   none,      Locale.ENGLISH, TextStyle.FULL},
+            // {"Asia/Taipei",      "China Standard Time",   preferred, Locale.ENGLISH, TextStyle.FULL},
+            // {"America/Chicago",  "CST",                   none,      Locale.ENGLISH, TextStyle.SHORT},
+            // {"Asia/Taipei",      "CST",                   preferred, Locale.ENGLISH, TextStyle.SHORT},
+            // Australia/South is a valid synonym for Australia/Adelaide, so this test will pass.
+            {"Australia/South",  "ACST",                  preferred_s, new Locale("en", "AU"), TextStyle.SHORT},
+            // {"America/Chicago",  "CDT",                   none,        Locale.ENGLISH, TextStyle.SHORT},
+            // {"Asia/Shanghai",    "CDT",                   preferred_s, Locale.ENGLISH, TextStyle.SHORT},
        };
     }
 
