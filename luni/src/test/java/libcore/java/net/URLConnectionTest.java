@@ -37,6 +37,8 @@ import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.CacheRequest;
 import java.net.CacheResponse;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpRetryException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
@@ -94,6 +96,8 @@ import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
 import static com.google.mockwebserver.SocketPolicy.FAIL_HANDSHAKE;
 import static com.google.mockwebserver.SocketPolicy.SHUTDOWN_INPUT_AT_END;
 import static com.google.mockwebserver.SocketPolicy.SHUTDOWN_OUTPUT_AT_END;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public final class URLConnectionTest extends TestCase {
 
@@ -1060,6 +1064,39 @@ public final class URLConnectionTest extends TestCase {
             in.read();
             fail("Expected a connection closed exception");
         } catch (IOException expected) {
+        }
+    }
+
+    // http://b/33763156
+    public void testDisconnectDuringConnect() throws IOException {
+        server.enqueue(new MockResponse().setBody("This should never be sent"));
+        server.play();
+
+        final AtomicReference<HttpURLConnection> connectionHolder = new AtomicReference<>();
+        class DisconnectingCookieHandler extends CookieManager {
+            @Override
+            public Map<String, List<String>> get(URI uri, Map<String, List<String>> map)
+                    throws IOException {
+                Map<String, List<String>> result = super.get(uri, map);
+                connectionHolder.get().disconnect();
+                return result;
+            }
+        }
+        CookieHandler defaultCookieHandler = CookieHandler.getDefault();
+        try {
+            CookieHandler.setDefault(new DisconnectingCookieHandler());
+            HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
+            connectionHolder.set(connection);
+            try {
+                connection.getInputStream();
+                fail();
+            } catch (IOException expected) {
+                assertEquals("Canceled", expected.getMessage());
+            } finally {
+                connection.disconnect();
+            }
+        } finally {
+            CookieHandler.setDefault(defaultCookieHandler);
         }
     }
 
