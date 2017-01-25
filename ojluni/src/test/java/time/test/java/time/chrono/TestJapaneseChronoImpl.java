@@ -61,7 +61,6 @@ import static org.testng.Assert.assertEquals;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.time.ZoneOffset;
 import java.time.chrono.JapaneseChronology;
 import java.time.chrono.JapaneseEra;
@@ -69,7 +68,6 @@ import java.time.chrono.JapaneseDate;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -100,7 +98,8 @@ public class TestJapaneseChronoImpl {
         Locale locale = Locale.forLanguageTag("ja-JP-u-ca-japanese");
         assertEquals(locale.toString(), "ja_JP_#u-ca-japanese", "Unexpected locale");
 
-        Calendar cal = java.util.Calendar.getInstance(locale);
+        // Android changed: Android doesn't return the Japanese Imperial Calendar from getInstance.
+        Calendar cal = java.util.Calendar.getJapanesImperialInstance(TimeZone.getDefault(), locale);
         assertEquals(cal.getCalendarType(), "japanese", "Unexpected calendar type");
 
         JapaneseDate jDate = JapaneseChronology.INSTANCE.date(isoStartDate);
