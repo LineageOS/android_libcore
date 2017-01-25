@@ -996,6 +996,7 @@ public class IdentityHashMapTest extends junit.framework.TestCase {
         SpliteratorTester.runBasicIterationTests(keys.spliterator(), expectedKeys);
         SpliteratorTester.runBasicSplitTests(keys, expectedKeys);
         SpliteratorTester.testSpliteratorNPE(keys.spliterator());
+        SpliteratorTester.assertSupportsTrySplit(keys);
     }
 
     public void test_spliterator_valueSet() {
@@ -1023,6 +1024,7 @@ public class IdentityHashMapTest extends junit.framework.TestCase {
         SpliteratorTester.runBasicIterationTests(values.spliterator(), expectedValues);
         SpliteratorTester.runBasicSplitTests(values, expectedValues);
         SpliteratorTester.testSpliteratorNPE(values.spliterator());
+        SpliteratorTester.assertSupportsTrySplit(values);
     }
 
     public void test_spliterator_entrySet() {
@@ -1053,6 +1055,7 @@ public class IdentityHashMapTest extends junit.framework.TestCase {
         SpliteratorTester.runBasicIterationTests(values.spliterator(), expectedValues);
         SpliteratorTester.runBasicSplitTests(values, expectedValues, comparator);
         SpliteratorTester.testSpliteratorNPE(values.spliterator());
+        SpliteratorTester.assertSupportsTrySplit(values);
     }
 
     public void test_replaceAll() {
