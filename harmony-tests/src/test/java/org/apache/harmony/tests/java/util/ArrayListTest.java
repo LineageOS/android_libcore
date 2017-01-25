@@ -1129,6 +1129,7 @@ public class ArrayListTest extends junit.framework.TestCase {
         SpliteratorTester.runOrderedTests(list);
         SpliteratorTester.runSizedTests(list, 16 /* expected size */);
         SpliteratorTester.runSubSizedTests(list, 16 /* expected size */);
+        SpliteratorTester.assertSupportsTrySplit(list);
     }
 
     public void test_spliterator_CME() throws Exception {
@@ -1178,6 +1179,7 @@ public class ArrayListTest extends junit.framework.TestCase {
         SpliteratorTester.runOrderedTests(list);
         SpliteratorTester.runSizedTests(list, 8 /* expected size */);
         SpliteratorTester.runSubSizedTests(list, 8 /* expected size */);
+        SpliteratorTester.assertSupportsTrySplit(list);
     }
 
     /**
