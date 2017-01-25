@@ -308,15 +308,16 @@ public class TCKZoneId extends AbstractTCKTest {
     }
 
     private String displayName(String id) {
-        if (id.equals("GMT")) {
-            return "Greenwich Mean Time";
-        }
-        if (id.equals("GMT0")) {
-            return "Greenwich Mean Time";
-        }
-        if (id.equals("UTC")) {
-            return "Coordinated Universal Time";
-        }
+        // Android-changed: Android doesn't have long names for GMT/UTC as of 2017.
+//        if (id.equals("GMT")) {
+//            return "Greenwich Mean Time";
+//        }
+//        if (id.equals("GMT0")) {
+//            return "Greenwich Mean Time";
+//        }
+//        if (id.equals("UTC")) {
+//            return "Coordinated Universal Time";
+//        }
         return id;
     }
 

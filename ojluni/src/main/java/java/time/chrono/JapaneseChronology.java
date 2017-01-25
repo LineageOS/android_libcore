@@ -86,6 +86,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import sun.util.calendar.CalendarSystem;
 import sun.util.calendar.LocalGregorianCalendar;
@@ -125,8 +126,14 @@ public final class JapaneseChronology extends AbstractChronology implements Seri
     static final LocalGregorianCalendar JCAL =
         (LocalGregorianCalendar) CalendarSystem.forName("japanese");
 
+    // Android-changed: don't use locale to create japanese imperial calendar, as it's not generally
+    // supported on Android. Use Calendar.getJapaneseImperialInstance() instead. See .createCalendar
     // Locale for creating a JapaneseImpericalCalendar.
-    static final Locale LOCALE = Locale.forLanguageTag("ja-JP-u-ca-japanese");
+    private static final Locale LOCALE = Locale.forLanguageTag("ja-JP-u-ca-japanese");
+
+    static Calendar createCalendar() {
+        return Calendar.getJapanesImperialInstance(TimeZone.getDefault(), LOCALE);
+    }
 
     /**
      * Singleton instance for Japanese chronology.
@@ -398,14 +405,16 @@ public final class JapaneseChronology extends AbstractChronology implements Seri
             case ALIGNED_WEEK_OF_YEAR:
                 throw new UnsupportedTemporalTypeException("Unsupported field: " + field);
             case YEAR_OF_ERA: {
-                Calendar jcal = Calendar.getInstance(LOCALE);
+                // Android-changed: use #createCalendar() to create calendar.
+                Calendar jcal = createCalendar();
                 int startYear = getCurrentEra().getPrivateEra().getSinceDate().getYear();
                 return ValueRange.of(1, jcal.getGreatestMinimum(Calendar.YEAR),
                         jcal.getLeastMaximum(Calendar.YEAR) + 1, // +1 due to the different definitions
                         Year.MAX_VALUE - startYear);
             }
             case DAY_OF_YEAR: {
-                Calendar jcal = Calendar.getInstance(LOCALE);
+                // Android-changed: use #createCalendar() to create calendar.
+                Calendar jcal = createCalendar();
                 int fieldIndex = Calendar.DAY_OF_YEAR;
                 return ValueRange.of(jcal.getMinimum(fieldIndex), jcal.getGreatestMinimum(fieldIndex),
                         jcal.getLeastMaximum(fieldIndex), jcal.getMaximum(fieldIndex));
