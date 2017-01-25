@@ -930,6 +930,23 @@ public class Transformers {
             throw new InternalError("Unexpected type: " + elementType);
         }
 
+        public static Object collectArguments(char basicComponentType, Class<?> componentType,
+                                              StackFrameReader reader, Class<?>[] types,
+                                              int startIdx, int length) {
+            switch (basicComponentType) {
+                case 'L': return referenceArray(reader, types, componentType, startIdx, length);
+                case 'I': return intArray(reader, types, startIdx, length);
+                case 'J': return longArray(reader, types, startIdx, length);
+                case 'B': return byteArray(reader, types, startIdx, length);
+                case 'S': return shortArray(reader, types, startIdx, length);
+                case 'C': return charArray(reader, types, startIdx, length);
+                case 'Z': return booleanArray(reader, types, startIdx, length);
+                case 'F': return floatArray(reader, types, startIdx, length);
+                case 'D': return doubleArray(reader, types, startIdx, length);
+            }
+            throw new InternalError("Unexpected type: " + basicComponentType);
+        }
+
         private static void copyParameter(StackFrameReader reader, StackFrameWriter writer,
                                           Class<?> ptype) {
             switch (Wrapper.basicTypeChar(ptype)) {
@@ -1297,6 +1314,155 @@ public class Transformers {
                     default : { throw new AssertionError(); }
                 }
             }
+        }
+    }
+
+    /**
+     * Implements MethodHandle.asCollector.
+     */
+    static class Collector extends Transformer {
+        private final MethodHandle target;
+
+        /**
+         * The offset of the trailing array argument in the list of arguments to
+         * this transformer. The array argument is always the last argument.
+         */
+        private final int arrayOffset;
+
+        /**
+         * The number of input arguments that will be present in the array. In other words,
+         * this is the expected array length.
+         */
+        private final int numArrayArgs;
+
+        /**
+         * The type char of the component type of the array.
+         */
+        private final char arrayTypeChar;
+
+        /**
+         * Range of arguments to copy verbatim from the input frame, This will cover all
+         * arguments that aren't a part of the trailing array.
+         */
+        private final Range copyRange;
+
+        private final StackFrameWriter writer;
+        private final StackFrameReader reader;
+
+        Collector(MethodHandle delegate, Class<?> arrayType, int length) {
+            super(delegate.type().asCollectorType(arrayType, length));
+
+            target = delegate;
+            // Copy all arguments except the last argument (which is the trailing array argument
+            // that needs to be spread).
+            arrayOffset = delegate.type().parameterCount() - 1;
+            arrayTypeChar = Wrapper.basicTypeChar(arrayType.getComponentType());
+            numArrayArgs = length;
+
+            // Copy all args except for the last argument.
+            copyRange = EmulatedStackFrame.Range.of(delegate.type(), 0, arrayOffset);
+            writer = new StackFrameWriter();
+            reader = new StackFrameReader();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            // Create a new stack frame for the callee.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+
+            // Copy all arguments except for the trailing array argument.
+            callerFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
+
+            // Attach the writer, prepare to spread the trailing array arguments into
+            // the callee frame.
+            writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            reader.attach(callerFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+
+            switch (arrayTypeChar) {
+                case 'L': {
+                    // Reference arrays are the only case where the component type of the
+                    // array we construct might differ from the type of the reference we read
+                    // from the stack frame.
+                    final Class<?> targetType = target.type().ptypes()[arrayOffset];
+                    final Class<?> targetComponentType = targetType.getComponentType();
+                    final Class<?> adapterComponentType = type().lastParameterType();
+
+                    Object[] arr = (Object[]) Array.newInstance(targetComponentType, numArrayArgs);
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        arr[i] = reader.nextReference(adapterComponentType);
+                    }
+
+                    writer.putNextReference(arr, targetType);
+                    break;
+                }
+                case 'I': {
+                    int[] array = new int[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextInt();
+                    }
+                    writer.putNextReference(array, int[].class);
+                    break;
+                }
+                case 'J': {
+                    long[] array = new long[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextLong();
+                    }
+                    writer.putNextReference(array, long[].class);
+                    break;
+                }
+                case 'B': {
+                    byte[] array = new byte[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextByte();
+                    }
+                    writer.putNextReference(array, byte[].class);
+                    break;
+                }
+                case 'S': {
+                    short[] array = new short[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextShort();
+                    }
+                    writer.putNextReference(array, short[].class);
+                    break;
+                }
+                case 'C': {
+                    char[] array = new char[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextChar();
+                    }
+                    writer.putNextReference(array, char[].class);
+                    break;
+                }
+                case 'Z': {
+                    boolean[] array = new boolean[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextBoolean();
+                    }
+                    writer.putNextReference(array, boolean[].class);
+                    break;
+                }
+                case 'F': {
+                    float[] array = new float[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextFloat();
+                    }
+                    writer.putNextReference(array, float[].class);
+                    break;
+                }
+                case 'D': {
+                    double[] array = new double[numArrayArgs];
+                    for (int i = 0; i < numArrayArgs; ++i) {
+                        array[i] = reader.nextDouble();
+                    }
+                    writer.putNextReference(array, double[].class);
+                    break;
+                }
+            }
+
+            target.invoke(targetFrame);
+            targetFrame.copyReturnValueTo(callerFrame);
         }
     }
 }
