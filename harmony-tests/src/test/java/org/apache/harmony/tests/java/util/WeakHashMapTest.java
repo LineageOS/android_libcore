@@ -545,6 +545,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
         assertTrue(keys.spliterator().hasCharacteristics(Spliterator.DISTINCT));
 
         SpliteratorTester.runDistinctTests(keys);
+        SpliteratorTester.assertSupportsTrySplit(keys);
     }
 
     public void test_spliterator_valueSet() {
@@ -608,6 +609,7 @@ public class WeakHashMapTest extends junit.framework.TestCase {
         assertTrue(values.spliterator().hasCharacteristics(Spliterator.DISTINCT));
 
         SpliteratorTester.runDistinctTests(values);
+        SpliteratorTester.assertSupportsTrySplit(values);
     }
 
     /**
