@@ -1006,8 +1006,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
     public MethodHandle asCollector(Class<?> arrayType, int arrayLength) {
         asCollectorChecks(arrayType, arrayLength);
 
-        // Android-changed, TODO(narayan): Implement asCollector, remove @hide.
-        throw new UnsupportedOperationException("asCollector(Class<?>, int)");
+        return new Transformers.Collector(this, arrayType, arrayLength);
     }
 
     /**
