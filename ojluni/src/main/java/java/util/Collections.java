@@ -1236,7 +1236,6 @@ public class Collections {
      *        returned
      * @return an unmodifiable view of the specified navigable set
      * @since 1.8
-     * @hide
      */
     public static <T> NavigableSet<T> unmodifiableNavigableSet(NavigableSet<T> s) {
         return new UnmodifiableNavigableSet<>(s);
@@ -1869,7 +1868,6 @@ public class Collections {
      *        returned
      * @return an unmodifiable view of the specified navigable map
      * @since 1.8
-     * @hide
      */
     public static <K,V> NavigableMap<K,V> unmodifiableNavigableMap(NavigableMap<K, ? extends V> m) {
         return new UnmodifiableNavigableMap<>(m);
@@ -2316,7 +2314,6 @@ public class Collections {
      * set
      * @return a synchronized view of the specified navigable set
      * @since 1.8
-     * @hide
      */
     public static <T> NavigableSet<T> synchronizedNavigableSet(NavigableSet<T> s) {
         return new SynchronizedNavigableSet<>(s);
@@ -2880,7 +2877,6 @@ public class Collections {
      *              map
      * @return a synchronized view of the specified navigable map.
      * @since 1.8
-     * @hide
      */
     public static <K,V> NavigableMap<K,V> synchronizedNavigableMap(NavigableMap<K,V> m) {
         return new SynchronizedNavigableMap<>(m);
@@ -3206,7 +3202,6 @@ public class Collections {
      * @param type the type of element that {@code queue} is permitted to hold
      * @return a dynamically typesafe view of the specified queue
      * @since 1.8
-     * @hide
      */
     public static <E> Queue<E> checkedQueue(Queue<E> queue, Class<E> type) {
         return new CheckedQueue<>(queue, type);
@@ -3371,7 +3366,6 @@ public class Collections {
      * @param type the type of element that {@code s} is permitted to hold
      * @return a dynamically typesafe view of the specified navigable set
      * @since 1.8
-     * @hide
      */
     public static <E> NavigableSet<E> checkedNavigableSet(NavigableSet<E> s,
                                                     Class<E> type) {
@@ -4070,7 +4064,6 @@ public class Collections {
      * @param valueType the type of value that {@code m} is permitted to hold
      * @return a dynamically typesafe view of the specified map
      * @since 1.8
-     * @hide
      */
     public static <K,V> NavigableMap<K,V> checkedNavigableMap(NavigableMap<K, V> m,
                                                         Class<K> keyType,
@@ -4413,7 +4406,6 @@ public class Collections {
      * @param <E> type of elements, if there were any, in the set
      * @return the empty sorted set
      * @since 1.8
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static <E> SortedSet<E> emptySortedSet() {
@@ -4435,7 +4427,6 @@ public class Collections {
      * @param <E> type of elements, if there were any, in the set
      * @return the empty navigable set
      * @since 1.8
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static <E> NavigableSet<E> emptyNavigableSet() {
@@ -4589,7 +4580,6 @@ public class Collections {
      * @param <V> the class of the map values
      * @return an empty sorted map
      * @since 1.8
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static final <K,V> SortedMap<K,V> emptySortedMap() {
@@ -4611,7 +4601,6 @@ public class Collections {
      * @param <V> the class of the map values
      * @return an empty navigable map
      * @since 1.8
-     * @hide
      */
     @SuppressWarnings("unchecked")
     public static final <K,V> NavigableMap<K,V> emptyNavigableMap() {
