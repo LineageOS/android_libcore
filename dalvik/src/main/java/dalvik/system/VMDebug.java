@@ -172,11 +172,26 @@ public final class VMDebug {
      * FileDescriptor in which the trace is written.  The file name is also
      * supplied simply for logging.  Makes a dup of the file descriptor.
      */
-    public static void startMethodTracing(String traceFileName, FileDescriptor fd, int bufferSize, int flags, boolean samplingEnabled, int intervalUs) {
+    public static void startMethodTracing(String traceFileName, FileDescriptor fd, int bufferSize,
+                                          int flags, boolean samplingEnabled, int intervalUs) {
+        startMethodTracing(traceFileName, fd, bufferSize, flags, samplingEnabled, intervalUs,
+                           false);
+    }
+
+    /**
+     * Like startMethodTracing(String, int, int), but taking an already-opened
+     * FileDescriptor in which the trace is written.  The file name is also
+     * supplied simply for logging.  Makes a dup of the file descriptor.
+     * Streams tracing data to the file if streamingOutput is true.
+     */
+    public static void startMethodTracing(String traceFileName, FileDescriptor fd, int bufferSize,
+                                          int flags, boolean samplingEnabled, int intervalUs,
+                                          boolean streamingOutput) {
         if (fd == null) {
             throw new NullPointerException("fd == null");
         }
-        startMethodTracingFd(traceFileName, fd, checkBufferSize(bufferSize), flags, samplingEnabled, intervalUs);
+        startMethodTracingFd(traceFileName, fd, checkBufferSize(bufferSize), flags,
+                             samplingEnabled, intervalUs, streamingOutput);
     }
 
     /**
@@ -200,7 +215,7 @@ public final class VMDebug {
     }
 
     private static native void startMethodTracingDdmsImpl(int bufferSize, int flags, boolean samplingEnabled, int intervalUs);
-    private static native void startMethodTracingFd(String traceFileName, FileDescriptor fd, int bufferSize, int flags, boolean samplingEnabled, int intervalUs);
+    private static native void startMethodTracingFd(String traceFileName, FileDescriptor fd, int bufferSize, int flags, boolean samplingEnabled, int intervalUs, boolean streamingOutput);
     private static native void startMethodTracingFilename(String traceFileName, int bufferSize, int flags, boolean samplingEnabled, int intervalUs);
 
     /**
