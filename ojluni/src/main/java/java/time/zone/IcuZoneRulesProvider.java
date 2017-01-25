@@ -16,6 +16,7 @@
 package java.time.zone;
 
 import android.icu.impl.OlsonTimeZone;
+import android.icu.impl.ZoneMeta;
 import android.icu.util.AnnualTimeZoneRule;
 import android.icu.util.DateTimeRule;
 import android.icu.util.InitialTimeZoneRule;
@@ -53,7 +54,13 @@ public class IcuZoneRulesProvider extends ZoneRulesProvider {
 
     @Override
     protected Set<String> provideZoneIds() {
-        return new HashSet<>(Arrays.asList(TimeZone.getAvailableIDs()));
+        Set<String> zoneIds = ZoneMeta.getAvailableIDs(TimeZone.SystemTimeZoneType.ANY, null, null);
+        zoneIds = new HashSet<>(zoneIds);
+        // java.time assumes ZoneId that start with "GMT" fit the pattern "GMT+HH:mm:ss" which these
+        // do not. Since they are equivalent to GMT, just remove these aliases.
+        zoneIds.remove("GMT+0");
+        zoneIds.remove("GMT-0");
+        return zoneIds;
     }
 
     @Override
@@ -90,7 +97,7 @@ public class IcuZoneRulesProvider extends ZoneRulesProvider {
      *
      * These assumptions are verified using the verify() method where appropriate.
      */
-    protected static ZoneRules generateZoneRules(String zoneId) {
+    static ZoneRules generateZoneRules(String zoneId) {
         TimeZone timeZone = TimeZone.getFrozenTimeZone(zoneId);
         // Assumption #0
         verify(timeZone instanceof OlsonTimeZone, zoneId,
