@@ -42,13 +42,9 @@ package java.util;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.security.AccessControlContext;
-import java.security.AccessController;
 import java.security.PermissionCollection;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.security.ProtectionDomain;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
@@ -1651,6 +1647,14 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                                        Locale aLocale)
     {
         return createCalendar(zone, aLocale);
+    }
+
+    /**
+     * Create a Japanese Imperial Calendar.
+     * @hide
+     */
+    public static Calendar getJapanesImperialInstance(TimeZone zone, Locale aLocale) {
+        return new JapaneseImperialCalendar(zone, aLocale);
     }
 
     private static Calendar createCalendar(TimeZone zone,

@@ -1350,6 +1350,7 @@ openjdk_java_files := \
     ojluni/src/main/java/java/beans/ChangeListenerMap.java \
     ojluni/src/main/java/java/time/zone/IcuZoneRulesProvider.java \
     ojluni/src/main/java/java/time/zone/ZoneRulesProvider.java \
+    ojluni/src/main/java/java/util/JapaneseImperialCalendar.java \
     ojluni/src/main/java/sun/misc/FDBigInteger.java \
     ojluni/src/main/java/sun/misc/FloatingDecimal.java \
     ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java \
