@@ -3923,6 +3923,12 @@ public final class DateTimeFormatterBuilder {
                 return position;
             }
 
+            // Android-changed: "GMT0" is considered a valid ZoneId.
+            if (text.charAt(position) == '0' && prefix.equals("GMT")) {
+                context.setParsed(ZoneId.of("GMT0"));
+                return position + 1;
+            }
+
             // '0' or 'Z' after prefix is not part of a valid ZoneId; use bare prefix
             if (text.charAt(position) == '0' ||
                 context.charEquals(text.charAt(position), 'Z')) {
