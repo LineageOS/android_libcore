@@ -394,7 +394,8 @@ public final class JapaneseDate
 
     @Override
     public int lengthOfYear() {
-        Calendar jcal = Calendar.getInstance(JapaneseChronology.LOCALE);
+        // Android-changed: use #createCalendar() to create calendar.
+        Calendar jcal = JapaneseChronology.createCalendar();
         jcal.set(Calendar.ERA, era.getValue() + JapaneseEra.ERA_OFFSET);
         jcal.set(yearOfEra, isoDate.getMonthValue() - 1, isoDate.getDayOfMonth());
         return  jcal.getActualMaximum(Calendar.DAY_OF_YEAR);
@@ -449,7 +450,8 @@ public final class JapaneseDate
                     case DAY_OF_MONTH: return ValueRange.of(1, lengthOfMonth());
                     case DAY_OF_YEAR: return ValueRange.of(1, lengthOfYear());
                     case YEAR_OF_ERA: {
-                        Calendar jcal = Calendar.getInstance(JapaneseChronology.LOCALE);
+                        // Android-changed: use #createCalendar() to create calendar.
+                        Calendar jcal = JapaneseChronology.createCalendar();
                         jcal.set(Calendar.ERA, era.getValue() + JapaneseEra.ERA_OFFSET);
                         jcal.set(yearOfEra, isoDate.getMonthValue() - 1, isoDate.getDayOfMonth());
                         return ValueRange.of(1, jcal.getActualMaximum(Calendar.YEAR));
@@ -481,7 +483,8 @@ public final class JapaneseDate
                 case ERA:
                     return era.getValue();
                 case DAY_OF_YEAR:
-                    Calendar jcal = Calendar.getInstance(JapaneseChronology.LOCALE);
+                    // Android-changed: use #createCalendar() to create calendar.
+                    Calendar jcal = JapaneseChronology.createCalendar();
                     jcal.set(Calendar.ERA, era.getValue() + JapaneseEra.ERA_OFFSET);
                     jcal.set(yearOfEra, isoDate.getMonthValue() - 1, isoDate.getDayOfMonth());
                     return jcal.get(Calendar.DAY_OF_YEAR);
