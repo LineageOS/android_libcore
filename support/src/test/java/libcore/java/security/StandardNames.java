@@ -321,10 +321,7 @@ public final class StandardNames extends Assert {
 
         // Not documented as in RI 6 but mentioned in Standard Names
         provide("AlgorithmParameters", "PBE");
-        // Android does not support SSLv3
-        if (IS_RI) {
-            provide("SSLContext", "SSL");
-        }
+        provide("SSLContext", "SSL");
         provide("SSLContext", "TLS");
 
         // Not documented as in RI 6 but that exist in RI 6
