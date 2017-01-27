@@ -406,6 +406,10 @@ public class Transformers {
             this.callerRange = EmulatedStackFrame.Range.all(type());
         }
 
+        MethodHandle getConstructorHandle() {
+            return constructorHandle;
+        }
+
         private static boolean isAbstract(Class<?> klass) {
             return (klass.getModifiers() & Modifier.ABSTRACT) == Modifier.ABSTRACT;
         }
