@@ -137,8 +137,10 @@ public class MethodHandles {
      */
     public static <T extends Member> T
     reflectAs(Class<T> expected, MethodHandle target) {
-        // TODO: Implement reflectAs, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.reflectAs is not implemented.");
+        MethodHandleImpl directTarget = getMethodHandleImpl(target);
+        // Given that this is specified to be an "unchecked" crack, we can directly allocate
+        // a member from the underlying ArtField / Method and bypass all associated access checks.
+        return (T) directTarget.getMemberInternal();
     }
 
     /**
@@ -1551,11 +1553,17 @@ return mh1;
          * @hide
          */
         public MethodHandleInfo revealDirect(MethodHandle target) {
-            // TODO(narayan): Implement revealDirect, remove @hide.
-            //
-            // Notes: Only works for direct method handles. Must check access.
-            //
-            throw new UnsupportedOperationException("MethodHandles.Lookup.revealDirect is not implemented");
+            MethodHandleImpl directTarget = getMethodHandleImpl(target);
+            MethodHandleInfo info = directTarget.reveal();
+
+            try {
+                checkAccess(lookupClass(), info.getDeclaringClass(), info.getModifiers(),
+                        info.getName());
+            } catch (IllegalAccessException exception) {
+                throw new IllegalArgumentException("Unable to access memeber.", exception);
+            }
+
+            return info;
         }
 
         private boolean hasPrivateAccess() {
@@ -1659,6 +1667,29 @@ return mh1;
                 throw new NoSuchMethodException(method.getName() + methodType);
             }
         }
+    }
+
+    /**
+     * "Cracks" {@code target} to reveal the underlying {@code MethodHandleImpl}.
+     */
+    private static MethodHandleImpl getMethodHandleImpl(MethodHandle target) {
+        // Special case : We implement handles to constructors as transformers,
+        // so we must extract the underlying handle from the transformer.
+        if (target instanceof Transformers.Construct) {
+            target = ((Transformers.Construct) target).getConstructorHandle();
+        }
+
+        // Special case: Var-args methods are also implemented as Transformers,
+        // so we should get the underlying handle in that case as well.
+        if (target instanceof Transformers.VarargsCollector) {
+            target = target.asFixedArity();
+        }
+
+        if (target instanceof MethodHandleImpl) {
+            return (MethodHandleImpl) target;
+        }
+
+        throw new IllegalArgumentException(target + " is not a direct handle");
     }
 
     /**
