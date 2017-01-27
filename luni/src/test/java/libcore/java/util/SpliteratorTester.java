@@ -18,14 +18,18 @@ package libcore.java.util;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.List;
 import java.util.Locale;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
+import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterator.SIZED;
 import static java.util.Spliterator.SUBSIZED;
 import static junit.framework.Assert.assertEquals;
@@ -171,34 +175,54 @@ public class SpliteratorTester {
         runBasicSplitTests(spliterable.spliterator(), expectedElements, comparator);
     }
 
+    private static<T> List<T> toList(Iterator<T> iterator) {
+        List<T> result = new ArrayList<>();
+        while (iterator.hasNext()) {
+            result.add(iterator.next());
+        }
+        return result;
+    }
+
+    private static<T> List<T> toList(Spliterator<T> spliterator) {
+        List<T> result = new ArrayList<>();
+        spliterator.forEachRemaining(value -> result.add(value));
+        return result;
+    }
+
     public static <T> void runOrderedTests(Iterable<T> spliterable) {
-        ArrayList<T> iteration1 = new ArrayList<>();
-        ArrayList<T> iteration2 = new ArrayList<>();
+        List<T> elements = toList(spliterable.spliterator());
+        assertEquals("Ordering should be consistent", elements, toList(spliterable.spliterator()));
 
-        spliterable.spliterator().forEachRemaining(value -> iteration1.add(value));
-        spliterable.spliterator().forEachRemaining(value -> iteration2.add(value));
+        // NOTE: This would fail for some Collections because of b/34757089:
+        // assertTrue(spliterable.spliterator().hasCharacteristics(ORDERED));
 
-        assertEquals(iteration1, iteration2);
+        if (spliterable instanceof Collection) {
+            assertEquals("ORDERED Spliterator must be consistent with Iterator: "
+                            + spliterable.getClass(), elements, toList(spliterable.iterator()));
+        }
 
-        iteration1.clear();
-        iteration2.clear();
-
-        // trySplit() may always return null, but is only required to when empty
         boolean isEmpty = !spliterable.iterator().hasNext();
-        Spliterator<T> sa = spliterable.spliterator().trySplit();
-        Spliterator<T> sb = spliterable.spliterator().trySplit();
+
+        Spliterator<T> sa = spliterable.spliterator();
+        Spliterator<T> sb = spliterable.spliterator();
+        Spliterator<T> saSplit = sa.trySplit();
+        Spliterator<T> sbSplit = sb.trySplit();
+        // trySplit() may always return null, but is only required to when empty
         if (isEmpty) {
-            assertNull(sa);
-            assertNull(sb);
+            assertNull(saSplit);
+            assertNull(sbSplit);
         } else {
-            // A non-empty Iterable may still return null. We don't assert
-            // anything if sa == null.
-            // To enforce that a particular non-empty Iterable doesn't
-            // return null, use assertSupportsTrySplit(Iterable).
-            if (sa != null) {
-                sa.forEachRemaining(value -> iteration1.add(value));
-                sb.forEachRemaining(value -> iteration2.add(value));
-                assertEquals(iteration1, iteration2);
+            // A non-empty Iterable may still return null from trySplit();
+            // if it does, then the un-split parent spliterators (sa, sb) must
+            // each still contain all of the elements. Regardless of whether
+            // the split was successful, sa and sb must behave the consistently
+            // with each other since they came from the same Iterable.
+            if (saSplit != null) {
+                assertEquals(toList(saSplit), toList(sbSplit));
+                assertEquals(toList(sa), toList(sb));
+            } else {
+                assertEquals(elements, toList(sa));
+                assertEquals(elements, toList(sb));
             }
         }
     }
