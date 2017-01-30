@@ -43,6 +43,11 @@ import java.util.Map;
  */
 public class CalendarDataUtility {
 
+    private static final String ISLAMIC_CALENDAR = "islamic";
+    private static final String GREGORIAN_CALENDAR = "gregorian";
+    private static final String BUDDHIST_CALENDAR = "buddhist";
+    private static final String JAPANESE_CALENDAR = "japanese";
+
     // No instantiation
     private CalendarDataUtility() {
     }
@@ -53,6 +58,25 @@ public class CalendarDataUtility {
     public static String retrieveFieldValueName(String id, int field, int value, int style,
             Locale locale) {
         // Android-changed: delegate to ICU.
+        if (field == Calendar.ERA) {
+            // For era the field value does not always equal the index into the names array.
+            switch (normalizeCalendarType(id)) {
+                // These calendars have only one era, but represented it by the value 1.
+                case BUDDHIST_CALENDAR:
+                case ISLAMIC_CALENDAR:
+                    value -= 1;
+                    break;
+                case JAPANESE_CALENDAR:
+                    // CLDR contains full data for historical eras, java.time only supports the 4
+                    // modern eras and numbers the modern eras starting with 1 (MEIJI). There are
+                    // 232 historical eras in CLDR/ICU so to get the real offset, we add 231.
+                    value += 231;
+                    break;
+                default:
+                    // Other eras use 0-based values (e.g. 0=BCE, 1=CE for gregorian).
+                    break;
+            }
+        }
         if (value < 0) {
             return null;
         }
@@ -69,14 +93,60 @@ public class CalendarDataUtility {
         return retrieveFieldValueName(id, field, value, style, locale);
     }
 
+    // ALL_STYLES implies SHORT_FORMAT and all of these values.
+    private static int[] REST_OF_STYLES = {
+            SHORT_STANDALONE, LONG_FORMAT, LONG_STANDALONE,
+            NARROW_FORMAT, NARROW_STANDALONE
+    };
+
     public static Map<String, Integer> retrieveFieldValueNames(String id, int field, int style,
             Locale locale) {
-        // TODO: support ALL_STYLES
         // Android-changed: delegate to ICU.
+        Map<String, Integer> names;
+        if (style == ALL_STYLES) {
+            names = retrieveFieldValueNamesImpl(id, field, SHORT_FORMAT, locale);
+            for (int st : REST_OF_STYLES) {
+                names.putAll(retrieveFieldValueNamesImpl(id, field, st, locale));
+            }
+        } else {
+            // specific style
+            names = retrieveFieldValueNamesImpl(id, field, style, locale);
+        }
+        return names.isEmpty() ? null : names;
+    }
+
+    private static Map<String, Integer> retrieveFieldValueNamesImpl(String id, int field, int style,
+            Locale locale) {
         String[] names = getNames(id, field, style, locale);
+        int skipped = 0;
+        int offset = 0;
+        if (field == Calendar.ERA) {
+            // See retrieveFieldValueName() for explanation of this code and the values used.
+            switch (normalizeCalendarType(id)) {
+                case BUDDHIST_CALENDAR:
+                case ISLAMIC_CALENDAR:
+                    offset = 1;
+                    break;
+                case JAPANESE_CALENDAR:
+                    skipped = 232;
+                    offset = -231;
+                    break;
+                default:
+                    break;
+            }
+        }
         Map<String, Integer> result = new LinkedHashMap<>();
-        for (int i = 0; i < names.length; i++) {
-            result.put(names[i], i);
+        for (int i = skipped; i < names.length; i++) {
+            if (names[i].isEmpty()) {
+                continue;
+            }
+
+            if (result.put(names[i], i + offset) != null) {
+                // Duplicate names indicate that the names would be ambiguous. Skip this style for
+                // ALL_STYLES. In other cases this results in null being returned in
+                // retrieveValueNames(), which is required by Calendar.getDisplayNames().
+                return new LinkedHashMap<>();
+            }
         }
         return result;
     }
@@ -156,14 +226,14 @@ public class CalendarDataUtility {
         }
     }
 
-    static String normalizeCalendarType(String requestID) {
+    private static String normalizeCalendarType(String requestID) {
         String type;
         // Android-changed: normalize "gregory" to "gregorian", not the other way around.
         // See android.icu.text.DateFormatSymbols.CALENDAR_CLASSES for reference.
         if (requestID.equals("gregory") || requestID.equals("iso8601")) {
-            type = "gregorian";
-        } else if (requestID.startsWith("islamic")) {
-            type = "islamic";
+            type = GREGORIAN_CALENDAR;
+        } else if (requestID.startsWith(ISLAMIC_CALENDAR)) {
+            type = ISLAMIC_CALENDAR;
         } else {
             type = requestID;
         }

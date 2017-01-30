@@ -77,7 +77,10 @@ public class TestServiceLoader {
     @Test
     public void test_copticServiceLoader() {
         Map<String, Chronology> chronos = new HashMap<>();
-        ServiceLoader<Chronology> loader = ServiceLoader.load(Chronology.class, null);
+        // Android-changed: This test assumes that the system classloader sees all test classes.
+        // That assumption is untrue, when run in CTS. Use this class's classloader instead.
+        ServiceLoader<Chronology> loader = ServiceLoader.load(Chronology.class,
+                getClass().getClassLoader());
         for (Chronology chrono : loader) {
             chronos.put(chrono.getId(), chrono);
         }
