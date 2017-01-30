@@ -343,8 +343,9 @@ public class InetAddressTest extends junit.framework.TestCase {
         } catch (IllegalArgumentException e) {
             // correct
         }
-        // tests nowhere
-        ia = Inet4Address.getByName("1.1.1.1");
+        // tests nowhere using an address from the  'IPv4 Address Blocks Reserved for Documentation'
+        // as specified in https://tools.ietf.org/html/rfc5737
+        ia = Inet4Address.getByName("192.0.2.1");
         assertFalse(ia.isReachable(1000));
         assertFalse(ia.isReachable(null, 0, 1000));
 
