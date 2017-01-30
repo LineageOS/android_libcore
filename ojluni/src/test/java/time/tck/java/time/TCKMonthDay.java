@@ -94,7 +94,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -104,10 +104,13 @@ import org.testng.annotations.Test;
 @Test
 public class TCKMonthDay extends AbstractDateTimeTest {
 
-    private MonthDay TEST_07_15;
+    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static MonthDay TEST_07_15;
 
-    @BeforeMethod
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TEST_07_15 = MonthDay.of(7, 15);
     }
 
