@@ -126,7 +126,7 @@ import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -139,7 +139,10 @@ public class TCKLocalTime extends AbstractDateTimeTest {
     private static final ZoneOffset OFFSET_PTWO = ZoneOffset.ofHours(2);
     private static final ZoneId ZONE_PARIS = ZoneId.of("Europe/Paris");
 
-    private LocalTime TEST_12_30_40_987654321;
+    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static LocalTime TEST_12_30_40_987654321;
 
     private static final TemporalUnit[] INVALID_UNITS;
     static {
@@ -147,8 +150,8 @@ public class TCKLocalTime extends AbstractDateTimeTest {
         INVALID_UNITS = set.toArray(new TemporalUnit[set.size()]);
     }
 
-    @BeforeMethod
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TEST_12_30_40_987654321 = LocalTime.of(12, 30, 40, 987654321);
     }
 

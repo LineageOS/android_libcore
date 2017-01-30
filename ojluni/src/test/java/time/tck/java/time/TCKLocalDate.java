@@ -121,7 +121,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import test.java.time.MockSimplePeriod;
@@ -138,16 +138,19 @@ public class TCKLocalDate extends AbstractDateTimeTest {
     private static final ZoneId ZONE_PARIS = ZoneId.of("Europe/Paris");
     private static final ZoneId ZONE_GAZA = ZoneId.of("Asia/Gaza");
 
-    private LocalDate TEST_2007_07_15;
-    private long MAX_VALID_EPOCHDAYS;
-    private long MIN_VALID_EPOCHDAYS;
-    private LocalDate MAX_DATE;
-    private LocalDate MIN_DATE;
-    private Instant MAX_INSTANT;
-    private Instant MIN_INSTANT;
+    // Android changed: These wer originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static LocalDate TEST_2007_07_15;
+    private static long MAX_VALID_EPOCHDAYS;
+    private static long MIN_VALID_EPOCHDAYS;
+    private static LocalDate MAX_DATE;
+    private static LocalDate MIN_DATE;
+    private static Instant MAX_INSTANT;
+    private static Instant MIN_INSTANT;
 
-    @BeforeMethod
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TEST_2007_07_15 = LocalDate.of(2007, 7, 15);
 
         LocalDate max = LocalDate.MAX;

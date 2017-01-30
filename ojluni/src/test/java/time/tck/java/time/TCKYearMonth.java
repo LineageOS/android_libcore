@@ -110,7 +110,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -120,10 +120,13 @@ import org.testng.annotations.Test;
 @Test
 public class TCKYearMonth extends AbstractDateTimeTest {
 
-    private YearMonth TEST_2008_06;
+    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
+    // since multiple test methods were run and the first one did not require this value.
+    private static YearMonth TEST_2008_06;
 
-    @BeforeMethod
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() {
         TEST_2008_06 = YearMonth.of(2008, 6);
     }
 
