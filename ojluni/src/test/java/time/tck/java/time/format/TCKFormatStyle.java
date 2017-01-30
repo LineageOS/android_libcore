@@ -93,15 +93,16 @@ public class TCKFormatStyle {
     @DataProvider(name="formatStyle")
     Object[][] data_formatStyle() {
         return new Object[][] {
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.FULL, "Tuesday, October 2, 2001 1:02:03 AM CEST Europe/Paris"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.LONG, "October 2, 2001 1:02:03 AM CEST Europe/Paris"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.MEDIUM, "Oct 2, 2001 1:02:03 AM Europe/Paris"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.SHORT, "10/2/01 1:02 AM Europe/Paris"},
+                // Android-changed: date/time patterns changed in new CLDR; adapt to UK locale.
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.FULL, "Tuesday, 2 October 2001 at 01:02:03 Central European Summer Time Europe/Paris"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.LONG, "2 October 2001 at 01:02:03 CEST Europe/Paris"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.MEDIUM, "2 Oct 2001, 01:02:03 Europe/Paris"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), ZONEID_PARIS), FormatStyle.SHORT, "02/10/2001, 01:02 Europe/Paris"},
 
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.FULL, "Tuesday, October 2, 2001 1:02:03 AM +02:00 +02:00"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.LONG, "October 2, 2001 1:02:03 AM +02:00 +02:00"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.MEDIUM, "Oct 2, 2001 1:02:03 AM +02:00"},
-                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.SHORT, "10/2/01 1:02 AM +02:00"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.FULL, "Tuesday, 2 October 2001 at 01:02:03 +02:00 +02:00"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.LONG, "2 October 2001 at 01:02:03 +02:00 +02:00"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.MEDIUM, "2 Oct 2001, 01:02:03 +02:00"},
+                {ZonedDateTime.of(LocalDateTime.of(2001, 10, 2, 1, 2, 3), OFFSET_PTWO), FormatStyle.SHORT, "02/10/2001, 01:02 +02:00"},
         };
     }
 
@@ -109,7 +110,8 @@ public class TCKFormatStyle {
     public void test_formatStyle(Temporal temporal, FormatStyle style, String formattedStr) {
         DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder();
         DateTimeFormatter formatter = builder.appendLocalized(style, style).appendLiteral(" ").appendZoneOrOffsetId().toFormatter();
-        formatter = formatter.withLocale(Locale.US);
+        // Android-changed: Use a locale that actually uses "CEST" as short form of Europe/Paris.
+        formatter = formatter.withLocale(Locale.UK);
         assertEquals(formatter.format(temporal), formattedStr);
     }
 }
