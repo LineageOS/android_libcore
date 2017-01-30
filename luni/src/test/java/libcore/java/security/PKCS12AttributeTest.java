@@ -14,11 +14,12 @@
  * limitations under the License
  */
 
-package java.security;
+package libcore.java.security;
 
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.security.PKCS12Attribute;
 import java.util.Arrays;
 
 
