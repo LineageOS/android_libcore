@@ -123,7 +123,8 @@ public class TestChronoField {
     public void test_IsoFields_week_based_year() {
         Locale locale = Locale.US;
         String name = IsoFields.WEEK_OF_WEEK_BASED_YEAR.getDisplayName(locale);
-        assertEquals(name, "Week");
+        // Android-changed: week is lower-case in CLDR.
+        assertEquals(name, "week");
     }
 
     @Test(expectedExceptions=NullPointerException.class)
@@ -136,7 +137,8 @@ public class TestChronoField {
         Locale locale = Locale.US;
         TemporalField weekOfYearField = WeekFields.SUNDAY_START.weekOfYear();
         String name = weekOfYearField.getDisplayName(locale);
-        assertEquals(name, "Week");
+        // Android-changed: week is lower-case in CLDR.
+        assertEquals(name, "week");
     }
 
     @Test(expectedExceptions=NullPointerException.class)
