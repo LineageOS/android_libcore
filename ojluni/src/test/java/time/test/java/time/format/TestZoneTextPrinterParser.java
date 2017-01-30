@@ -46,6 +46,7 @@ import jdk.testlibrary.RandomFactory;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import android.icu.impl.ZoneMeta;
 
 /*
  * @test
@@ -67,7 +68,8 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
 
     public void test_printText() {
         Random r = RandomFactory.getRandom();
-        int N = 8;
+        // Android changed: only run one iteration.
+        int N = 1;
         Locale[] locales = Locale.getAvailableLocales();
         Set<String> zids = ZoneRulesProvider.getAvailableZoneIds();
         ZonedDateTime zdt = ZonedDateTime.now();
@@ -76,14 +78,29 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
         while (N-- > 0) {
             zdt = zdt.withDayOfYear(r.nextInt(365) + 1)
                      .with(ChronoField.SECOND_OF_DAY, r.nextInt(86400));
-            for (String zid : zids) {
-                if (zid.equals("ROC") || zid.startsWith("Etc/GMT")) {
-                    continue;      // TBD: match jdk behavior?
+            // Android-changed: loop over locales first to speed up test. TimeZoneNames are cached
+            // per locale, but the cache only holds the most recently used locales.
+            for (Locale locale : locales) {
+                // Android-changed: "ji" isn't correctly aliased to "yi", see http//b/8634320.
+                if (locale.getLanguage().equals("ji")) {
+                    continue;
                 }
-                zdt = zdt.withZoneSameLocal(ZoneId.of(zid));
-                TimeZone tz = TimeZone.getTimeZone(zid);
-                boolean isDST = tz.inDaylightTime(new Date(zdt.toInstant().toEpochMilli()));
-                for (Locale locale : locales) {
+                for (String zid : zids) {
+                    if (zid.equals("ROC") || zid.startsWith("Etc/GMT")) {
+                        continue;      // TBD: match jdk behavior?
+                    }
+                    // Android-changed (http://b/33197219): TimeZone.getDisplayName() for
+                    // non-canonical time zones are not correct.
+                    if (!zid.equals(ZoneMeta.getCanonicalCLDRID(zid))) {
+                        continue;
+                    }
+                    zdt = zdt.withZoneSameLocal(ZoneId.of(zid));
+                    TimeZone tz = TimeZone.getTimeZone(zid);
+                    // Android-changed: We don't have long names for GMT.
+                    if (tz.getID().equals("GMT")) {
+                        continue;
+                    }
+                    boolean isDST = tz.inDaylightTime(new Date(zdt.toInstant().toEpochMilli()));
                     printText(locale, zdt, TextStyle.FULL, tz,
                             tz.getDisplayName(isDST, TimeZone.LONG, locale));
                     printText(locale, zdt, TextStyle.SHORT, tz,
@@ -95,6 +112,10 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
 
     private void printText(Locale locale, ZonedDateTime zdt, TextStyle style, TimeZone zone, String expected) {
         String result = getFormatter(locale, style).format(zdt);
+        // Android-changed: TimeZone.getDisplayName() will never return "GMT".
+        if (result.startsWith("GMT") && expected.equals("GMT+00:00")) {
+            return;
+        }
         if (!result.equals(expected)) {
             if (result.equals("FooLocation")) { // from rules provider test if same vm
                 return;
@@ -107,6 +128,8 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
         assertEquals(result, expected);
     }
 
+    // Android-changed: disable test as it doesn't assert anything and produces a lot of output.
+    @Test(enabled = false)
     public void test_ParseText() {
         Locale[] locales = new Locale[] { Locale.ENGLISH, Locale.JAPANESE, Locale.FRENCH };
         Set<String> zids = ZoneRulesProvider.getAvailableZoneIds();
