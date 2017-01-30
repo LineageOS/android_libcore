@@ -14,10 +14,11 @@
  * limitations under the License
  */
 
-package java.security;
+package libcore.java.security;
 
 import junit.framework.TestCase;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
 
