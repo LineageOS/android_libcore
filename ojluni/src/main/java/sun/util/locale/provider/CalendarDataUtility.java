@@ -43,6 +43,11 @@ import java.util.Map;
  */
 public class CalendarDataUtility {
 
+    private static final String ISLAMIC_CALENDAR = "islamic";
+    private static final String GREGORIAN_CALENDAR = "gregorian";
+    private static final String BUDDHIST_CALENDAR = "buddhist";
+    private static final String JAPANESE_CALENDAR = "japanese";
+
     // No instantiation
     private CalendarDataUtility() {
     }
@@ -53,6 +58,25 @@ public class CalendarDataUtility {
     public static String retrieveFieldValueName(String id, int field, int value, int style,
             Locale locale) {
         // Android-changed: delegate to ICU.
+        if (field == Calendar.ERA) {
+            // For era the field value does not always equal the index into the names array.
+            switch (normalizeCalendarType(id)) {
+                // These calendars have only one era, but represented it by the value 1.
+                case BUDDHIST_CALENDAR:
+                case ISLAMIC_CALENDAR:
+                    value -= 1;
+                    break;
+                case JAPANESE_CALENDAR:
+                    // CLDR contains full data for historical eras, java.time only supports the 4
+                    // modern eras and numbers the modern eras starting with 1 (MEIJI). There are
+                    // 232 historical eras in CLDR/ICU so to get the real offset, we add 231.
+                    value += 231;
+                    break;
+                default:
+                    // Other eras use 0-based values (e.g. 0=BCE, 1=CE for gregorian).
+                    break;
+            }
+        }
         if (value < 0) {
             return null;
         }
@@ -75,8 +99,28 @@ public class CalendarDataUtility {
         // Android-changed: delegate to ICU.
         String[] names = getNames(id, field, style, locale);
         Map<String, Integer> result = new LinkedHashMap<>();
-        for (int i = 0; i < names.length; i++) {
-            result.put(names[i], i);
+        int skipped = 0;
+        int offset = 0;
+        if (field == Calendar.ERA) {
+            // See retrieveFieldValueName() for explanation of this code and the values used.
+            switch (normalizeCalendarType(id)) {
+                case BUDDHIST_CALENDAR:
+                case ISLAMIC_CALENDAR:
+                    offset = 1;
+                    break;
+                case JAPANESE_CALENDAR:
+                    skipped = 232;
+                    offset = -231;
+                    break;
+                default:
+                    break;
+            }
+        }
+        for (int i = skipped; i < names.length; i++) {
+            if (names[i].isEmpty()) {
+                continue;
+            }
+            result.put(names[i], i + offset);
         }
         return result;
     }
@@ -161,9 +205,9 @@ public class CalendarDataUtility {
         // Android-changed: normalize "gregory" to "gregorian", not the other way around.
         // See android.icu.text.DateFormatSymbols.CALENDAR_CLASSES for reference.
         if (requestID.equals("gregory") || requestID.equals("iso8601")) {
-            type = "gregorian";
-        } else if (requestID.startsWith("islamic")) {
-            type = "islamic";
+            type = GREGORIAN_CALENDAR;
+        } else if (requestID.startsWith(ISLAMIC_CALENDAR)) {
+            type = ISLAMIC_CALENDAR;
         } else {
             type = requestID;
         }
