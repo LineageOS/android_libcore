@@ -215,7 +215,8 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	nist-pkix-tests \
 	slf4j-jdk14 \
 	sqlite-jdbc \
-	tzdata-testing
+	tzdata-testing \
+        junit-params
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -383,7 +384,8 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
         nist-pkix-tests-host \
         slf4j-jdk14-hostdex \
         sqlite-jdbc-host \
-        tzdata-testing-hostdex
+        tzdata-testing-hostdex \
+        junit-params-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
