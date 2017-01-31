@@ -45,11 +45,12 @@ import sun.net.www.ParseUtil;
 /* URL jar file is a common JarFile subtype used for JarURLConnection */
 public class URLJarFile extends JarFile {
 
-    /*
-     * Interface to be able to call retrieve() in plugin if
-     * this variable is set.
-     */
-    private static URLJarFileCallBack callback = null;
+// Android-changed: Removed setCallBack(URLJarFileCallBack) and field callback (dead code).
+//    /*
+//     * Interface to be able to call retrieve() in plugin if
+//     * this variable is set.
+//     */
+//    private static URLJarFileCallBack callback = null;
 
     /* Controller of the Jar File's closing */
     private URLJarFileCloseController closeController = null;
@@ -195,17 +196,18 @@ public class URLJarFile extends JarFile {
      * cached JAR file object.
      */
      private static JarFile retrieve(final URL url, final URLJarFileCloseController closeController) throws IOException {
-        /*
-         * See if interface is set, then call retrieve function of the class
-         * that implements URLJarFileCallBack interface (sun.plugin - to
-         * handle the cache failure for JARJAR file.)
-         */
-        if (callback != null)
-        {
-            return callback.retrieve(url);
-        }
-
-        else
+// Android-changed: Removed setCallBack(URLJarFileCallBack) and field callback (dead code).
+//        /*
+//         * See if interface is set, then call retrieve function of the class
+//         * that implements URLJarFileCallBack interface (sun.plugin - to
+//         * handle the cache failure for JARJAR file.)
+//         */
+//        if (callback != null)
+//        {
+//            return callback.retrieve(url);
+//        }
+//
+//        else
         {
 
             JarFile result = null;
@@ -239,15 +241,15 @@ public class URLJarFile extends JarFile {
         }
     }
 
-    /*
-     * Set the call back interface to call retrive function in sun.plugin
-     * package if plugin is running.
-     */
-    public static void setCallBack(URLJarFileCallBack cb)
-    {
-        callback = cb;
-    }
-
+// Android-changed: Removed setCallBack(URLJarFileCallBack) and field callback (dead code).
+//    /*
+//     * Set the call back interface to call retrive function in sun.plugin
+//     * package if plugin is running.
+//     */
+//    public static void setCallBack(URLJarFileCallBack cb)
+//    {
+//        callback = cb;
+//    }
 
     private class URLJarFileEntry extends JarEntry {
         private JarEntry je;
