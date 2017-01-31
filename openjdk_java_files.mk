@@ -1430,7 +1430,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/TransferProtocolClient.java \
     ojluni/src/main/java/sun/net/util/IPAddressUtil.java \
     ojluni/src/main/java/sun/net/util/URLUtil.java \
-    ojluni/src/main/java/sun/net/www/HeaderParser.java \
     ojluni/src/main/java/sun/net/www/MessageHeader.java \
     ojluni/src/main/java/sun/net/www/MeteredStream.java \
     ojluni/src/main/java/sun/net/www/ParseUtil.java \
@@ -1443,7 +1442,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/www/protocol/jar/JarFileFactory.java \
     ojluni/src/main/java/sun/net/www/protocol/jar/JarURLConnection.java \
     ojluni/src/main/java/sun/net/www/protocol/jar/URLJarFile.java \
-    ojluni/src/main/java/sun/net/www/protocol/jar/URLJarFileCallBack.java \
     ojluni/src/main/java/sun/nio/ByteBuffered.java \
     ojluni/src/main/java/sun/nio/ch/AbstractPollArrayWrapper.java \
     ojluni/src/main/java/sun/nio/ch/AbstractPollSelectorImpl.java \
