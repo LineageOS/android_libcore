@@ -49,12 +49,12 @@ public class TimeZoneBundleTest extends TestCase {
     }
 
     public void testGetBundleVersion() throws Exception {
-        BundleVersion bundleVersion =
-                new BundleVersion(BundleVersion.FULL_BUNDLE_FORMAT_VERSION, "2016c", "001");
+        BundleVersion bundleVersion = new BundleVersion(BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                BundleVersion.CURRENT_FORMAT_MINOR_VERSION, "2016c", 1);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(baos)) {
             addZipEntry(zipOutputStream, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME,
-                    bundleVersion.getBytes());
+                    bundleVersion.toBytes());
         }
 
         TimeZoneBundle bundle = new TimeZoneBundle(baos.toByteArray());

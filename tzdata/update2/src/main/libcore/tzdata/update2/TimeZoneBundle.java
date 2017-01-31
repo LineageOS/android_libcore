@@ -26,7 +26,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * A timezone bundle. This is a thin wrapper around some in-memory bytes representing a zip
+ * A time zone bundle. This is a thin wrapper around some in-memory bytes representing a zip
  * archive and logic for its safe extraction.
  */
 public final class TimeZoneBundle {
@@ -67,7 +67,7 @@ public final class TimeZoneBundle {
         if (contents == null) {
             throw new BundleException("Bundle version file entry not found");
         }
-        return BundleVersion.extractFromBytes(contents);
+        return BundleVersion.fromBytes(contents);
     }
 
     private static byte[] getEntryContents(InputStream is, String entryName) throws IOException {
