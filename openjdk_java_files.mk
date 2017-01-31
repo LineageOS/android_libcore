@@ -1420,8 +1420,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/ProgressSource.java \
     ojluni/src/main/java/sun/net/RegisteredDomain.java \
     ojluni/src/main/java/sun/net/ResourceManager.java \
-    ojluni/src/main/java/sun/net/smtp/SmtpClient.java \
-    ojluni/src/main/java/sun/net/smtp/SmtpProtocolException.java \
     ojluni/src/main/java/sun/net/SocksProxy.java \
     ojluni/src/main/java/sun/net/spi/DefaultProxySelector.java \
     ojluni/src/main/java/sun/net/spi/nameservice/NameServiceDescriptor.java \
