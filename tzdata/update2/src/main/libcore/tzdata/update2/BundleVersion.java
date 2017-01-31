@@ -17,101 +17,114 @@
 package libcore.tzdata.update2;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Constants and logic associated with the timezone bundle version file.
+ * Constants and logic associated with the time zone bundle version file.
  */
 public class BundleVersion {
 
     /**
-     * The current bundle format version in the form XXX.YYY. Increment the first number (XXX)
-     * when making incompatible changes to the bundle structure, or the files contained within.
-     * The second number (YYY) is currently ignored.
+     * The major bundle format version supported by this device.
+     * Increment this for non-backwards compatible changes to the bundle format.
      */
-    public static final String BUNDLE_FORMAT_MAJOR_VERSION = "001";
+    public static final int CURRENT_FORMAT_MAJOR_VERSION = 1;
 
-    public static final String FULL_BUNDLE_FORMAT_VERSION = BUNDLE_FORMAT_MAJOR_VERSION + ".001";
+    /**
+     * The minor bundle format version supported by this device. Increment this for
+     * backwards-compatible changes to the bundle format.
+     */
+    public static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
-    private static final int BUNDLE_FORMAT_LENGTH = 7;
+    /** The full major + minor bundle format version for this device. */
+    private static final String FULL_CURRENT_FORMAT_VERSION_STRING =
+            toFormatVersionString(CURRENT_FORMAT_MAJOR_VERSION, CURRENT_FORMAT_MINOR_VERSION);
 
-    public static final Pattern BUNDLE_FORMAT_VERSION_PATTERN = Pattern.compile("\\d{3}\\.\\d{3}");
+    private static final int FORMAT_VERSION_STRING_LENGTH =
+            FULL_CURRENT_FORMAT_VERSION_STRING.length();
+    private static final Pattern FORMAT_VERSION_PATTERN = Pattern.compile("(\\d{3})\\.(\\d{3})");
 
     /** A pattern that matches the IANA rules value of a rules update. e.g. "2016g" */
-    public static final Pattern RULES_VERSION_PATTERN = Pattern.compile("\\d{4}\\w");
+    private static final Pattern RULES_VERSION_PATTERN = Pattern.compile("(\\d{4}\\w)");
 
     private static final int RULES_VERSION_LENGTH = 5;
 
-    /** A pattern that matches the Android revision of a rules update. e.g. "001" */
-    public static final Pattern ANDROID_REVISION_PATTERN = Pattern.compile("\\d{3}");
+    /** A pattern that matches the revision of a rules update. e.g. "001" */
+    private static final Pattern REVISION_PATTERN = Pattern.compile("(\\d{3})");
 
-    private static final int ANDROID_REVISION_LENGTH = 3;
+    private static final int REVISION_LENGTH = 3;
 
     /**
      * The length of a well-formed bundle version file:
-     * {Bundle version}|{Rule version}|{Android revision}
+     * {Bundle version}|{Rule version}|{Revision}
      */
-    public static final int BUNDLE_VERSION_FILE_LENGTH = BUNDLE_FORMAT_LENGTH + 1
+    static final int BUNDLE_VERSION_FILE_LENGTH = FORMAT_VERSION_STRING_LENGTH + 1
             + RULES_VERSION_LENGTH
-            + 1 + ANDROID_REVISION_LENGTH;
+            + 1 + REVISION_LENGTH;
 
     private static final Pattern BUNDLE_VERSION_PATTERN = Pattern.compile(
-            BUNDLE_FORMAT_VERSION_PATTERN.pattern() + "\\|"
+            FORMAT_VERSION_PATTERN.pattern() + "\\|"
                     + RULES_VERSION_PATTERN.pattern() + "\\|"
-                    + ANDROID_REVISION_PATTERN.pattern()
+                    + REVISION_PATTERN.pattern()
                     + ".*" /* ignore trailing */);
 
-    private final String bundleFormatVersion;
-
+    public final int formatMajorVersion;
+    public final int formatMinorVersion;
     public final String rulesVersion;
+    public final int revision;
 
-    public final String androidRevision;
-
-    public BundleVersion(String bundleFormatVersion, String rulesVersion,
-            String androidRevision) throws BundleException {
-        if (!BUNDLE_FORMAT_VERSION_PATTERN.matcher(bundleFormatVersion).matches()) {
-            throw new BundleException("Invalid bundleFormatVersion: " + bundleFormatVersion);
-        }
+    public BundleVersion(int formatMajorVersion, int formatMinorVersion, String rulesVersion,
+            int revision) throws BundleException {
+        this.formatMajorVersion = validate3DigitVersion(formatMajorVersion);
+        this.formatMinorVersion = validate3DigitVersion(formatMinorVersion);
         if (!RULES_VERSION_PATTERN.matcher(rulesVersion).matches()) {
             throw new BundleException("Invalid rulesVersion: " + rulesVersion);
         }
-        if (!ANDROID_REVISION_PATTERN.matcher(androidRevision).matches()) {
-            throw new BundleException("Invalid androidRevision: " + androidRevision);
-        }
-        this.bundleFormatVersion = bundleFormatVersion;
         this.rulesVersion = rulesVersion;
-        this.androidRevision = androidRevision;
+        this.revision = validate3DigitVersion(revision);
     }
 
-    public static BundleVersion extractFromBytes(byte[] bytes) throws BundleException {
+    public static BundleVersion fromBytes(byte[] bytes) throws BundleException {
         String bundleVersion = new String(bytes, StandardCharsets.US_ASCII);
         try {
-            if (!BUNDLE_VERSION_PATTERN.matcher(bundleVersion).matches()) {
+            Matcher matcher = BUNDLE_VERSION_PATTERN.matcher(bundleVersion);
+            if (!matcher.matches()) {
                 throw new BundleException("Invalid bundle version string: " + bundleVersion);
             }
-            String bundleFormatVersion = bundleVersion.substring(0, 7);
-            String rulesVersion = bundleVersion.substring(8, 13);
-            String androidRevision = bundleVersion.substring(14);
-            return new BundleVersion(bundleFormatVersion, rulesVersion, androidRevision);
+            String formatMajorVersion = matcher.group(1);
+            String formatMinorVersion = matcher.group(2);
+            String rulesVersion = matcher.group(3);
+            String revision = matcher.group(4);
+            return new BundleVersion(
+                    from3DigitVersionString(formatMajorVersion),
+                    from3DigitVersionString(formatMinorVersion),
+                    rulesVersion,
+                    from3DigitVersionString(revision));
         } catch (IndexOutOfBoundsException e) {
             // The use of the regexp above should make this impossible.
             throw new BundleException("Bundle version string too short:" + bundleVersion);
         }
     }
 
-    public String getBundleFormatMajorVersion() {
-        return bundleFormatVersion.substring(0, 3);
-    }
-
-    public byte[] getBytes() {
-        return getBytes(bundleFormatVersion, rulesVersion, androidRevision);
+    public byte[] toBytes() {
+        return toBytes(formatMajorVersion, formatMinorVersion, rulesVersion, revision);
     }
 
     // @VisibleForTesting - can be used to construct invalid bundle version bytes.
-    public static byte[] getBytes(
-            String bundleFormatVersion, String rulesVersion, String androidRevision) {
-        return (bundleFormatVersion + "|" + rulesVersion + "|" + androidRevision)
+    public static byte[] toBytes(
+            int majorFormatVersion, int minorFormatVerison, String rulesVersion, int revision) {
+        return (toFormatVersionString(majorFormatVersion, minorFormatVerison)
+                + "|" + rulesVersion + "|" + to3DigitVersionString(revision))
                 .getBytes(StandardCharsets.US_ASCII);
+    }
+
+    public static boolean isCompatibleWithThisDevice(BundleVersion bundleVersion) {
+        return (BundleVersion.CURRENT_FORMAT_MAJOR_VERSION
+                == bundleVersion.formatMajorVersion)
+                && (BundleVersion.CURRENT_FORMAT_MINOR_VERSION
+                <= bundleVersion.formatMinorVersion);
     }
 
     @Override
@@ -125,21 +138,65 @@ public class BundleVersion {
 
         BundleVersion that = (BundleVersion) o;
 
-        if (!bundleFormatVersion.equals(that.bundleFormatVersion)) {
+        if (formatMajorVersion != that.formatMajorVersion) {
             return false;
         }
-        if (!rulesVersion.equals(that.rulesVersion)) {
+        if (formatMinorVersion != that.formatMinorVersion) {
             return false;
         }
-        return androidRevision.equals(that.androidRevision);
+        if (revision != that.revision) {
+            return false;
+        }
+        return rulesVersion.equals(that.rulesVersion);
     }
 
     @Override
     public String toString() {
         return "BundleVersion{" +
-                "bundleFormatVersion='" + bundleFormatVersion + '\'' +
+                "formatMajorVersion=" + formatMajorVersion +
+                ", formatMinorVersion=" + formatMinorVersion +
                 ", rulesVersion='" + rulesVersion + '\'' +
-                ", androidRevision='" + androidRevision + '\'' +
+                ", revision=" + revision +
                 '}';
+    }
+
+    /**
+     * Returns a version as a zero-padded three-digit String value.
+     */
+    private static String to3DigitVersionString(int version) {
+        try {
+            return String.format(Locale.ROOT, "%03d", validate3DigitVersion(version));
+        } catch (BundleException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Validates and parses a zero-padded three-digit String value.
+     */
+    private static int from3DigitVersionString(String versionString) throws BundleException {
+        final String parseErrorMessage = "versionString must be a zero padded, 3 digit, positive"
+                + " decimal integer";
+        if (versionString.length() != 3) {
+            throw new BundleException(parseErrorMessage);
+        }
+        try {
+            int version = Integer.parseInt(versionString);
+            return validate3DigitVersion(version);
+        } catch (NumberFormatException e) {
+            throw new BundleException(parseErrorMessage, e);
+        }
+    }
+
+    private static int validate3DigitVersion(int value) throws BundleException {
+        if (value < 1 || value > 999) {
+            throw new BundleException("Expected 1 <= value <= 999, was " + value);
+        }
+        return value;
+    }
+
+    private static String toFormatVersionString(int majorFormatVersion, int minorFormatVersion) {
+        return to3DigitVersionString(majorFormatVersion)
+                + "." + to3DigitVersionString(minorFormatVersion);
     }
 }

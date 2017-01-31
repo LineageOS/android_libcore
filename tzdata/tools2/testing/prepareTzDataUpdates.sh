@@ -84,7 +84,7 @@ mv icu_tzdata.dat ${TMP_PREVIOUS}
 
 TZ_PREVIOUS_UPDATE_PROPERTIES=${TMP}/tzupdate.properties.${TZ_PREVIOUS}
 cat > ${TZ_PREVIOUS_UPDATE_PROPERTIES} <<EOF
-android.revision=001
+revision=1
 rules.version=${TZ_PREVIOUS}
 bionic.file=${TMP_PREVIOUS}/tzdata
 icu.file=${TMP_PREVIOUS}/icu_tzdata.dat
@@ -113,7 +113,7 @@ echo "Transformed version ${TZ_PREVIOUS} of icu_tzdata into version ${TZ_CURRENT
 
 TZ_CURRENT_UPDATE_PROPERTIES=${TMP}/tzupdate.properties.${TZ_CURRENT}
 cat > ${TZ_CURRENT_UPDATE_PROPERTIES} <<EOF
-android.revision=001
+revision=1
 rules.version=${TZ_CURRENT}
 bionic.file=${TMP_CURRENT}/tzdata
 icu.file=${TMP_CURRENT}/icu_tzdata.dat
@@ -142,7 +142,7 @@ echo "Transformed version ${TZ_PREVIOUS} of icu_tzdata into version ${TZ_NEXT}"
 
 TZ_NEXT_UPDATE_PROPERTIES=${TMP}/tzupdate.properties.${TZ_NEXT}
 cat > ${TZ_NEXT_UPDATE_PROPERTIES} <<EOF
-android.revision=001
+revision=1
 rules.version=${TZ_NEXT}
 bionic.file=${TMP_NEXT}/tzdata
 icu.file=${TMP_NEXT}/icu_tzdata.dat
