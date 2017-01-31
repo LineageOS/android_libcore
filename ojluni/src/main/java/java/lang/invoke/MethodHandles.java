@@ -132,8 +132,6 @@ public class MethodHandles {
      * @exception IllegalArgumentException if the target is not a direct method handle
      * @exception ClassCastException if the member is not of the expected type
      * @since 1.8
-     *
-     * @hide
      */
     public static <T extends Member> T
     reflectAs(Class<T> expected, MethodHandle target) {
@@ -1549,8 +1547,6 @@ return mh1;
          * @exception NullPointerException if the target is {@code null}
          * @see MethodHandleInfo
          * @since 1.8
-         *
-         * @hide
          */
         public MethodHandleInfo revealDirect(MethodHandle target) {
             MethodHandleImpl directTarget = getMethodHandleImpl(target);
@@ -1826,8 +1822,6 @@ return invoker;
      *                  the range from 0 to {@code type.parameterCount()} inclusive,
      *                  or if the resulting method handle's type would have
      *          <a href="MethodHandle.html#maxarity">too many parameters</a>
-     *
-     * @hide
      */
     static public
     MethodHandle spreadInvoker(MethodType type, int leadingArgCount) {
@@ -2179,8 +2173,6 @@ assert((int)twice.invokeExact(21) == 42);
      *         before calling the original method handle
      * @throws NullPointerException if the target or the {@code values} array is null
      * @see MethodHandle#bindTo
-     *
-     * @hide
      */
     public static
     MethodHandle insertArguments(MethodHandle target, int pos, Object... values) {
@@ -2415,8 +2407,6 @@ assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
      *          or if the {@code pos+filters.length} is greater than {@code target.type().parameterCount()},
      *          or if the resulting method handle's type would have
      *          <a href="MethodHandle.html#maxarity">too many parameters</a>
-     *
-     * @hide
      */
     public static
     MethodHandle filterArguments(MethodHandle target, int pos, MethodHandle... filters) {
@@ -2549,8 +2539,6 @@ assertEquals("[top, [[up, down, strange], charm], bottom]",
      * @see MethodHandles#foldArguments
      * @see MethodHandles#filterArguments
      * @see MethodHandles#filterReturnValue
-     *
-     * @hide
      */
     public static
     MethodHandle collectArguments(MethodHandle target, int pos, MethodHandle filter) {
@@ -2722,8 +2710,6 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      *          of the target
      *          (skipping one matching the {@code combiner}'s return type)
      *          are not identical with the argument types of {@code combiner}
-     *
-     * @hide
      */
     public static
     MethodHandle foldArguments(MethodHandle target, MethodHandle combiner) {
