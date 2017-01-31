@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
+import libcore.tzdata.update2.BundleVersion;
 import libcore.tzdata.update2.TimeZoneBundle;
 
 /**
@@ -48,9 +49,13 @@ public class CreateTimeZoneBundle {
             System.exit(2);
         }
         Properties p = loadProperties(f);
+        BundleVersion bundleVersion = new BundleVersion(
+                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                BundleVersion.CURRENT_FORMAT_MINOR_VERSION,
+                getMandatoryProperty(p, "rules.version"),
+                Integer.parseInt(getMandatoryProperty(p, "revision")));
         TimeZoneBundleBuilder builder = new TimeZoneBundleBuilder()
-                .setRulesVersion(getMandatoryProperty(p, "rules.version"))
-                .setAndroidRevision(getMandatoryProperty(p, "android.revision"))
+                .setBundleVersion(bundleVersion)
                 .setTzData(getMandatoryPropertyFile(p, "bionic.file"))
                 .setIcuData(getMandatoryPropertyFile(p, "icu.file"));
 

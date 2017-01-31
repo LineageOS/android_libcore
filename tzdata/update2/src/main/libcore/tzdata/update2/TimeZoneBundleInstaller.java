@@ -27,6 +27,16 @@ import libcore.util.ZoneInfoDB;
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
 public final class TimeZoneBundleInstaller {
+    /** {@link #installWithErrorCode(byte[])} result code: Success. */
+    public final static int INSTALL_SUCCESS = 0;
+    /** {@link #installWithErrorCode(byte[])} result code: Bundle corrupt. */
+    public final static int INSTALL_FAIL_BAD_BUNDLE_STRUCTURE = 1;
+    /** {@link #installWithErrorCode(byte[])} result code: Bundle version incompatible. */
+    public final static int INSTALL_FAIL_BAD_BUNDLE_FORMAT_VERSION = 2;
+    /** {@link #installWithErrorCode(byte[])} result code: Bundle rules too old for device. */
+    public final static int INSTALL_FAIL_RULES_TOO_OLD = 3;
+    /** {@link #installWithErrorCode(byte[])} result code: Bundle content failed validation. */
+    public final static int INSTALL_FAIL_VALIDATION_ERROR = 4;
 
     private static final String CURRENT_TZ_DATA_DIR_NAME = "current";
     private static final String WORKING_DIR_NAME = "working";
@@ -69,6 +79,17 @@ public final class TimeZoneBundleInstaller {
      * If the installation completed successfully this method returns {@code true}.
      */
     public boolean install(byte[] content) throws IOException {
+        int result = installWithErrorCode(content);
+        return result == INSTALL_SUCCESS;
+    }
+
+    /**
+     * Install the supplied time zone bundle.
+     *
+     * <p>Errors during unpacking or installation will throw an {@link IOException}.
+     * Returns {@link #INSTALL_SUCCESS} or an error code.
+     */
+    public int installWithErrorCode(byte[] content) throws IOException {
         if (oldTzDataDir.exists()) {
             FileUtils.deleteRecursive(oldTzDataDir);
         }
@@ -84,39 +105,39 @@ public final class TimeZoneBundleInstaller {
                 bundleVersion = readBundleVersion(workingDir);
             } catch (BundleException e) {
                 Slog.i(logTag, "Invalid bundle version: " + e.getMessage());
-                return false;
+                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
             }
             if (bundleVersion == null) {
                 Slog.i(logTag, "Update not applied: Bundle version could not be loaded");
-                return false;
+                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
             }
-            if (!checkBundleFormatVersion(bundleVersion)) {
+            if (!BundleVersion.isCompatibleWithThisDevice(bundleVersion)) {
                 Slog.i(logTag, "Update not applied: Bundle format version check failed: "
                         + bundleVersion);
-                return false;
+                return INSTALL_FAIL_BAD_BUNDLE_FORMAT_VERSION;
             }
 
             if (!checkBundleDataFilesExist(workingDir)) {
                 Slog.i(logTag, "Update not applied: Bundle is missing required data file(s)");
-                return false;
+                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
             }
 
             if (!checkBundleRulesNewerThanSystem(systemTzDataFile, bundleVersion)) {
                 Slog.i(logTag, "Update not applied: Bundle rules version check failed");
-                return false;
+                return INSTALL_FAIL_RULES_TOO_OLD;
             }
 
             File zoneInfoFile = new File(workingDir, TimeZoneBundle.TZDATA_FILE_NAME);
             ZoneInfoDB.TzData tzData = ZoneInfoDB.TzData.loadTzData(zoneInfoFile.getPath());
             if (tzData == null) {
                 Slog.i(logTag, "Update not applied: " + zoneInfoFile + " could not be loaded");
-                return false;
+                return INSTALL_FAIL_VALIDATION_ERROR;
             }
             try {
                 tzData.validate();
             } catch (IOException e) {
                 Slog.i(logTag, "Update not applied: " + zoneInfoFile + " failed validation", e);
-                return false;
+                return INSTALL_FAIL_VALIDATION_ERROR;
             } finally {
                 tzData.close();
             }
@@ -133,7 +154,7 @@ public final class TimeZoneBundleInstaller {
             Slog.i(logTag, "Moving " + workingDir + " to " + currentTzDataDir);
             FileUtils.rename(workingDir, currentTzDataDir);
             Slog.i(logTag, "Update applied: " + currentTzDataDir + " successfully created");
-            return true;
+            return INSTALL_SUCCESS;
         } finally {
             deleteBestEffort(oldTzDataDir);
             deleteBestEffort(workingDir);
@@ -161,16 +182,17 @@ public final class TimeZoneBundleInstaller {
             return false;
         }
 
-        try {
-            Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
-            // Move currentTzDataDir out of the way in one operation so we can't partially delete
-            // the contents, which would leave a partial install.
-            FileUtils.rename(currentTzDataDir, oldTzDataDir);
-            return true;
-        } finally {
-            // Do our best to delete the now uninstalled timezone data.
-            deleteBestEffort(oldTzDataDir);
-        }
+        Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
+        // Move currentTzDataDir out of the way in one operation so we can't partially delete
+        // the contents, which would leave a partial install.
+        FileUtils.rename(currentTzDataDir, oldTzDataDir);
+
+        // Do our best to delete the now uninstalled timezone data.
+        deleteBestEffort(oldTzDataDir);
+
+        Slog.i(logTag, "Time zone update uninstalled.");
+
+        return true;
     }
 
     /**
@@ -199,6 +221,7 @@ public final class TimeZoneBundleInstaller {
 
     private void deleteBestEffort(File dir) {
         if (dir.exists()) {
+            Slog.i(logTag, "Deleting " + dir);
             try {
                 FileUtils.deleteRecursive(dir);
             } catch (IOException e) {
@@ -230,12 +253,7 @@ public final class TimeZoneBundleInstaller {
         }
         byte[] versionBytes =
                 FileUtils.readBytes(bundleVersionFile, BundleVersion.BUNDLE_VERSION_FILE_LENGTH);
-        return BundleVersion.extractFromBytes(versionBytes);
-    }
-
-    private boolean checkBundleFormatVersion(BundleVersion bundleVersion) {
-        return bundleVersion.getBundleFormatMajorVersion()
-                .equals(BundleVersion.BUNDLE_FORMAT_MAJOR_VERSION);
+        return BundleVersion.fromBytes(versionBytes);
     }
 
     /**
