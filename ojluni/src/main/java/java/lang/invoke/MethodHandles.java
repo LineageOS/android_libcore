@@ -2186,23 +2186,23 @@ assert((int)twice.invokeExact(21) == 42);
     MethodHandle insertArguments(MethodHandle target, int pos, Object... values) {
         int insCount = values.length;
         Class<?>[] ptypes = insertArgumentsChecks(target, insCount, pos);
-        if (insCount == 0)  return target;
+        if (insCount == 0)  {
+            return target;
+        }
 
-        // BoundMethodHandle result = target.rebind();
-        // for (int i = 0; i < insCount; i++) {
-        //     Object value = values[i];
-        //     Class<?> ptype = ptypes[pos+i];
-        //     if (ptype.isPrimitive()) {
-        //         result = insertArgumentPrimitive(result, pos, ptype, value);
-        //     } else {
-        //         value = ptype.cast(value);  // throw CCE if needed
-        //         result = result.bindArgumentL(pos, value);
-        //     }
-        // }
-        // return result;
+        // Throw ClassCastExceptions early if we can't cast any of the provided values
+        // to the required type.
+        for (int i = 0; i < insCount; i++) {
+            final Class<?> ptype = ptypes[pos + i];
+            if (!ptype.isPrimitive()) {
+                ptypes[pos + i].cast(values[i]);
+            } else {
+                // Will throw a ClassCastException if something terrible happens.
+                values[i] = Wrapper.forPrimitiveType(ptype).convert(values[i], ptype);
+            }
+        }
 
-        // TODO(narayan): Implement insertArguments, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.insertArguments is not implemented");
+        return new Transformers.InsertArguments(target, pos, values);
     }
 
     // Android-changed: insertArgumentPrimitive is unused.
@@ -2421,30 +2421,12 @@ assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
     public static
     MethodHandle filterArguments(MethodHandle target, int pos, MethodHandle... filters) {
         filterArgumentsCheckArity(target, pos, filters);
-        MethodHandle adapter = target;
-        int curPos = pos-1;  // pre-incremented
-        for (MethodHandle filter : filters) {
-            curPos += 1;
-            if (filter == null)  continue;  // ignore null elements of filters
-            adapter = filterArgument(adapter, curPos, filter);
+
+        for (int i = 0; i < filters.length; ++i) {
+            filterArgumentChecks(target, i + pos, filters[i]);
         }
-        return adapter;
-    }
 
-    /*non-public*/ static
-    MethodHandle filterArgument(MethodHandle target, int pos, MethodHandle filter) {
-        filterArgumentChecks(target, pos, filter);
-        // MethodType targetType = target.type();
-        // MethodType filterType = filter.type();
-        // BoundMethodHandle result = target.rebind();
-        // Class<?> newParamType = filterType.parameterType(0);
-        // LambdaForm lform = result.editor().filterArgumentForm(1 + pos, BasicType.basicType(newParamType));
-        // MethodType newType = targetType.changeParameterType(pos, newParamType);
-        // result = result.copyWithExtendL(newType, lform, filter);
-        // return result;
-
-        // TODO(narayan): Implement filterArguments, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.filterArgument is not implemented");
+        return new Transformers.FilterArguments(target, pos, filters);
     }
 
     private static void filterArgumentsCheckArity(MethodHandle target, int pos, MethodHandle[] filters) {
@@ -2573,21 +2555,7 @@ assertEquals("[top, [[up, down, strange], charm], bottom]",
     public static
     MethodHandle collectArguments(MethodHandle target, int pos, MethodHandle filter) {
         MethodType newType = collectArgumentsChecks(target, pos, filter);
-        MethodType collectorType = filter.type();
-
-        // BoundMethodHandle result = target.rebind();
-        // LambdaForm lform;
-        // if (collectorType.returnType().isArray() && filter.intrinsicName() == Intrinsic.NEW_ARRAY) {
-        //     lform = result.editor().collectArgumentArrayForm(1 + pos, filter);
-        //     if (lform != null) {
-        //         return result.copyWith(newType, lform);
-        //     }
-        // }
-        // lform = result.editor().collectArgumentsForm(1 + pos, collectorType.basicType());
-        // return result.copyWithExtendL(newType, lform, filter);
-
-        // TODO(narayan): Implement collectArguments, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.collectArguments is not implemented");
+        return new Transformers.CollectArguments(target, filter, pos, newType);
     }
 
     private static MethodType collectArgumentsChecks(MethodHandle target, int pos, MethodHandle filter) throws RuntimeException {
@@ -2764,8 +2732,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         MethodType combinerType = combiner.type();
         Class<?> rtype = foldArgumentChecks(foldPos, targetType, combinerType);
 
-        // TODO(narayan): Implement foldArguments, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.foldArguments is not implemented");
+        return new Transformers.FoldArguments(target, combiner);
     }
 
     private static Class<?> foldArgumentChecks(int foldPos, MethodType targetType, MethodType combinerType) {
