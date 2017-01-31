@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import sun.invoke.util.Wrapper;
 import sun.misc.Unsafe;
+import static dalvik.system.EmulatedStackFrame.StackFrameAccessor.copyNext;
 
 /**
  * @hide Public for testing only.
@@ -1053,7 +1054,6 @@ public class Transformers {
         }
     }
 
-
     /**
      * Implements MethodHandle.asSpreader / MethodHandles.spreadInvoker.
      */
@@ -1467,6 +1467,342 @@ public class Transformers {
 
             target.invoke(targetFrame);
             targetFrame.copyReturnValueTo(callerFrame);
+        }
+    }
+
+    /*
+     * Implements MethodHandles.filterArguments.
+     */
+    static class FilterArguments extends Transformer {
+        /** The target handle. */
+        private final MethodHandle target;
+        /** Index of the first argument to filter */
+        private final int pos;
+        /** The list of filters to apply */
+        private final MethodHandle[] filters;
+
+        private final StackFrameWriter writer;
+        private final StackFrameReader reader;
+
+        private final StackFrameWriter filterWriter;
+        private final StackFrameReader filterReader;
+
+        FilterArguments(MethodHandle target, int pos, MethodHandle[] filters) {
+            super(deriveType(target, pos, filters));
+
+            this.target = target;
+            this.pos = pos;
+            this.filters = filters;
+
+            this.writer = new StackFrameWriter();
+            this.reader = new StackFrameReader();
+
+            this.filterReader = new StackFrameReader();
+            this.filterWriter = new StackFrameWriter();
+        }
+
+        private static MethodType deriveType(MethodHandle target, int pos, MethodHandle[] filters) {
+            final Class<?>[] filterArgs = new Class<?>[filters.length];
+            for (int i = 0; i < filters.length; ++i) {
+                filterArgs[i] = filters[i].type().parameterType(0);
+            }
+
+            return target.type().replaceParameterTypes(pos, pos + filters.length, filterArgs);
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame stackFrame) throws Throwable {
+            reader.attach(stackFrame);
+
+            EmulatedStackFrame transformedFrame = EmulatedStackFrame.create(target.type());
+            writer.attach(transformedFrame);
+
+            final Class<?>[] ptypes = target.type().ptypes();
+            for (int i = 0; i < ptypes.length; ++i) {
+                // Check whether the current argument has a filter associated with it.
+                // If it has no filter, no further action need be taken.
+                final Class<?> ptype = ptypes[i];
+                final MethodHandle filter;
+                if (i < pos) {
+                    filter = null;
+                } else if (i >= pos + filters.length) {
+                    filter = null;
+                } else {
+                    filter = filters[i - pos];
+                }
+
+                if (filter != null) {
+                    // Note that filter.type() must be (ptype)ptype - this is checked before
+                    // this transformer is created.
+                    EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
+
+                    //  Copy the next argument from the stack frame to the filter frame.
+                    filterWriter.attach(filterFrame);
+                    copyNext(reader, filterWriter, filter.type().ptypes()[0]);
+
+                    filter.invoke(filterFrame);
+
+                    // Copy the argument back from the filter frame to the stack frame.
+                    filterReader.attach(filterFrame);
+                    filterReader.makeReturnValueAccessor();
+                    copyNext(filterReader, writer, ptype);
+                } else {
+                    // There's no filter associated with this frame, just copy the next argument
+                    // over.
+                    copyNext(reader, writer, ptype);
+                }
+            }
+
+            target.invoke(transformedFrame);
+            transformedFrame.copyReturnValueTo(stackFrame);
+        }
+    }
+
+    /**
+     * Implements MethodHandles.collectArguments.
+     */
+    static class CollectArguments extends Transformer {
+        private final MethodHandle target;
+        private final MethodHandle collector;
+        private final int pos;
+
+        /** The range of input arguments we copy to the collector. */
+        private final Range collectorRange;
+
+        /**
+         * The first range of arguments we copy to the target. These are arguments
+         * in the range [0, pos). Note that arg[pos] is the return value of the filter.
+         */
+        private final Range range1;
+
+        /**
+         * The second range of arguments we copy to the target. These are arguments in the range
+         * (pos, N], where N is the number of target arguments.
+         */
+        private final Range range2;
+
+        private final StackFrameReader reader;
+        private final StackFrameWriter writer;
+
+        private final int referencesOffset;
+        private final int stackFrameOffset;
+
+        CollectArguments(MethodHandle target, MethodHandle collector, int pos,
+                         MethodType adapterType) {
+            super(adapterType);
+
+            this.target = target;
+            this.collector = collector;
+            this.pos = pos;
+
+            final int numFilterArgs = collector.type().parameterCount();
+            final int numAdapterArgs = type().parameterCount();
+            collectorRange = Range.of(type(), pos, pos + numFilterArgs);
+
+            range1 = Range.of(type(), 0, pos);
+            if (pos + numFilterArgs < numAdapterArgs) {
+                this.range2 = Range.of(type(), pos + numFilterArgs, numAdapterArgs);
+            } else {
+                this.range2 = null;
+            }
+
+            reader = new StackFrameReader();
+            writer = new StackFrameWriter();
+
+            // Calculate the number of primitive bytes (or references) we copy to the
+            // target frame based on the return value of the combiner.
+            final Class<?> collectorRType = collector.type().rtype();
+            if (collectorRType == void.class) {
+                stackFrameOffset = 0;
+                referencesOffset = 0;
+            } else if (collectorRType.isPrimitive()) {
+                stackFrameOffset = EmulatedStackFrame.getSize(collectorRType);
+                referencesOffset = 0;
+            } else {
+                stackFrameOffset = 0;
+                referencesOffset = 1;
+            }
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame stackFrame) throws Throwable {
+            // First invoke the collector.
+            EmulatedStackFrame filterFrame = EmulatedStackFrame.create(collector.type());
+            stackFrame.copyRangeTo(filterFrame, collectorRange, 0, 0);
+            collector.invoke(filterFrame);
+
+            // Start constructing the target frame.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            stackFrame.copyRangeTo(targetFrame, range1, 0, 0);
+
+            // If one of these offsets is not zero, we have a return value to copy.
+            if (referencesOffset != 0 || stackFrameOffset != 0) {
+                reader.attach(filterFrame).makeReturnValueAccessor();
+                writer.attach(targetFrame, pos, range1.numReferences, range1.numBytes);
+                copyNext(reader, writer, target.type().ptypes()[0]);
+            }
+
+            if (range2 != null) {
+                stackFrame.copyRangeTo(targetFrame, range2,
+                        range1.numReferences + referencesOffset,
+                        range2.numBytes + stackFrameOffset);
+            }
+
+            target.invoke(targetFrame);
+            targetFrame.copyReturnValueTo(stackFrame);
+        }
+    }
+
+    /**
+     * Implements MethodHandles.foldArguments.
+     */
+    static class FoldArguments extends Transformer {
+        private final MethodHandle target;
+        private final MethodHandle combiner;
+
+        private final Range combinerArgs;
+        private final Range targetArgs;
+
+        private final StackFrameReader reader;
+        private final StackFrameWriter writer;
+
+        private final int referencesOffset;
+        private final int stackFrameOffset;
+
+        FoldArguments(MethodHandle target, MethodHandle combiner) {
+            super(deriveType(target, combiner));
+
+            this.target = target;
+            this.combiner = combiner;
+
+            combinerArgs = Range.all(combiner.type());
+            targetArgs = Range.all(type());
+
+            reader = new StackFrameReader();
+            writer = new StackFrameWriter();
+
+            final Class<?> combinerRType = combiner.type().rtype();
+            if (combinerRType == void.class) {
+                stackFrameOffset = 0;
+                referencesOffset = 0;
+            } else if (combinerRType.isPrimitive()) {
+                stackFrameOffset = EmulatedStackFrame.getSize(combinerRType);
+                referencesOffset = 0;
+            } else {
+                stackFrameOffset = 0;
+                referencesOffset = 1;
+            }
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame stackFrame) throws Throwable {
+            // First construct the combiner frame and invoke it.
+            EmulatedStackFrame combinerFrame = EmulatedStackFrame.create(combiner.type());
+            stackFrame.copyRangeTo(combinerFrame, combinerArgs, 0, 0);
+            combiner.invoke(combinerFrame);
+
+            // Create the stack frame for the target.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+
+            // If one of these offsets is not zero, we have a return value to copy.
+            if (referencesOffset != 0 || stackFrameOffset != 0) {
+                reader.attach(combinerFrame).makeReturnValueAccessor();
+                writer.attach(targetFrame);
+                copyNext(reader, writer, target.type().ptypes()[0]);
+            }
+
+            stackFrame.copyRangeTo(targetFrame, targetArgs, referencesOffset, stackFrameOffset);
+            target.invoke(targetFrame);
+
+            targetFrame.copyReturnValueTo(stackFrame);
+        }
+
+        private static MethodType deriveType(MethodHandle target, MethodHandle combiner) {
+            if (combiner.type().rtype() == void.class) {
+                return target.type();
+            }
+
+            return target.type().dropParameterTypes(0, 1);
+        }
+    }
+
+    /**
+     * Implements MethodHandles.insertArguments.
+     */
+    static class InsertArguments extends Transformer {
+        private final MethodHandle target;
+        private final int pos;
+        private final Object[] values;
+
+        private final Range range1;
+        private final Range range2;
+        private final StackFrameWriter writer;
+
+        InsertArguments(MethodHandle target, int pos, Object[] values) {
+            super(target.type().dropParameterTypes(pos, pos + values.length));
+            this.target = target;
+            this.pos = pos;
+            this.values = values;
+
+            final MethodType type = type();
+            range1 = EmulatedStackFrame.Range.of(type, 0, pos);
+            range2 = Range.of(type, pos, type.parameterCount());
+
+            writer = new StackFrameWriter();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame stackFrame) throws Throwable {
+            EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(target.type());
+
+            // Copy all arguments before |pos|.
+            stackFrame.copyRangeTo(calleeFrame, range1, 0, 0);
+
+            // Attach a stack frame writer so that we can copy the next |values.length|
+            // arguments.
+            writer.attach(calleeFrame, pos, range1.numReferences, range1.numBytes);
+
+            // Copy all the arguments supplied in |values|.
+            int referencesCopied = 0;
+            int bytesCopied = 0;
+            final Class<?>[] ptypes = target.type().ptypes();
+            for (int i = 0; i < values.length; ++i) {
+                final Class<?> ptype = ptypes[i + pos];
+                if (ptype.isPrimitive()) {
+                    if (ptype == boolean.class) {
+                        writer.putNextBoolean((boolean) values[i]);
+                    } else if (ptype == byte.class) {
+                        writer.putNextByte((byte) values[i]);
+                    } else if (ptype == char.class) {
+                        writer.putNextChar((char) values[i]);
+                    } else if (ptype == short.class) {
+                        writer.putNextShort((short) values[i]);
+                    } else if (ptype == int.class) {
+                        writer.putNextInt((int) values[i]);
+                    } else if (ptype == long.class) {
+                        writer.putNextLong((long) values[i]);
+                    } else if (ptype == float.class) {
+                        writer.putNextFloat((float) values[i]);
+                    } else if (ptype == double.class) {
+                        writer.putNextDouble((double) values[i]);
+                    }
+
+                    bytesCopied += EmulatedStackFrame.getSize(ptype);
+                } else {
+                    writer.putNextReference(values[i], ptype);
+                    referencesCopied++;
+                }
+            }
+
+            // Copy all remaining arguments.
+            if (range2 != null) {
+                stackFrame.copyRangeTo(calleeFrame, range2,
+                        range1.numReferences + referencesCopied,
+                        range1.numBytes + bytesCopied);
+            }
+
+            target.invoke(calleeFrame);
+            calleeFrame.copyReturnValueTo(stackFrame);
         }
     }
 }

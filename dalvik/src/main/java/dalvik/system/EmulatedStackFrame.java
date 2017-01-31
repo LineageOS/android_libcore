@@ -263,7 +263,7 @@ public class EmulatedStackFrame {
      * Returns the size (in bytes) occupied by a given primitive type on an
      * {@code EmulatedStackFrame}.
      */
-    private static int getSize(Class<?> type) {
+    public static int getSize(Class<?> type) {
         if (!type.isPrimitive()) {
             throw new IllegalArgumentException("type.isPrimitive() == false: " + type);
         }
@@ -375,6 +375,29 @@ public class EmulatedStackFrame {
                 frameBuf.position(frameBuf.capacity() - getSize(rtype));
             } else {
                 referencesOffset = frame.references.length - 1;
+            }
+        }
+
+        public static void copyNext(StackFrameReader reader, StackFrameWriter writer,
+                                    Class<?> type) {
+            if (!type.isPrimitive()) {
+                writer.putNextReference(reader.nextReference(type), type);
+            } else if (type == boolean.class) {
+                writer.putNextBoolean(reader.nextBoolean());
+            } else if (type == byte.class) {
+                writer.putNextByte(reader.nextByte());
+            } else if (type == char.class) {
+                writer.putNextChar(reader.nextChar());
+            } else if (type == short.class) {
+                writer.putNextShort(reader.nextShort());
+            } else if (type == int.class) {
+                writer.putNextInt(reader.nextInt());
+            } else if (type == long.class) {
+                writer.putNextLong(reader.nextLong());
+            } else if (type == float.class) {
+                writer.putNextFloat(reader.nextFloat());
+            } else if (type == double.class) {
+                writer.putNextDouble(reader.nextDouble());
             }
         }
     }
