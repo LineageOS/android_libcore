@@ -119,16 +119,21 @@ public class FtpURLConnectionTest extends TestCase {
      */
     public void testCountingProxy() throws Exception {
         CountingProxy countingProxy = CountingProxy.start();
+        Socket socket = new Socket();
         try {
-            Proxy proxy = countingProxy.asProxy();
-            assertEquals(Proxy.Type.HTTP, proxy.type());
-            SocketAddress address = proxy.address();
-            Socket socket = new Socket();
-            socket.connect(address, /* timeout (msec) */ 10); // attempt one connection
-            socket.close();
+            try {
+                Proxy proxy = countingProxy.asProxy();
+                assertEquals(Proxy.Type.HTTP, proxy.type());
+                SocketAddress address = proxy.address();
+                socket.connect(address, /* timeout (msec) */ 10); // attempt one connection
+            } finally {
+                int numConnections = countingProxy.shutdownAndGetConnectionCount();
+                assertEquals(1, numConnections);
+            }
         } finally {
-            int numConnections = countingProxy.shutdownAndGetConnectionCount();
-            assertEquals(1, numConnections);
+            // Closing this socket *after* shutdownAndGetConnectionCount() ensures
+            // that the server thread had a chance to count the connection attempt.
+            socket.close();
         }
     }
 
