@@ -250,4 +250,14 @@ public class SystemTest extends TestCase {
         } catch (SecurityException expected) {
         }
     }
+
+    // http://b/34867424
+    public void testIcuPathIncludesTimeZoneOverride() {
+        String icuDataPath = System.getProperty("android.icu.impl.ICUBinary.dataPath");
+        String[] paths = icuDataPath.split(":");
+        assertEquals(2, paths.length);
+
+        assertTrue(paths[0].contains("/misc/zoneinfo/current/icu"));
+        assertTrue(paths[1].contains("/usr/icu"));
+    }
 }
