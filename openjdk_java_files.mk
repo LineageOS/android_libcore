@@ -1463,11 +1463,8 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/ch/DefaultAsynchronousChannelProvider.java \
     ojluni/src/main/java/sun/nio/ch/DefaultSelectorProvider.java \
     ojluni/src/main/java/sun/nio/ch/DirectBuffer.java \
-    ojluni/src/main/java/sun/nio/ch/EPollArrayWrapper.java \
     ojluni/src/main/java/sun/nio/ch/EPoll.java \
     ojluni/src/main/java/sun/nio/ch/EPollPort.java \
-    ojluni/src/main/java/sun/nio/ch/EPollSelectorImpl.java \
-    ojluni/src/main/java/sun/nio/ch/EPollSelectorProvider.java \
     ojluni/src/main/java/sun/nio/ch/ExtendedSocketOption.java \
     ojluni/src/main/java/sun/nio/ch/FileChannelImpl.java \
     ojluni/src/main/java/sun/nio/ch/FileDescriptorHolderSocketImpl.java \
@@ -1482,8 +1479,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/ch/IOStatus.java \
     ojluni/src/main/java/sun/nio/ch/IOUtil.java \
     ojluni/src/main/java/sun/nio/ch/IOVecWrapper.java \
-    ojluni/src/main/java/sun/nio/ch/KQueue.java \
-    ojluni/src/main/java/sun/nio/ch/KQueuePort.java \
     ojluni/src/main/java/sun/nio/ch/LinuxAsynchronousChannelProvider.java \
     ojluni/src/main/java/sun/nio/ch/MembershipKeyImpl.java \
     ojluni/src/main/java/sun/nio/ch/MembershipRegistry.java \
@@ -1499,7 +1494,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/ch/PollSelectorImpl.java \
     ojluni/src/main/java/sun/nio/ch/PollSelectorProvider.java \
     ojluni/src/main/java/sun/nio/ch/Port.java \
-    ojluni/src/main/java/sun/nio/ch/Reflect.java \
     ojluni/src/main/java/sun/nio/ch/SelChImpl.java \
     ojluni/src/main/java/sun/nio/ch/SelectionKeyImpl.java \
     ojluni/src/main/java/sun/nio/ch/SelectorImpl.java \
