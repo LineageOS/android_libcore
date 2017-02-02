@@ -20,7 +20,6 @@ LOCAL_SRC_FILES := \
     DatagramDispatcher.c \
     Console_md.c \
     IOUtil.c \
-    EPollArrayWrapper.c \
     PollArrayWrapper.c \
     SocketChannelImpl.c \
     FileChannelImpl.c \
