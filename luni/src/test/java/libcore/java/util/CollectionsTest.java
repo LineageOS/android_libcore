@@ -839,6 +839,16 @@ public final class CollectionsTest extends TestCase {
                     valuesInOrder.subList(0, i + 1),
                     absentKey,
                     absentValue);
+            K lowerKey = map.lowerKey(key);
+            if (lowerKey != null) {
+                // headMap inclusive of lowerKey is same as exclusive of key
+                check_unmodifiableOrderedMap_defaultMethods(
+                        map.headMap(lowerKey, true /* inclusive */),
+                        keysInOrder.subList(0, i),
+                        valuesInOrder.subList(0, i),
+                        absentKey,
+                        absentValue);
+            }
 
             check_unmodifiableOrderedMap_defaultMethods(
                     map.tailMap(key),
@@ -858,6 +868,30 @@ public final class CollectionsTest extends TestCase {
                     valuesInOrder.subList(i + 1, numEntries),
                     absentKey,
                     absentValue);
+            K higherKey = map.higherKey(key);
+            if (higherKey != null) {
+                // headMap inclusive of higherKey is same as exclusive of key
+                check_unmodifiableOrderedMap_defaultMethods(
+                        map.tailMap(higherKey, true /* inclusive */),
+                        keysInOrder.subList(i + 1, numEntries),
+                        valuesInOrder.subList(i + 1, numEntries),
+                        absentKey,
+                        absentValue);
+            }
+
+            int headSize = map.headMap(absentKey).size();
+            check_unmodifiableOrderedMap_defaultMethods(
+                    map.headMap(absentKey, true /* inclusive */),
+                    keysInOrder.subList(0, headSize),
+                    valuesInOrder.subList(0, headSize),
+                    absentKey,
+                    absentValue);
+            check_unmodifiableOrderedMap_defaultMethods(
+                    map.tailMap(absentKey, true /* inclusive */),
+                    keysInOrder.subList(headSize, numEntries),
+                    valuesInOrder.subList(headSize, numEntries),
+                    absentKey,
+                    absentValue);
 
             assertEquals(key, map.floorKey(key));
             assertEquals(key, map.ceilingKey(key));
@@ -873,6 +907,8 @@ public final class CollectionsTest extends TestCase {
         } else {
             assertFalse(Objects.equal(floor, ceiling));
             assertTrue(floor != null || ceiling != null);
+            assertEquals(ceiling, floor == null ? map.firstKey() : map.higherKey(floor));
+            assertEquals(floor, ceiling == null ? map.lastKey() : map.lowerKey(ceiling));
         }
     }
 
