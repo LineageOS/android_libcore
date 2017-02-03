@@ -28,15 +28,33 @@ package sun.nio.ch;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
-import java.net.*;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.ProtocolFamily;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
-import java.nio.channels.spi.*;
-import java.util.*;
+import java.nio.channels.AlreadyBoundException;
+import java.nio.channels.AlreadyConnectedException;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.ConnectionPendingException;
+import java.nio.channels.NoConnectionPendingException;
+import java.nio.channels.NotYetConnectedException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
+import java.nio.channels.spi.SelectorProvider;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import dalvik.system.BlockGuard;
-import sun.net.NetHooks;
+import dalvik.system.CloseGuard;
 import sun.net.ExtendedOptionsImpl;
+import sun.net.NetHooks;
 
 
 /**
@@ -100,6 +118,8 @@ class SocketChannelImpl
 
     // -- End of fields protected by stateLock
 
+    // Android-changed: Add CloseGuard support.
+    private final CloseGuard guard = CloseGuard.get();
 
     // Constructor for normal connecting sockets
     //
@@ -108,6 +128,12 @@ class SocketChannelImpl
         this.fd = Net.socket(true);
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
+
+        // Android-changed: Add CloseGuard support.
+        // Net#socket will set |fd| if it succeeds.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
     }
 
     SocketChannelImpl(SelectorProvider sp,
@@ -119,6 +145,12 @@ class SocketChannelImpl
         this.fd = fd;
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
+
+        // Android-changed: Add CloseGuard support.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
+
         if (bound)
             this.localAddress = Net.localAddress(fd);
     }
@@ -135,6 +167,10 @@ class SocketChannelImpl
         this.state = ST_CONNECTED;
         this.localAddress = Net.localAddress(fd);
         this.remoteAddress = remote;
+        // Android-changed: Add CloseGuard support.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
     }
 
     public Socket socket() {
@@ -841,8 +877,11 @@ class SocketChannelImpl
             // channel from using the old fd, which might be recycled in the
             // meantime and allocated to an entirely different channel.
             //
-            if (state != ST_KILLED)
+            if (state != ST_KILLED) {
+                // Android-changed: Add CloseGuard support.
+                guard.close();
                 nd.preClose(fd);
+            }
 
             // Signal native threads, if needed.  If a target thread is not
             // currently blocked in an I/O operation then no harm is done since
@@ -889,6 +928,13 @@ class SocketChannelImpl
                 state = ST_KILLPENDING;
             }
         }
+    }
+
+    protected void finalize() throws IOException {
+        if (guard != null) {
+            guard.warnIfOpen();
+        }
+        close();
     }
 
     /**

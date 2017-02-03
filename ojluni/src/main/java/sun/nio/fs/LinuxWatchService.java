@@ -25,15 +25,24 @@
 
 package sun.nio.fs;
 
-import java.nio.file.*;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.*;
 import java.io.IOException;
+import java.nio.file.NotDirectoryException;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import dalvik.system.CloseGuard;
 import sun.misc.Unsafe;
 
-import static sun.nio.fs.UnixNativeDispatcher.*;
-import static sun.nio.fs.UnixConstants.*;
+import static sun.nio.fs.UnixConstants.EAGAIN;
+import static sun.nio.fs.UnixConstants.EMFILE;
+import static sun.nio.fs.UnixConstants.ENOSPC;
+import static sun.nio.fs.UnixNativeDispatcher.read;
+import static sun.nio.fs.UnixNativeDispatcher.write;
 
 /**
  * Linux implementation of WatchService based on inotify.
@@ -185,6 +194,9 @@ class LinuxWatchService
         // address of read buffer
         private final long address;
 
+        // Android-changed: Add CloseGuard support.
+        private final CloseGuard guard = CloseGuard.get();
+
         Poller(UnixFileSystem fs, LinuxWatchService watcher, int ifd, int[] sp) {
             this.fs = fs;
             this.watcher = watcher;
@@ -192,6 +204,8 @@ class LinuxWatchService
             this.socketpair = sp;
             this.wdToKey = new HashMap<Integer,LinuxWatchKey>();
             this.address = unsafe.allocateMemory(BUFFER_SIZE);
+            // Android-changed: Add CloseGuard support.
+            guard.open("close");
         }
 
         @Override
@@ -288,6 +302,8 @@ class LinuxWatchService
         // close watch service
         @Override
         void implCloseAll() {
+            // Android-changed: Add CloseGuard support.
+            guard.close();
             // invalidate all keys
             for (Map.Entry<Integer,LinuxWatchKey> entry: wdToKey.entrySet()) {
                 entry.getValue().invalidate(true);
@@ -299,6 +315,17 @@ class LinuxWatchService
             UnixNativeDispatcher.close(socketpair[0]);
             UnixNativeDispatcher.close(socketpair[1]);
             UnixNativeDispatcher.close(ifd);
+        }
+
+        protected void finalize() throws Throwable {
+            try {
+                if (guard != null) {
+                    guard.warnIfOpen();
+                }
+                close();
+            } finally {
+                super.finalize();
+            }
         }
 
         /**
