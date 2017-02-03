@@ -25,13 +25,24 @@
 
 package sun.nio.ch;
 
-import java.nio.channels.*;
-import java.nio.ByteBuffer;
-import java.net.*;
-import java.util.concurrent.*;
-import java.io.IOException;
 import java.io.FileDescriptor;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.AlreadyConnectedException;
+import java.nio.channels.AsynchronousChannel;
+import java.nio.channels.AsynchronousCloseException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.CompletionHandler;
+import java.nio.channels.ConnectionPendingException;
+import java.nio.channels.InterruptedByTimeoutException;
+import java.nio.channels.ShutdownChannelGroupException;
 import java.security.AccessController;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import dalvik.system.CloseGuard;
 import sun.net.NetHooks;
 import sun.security.action.GetPropertyAction;
 
@@ -89,6 +100,8 @@ class UnixAsynchronousSocketChannelImpl
     private PendingFuture<Number,Object> writeFuture;
     private Future<?> writeTimer;
 
+    // Android-changed: Add CloseGuard support.
+    private final CloseGuard guard = CloseGuard.get();
 
     UnixAsynchronousSocketChannelImpl(Port port)
         throws IOException
@@ -108,6 +121,8 @@ class UnixAsynchronousSocketChannelImpl
 
         // add mapping from file descriptor to this channel
         port.register(fdVal, this);
+        // Android-changed: Add CloseGuard support.
+        guard.open("close");
     }
 
     // Constructor for sockets created by UnixAsynchronousServerSocketChannelImpl
@@ -130,6 +145,7 @@ class UnixAsynchronousSocketChannelImpl
         }
 
         this.port = port;
+        guard.open("close");
     }
 
     @Override
@@ -215,6 +231,8 @@ class UnixAsynchronousSocketChannelImpl
 
     @Override
     void implClose() throws IOException {
+        // Android-changed: Add CloseGuard support.
+        guard.close();
         // remove the mapping
         port.unregister(fdVal);
 
@@ -223,6 +241,17 @@ class UnixAsynchronousSocketChannelImpl
 
         // All outstanding I/O operations are required to fail
         finish(false, true, true);
+    }
+
+    protected void finalize() throws Throwable {
+        try {
+            if (guard != null) {
+                guard.warnIfOpen();
+            }
+            close();
+        } finally {
+            super.finalize();
+        }
     }
 
     @Override
