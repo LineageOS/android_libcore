@@ -110,12 +110,12 @@ public class SpliteratorTester {
     }
 
     public static <T extends Comparable<T>> void runBasicSplitTests(
-            Iterable<T> spliterable, ArrayList<T> expectedElements) {
+            Iterable<T> spliterable, List<T> expectedElements) {
         runBasicSplitTests(spliterable, expectedElements, T::compareTo);
     }
 
     public static <T> void runBasicSplitTests(Spliterator<T> spliterator,
-            ArrayList<T> expectedElements, Comparator<T> comparator) {
+            List<T> expectedElements, Comparator<T> comparator) {
         boolean empty = expectedElements.isEmpty();
         ArrayList<T> recorder = new ArrayList<>();
 
@@ -171,7 +171,7 @@ public class SpliteratorTester {
      * iterated over.
      */
     public static <T> void runBasicSplitTests(Iterable<T> spliterable,
-            ArrayList<T> expectedElements, Comparator<T> comparator) {
+            List<T> expectedElements, Comparator<T> comparator) {
         runBasicSplitTests(spliterable.spliterator(), expectedElements, comparator);
     }
 
