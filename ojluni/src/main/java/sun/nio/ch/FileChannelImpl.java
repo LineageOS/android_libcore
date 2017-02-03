@@ -26,24 +26,33 @@
 
 package sun.nio.ch;
 
+import android.system.ErrnoException;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.DirectByteBuffer;
 import java.nio.MappedByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.channels.FileLockInterruptionException;
+import java.nio.channels.NonReadableChannelException;
+import java.nio.channels.NonWritableChannelException;
+import java.nio.channels.OverlappingFileLockException;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.WritableByteChannel;
+import java.security.AccessController;
 import java.util.ArrayList;
 import java.util.List;
-import java.security.AccessController;
+import libcore.io.Libcore;
 
 import dalvik.system.BlockGuard;
+import dalvik.system.CloseGuard;
 import sun.misc.Cleaner;
 import sun.security.action.GetPropertyAction;
-
-// ----- BEGIN android -----
-import android.system.ErrnoException;
-import libcore.io.Libcore;
-// ----- END android -----
 
 public class FileChannelImpl
     extends FileChannel
@@ -76,6 +85,9 @@ public class FileChannelImpl
     // Lock for operations involving position and size
     private final Object positionLock = new Object();
 
+    // Android-changed: Add CloseGuard support.
+    private final CloseGuard guard = CloseGuard.get();
+
     private FileChannelImpl(FileDescriptor fd, String path, boolean readable,
                             boolean writable, boolean append, Object parent)
     {
@@ -86,6 +98,10 @@ public class FileChannelImpl
         this.parent = parent;
         this.path = path;
         this.nd = new FileDispatcherImpl(append);
+        // Android-changed: Add CloseGuard support.
+        if (fd != null && fd.valid()) {
+            guard.open("close");
+        }
     }
 
     // Used by FileInputStream.getChannel() and RandomAccessFile.getChannel()
@@ -113,6 +129,8 @@ public class FileChannelImpl
     // -- Standard channel operations --
 
     protected void implCloseChannel() throws IOException {
+        // Android-changed: Add CloseGuard support.
+        guard.close();
         // Release and invalidate any locks that we still hold
         if (fileLockTable != null) {
             for (FileLock fl: fileLockTable.removeAll()) {
@@ -140,6 +158,17 @@ public class FileChannelImpl
             nd.close(fd);
         }
 
+    }
+
+    protected void finalize() throws Throwable {
+        try {
+            if (guard != null) {
+                guard.warnIfOpen();
+            }
+            close();
+        } finally {
+            super.finalize();
+        }
     }
 
     public int read(ByteBuffer dst) throws IOException {
