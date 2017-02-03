@@ -16,6 +16,9 @@
 
 package libcore.java.nio.channels;
 
+import org.junit.Rule;
+
+import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -37,8 +40,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import libcore.junit.util.ResourceLeakageDetector.LeakageDetectorRule;
 
-public class AsynchronousServerSocketChannelTest extends junit.framework.TestCase {
+public class AsynchronousServerSocketChannelTest extends TestCaseWithRules {
+
+    @Rule
+    public LeakageDetectorRule leakageDetectorRule = ResourceLeakageDetector.getRule();
 
     public void test_bind() throws Throwable {
         AsynchronousServerSocketChannel assc = AsynchronousServerSocketChannel.open();
@@ -343,4 +352,20 @@ public class AsynchronousServerSocketChannelTest extends junit.framework.TestCas
         assertEquals(2, supportedOptions.size());
     }
 
+    public void test_closeGuardSupport() throws IOException {
+        try (AsynchronousServerSocketChannel asc = AsynchronousServerSocketChannel.open()) {
+            leakageDetectorRule.assertUnreleasedResourceCount(asc, 1);
+        }
+    }
+
+    public void test_closeGuardSupport_group() throws IOException {
+        AsynchronousChannelProvider provider =
+                AsynchronousChannelProvider.provider();
+        AsynchronousChannelGroup group =
+                provider.openAsynchronousChannelGroup(2, Executors.defaultThreadFactory());
+
+        try (AsynchronousServerSocketChannel assc = AsynchronousServerSocketChannel.open(group)) {
+            leakageDetectorRule.assertUnreleasedResourceCount(assc, 1);
+        }
+    }
 }
