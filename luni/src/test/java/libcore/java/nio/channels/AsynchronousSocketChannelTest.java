@@ -16,6 +16,9 @@
 
 package libcore.java.nio.channels;
 
+import org.junit.Rule;
+
+import java.io.IOException;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
@@ -37,8 +40,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.ResourceLeakageDetector;
+import libcore.junit.util.ResourceLeakageDetector.LeakageDetectorRule;
 
-public class AsynchronousSocketChannelTest extends junit.framework.TestCase {
+public class AsynchronousSocketChannelTest extends TestCaseWithRules {
+
+    @Rule
+    public LeakageDetectorRule leakageDetectorRule = ResourceLeakageDetector.getRule();
+
     // Comfortably smaller than the default TCP socket buffer size to avoid blocking on write.
     final int NON_BLOCKING_MESSAGE_SIZE = 32;
 
@@ -824,22 +834,23 @@ public class AsynchronousSocketChannelTest extends junit.framework.TestCase {
     }
 
     public void test_options() throws Exception {
-        AsynchronousSocketChannel asc = AsynchronousSocketChannel.open();
+        try (AsynchronousSocketChannel asc = AsynchronousSocketChannel.open()) {
 
-        asc.setOption(StandardSocketOptions.SO_SNDBUF, 5000);
-        assertEquals(5000, (long)asc.getOption(StandardSocketOptions.SO_SNDBUF));
+            asc.setOption(StandardSocketOptions.SO_SNDBUF, 5000);
+            assertEquals(5000, (long) asc.getOption(StandardSocketOptions.SO_SNDBUF));
 
-        asc.setOption(StandardSocketOptions.SO_RCVBUF, 5000);
-        assertEquals(5000, (long)asc.getOption(StandardSocketOptions.SO_RCVBUF));
+            asc.setOption(StandardSocketOptions.SO_RCVBUF, 5000);
+            assertEquals(5000, (long) asc.getOption(StandardSocketOptions.SO_RCVBUF));
 
-        asc.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-        assertTrue(asc.getOption(StandardSocketOptions.SO_KEEPALIVE));
+            asc.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
+            assertTrue(asc.getOption(StandardSocketOptions.SO_KEEPALIVE));
 
-        asc.setOption(StandardSocketOptions.SO_REUSEADDR, true);
-        assertTrue(asc.getOption(StandardSocketOptions.SO_REUSEADDR));
+            asc.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+            assertTrue(asc.getOption(StandardSocketOptions.SO_REUSEADDR));
 
-        asc.setOption(StandardSocketOptions.TCP_NODELAY, true);
-        assertTrue(asc.getOption(StandardSocketOptions.TCP_NODELAY));
+            asc.setOption(StandardSocketOptions.TCP_NODELAY, true);
+            assertTrue(asc.getOption(StandardSocketOptions.TCP_NODELAY));
+        }
     }
 
     public void test_options_iae() throws Exception {
@@ -893,5 +904,22 @@ public class AsynchronousSocketChannelTest extends junit.framework.TestCase {
             bb.put(i, (byte)(i + contentOffset));
         }
         return bb;
+    }
+
+    public void test_closeGuardSupport() throws IOException {
+        try (AsynchronousSocketChannel asc = AsynchronousSocketChannel.open()) {
+            leakageDetectorRule.assertUnreleasedResourceCount(asc, 1);
+        }
+    }
+
+    public void test_closeGuardSupport_group() throws IOException {
+        AsynchronousChannelProvider provider =
+                AsynchronousChannelProvider.provider();
+        AsynchronousChannelGroup group =
+                provider.openAsynchronousChannelGroup(2, Executors.defaultThreadFactory());
+
+        try (AsynchronousSocketChannel asc = AsynchronousSocketChannel.open(group)) {
+            leakageDetectorRule.assertUnreleasedResourceCount(asc, 1);
+        }
     }
 }
