@@ -16,6 +16,7 @@
 
 package libcore.java.net;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -239,7 +240,7 @@ public class ConcurrentCloseTest extends junit.framework.TestCase {
     }
 
     // This thread calls the "close" method on the supplied T after 2s.
-    static class Killer<T> extends Thread {
+    static class Killer<T extends Closeable> extends Thread {
         private final T s;
 
         public Killer(T s) {
@@ -251,7 +252,7 @@ public class ConcurrentCloseTest extends junit.framework.TestCase {
                 System.err.println("sleep...");
                 Thread.sleep(2000);
                 System.err.println("close...");
-                s.getClass().getMethod("close").invoke(s);
+                s.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
