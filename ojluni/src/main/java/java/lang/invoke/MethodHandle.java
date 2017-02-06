@@ -38,7 +38,7 @@ import static java.lang.invoke.MethodHandleStatics.*;
  * {@linkplain #asType conversion},
  * {@linkplain #bindTo insertion},
  * {@linkplain java.lang.invoke.MethodHandles#dropArguments deletion},
- * and {@code java.lang.invoke.MethodHandles#filterArguments substitution}.
+ * and {@linkplain java.lang.invoke.MethodHandles#filterArguments substitution}.
  *
  * <h1>Method handle contents</h1>
  * Method handles are dynamically and strongly typed according to their parameter and return types.
@@ -418,7 +418,6 @@ mh.invokeExact(System.out, "Hello, world.");
  * @see MethodHandles
  * @author John Rose, JSR 292 EG
  */
-// TODO: Change @code to @link once filterArguments is unhidden.
 public abstract class MethodHandle {
     // Android-changed:
     //
@@ -632,8 +631,6 @@ public abstract class MethodHandle {
      * @throws WrongMethodTypeException if the target's type cannot be adjusted to take the given number of {@code Object} arguments
      * @throws Throwable anything thrown by the target method invocation
      * @see MethodHandles#spreadInvoker
-     *
-     * @hide
      */
     public Object invokeWithArguments(Object... arguments) throws Throwable {
         MethodHandle invoker = null;
@@ -872,8 +869,6 @@ assertEquals("[A, B, C]", (String) caToString2.invokeExact('A', "BC".toCharArray
      *         <a href="MethodHandle.html#maxarity">too many parameters</a>
      * @throws WrongMethodTypeException if the implied {@code asType} call fails
      * @see #asCollector
-     *
-     * @hide
      */
     public MethodHandle asSpreader(Class<?> arrayType, int arrayLength) {
         MethodType postSpreadType = asSpreaderChecks(arrayType, arrayLength);
@@ -1000,8 +995,6 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * @throws WrongMethodTypeException if the implied {@code asType} call fails
      * @see #asSpreader
      * @see #asVarargsCollector
-     *
-     * @hide
      */
     public MethodHandle asCollector(Class<?> arrayType, int arrayLength) {
         asCollectorChecks(arrayType, arrayLength);
@@ -1045,7 +1038,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * When called with {@link #invokeExact invokeExact}, the adapter invokes
      * the target with no argument changes.
      * (<em>Note:</em> This behavior is different from a
-     * {@code #asCollector fixed arity collector},
+     * {@linkplain #asCollector fixed arity collector},
      * since it accepts a whole array of indeterminate length,
      * rather than a fixed number of arguments.)
      * <p>
@@ -1082,7 +1075,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * In all cases, what the target eventually returns is returned unchanged by the adapter.
      * <p>
      * In the final case, it is exactly as if the target method handle were
-     * temporarily adapted with a {@code #asCollector fixed arity collector}
+     * temporarily adapted with a {@linkplain #asCollector fixed arity collector}
      * to the arity required by the caller type.
      * (As with {@code asCollector}, if the array length is zero,
      * a shared constant may be used instead of a new array.
@@ -1111,7 +1104,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * <p>
      * In order to create a collecting adapter which collects a predetermined
      * number of arguments, and whose type reflects this predetermined number,
-     * use {@code #asCollector asCollector} instead.
+     * use {@link #asCollector asCollector} instead.
      * <p>
      * No method handle transformations produce new method handles with
      * variable arity, unless they are documented as doing so.
@@ -1174,7 +1167,6 @@ assertEquals("[three, thee, tee]", Arrays.toString((Object[])ls.get(0)));
      * @see #isVarargsCollector
      * @see #asFixedArity
      */
-    // TODO: Change @code to @link once asCollector is unhidden.
     public MethodHandle asVarargsCollector(Class<?> arrayType) {
         arrayType.getClass(); // explicit NPE
         boolean lastMatch = asCollectorChecks(arrayType, 0);
