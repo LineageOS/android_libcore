@@ -304,9 +304,28 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * Each of these fields are initialized to contain an instance of the
      * appropriate view the first time this view is requested.  The views are
      * stateless, so there's no reason to create more than one of each.
-     */
-    transient volatile Set<K>        keySet;
-    transient volatile Collection<V> values;
+     *
+     * <p>Since there is no synchronization performed while accessing these fields,
+     * it is expected that java.util.Map view classes using these fields have
+     * no non-final fields (or any fields at all except for outer-this). Adhering
+     * to this rule would make the races on these fields benign.
+     *
+     * <p>It is also imperative that implementations read the field only once,
+     * as in:
+     *
+     * <pre> {@code
+     * public Set<K> keySet() {
+     *   Set<K> ks = keySet;  // single racy read
+     *   if (ks == null) {
+     *     ks = new KeySet();
+     *     keySet = ks;
+     *   }
+     *   return ks;
+     * }
+     *}</pre>
+      */
+    transient Set<K>        keySet;
+    transient Collection<V> values;
 
     /**
      * {@inheritDoc}
@@ -324,9 +343,10 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * is performed, so there is a slight chance that multiple calls to this
      * method will not all return the same set.
      */
-    public Set<K> keySet() {
-        if (keySet == null) {
-            keySet = new AbstractSet<K>() {
+  public Set<K> keySet() {
+        Set<K> ks = keySet;
+        if (ks == null) {
+            ks = new AbstractSet<K>() {
                 public Iterator<K> iterator() {
                     return new Iterator<K>() {
                         private Iterator<Entry<K,V>> i = entrySet().iterator();
@@ -360,9 +380,10 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
                 public boolean contains(Object k) {
                     return AbstractMap.this.containsKey(k);
                 }
-            };
+              };
+            keySet = ks;
         }
-        return keySet;
+        return ks;
     }
 
     /**
@@ -381,9 +402,10 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * performed, so there is a slight chance that multiple calls to this
      * method will not all return the same collection.
      */
-    public Collection<V> values() {
-        if (values == null) {
-            values = new AbstractCollection<V>() {
+  public Collection<V> values() {
+        Collection<V> vals = values;
+        if (vals == null) {
+            vals = new AbstractCollection<V>() {
                 public Iterator<V> iterator() {
                     return new Iterator<V>() {
                         private Iterator<Entry<K,V>> i = entrySet().iterator();
@@ -417,9 +439,10 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
                 public boolean contains(Object v) {
                     return AbstractMap.this.containsValue(v);
                 }
-            };
+              };
+            values = vals;
         }
-        return values;
+        return vals;
     }
 
     public abstract Set<Entry<K,V>> entrySet();
