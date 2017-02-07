@@ -20,6 +20,11 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ByteArrayInputStream;
+import java.lang.reflect.Field;
 
 public class HashtableTest extends junit.framework.TestCase {
 
@@ -129,5 +134,31 @@ public class HashtableTest extends junit.framework.TestCase {
             fail("Class " + forbiddenClassName + " should not exist");
         } catch (ClassNotFoundException expected) {
         }
+    }
+
+    public void test_deserializedArrayLength() throws Exception {
+        final float loadFactor = 0.75f;
+        final int entriesCount = 100;
+        // Create table
+        Hashtable<Integer, Integer> hashtable1 = new Hashtable<>(1, loadFactor);
+        for (int i = 0; i < entriesCount; i++) {
+            hashtable1.put(i, 1);
+        }
+
+        // Serialize and deserialize
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(bos)) {
+            oos.writeObject(hashtable1);
+        }
+        Hashtable<Integer, Integer> hashtable2 =
+                (Hashtable<Integer, Integer>) new ObjectInputStream(
+                    new ByteArrayInputStream(bos.toByteArray())).readObject();
+
+        // Check that table size is >= min expected size. Due to a bug in
+        // Hashtable deserialization this wasn't the case.
+        Field tableField = Hashtable.class.getDeclaredField("table");
+        tableField.setAccessible(true);
+        Object[] table2 = (Object[]) tableField.get(hashtable2);
+        assertTrue(table2.length >= (entriesCount / loadFactor));
     }
 }
