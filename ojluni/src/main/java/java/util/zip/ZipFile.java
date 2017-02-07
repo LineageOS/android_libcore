@@ -722,7 +722,7 @@ class ZipFile implements ZipConstants, Closeable {
      * (possibly compressed) zip file entry.
      */
    private class ZipFileInputStream extends InputStream {
-        private volatile boolean closeRequested = false;
+        private volatile boolean zfisCloseRequested = false;
         protected long jzentry; // address of jzentry data
         private   long pos;     // current position within entry data
         protected long rem;     // number of remaining bytes within entry
@@ -797,9 +797,9 @@ class ZipFile implements ZipConstants, Closeable {
         }
 
         public void close() {
-            if (closeRequested)
+            if (zfisCloseRequested)
                 return;
-            closeRequested = true;
+            zfisCloseRequested = true;
 
             rem = 0;
             synchronized (ZipFile.this) {

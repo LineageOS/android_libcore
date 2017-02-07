@@ -362,6 +362,7 @@ int getFastEncoding();
 
 void initializeEncoding();
 
+extern int getErrorString(int err, char *buf, size_t len);
 
 #ifdef __cplusplus
 } /* extern "C" */
