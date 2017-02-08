@@ -1081,7 +1081,35 @@ public final class URLConnectionTest extends TestCase {
     }
 
     // http://b/33763156
-    public void testDisconnectDuringConnect() throws IOException {
+    public void testDisconnectDuringConnect_getInputStream() throws IOException {
+        checkDisconnectDuringConnect(HttpURLConnection::getInputStream);
+    }
+
+    // http://b/33763156
+    public void testDisconnectDuringConnect_getOutputStream() throws IOException {
+        checkDisconnectDuringConnect(HttpURLConnection::getOutputStream);
+    }
+
+    // http://b/33763156
+    public void testDisconnectDuringConnect_getResponseCode() throws IOException {
+        checkDisconnectDuringConnect(HttpURLConnection::getResponseCode);
+    }
+
+    // http://b/33763156
+    public void testDisconnectDuringConnect_getResponseMessage() throws IOException {
+        checkDisconnectDuringConnect(HttpURLConnection::getResponseMessage);
+    }
+
+    interface ConnectStrategy {
+        /**
+         * Causes the given {@code connection}, which was previously disconnected,
+         * to initiate the connection.
+         */
+        void connect(HttpURLConnection connection) throws IOException;
+    }
+
+    // http://b/33763156
+    private void checkDisconnectDuringConnect(ConnectStrategy connectStrategy) throws IOException {
         server.enqueue(new MockResponse().setBody("This should never be sent"));
         server.play();
 
@@ -1101,7 +1129,7 @@ public final class URLConnectionTest extends TestCase {
             HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
             connectionHolder.set(connection);
             try {
-                connection.getInputStream();
+                connectStrategy.connect(connection);
                 fail();
             } catch (IOException expected) {
                 assertEquals("Canceled", expected.getMessage());
