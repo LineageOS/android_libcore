@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -118,21 +118,19 @@ public class FtpURLConnectionTest extends TestCase {
      * counts connection attempts to the address represented by {@code asProxy()}.
      */
     public void testCountingProxy() throws Exception {
-        CountingProxy countingProxy = CountingProxy.start();
         Socket socket = new Socket();
         try {
+            CountingProxy countingProxy = CountingProxy.start();
             try {
                 Proxy proxy = countingProxy.asProxy();
                 assertEquals(Proxy.Type.HTTP, proxy.type());
                 SocketAddress address = proxy.address();
-                socket.connect(address, /* timeout (msec) */ 10); // attempt one connection
+                socket.connect(address, /* timeout (msec) */ 200); // attempt one connection
+                countingProxy.waitAndAssertConnectionCount(1);
             } finally {
-                int numConnections = countingProxy.shutdownAndGetConnectionCount();
-                assertEquals(1, numConnections);
+                countingProxy.shutdown();
             }
         } finally {
-            // Closing this socket *after* shutdownAndGetConnectionCount() ensures
-            // that the server thread had a chance to count the connection attempt.
             socket.close();
         }
     }
@@ -146,16 +144,15 @@ public class FtpURLConnectionTest extends TestCase {
         byte[] fileContents = "abcdef 1234567890".getBytes(UTF_8);
         URL fileUrl = addFileEntry(FILE_PATH, fileContents);
         CountingProxy countingProxy = CountingProxy.start();
-        final int numConnections;
         try {
             Proxy proxy = countingProxy.asProxy();
             URLConnection connection = fileUrl.openConnection(proxy);
             // direct connection succeeds
             assertContents(fileContents, connection.getInputStream());
+            countingProxy.waitAndAssertConnectionCount(0);
         } finally {
-            numConnections = countingProxy.shutdownAndGetConnectionCount();
+            countingProxy.shutdown();
         }
-        assertEquals(0, numConnections);
     }
 
     /**
@@ -182,9 +179,9 @@ public class FtpURLConnectionTest extends TestCase {
 
                 // The direct connection is successful
                 assertContents(fileContents, inputStream);
+                countingProxy.waitAndAssertConnectionCount(0);
             } finally {
-                int numConnections = countingProxy.shutdownAndGetConnectionCount();
-                assertEquals(0, numConnections);
+                countingProxy.shutdown();
             }
         } finally {
             ProxySelector.setDefault(defaultProxySelector);
@@ -296,9 +293,9 @@ public class FtpURLConnectionTest extends TestCase {
     /**
      * Counts the number of attempts to connect to a ServerSocket exposed
      * {@link #asProxy() as a Proxy}. From {@link #start()} until
-     * {@link #shutdownAndGetConnectionCount()}, a background server thread
-     * accepts and counts connections on the socket but immediately closes
-     * them without reading any data.
+     * {@link #shutdown()}, a background server thread accepts and counts
+     * connections on the socket but immediately closes them without
+     * reading any data.
      */
     static class CountingProxy {
         class ServerThread extends Thread {
@@ -311,13 +308,13 @@ public class FtpURLConnectionTest extends TestCase {
                 while (true) {
                     try {
                         Socket socket = serverSocket.accept();
-                        connectionAttempts.incrementAndGet();
+                        connectionAttempts.release(1); // count one connection attempt
                         socket.close();
                     } catch (SocketException e) {
                         shutdownLatch.countDown();
                         return;
                     } catch (IOException e) {
-                        // retry, unless shutdownLatch has reached 0
+                        // retry
                     }
                 }
             }
@@ -328,14 +325,15 @@ public class FtpURLConnectionTest extends TestCase {
         private final ServerSocket serverSocket;
         private final Proxy proxy;
         private final Thread serverThread;
-        private final AtomicInteger connectionAttempts = new AtomicInteger(0);
+        // holds one permit for each connection attempt encountered; this allows
+        // us to block until a certain number of attempts have taken place.
+        private final Semaphore connectionAttempts = new Semaphore(0);
 
         private CountingProxy() throws IOException {
             serverSocket = new ServerSocket(0 /* allocate port number automatically */);
             SocketAddress socketAddress = serverSocket.getLocalSocketAddress();
             proxy = new Proxy(Proxy.Type.HTTP, socketAddress);
-            String threadName = getClass().getSimpleName() + " @ " +
-                    serverSocket.getLocalSocketAddress();
+            String threadName = getClass().getSimpleName() + " @ " + socketAddress;
             serverThread = new ServerThread(threadName);
         }
 
@@ -343,6 +341,12 @@ public class FtpURLConnectionTest extends TestCase {
             CountingProxy result = new CountingProxy();
             // only start the thread once the object has been properly constructed
             result.serverThread.start();
+            try {
+                // Give ServerThread time to call accept().
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                throw new IOException("Unexpectedly interrupted", e);
+            }
             return result;
         }
 
@@ -360,17 +364,23 @@ public class FtpURLConnectionTest extends TestCase {
          *
          * @return the number of connections that were attempted during the proxy's lifetime
          */
-        public int shutdownAndGetConnectionCount() throws IOException, InterruptedException {
-            try {
-                serverSocket.close();
-                // Check that the server shuts down quickly and gracefully via the expected
-                // code path (as opposed to an uncaught exception).
-                shutdownLatch.await(1, TimeUnit.SECONDS);
-                serverThread.join(1000);
-                assertFalse("serverThread failed to shut down quickly", serverThread.isAlive());
-            } finally {
-                return connectionAttempts.get();
-            }
+        public void waitAndAssertConnectionCount(int expectedConnectionAttempts)
+                throws IOException, InterruptedException {
+            // Wait for a timeout, or fail early if expected # of connections is exceeded
+            boolean tooManyConnections = connectionAttempts.tryAcquire(
+                    expectedConnectionAttempts + 1, 300, TimeUnit.MILLISECONDS);
+            assertFalse("Observed more connections than the expected " + expectedConnectionAttempts,
+                    tooManyConnections);
+            assertEquals(expectedConnectionAttempts, connectionAttempts.availablePermits());
+        }
+
+        public void shutdown() throws IOException, InterruptedException {
+            serverSocket.close();
+            // Check that the server shuts down quickly and gracefully via the expected
+            // code path (as opposed to an uncaught exception).
+            shutdownLatch.await(1, TimeUnit.SECONDS);
+            serverThread.join(1000);
+            assertFalse("serverThread failed to shut down quickly", serverThread.isAlive());
         }
 
         @Override
