@@ -18,13 +18,15 @@ package libcore.java.util;
 
 import junit.framework.TestCase;
 
+import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.NavigableMap;
@@ -641,25 +643,27 @@ public class TreeMapTest extends TestCase {
 
     public void test_spliterator_keySet() {
         TreeMap<String, String> treeMap = new TreeMap<>();
+        // Elements are added out of order to ensure ordering is still preserved.
         treeMap.put("a", "1");
-        treeMap.put("b", "2");
-        treeMap.put("c", "3");
-        treeMap.put("d", "4");
-        treeMap.put("e", "5");
-        treeMap.put("f", "6");
-        treeMap.put("g", "7");
-        treeMap.put("h", "8");
         treeMap.put("i", "9");
         treeMap.put("j", "10");
         treeMap.put("k", "11");
         treeMap.put("l", "12");
-        treeMap.put("m", "13");
+        treeMap.put("b", "2");
+        treeMap.put("c", "3");
+        treeMap.put("d", "4");
+        treeMap.put("e", "5");
         treeMap.put("n", "14");
         treeMap.put("o", "15");
         treeMap.put("p", "16");
+        treeMap.put("f", "6");
+        treeMap.put("g", "7");
+        treeMap.put("h", "8");
+        treeMap.put("m", "13");
 
         Set<String> keys = treeMap.keySet();
-        ArrayList<String> expectedKeys = new ArrayList<>(keys);
+        List<String> expectedKeys = Arrays.asList(
+                "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k" , "l", "m", "n", "o", "p");
 
         SpliteratorTester.runBasicIterationTests_unordered(keys.spliterator(), expectedKeys,
                 String::compareTo);
@@ -675,25 +679,27 @@ public class TreeMapTest extends TestCase {
 
     public void test_spliterator_values() {
         TreeMap<String, String> treeMap = new TreeMap<>();
+        // Elements are added out of order to ensure ordering is still preserved.
         treeMap.put("a", "1");
-        treeMap.put("b", "2");
-        treeMap.put("c", "3");
-        treeMap.put("d", "4");
-        treeMap.put("e", "5");
-        treeMap.put("f", "6");
-        treeMap.put("g", "7");
-        treeMap.put("h", "8");
         treeMap.put("i", "9");
         treeMap.put("j", "10");
         treeMap.put("k", "11");
         treeMap.put("l", "12");
-        treeMap.put("m", "13");
+        treeMap.put("b", "2");
+        treeMap.put("c", "3");
+        treeMap.put("d", "4");
+        treeMap.put("e", "5");
         treeMap.put("n", "14");
         treeMap.put("o", "15");
         treeMap.put("p", "16");
+        treeMap.put("f", "6");
+        treeMap.put("g", "7");
+        treeMap.put("h", "8");
+        treeMap.put("m", "13");
 
         Collection<String> values = treeMap.values();
-        ArrayList<String> expectedValues = new ArrayList<>(values);
+        List<String> expectedValues = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9",
+                "10", "11", "12", "13", "14", "15", "16");
 
         SpliteratorTester.runBasicIterationTests_unordered(
                 values.spliterator(), expectedValues, String::compareTo);
@@ -709,25 +715,43 @@ public class TreeMapTest extends TestCase {
 
     public void test_spliterator_entrySet() {
         TreeMap<String, String> treeMap = new TreeMap<>();
+        // Elements are added out of order to ensure ordering is still preserved.
         treeMap.put("a", "1");
-        treeMap.put("b", "2");
-        treeMap.put("c", "3");
-        treeMap.put("d", "4");
-        treeMap.put("e", "5");
-        treeMap.put("f", "6");
-        treeMap.put("g", "7");
-        treeMap.put("h", "8");
         treeMap.put("i", "9");
         treeMap.put("j", "10");
         treeMap.put("k", "11");
         treeMap.put("l", "12");
-        treeMap.put("m", "13");
+        treeMap.put("b", "2");
+        treeMap.put("c", "3");
+        treeMap.put("d", "4");
+        treeMap.put("e", "5");
         treeMap.put("n", "14");
         treeMap.put("o", "15");
         treeMap.put("p", "16");
+        treeMap.put("f", "6");
+        treeMap.put("g", "7");
+        treeMap.put("h", "8");
+        treeMap.put("m", "13");
 
         Set<Map.Entry<String, String>> entries = treeMap.entrySet();
-        ArrayList<Map.Entry<String, String>> expectedValues = new ArrayList<>(entries);
+        List<Map.Entry<String, String>> expectedValues = Arrays.asList(
+                entry("a", "1"),
+                entry("b", "2"),
+                entry("c", "3"),
+                entry("d", "4"),
+                entry("e", "5"),
+                entry("f", "6"),
+                entry("g", "7"),
+                entry("h", "8"),
+                entry("i", "9"),
+                entry("j", "10"),
+                entry("k", "11"),
+                entry("l", "12"),
+                entry("m", "13"),
+                entry("n", "14"),
+                entry("o", "15"),
+                entry("p", "16")
+        );
 
         Comparator<Map.Entry<String, String>> comparator =
                 (a, b) -> (a.getKey().compareTo(b.getKey()));
@@ -743,6 +767,10 @@ public class TreeMapTest extends TestCase {
         SpliteratorTester.runSortedTests(entries, (a, b) -> (a.getKey().compareTo(b.getKey())));
         SpliteratorTester.runOrderedTests(entries);
         SpliteratorTester.assertSupportsTrySplit(entries);
+    }
+
+    private static<K, V> Map.Entry<K, V> entry(K key, V value) {
+        return new AbstractMap.SimpleEntry<>(key, value);
     }
 
     public void test_replaceAll() throws Exception {
