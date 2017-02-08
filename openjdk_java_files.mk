@@ -800,7 +800,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/time/Duration.java \
     ojluni/src/main/java/java/time/LocalDateTime.java \
     ojluni/src/main/java/java/time/OffsetDateTime.java \
-    ojluni/src/main/java/java/time/overview.html \
     ojluni/src/main/java/java/time/Instant.java \
     ojluni/src/main/java/java/time/temporal/ValueRange.java \
     ojluni/src/main/java/java/time/temporal/TemporalAmount.java \
@@ -1357,7 +1356,6 @@ openjdk_java_files := \
     ojluni/src/main/java/jdk/net/NetworkPermission.java \
     ojluni/src/main/java/jdk/net/SocketFlow.java \
     ojluni/src/main/java/jdk/net/Sockets.java \
-    ojluni/src/main/java/sun/invoke/empty/Empty.java \
     ojluni/src/main/java/sun/invoke/util/BytecodeDescriptor.java \
     ojluni/src/main/java/sun/invoke/util/Wrapper.java \
     ojluni/src/main/java/sun/invoke/util/VerifyAccess.java \
@@ -1381,7 +1379,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/IOUtils.java \
     ojluni/src/main/java/sun/misc/JarIndex.java \
     ojluni/src/main/java/sun/misc/JavaIOFileDescriptorAccess.java \
-    ojluni/src/main/java/sun/misc/JavaSecurityProtectionDomainAccess.java \
     ojluni/src/main/java/sun/misc/LRUCache.java \
     ojluni/src/main/java/sun/misc/MessageUtils.java \
     ojluni/src/main/java/sun/misc/MetaIndex.java \
@@ -1389,10 +1386,7 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/RegexpPool.java \
     ojluni/src/main/java/sun/misc/RegexpTarget.java \
     ojluni/src/main/java/sun/misc/Resource.java \
-    ojluni/src/main/java/sun/misc/ServiceConfigurationError.java \
     ojluni/src/main/java/sun/misc/SharedSecrets.java \
-    ojluni/src/main/java/sun/misc/Service.java \
-    ojluni/src/main/java/sun/misc/SoftCache.java \
     ojluni/src/main/java/sun/misc/URLClassPath.java \
     ojluni/src/main/java/sun/misc/Unsafe.java \
     ojluni/src/main/java/sun/misc/Version.java \
@@ -1420,7 +1414,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/net/ResourceManager.java \
     ojluni/src/main/java/sun/net/SocksProxy.java \
     ojluni/src/main/java/sun/net/spi/DefaultProxySelector.java \
-    ojluni/src/main/java/sun/net/spi/nameservice/NameServiceDescriptor.java \
     ojluni/src/main/java/sun/net/spi/nameservice/NameService.java \
     ojluni/src/main/java/sun/net/TelnetInputStream.java \
     ojluni/src/main/java/sun/net/TelnetOutputStream.java \
@@ -1556,13 +1549,11 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/nio/fs/UnixUriUtils.java \
     ojluni/src/main/java/sun/nio/fs/UnixUserPrincipals.java \
     ojluni/src/main/java/sun/nio/fs/Util.java \
-    ojluni/src/main/java/sun/reflect/ConstructorAccessor.java \
     ojluni/src/main/java/sun/reflect/misc/ReflectUtil.java \
     ojluni/src/main/java/sun/reflect/Reflection.java \
     ojluni/src/main/java/sun/security/action/GetBooleanAction.java \
     ojluni/src/main/java/sun/security/action/GetIntegerAction.java \
     ojluni/src/main/java/sun/security/action/GetPropertyAction.java \
-    ojluni/src/main/java/sun/security/action/LoadLibraryAction.java \
     ojluni/src/main/java/sun/security/jca/GetInstance.java \
     ojluni/src/main/java/sun/security/jca/JCAUtil.java \
     ojluni/src/main/java/sun/security/jca/ProviderConfig.java \
@@ -1721,7 +1712,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/util/calendar/ImmutableGregorianDate.java \
     ojluni/src/main/java/sun/util/calendar/JulianCalendar.java \
     ojluni/src/main/java/sun/util/calendar/LocalGregorianCalendar.java \
-    ojluni/src/main/java/sun/util/calendar/TzIDOldMapping.java \
     ojluni/src/main/java/sun/util/locale/BaseLocale.java \
     ojluni/src/main/java/sun/util/locale/Extension.java \
     ojluni/src/main/java/sun/util/locale/InternalLocaleBuilder.java \
