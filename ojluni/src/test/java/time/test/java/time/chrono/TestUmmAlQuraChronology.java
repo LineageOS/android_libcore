@@ -30,6 +30,7 @@ import static java.time.temporal.ChronoField.DAY_OF_YEAR;
 import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
 import static java.time.temporal.ChronoField.YEAR;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
@@ -528,6 +529,23 @@ public class TestUmmAlQuraChronology {
     public void test_leapYears(int y, boolean leapyear) {
         HijrahDate date = HijrahDate.of(y, 1, 1);
         assertEquals(date.isLeapYear(), leapyear);
+    }
+
+    // Data provider to verify that a given hijrah year is outside the range of supported years
+    // The values are dependent on the currently configured UmmAlQura calendar data
+    @DataProvider(name="OutOfRangeLeapYears")
+    Object[][] data_invalid_leapyears() {
+        return new Object[][] {
+                {1299},
+                {1601},
+                {Integer.MAX_VALUE},
+                {Integer.MIN_VALUE},
+        };
+    }
+
+    @Test(dataProvider="OutOfRangeLeapYears")
+    public void test_notLeapYears(int y) {
+        assertFalse(HijrahChronology.INSTANCE.isLeapYear(y), "Out of range leap year");
     }
 
     // Date samples to convert HijrahDate to LocalDate and vice versa
