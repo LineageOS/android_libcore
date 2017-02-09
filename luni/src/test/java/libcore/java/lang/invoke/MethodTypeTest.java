@@ -152,6 +152,23 @@ public class MethodTypeTest extends TestCase {
         }
     }
 
+    public void test_methodType_basicTestsReturnTypeAndMethodTypeParameters() {
+        MethodType mt = MethodType.methodType(int.class, long.class, String.class);
+        assertEquals(int.class, mt.returnType());
+
+        MethodType mt2 = MethodType.methodType(long.class, mt);
+
+        assertEquals(long.class, mt2.returnType());
+        assertEquals(long.class, mt2.parameterType(0));
+        assertEquals(String.class, mt2.parameterType(1));
+
+        try {
+            MethodType.methodType(int.class, (MethodType) null);
+            fail();
+        } catch (NullPointerException expected) {
+        }
+    }
+
     public void testGenericMethodType() {
         MethodType mt = MethodType.genericMethodType(0);
         assertEquals(0, mt.parameterCount());
