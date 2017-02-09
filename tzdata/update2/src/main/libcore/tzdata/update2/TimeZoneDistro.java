@@ -40,6 +40,7 @@ public final class TimeZoneDistro {
     /**
      * The name of the file inside the distro containing the distro version information.
      * The content is ASCII bytes representing a set of version numbers. See {@link DistroVersion}.
+     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     public static final String DISTRO_VERSION_FILE_NAME = "distro_version";
 
