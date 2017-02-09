@@ -208,10 +208,25 @@ include $(BUILD_JAVA_LIBRARY)
 endif
 
 ifeq ($(LIBCORE_SKIP_TESTS),)
+# Build a library just containing files from luni/src/test/filesystems for use in tests.
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := $(call all-java-files-under, luni/src/test/filesystems/src)
+LOCAL_JAVA_RESOURCE_DIRS := luni/src/test/filesystems/resources
+LOCAL_NO_STANDARD_LIBRARIES := true
+LOCAL_MODULE := filesystemstest
+LOCAL_JAVA_LIBRARIES := core-oj core-libart
+LOCAL_DEX_PREOPT := false
+include $(BUILD_JAVA_LIBRARY)
+endif
+
+ifeq ($(LIBCORE_SKIP_TESTS),)
 # Make the core-tests library.
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(test_src_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
+# Include individual dex.jar files (jars containing resources and a classes.dex) so that they
+# be loaded by tests using ClassLoaders but are not in the main classes.dex.
+LOCAL_JAVA_RESOURCE_FILES := $(TARGET_OUT)/framework/filesystemstest.jar
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp junit bouncycastle mockito-target
 LOCAL_STATIC_JAVA_LIBRARIES := \
