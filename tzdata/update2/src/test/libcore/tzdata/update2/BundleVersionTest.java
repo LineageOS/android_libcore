@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 public class BundleVersionTest extends TestCase {
 
-    private static final int INVALID_VERSION_LOW = 0;
+    private static final int INVALID_VERSION_LOW = -1;
     private static final int VALID_VERSION = 23;
     private static final int INVALID_VERSION_HIGH = 1000;
     private static final String VALID_RULES_VERSION = "2016a";
@@ -79,19 +79,20 @@ public class BundleVersionTest extends TestCase {
                 BundleVersion.CURRENT_FORMAT_MINOR_VERSION + 1);
         assertTrue(BundleVersion.isCompatibleWithThisDevice(newerMinor));
 
-        if (BundleVersion.CURRENT_FORMAT_MAJOR_VERSION > 1) {
-            BundleVersion olderMajor = createBundleVersion(
-                    BundleVersion.CURRENT_FORMAT_MAJOR_VERSION - 1,
-                    BundleVersion.CURRENT_FORMAT_MINOR_VERSION);
-            assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMajor));
-        }
+        // The constant versions should never be below 1. We allow 0 but want to start version
+        // numbers at 1 to allow testing of older version logic.
+        assertTrue(BundleVersion.CURRENT_FORMAT_MAJOR_VERSION >= 1);
+        assertTrue(BundleVersion.CURRENT_FORMAT_MINOR_VERSION >= 1);
 
-        if (BundleVersion.CURRENT_FORMAT_MINOR_VERSION > 1) {
-            BundleVersion olderMinor = createBundleVersion(
-                    BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                    BundleVersion.CURRENT_FORMAT_MINOR_VERSION - 1);
-            assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMinor));
-        }
+        BundleVersion olderMajor = createBundleVersion(
+                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION - 1,
+                BundleVersion.CURRENT_FORMAT_MINOR_VERSION);
+        assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMajor));
+
+        BundleVersion olderMinor = createBundleVersion(
+                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                BundleVersion.CURRENT_FORMAT_MINOR_VERSION - 1);
+        assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMinor));
     }
 
     private BundleVersion createBundleVersion(int majorFormatVersion, int minorFormatVersion)
