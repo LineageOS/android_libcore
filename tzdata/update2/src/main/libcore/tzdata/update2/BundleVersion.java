@@ -28,7 +28,8 @@ public class BundleVersion {
 
     /**
      * The major bundle format version supported by this device.
-     * Increment this for non-backwards compatible changes to the bundle format.
+     * Increment this for non-backwards compatible changes to the bundle format. Reset the minor
+     * version to 1 when doing so.
      */
     public static final int CURRENT_FORMAT_MAJOR_VERSION = 1;
 
@@ -189,8 +190,9 @@ public class BundleVersion {
     }
 
     private static int validate3DigitVersion(int value) throws BundleException {
-        if (value < 1 || value > 999) {
-            throw new BundleException("Expected 1 <= value <= 999, was " + value);
+        // 0 is allowed but is reserved for testing.
+        if (value < 0 || value > 999) {
+            throw new BundleException("Expected 0 <= value <= 999, was " + value);
         }
         return value;
     }
