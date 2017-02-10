@@ -22,24 +22,24 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Constants and logic associated with the time zone bundle version file.
+ * Constants and logic associated with the time zone distro version file.
  */
-public class BundleVersion {
+public class DistroVersion {
 
     /**
-     * The major bundle format version supported by this device.
-     * Increment this for non-backwards compatible changes to the bundle format. Reset the minor
+     * The major distro format version supported by this device.
+     * Increment this for non-backwards compatible changes to the distro format. Reset the minor
      * version to 1 when doing so.
      */
     public static final int CURRENT_FORMAT_MAJOR_VERSION = 1;
 
     /**
-     * The minor bundle format version supported by this device. Increment this for
-     * backwards-compatible changes to the bundle format.
+     * The minor distro format version supported by this device. Increment this for
+     * backwards-compatible changes to the distro format.
      */
     public static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
-    /** The full major + minor bundle format version for this device. */
+    /** The full major + minor distro format version for this device. */
     private static final String FULL_CURRENT_FORMAT_VERSION_STRING =
             toFormatVersionString(CURRENT_FORMAT_MAJOR_VERSION, CURRENT_FORMAT_MINOR_VERSION);
 
@@ -58,14 +58,14 @@ public class BundleVersion {
     private static final int REVISION_LENGTH = 3;
 
     /**
-     * The length of a well-formed bundle version file:
-     * {Bundle version}|{Rule version}|{Revision}
+     * The length of a well-formed distro version file:
+     * {Distro version}|{Rule version}|{Revision}
      */
-    static final int BUNDLE_VERSION_FILE_LENGTH = FORMAT_VERSION_STRING_LENGTH + 1
+    static final int DISTRO_VERSION_FILE_LENGTH = FORMAT_VERSION_STRING_LENGTH + 1
             + RULES_VERSION_LENGTH
             + 1 + REVISION_LENGTH;
 
-    private static final Pattern BUNDLE_VERSION_PATTERN = Pattern.compile(
+    private static final Pattern DISTRO_VERSION_PATTERN = Pattern.compile(
             FORMAT_VERSION_PATTERN.pattern() + "\\|"
                     + RULES_VERSION_PATTERN.pattern() + "\\|"
                     + REVISION_PATTERN.pattern()
@@ -76,36 +76,36 @@ public class BundleVersion {
     public final String rulesVersion;
     public final int revision;
 
-    public BundleVersion(int formatMajorVersion, int formatMinorVersion, String rulesVersion,
-            int revision) throws BundleException {
+    public DistroVersion(int formatMajorVersion, int formatMinorVersion, String rulesVersion,
+            int revision) throws DistroException {
         this.formatMajorVersion = validate3DigitVersion(formatMajorVersion);
         this.formatMinorVersion = validate3DigitVersion(formatMinorVersion);
         if (!RULES_VERSION_PATTERN.matcher(rulesVersion).matches()) {
-            throw new BundleException("Invalid rulesVersion: " + rulesVersion);
+            throw new DistroException("Invalid rulesVersion: " + rulesVersion);
         }
         this.rulesVersion = rulesVersion;
         this.revision = validate3DigitVersion(revision);
     }
 
-    public static BundleVersion fromBytes(byte[] bytes) throws BundleException {
-        String bundleVersion = new String(bytes, StandardCharsets.US_ASCII);
+    public static DistroVersion fromBytes(byte[] bytes) throws DistroException {
+        String distroVersion = new String(bytes, StandardCharsets.US_ASCII);
         try {
-            Matcher matcher = BUNDLE_VERSION_PATTERN.matcher(bundleVersion);
+            Matcher matcher = DISTRO_VERSION_PATTERN.matcher(distroVersion);
             if (!matcher.matches()) {
-                throw new BundleException("Invalid bundle version string: " + bundleVersion);
+                throw new DistroException("Invalid distro version string: " + distroVersion);
             }
             String formatMajorVersion = matcher.group(1);
             String formatMinorVersion = matcher.group(2);
             String rulesVersion = matcher.group(3);
             String revision = matcher.group(4);
-            return new BundleVersion(
+            return new DistroVersion(
                     from3DigitVersionString(formatMajorVersion),
                     from3DigitVersionString(formatMinorVersion),
                     rulesVersion,
                     from3DigitVersionString(revision));
         } catch (IndexOutOfBoundsException e) {
             // The use of the regexp above should make this impossible.
-            throw new BundleException("Bundle version string too short:" + bundleVersion);
+            throw new DistroException("Distro version string too short:" + distroVersion);
         }
     }
 
@@ -113,7 +113,7 @@ public class BundleVersion {
         return toBytes(formatMajorVersion, formatMinorVersion, rulesVersion, revision);
     }
 
-    // @VisibleForTesting - can be used to construct invalid bundle version bytes.
+    // @VisibleForTesting - can be used to construct invalid distro version bytes.
     public static byte[] toBytes(
             int majorFormatVersion, int minorFormatVerison, String rulesVersion, int revision) {
         return (toFormatVersionString(majorFormatVersion, minorFormatVerison)
@@ -121,11 +121,11 @@ public class BundleVersion {
                 .getBytes(StandardCharsets.US_ASCII);
     }
 
-    public static boolean isCompatibleWithThisDevice(BundleVersion bundleVersion) {
-        return (BundleVersion.CURRENT_FORMAT_MAJOR_VERSION
-                == bundleVersion.formatMajorVersion)
-                && (BundleVersion.CURRENT_FORMAT_MINOR_VERSION
-                <= bundleVersion.formatMinorVersion);
+    public static boolean isCompatibleWithThisDevice(DistroVersion distroVersion) {
+        return (DistroVersion.CURRENT_FORMAT_MAJOR_VERSION
+                == distroVersion.formatMajorVersion)
+                && (DistroVersion.CURRENT_FORMAT_MINOR_VERSION
+                <= distroVersion.formatMinorVersion);
     }
 
     @Override
@@ -137,7 +137,7 @@ public class BundleVersion {
             return false;
         }
 
-        BundleVersion that = (BundleVersion) o;
+        DistroVersion that = (DistroVersion) o;
 
         if (formatMajorVersion != that.formatMajorVersion) {
             return false;
@@ -153,7 +153,7 @@ public class BundleVersion {
 
     @Override
     public String toString() {
-        return "BundleVersion{" +
+        return "DistroVersion{" +
                 "formatMajorVersion=" + formatMajorVersion +
                 ", formatMinorVersion=" + formatMinorVersion +
                 ", rulesVersion='" + rulesVersion + '\'' +
@@ -167,7 +167,7 @@ public class BundleVersion {
     private static String to3DigitVersionString(int version) {
         try {
             return String.format(Locale.ROOT, "%03d", validate3DigitVersion(version));
-        } catch (BundleException e) {
+        } catch (DistroException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -175,24 +175,24 @@ public class BundleVersion {
     /**
      * Validates and parses a zero-padded three-digit String value.
      */
-    private static int from3DigitVersionString(String versionString) throws BundleException {
+    private static int from3DigitVersionString(String versionString) throws DistroException {
         final String parseErrorMessage = "versionString must be a zero padded, 3 digit, positive"
                 + " decimal integer";
         if (versionString.length() != 3) {
-            throw new BundleException(parseErrorMessage);
+            throw new DistroException(parseErrorMessage);
         }
         try {
             int version = Integer.parseInt(versionString);
             return validate3DigitVersion(version);
         } catch (NumberFormatException e) {
-            throw new BundleException(parseErrorMessage, e);
+            throw new DistroException(parseErrorMessage, e);
         }
     }
 
-    private static int validate3DigitVersion(int value) throws BundleException {
+    private static int validate3DigitVersion(int value) throws DistroException {
         // 0 is allowed but is reserved for testing.
         if (value < 0 || value > 999) {
-            throw new BundleException("Expected 0 <= value <= 999, was " + value);
+            throw new DistroException("Expected 0 <= value <= 999, was " + value);
         }
         return value;
     }

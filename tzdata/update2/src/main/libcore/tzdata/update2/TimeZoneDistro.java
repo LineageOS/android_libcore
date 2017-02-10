@@ -26,22 +26,22 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 /**
- * A time zone bundle. This is a thin wrapper around some in-memory bytes representing a zip
+ * A time zone distro. This is a thin wrapper around some in-memory bytes representing a zip
  * archive and logic for its safe extraction.
  */
-public final class TimeZoneBundle {
+public final class TimeZoneDistro {
 
-    /** The name of the file inside the bundle containing bionic/libcore TZ data. */
+    /** The name of the file inside the distro containing bionic/libcore TZ data. */
     public static final String TZDATA_FILE_NAME = "tzdata";
 
-    /** The name of the file inside the bundle containing ICU TZ data. */
+    /** The name of the file inside the distro containing ICU TZ data. */
     public static final String ICU_DATA_FILE_NAME = "icu/icu_tzdata.dat";
 
     /**
-     * The name of the file inside the bundle containing the bundle version information.
-     * The content is ASCII bytes representing a set of version numbers. See {@link BundleVersion}.
+     * The name of the file inside the distro containing the distro version information.
+     * The content is ASCII bytes representing a set of version numbers. See {@link DistroVersion}.
      */
-    public static final String BUNDLE_VERSION_FILE_NAME = "bundle_version";
+    public static final String DISTRO_VERSION_FILE_NAME = "distro_version";
 
     private static final int BUFFER_SIZE = 8192;
 
@@ -53,7 +53,7 @@ public final class TimeZoneBundle {
 
     private final byte[] bytes;
 
-    public TimeZoneBundle(byte[] bytes) {
+    public TimeZoneDistro(byte[] bytes) {
         this.bytes = bytes;
     }
 
@@ -61,13 +61,13 @@ public final class TimeZoneBundle {
         return bytes;
     }
 
-    public BundleVersion getBundleVersion() throws BundleException, IOException {
+    public DistroVersion getDistroVersion() throws DistroException, IOException {
         byte[] contents = getEntryContents(
-                new ByteArrayInputStream(bytes), BUNDLE_VERSION_FILE_NAME);
+                new ByteArrayInputStream(bytes), DISTRO_VERSION_FILE_NAME);
         if (contents == null) {
-            throw new BundleException("Bundle version file entry not found");
+            throw new DistroException("Distro version file entry not found");
         }
-        return BundleVersion.fromBytes(contents);
+        return DistroVersion.fromBytes(contents);
     }
 
     private static byte[] getEntryContents(InputStream is, String entryName) throws IOException {
@@ -154,7 +154,7 @@ public final class TimeZoneBundle {
             return false;
         }
 
-        TimeZoneBundle that = (TimeZoneBundle) o;
+        TimeZoneDistro that = (TimeZoneDistro) o;
 
         if (!Arrays.equals(bytes, that.bytes)) {
             return false;
