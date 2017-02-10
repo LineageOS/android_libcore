@@ -1821,7 +1821,7 @@ public class SimpleDateFormat extends DateFormat {
             }
             if (bestMatch == null) {
                 // No match found, return error.
-                return 0;
+                return -start;
             }
         }
 
@@ -1926,7 +1926,7 @@ public class SimpleDateFormat extends DateFormat {
             }
             return (start + zoneNames[nameIndex].length());
         }
-        return 0;
+        return -start;
     }
 
     /**
