@@ -32,9 +32,9 @@ import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 
 /**
- * Tests for {@link TimeZoneBundle}.
+ * Tests for {@link TimeZoneDistro}.
  */
-public class TimeZoneBundleTest extends TestCase {
+public class TimeZoneDistroTest extends TestCase {
 
     private final List<File> testFiles = new ArrayList<>();
 
@@ -48,17 +48,17 @@ public class TimeZoneBundleTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGetBundleVersion() throws Exception {
-        BundleVersion bundleVersion = new BundleVersion(BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION, "2016c", 1);
+    public void testGetDistroVersion() throws Exception {
+        DistroVersion distroVersion = new DistroVersion(DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION, "2016c", 1);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zipOutputStream = new ZipOutputStream(baos)) {
-            addZipEntry(zipOutputStream, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME,
-                    bundleVersion.toBytes());
+            addZipEntry(zipOutputStream, TimeZoneDistro.DISTRO_VERSION_FILE_NAME,
+                    distroVersion.toBytes());
         }
 
-        TimeZoneBundle bundle = new TimeZoneBundle(baos.toByteArray());
-        assertEquals(bundleVersion, bundle.getBundleVersion());
+        TimeZoneDistro distro = new TimeZoneDistro(baos.toByteArray());
+        assertEquals(distroVersion, distro.getDistroVersion());
     }
 
     public void testExtractZipSafely_goodZip() throws Exception {
@@ -75,7 +75,7 @@ public class TimeZoneBundleTest extends TestCase {
         File targetDir = new File(dir, "target");
         TestInputStream inputStream =
                 new TestInputStream(new ByteArrayInputStream(baos.toByteArray()));
-        TimeZoneBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
+        TimeZoneDistro.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
         inputStream.assertClosed();
         assertFilesExist(
                 new File(targetDir, "leadingSlash"),
@@ -109,7 +109,7 @@ public class TimeZoneBundleTest extends TestCase {
         TestInputStream inputStream = new TestInputStream(
                 new ByteArrayInputStream(baos.toByteArray()));
         try {
-            TimeZoneBundle.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
+            TimeZoneDistro.extractZipSafely(inputStream, targetDir, true /* makeWorldReadable */);
             fail();
         } catch (IOException expected) {
         }
