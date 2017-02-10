@@ -18,7 +18,7 @@ package libcore.tzdata.update2;
 
 import junit.framework.TestCase;
 
-public class BundleVersionTest extends TestCase {
+public class DistroVersionTest extends TestCase {
 
     private static final int INVALID_VERSION_LOW = -1;
     private static final int VALID_VERSION = 23;
@@ -45,58 +45,58 @@ public class BundleVersionTest extends TestCase {
     private static void checkConstructorThrows(
             int majorVersion, int minorVersion, String rulesVersion, int revision) {
         try {
-            new BundleVersion(majorVersion, minorVersion, rulesVersion, revision);
+            new DistroVersion(majorVersion, minorVersion, rulesVersion, revision);
             fail();
-        } catch (BundleException expected) {}
+        } catch (DistroException expected) {}
     }
 
     public void testConstructor() throws Exception {
-        BundleVersion bundleVersion = new BundleVersion(1, 2, VALID_RULES_VERSION, 3);
-        assertEquals(1, bundleVersion.formatMajorVersion);
-        assertEquals(2, bundleVersion.formatMinorVersion);
-        assertEquals(VALID_RULES_VERSION, bundleVersion.rulesVersion);
-        assertEquals(3, bundleVersion.revision);
+        DistroVersion distroVersion = new DistroVersion(1, 2, VALID_RULES_VERSION, 3);
+        assertEquals(1, distroVersion.formatMajorVersion);
+        assertEquals(2, distroVersion.formatMinorVersion);
+        assertEquals(VALID_RULES_VERSION, distroVersion.rulesVersion);
+        assertEquals(3, distroVersion.revision);
     }
 
     public void testToFromBytesRoundTrip() throws Exception {
-        BundleVersion bundleVersion = new BundleVersion(1, 2, VALID_RULES_VERSION, 3);
-        assertEquals(bundleVersion, BundleVersion.fromBytes(bundleVersion.toBytes()));
+        DistroVersion distroVersion = new DistroVersion(1, 2, VALID_RULES_VERSION, 3);
+        assertEquals(distroVersion, DistroVersion.fromBytes(distroVersion.toBytes()));
     }
 
     public void testIsCompatibleWithThisDevice() throws Exception {
-        BundleVersion exactMatch = createBundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION);
-        assertTrue(BundleVersion.isCompatibleWithThisDevice(exactMatch));
+        DistroVersion exactMatch = createDistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION);
+        assertTrue(DistroVersion.isCompatibleWithThisDevice(exactMatch));
 
-        BundleVersion newerMajor = createBundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION + 1,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION);
-        assertFalse(BundleVersion.isCompatibleWithThisDevice(newerMajor));
+        DistroVersion newerMajor = createDistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION + 1,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION);
+        assertFalse(DistroVersion.isCompatibleWithThisDevice(newerMajor));
 
-        BundleVersion newerMinor = createBundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION + 1);
-        assertTrue(BundleVersion.isCompatibleWithThisDevice(newerMinor));
+        DistroVersion newerMinor = createDistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION + 1);
+        assertTrue(DistroVersion.isCompatibleWithThisDevice(newerMinor));
 
         // The constant versions should never be below 1. We allow 0 but want to start version
         // numbers at 1 to allow testing of older version logic.
-        assertTrue(BundleVersion.CURRENT_FORMAT_MAJOR_VERSION >= 1);
-        assertTrue(BundleVersion.CURRENT_FORMAT_MINOR_VERSION >= 1);
+        assertTrue(DistroVersion.CURRENT_FORMAT_MAJOR_VERSION >= 1);
+        assertTrue(DistroVersion.CURRENT_FORMAT_MINOR_VERSION >= 1);
 
-        BundleVersion olderMajor = createBundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION - 1,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION);
-        assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMajor));
+        DistroVersion olderMajor = createDistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION - 1,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION);
+        assertFalse(DistroVersion.isCompatibleWithThisDevice(olderMajor));
 
-        BundleVersion olderMinor = createBundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION - 1);
-        assertFalse(BundleVersion.isCompatibleWithThisDevice(olderMinor));
+        DistroVersion olderMinor = createDistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION - 1);
+        assertFalse(DistroVersion.isCompatibleWithThisDevice(olderMinor));
     }
 
-    private BundleVersion createBundleVersion(int majorFormatVersion, int minorFormatVersion)
-            throws BundleException {
-        return new BundleVersion(majorFormatVersion, minorFormatVersion, VALID_RULES_VERSION, 3);
+    private DistroVersion createDistroVersion(int majorFormatVersion, int minorFormatVersion)
+            throws DistroException {
+        return new DistroVersion(majorFormatVersion, minorFormatVersion, VALID_RULES_VERSION, 3);
     }
 }

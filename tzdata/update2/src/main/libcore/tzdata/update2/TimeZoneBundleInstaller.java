@@ -23,19 +23,20 @@ import java.io.IOException;
 import libcore.util.ZoneInfoDB;
 
 /**
- * A bundle-validation / extraction class. Separate from the services code that uses it for easier
+ * A distro-validation / extraction class. Separate from the services code that uses it for easier
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
+// TODO(nfuller) Rename to TimeZoneDistroInstaller
 public final class TimeZoneBundleInstaller {
     /** {@link #installWithErrorCode(byte[])} result code: Success. */
     public final static int INSTALL_SUCCESS = 0;
-    /** {@link #installWithErrorCode(byte[])} result code: Bundle corrupt. */
-    public final static int INSTALL_FAIL_BAD_BUNDLE_STRUCTURE = 1;
-    /** {@link #installWithErrorCode(byte[])} result code: Bundle version incompatible. */
-    public final static int INSTALL_FAIL_BAD_BUNDLE_FORMAT_VERSION = 2;
-    /** {@link #installWithErrorCode(byte[])} result code: Bundle rules too old for device. */
+    /** {@link #installWithErrorCode(byte[])} result code: Distro corrupt. */
+    public final static int INSTALL_FAIL_BAD_DISTRO_STRUCTURE = 1;
+    /** {@link #installWithErrorCode(byte[])} result code: Distro version incompatible. */
+    public final static int INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION = 2;
+    /** {@link #installWithErrorCode(byte[])} result code: Distro rules too old for device. */
     public final static int INSTALL_FAIL_RULES_TOO_OLD = 3;
-    /** {@link #installWithErrorCode(byte[])} result code: Bundle content failed validation. */
+    /** {@link #installWithErrorCode(byte[])} result code: Distro content failed validation. */
     public final static int INSTALL_FAIL_VALIDATION_ERROR = 4;
 
     private static final String CURRENT_TZ_DATA_DIR_NAME = "current";
@@ -75,7 +76,7 @@ public final class TimeZoneBundleInstaller {
      * Install the supplied content.
      *
      * <p>Errors during unpacking or installation will throw an {@link IOException}.
-     * If the bundle content is invalid this method returns {@code false}.
+     * If the distro content is invalid this method returns {@code false}.
      * If the installation completed successfully this method returns {@code true}.
      */
     public boolean install(byte[] content) throws IOException {
@@ -84,7 +85,7 @@ public final class TimeZoneBundleInstaller {
     }
 
     /**
-     * Install the supplied time zone bundle.
+     * Install the supplied time zone distro.
      *
      * <p>Errors during unpacking or installation will throw an {@link IOException}.
      * Returns {@link #INSTALL_SUCCESS} or an error code.
@@ -98,36 +99,36 @@ public final class TimeZoneBundleInstaller {
         }
 
         Slog.i(logTag, "Unpacking / verifying time zone update");
-        unpackBundle(content, workingDir);
+        unpackDistro(content, workingDir);
         try {
-            BundleVersion bundleVersion;
+            DistroVersion distroVersion;
             try {
-                bundleVersion = readBundleVersion(workingDir);
-            } catch (BundleException e) {
-                Slog.i(logTag, "Invalid bundle version: " + e.getMessage());
-                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
+                distroVersion = readDistroVersion(workingDir);
+            } catch (DistroException e) {
+                Slog.i(logTag, "Invalid distro version: " + e.getMessage());
+                return INSTALL_FAIL_BAD_DISTRO_STRUCTURE;
             }
-            if (bundleVersion == null) {
-                Slog.i(logTag, "Update not applied: Bundle version could not be loaded");
-                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
+            if (distroVersion == null) {
+                Slog.i(logTag, "Update not applied: Distro version could not be loaded");
+                return INSTALL_FAIL_BAD_DISTRO_STRUCTURE;
             }
-            if (!BundleVersion.isCompatibleWithThisDevice(bundleVersion)) {
-                Slog.i(logTag, "Update not applied: Bundle format version check failed: "
-                        + bundleVersion);
-                return INSTALL_FAIL_BAD_BUNDLE_FORMAT_VERSION;
-            }
-
-            if (!checkBundleDataFilesExist(workingDir)) {
-                Slog.i(logTag, "Update not applied: Bundle is missing required data file(s)");
-                return INSTALL_FAIL_BAD_BUNDLE_STRUCTURE;
+            if (!DistroVersion.isCompatibleWithThisDevice(distroVersion)) {
+                Slog.i(logTag, "Update not applied: Distro format version check failed: "
+                        + distroVersion);
+                return INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION;
             }
 
-            if (!checkBundleRulesNewerThanSystem(systemTzDataFile, bundleVersion)) {
-                Slog.i(logTag, "Update not applied: Bundle rules version check failed");
+            if (!checkDistroDataFilesExist(workingDir)) {
+                Slog.i(logTag, "Update not applied: Distro is missing required data file(s)");
+                return INSTALL_FAIL_BAD_DISTRO_STRUCTURE;
+            }
+
+            if (!checkDistroRulesNewerThanSystem(systemTzDataFile, distroVersion)) {
+                Slog.i(logTag, "Update not applied: Distro rules version check failed");
                 return INSTALL_FAIL_RULES_TOO_OLD;
             }
 
-            File zoneInfoFile = new File(workingDir, TimeZoneBundle.TZDATA_FILE_NAME);
+            File zoneInfoFile = new File(workingDir, TimeZoneDistro.TZDATA_FILE_NAME);
             ZoneInfoDB.TzData tzData = ZoneInfoDB.TzData.loadTzData(zoneInfoFile.getPath());
             if (tzData == null) {
                 Slog.i(logTag, "Update not applied: " + zoneInfoFile + " could not be loaded");
@@ -196,17 +197,17 @@ public final class TimeZoneBundleInstaller {
     }
 
     /**
-     * Reads the currently installed bundle version. Returns {@code null} if there is no bundle
+     * Reads the currently installed distro version. Returns {@code null} if there is no distro
      * installed.
      *
      * @throws IOException if there was a problem reading data from /data
-     * @throws BundleException if there was a problem with the installed bundle format/structure
+     * @throws DistroException if there was a problem with the installed distro format/structure
      */
-    public BundleVersion getInstalledBundleVersion() throws BundleException, IOException {
+    public DistroVersion getInstalledDistroVersion() throws DistroException, IOException {
         if (!currentTzDataDir.exists()) {
             return null;
         }
-        return readBundleVersion(currentTzDataDir);
+        return readDistroVersion(currentTzDataDir);
     }
 
     /**
@@ -231,51 +232,51 @@ public final class TimeZoneBundleInstaller {
         }
     }
 
-    private void unpackBundle(byte[] content, File targetDir) throws IOException {
+    private void unpackDistro(byte[] content, File targetDir) throws IOException {
         Slog.i(logTag, "Unpacking update content to: " + targetDir);
-        TimeZoneBundle bundle = new TimeZoneBundle(content);
-        bundle.extractTo(targetDir);
+        TimeZoneDistro distro = new TimeZoneDistro(content);
+        distro.extractTo(targetDir);
     }
 
-    private boolean checkBundleDataFilesExist(File unpackedContentDir) throws IOException {
-        Slog.i(logTag, "Verifying bundle contents");
+    private boolean checkDistroDataFilesExist(File unpackedContentDir) throws IOException {
+        Slog.i(logTag, "Verifying distro contents");
         return FileUtils.filesExist(unpackedContentDir,
-                TimeZoneBundle.TZDATA_FILE_NAME,
-                TimeZoneBundle.ICU_DATA_FILE_NAME);
+                TimeZoneDistro.TZDATA_FILE_NAME,
+                TimeZoneDistro.ICU_DATA_FILE_NAME);
     }
 
-    private BundleVersion readBundleVersion(File bundleDir) throws BundleException, IOException {
-        Slog.i(logTag, "Reading bundle format version");
-        File bundleVersionFile =
-                new File(bundleDir, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME);
-        if (!bundleVersionFile.exists()) {
-            throw new BundleException("No bundle version file found: " + bundleVersionFile);
+    private DistroVersion readDistroVersion(File distroDir) throws DistroException, IOException {
+        Slog.i(logTag, "Reading distro format version");
+        File distroVersionFile =
+                new File(distroDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
+        if (!distroVersionFile.exists()) {
+            throw new DistroException("No distro version file found: " + distroVersionFile);
         }
         byte[] versionBytes =
-                FileUtils.readBytes(bundleVersionFile, BundleVersion.BUNDLE_VERSION_FILE_LENGTH);
-        return BundleVersion.fromBytes(versionBytes);
+                FileUtils.readBytes(distroVersionFile, DistroVersion.DISTRO_VERSION_FILE_LENGTH);
+        return DistroVersion.fromBytes(versionBytes);
     }
 
     /**
-     * Returns true if the the bundle IANA rules version is >= system IANA rules version.
+     * Returns true if the the distro IANA rules version is >= system IANA rules version.
      */
-    private boolean checkBundleRulesNewerThanSystem(
-            File systemTzDataFile, BundleVersion bundleVersion) throws IOException {
+    private boolean checkDistroRulesNewerThanSystem(
+            File systemTzDataFile, DistroVersion distroVersion) throws IOException {
 
         // We only check the /system tzdata file and assume that other data like ICU is in sync.
         // There is a CTS test that checks ICU and bionic/libcore are in sync.
         Slog.i(logTag, "Reading /system rules version");
         String systemRulesVersion = readSystemRulesVersion(systemTzDataFile);
 
-        String bundleRulesVersion = bundleVersion.rulesVersion;
-        // canApply = bundleRulesVersion >= systemRulesVersion
-        boolean canApply = bundleRulesVersion.compareTo(systemRulesVersion) >= 0;
+        String distroRulesVersion = distroVersion.rulesVersion;
+        // canApply = distroRulesVersion >= systemRulesVersion
+        boolean canApply = distroRulesVersion.compareTo(systemRulesVersion) >= 0;
         if (!canApply) {
-            Slog.i(logTag, "Failed rules version check: bundleRulesVersion="
-                    + bundleRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
+            Slog.i(logTag, "Failed rules version check: distroRulesVersion="
+                    + distroRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
         } else {
-            Slog.i(logTag, "Passed rules version check: bundleRulesVersion="
-                    + bundleRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
+            Slog.i(logTag, "Passed rules version check: distroRulesVersion="
+                    + distroRulesVersion + ", systemRulesVersion=" + systemRulesVersion);
         }
         return canApply;
     }

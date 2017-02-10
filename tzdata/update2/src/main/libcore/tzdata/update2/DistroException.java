@@ -17,15 +17,15 @@
 package libcore.tzdata.update2;
 
 /**
- * A checked exception used in connection with time zone bundle creation / installation.
+ * A checked exception used in connection with time zone distro creation / installation.
  */
-public class BundleException extends Exception {
+public class DistroException extends Exception {
 
-    public BundleException(String message) {
+    public DistroException(String message) {
         super(message);
     }
 
-    public BundleException(String message, Throwable cause) {
+    public DistroException(String message, Throwable cause) {
         super(message, cause);
     }
 }

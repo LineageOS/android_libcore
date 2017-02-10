@@ -91,7 +91,7 @@ icu.file=${TMP_PREVIOUS}/icu_tzdata.dat
 EOF
 
 TZ_PREVIOUS_UPDATE_ZIP=update_${TZ_PREVIOUS}_test.zip
-./createTimeZoneBundle.sh ${TZ_PREVIOUS_UPDATE_PROPERTIES} ${TMP}/update_${TZ_PREVIOUS}_test.zip
+./createTimeZoneDistro.sh ${TZ_PREVIOUS_UPDATE_PROPERTIES} ${TMP}/update_${TZ_PREVIOUS}_test.zip
 adb push ${TMP}/${TZ_PREVIOUS_UPDATE_ZIP} /data/local/tmp
 echo "Pushed ${TZ_PREVIOUS_UPDATE_ZIP} to /data/local/tmp"
 
@@ -120,7 +120,7 @@ icu.file=${TMP_CURRENT}/icu_tzdata.dat
 EOF
 
 TZ_CURRENT_UPDATE_ZIP=update_${TZ_CURRENT}_test.zip
-./createTimeZoneBundle.sh ${TZ_CURRENT_UPDATE_PROPERTIES} ${TMP}/update_${TZ_CURRENT}_test.zip
+./createTimeZoneDistro.sh ${TZ_CURRENT_UPDATE_PROPERTIES} ${TMP}/update_${TZ_CURRENT}_test.zip
 adb push ${TMP}/${TZ_CURRENT_UPDATE_ZIP} /data/local/tmp
 echo "Pushed ${TZ_CURRENT_UPDATE_ZIP} to /data/local/tmp"
 
@@ -149,7 +149,7 @@ icu.file=${TMP_NEXT}/icu_tzdata.dat
 EOF
 
 TZ_NEXT_UPDATE_ZIP=update_${TZ_NEXT}_test.zip
-./createTimeZoneBundle.sh ${TZ_NEXT_UPDATE_PROPERTIES} ${TMP}/update_${TZ_NEXT}_test.zip
+./createTimeZoneDistro.sh ${TZ_NEXT_UPDATE_PROPERTIES} ${TMP}/update_${TZ_NEXT}_test.zip
 adb push ${TMP}/${TZ_NEXT_UPDATE_ZIP} /data/local/tmp
 echo "Pushed ${TZ_NEXT_UPDATE_ZIP} to /data/local/tmp"
 
