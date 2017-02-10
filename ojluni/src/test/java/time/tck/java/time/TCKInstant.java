@@ -1931,6 +1931,16 @@ public class TCKInstant extends AbstractDateTimeTest {
         Instant.ofEpochSecond(Long.MIN_VALUE / 1000 - 1).toEpochMilli();
     }
 
+    @Test(expectedExceptions=ArithmeticException.class)
+    public void test_toEpochMillis_overflow() {
+        Instant.ofEpochSecond(Long.MAX_VALUE / 1000, 809_000_000).toEpochMilli();
+    }
+
+    @Test(expectedExceptions=ArithmeticException.class)
+    public void test_toEpochMillis_overflow2() {
+        Instant.ofEpochSecond(-9223372036854776L, 1).toEpochMilli();
+    }
+
     //-----------------------------------------------------------------------
     // compareTo()
     //-----------------------------------------------------------------------
