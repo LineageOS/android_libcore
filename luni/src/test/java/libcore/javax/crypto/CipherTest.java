@@ -1362,7 +1362,7 @@ public final class CipherTest extends TestCase {
         } catch (IllegalStateException expected) {
         }
 
-        // TODO: test keys from different factories (e.g. OpenSSLRSAPrivateKey vs JCERSAPrivateKey)
+        // TODO: test keys from different factories (e.g. OpenSSLRSAPrivateKey vs BCRSAPrivateKey)
         Key encryptKey = getEncryptKey(algorithm);
 
         final AlgorithmParameterSpec encryptSpec = getEncryptAlgorithmParameterSpec(algorithm);
