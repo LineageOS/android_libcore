@@ -21,67 +21,67 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import libcore.tzdata.update2.BundleException;
-import libcore.tzdata.update2.BundleVersion;
-import libcore.tzdata.update2.TimeZoneBundle;
+import libcore.tzdata.update2.DistroException;
+import libcore.tzdata.update2.DistroVersion;
+import libcore.tzdata.update2.TimeZoneDistro;
 
 /**
- * A class for creating a {@link TimeZoneBundle} containing timezone update data. Used in real
- * bundle creation code and tests.
+ * A class for creating a {@link TimeZoneDistro} containing timezone update data. Used in real
+ * distro creation code and tests.
  */
-public final class TimeZoneBundleBuilder {
+public final class TimeZoneDistroBuilder {
 
-    private BundleVersion bundleVersion;
+    private DistroVersion distroVersion;
     private byte[] tzData;
     private byte[] icuData;
 
-    public TimeZoneBundleBuilder setBundleVersion(BundleVersion bundleVersion) {
-        this.bundleVersion = bundleVersion;
+    public TimeZoneDistroBuilder setDistroVersion(DistroVersion distroVersion) {
+        this.distroVersion = distroVersion;
         return this;
     }
 
-    public TimeZoneBundleBuilder clearVersionForTests() {
+    public TimeZoneDistroBuilder clearVersionForTests() {
         // This has the effect of omitting the version file in buildUnvalidated().
-        this.bundleVersion = null;
+        this.distroVersion = null;
         return this;
     }
 
-    public TimeZoneBundleBuilder replaceFormatVersionForTests(int majorVersion, int minorVersion) {
+    public TimeZoneDistroBuilder replaceFormatVersionForTests(int majorVersion, int minorVersion) {
         try {
-            bundleVersion = new BundleVersion(
-                    majorVersion, minorVersion, bundleVersion.rulesVersion, bundleVersion.revision);
-        } catch (BundleException e) {
+            distroVersion = new DistroVersion(
+                    majorVersion, minorVersion, distroVersion.rulesVersion, distroVersion.revision);
+        } catch (DistroException e) {
             throw new IllegalArgumentException();
         }
         return this;
     }
 
-    public TimeZoneBundleBuilder setTzData(File tzDataFile) throws IOException {
+    public TimeZoneDistroBuilder setTzData(File tzDataFile) throws IOException {
         return setTzData(readFileAsByteArray(tzDataFile));
     }
 
-    public TimeZoneBundleBuilder setTzData(byte[] tzData) {
+    public TimeZoneDistroBuilder setTzData(byte[] tzData) {
         this.tzData = tzData;
         return this;
     }
 
     // For use in tests.
-    public TimeZoneBundleBuilder clearTzDataForTests() {
+    public TimeZoneDistroBuilder clearTzDataForTests() {
         this.tzData = null;
         return this;
     }
 
-    public TimeZoneBundleBuilder setIcuData(File icuDataFile) throws IOException {
+    public TimeZoneDistroBuilder setIcuData(File icuDataFile) throws IOException {
         return setIcuData(readFileAsByteArray(icuDataFile));
     }
 
-    public TimeZoneBundleBuilder setIcuData(byte[] icuData) {
+    public TimeZoneDistroBuilder setIcuData(byte[] icuData) {
         this.icuData = icuData;
         return this;
     }
 
     // For use in tests.
-    public TimeZoneBundleBuilder clearIcuDataForTests() {
+    public TimeZoneDistroBuilder clearIcuDataForTests() {
         this.icuData = null;
         return this;
     }
@@ -89,31 +89,31 @@ public final class TimeZoneBundleBuilder {
     /**
      * For use in tests. Use {@link #build()}.
      */
-    public TimeZoneBundle buildUnvalidated() throws BundleException {
+    public TimeZoneDistro buildUnvalidated() throws DistroException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            if (bundleVersion != null) {
-                addZipEntry(zos, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME, bundleVersion.toBytes());
+            if (distroVersion != null) {
+                addZipEntry(zos, TimeZoneDistro.DISTRO_VERSION_FILE_NAME, distroVersion.toBytes());
             }
 
             if (tzData != null) {
-                addZipEntry(zos, TimeZoneBundle.TZDATA_FILE_NAME, tzData);
+                addZipEntry(zos, TimeZoneDistro.TZDATA_FILE_NAME, tzData);
             }
             if (icuData != null) {
-                addZipEntry(zos, TimeZoneBundle.ICU_DATA_FILE_NAME, icuData);
+                addZipEntry(zos, TimeZoneDistro.ICU_DATA_FILE_NAME, icuData);
             }
         } catch (IOException e) {
-            throw new BundleException("Unable to create zip file", e);
+            throw new DistroException("Unable to create zip file", e);
         }
-        return new TimeZoneBundle(baos.toByteArray());
+        return new TimeZoneDistro(baos.toByteArray());
     }
 
     /**
-     * Builds a {@link TimeZoneBundle}.
+     * Builds a {@link TimeZoneDistro}.
      */
-    public TimeZoneBundle build() throws BundleException {
-        if (bundleVersion == null) {
-            throw new IllegalStateException("Missing bundleVersion");
+    public TimeZoneDistro build() throws DistroException {
+        if (distroVersion == null) {
+            throw new IllegalStateException("Missing distroVersion");
         }
         if (icuData == null) {
             throw new IllegalStateException("Missing icuData");
@@ -125,7 +125,7 @@ public final class TimeZoneBundleBuilder {
     }
 
     private static void addZipEntry(ZipOutputStream zos, String name, byte[] content)
-            throws BundleException {
+            throws DistroException {
         try {
             ZipEntry zipEntry = new ZipEntry(name);
             zipEntry.setSize(content.length);
@@ -133,7 +133,7 @@ public final class TimeZoneBundleBuilder {
             zos.write(content);
             zos.closeEntry();
         } catch (IOException e) {
-            throw new BundleException("Unable to add zip entry", e);
+            throw new DistroException("Unable to add zip entry", e);
         }
     }
 

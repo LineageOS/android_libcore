@@ -31,7 +31,7 @@ import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 import libcore.io.Streams;
 import libcore.tzdata.testing.ZoneInfoTestHelper;
-import libcore.tzdata.update2.tools.TimeZoneBundleBuilder;
+import libcore.tzdata.update2.tools.TimeZoneDistroBuilder;
 
 /**
  * Tests for {@link TimeZoneBundleInstaller}.
@@ -91,7 +91,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         File doesNotExist = new File(testSystemTzDataDir, "doesNotExist");
         TimeZoneBundleInstaller brokenSystemInstaller = new TimeZoneBundleInstaller(
                 "TimeZoneBundleInstallerTest", doesNotExist, testInstallDir);
-        TimeZoneBundle tzData = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro tzData = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
 
         try {
             brokenSystemInstaller.installWithErrorCode(tzData.getBytes());
@@ -103,33 +103,33 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
     /** Tests the first successful update on a device */
     public void testInstall_successfulFirstUpdate() throws Exception {
-        TimeZoneBundle bundle = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
 
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle.getBytes()));
-        assertBundleInstalled(bundle);
+                installer.installWithErrorCode(distro.getBytes()));
+        assertDistroInstalled(distro);
     }
 
     /**
      * Tests we can install an update the same version as is in /system.
      */
     public void testInstall_successfulFirstUpdate_sameVersionAsSystem() throws Exception {
-        TimeZoneBundle bundle = createValidTimeZoneBundle(SYSTEM_RULES_VERSION, 1);
+        TimeZoneDistro distro = createValidTimeZoneDistro(SYSTEM_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle.getBytes()));
-        assertBundleInstalled(bundle);
+                installer.installWithErrorCode(distro.getBytes()));
+        assertDistroInstalled(distro);
     }
 
     /**
      * Tests we cannot install an update older than the version in /system.
      */
     public void testInstall_unsuccessfulFirstUpdate_olderVersionThanSystem() throws Exception {
-        TimeZoneBundle bundle = createValidTimeZoneBundle(OLDER_RULES_VERSION, 1);
+        TimeZoneDistro distro = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_FAIL_RULES_TOO_OLD,
-                installer.installWithErrorCode(bundle.getBytes()));
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
@@ -137,23 +137,23 @@ public class TimeZoneBundleInstallerTest extends TestCase {
      * Tests an update on a device when there is a prior update already applied.
      */
     public void testInstall_successfulFollowOnUpdate_newerVersion() throws Exception {
-        TimeZoneBundle bundle1 = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle1.getBytes()));
-        assertBundleInstalled(bundle1);
+                installer.installWithErrorCode(distro1.getBytes()));
+        assertDistroInstalled(distro1);
 
-        TimeZoneBundle bundle2 = createValidTimeZoneBundle(NEW_RULES_VERSION, 2);
+        TimeZoneDistro distro2 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle2.getBytes()));
-        assertBundleInstalled(bundle2);
+                installer.installWithErrorCode(distro2.getBytes()));
+        assertDistroInstalled(distro2);
 
-        TimeZoneBundle bundle3 = createValidTimeZoneBundle(NEWER_RULES_VERSION, 1);
+        TimeZoneDistro distro3 = createValidTimeZoneDistro(NEWER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle3.getBytes()));
-        assertBundleInstalled(bundle3);
+                installer.installWithErrorCode(distro3.getBytes()));
+        assertDistroInstalled(distro3);
     }
 
     /**
@@ -161,53 +161,53 @@ public class TimeZoneBundleInstallerTest extends TestCase {
      * on update is older than in /system.
      */
     public void testInstall_unsuccessfulFollowOnUpdate_olderVersion() throws Exception {
-        TimeZoneBundle bundle1 = createValidTimeZoneBundle(NEW_RULES_VERSION, 2);
+        TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle1.getBytes()));
-        assertBundleInstalled(bundle1);
+                installer.installWithErrorCode(distro1.getBytes()));
+        assertDistroInstalled(distro1);
 
-        TimeZoneBundle bundle2 = createValidTimeZoneBundle(OLDER_RULES_VERSION, 1);
+        TimeZoneDistro distro2 = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_FAIL_RULES_TOO_OLD,
-                installer.installWithErrorCode(bundle2.getBytes()));
-        assertBundleInstalled(bundle1);
+                installer.installWithErrorCode(distro2.getBytes()));
+        assertDistroInstalled(distro1);
     }
 
-    /** Tests that a bundle with a missing file will not update the content. */
+    /** Tests that a distro with a missing file will not update the content. */
     public void testInstall_missingTzDataFile() throws Exception {
-        TimeZoneBundle installedBundle = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro installedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(installedBundle.getBytes()));
-        assertBundleInstalled(installedBundle);
+                installer.installWithErrorCode(installedDistro.getBytes()));
+        assertDistroInstalled(installedDistro);
 
-        TimeZoneBundle incompleteBundle =
-                createValidTimeZoneBundleBuilder(NEWER_RULES_VERSION, 1)
+        TimeZoneDistro incompleteDistro =
+                createValidTimeZoneDistroBuilder(NEWER_RULES_VERSION, 1)
                         .clearTzDataForTests()
                         .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(incompleteBundle.getBytes()));
-        assertBundleInstalled(installedBundle);
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(incompleteDistro.getBytes()));
+        assertDistroInstalled(installedDistro);
     }
 
-    /** Tests that a bundle with a missing file will not update the content. */
+    /** Tests that a distro with a missing file will not update the content. */
     public void testInstall_missingIcuFile() throws Exception {
-        TimeZoneBundle installedBundle = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro installedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(installedBundle.getBytes()));
-        assertBundleInstalled(installedBundle);
+                installer.installWithErrorCode(installedDistro.getBytes()));
+        assertDistroInstalled(installedDistro);
 
-        TimeZoneBundle incompleteBundle =
-                createValidTimeZoneBundleBuilder(NEWER_RULES_VERSION, 1)
+        TimeZoneDistro incompleteDistro =
+                createValidTimeZoneDistroBuilder(NEWER_RULES_VERSION, 1)
                         .clearIcuDataForTests()
                         .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(incompleteBundle.getBytes()));
-        assertBundleInstalled(installedBundle);
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(incompleteDistro.getBytes()));
+        assertDistroInstalled(installedDistro);
     }
 
     /**
@@ -218,96 +218,96 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         assertTrue(workingDir.mkdir());
         createFile(new File(workingDir, "myFile"), new byte[] { 'a' });
 
-        TimeZoneBundle bundle = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
+        TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneBundleInstaller.INSTALL_SUCCESS,
-                installer.installWithErrorCode(bundle.getBytes()));
-        assertBundleInstalled(bundle);
+                installer.installWithErrorCode(distro.getBytes()));
+        assertDistroInstalled(distro);
     }
 
     /**
-     * Tests that a bundle without a bundle version file will be rejected.
+     * Tests that a distro without a distro version file will be rejected.
      */
-    public void testInstall_withMissingBundleVersionFile() throws Exception {
-        // Create a bundle without a version file.
-        TimeZoneBundle bundle = createValidTimeZoneBundleBuilder(NEW_RULES_VERSION, 1)
+    public void testInstall_withMissingDistroVersionFile() throws Exception {
+        // Create a distro without a version file.
+        TimeZoneDistro distro = createValidTimeZoneDistroBuilder(NEW_RULES_VERSION, 1)
                 .clearVersionForTests()
                 .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(bundle.getBytes()));
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
     /**
-     * Tests that a bundle with an newer bundle version will be rejected.
+     * Tests that a distro with an newer distro version will be rejected.
      */
-    public void testInstall_withNewerBundleVersion() throws Exception {
-        // Create a bundle that will appear to be newer than the one currently supported.
-        TimeZoneBundle bundle = createValidTimeZoneBundleBuilder(NEW_RULES_VERSION, 1)
+    public void testInstall_withNewerDistroVersion() throws Exception {
+        // Create a distro that will appear to be newer than the one currently supported.
+        TimeZoneDistro distro = createValidTimeZoneDistroBuilder(NEW_RULES_VERSION, 1)
                 .replaceFormatVersionForTests(2, 1)
                 .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_FORMAT_VERSION,
-                installer.installWithErrorCode(bundle.getBytes()));
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION,
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
     /**
-     * Tests that a bundle with a badly formed bundle version will be rejected.
+     * Tests that a distro with a badly formed distro version will be rejected.
      */
-    public void testInstall_withBadlyFormedBundleVersion() throws Exception {
-        // Create a bundle that has an invalid major bundle version. It should be 3 numeric
+    public void testInstall_withBadlyFormedDistroVersion() throws Exception {
+        // Create a distro that has an invalid major distro version. It should be 3 numeric
         // characters, "." and 3 more numeric characters.
-        BundleVersion validBundleVersion = new BundleVersion(1, 1, NEW_RULES_VERSION, 1);
-        byte[] invalidFormatVersionBytes = validBundleVersion.toBytes();
+        DistroVersion validDistroVersion = new DistroVersion(1, 1, NEW_RULES_VERSION, 1);
+        byte[] invalidFormatVersionBytes = validDistroVersion.toBytes();
         invalidFormatVersionBytes[0] = 'A';
 
-        TimeZoneBundle bundle = createTimeZoneBundleWithVersionBytes(invalidFormatVersionBytes);
+        TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidFormatVersionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(bundle.getBytes()));
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
     /**
-     * Tests that a bundle with a badly formed revision will be rejected.
+     * Tests that a distro with a badly formed revision will be rejected.
      */
     public void testInstall_withBadlyFormedRevision() throws Exception {
-        // Create a bundle that has an invalid revision. It should be 3 numeric characters.
-        BundleVersion validBundleVersion = new BundleVersion(1, 1, NEW_RULES_VERSION, 1);
-        byte[] invalidRevisionBytes = validBundleVersion.toBytes();
+        // Create a distro that has an invalid revision. It should be 3 numeric characters.
+        DistroVersion validDistroVersion = new DistroVersion(1, 1, NEW_RULES_VERSION, 1);
+        byte[] invalidRevisionBytes = validDistroVersion.toBytes();
         invalidRevisionBytes[invalidRevisionBytes.length - 3] = 'A';
 
-        TimeZoneBundle bundle = createTimeZoneBundleWithVersionBytes(invalidRevisionBytes);
+        TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRevisionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(bundle.getBytes()));
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
     /**
-     * Tests that a bundle with a badly formed rules version will be rejected.
+     * Tests that a distro with a badly formed rules version will be rejected.
      */
     public void testInstall_withBadlyFormedRulesVersion() throws Exception {
-        // Create a bundle that has an invalid rules version. It should be in the form "2016c".
-        BundleVersion validBundleVersion = new BundleVersion(1, 1, NEW_RULES_VERSION, 1);
-        byte[] invalidRulesVersionBytes = validBundleVersion.toBytes();
+        // Create a distro that has an invalid rules version. It should be in the form "2016c".
+        DistroVersion validDistroVersion = new DistroVersion(1, 1, NEW_RULES_VERSION, 1);
+        byte[] invalidRulesVersionBytes = validDistroVersion.toBytes();
         invalidRulesVersionBytes[invalidRulesVersionBytes.length - 6] = 'B';
 
-        TimeZoneBundle bundle = createTimeZoneBundleWithVersionBytes(invalidRulesVersionBytes);
+        TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRulesVersionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_BUNDLE_STRUCTURE,
-                installer.installWithErrorCode(bundle.getBytes()));
+                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
 
-    public void testUninstall_noExistingDataBundle() throws Exception {
+    public void testUninstall_noExistingDataDistro() throws Exception {
         assertFalse(installer.uninstall());
         assertNoContentInstalled();
     }
 
-    public void testUninstall_existingDataBundle() throws Exception {
+    public void testUninstall_existingDataDistro() throws Exception {
         File currentDataDir = installer.getCurrentTzDataDir();
         assertTrue(currentDataDir.mkdir());
 
@@ -330,57 +330,57 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         assertEquals(SYSTEM_RULES_VERSION, installer.getSystemRulesVersion());
     }
 
-    private static TimeZoneBundle createValidTimeZoneBundle(
+    private static TimeZoneDistro createValidTimeZoneDistro(
             String rulesVersion, int revision) throws Exception {
-        return createValidTimeZoneBundleBuilder(rulesVersion, revision).build();
+        return createValidTimeZoneDistroBuilder(rulesVersion, revision).build();
     }
 
-    private static TimeZoneBundleBuilder createValidTimeZoneBundleBuilder(
+    private static TimeZoneDistroBuilder createValidTimeZoneDistroBuilder(
             String rulesVersion, int revision) throws Exception {
 
         byte[] bionicTzData = createTzData(rulesVersion);
         byte[] icuData = new byte[] { 'a' };
-        BundleVersion bundleVersion = new BundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION,
+        DistroVersion distroVersion = new DistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION,
                 rulesVersion,
                 revision);
-        return new TimeZoneBundleBuilder()
-                .setBundleVersion(bundleVersion)
+        return new TimeZoneDistroBuilder()
+                .setDistroVersion(distroVersion)
                 .setTzData(bionicTzData)
                 .setIcuData(icuData);
     }
 
-    private void assertBundleInstalled(TimeZoneBundle expectedBundle) throws Exception {
+    private void assertDistroInstalled(TimeZoneDistro expectedDistro) throws Exception {
         assertTrue(testInstallDir.exists());
 
         File currentTzDataDir = installer.getCurrentTzDataDir();
         assertTrue(currentTzDataDir.exists());
 
-        File bundleVersionFile =
-                new File(currentTzDataDir, TimeZoneBundle.BUNDLE_VERSION_FILE_NAME);
-        assertTrue(bundleVersionFile.exists());
+        File distroVersionFile =
+                new File(currentTzDataDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
+        assertTrue(distroVersionFile.exists());
 
-        File bionicFile = new File(currentTzDataDir, TimeZoneBundle.TZDATA_FILE_NAME);
+        File bionicFile = new File(currentTzDataDir, TimeZoneDistro.TZDATA_FILE_NAME);
         assertTrue(bionicFile.exists());
 
-        File icuFile = new File(currentTzDataDir, TimeZoneBundle.ICU_DATA_FILE_NAME);
+        File icuFile = new File(currentTzDataDir, TimeZoneDistro.ICU_DATA_FILE_NAME);
         assertTrue(icuFile.exists());
 
-        // Assert getInstalledBundleVersion() is reporting correctly.
-        assertEquals(expectedBundle.getBundleVersion(), installer.getInstalledBundleVersion());
+        // Assert getInstalledDistroVersion() is reporting correctly.
+        assertEquals(expectedDistro.getDistroVersion(), installer.getInstalledDistroVersion());
 
         try (ZipInputStream zis = new ZipInputStream(
-                new ByteArrayInputStream(expectedBundle.getBytes()))) {
+                new ByteArrayInputStream(expectedDistro.getBytes()))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 String entryName = entry.getName();
                 File actualFile;
-                if (entryName.endsWith(TimeZoneBundle.BUNDLE_VERSION_FILE_NAME)) {
-                   actualFile = bundleVersionFile;
-                } else if (entryName.endsWith(TimeZoneBundle.ICU_DATA_FILE_NAME)) {
+                if (entryName.endsWith(TimeZoneDistro.DISTRO_VERSION_FILE_NAME)) {
+                   actualFile = distroVersionFile;
+                } else if (entryName.endsWith(TimeZoneDistro.ICU_DATA_FILE_NAME)) {
                     actualFile = icuFile;
-                } else if (entryName.endsWith(TimeZoneBundle.TZDATA_FILE_NAME)) {
+                } else if (entryName.endsWith(TimeZoneDistro.TZDATA_FILE_NAME)) {
                     actualFile = bionicFile;
                 } else {
                     throw new AssertionFailedError("Unknown file found");
@@ -402,7 +402,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     }
 
     private void assertNoContentInstalled() throws Exception {
-        assertNull(installer.getInstalledBundleVersion());
+        assertNull(installer.getInstalledDistroVersion());
 
         File currentTzDataDir = installer.getCurrentTzDataDir();
         assertFalse(currentTzDataDir.exists());
@@ -431,25 +431,25 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     }
 
     /**
-     * Creates a TimeZoneBundle containing arbitrary bytes in the version file. Used for testing
-     * bundles with badly formed version info.
+     * Creates a TimeZoneDistro containing arbitrary bytes in the version file. Used for testing
+     * distros with badly formed version info.
      */
-    private static TimeZoneBundle createTimeZoneBundleWithVersionBytes(byte[] versionBytes)
+    private static TimeZoneDistro createTimeZoneDistroWithVersionBytes(byte[] versionBytes)
             throws Exception {
 
-        // Create a valid bundle, then manipulate the version file.
-        TimeZoneBundle bundle = createValidTimeZoneBundle(NEW_RULES_VERSION, 1);
-        byte[] bundleBytes = bundle.getBytes();
+        // Create a valid distro, then manipulate the version file.
+        TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
+        byte[] distroBytes = distro.getBytes();
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(bundleBytes.length);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(distroBytes.length);
         try (ZipInputStream zipInputStream =
-                     new ZipInputStream(new ByteArrayInputStream(bundleBytes));
+                     new ZipInputStream(new ByteArrayInputStream(distroBytes));
              ZipOutputStream zipOutputStream = new ZipOutputStream(baos)) {
 
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
                 zipOutputStream.putNextEntry(entry);
-                if (entry.getName().equals(TimeZoneBundle.BUNDLE_VERSION_FILE_NAME)) {
+                if (entry.getName().equals(TimeZoneDistro.DISTRO_VERSION_FILE_NAME)) {
                     // Replace the content.
                     zipOutputStream.write(versionBytes);
                 }  else {
@@ -460,6 +460,6 @@ public class TimeZoneBundleInstallerTest extends TestCase {
                 zipInputStream.closeEntry();
             }
         }
-        return new TimeZoneBundle(baos.toByteArray());
+        return new TimeZoneDistro(baos.toByteArray());
     }
 }
