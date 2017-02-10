@@ -557,4 +557,30 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         dateFormat.setTimeZone(UTC);
         assertEquals("UTC", dateFormat.format(new Date(0)));
     }
+
+    // http://b/35134326
+    public void testTimeZoneParsingErrorIndex() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy z", Locale.ENGLISH);
+
+        checkTimeZoneParsingErrorIndex(dateFormat);
+    }
+
+    // http://b/35134326
+    public void testTimeZoneParsingErrorIndexWithZoneStrings() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy z", Locale.ENGLISH);
+        // Force legacy code path by using zone strings.
+        DateFormatSymbols dfs = dateFormat.getDateFormatSymbols();
+        dfs.setZoneStrings(dfs.getZoneStrings());
+        dateFormat.setDateFormatSymbols(dfs);
+
+        checkTimeZoneParsingErrorIndex(dateFormat);
+    }
+
+    private void checkTimeZoneParsingErrorIndex(SimpleDateFormat dateFormat) {
+        ParsePosition pos = new ParsePosition(0);
+        Date parsed;
+        parsed = dateFormat.parse("2000 foobar", pos);
+        assertNull(parsed);
+        assertEquals("Wrong error index", 5, pos.getErrorIndex());
+    }
 }
