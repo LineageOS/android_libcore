@@ -123,6 +123,7 @@ class Inet6AddressImpl implements InetAddressImpl {
             // TODO: should getaddrinfo set the hostname of the InetAddresses it returns?
             for (InetAddress address : addresses) {
                 address.holder().hostName = host;
+                address.holder().originalHostName = host;
             }
             addressCache.put(host, netId, addresses);
             return addresses;
