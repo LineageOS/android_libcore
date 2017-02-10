@@ -576,7 +576,7 @@ public final class StandardNames extends Assert {
             unprovide("AlgorithmParameters", "PBEWithMD5AndDES"); // 1.2.840.113549.1.5.3
 
             // EC support
-            // provide("AlgorithmParameters", "EC");
+            provide("AlgorithmParameters", "EC");
             provide("KeyAgreement", "ECDH");
             provide("KeyFactory", "EC");
             provide("KeyPairGenerator", "EC");
