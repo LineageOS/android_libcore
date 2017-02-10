@@ -16,6 +16,9 @@
 
 package libcore.java.util;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -295,6 +298,21 @@ public class GregorianCalendarTest extends TestCase {
         assertEquals(10, calendar.get(Calendar.HOUR_OF_DAY));
         assertEquals(15, calendar.get(Calendar.MINUTE));
         assertEquals(3600 * 1000, calendar.getTimeZone().getRawOffset()); // in milliseconds
+    }
+
+    public void test_fromZonedDateTime_invalidValues() {
+        ZoneId gmt = ZoneId.of("GMT");
+        ZonedDateTime[] invalidValues = {
+                ZonedDateTime.of(LocalDateTime.MAX, gmt),
+                ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.MAX_VALUE).plusMillis(1), gmt),
+                ZonedDateTime.ofInstant(Instant.ofEpochMilli(Long.MIN_VALUE).minusMillis(1), gmt),
+                ZonedDateTime.of(LocalDateTime.MAX, gmt) };
+        for (ZonedDateTime invalidValue : invalidValues) {
+            try {
+                GregorianCalendar.from(invalidValue);
+                fail("GregorianCalendar.from() should have failed with " + invalidValue);
+            } catch (IllegalArgumentException expected) {}
+        }
     }
 
     public void test_toZonedDateTime() {
