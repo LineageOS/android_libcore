@@ -23,19 +23,19 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
-import libcore.tzdata.update2.BundleVersion;
-import libcore.tzdata.update2.TimeZoneBundle;
+import libcore.tzdata.update2.DistroVersion;
+import libcore.tzdata.update2.TimeZoneDistro;
 
 /**
- * A command-line tool for creating a timezone update bundle.
+ * A command-line tool for creating a timezone update distro.
  *
  * Args:
- * tzdata.properties file - the file describing the bundle (see template file in tzdata/tools)
+ * tzdata.properties file - the file describing the distro (see template file in tzdata/tools)
  * output file - the name of the file to be generated
  */
-public class CreateTimeZoneBundle {
+public class CreateTimeZoneDistro {
 
-    private CreateTimeZoneBundle() {}
+    private CreateTimeZoneDistro() {}
 
     public static void main(String[] args) throws Exception {
         if (args.length != 2) {
@@ -49,20 +49,20 @@ public class CreateTimeZoneBundle {
             System.exit(2);
         }
         Properties p = loadProperties(f);
-        BundleVersion bundleVersion = new BundleVersion(
-                BundleVersion.CURRENT_FORMAT_MAJOR_VERSION,
-                BundleVersion.CURRENT_FORMAT_MINOR_VERSION,
+        DistroVersion distroVersion = new DistroVersion(
+                DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                DistroVersion.CURRENT_FORMAT_MINOR_VERSION,
                 getMandatoryProperty(p, "rules.version"),
                 Integer.parseInt(getMandatoryProperty(p, "revision")));
-        TimeZoneBundleBuilder builder = new TimeZoneBundleBuilder()
-                .setBundleVersion(bundleVersion)
+        TimeZoneDistroBuilder builder = new TimeZoneDistroBuilder()
+                .setDistroVersion(distroVersion)
                 .setTzData(getMandatoryPropertyFile(p, "bionic.file"))
                 .setIcuData(getMandatoryPropertyFile(p, "icu.file"));
 
-        TimeZoneBundle bundle = builder.build();
+        TimeZoneDistro distro = builder.build();
         File outputFile = new File(args[1]);
         try (OutputStream os = new FileOutputStream(outputFile)) {
-            os.write(bundle.getBytes());
+            os.write(distro.getBytes());
         }
         System.out.println("Wrote: " + outputFile);
     }
@@ -99,7 +99,7 @@ public class CreateTimeZoneBundle {
 
     private static void printUsage() {
         System.out.println("Usage:");
-        System.out.println("\t" + CreateTimeZoneBundle.class.getName() +
+        System.out.println("\t" + CreateTimeZoneDistro.class.getName() +
                 " <tzupdate.properties file> <output file>");
     }
 }
