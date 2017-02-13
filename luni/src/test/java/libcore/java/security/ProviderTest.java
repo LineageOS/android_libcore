@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -148,10 +149,28 @@ public class ProviderTest extends TestCase {
 
         // assert that we don't have any extra in the implementation
         Collections.sort(extra); // sort so that its grouped by type
-        assertEquals("Extra algorithms", Collections.EMPTY_LIST, extra);
+        assertEquals("Algorithms are provided but not present in StandardNames",
+                Collections.EMPTY_LIST, extra);
 
+        if (remainingExpected.containsKey("Cipher")) {
+            // For any remaining ciphers, they may be aliases for other ciphers or otherwise
+            // don't show up as a service but can still be instantiated.
+            for (Iterator<String> cipherIt = remainingExpected.get("Cipher").iterator();
+                    cipherIt.hasNext(); ) {
+                String missingCipher = cipherIt.next();
+                try {
+                    Cipher.getInstance(missingCipher);
+                    cipherIt.remove();
+                } catch (NoSuchAlgorithmException|NoSuchPaddingException e) {
+                }
+            }
+            if (remainingExpected.get("Cipher").isEmpty()) {
+                remainingExpected.remove("Cipher");
+            }
+        }
         // assert that we don't have any missing in the implementation
-        assertEquals("Missing algorithms", Collections.EMPTY_MAP, remainingExpected);
+        assertEquals("Algorithms are present in StandardNames but not provided",
+                Collections.EMPTY_MAP, remainingExpected);
 
         // assert that we don't have any missing classes
         Collections.sort(missing); // sort it for readability
