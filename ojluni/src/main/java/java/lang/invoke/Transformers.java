@@ -237,27 +237,25 @@ public class Transformers {
      */
     public static class ReferenceArrayElementGetter extends Transformer {
         private final Class<?> arrayClass;
-        private final StackFrameReader reader;
-        private final StackFrameWriter writer;
 
         public ReferenceArrayElementGetter(Class<?> arrayClass) {
             super(MethodType.methodType(arrayClass.getComponentType(),
                     new Class<?>[]{arrayClass, int.class}));
             this.arrayClass = arrayClass;
-            reader = new StackFrameReader();
-            writer = new StackFrameWriter();
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(emulatedStackFrame);
-            writer.attach(emulatedStackFrame);
 
             // Read the array object and the index from the stack frame.
             final Object[] array = (Object[]) reader.nextReference(arrayClass);
             final int index = reader.nextInt();
 
             // Write the array element back to the stack frame.
+            final StackFrameWriter writer = new StackFrameWriter();
+            writer.attach(emulatedStackFrame);
             writer.makeReturnValueAccessor();
             writer.putNextReference(array[index], arrayClass.getComponentType());
         }
@@ -268,17 +266,16 @@ public class Transformers {
      */
     public static class ReferenceArrayElementSetter extends Transformer {
         private final Class<?> arrayClass;
-        private final StackFrameReader reader;
 
         public ReferenceArrayElementSetter(Class<?> arrayClass) {
             super(MethodType.methodType(void.class,
                     new Class<?>[] { arrayClass, int.class, arrayClass.getComponentType() }));
             this.arrayClass = arrayClass;
-            reader = new StackFrameReader();
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(emulatedStackFrame);
 
             // Read the array object, index and the value to write from the stack frame.
@@ -295,23 +292,20 @@ public class Transformers {
      */
     public static class ReferenceIdentity extends Transformer {
         private final Class<?> type;
-        private final StackFrameReader reader;
-        private final StackFrameWriter writer;
 
         public ReferenceIdentity(Class<?> type) {
             super(MethodType.methodType(type, type));
             this.type = type;
-
-            reader = new StackFrameReader();
-            writer = new StackFrameWriter();
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(emulatedStackFrame);
+
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(emulatedStackFrame);
             writer.makeReturnValueAccessor();
-
             writer.putNextReference(reader.nextReference(type), type);
         }
     }
@@ -335,8 +329,6 @@ public class Transformers {
         private Object asReference;
 
         private char typeChar;
-
-        private final EmulatedStackFrame.StackFrameWriter writer;
 
         public Constant(Class<?> type, Object value) {
             super(MethodType.methodType(type));
@@ -372,12 +364,11 @@ public class Transformers {
             } else {
                 throw new AssertionError("unknown type: " + typeChar);
             }
-
-            writer = new EmulatedStackFrame.StackFrameWriter();
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(emulatedStackFrame);
             writer.makeReturnValueAccessor();
 
@@ -491,9 +482,6 @@ public class Transformers {
         private final MethodHandle target;
         private final MethodHandle filter;
 
-        private final EmulatedStackFrame.StackFrameReader returnValueReader;
-        private final EmulatedStackFrame.StackFrameWriter filterWriter;
-
         private final EmulatedStackFrame.Range allArgs;
 
         public FilterReturnValue(MethodHandle target, MethodHandle filter) {
@@ -501,9 +489,6 @@ public class Transformers {
 
             this.target = target;
             this.filter = filter;
-
-            returnValueReader = new EmulatedStackFrame.StackFrameReader();
-            filterWriter = new EmulatedStackFrame.StackFrameWriter();
 
             allArgs = EmulatedStackFrame.Range.all(type());
         }
@@ -515,15 +500,16 @@ public class Transformers {
             // the same parameter shapes.
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
             emulatedStackFrame.copyRangeTo(targetFrame, allArgs, 0, 0);
-
             target.invoke(targetFrame);
 
             // Perform the invoke.
+            final StackFrameReader returnValueReader = new StackFrameReader();
             returnValueReader.attach(targetFrame);
             returnValueReader.makeReturnValueAccessor();
 
             // Create an emulated frame for the filter and copy all its arguments across.
             EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
+            final StackFrameWriter filterWriter = new StackFrameWriter();
             filterWriter.attach(filterFrame);
 
             final Class<?> returnType = target.type().rtype();
@@ -563,30 +549,24 @@ public class Transformers {
         private final MethodHandle target;
         private final int[] reorder;
 
-        private final EmulatedStackFrame.StackFrameWriter writer;
-        private final EmulatedStackFrame.StackFrameReader reader;
-
         public PermuteArguments(MethodType type, MethodHandle target, int[] reorder) {
             super(type);
 
             this.target = target;
             this.reorder = reorder;
-
-            writer = new EmulatedStackFrame.StackFrameWriter();
-            reader = new EmulatedStackFrame.StackFrameReader();
         }
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(emulatedStackFrame);
-            final Class<?>[] ptypes = type().ptypes();
 
             // In the interests of simplicity, we box / unbox arguments while performing
             // the permutation. We first iterate through the incoming stack frame and box
             // each argument. We then unbox and write out the argument to the target frame
             // according to the specified reordering.
             Object[] arguments = new Object[reorder.length];
-
+            final Class<?>[] ptypes = type().ptypes();
             for (int i = 0; i < ptypes.length; ++i) {
                 final Class<?> ptype = ptypes[i];
                 if (!ptype.isPrimitive()) {
@@ -613,6 +593,7 @@ public class Transformers {
             }
 
             EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(target.type());
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(calleeFrame);
 
             for (int i = 0; i < ptypes.length; ++i) {
@@ -1083,7 +1064,6 @@ public class Transformers {
          * arguments that aren't a part of the trailing array.
          */
         private final Range copyRange;
-        private final StackFrameWriter writer;
 
         Spreader(MethodHandle target, MethodType spreaderType, int numArrayArgs) {
             super(spreaderType);
@@ -1102,7 +1082,6 @@ public class Transformers {
             this.numArrayArgs = numArrayArgs;
             // Copy all args except for the last argument.
             this.copyRange = EmulatedStackFrame.Range.of(spreaderType, 0, arrayOffset);
-            this.writer = new StackFrameWriter();
         }
 
         @Override
@@ -1115,6 +1094,7 @@ public class Transformers {
 
             // Attach the writer, prepare to spread the trailing array arguments into
             // the callee frame.
+            StackFrameWriter writer = new StackFrameWriter();
             writer.attach(targetFrame,
                     arrayOffset,
                     copyRange.numReferences,
@@ -1350,9 +1330,6 @@ public class Transformers {
          */
         private final Range copyRange;
 
-        private final StackFrameWriter writer;
-        private final StackFrameReader reader;
-
         Collector(MethodHandle delegate, Class<?> arrayType, int length) {
             super(delegate.type().asCollectorType(arrayType, length));
 
@@ -1365,8 +1342,6 @@ public class Transformers {
 
             // Copy all args except for the last argument.
             copyRange = EmulatedStackFrame.Range.of(delegate.type(), 0, arrayOffset);
-            writer = new StackFrameWriter();
-            reader = new StackFrameReader();
         }
 
         @Override
@@ -1379,7 +1354,9 @@ public class Transformers {
 
             // Attach the writer, prepare to spread the trailing array arguments into
             // the callee frame.
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(callerFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
 
             switch (arrayTypeChar) {
@@ -1481,12 +1458,6 @@ public class Transformers {
         /** The list of filters to apply */
         private final MethodHandle[] filters;
 
-        private final StackFrameWriter writer;
-        private final StackFrameReader reader;
-
-        private final StackFrameWriter filterWriter;
-        private final StackFrameReader filterReader;
-
         FilterArguments(MethodHandle target, int pos, MethodHandle[] filters) {
             super(deriveType(target, pos, filters));
 
@@ -1494,11 +1465,6 @@ public class Transformers {
             this.pos = pos;
             this.filters = filters;
 
-            this.writer = new StackFrameWriter();
-            this.reader = new StackFrameReader();
-
-            this.filterReader = new StackFrameReader();
-            this.filterWriter = new StackFrameWriter();
         }
 
         private static MethodType deriveType(MethodHandle target, int pos, MethodHandle[] filters) {
@@ -1512,9 +1478,11 @@ public class Transformers {
 
         @Override
         public void transform(EmulatedStackFrame stackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
             reader.attach(stackFrame);
 
             EmulatedStackFrame transformedFrame = EmulatedStackFrame.create(target.type());
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(transformedFrame);
 
             final Class<?>[] ptypes = target.type().ptypes();
@@ -1537,12 +1505,14 @@ public class Transformers {
                     EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
 
                     //  Copy the next argument from the stack frame to the filter frame.
+                    final StackFrameWriter filterWriter = new StackFrameWriter();
                     filterWriter.attach(filterFrame);
                     copyNext(reader, filterWriter, filter.type().ptypes()[0]);
 
                     filter.invoke(filterFrame);
 
                     // Copy the argument back from the filter frame to the stack frame.
+                    final StackFrameReader filterReader = new StackFrameReader();
                     filterReader.attach(filterFrame);
                     filterReader.makeReturnValueAccessor();
                     copyNext(filterReader, writer, ptype);
@@ -1581,9 +1551,6 @@ public class Transformers {
          */
         private final Range range2;
 
-        private final StackFrameReader reader;
-        private final StackFrameWriter writer;
-
         private final int referencesOffset;
         private final int stackFrameOffset;
 
@@ -1605,9 +1572,6 @@ public class Transformers {
             } else {
                 this.range2 = null;
             }
-
-            reader = new StackFrameReader();
-            writer = new StackFrameWriter();
 
             // Calculate the number of primitive bytes (or references) we copy to the
             // target frame based on the return value of the combiner.
@@ -1637,7 +1601,9 @@ public class Transformers {
 
             // If one of these offsets is not zero, we have a return value to copy.
             if (referencesOffset != 0 || stackFrameOffset != 0) {
+                final StackFrameReader reader = new StackFrameReader();
                 reader.attach(filterFrame).makeReturnValueAccessor();
+                final StackFrameWriter writer = new StackFrameWriter();
                 writer.attach(targetFrame, pos, range1.numReferences, range1.numBytes);
                 copyNext(reader, writer, target.type().ptypes()[0]);
             }
@@ -1663,9 +1629,6 @@ public class Transformers {
         private final Range combinerArgs;
         private final Range targetArgs;
 
-        private final StackFrameReader reader;
-        private final StackFrameWriter writer;
-
         private final int referencesOffset;
         private final int stackFrameOffset;
 
@@ -1677,9 +1640,6 @@ public class Transformers {
 
             combinerArgs = Range.all(combiner.type());
             targetArgs = Range.all(type());
-
-            reader = new StackFrameReader();
-            writer = new StackFrameWriter();
 
             final Class<?> combinerRType = combiner.type().rtype();
             if (combinerRType == void.class) {
@@ -1706,7 +1666,9 @@ public class Transformers {
 
             // If one of these offsets is not zero, we have a return value to copy.
             if (referencesOffset != 0 || stackFrameOffset != 0) {
+                final StackFrameReader reader = new StackFrameReader();
                 reader.attach(combinerFrame).makeReturnValueAccessor();
+                final StackFrameWriter writer = new StackFrameWriter();
                 writer.attach(targetFrame);
                 copyNext(reader, writer, target.type().ptypes()[0]);
             }
@@ -1736,7 +1698,6 @@ public class Transformers {
 
         private final Range range1;
         private final Range range2;
-        private final StackFrameWriter writer;
 
         InsertArguments(MethodHandle target, int pos, Object[] values) {
             super(target.type().dropParameterTypes(pos, pos + values.length));
@@ -1747,8 +1708,6 @@ public class Transformers {
             final MethodType type = type();
             range1 = EmulatedStackFrame.Range.of(type, 0, pos);
             range2 = Range.of(type, pos, type.parameterCount());
-
-            writer = new StackFrameWriter();
         }
 
         @Override
@@ -1760,6 +1719,7 @@ public class Transformers {
 
             // Attach a stack frame writer so that we can copy the next |values.length|
             // arguments.
+            final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(calleeFrame, pos, range1.numReferences, range1.numBytes);
 
             // Copy all the arguments supplied in |values|.

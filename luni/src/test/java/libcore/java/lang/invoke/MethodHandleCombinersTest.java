@@ -16,6 +16,7 @@
 
 package libcore.java.lang.invoke;
 
+import java.lang.Thread;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -25,6 +26,8 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 
 public class MethodHandleCombinersTest extends TestCase {
+
+    static final int TEST_THREAD_ITERATIONS = 1000;
 
     public static void testThrowException() throws Throwable {
         MethodHandle handle = MethodHandles.throwException(String.class,
@@ -1632,5 +1635,261 @@ public class MethodHandleCombinersTest extends TestCase {
             fail();
         } catch (IllegalArgumentException expected) {
         }
+    }
+
+    // An exception thrown on worker threads and re-thrown on the main thread.
+    static Throwable workerException = null;
+
+    private static void invokeMultiThreaded(final MethodHandle mh) throws Throwable {
+        // Create enough worker threads to be oversubscribed in bid to force some parallelism.
+        final int threadCount = Runtime.getRuntime().availableProcessors() + 1;
+        final Thread threads [] = new Thread [threadCount];
+
+        // Launch worker threads and iterate invoking method handle.
+        for (int i = 0; i < threadCount; ++i) {
+            threads[i] = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            for (int j = 0; j < TEST_THREAD_ITERATIONS; ++j) {
+                                mh.invoke();
+                            }
+                        } catch (Throwable t) {
+                            workerException = t;
+                            fail("Unexpected exception " + workerException);
+                        }
+                    }});
+            threads[i].start();
+        }
+
+        // Wait for completion
+        for (int i = 0; i < threadCount; ++i) {
+            threads[i].join();
+        }
+
+        // Fail on main thread to avoid test appearing to complete successfully.
+        Throwable t = workerException;
+        workerException = null;
+        if (t != null) {
+            throw t;
+        }
+    }
+
+    public static void testDropInsertArgumentsMultithreaded() throws Throwable {
+        MethodHandle delegate = MethodHandles.lookup().findStatic(MethodHandleCombinersTest.class,
+                "dropArguments_delegate",
+                MethodType.methodType(void.class, new Class<?>[]{String.class, long.class}));
+        MethodHandle mh = MethodHandles.dropArguments(delegate, 0, int.class, Object.class);
+        mh = MethodHandles.insertArguments(mh, 0, 3333, "bogon", "foo", 42);
+        invokeMultiThreaded(mh);
+    }
+
+    private static void exceptionHandler_delegate(NumberFormatException e, int x, int y, long z)
+            throws Throwable {
+        assertEquals(e.getClass(), NumberFormatException.class);
+        assertEquals(e.getMessage(), "fake");
+        assertEquals(x, 66);
+        assertEquals(y, 51);
+        assertEquals(z, 20000000000l);
+    }
+
+    public static void testThrowCatchExceptionMultiThreaded() throws Throwable {
+        MethodHandle thrower = MethodHandles.throwException(void.class,
+                                                            NumberFormatException.class);
+        thrower = MethodHandles.dropArguments(thrower, 0, int.class, int.class, long.class);
+        MethodHandle handler = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "exceptionHandler_delegate",
+            MethodType.methodType(void.class, NumberFormatException.class,
+                                  int.class, int.class, long.class));
+        MethodHandle catcher =
+            MethodHandles.catchException(thrower, NumberFormatException.class, handler);
+        MethodHandle caller = MethodHandles.insertArguments(catcher, 0, 66, 51, 20000000000l,
+                                                            new NumberFormatException("fake"));
+        invokeMultiThreaded(caller);
+    }
+
+    private static void testTargetAndFallback_delegate(MethodHandle mh) throws Throwable {
+        String actual = (String) mh.invoke("target", 42, 56);
+        assertEquals("target", actual);
+        actual = (String) mh.invoke("blah", 41, 56);
+        assertEquals("fallback", actual);
+    }
+
+    public static void testGuardWithTestMultiThreaded() throws Throwable {
+        MethodHandle test =
+                MethodHandles.lookup().findStatic(MethodHandleCombinersTest.class,
+                                                  "testGuardWithTest_test",
+                                                  MethodType.methodType(boolean.class,
+                                                                        new Class<?>[]{String.class,
+                                                                                    long.class}));
+        final MethodType type = MethodType.methodType(String.class,
+                new Class<?>[]{String.class, long.class, int.class});
+        final MethodHandle target =
+                MethodHandles.lookup().findStatic(MethodHandleCombinersTest.class,
+                                                  "testGuardWithTest_target", type);
+        final MethodHandle fallback =
+                MethodHandles.lookup().findStatic(MethodHandleCombinersTest.class,
+                                                  "testGuardWithTest_fallback", type);
+        MethodHandle adapter = MethodHandles.guardWithTest(test, target, fallback);
+        MethodHandle tester = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class,
+            "testTargetAndFallback_delegate",
+            MethodType.methodType(void.class, MethodHandle.class));
+        invokeMultiThreaded(MethodHandles.insertArguments(tester, 0, adapter));
+    }
+
+    private static void arrayElementSetterGetter_delegate(MethodHandle getter,
+                                                          MethodHandle setter,
+                                                          int [] values)
+            throws Throwable{
+        for (int i = 0; i < values.length; ++i) {
+            int value = i * 13;
+            setter.invoke(values, i, value);
+            assertEquals(values[i], value);
+            assertEquals(getter.invoke(values, i), values[i]);
+        }
+    }
+
+    public static void testReferenceArrayGetterMultiThreaded() throws Throwable {
+        MethodHandle getter = MethodHandles.arrayElementGetter(int[].class);
+        MethodHandle setter = MethodHandles.arrayElementSetter(int[].class);
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class,
+            "arrayElementSetterGetter_delegate",
+            MethodType.methodType(void.class, MethodHandle.class, MethodHandle.class, int[].class));
+        mh = MethodHandles.insertArguments(mh, 0, getter, setter,
+                                           new int[] { 1, 2, 3, 5, 7, 11, 13, 17, 19, 23 });
+        invokeMultiThreaded(mh);
+    }
+
+    private static void checkConstant_delegate(MethodHandle mh, double value) throws Throwable {
+        assertEquals(mh.invoke(), value);
+    }
+
+    public static void testConstantMultithreaded() throws Throwable {
+        final double value = 7.77e77;
+        MethodHandle constant = MethodHandles.constant(double.class, value);
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkConstant_delegate",
+            MethodType.methodType(void.class, MethodHandle.class, double.class));
+        mh = MethodHandles.insertArguments(mh, 0, constant, value);
+        invokeMultiThreaded(mh);
+    }
+
+    private static void checkIdentity_delegate(MethodHandle mh, char value) throws Throwable {
+        assertEquals(mh.invoke(value), value);
+    }
+
+    public static void testIdentityMultiThreaded() throws Throwable {
+        final char value = 'z';
+        MethodHandle identity = MethodHandles.identity(char.class);
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkIdentity_delegate",
+            MethodType.methodType(void.class, MethodHandle.class, char.class));
+        mh = MethodHandles.insertArguments(mh, 0, identity, value);
+        invokeMultiThreaded(mh);
+    }
+
+    private static int multiplyByTwo(int x) { return x * 2; }
+    private static int divideByTwo(int x) { return x / 2; }
+    private static void assertMethodHandleInvokeEquals(MethodHandle mh, int value) throws Throwable{
+        assertEquals(mh.invoke(value), value);
+    }
+
+    public static void testFilterReturnValueMultiThreaded() throws Throwable {
+        MethodHandle target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "multiplyByTwo",
+            MethodType.methodType(int.class, int.class));
+        MethodHandle filter = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "divideByTwo",
+            MethodType.methodType(int.class, int.class));
+        MethodHandle filtered = MethodHandles.filterReturnValue(target, filter);
+        assertEquals(filtered.invoke(33), 33);
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "assertMethodHandleInvokeEquals",
+            MethodType.methodType(void.class, MethodHandle.class, int.class));
+        invokeMultiThreaded(MethodHandles.insertArguments(mh, 0, filtered, 77));
+    }
+
+    public static void compareStringAndFloat(String s, float f) {
+        assertEquals(s, Float.toString(f));
+    }
+
+    public static void testPermuteArgumentsMultiThreaded() throws Throwable {
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "compareStringAndFloat",
+            MethodType.methodType(void.class, String.class, float.class));
+        mh = MethodHandles.permuteArguments(
+            mh, MethodType.methodType(void.class, float.class, String.class), 1, 0);
+        invokeMultiThreaded(MethodHandles.insertArguments(mh, 0, 2.22f, "2.22"));
+    }
+
+    public static void testSpreadInvokerMultiThreaded() throws Throwable {
+        MethodType methodType = MethodType.methodType(
+            int.class, new Class<?>[]{String.class, String.class, String.class});
+        MethodHandle delegate = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "spreadReferences", methodType);
+        MethodHandle mh = delegate.asSpreader(String[].class, 3);
+        mh = MethodHandles.insertArguments(mh, 0, new Object[] { new String [] { "a", "b", "c" }});
+        invokeMultiThreaded(mh);
+    }
+
+    public static void testCollectorMultiThreaded() throws Throwable {
+        MethodHandle trailingRef = MethodHandles.lookup().findStatic(
+                MethodHandleCombinersTest.class, "collectCharSequence",
+                MethodType.methodType(int.class, String.class, CharSequence[].class));
+        MethodHandle mh = trailingRef.asCollector(String[].class, 2);
+        mh = MethodHandles.insertArguments(mh, 0, "a", "b", "c");
+        invokeMultiThreaded(mh);
+    }
+
+    public static void testFilterArgumentsMultiThreaded() throws Throwable {
+        MethodHandle filter1 = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "filter1",
+            MethodType.methodType(String.class, char.class));
+        MethodHandle filter2 = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "filter2",
+            MethodType.methodType(char.class, String.class));
+        MethodHandle target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "filterTarget",
+            MethodType.methodType(int.class, String.class, char.class, String.class, char.class));
+        MethodHandle adapter = MethodHandles.filterArguments(target, 2, filter1, filter2);
+        invokeMultiThreaded(MethodHandles.insertArguments(adapter, 0, "a", 'b', 'c', "dXXXXX"));
+    }
+
+    private static void checkStringResult_delegate(MethodHandle mh,
+                                                   String expected) throws Throwable {
+        assertEquals(mh.invoke(), expected);
+    }
+
+    public static void testCollectArgumentsMultiThreaded() throws Throwable {
+        MethodHandle filter = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "filter",
+            MethodType.methodType(String.class, char.class, char.class));
+        MethodHandle target = MethodHandles.lookup().findStatic(
+                MethodHandleCombinersTest.class, "target",
+                MethodType.methodType(String.class, String.class, String.class, String.class));
+        MethodHandle collect = MethodHandles.collectArguments(target, 2, filter);
+        collect = MethodHandles.insertArguments(collect, 0, "a", "b", 'c', 'd');
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkStringResult_delegate",
+            MethodType.methodType(void.class, MethodHandle.class, String.class));
+        invokeMultiThreaded(MethodHandles.insertArguments(mh, 0, collect, "a: a, b: b, c: c+d"));
+    }
+
+    public static void testFoldArgumentsMultiThreaded() throws Throwable {
+        MethodHandle target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "foldTarget",
+            MethodType.methodType(String.class, String.class,
+                                  char.class, char.class, String.class));
+        MethodHandle filter = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "foldFilter",
+            MethodType.methodType(String.class, char.class, char.class));
+        MethodHandle adapter = MethodHandles.foldArguments(target, filter);
+        adapter = MethodHandles.insertArguments(adapter, 0, 'c', 'd', "e");
+        MethodHandle mh = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkStringResult_delegate",
+            MethodType.methodType(void.class, MethodHandle.class, String.class));
+        invokeMultiThreaded(MethodHandles.insertArguments(mh, 0, adapter, "a: c+d ,b:c ,c:d ,d:e"));
     }
 }
