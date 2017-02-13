@@ -30,12 +30,14 @@ public class DistroVersion {
      * The major distro format version supported by this device.
      * Increment this for non-backwards compatible changes to the distro format. Reset the minor
      * version to 1 when doing so.
+     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     public static final int CURRENT_FORMAT_MAJOR_VERSION = 1;
 
     /**
      * The minor distro format version supported by this device. Increment this for
      * backwards-compatible changes to the distro format.
+     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     public static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
@@ -122,10 +124,8 @@ public class DistroVersion {
     }
 
     public static boolean isCompatibleWithThisDevice(DistroVersion distroVersion) {
-        return (DistroVersion.CURRENT_FORMAT_MAJOR_VERSION
-                == distroVersion.formatMajorVersion)
-                && (DistroVersion.CURRENT_FORMAT_MINOR_VERSION
-                <= distroVersion.formatMinorVersion);
+        return (CURRENT_FORMAT_MAJOR_VERSION == distroVersion.formatMajorVersion)
+                && (CURRENT_FORMAT_MINOR_VERSION <= distroVersion.formatMinorVersion);
     }
 
     @Override
