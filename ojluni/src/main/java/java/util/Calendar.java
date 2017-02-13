@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -1161,12 +1161,13 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
             return this;
         }
 
+        // Android-changed: fix typo in example code.
         /**
          * Sets field parameters to their values given by
          * {@code fieldValuePairs} that are pairs of a field and its value.
          * For example,
          * <pre>
-         *   setFeilds(Calendar.YEAR, 2013,
+         *   setFields(Calendar.YEAR, 2013,
          *             Calendar.MONTH, Calendar.DECEMBER,
          *             Calendar.DAY_OF_MONTH, 23);</pre>
          * is equivalent to the sequence of the following
@@ -1464,12 +1465,17 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                 type = locale.getUnicodeLocaleType("ca");
             }
             if (type == null) {
+                // Android-changed: don't switch to buddhist calendar based on locale.
+                // See http://b/35138741
+                /*
                 if (locale.getCountry() == "TH"
-                    && locale.getLanguage() == "th") {
+                        && locale.getLanguage() == "th") {
                     type = "buddhist";
                 } else {
                     type = "gregory";
                 }
+                */
+                type = "gregory";
             }
             switch (type) {
             case "gregory":
@@ -1483,6 +1489,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                 setWeekDefinition(MONDAY, 4);
                 cal = gcal;
                 break;
+                // Android-changed: removed support for "buddhist" and "japanese".
             default:
                 throw new IllegalArgumentException("unknown calendar type: " + type);
             }
@@ -2595,6 +2602,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         static {
             Set<String> set = new HashSet<>(3);
             set.add("gregory");
+            // Android-changed: removed "buddhist" and "japanese".
             SET = Collections.unmodifiableSet(set);
         }
         private AvailableCalendarTypes() {
