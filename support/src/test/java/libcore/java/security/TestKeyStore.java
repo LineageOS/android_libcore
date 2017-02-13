@@ -16,6 +16,8 @@
 
 package libcore.java.security;
 
+import static org.junit.Assert.assertEquals;
+
 import com.android.org.bouncycastle.asn1.DEROctetString;
 import com.android.org.bouncycastle.asn1.x500.X500Name;
 import com.android.org.bouncycastle.asn1.x509.BasicConstraints;
@@ -63,7 +65,6 @@ import java.security.Security;
 import java.security.UnrecoverableEntryException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -78,7 +79,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.security.auth.x500.X500Principal;
-import junit.framework.Assert;
 import libcore.javax.net.ssl.TestKeyManager;
 import libcore.javax.net.ssl.TestTrustManager;
 
@@ -89,7 +89,7 @@ import libcore.javax.net.ssl.TestTrustManager;
  * Creating a key store is relatively slow, so a singleton instance is
  * accessible via TestKeyStore.get().
  */
-public final class TestKeyStore extends Assert {
+public final class TestKeyStore {
     /** Size of DSA keys to generate for testing. */
     private static final int DSA_KEY_SIZE_BITS = 1024;
 
@@ -155,10 +155,8 @@ public final class TestKeyStore extends Assert {
         }
     }
 
-    private static final boolean TEST_MANAGERS = true;
     private static final byte[] LOCAL_HOST_ADDRESS = { 127, 0, 0, 1 };
     private static final String LOCAL_HOST_NAME = "localhost";
-
 
     public final KeyStore keyStore;
     public final char[] storePassword;
