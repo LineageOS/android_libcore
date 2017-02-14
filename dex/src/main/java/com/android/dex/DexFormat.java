@@ -51,7 +51,12 @@ public final class DexFormat {
      * completed and is not considered a valid dex file format.
      * </p>
      */
-    public static final String VERSION_CURRENT = "037";
+    public static final String VERSION_CURRENT = "038";
+
+    /**
+     * Versions currently supported.
+     */
+    static final String [] VERSIONS_SUPPORTED = { "035", "037", "038" };
 
     /** dex file version number for API level 13 and earlier */
     public static final String VERSION_FOR_API_13 = "035";
@@ -91,9 +96,13 @@ public final class DexFormat {
 
         String version = "" + ((char) magic[4]) + ((char) magic[5]) +((char) magic[6]);
 
-        if (version.equals(VERSION_CURRENT)) {
-            return API_CURRENT;
-        } else if (version.equals(VERSION_FOR_API_13)) {
+        for (String supported : VERSIONS_SUPPORTED) {
+            if (version.equals(supported)) {
+                return API_CURRENT;
+            }
+        }
+
+        if (version.equals(VERSION_FOR_API_13)) {
             return API_NO_EXTENDED_OPCODES;
         }
 
