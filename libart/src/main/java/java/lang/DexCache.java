@@ -48,10 +48,22 @@ final class DexCache {
     private long dexFile;
 
     /**
+     * References to CallSite (C array pointer) as they become resolved following
+     * interpreter semantics.
+     */
+    private long resolvedCallSites;
+
+    /**
      * References to fields (C array pointer) as they become resolved following
      * interpreter semantics. May refer to fields defined in other dex files.
      */
     private long resolvedFields;
+
+    /**
+     * References to MethodType (C array pointer) as they become resolved following
+     * interpreter semantics.
+     */
+    private long resolvedMethodTypes;
 
     /**
      * References to methods (C array pointer) as they become resolved following
@@ -72,15 +84,19 @@ final class DexCache {
     private long strings;
 
     /**
-     * References to MethodType (C array pointer) as they become resolved following
-     * interpreter semantics.
+     * The number of elements in the native call sites array.
      */
-    private long resolvedMethodTypes;
+    private int numResolvedCallSites;
 
     /**
      * The number of elements in the native resolvedFields array.
      */
     private int numResolvedFields;
+
+    /**
+     * The number of elements in the native method types array.
+     */
+    private int numResolvedMethodTypes;
 
     /**
      * The number of elements in the native resolvedMethods array.
@@ -96,11 +112,6 @@ final class DexCache {
      * The number of elements in the native strings array.
      */
     private int numStrings;
-
-    /**
-     * The number of elements in the native method types array.
-     */
-    private int numResolvedMethodTypes;
 
     // Only created by the VM.
     private DexCache() {}

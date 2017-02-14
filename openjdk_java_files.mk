@@ -114,6 +114,7 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/AssertionError.java \
     ojluni/src/main/java/java/lang/AutoCloseable.java \
     ojluni/src/main/java/java/lang/Boolean.java \
+    ojluni/src/main/java/java/lang/BootstrapMethodError.java \
     ojluni/src/main/java/java/lang/Byte.java \
     ojluni/src/main/java/java/lang/Character.java \
     ojluni/src/main/java/java/lang/CharSequence.java \
@@ -240,6 +241,8 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/VirtualMachineError.java \
     ojluni/src/main/java/java/lang/Void.java \
     ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java \
+    ojluni/src/main/java/java/lang/invoke/CallSite.java \
+    ojluni/src/main/java/java/lang/invoke/ConstantCallSite.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandle.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java \
@@ -247,8 +250,10 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java \
     ojluni/src/main/java/java/lang/invoke/MethodType.java \
     ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java \
+    ojluni/src/main/java/java/lang/invoke/MutableCallSite.java \
     ojluni/src/main/java/java/lang/invoke/Stable.java \
     ojluni/src/main/java/java/lang/invoke/Transformers.java \
+    ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java \
     ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java \
     ojluni/src/main/java/java/net/AbstractPlainDatagramSocketImpl.java \
     ojluni/src/main/java/java/net/AbstractPlainSocketImpl.java \
@@ -1744,10 +1749,10 @@ openjdk_java_files := \
 # On older platforms : Both sets of stub files are used and core-oj does not contain
 # any of these classes.
 openjdk_lambda_stub_files := \
-    ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
     ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
 openjdk_lambda_duplicate_stub_files := \
+    ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
     ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
     ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \

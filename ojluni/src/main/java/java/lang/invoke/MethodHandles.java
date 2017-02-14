@@ -665,6 +665,9 @@ public class MethodHandles {
          */
         static final Lookup PUBLIC_LOOKUP = new Lookup(Object.class, PUBLIC);
 
+        /** Package-private version of lookup which is trusted. */
+        static final Lookup IMPL_LOOKUP = new Lookup(Object.class, ALL_MODES);
+
         private static void checkUnprivilegedlookupClass(Class<?> lookupClass, int allowedModes) {
             String name = lookupClass.getName();
             if (name.startsWith("java.lang.invoke."))
