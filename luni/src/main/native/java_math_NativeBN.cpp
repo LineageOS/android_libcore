@@ -216,43 +216,33 @@ static void NativeBN_twosComp2bn(JNIEnv* env, jclass, jbyteArray arr, int bytesL
   if (bytes.get() == NULL) {
     return;
   }
+
+  if (bytesLen == 0) {
+    BN_zero(ret);
+    return;
+  }
+
   const unsigned char* bytesTmp = reinterpret_cast<const unsigned char*>(bytes.get());
 
-  if ((bytes[0] & 0x80) == 0) {
-    // Positive value: we can use the existing BN implementation for unsigned big endian bytes.
+  if (!BN_bin2bn(bytesTmp, bytesLen, ret)) {
+    throwException(env);
+    return;
+  }
 
-    if (!BN_bin2bn(bytesTmp, bytesLen, ret)) {
-      throwException(env);
-      return;
-    }
-    BN_set_negative(ret, false);
-  } else {
-    // Negative value: we need to interpret the twos complement representation
-    //
-    // This uses the fact that in the 2c rep,
-    //    - x = ~ x + 1
-    //
-    // TODO (varomodt): add BN bitwise ops to make this easier.
+  // Use the high bit to determine the sign in twos-complement.
+  BN_set_negative(ret, (bytes[0] & 0x80) != 0);
 
-    jbyteArray oppositeBytes = env->NewByteArray(bytesLen);
-    ScopedByteArrayRW opp(env, oppositeBytes);
-    uint8_t* oppTmp = reinterpret_cast<uint8_t*>(opp.get());
-
-    for (int i = 0; i < bytesLen; i++) {
-      oppTmp[i] = ~ bytesTmp[i];
-    }
-
-    if (!BN_bin2bn(oppTmp, bytesLen, ret)) {
+  if (BN_is_negative(ret)) {
+    // For negative values, BN_bin2bn doesn't interpret the twos-complement
+    // representation, so ret is now (- value - 2^N). We can use nnmod_pow2 to set
+    // ret to (-value).
+    if (!BN_nnmod_pow2(ret, ret, bytesLen * 8)) {
       throwException(env);
       return;
     }
 
-    BN_set_negative(ret, true);
-
-    if (!BN_sub(ret, ret, BN_value_one())) {
-      throwException(env);
-      return;
-    }
+    // And now we correct the sign.
+    BN_set_negative(ret, 1);
   }
 }
 
@@ -372,39 +362,31 @@ static void NativeBN_BN_set_negative(JNIEnv* env, jclass, jlong b, int n) {
   BN_set_negative(toBigNum(b), n);
 }
 
-// TODO (varomodt): add BN_is_pow2 to make this fast.
-static bool isPowerOfTwo(JNIEnv* env, BIGNUM* x) {
-  int bits = BN_num_bits(x);
-
-  if (bits == 0) {
-    return false;
-  }
-
-  BIGNUM tmp;
-  BN_init(&tmp);
-
-  if (!BN_copy(&tmp, x)) {
-    BN_free(&tmp);
-    throwException(env);
-    return false;
-  }
-
-  // If our value is 2^bits, then masking off one bit will make it zero.
-  BN_mask_bits(&tmp, bits - 1);
-  bool ret = BN_is_zero(&tmp);
-  BN_free(&tmp);
-  return ret;
-}
-
 static int NativeBN_bitLength(JNIEnv* env, jclass, jlong a0) {
   if (!oneValidHandle(env, a0)) return JNI_FALSE;
   BIGNUM* a = toBigNum(a0);
 
-  if (BN_is_negative(a)) {
-    return isPowerOfTwo(env, a) ? BN_num_bits(a) - 1 : BN_num_bits(a);
-  } else {
+  // If a is not negative, we can use BN_num_bits directly.
+  if (!BN_is_negative(a)) {
     return BN_num_bits(a);
   }
+
+  // In the negative case, the number of bits in a is the same as the number of bits in |a|,
+  // except one less when |a| is a power of two.
+  BIGNUM positiveA;
+  BN_init(&positiveA);
+
+  if (!BN_copy(&positiveA, a)) {
+    BN_free(&positiveA);
+    throwException(env);
+    return -1;
+  }
+
+  BN_set_negative(&positiveA, false);
+  int numBits = BN_is_pow2(&positiveA) ? BN_num_bits(&positiveA) - 1 : BN_num_bits(&positiveA);
+
+  BN_free(&positiveA);
+  return numBits;
 }
 
 static jboolean NativeBN_BN_is_bit_set(JNIEnv* env, jclass, jlong a, int n) {
