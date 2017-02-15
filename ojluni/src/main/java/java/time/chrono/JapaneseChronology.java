@@ -132,7 +132,7 @@ public final class JapaneseChronology extends AbstractChronology implements Seri
     private static final Locale LOCALE = Locale.forLanguageTag("ja-JP-u-ca-japanese");
 
     static Calendar createCalendar() {
-        return Calendar.getJapanesImperialInstance(TimeZone.getDefault(), LOCALE);
+        return Calendar.getJapaneseImperialInstance(TimeZone.getDefault(), LOCALE);
     }
 
     /**
