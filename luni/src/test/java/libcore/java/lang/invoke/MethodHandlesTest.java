@@ -965,7 +965,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals(testPattern, s);
     }
 
-    private static void testReferenceReturnValueConversions() throws Throwable {
+    public void testReferenceReturnValueConversions() throws Throwable {
         MethodHandle mh = MethodHandles.lookup().findStatic(
                 Float.class, "valueOf", MethodType.methodType(Float.class, String.class));
 
@@ -1023,7 +1023,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals(0, c.compareTo(Float.valueOf(2.125f)));
     }
 
-    private static void testPrimitiveReturnValueConversions() throws Throwable {
+    public void testPrimitiveReturnValueConversions() throws Throwable {
         MethodHandle mh = MethodHandles.lookup().findStatic(
                 Math.class, "min", MethodType.methodType(int.class, int.class, int.class));
 
@@ -1153,11 +1153,6 @@ public class MethodHandlesTest extends TestCase {
             fail();
         } catch (WrongMethodTypeException expected) {
         }
-    }
-
-    public static void testReturnValueConversions() throws Throwable {
-        testReferenceReturnValueConversions();
-        testPrimitiveReturnValueConversions();
     }
 
     public static class BaseVariableArityTester {
