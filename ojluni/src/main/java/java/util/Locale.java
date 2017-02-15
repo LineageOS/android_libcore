@@ -886,7 +886,8 @@ public final class Locale implements Cloneable, Serializable {
      */
     public static Locale getDefault() {
         // do not synchronize this method - see 4071298
-        return defaultLocale;
+        // Android-changed: Add NoImagePreloadHolder to allow compile-time initialization.
+        return NoImagePreloadHolder.defaultLocale;
     }
 
     /**
@@ -972,6 +973,8 @@ public final class Locale implements Cloneable, Serializable {
     }
 
     private static Locale initDefault(Locale.Category category) {
+        // Android-changed: Add NoImagePreloadHolder to allow compile-time initialization.
+        final Locale defaultLocale = NoImagePreloadHolder.defaultLocale;
         return getInstance(
             System.getProperty(category.languageKey, defaultLocale.getLanguage()),
             System.getProperty(category.scriptKey, defaultLocale.getScript()),
@@ -1012,7 +1015,8 @@ public final class Locale implements Cloneable, Serializable {
     public static synchronized void setDefault(Locale newLocale) {
         setDefault(Category.DISPLAY, newLocale);
         setDefault(Category.FORMAT, newLocale);
-        defaultLocale = newLocale;
+        // Android-changed: Add NoImagePreloadHolder to allow compile-time initialization.
+        NoImagePreloadHolder.defaultLocale = newLocale;
         // Android-added: Keep ICU state in sync with java.util.
         ICU.setDefaultLocale(newLocale.toLanguageTag());
     }
@@ -2184,7 +2188,10 @@ public final class Locale implements Cloneable, Serializable {
      */
     private transient volatile int hashCodeValue = 0;
 
-    private volatile static Locale defaultLocale = initDefault();
+    // Android-changed: Add NoImagePreloadHolder to allow compile-time initialization.
+    private static class NoImagePreloadHolder {
+        public volatile static Locale defaultLocale = initDefault();
+    }
     private volatile static Locale defaultDisplayLocale = null;
     private volatile static Locale defaultFormatLocale = null;
 
