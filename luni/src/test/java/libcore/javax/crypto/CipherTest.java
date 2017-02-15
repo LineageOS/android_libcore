@@ -4626,14 +4626,14 @@ public final class CipherTest extends TestCase {
                 if (s.getType().equals("Cipher")) {
                     if (s.getAlgorithm().startsWith("AES_128/")) {
                         Cipher c = Cipher.getInstance(s.getAlgorithm(), p);
-                        assertTrue(checkAES_keyConstraint(c, 128));
-                        assertFalse(checkAES_keyConstraint(c, 192));
-                        assertFalse(checkAES_keyConstraint(c, 256));
+                        assertTrue(s.getAlgorithm(), checkAES_keyConstraint(c, 128));
+                        assertFalse(s.getAlgorithm(), checkAES_keyConstraint(c, 192));
+                        assertFalse(s.getAlgorithm(), checkAES_keyConstraint(c, 256));
                     } else if (s.getAlgorithm().startsWith("AES_256/")) {
                         Cipher c = Cipher.getInstance(s.getAlgorithm(), p);
-                        assertFalse(checkAES_keyConstraint(c, 128));
-                        assertFalse(checkAES_keyConstraint(c, 192));
-                        assertTrue(checkAES_keyConstraint(c, 256));
+                        assertFalse(s.getAlgorithm(), checkAES_keyConstraint(c, 128));
+                        assertFalse(s.getAlgorithm(), checkAES_keyConstraint(c, 192));
+                        assertTrue(s.getAlgorithm(), checkAES_keyConstraint(c, 256));
                     }
                 }
             }

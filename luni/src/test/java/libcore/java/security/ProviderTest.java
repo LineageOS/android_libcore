@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -45,6 +46,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -85,6 +87,20 @@ public class ProviderTest extends TestCase {
             Set<Provider.Service> services = provider.getServices();
             assertNotNull(services);
             assertFalse(services.isEmpty());
+            if (LOG_DEBUG) {
+                Set<Provider.Service> originalServices = services;
+                services = new TreeSet<Provider.Service>(
+                        new Comparator<Provider.Service>() {
+                            public int compare(Provider.Service a, Provider.Service b) {
+                                int typeCompare = a.getType().compareTo(b.getType());
+                                if (typeCompare != 0) {
+                                    return typeCompare;
+                                }
+                                return a.getAlgorithm().compareTo(b.getAlgorithm());
+                            }
+                        });
+                services.addAll(originalServices);
+            }
 
             for (Provider.Service service : services) {
                 String type = service.getType();
