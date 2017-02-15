@@ -81,49 +81,63 @@ public class DateTest extends TestCase {
     }
 
     /**
-     * The minimum long value below which {@link Instant#toEpochMilli()} will
-     * throw is not clearly documented. This test discovers if that minimum
-     * value ever changes, and also checks that it is also the minimum Instant
-     * (at a millisecond boundary) that can be converted to a Date.
+     * Test that conversion between Date and Instant works when the
+     * Instant is based on a millisecond value (and thus can be
+     * represented as a Date).
      */
-    public void test_convertFromInstant_lowerBound() {
-        // smallest millisecond Instant that can be converted to Date
-        long minConvertible = -9223372036854775000L;
+    public void test_convertFromAndToInstant_milliseconds() {
+        check_convertFromAndToInstant_milliseconds(Long.MIN_VALUE);
+        check_convertFromAndToInstant_milliseconds(Long.MAX_VALUE);
 
-        // show that this value is < 1 sec away from Long.MIN_VALUE
-        assertEquals(Long.MIN_VALUE + 808, minConvertible);
-
-        Instant inBound = Instant.ofEpochMilli(minConvertible);
-        assertEquals(new Date(minConvertible), Date.from(inBound));
-        assertEquals(minConvertible, inBound.toEpochMilli());
-
-        Instant outOfBound = Instant.ofEpochMilli(minConvertible - 1);
-        try {
-            Date.from(outOfBound);
-            fail();
-        } catch (IllegalArgumentException expected) {
-            assertEquals(ArithmeticException.class, expected.getCause().getClass());
-        }
-
-        try {
-            outOfBound.toEpochMilli();
-            fail();
-        } catch (ArithmeticException expected) {
-
-        }
+        check_convertFromAndToInstant_milliseconds(-1);
+        check_convertFromAndToInstant_milliseconds(0);
+        check_convertFromAndToInstant_milliseconds(123456789);
     }
 
-    public void test_convertFromInstant_upperBound() {
-        Date.from(Instant.ofEpochMilli(Long.MAX_VALUE));
+    private static void check_convertFromAndToInstant_milliseconds(long millis) {
+        assertEquals(new Date(millis), Date.from(Instant.ofEpochMilli(millis)));
+        assertEquals(new Date(millis).toInstant(), Instant.ofEpochMilli(millis));
+    }
 
-        Date.from(Instant.ofEpochSecond(Long.MAX_VALUE / 1000, 0));
-        Date.from(Instant.ofEpochSecond(Long.MAX_VALUE / 1000, 999999999));
-        Instant outOfBound = Instant.ofEpochSecond(Long.MAX_VALUE / 1000 + 1, 0);
+    /**
+     * Checks the minimum/maximum Instant values (based on seconds and
+     * nanos) that can be converted to a Date, i.e. that can be converted
+     * to milliseconds without overflowing a long. Note that the rounding
+     * is such that the lower bound is exactly Long.MIN_VALUE msec whereas
+     * the upper bound is 999,999 nanos beyond Long.MAX_VALUE msec. This
+     * makes some sense in that the magnitude of the upper/lower bound
+     * nanos differ only by 1, just like the magnitude of Long.MIN_VALUE /
+     * MAX_VALUE differ only by 1.
+     */
+    public void test_convertFromInstant_secondsAndNanos() {
+        // Documentation for how the below bounds relate to long boundaries for milliseconds
+        assertEquals(-808, Long.MIN_VALUE % 1000);
+        assertEquals(807, Long.MAX_VALUE % 1000);
+
+        // Lower bound
+        long minSecond = Long.MIN_VALUE / 1000;
+        Date.from(Instant.ofEpochSecond(minSecond));
+        // This instant exactly corresponds to Long.MIN_VALUE msec because
+        // Long.MIN_VALUE % 1000 == -808 == (-1000 + 192)
+        Date.from(Instant.ofEpochSecond(minSecond - 1, 192000000));
+        assertArithmeticOverflowDateFrom(Instant.ofEpochSecond(minSecond - 1, 0));
+        assertArithmeticOverflowDateFrom(Instant.ofEpochSecond(minSecond - 1, 191999999));
+
+        // Upper bound
+        long maxSecond = Long.MAX_VALUE / 1000;
+        Date.from(Instant.ofEpochSecond(maxSecond, 0));
+        // This Instant is 999,999 nanos beyond Long.MAX_VALUE msec because
+        // (Long.MAX_VALUE % 1000) == 807
+        Date.from(Instant.ofEpochSecond(maxSecond, 807999999));
+        assertArithmeticOverflowDateFrom(Instant.ofEpochSecond(maxSecond + 1, 0));
+        assertArithmeticOverflowDateFrom(Instant.ofEpochSecond(maxSecond, 808000000));
+    }
+
+    private static void assertArithmeticOverflowDateFrom(Instant instant) {
         try {
-            Date.from(outOfBound);
-            fail();
+            Date.from(instant);
+            fail(instant + " should not have been convertible to Date");
         } catch (IllegalArgumentException expected) {
-            assertEquals(ArithmeticException.class, expected.getCause().getClass());
         }
     }
 
