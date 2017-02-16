@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -739,10 +739,12 @@ public class GregorianCalendar extends Calendar {
         gdate = (BaseCalendar.Date) gcal.newCalendarDate(getZone());
     }
 
+    // Android-added BEGIN
     GregorianCalendar(long milliseconds) {
         this();
         setTimeInMillis(milliseconds);
     }
+    // Android-added END
 
 /////////////////
 // Public methods
@@ -1078,8 +1080,7 @@ public class GregorianCalendar extends Calendar {
             }
 
             fd += delta; // fd is the expected fixed date after the calculation
-
-            // Android changed: move time zone related calculation to separate method.
+            // Android-changed BEGIN: time zone related calculation via helper methods
             // Calculate the time in the UTC time zone.
             long utcTime = (fd - EPOCH_OFFSET) * ONE_DAY + timeOfDay;
 
@@ -1092,6 +1093,7 @@ public class GregorianCalendar extends Calendar {
 
             // Update the time and recompute the fields.
             setTimeInMillis(millis);
+            // Android-changed END: time zone related calculation via helper methods
         }
     }
 
@@ -2344,9 +2346,12 @@ public class GregorianCalendar extends Calendar {
         }
         if (tzMask != (ZONE_OFFSET_MASK|DST_OFFSET_MASK)) {
             if (tz instanceof ZoneInfo) {
-                // Android changed: libcore ZoneInfo uses different method to get offsets.
+                // Android changed BEGIN: use libcore.util.ZoneInfo
+                // The method name to get offsets differs from sun.util.calendar.ZoneInfo
+                // zoneOffset = ((ZoneInfo)tz).getOffsets(time, zoneOffsets);
                 ZoneInfo zoneInfo = (ZoneInfo) tz;
                 zoneOffset = zoneInfo.getOffsetsByUtcTime(time, zoneOffsets);
+                // Android-changed END: use libcore.util.ZoneInfo
             } else {
                 zoneOffset = tz.getOffset(time);
                 zoneOffsets[0] = tz.getRawOffset();
@@ -2796,11 +2801,11 @@ public class GregorianCalendar extends Calendar {
         // We use the TimeZone object, unless the user has explicitly set the ZONE_OFFSET
         // or DST_OFFSET fields; then we use those fields.
         TimeZone zone = getZone();
-        // Android changed: move time zone related calculation to separate method.
-
+        // Android-changed BEGIN: time zone related calculation via helper methods
         int tzMask = fieldMask & (ZONE_OFFSET_MASK|DST_OFFSET_MASK);
 
         millis = adjustForZoneAndDaylightSavingsTime(tzMask, millis, zone);
+        // Android-changed END: time zone related calculation via helper methods
 
         // Set this calendar's time in milliseconds
         time = millis;
@@ -2823,6 +2828,7 @@ public class GregorianCalendar extends Calendar {
         setFieldsNormalized(mask);
     }
 
+    // Android-added BEGIN: helper methods for time zone related calculation
     /**
      * Calculates the time in milliseconds that this calendar represents using the UTC time,
      * timezone information (specifically Daylight Savings Time (DST) rules, if any) and knowledge
@@ -2992,6 +2998,7 @@ public class GregorianCalendar extends Calendar {
         }
         return dstOffset;
     }
+    // Android-added END: helper methods for time zone related calculation
 
     /**
      * Computes the fixed date under either the Gregorian or the
