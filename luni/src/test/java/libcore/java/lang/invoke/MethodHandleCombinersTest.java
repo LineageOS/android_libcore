@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.WrongMethodTypeException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -118,6 +119,23 @@ public class MethodHandleCombinersTest extends TestCase {
             fail();
         } catch (IllegalArgumentException expected) {
         }
+    }
+
+    public static void testDropArguments_List() throws Throwable {
+        MethodHandle delegate = MethodHandles.lookup().findStatic(MethodHandleCombinersTest.class,
+                "dropArguments_delegate",
+                MethodType.methodType(void.class, new Class<?>[]{String.class, long.class}));
+
+        MethodHandle transform = MethodHandles.dropArguments(
+                delegate, 0, Arrays.asList(int.class, Object.class));
+
+        transform.invokeExact(45, new Object(), "foo", 42l);
+        transform.invoke(45, new Object(), "foo", 42l);
+
+        // Check that asType works as expected.
+        transform = transform.asType(MethodType.methodType(void.class,
+                new Class<?>[]{short.class, Object.class, String.class, long.class}));
+        transform.invokeExact((short) 45, new Object(), "foo", 42l);
     }
 
     public static String testCatchException_target(String arg1, long arg2, String exceptionMessage)
