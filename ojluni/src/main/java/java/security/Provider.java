@@ -895,15 +895,6 @@ public abstract class Provider extends Properties {
             algorithm = algorithm.toUpperCase(ENGLISH);
             this.algorithm = intern ? algorithm.intern() : algorithm;
         }
-        // BEGIN ANDROID-CHANGED
-        // The above constructor is not amenable to compile-time execution as Locale.ENGLISH
-        // cannot be retrieved. Special-case a constructor for the static field "previousKey".
-        private ServiceKey() {
-            this.type = "";
-            this.originalAlgorithm = "";
-            this.algorithm = "";
-        }
-        // END ANDROID-CHANGED
         public int hashCode() {
             return type.hashCode() + algorithm.hashCode();
         }
@@ -1088,10 +1079,7 @@ public abstract class Provider extends Properties {
     // list and queries each provider with the same values until it finds
     // a matching service
     private static volatile ServiceKey previousKey =
-                                            // BEGIN ANDROID-CHANGED
-                                            //  was: new ServiceKey("", "", false);
-                                            new ServiceKey();
-                                            // END ANDROID-CHANGED
+                                            new ServiceKey("", "", false);
 
     /**
      * Get an unmodifiable Set of all services supported by
