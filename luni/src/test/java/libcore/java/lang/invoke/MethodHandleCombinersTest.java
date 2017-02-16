@@ -22,6 +22,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.WrongMethodTypeException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -1196,7 +1197,13 @@ public class MethodHandleCombinersTest extends TestCase {
 
         Object ret = handle.invokeWithArguments(new Object[]{"a", "b", "c"});
         assertEquals(42, (int) ret);
-        handle.invokeWithArguments(new String[]{"a", "b", "c"});
+        ret = handle.invokeWithArguments(new String[]{"a", "b", "c"});
+        assertEquals(42, (int) ret);
+
+        // Also test the versions that take a List<?> instead of an array.
+        ret = handle.invokeWithArguments(Arrays.asList(new Object[] {"a", "b", "c"}));
+        assertEquals(42, (int) ret);
+        ret = handle.invokeWithArguments(Arrays.asList(new String[]{"a", "b", "c"}));
         assertEquals(42, (int) ret);
 
         // Pass in an array that's too small. Should throw an IAE.
@@ -1206,6 +1213,14 @@ public class MethodHandleCombinersTest extends TestCase {
         } catch (IllegalArgumentException expected) {
         } catch (WrongMethodTypeException expected) {
         }
+
+        try {
+            handle.invokeWithArguments(Arrays.asList(new Object[]{"a", "b"}));
+            fail();
+        } catch (IllegalArgumentException expected) {
+        } catch (WrongMethodTypeException expected) {
+        }
+
 
         // Test implicit unboxing.
         MethodType methodType2 = MethodType.methodType(int.class,
