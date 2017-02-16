@@ -26,8 +26,7 @@ import libcore.util.ZoneInfoDB;
  * A distro-validation / extraction class. Separate from the services code that uses it for easier
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
-// TODO(nfuller) Rename to TimeZoneDistroInstaller
-public final class TimeZoneBundleInstaller {
+public final class TimeZoneDistroInstaller {
     /** {@link #installWithErrorCode(byte[])} result code: Success. */
     public final static int INSTALL_SUCCESS = 0;
     /** {@link #installWithErrorCode(byte[])} result code: Distro corrupt. */
@@ -49,7 +48,7 @@ public final class TimeZoneBundleInstaller {
     private final File currentTzDataDir;
     private final File workingDir;
 
-    public TimeZoneBundleInstaller(String logTag, File systemTzDataFile, File installDir) {
+    public TimeZoneDistroInstaller(String logTag, File systemTzDataFile, File installDir) {
         this.logTag = logTag;
         this.systemTzDataFile = systemTzDataFile;
         oldTzDataDir = new File(installDir, OLD_TZ_DATA_DIR_NAME);
