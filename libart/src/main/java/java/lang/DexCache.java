@@ -32,6 +32,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import com.android.dex.Dex;
 
 /**
@@ -129,10 +130,15 @@ final class DexCache {
         return result;
     }
 
+    @FastNative
     native Class<?> getResolvedType(int typeIndex);
+    @FastNative
     native String getResolvedString(int stringIndex);
+    @FastNative
     native void setResolvedType(int typeIndex, Class<?> type);
+    @FastNative
     native void setResolvedString(int stringIndex, String string);
+    @FastNative
     private native Dex getDexNative();
 }
 

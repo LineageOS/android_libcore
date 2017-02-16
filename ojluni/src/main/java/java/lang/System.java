@@ -25,6 +25,7 @@
  */
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import android.system.ErrnoException;
 import android.system.StructPasswd;
 import android.system.StructUtsname;
@@ -433,6 +434,7 @@ public final class System {
      * @exception  NullPointerException if either <code>src</code> or
      *               <code>dest</code> is <code>null</code>.
      */
+    @FastNative
     public static native void arraycopy(Object src,  int  srcPos,
                                         Object dest, int destPos,
                                         int length);
@@ -489,6 +491,7 @@ public final class System {
      * The char[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyCharUnchecked(char[] src, int srcPos,
         char[] dst, int dstPos, int length);
 
@@ -542,6 +545,7 @@ public final class System {
      * The byte[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyByteUnchecked(byte[] src, int srcPos,
         byte[] dst, int dstPos, int length);
 
@@ -595,6 +599,7 @@ public final class System {
      * The short[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyShortUnchecked(short[] src, int srcPos,
         short[] dst, int dstPos, int length);
 
@@ -648,6 +653,7 @@ public final class System {
      * The int[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyIntUnchecked(int[] src, int srcPos,
         int[] dst, int dstPos, int length);
 
@@ -701,6 +707,7 @@ public final class System {
      * The long[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyLongUnchecked(long[] src, int srcPos,
         long[] dst, int dstPos, int length);
 
@@ -754,6 +761,7 @@ public final class System {
      * The float[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyFloatUnchecked(float[] src, int srcPos,
         float[] dst, int dstPos, int length);
 
@@ -807,6 +815,7 @@ public final class System {
      * The double[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyDoubleUnchecked(double[] src, int srcPos,
         double[] dst, int dstPos, int length);
 
@@ -860,6 +869,7 @@ public final class System {
      * The boolean[] specialized, unchecked, native version of
      * arraycopy(). This assumes error checking has been done.
      */
+    @FastNative
     private static native void arraycopyBooleanUnchecked(boolean[] src, int srcPos,
         boolean[] dst, int dstPos, int length);
     // ----- END android -----
@@ -875,6 +885,7 @@ public final class System {
      * @return  the hashCode
      * @since   JDK1.1
      */
+    @FastNative
     public static native int identityHashCode(Object x);
 
     /**

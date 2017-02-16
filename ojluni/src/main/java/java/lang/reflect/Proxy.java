@@ -27,6 +27,7 @@
 package java.lang.reflect;
 
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.ref.Reference;
 import java.lang.ref.WeakReference;
 import java.security.Permission;
@@ -912,6 +913,7 @@ public class Proxy implements java.io.Serializable {
         return h.invoke(proxy, method, args);
     }
 
+    @FastNative
     private static native Class<?> generateProxy(String name, Class<?>[] interfaces,
                                                  ClassLoader loader, Method[] methods,
                                                  Class<?>[][] exceptions);
