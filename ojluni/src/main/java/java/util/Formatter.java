@@ -2710,6 +2710,7 @@ public final class Formatter implements Closeable, Flushable {
             if (s != null) {
                 try {
                     // Android-changed: FormatSpecifierParser passes in correct String.
+                    // index = Integer.parseInt(s.substring(0, s.length() - 1));
                     index = Integer.parseInt(s);
                 } catch (NumberFormatException x) {
                     assert(false);
@@ -2757,6 +2758,8 @@ public final class Formatter implements Closeable, Flushable {
             precision = -1;
             if (s != null) {
                 try {
+                    // Android-changed: FormatSpecifierParser passes in correct String.
+                    // precision = Integer.parseInt(s.substring(1));
                     precision = Integer.parseInt(s);
                     if (precision < 0)
                         throw new IllegalFormatPrecisionException(precision);
@@ -2789,7 +2792,7 @@ public final class Formatter implements Closeable, Flushable {
             return c;
         }
 
-        // Android-changed: FormatSpecifierParser passes in the values instead of a Matcher.
+        // Android-changed BEGIN: FormatSpecifierParser passes in the values instead of a Matcher.
         FormatSpecifier(String indexStr, String flagsStr, String widthStr,
                         String precisionStr, String tTStr, String convStr) {
             int idx = 1;
@@ -2806,7 +2809,7 @@ public final class Formatter implements Closeable, Flushable {
             }
 
             conversion(convStr);
-
+        // Android-changed END: FormatSpecifierParser passes in the values instead of a Matcher.
             if (dt)
                 checkDateTime();
             else if (Conversion.isGeneral(c))
@@ -2998,6 +3001,7 @@ public final class Formatter implements Closeable, Flushable {
                 s = s.substring(0, precision);
             if (f.contains(Flags.UPPERCASE)) {
                 // Android-changed: Use provided locale instead of default, if it is non-null.
+                // s = s.toUpperCase();
                 s = s.toUpperCase(l != null ? l : Locale.getDefault());
             }
             a.append(justify(s));
@@ -3369,12 +3373,13 @@ public final class Formatter implements Closeable, Flushable {
                     newW = adjustWidth(width - exp.length - 1, f, neg);
                 localizedMagnitude(sb, mant, f, newW, l);
 
-                // Android-changed: Use localized exponent separator for %e.
+                // Android-changed BEGIN: Use localized exponent separator for %e.
                 Locale separatorLocale = (l != null) ? l : Locale.getDefault();
                 LocaleData localeData = LocaleData.get(separatorLocale);
                 sb.append(f.contains(Flags.UPPERCASE) ?
                         localeData.exponentSeparator.toUpperCase(separatorLocale) :
                         localeData.exponentSeparator.toLowerCase(separatorLocale));
+                // Android-changed END: Use localized exponent separator for %e.
 
                 Flags flags = f.dup().remove(Flags.GROUP);
                 char sign = exp[0];
@@ -4455,14 +4460,14 @@ public final class Formatter implements Closeable, Flushable {
                     grpSep = dfs.getGroupingSeparator();
                     DecimalFormat df = (DecimalFormat) NumberFormat.getIntegerInstance(l);
                     grpSize = df.getGroupingSize();
-                    // Android-changed: http://b/33245708 : Some locales have a group separator but
-                    // also patterns without groups. If we do not clear the group separator in these
-                    // cases a divide by zero is thrown when determining where to place the
-                    // separators.
+                    // Android-changed BEGIN: http://b/33245708
+                    // Some locales have a group separator but also patterns without groups.
+                    // If we do not clear the group separator in these cases a divide by zero
+                    // is thrown when determining where to place the separators.
                     if (!df.isGroupingUsed() || df.getGroupingSize() == 0) {
                         grpSep = '\0';
                     }
-                    // Android-changed: end http://b/33245708.
+                    // Android-changed END: http://b/33245708.
                 }
             }
 
