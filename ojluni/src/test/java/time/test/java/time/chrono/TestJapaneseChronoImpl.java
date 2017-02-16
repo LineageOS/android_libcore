@@ -99,7 +99,7 @@ public class TestJapaneseChronoImpl {
         assertEquals(locale.toString(), "ja_JP_#u-ca-japanese", "Unexpected locale");
 
         // Android changed: Android doesn't return the Japanese Imperial Calendar from getInstance.
-        Calendar cal = java.util.Calendar.getJapanesImperialInstance(TimeZone.getDefault(), locale);
+        Calendar cal = Calendar.getJapaneseImperialInstance(TimeZone.getDefault(), locale);
         assertEquals(cal.getCalendarType(), "japanese", "Unexpected calendar type");
 
         JapaneseDate jDate = JapaneseChronology.INSTANCE.date(isoStartDate);
