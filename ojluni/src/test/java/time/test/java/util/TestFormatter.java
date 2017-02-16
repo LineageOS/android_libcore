@@ -111,7 +111,7 @@ public class TestFormatter {
                 TimeZone tz = TimeZone.getTimeZone(zdt.getZone());
                 Calendar cal;
                 if (calLocale.getLanguage().equals("ja")) {
-                    cal = Calendar.getJapanesImperialInstance(tz, calLocale);
+                    cal = Calendar.getJapaneseImperialInstance(tz, calLocale);
                 } else {
                     cal = Calendar.getInstance(tz, calLocale);
                 }
