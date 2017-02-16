@@ -617,6 +617,8 @@ public class MethodHandlesTest extends TestCase {
         public String publicVarArgsMethod(String... args) {
             return "publicVarArgsMethod";
         }
+
+        public static final Lookup lookup = MethodHandles.lookup();
     }
 
     public static void testUnreflects_publicMethods() throws Throwable {
@@ -1858,6 +1860,72 @@ public class MethodHandlesTest extends TestCase {
         assertEquals(MethodHandleInfo.REF_getField, info.getReferenceKind());
         assertEquals(field, info.reflectAs(Field.class, MethodHandles.lookup()));
         assertEquals(MethodType.methodType(String.class), info.getMethodType());
+    }
+
+    public static void testReflectAs() throws Throwable {
+        // Test with a virtual method :
+        MethodType type = MethodType.methodType(String.class);
+        MethodHandle handle = MethodHandles.lookup().findVirtual(
+                UnreflectTester.class, "publicMethod", type);
+
+        Method reflected = MethodHandles.reflectAs(Method.class, handle);
+        Method meth = UnreflectTester.class.getMethod("publicMethod");
+        assertEquals(meth, reflected);
+
+        try {
+            MethodHandles.reflectAs(Field.class, handle);
+            fail();
+        } catch (ClassCastException expected) {
+        }
+
+        try {
+            MethodHandles.reflectAs(Constructor.class, handle);
+            fail();
+        } catch (ClassCastException expected) {
+        }
+
+        // Test with a private instance method, unlike the "checked crack" (lol..) API exposed
+        // by revealDirect, this doesn't perform any access checks.
+        handle = UnreflectTester.lookup.findSpecial(
+                UnreflectTester.class, "privateMethod", type, UnreflectTester.class);
+        meth = UnreflectTester.class.getDeclaredMethod("privateMethod");
+        reflected = MethodHandles.reflectAs(Method.class, handle);
+        assertEquals(meth, reflected);
+
+        // Test with a constructor :
+        type = MethodType.methodType(void.class, String.class, boolean.class);
+        handle = MethodHandles.lookup().findConstructor(UnreflectTester.class, type);
+
+        Constructor cons = UnreflectTester.class.getConstructor(String.class, boolean.class);
+        Constructor reflectedCons = MethodHandles.reflectAs(Constructor.class, handle);
+        assertEquals(cons, reflectedCons);
+
+        try {
+            MethodHandles.reflectAs(Method.class, handle);
+            fail();
+        } catch (ClassCastException expected) {
+        }
+
+        // Test with an instance field :
+        handle = MethodHandles.lookup().findSetter(
+                UnreflectTester.class, "publicField", String.class);
+
+        Field field = UnreflectTester.class.getField("publicField");
+        Field reflectedField = MethodHandles.reflectAs(Field.class, handle);
+        assertEquals(field, reflectedField);
+
+        try {
+            MethodHandles.reflectAs(Method.class, handle);
+            fail();
+        } catch (ClassCastException expected) {
+        }
+
+        // Test with a non-direct method handle.
+        try {
+            MethodHandles.reflectAs(Method.class, MethodHandles.constant(String.class, "foo"));
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
     }
 
     public static class Inner1 {
