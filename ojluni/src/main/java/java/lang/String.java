@@ -536,7 +536,7 @@ public final class String
      *          object.
      */
     public int length() {
-        final boolean STRING_COMPRESSION_ENABLED = true;
+        final boolean STRING_COMPRESSION_ENABLED = false;
         if (STRING_COMPRESSION_ENABLED) {
             // For the compression purposes (save the characters as 8-bit if all characters
             // are ASCII), the least significant bit of "count" is used as the compression flag.
