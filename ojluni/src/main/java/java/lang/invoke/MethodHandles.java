@@ -1656,7 +1656,7 @@ return mh1;
             }
         }
 
-        public void throwMakeAccessException(String message, Object from) throws
+        private void throwMakeAccessException(String message, Object from) throws
                 IllegalAccessException{
             message = message + ": "+ toString();
             if (from != null)  message += ", from " + from;
