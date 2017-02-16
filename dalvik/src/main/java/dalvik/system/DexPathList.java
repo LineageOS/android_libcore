@@ -22,14 +22,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import libcore.io.ClassPathURLStreamHandler;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
-import libcore.io.ClassPathURLStreamHandler;
 
 import static android.system.OsConstants.S_ISDIR;
 
@@ -73,6 +74,42 @@ import static android.system.OsConstants.S_ISDIR;
      * Exceptions thrown during creation of the dexElements list.
      */
     private IOException[] dexElementsSuppressedExceptions;
+
+    /**
+     * Construct an instance.
+     *
+     * @param definingContext the context in which any as-yet unresolved
+     * classes should be defined
+     *
+     * @param dexFiles the bytebuffers containing the dex files that we should load classes from.
+     */
+    public DexPathList(ClassLoader definingContext, ByteBuffer[] dexFiles) {
+        if (definingContext == null) {
+            throw new NullPointerException("definingContext == null");
+        }
+        if (dexFiles == null) {
+            throw new NullPointerException("dexFiles == null");
+        }
+        if (Arrays.stream(dexFiles).anyMatch(v -> v == null)) {
+            throw new NullPointerException("dexFiles contains a null Buffer!");
+        }
+
+        this.definingContext = definingContext;
+        // TODO It might be useful to let in-memory dex-paths have native libraries.
+        this.nativeLibraryDirectories = Collections.emptyList();
+        this.systemNativeLibraryDirectories =
+                splitPaths(System.getProperty("java.library.path"), true);
+        this.nativeLibraryPathElements = makePathElements(this.systemNativeLibraryDirectories);
+
+        ArrayList<IOException> suppressedExceptions = new ArrayList<IOException>();
+        this.dexElements = makeInMemoryDexElements(dexFiles, suppressedExceptions);
+        if (suppressedExceptions.size() > 0) {
+            this.dexElementsSuppressedExceptions =
+                    suppressedExceptions.toArray(new IOException[suppressedExceptions.size()]);
+        } else {
+            dexElementsSuppressedExceptions = null;
+        }
+    }
 
     /**
      * Constructs an instance.
@@ -243,6 +280,25 @@ import static android.system.OsConstants.S_ISDIR;
         }
 
         return result;
+    }
+
+    private static Element[] makeInMemoryDexElements(ByteBuffer[] dexFiles,
+            List<IOException> suppressedExceptions) {
+        Element[] elements = new Element[dexFiles.length];
+        int elementPos = 0;
+        for (ByteBuffer buf : dexFiles) {
+            try {
+                DexFile dex = new DexFile(buf);
+                elements[elementPos++] = new Element(dex);
+            } catch (IOException suppressed) {
+                System.logE("Unable to load dex file: " + buf, suppressed);
+                suppressedExceptions.add(suppressed);
+            }
+        }
+        if (elementPos != elements.length) {
+            elements = Arrays.copyOf(elements, elementPos);
+        }
+        return elements;
     }
 
     /**
@@ -490,8 +546,8 @@ import static android.system.OsConstants.S_ISDIR;
         for (Element e : dexElements) {
             String dexPath = e.getDexPath();
             if (dexPath != null) {
-                // Add the element to the list only if it is a file.
-                // A null dex path signals the element is a resource directory.
+                // Add the element to the list only if it is a file. A null dex path signals the
+                // element is a resource directory or an in-memory dex file.
                 dexPaths.add(dexPath);
             }
         }
@@ -521,6 +577,11 @@ import static android.system.OsConstants.S_ISDIR;
         public Element(DexFile dexFile, File dexZipPath) {
             this.dexFile = dexFile;
             this.path = dexZipPath;
+        }
+
+        public Element(DexFile dexFile) {
+            this.dexFile = dexFile;
+            this.path = null;
         }
 
         public Element(File path) {
