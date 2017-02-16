@@ -34,9 +34,9 @@ import libcore.tzdata.testing.ZoneInfoTestHelper;
 import libcore.tzdata.update2.tools.TimeZoneDistroBuilder;
 
 /**
- * Tests for {@link TimeZoneBundleInstaller}.
+ * Tests for {@link TimeZoneDistroInstaller}.
  */
-public class TimeZoneBundleInstallerTest extends TestCase {
+public class TimeZoneDistroInstallerTest extends TestCase {
 
     // OLDER_RULES_VERSION < SYSTEM_RULES_VERSION < NEW_RULES_VERSION < NEWER_RULES_VERSION
     private static final String OLDER_RULES_VERSION = "2030a";
@@ -44,7 +44,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     private static final String NEW_RULES_VERSION = "2030c";
     private static final String NEWER_RULES_VERSION = "2030d";
 
-    private TimeZoneBundleInstaller installer;
+    private TimeZoneDistroInstaller installer;
     private File tempDir;
     private File testInstallDir;
     private File testSystemTzDataDir;
@@ -61,8 +61,8 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         byte[] systemTzDataBytes = createTzData(SYSTEM_RULES_VERSION);
         createFile(testSystemTzDataFile, systemTzDataBytes);
 
-        installer = new TimeZoneBundleInstaller(
-                "TimeZoneBundleInstallerTest", testSystemTzDataFile, testInstallDir);
+        installer = new TimeZoneDistroInstaller(
+                "TimeZoneDistroInstallerTest", testSystemTzDataFile, testInstallDir);
     }
 
     private static File createDirectory(String prefix) throws Exception {
@@ -89,8 +89,8 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     /** Tests the an update on a device will fail if the /system tzdata file cannot be found. */
     public void testInstall_badSystemFile() throws Exception {
         File doesNotExist = new File(testSystemTzDataDir, "doesNotExist");
-        TimeZoneBundleInstaller brokenSystemInstaller = new TimeZoneBundleInstaller(
-                "TimeZoneBundleInstallerTest", doesNotExist, testInstallDir);
+        TimeZoneDistroInstaller brokenSystemInstaller = new TimeZoneDistroInstaller(
+                "TimeZoneDistroInstallerTest", doesNotExist, testInstallDir);
         TimeZoneDistro tzData = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
 
         try {
@@ -106,7 +106,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
         TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
 
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro.getBytes()));
         assertDistroInstalled(distro);
     }
@@ -117,7 +117,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_successfulFirstUpdate_sameVersionAsSystem() throws Exception {
         TimeZoneDistro distro = createValidTimeZoneDistro(SYSTEM_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro.getBytes()));
         assertDistroInstalled(distro);
     }
@@ -128,7 +128,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_unsuccessfulFirstUpdate_olderVersionThanSystem() throws Exception {
         TimeZoneDistro distro = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_RULES_TOO_OLD,
+                TimeZoneDistroInstaller.INSTALL_FAIL_RULES_TOO_OLD,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
@@ -139,19 +139,19 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_successfulFollowOnUpdate_newerVersion() throws Exception {
         TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro1.getBytes()));
         assertDistroInstalled(distro1);
 
         TimeZoneDistro distro2 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro2.getBytes()));
         assertDistroInstalled(distro2);
 
         TimeZoneDistro distro3 = createValidTimeZoneDistro(NEWER_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro3.getBytes()));
         assertDistroInstalled(distro3);
     }
@@ -163,13 +163,13 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_unsuccessfulFollowOnUpdate_olderVersion() throws Exception {
         TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro1.getBytes()));
         assertDistroInstalled(distro1);
 
         TimeZoneDistro distro2 = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_RULES_TOO_OLD,
+                TimeZoneDistroInstaller.INSTALL_FAIL_RULES_TOO_OLD,
                 installer.installWithErrorCode(distro2.getBytes()));
         assertDistroInstalled(distro1);
     }
@@ -178,7 +178,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_missingTzDataFile() throws Exception {
         TimeZoneDistro installedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(installedDistro.getBytes()));
         assertDistroInstalled(installedDistro);
 
@@ -187,7 +187,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
                         .clearTzDataForTests()
                         .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(incompleteDistro.getBytes()));
         assertDistroInstalled(installedDistro);
     }
@@ -196,7 +196,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
     public void testInstall_missingIcuFile() throws Exception {
         TimeZoneDistro installedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(installedDistro.getBytes()));
         assertDistroInstalled(installedDistro);
 
@@ -205,7 +205,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
                         .clearIcuDataForTests()
                         .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(incompleteDistro.getBytes()));
         assertDistroInstalled(installedDistro);
     }
@@ -220,7 +220,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
         TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_SUCCESS,
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
                 installer.installWithErrorCode(distro.getBytes()));
         assertDistroInstalled(distro);
     }
@@ -234,7 +234,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
                 .clearVersionForTests()
                 .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
@@ -248,7 +248,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
                 .replaceFormatVersionForTests(2, 1)
                 .buildUnvalidated();
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
@@ -265,7 +265,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidFormatVersionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
@@ -281,7 +281,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRevisionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
@@ -297,7 +297,7 @@ public class TimeZoneBundleInstallerTest extends TestCase {
 
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRulesVersionBytes);
         assertEquals(
-                TimeZoneBundleInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
                 installer.installWithErrorCode(distro.getBytes()));
         assertNoContentInstalled();
     }
