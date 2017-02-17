@@ -21,7 +21,9 @@ import android.system.StructStat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import libcore.io.Libcore;
@@ -113,6 +115,12 @@ public final class DexFile {
         mInternalCookie = mCookie;
         mFileName = fileName;
         //System.out.println("DEX FILE cookie is " + mCookie + " fileName=" + fileName);
+    }
+
+    DexFile(ByteBuffer buf) throws IOException {
+        mCookie = openInMemoryDexFile(buf);
+        mInternalCookie = mCookie;
+        mFileName = null;
     }
 
     /**
@@ -230,7 +238,11 @@ public final class DexFile {
     }
 
     @Override public String toString() {
-        return getName();
+        if (mFileName != null) {
+            return getName();
+        } else {
+            return "InMemoryDexFile[cookie=" + Arrays.toString((long[]) mCookie) + "]";
+        }
     }
 
     /**
@@ -373,6 +385,17 @@ public final class DexFile {
                                  loader,
                                  elements);
     }
+
+    private static Object openInMemoryDexFile(ByteBuffer buf) throws IOException {
+        if (buf.isDirect()) {
+            return createCookieWithDirectBuffer(buf, buf.position(), buf.limit());
+        } else {
+            return createCookieWithArray(buf.array(), buf.position(), buf.limit());
+        }
+    }
+
+    private static native Object createCookieWithDirectBuffer(ByteBuffer buf, int start, int end);
+    private static native Object createCookieWithArray(byte[] buf, int start, int end);
 
     /*
      * Returns true if the dex file is backed by a valid oat file.
