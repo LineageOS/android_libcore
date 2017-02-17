@@ -1699,7 +1699,7 @@ public class DecimalFormatTest extends TestCase {
         // double 9999999999.999998 is decimal 9999999999.9999980926513671875
         assertEquals("9999999999.999998", df.format(9999999999.999998));
         // double 1E23 is decimal 99999999999999991611392
-        assertEquals("9999999999999999", df.format(1E23));
+        assertEquals("99999999999999990000000", df.format(1E23));
     }
 
     public void test_getDecimalFormatSymbols() {
