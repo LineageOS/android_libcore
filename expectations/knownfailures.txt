@@ -1413,14 +1413,6 @@
   ]
 },
 {
-  description: "Known precision issue in DecimalFormat",
-  bug: 17656132,
-  names: [
-    "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_bug17656132",
-    "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_roundingProblemCases"
-  ]
-},
-{
   description: "Known failure in GregorianCalendarTest",
   bug: 12778197,
   name: "org.apache.harmony.tests.java.util.GregorianCalendarTest#test_computeTime"
@@ -1435,7 +1427,7 @@
 },
 {
   description: "libcore.java.text.DecimalFormatSymbolsTest#test_getInstance_unknown_or_invalid_locale assumes fallback to locale other than en_US_POSIX.",
-  bug: 17374604,
+  bug: 17422813,
   names: [
     "libcore.java.text.DecimalFormatSymbolsTest#test_getInstance_unknown_or_invalid_locale"
   ]
