@@ -1294,19 +1294,6 @@
   name: "org.apache.harmony.tests.java.lang.MathTest#test_powDD"
 },
 {
-  description: "Known failures in PropertiesTest: We don't deal with comments in store()",
-  bug: 11686302,
-  result: EXEC_FAILED,
-  names: [
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario0",
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario1",
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario2",
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario3",
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario9",
-    "org.apache.harmony.tests.java.util.PropertiesTest#testStore_scenario11"
-  ]
-},
-{
   description: "Known failures in URLTest and URLDecoderTest",
   bug: 11686814,
   names: [
