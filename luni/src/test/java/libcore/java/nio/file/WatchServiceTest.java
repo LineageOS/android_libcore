@@ -113,17 +113,34 @@ public class WatchServiceTest {
 
         // emit EVENT_CREATE
         Files.createFile(file);
+        assertWatchServiceEvent(watchService, directoryKey1,
+            Arrays.asList(new WatchEventResult(ENTRY_CREATE, 1)), true);
+        assertNull(watchService.poll());
+      
         // emit EVENT_MODIFY
         Files.write(file, "hello1".getBytes());
+        assertWatchServiceEvent(watchService, directoryKey1,
+            Arrays.asList(new WatchEventResult(ENTRY_MODIFY)), true);
+
+        // http:///b/35346596
+        // Sometimes we receive a second, latent EVENT_MODIFY that happens shortly
+        // after the first one. This will intercept it and make sure it won't
+        // mess with ENTRY_DELETE later.
+        Thread.sleep(500);
+        WatchKey doubleModifyKey = watchService.poll();
+        if (doubleModifyKey != null) {
+            List<WatchEvent<?>> event = doubleModifyKey.pollEvents();
+            assertEquals(ENTRY_MODIFY, event.get(0).kind());
+            doubleModifyKey.reset();
+        }
+        assertNull(watchService.poll());      
+
         // emit EVENT_DELETE
         Files.delete(file);
-
-        // Don't assert count of ENTRY_MODIFY, it's very flaky, sometime it triggers
-        // two events, sometime one....
         assertWatchServiceEvent(watchService, directoryKey1,
-                Arrays.asList(new WatchEventResult(ENTRY_CREATE, 1),
-                              new WatchEventResult(ENTRY_MODIFY),
-                              new WatchEventResult(ENTRY_DELETE, 1)), true);
+            Arrays.asList(new WatchEventResult(ENTRY_DELETE, 1)), true);
+
+        // Assert no more events
         assertNull(watchService.poll());
         watchService.close();
     }
