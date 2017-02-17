@@ -18,6 +18,7 @@ package dalvik.system;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -66,6 +67,23 @@ public class BaseDexClassLoader extends ClassLoader {
         if (reporter != null) {
             reporter.report(this.pathList.getDexPaths());
         }
+    }
+
+    /**
+     * Constructs an instance.
+     *
+     * dexFile must be an in-memory representation of a full dexFile.
+     *
+     * @param dexFiles the array of in-memory dex files containing classes.
+     * @param parent the parent class loader
+     *
+     * TODO We should support giving this a library search path maybe.
+     *
+     * @hide
+     */
+    public BaseDexClassLoader(ByteBuffer[] dexFiles, ClassLoader parent) {
+        super(parent);
+        this.pathList = new DexPathList(this, dexFiles);
     }
 
     @Override
