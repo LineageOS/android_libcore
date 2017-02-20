@@ -255,18 +255,9 @@ public class OldSystemTest extends junit.framework.TestCase {
         }
     }
 
-    public void test_gc() {
-        Runtime rt =  Runtime.getRuntime();
-        byte[] data = new byte[2 * 1024 * 1024];
-        long beforeGC = rt.totalMemory() - rt.freeMemory();
-        data = null;
-        System.gc();
-        System.runFinalization();
-        long afterGC = rt.totalMemory() - rt.freeMemory();
-        assertTrue("memory was not released after calling System.gc()." +
-                "before gc: " + beforeGC + "; after gc: " + afterGC,
-                beforeGC > afterGC);
-    }
+    // Android-changed: test_gc() was deleted. PhantomReferenceTest provides basic
+    // coverage for the fact that System.gc() executes a garbage collection if
+    // followed by System.runFinalization().
 
     public void test_getenv() {
         // String[] props = { "PATH", "HOME", "USER"};
