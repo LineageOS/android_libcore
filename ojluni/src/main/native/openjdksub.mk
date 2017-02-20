@@ -70,6 +70,5 @@ LOCAL_SRC_FILES := \
 LOCAL_C_INCLUDES += \
        libcore/$(srcdir) \
        external/fdlibm \
-       external/openssl/include \
        external/zlib \
        external/icu/icu4c/source/common \
