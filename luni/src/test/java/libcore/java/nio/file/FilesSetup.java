@@ -45,6 +45,13 @@ class FilesSetup implements TestRule {
 
     final static String TEST_FILE_DATA_2 = "test";
 
+    /** 
+     *  Data that includes characters code above the US-ASCII range and will be more obviously
+     *  corrupted if encoded / decoded incorrectly than
+     *  {@link #TEST_FILE_DATA} / {@link #TEST_FILE_DATA_2}.
+     */
+    final static String UTF_16_DATA = "परीक्षण";
+
     private String testDir;
 
     private Path dataFilePath;
