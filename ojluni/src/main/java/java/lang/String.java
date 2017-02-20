@@ -579,8 +579,6 @@ public final class String
      */
     public native char charAt(int index);
 
-    native void setCharAt(int index, char c);
-
     /**
      * Returns the character (Unicode code point) at the specified
      * index. The index refers to {@code char} values
@@ -2063,20 +2061,19 @@ public final class String
      *          occurrence of {@code oldChar} with {@code newChar}.
      */
     public String replace(char oldChar, char newChar) {
-        String replaced = this;
         if (oldChar != newChar) {
             final int len = length();
             for (int i = 0; i < len; ++i) {
                 if (charAt(i) == oldChar) {
-                    if (replaced == this) {
-                        replaced = StringFactory.newStringFromString(this);
-                    }
-                    replaced.setCharAt(i, newChar);
+                    return doReplace(oldChar, newChar);
                 }
             }
         }
-        return replaced;
+        return this;
     }
+
+    // Implementation of replace(char oldChar, char newChar) called when we found a match.
+    private native String doReplace(char oldChar, char newChar);
 
     /**
      * Tells whether or not this string matches the given <a
