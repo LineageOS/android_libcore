@@ -26,6 +26,7 @@
 
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
 import libcore.reflect.Types;
@@ -202,6 +203,7 @@ public final class Method extends Executable  {
      * {@inheritDoc}
      */
     @Override
+    @FastNative
     public native Class<?>[] getExceptionTypes();
 
     /**
@@ -395,6 +397,7 @@ public final class Method extends Executable  {
      * @exception ExceptionInInitializerError if the initialization
      * provoked by this method fails.
      */
+    @FastNative
     public native Object invoke(Object obj, Object... args)
             throws IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
@@ -461,6 +464,7 @@ public final class Method extends Executable  {
      *     default class value.
      * @since  1.5
      */
+    @FastNative
     public native Object getDefaultValue();
 
     /**

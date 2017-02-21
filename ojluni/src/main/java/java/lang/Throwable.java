@@ -25,6 +25,7 @@
  */
 
 package java.lang;
+import dalvik.annotation.optimization.FastNative;
 import  java.io.*;
 import  java.util.*;
 
@@ -777,6 +778,7 @@ public class Throwable implements Serializable {
         return this;
     }
 
+    @FastNative
     private static native Object nativeFillInStackTrace();
 
     /**
@@ -881,6 +883,7 @@ public class Throwable implements Serializable {
      * @throws IndexOutOfBoundsException if {@code index < 0 ||
      *         index >= getStackTraceDepth() }
      */
+    @FastNative
     private static native StackTraceElement[] nativeGetStackTrace(Object stackState);
 
 

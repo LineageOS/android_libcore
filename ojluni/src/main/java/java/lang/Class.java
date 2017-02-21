@@ -26,6 +26,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import com.android.dex.Dex;
 
 import java.io.InputStream;
@@ -462,6 +463,7 @@ public final class Class<T> implements java.io.Serializable,
     }
 
     /** Called after security checks have been made. */
+    @FastNative
     static native Class<?> classForName(String className, boolean shouldInitialize,
             ClassLoader classLoader) throws ClassNotFoundException;
 
@@ -500,6 +502,7 @@ public final class Class<T> implements java.io.Serializable,
      *          s.checkPackageAccess()} denies access to the package
      *          of this class.
      */
+    @FastNative
     public native T newInstance() throws InstantiationException, IllegalAccessException;
 
     /**
@@ -743,6 +746,7 @@ public final class Class<T> implements java.io.Serializable,
         return name;
     }
 
+    @FastNative
     private native String getNameNative();
 
     /**
@@ -972,6 +976,7 @@ public final class Class<T> implements java.io.Serializable,
     }
 
     // Returns the interfaces that this proxy class directly implements.
+    @FastNative
     private native Class<?>[] getProxyInterfaces();
 
     /**
@@ -1115,6 +1120,7 @@ public final class Class<T> implements java.io.Serializable,
         return null;
     }
 
+    @FastNative
     private native Method getEnclosingMethodNative();
 
     /**
@@ -1162,6 +1168,7 @@ public final class Class<T> implements java.io.Serializable,
         return getEnclosingConstructorNative();
     }
 
+    @FastNative
     private native Constructor<?> getEnclosingConstructorNative();
 
     private boolean classNameImpliesTopLevel() {
@@ -1181,6 +1188,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since JDK1.1
      */
     // ANDROID-CHANGED: Removed SecurityException
+    @FastNative
     public native Class<?> getDeclaringClass();
 
     /**
@@ -1191,6 +1199,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.5
      */
     // ANDROID-CHANGED: Removed SecurityException
+    @FastNative
     public native Class<?> getEnclosingClass();
 
     /**
@@ -1295,6 +1304,7 @@ public final class Class<T> implements java.io.Serializable,
      * @return {@code true} if and only if this class is an anonymous class.
      * @since 1.5
      */
+    @FastNative
     public native boolean isAnonymousClass();
 
     /**
@@ -1606,6 +1616,7 @@ public final class Class<T> implements java.io.Serializable,
      *            if name is null.
      * @see #getField(String)
      */
+    @FastNative
     private native Field getPublicFieldRecursive(String name);
 
     /**
@@ -1757,6 +1768,7 @@ public final class Class<T> implements java.io.Serializable,
      * @since JDK1.1
      */
     // ANDROID-CHANGED: Removed SecurityException
+    @FastNative
     public native Class<?>[] getDeclaredClasses();
 
     /**
@@ -1802,6 +1814,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.3 Field Declarations
      */
     // ANDROID-CHANGED: Removed SecurityException
+    @FastNative
     public native Field[] getDeclaredFields();
 
     /**
@@ -1811,6 +1824,7 @@ public final class Class<T> implements java.io.Serializable,
      * @param publicOnly Whether to return only public fields.
      * @hide
      */
+    @FastNative
     public native Field[] getDeclaredFieldsUnchecked(boolean publicOnly);
 
     /**
@@ -1882,6 +1896,7 @@ public final class Class<T> implements java.io.Serializable,
      * @param publicOnly Whether to return only public methods.
      * @hide
      */
+    @FastNative
     public native Method[] getDeclaredMethodsUnchecked(boolean publicOnly);
 
     /**
@@ -1931,6 +1946,7 @@ public final class Class<T> implements java.io.Serializable,
      * Returns the constructor with the given parameters if it is defined by this class;
      * {@code null} otherwise. This may return a non-public member.
      */
+    @FastNative
     private native Constructor<?>[] getDeclaredConstructorsInternal(boolean publicOnly);
 
     /**
@@ -1974,11 +1990,13 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.3 Field Declarations
      */
     // ANDROID-CHANGED: Removed SecurityException
+    @FastNative
     public native Field getDeclaredField(String name) throws NoSuchFieldException;
 
     /**
      * Returns the subset of getDeclaredFields which are public.
      */
+    @FastNative
     private native Field[] getPublicDeclaredFields();
 
     /**
@@ -2320,6 +2338,7 @@ public final class Class<T> implements java.io.Serializable,
      *
      * @param args the types of the parameters to the constructor.
      */
+    @FastNative
     private native Constructor<T> getDeclaredConstructorInternal(Class<?>[] args);
 
     /**
@@ -2353,8 +2372,10 @@ public final class Class<T> implements java.io.Serializable,
     /**
      * Returns the simple name of a member or local class, or {@code null} otherwise.
      */
+    @FastNative
     private native String getInnerClassName();
 
+    @FastNative
     private native int getInnerClassFlags(int defaultValue);
 
     /**
@@ -2575,17 +2596,20 @@ public final class Class<T> implements java.io.Serializable,
      * @since 1.8
      */
     @Override
+    @FastNative
     public native <A extends Annotation> A getDeclaredAnnotation(Class<A> annotationClass);
 
     /**
      * @since 1.5
      */
     @Override
+    @FastNative
     public native Annotation[] getDeclaredAnnotations();
 
     /**
      * Returns true if the annotation exists.
      */
+    @FastNative
     private native boolean isDeclaredAnnotationPresent(Class<? extends Annotation> annotationClass);
 
     private String getSignatureAttribute() {
@@ -2600,6 +2624,7 @@ public final class Class<T> implements java.io.Serializable,
         return result.toString();
     }
 
+    @FastNative
     private native String[] getSignatureAnnotation();
 
     /**
@@ -2752,6 +2777,7 @@ public final class Class<T> implements java.io.Serializable,
      * @param name the method name
      * @param args the method's parameter types
      */
+    @FastNative
     private native Method getDeclaredMethodInternal(String name, Class<?>[] args);
 
     /**

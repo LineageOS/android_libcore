@@ -16,6 +16,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -85,6 +86,7 @@ class VMClassLoader {
         return list;
     }
 
+    @FastNative
     native static Class findLoadedClass(ClassLoader cl, String name);
 
     /**

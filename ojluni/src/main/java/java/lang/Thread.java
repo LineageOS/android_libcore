@@ -26,6 +26,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
@@ -271,6 +272,7 @@ class Thread implements Runnable {
      *
      * @return  the currently executing thread.
      */
+    @FastNative
     public static native Thread currentThread();
 
     /**
@@ -312,6 +314,7 @@ class Thread implements Runnable {
         Thread.sleep(millis, 0);
     }
 
+    @FastNative
     private static native void sleep(Object lock, long millis, int nanos)
         throws InterruptedException;
 
@@ -942,6 +945,7 @@ class Thread implements Runnable {
      * @see #isInterrupted()
      * @revised 6.0
      */
+    @FastNative
     public static native boolean interrupted();
 
     /**
@@ -957,6 +961,7 @@ class Thread implements Runnable {
      * @see     #interrupted()
      * @revised 6.0
      */
+    @FastNative
     public native boolean isInterrupted();
 
     /**
@@ -2036,6 +2041,7 @@ class Thread implements Runnable {
 
     private native int nativeGetStatus(boolean hasBeenStarted);
 
+    @FastNative
     private native void nativeInterrupt();
 
     /** Park states */
