@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.optimization.FastNative;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.util.HashMap;
@@ -106,6 +107,7 @@ public final class VMDebug {
      *
      * @return the time in milliseconds, or -1 if the debugger is not connected
      */
+    @FastNative
     public static native long lastDebuggerActivity();
 
     /**
@@ -114,6 +116,7 @@ public final class VMDebug {
      *
      * @return true if debugging is enabled
      */
+    @FastNative
     public static native boolean isDebuggingEnabled();
 
     /**
@@ -121,6 +124,7 @@ public final class VMDebug {
      *
      * @return true if (and only if) a debugger is connected
      */
+    @FastNative
     public static native boolean isDebuggerConnected();
 
     /**
@@ -251,6 +255,7 @@ public final class VMDebug {
      * @return the CPU usage. A value of -1 means the system does not support
      *         this feature.
      */
+    @FastNative
     public static native long threadCpuTimeNanos();
 
     /**
@@ -291,6 +296,7 @@ public final class VMDebug {
     /**
      * Dumps a list of loaded class to the log file.
      */
+    @FastNative
     public static native void printLoadedClasses(int flags);
 
     /**
@@ -298,6 +304,7 @@ public final class VMDebug {
      *
      * @return the number of loaded classes
      */
+    @FastNative
     public static native int getLoadedClassCount();
 
     /**

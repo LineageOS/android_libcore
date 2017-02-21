@@ -16,6 +16,8 @@
 
 package java.lang.ref;
 
+import dalvik.annotation.optimization.FastNative;
+
 /**
  * @hide
  */
@@ -129,7 +131,9 @@ public final class FinalizerReference<T> extends Reference<T> {
         throw new AssertionError("newly-created live Sentinel not on list!");
     }
 
+    @FastNative
     private final native T getReferent();
+    @FastNative
     private native boolean makeCircularListIfUnenqueued();
 
     /**

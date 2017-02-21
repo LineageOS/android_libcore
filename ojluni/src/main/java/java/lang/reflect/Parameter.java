@@ -24,6 +24,7 @@
  */
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -273,6 +274,7 @@ public final class Parameter implements AnnotatedElement {
         // Android-changed: Uses native code to obtain annotation information.
         return getAnnotationNative(executable, index, annotationClass);
     }
+    @FastNative
     private static native <A extends Annotation> A getAnnotationNative(
             Executable executable, int parameterIndex, Class<A> annotationType);
 
