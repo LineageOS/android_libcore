@@ -169,11 +169,27 @@ public final class StackTraceElement implements java.io.Serializable {
      * @see    Throwable#printStackTrace()
      */
     public String toString() {
-        return getClassName() + "." + methodName +
-            (isNativeMethod() ? "(Native Method)" :
-             (fileName != null && lineNumber >= 0 ?
-              "(" + fileName + ":" + lineNumber + ")" :
-              (fileName != null ?  "("+fileName+")" : "(Unknown Source)")));
+        // Android-changed: When ART cannot find a line number, the lineNumber field is set
+        // to the dex_pc and the fileName field is set to null.
+        StringBuilder result = new StringBuilder();
+        result.append(getClassName()).append(".").append(methodName);
+        if (isNativeMethod()) {
+            result.append("(Native Method)");
+        } else if (fileName != null) {
+            if (lineNumber >= 0) {
+                result.append("(").append(fileName).append(":").append(lineNumber).append(")");
+            } else {
+                result.append("(").append(fileName).append(")");
+            }
+        } else {
+            if (lineNumber >= 0) {
+                // The line number is actually the dex pc.
+                result.append("(Unknown Source:").append(lineNumber).append(")");
+            } else {
+                result.append("(Unknown Source)");
+            }
+        }
+        return result.toString();
     }
 
     /**
