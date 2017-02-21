@@ -26,6 +26,8 @@
 
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
+
 /**
  * The {@code Array} class provides static methods to dynamically create and
  * access Java arrays.
@@ -721,6 +723,7 @@ class Array {
     /*
      * Create a multi-dimensional array of objects with the specified type.
      */
+    @FastNative
     private static native Object createMultiArray(Class<?> componentType, int[] dimensions) throws NegativeArraySizeException;
 
     /**
@@ -760,6 +763,7 @@ class Array {
     /*
      * Create a one-dimensional array of objects with the specified type.
      */
+    @FastNative
     private static native Object createObjectArray(Class<?> componentType, int length) throws NegativeArraySizeException;
 
     private static IllegalArgumentException notAnArray(Object o) {

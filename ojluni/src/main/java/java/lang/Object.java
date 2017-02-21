@@ -26,6 +26,8 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
+
 /**
  * Class {@code Object} is the root of the class hierarchy.
  * Every class has {@code Object} as a superclass. All objects,
@@ -231,6 +233,7 @@ public class Object {
     /*
      * Native helper method for cloning.
      */
+    @FastNative
     private native Object internalClone();
 
 
@@ -291,6 +294,7 @@ public class Object {
      * @see        java.lang.Object#notifyAll()
      * @see        java.lang.Object#wait()
      */
+    @FastNative
     public final native void notify();
 
     /**
@@ -315,6 +319,7 @@ public class Object {
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#wait()
      */
+    @FastNative
     public final native void notifyAll();
 
     /**
@@ -468,6 +473,7 @@ public class Object {
      *             status</i> of the current thread is cleared when
      *             this exception is thrown.
      */
+    @FastNative
     public final native void wait(long millis, int nanos) throws InterruptedException;
 
     /**
@@ -508,6 +514,7 @@ public class Object {
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#notifyAll()
      */
+    @FastNative
     public final native void wait() throws InterruptedException;
 
     /**
