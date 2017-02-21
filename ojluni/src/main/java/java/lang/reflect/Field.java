@@ -26,6 +26,7 @@
 
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
 import com.android.dex.Dex;
 
 import java.lang.annotation.Annotation;
@@ -183,6 +184,7 @@ class Field extends AccessibleObject implements Member {
         }
         return result.toString();
     }
+    @FastNative
     private native String[] getSignatureAnnotation();
 
 
@@ -316,6 +318,7 @@ class Field extends AccessibleObject implements Member {
      * @exception ExceptionInInitializerError if the initialization provoked
      *              by this method fails.
      */
+    @FastNative
     public native Object get(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -341,6 +344,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native boolean getBoolean(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -366,6 +370,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native byte getByte(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -393,6 +398,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see Field#get
      */
+    @FastNative
     public native char getChar(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -420,6 +426,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native short getShort(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -447,6 +454,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native int getInt(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -474,6 +482,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native long getLong(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -501,6 +510,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see Field#get
      */
+    @FastNative
     public native float getFloat(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -528,6 +538,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#get
      */
+    @FastNative
     public native double getDouble(Object obj)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -597,6 +608,7 @@ class Field extends AccessibleObject implements Member {
      * @exception ExceptionInInitializerError if the initialization provoked
      *              by this method fails.
      */
+    @FastNative
     public native void set(Object obj, Object value)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -624,6 +636,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setBoolean(Object obj, boolean z)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -651,6 +664,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setByte(Object obj, byte b)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -678,6 +692,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setChar(Object obj, char c)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -705,6 +720,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setShort(Object obj, short s)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -732,6 +748,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setInt(Object obj, int i)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -759,6 +776,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setLong(Object obj, long l)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -786,6 +804,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setFloat(Object obj, float f)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -813,6 +832,7 @@ class Field extends AccessibleObject implements Member {
      *              by this method fails.
      * @see       Field#set
      */
+    @FastNative
     public native void setDouble(Object obj, double d)
         throws IllegalArgumentException, IllegalAccessException;
 
@@ -825,6 +845,7 @@ class Field extends AccessibleObject implements Member {
         Objects.requireNonNull(annotationClass);
         return getAnnotationNative(annotationClass);
     }
+    @FastNative
     private native <A extends Annotation> A getAnnotationNative(Class<A> annotationType);
 
     /**
@@ -845,12 +866,14 @@ class Field extends AccessibleObject implements Member {
         }
         return isAnnotationPresentNative(annotationType);
     }
+    @FastNative
     private native boolean isAnnotationPresentNative(Class<? extends Annotation> annotationType);
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @FastNative
     public native Annotation[] getDeclaredAnnotations();
 
     /**
@@ -874,5 +897,6 @@ class Field extends AccessibleObject implements Member {
     /**
      * @hide - export for use by {@code java.lang.invoke.*}
      */
+    @FastNative
     public native long getArtField();
 }

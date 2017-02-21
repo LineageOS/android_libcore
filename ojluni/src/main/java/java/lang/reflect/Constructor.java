@@ -26,6 +26,7 @@
 
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
 
@@ -153,6 +154,7 @@ public final class Constructor<T> extends Executable {
      * {@inheritDoc}
      */
     @Override
+    @FastNative
     public native Class<?>[] getExceptionTypes();
 
     /**
@@ -327,9 +329,11 @@ public final class Constructor<T> extends Executable {
         }
     }
 
+    @FastNative
     private static native Object newInstanceFromSerialization(Class<?> ctorClass, Class<?> allocClass)
         throws InstantiationException, IllegalArgumentException, InvocationTargetException;
 
+    @FastNative
     private native T newInstance0(Object... args) throws InstantiationException,
             IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 

@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.optimization.FastNative;
 import java.lang.ref.FinalizerReference;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,11 +103,13 @@ public final class VMRuntime {
     /**
      * Returns whether the VM is running in 64-bit mode.
      */
+    @FastNative
     public native boolean is64Bit();
 
     /**
      * Returns whether the VM is running with JNI checking enabled.
      */
+    @FastNative
     public native boolean isCheckJniEnabled();
 
     /**
@@ -255,6 +258,7 @@ public final class VMRuntime {
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
      */
+    @FastNative
     public native Object newNonMovableArray(Class<?> componentType, int length);
 
     /**
@@ -262,12 +266,14 @@ public final class VMRuntime {
      * avoiding any padding after the array. The amount of padding varies depending on the
      * componentType and the memory allocator implementation.
      */
+    @FastNative
     public native Object newUnpaddedArray(Class<?> componentType, int minLength);
 
     /**
      * Returns the address of array[0]. This differs from using JNI in that JNI might lie and
      * give you the address of a copy of the array when in forcecopy mode.
      */
+    @FastNative
     public native long addressOf(Object array);
 
     /**
@@ -285,11 +291,13 @@ public final class VMRuntime {
     /**
      * Returns true if either a Java debugger or native debugger is active.
      */
+    @FastNative
     public native boolean isDebuggerActive();
 
     /**
      * Returns true if native debugging is on.
      */
+    @FastNative
     public native boolean isNativeDebuggable();
 
     /**

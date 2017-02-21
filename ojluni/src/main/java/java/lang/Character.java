@@ -25,6 +25,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -5475,6 +5476,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isLowerCaseImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isLowerCaseImpl(int codePoint);
 
     /**
@@ -5542,6 +5544,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isUpperCaseImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isUpperCaseImpl(int codePoint);
 
 
@@ -5622,6 +5625,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isTitleCaseImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isTitleCaseImpl(int codePoint);
 
     /**
@@ -5697,6 +5701,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isDigitImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isDigitImpl(int codePoint);
 
     /**
@@ -5752,6 +5757,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isDefinedImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isDefinedImpl(int codePoint);
 
     /**
@@ -5826,6 +5832,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isLetterImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isLetterImpl(int codePoint);
 
     /**
@@ -5877,6 +5884,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isLetterOrDigitImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isLetterOrDigitImpl(int codePoint);
 
     /**
@@ -5971,6 +5979,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isAlphabeticImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isAlphabeticImpl(int codePoint);
 
 
@@ -5987,6 +5996,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
     public static boolean isIdeographic(int codePoint) {
         return isIdeographicImpl(codePoint);
     }
+    @FastNative
     static native boolean isIdeographicImpl(int codePoint);
 
     /**
@@ -6206,6 +6216,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isUnicodeIdentifierStartImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isUnicodeIdentifierStartImpl(int codePoint);
 
     /**
@@ -6272,6 +6283,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isUnicodeIdentifierPartImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isUnicodeIdentifierPartImpl(int codePoint);
 
     /**
@@ -6339,6 +6351,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isIdentifierIgnorableImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isIdentifierIgnorableImpl(int codePoint);
 
     /**
@@ -6410,6 +6423,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return toLowerCaseImpl(codePoint);
     }
 
+    @FastNative
     static native int toLowerCaseImpl(int codePoint);
 
     /**
@@ -6481,6 +6495,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return toUpperCaseImpl(codePoint);
     }
 
+    @FastNative
     static native int toUpperCaseImpl(int codePoint);
 
     /**
@@ -6542,6 +6557,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return toTitleCaseImpl(codePoint);
     }
 
+    @FastNative
     static native int toTitleCaseImpl(int codePoint);
 
     /**
@@ -6665,6 +6681,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return digitImpl(codePoint, radix);
     }
 
+    @FastNative
     native static int digitImpl(int codePoint, int radix);
 
     /**
@@ -6759,6 +6776,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return getNumericValueImpl(codePoint);
     }
 
+    @FastNative
     native static int getNumericValueImpl(int codePoint);
 
     /**
@@ -6867,6 +6885,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isSpaceCharImpl(codePoint);
     }
 
+    @FastNative
     static native boolean isSpaceCharImpl(int codePoint);
 
     /**
@@ -6961,6 +6980,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isWhitespaceImpl(codePoint);
     }
 
+    @FastNative
     native static boolean isWhitespaceImpl(int codePoint);
 
     /**
@@ -7103,6 +7123,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return (type + 1);
     }
 
+    @FastNative
     static native int getTypeImpl(int codePoint);
 
     /**
@@ -7228,6 +7249,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return Character.DIRECTIONALITY_UNDEFINED;
     }
 
+    @FastNative
     native static byte getDirectionalityImpl(int codePoint);
     /**
      * Determines whether the character is mirrored according to the
@@ -7271,6 +7293,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
         return isMirroredImpl(codePoint);
     }
 
+    @FastNative
     native static boolean isMirroredImpl(int codePoint);
     /**
      * Compares two {@code Character} objects numerically.

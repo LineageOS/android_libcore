@@ -25,6 +25,7 @@
  */
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import java.io.ObjectStreamField;
 import java.io.UnsupportedEncodingException;
 import java.lang.ArrayIndexOutOfBoundsException;
@@ -577,6 +578,7 @@ public final class String
      *             argument is negative or not less than the length of this
      *             string.
      */
+    @FastNative
     public native char charAt(int index);
 
     /**
@@ -771,6 +773,7 @@ public final class String
      * within the java.lang package only.  The caller is responsible for
      * ensuring that start >= 0 && start <= end && end <= count.
      */
+    @FastNative
     native void getCharsNoCheck(int start, int end, char[] buffer, int index);
 
 
@@ -1111,6 +1114,7 @@ public final class String
      *          value greater than {@code 0} if this string is
      *          lexicographically greater than the string argument.
      */
+    @FastNative
     public native int compareTo(String anotherString);
 
     /**
@@ -1502,6 +1506,7 @@ public final class String
         }
     }
 
+    @FastNative
     private native int fastIndexOf(int c, int start);
 
     /**
@@ -1974,6 +1979,7 @@ public final class String
                 : fastSubstring(beginIndex, subLen);
     }
 
+    @FastNative
     private native String fastSubstring(int start, int length);
 
     /**
@@ -2029,6 +2035,7 @@ public final class String
      * @return  a string that represents the concatenation of this object's
      *          characters followed by the string argument's characters.
      */
+    @FastNative
     public native String concat(String str);
 
     /**
@@ -2073,6 +2080,7 @@ public final class String
     }
 
     // Implementation of replace(char oldChar, char newChar) called when we found a match.
+    @FastNative
     private native String doReplace(char oldChar, char newChar);
 
     /**
@@ -2716,6 +2724,7 @@ public final class String
      *          of this string and whose contents are initialized to contain
      *          the character sequence represented by this string.
      */
+    @FastNative
     public native char[] toCharArray();
 
 
@@ -2988,5 +2997,6 @@ public final class String
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
      */
+    @FastNative
     public native String intern();
 }

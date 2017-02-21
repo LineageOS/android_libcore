@@ -25,6 +25,7 @@
  */
 
 package java.lang;
+import dalvik.annotation.optimization.FastNative;
 import java.util.Random;
 
 import sun.misc.FloatConsts;
@@ -136,6 +137,7 @@ public final class Math {
      * @param   a   an angle, in radians.
      * @return  the sine of the argument.
      */
+    @FastNative
     public static native double sin(double a);
 
     /**
@@ -149,6 +151,7 @@ public final class Math {
      * @param   a   an angle, in radians.
      * @return  the cosine of the argument.
      */
+    @FastNative
     public static native double cos(double a);
 
     /**
@@ -164,6 +167,7 @@ public final class Math {
      * @param   a   an angle, in radians.
      * @return  the tangent of the argument.
      */
+    @FastNative
     public static native double tan(double a);
 
     /**
@@ -180,6 +184,7 @@ public final class Math {
      * @param   a   the value whose arc sine is to be returned.
      * @return  the arc sine of the argument.
      */
+    @FastNative
     public static native double asin(double a);
 
     /**
@@ -194,6 +199,7 @@ public final class Math {
      * @param   a   the value whose arc cosine is to be returned.
      * @return  the arc cosine of the argument.
      */
+    @FastNative
     public static native double acos(double a);
 
     /**
@@ -209,6 +215,7 @@ public final class Math {
      * @param   a   the value whose arc tangent is to be returned.
      * @return  the arc tangent of the argument.
      */
+    @FastNative
     public static native double atan(double a);
 
     /**
@@ -257,6 +264,7 @@ public final class Math {
      * @return  the value <i>e</i><sup>{@code a}</sup>,
      *          where <i>e</i> is the base of the natural logarithms.
      */
+    @FastNative
     public static native double exp(double a);
 
     /**
@@ -276,6 +284,7 @@ public final class Math {
      * @return  the value ln&nbsp;{@code a}, the natural logarithm of
      *          {@code a}.
      */
+    @FastNative
     public static native double log(double a);
 
     /**
@@ -299,6 +308,7 @@ public final class Math {
      * @return  the base 10 logarithm of  {@code a}.
      * @since 1.5
      */
+    @FastNative
     public static native double log10(double a);
 
     /**
@@ -318,6 +328,7 @@ public final class Math {
      * @return  the positive square root of {@code a}.
      *          If the argument is NaN or less than zero, the result is NaN.
      */
+    @FastNative
     public static native double sqrt(double a);
 
 
@@ -347,6 +358,7 @@ public final class Math {
      * @return  the cube root of {@code a}.
      * @since 1.5
      */
+    @FastNative
     public static native double cbrt(double a);
 
     /**
@@ -371,6 +383,7 @@ public final class Math {
      * @return  the remainder when {@code f1} is divided by
      *          {@code f2}.
      */
+    @FastNative
     public static native double IEEEremainder(double f1, double f2);
 
     /**
@@ -392,6 +405,7 @@ public final class Math {
      *          floating-point value that is greater than or equal to
      *          the argument and is equal to a mathematical integer.
      */
+    @FastNative
     public static native double ceil(double a);
 
     /**
@@ -409,6 +423,7 @@ public final class Math {
      *          floating-point value that less than or equal to the argument
      *          and is equal to a mathematical integer.
      */
+    @FastNative
     public static native double floor(double a);
 
     /**
@@ -426,6 +441,7 @@ public final class Math {
      * @return  the closest floating-point value to {@code a} that is
      *          equal to a mathematical integer.
      */
+    @FastNative
     public static native double rint(double a);
 
     /**
@@ -480,6 +496,7 @@ public final class Math {
      *          in polar coordinates that corresponds to the point
      *          (<i>x</i>,&nbsp;<i>y</i>) in Cartesian coordinates.
      */
+    @FastNative
     public static native double atan2(double y, double x);
 
     /**
@@ -605,6 +622,7 @@ public final class Math {
      * @param   b   the exponent.
      * @return  the value {@code a}<sup>{@code b}</sup>.
      */
+    @FastNative
     public static native double pow(double a, double b);
 
     /**
@@ -1564,6 +1582,7 @@ public final class Math {
      * @return  The hyperbolic sine of {@code x}.
      * @since 1.5
      */
+    @FastNative
     public static native double sinh(double x);
 
     /**
@@ -1590,6 +1609,7 @@ public final class Math {
      * @return  The hyperbolic cosine of {@code x}.
      * @since 1.5
      */
+    @FastNative
     public static native double cosh(double x);
 
     /**
@@ -1628,6 +1648,7 @@ public final class Math {
      * @return  The hyperbolic tangent of {@code x}.
      * @since 1.5
      */
+    @FastNative
     public static native double tanh(double x);
 
     /**
@@ -1655,6 +1676,7 @@ public final class Math {
      * without intermediate overflow or underflow
      * @since 1.5
      */
+    @FastNative
     public static native double hypot(double x, double y);
 
     /**
@@ -1691,6 +1713,7 @@ public final class Math {
      * @return  the value <i>e</i><sup>{@code x}</sup>&nbsp;-&nbsp;1.
      * @since 1.5
      */
+    @FastNative
     public static native double expm1(double x);
 
     /**
@@ -1726,6 +1749,7 @@ public final class Math {
      * log of {@code x}&nbsp;+&nbsp;1
      * @since 1.5
      */
+    @FastNative
     public static native double log1p(double x);
 
     /**

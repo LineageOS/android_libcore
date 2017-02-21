@@ -26,6 +26,7 @@
 
 package java.lang;
 
+import dalvik.annotation.optimization.FastNative;
 import java.io.*;
 import java.util.StringTokenizer;
 import sun.reflect.CallerSensitive;
@@ -719,6 +720,7 @@ public class Runtime {
      * @return  an approximation to the total amount of memory currently
      *          available for future allocated objects, measured in bytes.
      */
+    @FastNative
     public native long freeMemory();
 
     /**
@@ -732,6 +734,7 @@ public class Runtime {
      * @return  the total amount of memory currently available for current
      *          and future objects, measured in bytes.
      */
+    @FastNative
     public native long totalMemory();
 
     /**
@@ -743,6 +746,7 @@ public class Runtime {
      *          attempt to use, measured in bytes
      * @since 1.4
      */
+    @FastNative
     public native long maxMemory();
 
     /**

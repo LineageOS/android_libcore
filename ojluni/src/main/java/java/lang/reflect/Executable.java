@@ -25,6 +25,7 @@
 
 package java.lang.reflect;
 
+import dalvik.annotation.optimization.FastNative;
 import com.android.dex.Dex;
 
 import java.lang.annotation.Annotation;
@@ -420,6 +421,7 @@ public abstract class Executable extends AccessibleObject
     private transient volatile boolean hasRealParameterData;
     private transient volatile Parameter[] parameters;
 
+    @FastNative
     private native Parameter[] getParameters0();
 
     /**
@@ -534,6 +536,7 @@ public abstract class Executable extends AccessibleObject
         // Android-changed: Implemented natively.
         return getAnnotationNative(annotationClass);
     }
+    @FastNative
     private native <T extends Annotation> T getAnnotationNative(Class<T> annotationClass);
 
     /**
@@ -554,6 +557,7 @@ public abstract class Executable extends AccessibleObject
         // Android-changed: Implemented natively.
         return getDeclaredAnnotationsNative();
     }
+    @FastNative
     private native Annotation[] getDeclaredAnnotationsNative();
 
     // Android-changed: Additional ART-related fields and logic below that is shared between
@@ -649,6 +653,7 @@ public abstract class Executable extends AccessibleObject
         Objects.requireNonNull(annotationType);
         return isAnnotationPresentNative(annotationType);
     }
+    @FastNative
     private native boolean isAnnotationPresentNative(Class<? extends Annotation> annotationType);
 
     final Annotation[][] getParameterAnnotationsInternal() {
@@ -658,6 +663,7 @@ public abstract class Executable extends AccessibleObject
         }
         return parameterAnnotations;
     }
+    @FastNative
     private native Annotation[][] getParameterAnnotationsNative();
 
     /**
@@ -721,6 +727,7 @@ public abstract class Executable extends AccessibleObject
         }
         return result.toString();
     }
+    @FastNative
     private native String[] getSignatureAnnotation();
 
     final boolean equalNameAndParametersInternal(Method m) {
