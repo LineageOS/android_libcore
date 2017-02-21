@@ -27,7 +27,10 @@ public final class DexFormat {
      * API level to target in order to produce the most modern file
      * format
      */
-    public static final int API_CURRENT = 24;
+    public static final int API_CURRENT = 26;
+
+    /** API level to target in order to pass through default and static interface methods */
+    public static final int API_DEFAULT_INTERFACE_METHODS = 24;
 
     /** API level to target in order to suppress extended opcode usage */
     public static final int API_NO_EXTENDED_OPCODES = 13;
@@ -53,10 +56,8 @@ public final class DexFormat {
      */
     public static final String VERSION_CURRENT = "038";
 
-    /**
-     * Versions currently supported.
-     */
-    static final String [] VERSIONS_SUPPORTED = { "035", "037", "038" };
+    /** dex file version number for API level 24 and earlier */
+    public static final String VERSION_FOR_API_24 = "037";
 
     /** dex file version number for API level 13 and earlier */
     public static final String VERSION_FOR_API_13 = "035";
@@ -96,14 +97,12 @@ public final class DexFormat {
 
         String version = "" + ((char) magic[4]) + ((char) magic[5]) +((char) magic[6]);
 
-        for (String supported : VERSIONS_SUPPORTED) {
-            if (version.equals(supported)) {
-                return API_CURRENT;
-            }
-        }
-
         if (version.equals(VERSION_FOR_API_13)) {
             return API_NO_EXTENDED_OPCODES;
+        } else if (version.equals(VERSION_FOR_API_24)) {
+            return API_DEFAULT_INTERFACE_METHODS;
+        } else if (version.equals(VERSION_CURRENT)) {
+            return API_CURRENT;
         }
 
         return -1;
@@ -117,6 +116,8 @@ public final class DexFormat {
 
         if (targetApiLevel >= API_CURRENT) {
             version = VERSION_CURRENT;
+        } else if (targetApiLevel >= API_DEFAULT_INTERFACE_METHODS) {
+            version = VERSION_FOR_API_24;
         } else {
             version = VERSION_FOR_API_13;
         }
@@ -126,6 +127,6 @@ public final class DexFormat {
 
     public static boolean isSupportedDexMagic(byte[] magic) {
         int api = magicToApi(magic);
-        return api == API_NO_EXTENDED_OPCODES || api == API_CURRENT;
+        return api > 0;
     }
 }
