@@ -77,11 +77,10 @@ public class BaseDexClassLoader extends ClassLoader {
      * @param dexFiles the array of in-memory dex files containing classes.
      * @param parent the parent class loader
      *
-     * TODO We should support giving this a library search path maybe.
-     *
      * @hide
      */
     public BaseDexClassLoader(ByteBuffer[] dexFiles, ClassLoader parent) {
+        // TODO We should support giving this a library search path maybe.
         super(parent);
         this.pathList = new DexPathList(this, dexFiles);
     }
