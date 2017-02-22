@@ -1088,7 +1088,10 @@ class DatagramChannelImpl
 
     protected void finalize() throws Throwable {
         try {
-            guard.warnIfOpen();
+            // Android-changed: Add CloseGuard support.
+            if (guard != null) {
+                guard.warnIfOpen();
+            }
             // fd is null if constructor threw exception
             if (fd != null)
                 close();
