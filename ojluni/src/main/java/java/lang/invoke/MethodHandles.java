@@ -139,7 +139,7 @@ public class MethodHandles {
         MethodHandleImpl directTarget = getMethodHandleImpl(target);
         // Given that this is specified to be an "unchecked" crack, we can directly allocate
         // a member from the underlying ArtField / Method and bypass all associated access checks.
-        return (T) directTarget.getMemberInternal();
+        return expected.cast(directTarget.getMemberInternal());
     }
 
     /**
