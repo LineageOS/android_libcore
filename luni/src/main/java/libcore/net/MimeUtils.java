@@ -16,8 +16,13 @@
 
 package libcore.net;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Utilities for dealing with MIME types.
@@ -389,6 +394,7 @@ public final class MimeUtils {
         add("video/x-webex", "wrf");
         add("x-conference/x-cooltalk", "ice");
         add("x-epoc/x-sisx-app", "sisx");
+        applyOverrides();
     }
 
     private static void add(String mimeType, String extension) {
@@ -402,6 +408,61 @@ public final class MimeUtils {
         }
         if (!extensionToMimeTypeMap.containsKey(extension)) {
             extensionToMimeTypeMap.put(extension, mimeType);
+        }
+    }
+
+    private static InputStream getContentTypesPropertiesStream() {
+        // User override?
+        String userTable = System.getProperty("content.types.user.table");
+        if (userTable != null) {
+            File f = new File(userTable);
+            if (f.exists()) {
+                try {
+                    return new FileInputStream(f);
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+        // Standard location?
+        File f = new File(System.getProperty("java.home"), "lib" + File.separator + "content-types.properties");
+        if (f.exists()) {
+            try {
+                return new FileInputStream(f);
+            } catch (IOException ignored) {
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * This isn't what the RI does. The RI doesn't have hard-coded defaults, so supplying your
+     * own "content.types.user.table" means you don't get any of the built-ins, and the built-ins
+     * come from "$JAVA_HOME/lib/content-types.properties".
+     */
+    private static void applyOverrides() {
+        // Get the appropriate InputStream to read overrides from, if any.
+        InputStream stream = getContentTypesPropertiesStream();
+        if (stream == null) {
+            return;
+        }
+
+        try {
+            try {
+                // Read the properties file...
+                Properties overrides = new Properties();
+                overrides.load(stream);
+                // And translate its mapping to ours...
+                for (Map.Entry<Object, Object> entry : overrides.entrySet()) {
+                    String extension = (String) entry.getKey();
+                    String mimeType = (String) entry.getValue();
+                    add(mimeType, extension);
+                }
+            } finally {
+                stream.close();
+            }
+        } catch (IOException ignored) {
         }
     }
 
