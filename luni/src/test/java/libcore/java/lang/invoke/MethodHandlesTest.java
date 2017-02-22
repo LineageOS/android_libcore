@@ -558,7 +558,7 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
-    public static void testfindStatic() throws Throwable {
+    public void testfindStatic() throws Throwable {
         MethodHandles.lookup().findStatic(BarImpl.class, "staticMethod",
                 MethodType.methodType(String.class));
         try {
@@ -631,7 +631,7 @@ public class MethodHandlesTest extends TestCase {
         public static final Lookup lookup = MethodHandles.lookup();
     }
 
-    public static void testUnreflects_publicMethods() throws Throwable {
+    public void testUnreflects_publicMethods() throws Throwable {
         UnreflectTester instance = new UnreflectTester("unused");
         Method publicMethod = UnreflectTester.class.getMethod("publicMethod");
 
@@ -645,7 +645,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals("publicStaticMethod", (String) mh.invokeExact());
     }
 
-    public static void testUnreflects_privateMethods() throws Throwable {
+    public void testUnreflects_privateMethods() throws Throwable {
         Method privateMethod = UnreflectTester.class.getDeclaredMethod("privateMethod");
 
         try {
@@ -674,7 +674,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals("privateStaticMethod", (String) mh.invokeExact());
     }
 
-    public static void testUnreflects_constructors() throws Throwable {
+    public void testUnreflects_constructors() throws Throwable {
         Constructor privateConstructor = UnreflectTester.class.getDeclaredConstructor(String.class);
 
         try {
@@ -698,7 +698,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals("def", instance.publicField);
     }
 
-    public static void testUnreflects_publicFields() throws Throwable {
+    public void testUnreflects_publicFields() throws Throwable {
         Field publicField = UnreflectTester.class.getField("publicField");
         MethodHandle mh = MethodHandles.lookup().unreflectGetter(publicField);
         UnreflectTester instance = new UnreflectTester("instanceValue");
@@ -720,7 +720,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals("updatedStaticValue2", UnreflectTester.publicStaticField);
     }
 
-    public static void testUnreflects_privateFields() throws Throwable {
+    public void testUnreflects_privateFields() throws Throwable {
         Field privateField = UnreflectTester.class.getDeclaredField("privateField");
         try {
             MethodHandles.lookup().unreflectGetter(privateField);
@@ -772,7 +772,7 @@ public class MethodHandlesTest extends TestCase {
         return "foo";
     }
 
-    public static void testAsType() throws Throwable {
+    public void testAsType() throws Throwable {
         // The type of this handle is (String, String)String.
         MethodHandle mh = MethodHandles.lookup().findVirtual(String.class,
                 "concat", MethodType.methodType(String.class, String.class));
@@ -815,7 +815,7 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
-    public static void testConstructors() throws Throwable {
+    public void testConstructors() throws Throwable {
         MethodHandle mh =
                 MethodHandles.lookup().findConstructor(Float.class,
                         MethodType.methodType(void.class,
@@ -884,7 +884,7 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
-    public static void testStringConstructors() throws Throwable {
+    public void testStringConstructors() throws Throwable {
         final String testPattern = "The system as we know it is broken";
 
         // String()
@@ -1867,7 +1867,7 @@ public class MethodHandlesTest extends TestCase {
         assertEquals(MethodType.methodType(String.class), info.getMethodType());
     }
 
-    public static void testReflectAs() throws Throwable {
+    public void testReflectAs() throws Throwable {
         // Test with a virtual method :
         MethodType type = MethodType.methodType(String.class);
         MethodHandle handle = MethodHandles.lookup().findVirtual(
