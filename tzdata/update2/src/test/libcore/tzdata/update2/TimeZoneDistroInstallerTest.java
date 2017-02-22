@@ -30,6 +30,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 import libcore.io.Streams;
+import libcore.tzdata.shared2.DistroVersion;
+import libcore.tzdata.shared2.FileUtils;
+import libcore.tzdata.shared2.TimeZoneDistro;
 import libcore.tzdata.testing.ZoneInfoTestHelper;
 import libcore.tzdata.update2.tools.TimeZoneDistroBuilder;
 

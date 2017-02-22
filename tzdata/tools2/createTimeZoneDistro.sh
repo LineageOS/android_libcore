@@ -5,23 +5,19 @@
 # Usage: ./createTimeZoneDistro.sh <tzupdate.properties file> <output file>
 # See libcore.tzdata.update2.tools.CreateTimeZoneDistro for more information.
 
-TOOLS_DIR=src/main/libcore/tzdata/update2/tools
-UPDATE_DIR=../update2/src/main/libcore/tzdata/update2
-GEN_DIR=./gen
-
 # Fail if anything below fails
 set -e
 
-rm -rf ${GEN_DIR}
-mkdir -p ${GEN_DIR}
+if [[ -z "${ANDROID_BUILD_TOP}" ]]; then
+  echo "Configure your environment with build/envsetup.sh and lunch"
+  exit 1
+fi
 
-javac \
-    ${TOOLS_DIR}/CreateTimeZoneDistro.java \
-    ${TOOLS_DIR}/TimeZoneDistroBuilder.java \
-    ${UPDATE_DIR}/DistroException.java \
-    ${UPDATE_DIR}/DistroVersion.java \
-    ${UPDATE_DIR}/FileUtils.java \
-    ${UPDATE_DIR}/TimeZoneDistro.java \
-    -d ${GEN_DIR}
+cd ${ANDROID_BUILD_TOP}
+make tzdata_tools2-host
 
-java -cp ${GEN_DIR} libcore.tzdata.update2.tools.CreateTimeZoneDistro $@
+TOOLS_LIB=${ANDROID_BUILD_TOP}/out/host/common/obj/JAVA_LIBRARIES/tzdata_tools2-host_intermediates/javalib.jar
+SHARED_LIB=${ANDROID_BUILD_TOP}/out/host/common/obj/JAVA_LIBRARIES/tzdata_shared2-host_intermediates/javalib.jar
+
+cd -
+java -cp ${TOOLS_LIB}:${SHARED_LIB} libcore.tzdata.update2.tools.CreateTimeZoneDistro $@
