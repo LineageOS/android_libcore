@@ -1129,6 +1129,10 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
         private MethodHandle findSpecial(Method method, MethodType type,
                                          Class<?> refc, Class<?> specialCaller)
                 throws IllegalAccessException {
+            if (Modifier.isStatic(method.getModifiers())) {
+                throw new IllegalAccessException("expected a non-static method:" + method);
+            }
+
             if (Modifier.isPrivate(method.getModifiers())) {
                 // Since this is a private method, we'll need to also make sure that the
                 // lookup class is the same as the refering class. We've already checked that
