@@ -590,7 +590,13 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
-    static class UnreflectTester {
+    static class UnreflectTesterBase {
+        public String overridenMethod() {
+            return "Base";
+        }
+    }
+
+    static class UnreflectTester extends UnreflectTesterBase {
         public String publicField;
         private String privateField;
 
@@ -628,6 +634,11 @@ public class MethodHandlesTest extends TestCase {
             return "publicVarArgsMethod";
         }
 
+        @Override
+        public String overridenMethod() {
+            return "Override";
+        }
+
         public static final Lookup lookup = MethodHandles.lookup();
     }
 
@@ -654,10 +665,14 @@ public class MethodHandlesTest extends TestCase {
         } catch (IllegalAccessException expected) {
         }
 
-        privateMethod.setAccessible(true);
-
-        MethodHandle mh = MethodHandles.lookup().unreflect(privateMethod);
         UnreflectTester instance = new UnreflectTester("unused");
+        MethodHandle mh = UnreflectTester.lookup.unreflectSpecial(privateMethod,
+                UnreflectTester.class);
+        assertEquals("privateMethod", (String) mh.invoke(instance));
+        assertEquals("privateMethod", (String) mh.invokeExact(instance));
+
+        privateMethod.setAccessible(true);
+        mh = MethodHandles.lookup().unreflect(privateMethod);
         assertEquals("privateMethod", (String) mh.invoke(instance));
         assertEquals("privateMethod", (String) mh.invokeExact(instance));
 
@@ -668,10 +683,25 @@ public class MethodHandlesTest extends TestCase {
         } catch (IllegalAccessException expected) {
         }
 
+        try {
+            mh = UnreflectTester.lookup.unreflectSpecial(privateStaticMethod,
+                    UnreflectTester.class);
+            fail();
+        } catch (IllegalAccessException expected) {
+        }
+
         privateStaticMethod.setAccessible(true);
         mh = MethodHandles.lookup().unreflect(privateStaticMethod);
         assertEquals("privateStaticMethod", (String) mh.invoke());
         assertEquals("privateStaticMethod", (String) mh.invokeExact());
+    }
+
+    public void testUnreflectSpecial_superCalls() throws Throwable {
+        Method overridenMethod = UnreflectTester.class.getMethod("overridenMethod");
+        UnreflectTester instance = new UnreflectTester("unused");
+        MethodHandle mh = UnreflectTester.lookup.unreflectSpecial(overridenMethod,
+                UnreflectTester.class);
+        assertEquals("Base", (String) mh.invoke(instance));
     }
 
     public void testUnreflects_constructors() throws Throwable {
