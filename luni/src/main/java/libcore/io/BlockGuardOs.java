@@ -201,7 +201,7 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public FileDescriptor open(String path, int flags, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
-        if ((mode & O_ACCMODE) != O_RDONLY) {
+        if ((flags & O_ACCMODE) != O_RDONLY) {
             BlockGuard.getThreadPolicy().onWriteToDisk();
         }
         return os.open(path, flags, mode);
