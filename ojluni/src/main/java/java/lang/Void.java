@@ -46,6 +46,12 @@ class Void {
      */
     public static final Class<Void> TYPE = lookupType();
 
+    // Android-changed: Upstream code would use reflection to establish the value of "void.class".
+    // ART makes a native call instead because the reflection approach could lead to initialization
+    // of TYPE with the current, i.e. uninitialized, value of TYPE due to other Android changes.
+    @dalvik.annotation.optimization.FastNative
+    private static native Class<Void> lookupType();
+    /*
     @SuppressWarnings("unchecked")
     private static Class<Void> lookupType() {
         try {
@@ -55,6 +61,7 @@ class Void {
             throw new AssertionError(e);
         }
     }
+    */
 
     /*
      * The Void class cannot be instantiated.
