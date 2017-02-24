@@ -175,6 +175,14 @@ public abstract class URLStreamHandler {
                     i = limit;
             }
 
+            // ----- BEGIN android -----
+            // i may become greater than limit
+            // b/31858037
+            if (i > limit) {
+                i = limit;
+            }
+            // ----- END android -----
+
             host = authority = spec.substring(start, i);
 
             int ind = authority.indexOf('@');
