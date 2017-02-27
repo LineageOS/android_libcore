@@ -440,6 +440,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
         okhttp-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := testng-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
+    LOCAL_DX_FLAGS := --core-library
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
     LOCAL_MODULE := core-ojtests-hostdex
