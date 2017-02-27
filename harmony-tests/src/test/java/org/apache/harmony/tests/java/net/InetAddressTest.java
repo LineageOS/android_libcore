@@ -112,23 +112,6 @@ public class InetAddressTest extends junit.framework.TestCase {
     }
 
     /**
-     * java.net.InetAddress#getByName(java.lang.String)
-     */
-    public void test_getByNameLjava_lang_String() throws Exception {
-        // Test for method java.net.InetAddress
-        // java.net.InetAddress.getByName(java.lang.String)
-        InetAddress ia2 = InetAddress.getByName("127.0.0.1");
-
-        // TODO : Test to ensure all the address formats are recognized
-        InetAddress i = InetAddress.getByName("1.2.3");
-        assertEquals("1.2.0.3", i.getHostAddress());
-        i = InetAddress.getByName("1.2");
-        assertEquals("1.0.0.2", i.getHostAddress());
-        i = InetAddress.getByName(String.valueOf(0xffffffffL));
-        assertEquals("255.255.255.255", i.getHostAddress());
-    }
-
-    /**
      * java.net.InetAddress#getHostAddress()
      */
     public void test_getHostAddress() throws Exception {
@@ -383,12 +366,11 @@ public class InetAddressTest extends junit.framework.TestCase {
 
         NetworkInterface loopbackInterface = null;
         ArrayList<InetAddress> localAddresses = new ArrayList<InetAddress>();
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface
-                .getNetworkInterfaces();
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        assertNotNull(networkInterfaces);
         while (networkInterfaces.hasMoreElements()) {
             NetworkInterface networkInterface = networkInterfaces.nextElement();
-            Enumeration<InetAddress> addresses = networkInterface
-                    .getInetAddresses();
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
             while (addresses.hasMoreElements()) {
                 InetAddress address = addresses.nextElement();
                 if (address.isLoopbackAddress()) {
