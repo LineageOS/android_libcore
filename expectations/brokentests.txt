@@ -55,8 +55,6 @@
   description: "(Needs investigation) Some tests make assertions that don't make sense, others use broken port allocation logic.",
   result: EXEC_FAILED,
   names: [
-    "org.apache.harmony.tests.java.net.Inet6AddressTest#test_getByNameLjava_lang_String",
-    "org.apache.harmony.tests.java.net.InetAddressTest#test_getByNameLjava_lang_String",
     "org.apache.harmony.tests.java.net.InetAddressTest#test_isReachableLjava_net_NetworkInterfaceII_loopbackInterface"
   ]
 },
