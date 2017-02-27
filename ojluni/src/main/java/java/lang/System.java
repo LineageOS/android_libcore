@@ -885,8 +885,12 @@ public final class System {
      * @return  the hashCode
      * @since   JDK1.1
      */
-    @FastNative
-    public static native int identityHashCode(Object x);
+    public static int identityHashCode(Object x) {
+        if (x == null) {
+            return 0;
+        }
+        return Object.identityHashCode(x);
+    }
 
     /**
      * System properties. The following properties are guaranteed to be defined:

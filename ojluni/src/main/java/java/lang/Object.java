@@ -101,15 +101,26 @@ public class Object {
      * @see     java.lang.System#identityHashCode
      */
     public int hashCode() {
-        int lockWord = shadow$_monitor_;
+        return identityHashCode(this);
+    }
+
+    // Android-changed: add a local helper for identityHashCode.
+    // Package-private to be used by j.l.System. We do the implementation here
+    // to avoid Object.hashCode doing a clinit check on j.l.System, and also
+    // to avoid leaking shadow$_monitor_ outside of this class.
+    /* package-private */ static int identityHashCode(Object obj) {
+        int lockWord = obj.shadow$_monitor_;
         final int lockWordStateMask = 0xC0000000;  // Top 2 bits.
         final int lockWordStateHash = 0x80000000;  // Top 2 bits are value 2 (kStateHash).
         final int lockWordHashMask = 0x0FFFFFFF;  // Low 28 bits.
         if ((lockWord & lockWordStateMask) == lockWordStateHash) {
             return lockWord & lockWordHashMask;
         }
-        return System.identityHashCode(this);
+        return identityHashCodeNative(obj);
     }
+
+    @FastNative
+    private static native int identityHashCodeNative(Object obj);
 
     /**
      * Indicates whether some other object is "equal to" this one.
