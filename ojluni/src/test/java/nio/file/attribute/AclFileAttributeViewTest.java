@@ -161,8 +161,10 @@ public class AclFileAttributeViewTest {
     public static void main() throws IOException {
         // use work directory rather than system temporary directory to
         // improve chances that ACLs are supported
-        Path dir = Paths.get("./work" + new Random().nextInt());
-        Files.createDirectory(dir);
+        // Android-changed: Switched to temp dir due to permissions
+        // Path dir = Paths.get("./work" + new Random().nextInt());
+        // Files.createTempDirectory(dir);
+        Path dir = Files.createTempDirectory("acl");
         try {
             if (!Files.getFileStore(dir).supportsFileAttributeView("acl")) {
                 System.out.println("ACLs not supported - test skipped!");
