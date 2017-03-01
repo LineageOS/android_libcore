@@ -82,7 +82,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-// Android changed: remove mention of ZoneRulesProvider.
+// Android-changed: remove mention of ZoneRulesProvider.
 /**
  * The rules defining how the zone offset varies for a single time-zone.
  * <p>

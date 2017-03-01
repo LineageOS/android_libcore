@@ -1138,7 +1138,7 @@ public final class Class<T> implements java.io.Serializable,
      *     that class is a local or anonymous class; otherwise {@code null}.
      * @since 1.5
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     public Method getEnclosingMethod() {
         if (classNameImpliesTopLevel()) {
             return null;
@@ -1160,7 +1160,7 @@ public final class Class<T> implements java.io.Serializable,
      *     that class is a local or anonymous class; otherwise {@code null}.
      * @since 1.5
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     public Constructor<?> getEnclosingConstructor() {
         if (classNameImpliesTopLevel()) {
             return null;
@@ -1187,7 +1187,7 @@ public final class Class<T> implements java.io.Serializable,
      * @return the declaring class for this class
      * @since JDK1.1
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     @FastNative
     public native Class<?> getDeclaringClass();
 
@@ -1198,7 +1198,7 @@ public final class Class<T> implements java.io.Serializable,
      * @return the immediately enclosing class of the underlying class
      * @since 1.5
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     @FastNative
     public native Class<?> getEnclosingClass();
 
@@ -1596,7 +1596,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.3 Field Declarations
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     public Field getField(String name)
         throws NoSuchFieldException {
         if (name == null) {
@@ -1767,7 +1767,7 @@ public final class Class<T> implements java.io.Serializable,
      *
      * @since JDK1.1
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     @FastNative
     public native Class<?>[] getDeclaredClasses();
 
@@ -1813,7 +1813,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.3 Field Declarations
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     @FastNative
     public native Field[] getDeclaredFields();
 
@@ -1989,7 +1989,7 @@ public final class Class<T> implements java.io.Serializable,
      * @jls 8.2 Class Members
      * @jls 8.3 Field Declarations
      */
-    // ANDROID-CHANGED: Removed SecurityException
+    // Android-changed: Removed SecurityException
     @FastNative
     public native Field getDeclaredField(String name) throws NoSuchFieldException;
 

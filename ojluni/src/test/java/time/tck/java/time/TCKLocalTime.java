@@ -139,7 +139,7 @@ public class TCKLocalTime extends AbstractDateTimeTest {
     private static final ZoneOffset OFFSET_PTWO = ZoneOffset.ofHours(2);
     private static final ZoneId ZONE_PARIS = ZoneId.of("Europe/Paris");
 
-    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // Android-changed: This was originally non-static and initialized in @BeforeMethod,
     // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
     // since multiple test methods were run and the first one did not require this value.
     private static LocalTime TEST_12_30_40_987654321;

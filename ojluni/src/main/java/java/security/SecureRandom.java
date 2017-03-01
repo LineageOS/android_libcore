@@ -34,9 +34,6 @@ import java.util.function.Function;
 import dalvik.system.VMRuntime;
 import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
-/** BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
-import sun.security.util.Debug;
-*/
 
 /**
  * This class provides a cryptographically strong random number
@@ -102,12 +99,14 @@ import sun.security.util.Debug;
 
 public class SecureRandom extends java.util.Random {
 
-    /** BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+    // Android-removed: this debugging mechanism is not supported in Android.
+    /*
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
         Debug.isOn("engine=") && !Debug.isOn("securerandom");
-    END ANDROID-REMOVED */
+    */
+    // END Android-removed
 
     /**
      * The provider.
@@ -204,7 +203,7 @@ public class SecureRandom extends java.util.Random {
     private void getDefaultPRNG(boolean setSeed, byte[] seed) {
         String prng = getPrngAlgorithm();
         if (prng == null) {
-            // Android changed, should never happen
+            // Android-changed, should never happen
             throw new IllegalStateException("No SecureRandom implementation!");
         } else {
             try {
@@ -247,12 +246,14 @@ public class SecureRandom extends java.util.Random {
         this.provider = provider;
         this.algorithm = algorithm;
 
-        /** BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("SecureRandom." + algorithm +
                 " algorithm from: " + this.provider.getName());
         }
-        END ANDROID-REMOVED */
+        */
+        // END Android-removed
     }
 
     /**

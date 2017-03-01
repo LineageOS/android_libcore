@@ -494,7 +494,7 @@ public class Date
                         i++;
                     }
                     if (prevc == '+' || prevc == '-' && year != Integer.MIN_VALUE) {
-                        // Android-changed BEGIN: Android specific time zone logic
+                        // BEGIN Android-changed: Android specific time zone logic
 
                         if (tzoffset != 0 && tzoffset != -1)
                             break syntax;
@@ -522,7 +522,7 @@ public class Date
 
                         if (prevc == '+')   // plus means east of GMT
                             n = -n;
-                        // Android-changed END
+                        // END Android-changed
 
                         tzoffset = n;
                     } else if (n >= 70)
@@ -752,7 +752,7 @@ public class Date
      * replaced by <code>Calendar.get(Calendar.DAY_OF_MONTH)</code>.
      */
     @Deprecated
-    // Android removed stray @deprecated tag.
+    // Android-removed stray @deprecated tag.
     public int getDate() {
         return normalize().getDayOfMonth();
     }

@@ -875,7 +875,7 @@ public final class HijrahChronology extends AbstractChronology implements Serial
      * @throws Exception if access to the property resource fails
      */
     private static Properties readConfigProperties(final String resource) throws Exception {
-        // Android changed: Load system resources.
+        // Android-changed: Load system resources.
         Properties props = new Properties();
         try (InputStream is = ClassLoader.getSystemResourceAsStream(resource)) {
             props.load(is);

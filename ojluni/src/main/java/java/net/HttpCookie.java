@@ -37,11 +37,11 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
 
-// ----- BEGIN android -----
+// BEGIN Android-changed
 import java.util.HashSet;
 import java.util.Set;
 import libcore.net.http.HttpDate;
-// ----- END android -----
+// END Android-changed
 
 /**
  * An HttpCookie object represents an HTTP cookie, which carries state
@@ -63,7 +63,7 @@ import libcore.net.http.HttpDate;
  * @since 1.6
  */
 public final class HttpCookie implements Cloneable {
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     private static final Set<String> RESERVED_NAMES = new HashSet<String>();
 
     static {
@@ -79,7 +79,7 @@ public final class HttpCookie implements Cloneable {
         RESERVED_NAMES.add("secure");     // Netscape  RFC 2109  RFC 2965  RFC 6265
         RESERVED_NAMES.add("version");    //           RFC 2109  RFC 2965  RFC 6265
     }
-    // ----- END android -----
+    // END Android-changed
 
     /* ---------------- Fields -------------- */
 
@@ -700,11 +700,11 @@ public final class HttpCookie implements Cloneable {
             String H = host.substring(0, lengthDiff);
             String D = host.substring(lengthDiff);
 
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             //return (H.indexOf('.') == -1 && D.equalsIgnoreCase(domain));
             return D.equalsIgnoreCase(domain) && ((domain.startsWith(".") && isFullyQualifiedDomainName(domain, 1))
                 || isLocalDomain);
-            // ----- END android -----
+            // END Android-changed
         }
         else if (lengthDiff == -1) {
             // if domain is actually .host
@@ -715,12 +715,12 @@ public final class HttpCookie implements Cloneable {
         return false;
     }
 
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     private static boolean isFullyQualifiedDomainName(String s, int firstCharacter) {
         int dotPosition = s.indexOf('.', firstCharacter + 1);
         return dotPosition != -1 && dotPosition < s.length() - 1;
     }
-    // ----- END android -----
+    // END Android-changed
 
     /**
      * Constructs a cookie header string representation of this cookie,
@@ -806,10 +806,10 @@ public final class HttpCookie implements Cloneable {
     // from RFC 2068, token special case characters
     //
     // private static final String tspecials = "()<>@,;:\\\"/[]?={} \t";
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     // private static final String tspecials = ",;";
     private static final String tspecials = ",;= \t";
-    // ----- END android -----
+    // END Android-changed
 
     /*
      * Tests a string and returns true if the string counts as a token.
@@ -821,11 +821,11 @@ public final class HttpCookie implements Cloneable {
      *          {@code false} if it is not
      */
     private static boolean isToken(String value) {
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         if (RESERVED_NAMES.contains(value.toLowerCase(Locale.US))) {
             return false;
         }
-        // ----- END android -----
+        // END Android-changed
 
         int len = value.length();
 

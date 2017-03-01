@@ -350,7 +350,7 @@ public abstract class ClassLoader {
      * @throws  ClassNotFoundException
      *          If the class could not be found
      */
-    // Android-removed : Remove references to getClassLoadingLock
+    // Android-removed: Remove references to getClassLoadingLock
     //                   Remove perf counters.
     //
     // <p> Unless overridden, this method synchronizes on the result of

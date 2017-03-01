@@ -48,7 +48,7 @@ public class IPAddressUtil {
         long val;
         try {
             switch(s.length) {
-            /* ----- BEGIN android -----
+            /* BEGIN Android-changed
             case 1:
                 // When only one part is given, the value is stored directly in
                 // the network address without any byte rearrangement.

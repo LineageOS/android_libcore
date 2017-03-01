@@ -92,7 +92,7 @@ public class TestFormatter {
         Chronology chrono = Chronology.ofLocale(calLocale);
         ChronoLocalDate now = chrono.dateNow();
         ChronoLocalDateTime<?> ldt0 = now.atTime(LocalTime.now());
-        // Android changed: use hard-coded zone id instead of system default.
+        // Android-changed: use hard-coded zone id instead of system default.
         ChronoZonedDateTime<?>  zdt0 = ldt0.atZone(ZoneId.of("America/Los_Angeles"));
         ChronoZonedDateTime<?>[] zdts = new ChronoZonedDateTime<?>[] {
             zdt0,
@@ -106,7 +106,7 @@ public class TestFormatter {
                 zdt = zdt.with(ChronoField.DAY_OF_YEAR, (r.nextInt(365) + 1))
                          .with(ChronoField.SECOND_OF_DAY, r.nextInt(86400));
                 Instant instant = zdt.toInstant();
-                // Android changed: Calendar.getInstance() only returns GregorianCalendar.
+                // Android-changed: Calendar.getInstance() only returns GregorianCalendar.
                 // Manually get a JapaneseImperialCalendar for the test.
                 TimeZone tz = TimeZone.getTimeZone(zdt.getZone());
                 Calendar cal;
@@ -205,12 +205,12 @@ public class TestFormatter {
     }
 
     private String toZoneIdStr(String expected) {
-        // Android changed: java.util.Calendar and java.time types are formatted identically.
+        // Android-changed: java.util.Calendar and java.time types are formatted identically.
         return expected;
     }
 
     private String toZoneOffsetStr(String expected) {
-        // Android changed: Android Matcher doesn't support named groups. Also GMT/Z is formatted as
+        // Android-changed: Android Matcher doesn't support named groups. Also GMT/Z is formatted as
         // "GMT+00:00".
         return expected.replaceAll("GMT(?:\\+00:00)|UTC|UT", "Z")
                 .replaceAll("(?:GMT|UTC)([+\\-]?[0-9]{2}:[0-9]{2})", "$1");

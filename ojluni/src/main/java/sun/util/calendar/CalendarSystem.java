@@ -78,7 +78,7 @@ public abstract class CalendarSystem {
     // Map of calendar names and calendar classes;
     private static final Map<String, Class<?>> names;
 
-    // Android changed : Don't use reflection for Class.forName every time.
+    // Android-changed: Don't use reflection for Class.forName every time.
 
     static {
         names = new HashMap<>();
@@ -122,7 +122,7 @@ public abstract class CalendarSystem {
             return GREGORIAN_INSTANCE;
         }
 
-        //Android changed: remove lazy initialization, use classes instead of class names.
+        //Android-changed: remove lazy initialization, use classes instead of class names.
 
         CalendarSystem cal = calendars.get(calendarName);
         if (cal != null) {
@@ -161,7 +161,7 @@ public abstract class CalendarSystem {
      *                                  Unicode escape sequences
      */
     public static Properties getCalendarProperties() throws IOException {
-        // Android changed: load from resources.
+        // Android-changed: load from resources.
         Properties calendarProps = new Properties();
         try (InputStream is = ClassLoader.getSystemResourceAsStream("calendars.properties")) {
             calendarProps.load(is);

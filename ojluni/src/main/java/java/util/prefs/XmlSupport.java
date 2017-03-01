@@ -250,7 +250,7 @@ class XmlSupport {
     {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setIgnoringElementContentWhitespace(true);
-        // Android changed: No validating builder implementation.
+        // Android-changed: No validating builder implementation.
         // dbf.setValidating(true);
         dbf.setCoalescing(true);
         dbf.setIgnoringComments(true);
@@ -310,7 +310,7 @@ class XmlSupport {
      * preferences tree, as appropriate.
      */
     private static void ImportSubtree(Preferences prefsNode, Element xmlNode) {
-        // Android changed: filter out non-element nodes.
+        // Android-changed: filter out non-element nodes.
         List<Element> xmlKids = getChildElements(xmlNode);
 
         /*
@@ -349,7 +349,7 @@ class XmlSupport {
      * preferences node.
      */
     private static void ImportPrefs(Preferences prefsNode, Element map) {
-        // Android changed: Use getChildElements.
+        // Android-changed: Use getChildElements.
         List<Element> entries = getChildElements(map);
         for (int i=0, numEntries = entries.size(); i < numEntries; i++) {
             Element entry = entries.get(i);
@@ -411,7 +411,7 @@ class XmlSupport {
 
             NodeList entries = xmlMap.getChildNodes();
             for (int i=0, numEntries=entries.getLength(); i<numEntries; i++) {
-                // Android added, android xml serializer generates one-char Text nodes with a single
+                // Android-added, android xml serializer generates one-char Text nodes with a single
                 // new-line character between expected Element nodes. openJdk code wasn't
                 // expecting anything else than Element node.
                 if (!(entries.item(i) instanceof Element)) {

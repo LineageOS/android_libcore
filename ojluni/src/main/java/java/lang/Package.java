@@ -358,7 +358,7 @@ public class Package implements java.lang.reflect.AnnotatedElement {
      * @return the string representation of the package.
      */
     public String toString() {
-        // Android changed start
+        // Android-changed start
         // Several apps try to parse the output of toString(). This is a really
         // bad idea - especially when there's a Package.getName() function as well as a
         // Class.getName() function that can be used instead.
@@ -367,7 +367,7 @@ public class Package implements java.lang.reflect.AnnotatedElement {
         if (targetSdkVersion > 0 && targetSdkVersion <= 24) {
             return "package " + pkgName;
         }
-        // Android changed end
+        // Android-changed end
 
         String spec = specTitle;
         String ver =  specVersion;

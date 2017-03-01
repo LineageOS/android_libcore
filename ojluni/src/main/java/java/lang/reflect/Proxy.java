@@ -894,7 +894,7 @@ public class Proxy implements java.io.Serializable {
 
         final Proxy p = (Proxy) proxy;
         final InvocationHandler ih = p.h;
-        // Android changed, System.getSecurityManager() is always null
+        // Android-changed, System.getSecurityManager() is always null
         // if (System.getSecurityManager() != null) {
         //     Class<?> ihClass = ih.getClass();
         //     Class<?> caller = Reflection.getCallerClass();

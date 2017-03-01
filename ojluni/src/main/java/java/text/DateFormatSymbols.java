@@ -625,7 +625,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
         }
         zoneStrings = aCopy;
         isZoneStringsSet = true;
-        // Android changed: don't include zone strings in hashCode to avoid populating it.
+        // Android-changed: don't include zone strings in hashCode to avoid populating it.
         // cachedHashCode = 0;
     }
 
@@ -710,7 +710,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
             hashCode = 11 * hashCode + Arrays.hashCode(weekdays);
             hashCode = 11 * hashCode + Arrays.hashCode(shortWeekdays);
             hashCode = 11 * hashCode + Arrays.hashCode(ampms);
-            // Android changed: Don't include zone strings in hashCode to avoid populating it.
+            // Android-changed: Don't include zone strings in hashCode to avoid populating it.
             // hashCode = 11 * hashCode + Arrays.deepHashCode(getZoneStringsWrapper());
             hashCode = 11 * hashCode + Objects.hashCode(localPatternChars);
             cachedHashCode = hashCode;
@@ -747,7 +747,7 @@ public class DateFormatSymbols implements Serializable, Cloneable {
                   && that.localPatternChars == null)))) {
             return false;
         }
-        // Android changed: Avoid populating zoneStrings just for the comparison.
+        // Android-changed: Avoid populating zoneStrings just for the comparison.
         if (!isZoneStringsSet && !that.isZoneStringsSet && Objects.equals(locale, that.locale)) {
             return true;
         }

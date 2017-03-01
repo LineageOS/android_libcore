@@ -861,18 +861,18 @@ class InetAddress implements java.io.Serializable {
 
     private void readObjectNoData (ObjectInputStream s) throws
                          IOException, ClassNotFoundException {
-        // Android-changed : Don't use null to mean the boot classloader.
+        // Android-changed: Don't use null to mean the boot classloader.
         if (getClass().getClassLoader() != BOOT_CLASSLOADER) {
             throw new SecurityException ("invalid address type");
         }
     }
 
-    // Android-changed : Don't use null to mean the boot classloader.
+    // Android-changed: Don't use null to mean the boot classloader.
     private static final ClassLoader BOOT_CLASSLOADER = Object.class.getClassLoader();
 
     private void readObject (ObjectInputStream s) throws
                          IOException, ClassNotFoundException {
-        // Android-changed : Don't use null to mean the boot classloader.
+        // Android-changed: Don't use null to mean the boot classloader.
         if (getClass().getClassLoader() != BOOT_CLASSLOADER) {
             throw new SecurityException ("invalid address type");
         }
@@ -898,7 +898,7 @@ class InetAddress implements java.io.Serializable {
 
     private void writeObject (ObjectOutputStream s) throws
                         IOException {
-        // Android-changed : Don't use null to mean the boot classloader.
+        // Android-changed: Don't use null to mean the boot classloader.
         if (getClass().getClassLoader() != BOOT_CLASSLOADER) {
             throw new SecurityException ("invalid address type");
         }

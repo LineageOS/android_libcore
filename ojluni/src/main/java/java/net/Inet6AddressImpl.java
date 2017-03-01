@@ -72,7 +72,7 @@ class Inet6AddressImpl implements InetAddressImpl {
     @Override
     public InetAddress[] lookupAllHostAddr(String host, int netId) throws UnknownHostException {
         if (host == null || host.isEmpty()) {
-            // Android-changed : Return both the Inet4 and Inet6 loopback addresses
+            // Android-changed: Return both the Inet4 and Inet6 loopback addresses
             // when host == null or empty.
             return loopbackAddresses();
         }

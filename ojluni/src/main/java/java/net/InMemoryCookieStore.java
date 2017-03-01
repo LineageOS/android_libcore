@@ -336,7 +336,7 @@ public class InMemoryCookieStore implements CookieStore {
                               T index,
                               HttpCookie cookie)
     {
-        // Android-changed : "index" can be null. We only use the URI based
+        // Android-changed: "index" can be null. We only use the URI based
         // index on Android and we want to support null URIs. The underlying
         // store is a HashMap which will support null keys anyway.
         List<HttpCookie> cookies = indexStore.get(index);

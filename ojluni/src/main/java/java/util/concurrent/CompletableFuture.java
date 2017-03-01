@@ -2407,7 +2407,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public <U> CompletableFuture<U> newIncompleteFuture() {
         return new CompletableFuture<U>();
     }
@@ -2424,7 +2424,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public Executor defaultExecutor() {
         return ASYNC_POOL;
     }
@@ -2444,7 +2444,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletableFuture<T> copy() {
         return uniCopyStage();
     }
@@ -2463,7 +2463,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletionStage<T> minimalCompletionStage() {
         return uniAsMinimalStage();
     }
@@ -2480,7 +2480,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletableFuture<T> completeAsync(Supplier<? extends T> supplier,
                                               Executor executor) {
         if (supplier == null || executor == null)
@@ -2500,7 +2500,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletableFuture<T> completeAsync(Supplier<? extends T> supplier) {
         return completeAsync(supplier, defaultExecutor());
     }
@@ -2518,7 +2518,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletableFuture<T> orTimeout(long timeout, TimeUnit unit) {
         if (unit == null)
             throw new NullPointerException();
@@ -2541,7 +2541,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public CompletableFuture<T> completeOnTimeout(T value, long timeout,
                                                   TimeUnit unit) {
         if (unit == null)
@@ -2567,7 +2567,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public static Executor delayedExecutor(long delay, TimeUnit unit,
                                            Executor executor) {
         if (unit == null || executor == null)
@@ -2588,7 +2588,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public static Executor delayedExecutor(long delay, TimeUnit unit) {
         if (unit == null)
             throw new NullPointerException();
@@ -2606,7 +2606,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public static <U> CompletionStage<U> completedStage(U value) {
         return new MinimalStage<U>((value == null) ? NIL : value);
     }
@@ -2621,7 +2621,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public static <U> CompletableFuture<U> failedFuture(Throwable ex) {
         if (ex == null) throw new NullPointerException();
         return new CompletableFuture<U>(new AltResult(ex));
@@ -2638,7 +2638,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     public static <U> CompletionStage<U> failedStage(Throwable ex) {
         if (ex == null) throw new NullPointerException();
         return new MinimalStage<U>(new AltResult(ex));

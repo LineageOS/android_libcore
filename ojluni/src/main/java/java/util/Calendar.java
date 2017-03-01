@@ -1489,7 +1489,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                 setWeekDefinition(MONDAY, 4);
                 cal = gcal;
                 break;
-// Android-changed BEGIN: removed support for "buddhist" and "japanese".
+// BEGIN Android-changed: removed support for "buddhist" and "japanese".
 //            case "buddhist":
 //                cal = new BuddhistCalendar(zone, locale);
 //                cal.clear();
@@ -1497,7 +1497,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
 //            case "japanese":
 //                cal = new JapaneseImperialCalendar(zone, locale, true);
 //                break;
-// Android-changed END: removed support for "buddhist" and "japanese".
+// END Android-changed: removed support for "buddhist" and "japanese".
             default:
                 throw new IllegalArgumentException("unknown calendar type: " + type);
             }
@@ -1594,7 +1594,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
      */
     protected Calendar(TimeZone zone, Locale aLocale)
     {
-        // Android-added BEGIN: Allow aLocale == null
+        // BEGIN Android-added: Allow aLocale == null
         // http://b/16938922.
         //
         // TODO: This is for backwards compatibility only. Seems like a better idea to throw
@@ -1602,7 +1602,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         if (aLocale == null) {
             aLocale = Locale.getDefault();
         }
-        // Android-added END: Allow aLocale == null
+        // END Android-added: Allow aLocale == null
         fields = new int[FIELD_COUNT];
         isSet = new boolean[FIELD_COUNT];
         stamp = new int[FIELD_COUNT];
@@ -1666,7 +1666,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         return createCalendar(zone, aLocale);
     }
 
-    // Android-added BEGIN: add getJapaneseImperialInstance()
+    // BEGIN Android-added: add getJapaneseImperialInstance()
     /**
      * Create a Japanese Imperial Calendar.
      * @hide
@@ -1674,14 +1674,14 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
     public static Calendar getJapaneseImperialInstance(TimeZone zone, Locale aLocale) {
         return new JapaneseImperialCalendar(zone, aLocale);
     }
-    // Android-added END: add getJapaneseImperialInstance()
+    // END Android-added: add getJapaneseImperialInstance()
 
     private static Calendar createCalendar(TimeZone zone,
                                            Locale aLocale)
     {
-        // Android-changed BEGIN: only support GregorianCalendar here
+        // BEGIN Android-changed: only support GregorianCalendar here
         return new GregorianCalendar(zone, aLocale);
-        // Android-changed END: only support GregorianCalendar here
+        // END Android-changed: only support GregorianCalendar here
     }
 
     /**
@@ -1772,11 +1772,11 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
     public void setTimeInMillis(long millis) {
         // If we don't need to recalculate the calendar field values,
         // do nothing.
-// Android-changed BEGIN: Removed ZoneInfo support
+// BEGIN Android-changed: Removed ZoneInfo support
         if (time == millis && isTimeSet && areFieldsSet && areAllFieldsSet) {
 //        if (time == millis && isTimeSet && areFieldsSet && areAllFieldsSet
 //            && (zone instanceof ZoneInfo) && !((ZoneInfo)zone).isDirty()) {
-// Android-changed END: Removed ZoneInfo support
+// END Android-changed: Removed ZoneInfo support
 
             return;
         }
@@ -2060,13 +2060,13 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
      * @since 1.6
      */
     public String getDisplayName(int field, int style, Locale locale) {
-        // Android-changed BEGIN: Treat ALL_STYLES as SHORT
+        // BEGIN Android-changed: Treat ALL_STYLES as SHORT
         // Android has traditionally treated ALL_STYLES as SHORT, even though
         // it's not documented to be a valid value for style.
         if (style == ALL_STYLES) {
             style = SHORT;
         }
-        // Android-changed END: Treat ALL_STYLES as SHORT
+        // END Android-changed: Treat ALL_STYLES as SHORT
         if (!checkDisplayNameParams(field, style, SHORT, NARROW_FORMAT, locale,
                             ERA_MASK|MONTH_MASK|DAY_OF_WEEK_MASK|AM_PM_MASK)) {
             return null;
@@ -2208,12 +2208,12 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
             baseStyle < minStyle || baseStyle > maxStyle) {
             throw new IllegalArgumentException();
         }
-        // Android-added BEGIN: Check for invalid baseStyle == 3
+        // BEGIN Android-added: Check for invalid baseStyle == 3
         // 3 is not a valid base style (unlike 1, 2 and 4). Throw if used.
         if (baseStyle == 3) {
             throw new IllegalArgumentException();
         }
-        // Android-added END: Check for invalid baseStyle == 3
+        // END Android-added: Check for invalid baseStyle == 3
         if (locale == null) {
             throw new NullPointerException();
         }
@@ -3371,7 +3371,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         /* try to get the Locale data from the cache */
         int[] data = cachedLocaleData.get(desiredLocale);
         if (data == null) {  /* cache miss */
-            // Android changed: Use ICU4C to get week data.
+            // Android-changed: Use ICU4C to get week data.
             LocaleData localeData = LocaleData.get(desiredLocale);
             data = new int[2];
             data[0] = localeData.firstDayOfWeek.intValue();
@@ -3502,7 +3502,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
             catch (IllegalArgumentException e) {}
         }
 
-        // Android changed: Removed ZoneInfo support/workaround.
+        // Android-changed: Removed ZoneInfo support/workaround.
         // Write out the 1.1 FCS object.
         stream.defaultWriteObject();
     }
@@ -3554,7 +3554,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
 
         serialVersionOnStream = currentSerialVersion;
 
-        // Android changed: removed ZoneInfo support.
+        // Android-changed: removed ZoneInfo support.
 
         // If the deserialized object has a SimpleTimeZone, try to
         // replace it with a ZoneInfo equivalent (as of 1.4) in order

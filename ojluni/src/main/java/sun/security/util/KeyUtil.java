@@ -27,32 +27,14 @@
 package sun.security.util;
 
 import java.security.Key;
-/* BEGIN android-removed
-import java.security.PrivilegedAction;
-import java.security.AccessController;
-import java.security.InvalidKeyException;
- * END android-removed */
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
 import java.security.interfaces.DSAKey;
-// BEGIN android-added
 import java.security.interfaces.DSAParams;
-// END android-added
 import java.security.SecureRandom;
-// BEGIN android-added
 import java.security.spec.ECParameterSpec;
-// END android-added
-/* BEGIN android-removed
-import java.security.spec.KeySpec;
- * END android-removed */
 import javax.crypto.SecretKey;
 import javax.crypto.interfaces.DHKey;
-/* BEGIN android-removed
-import javax.crypto.interfaces.DHPublicKey;
-import javax.crypto.spec.DHParameterSpec;
-import javax.crypto.spec.DHPublicKeySpec;
-import java.math.BigInteger;
- * END android-removed */
 
 /**
  * A utility class to get key length, valiate keys, etc.
@@ -95,7 +77,7 @@ public final class KeyUtil {
             size = pubk.getModulus().bitLength();
         } else if (key instanceof ECKey) {
             ECKey pubk = (ECKey)key;
-            // BEGIN android-changed
+            // BEGIN Android-changed
             // Was: size = pubk.getParams().getOrder().bitLength();
             ECParameterSpec params = pubk.getParams();
             // According to RFC 3279 section 2.3.5, EC keys are allowed
@@ -106,10 +88,10 @@ public final class KeyUtil {
             if (params != null) {
                 size = params.getOrder().bitLength();
             }
-            // END android-changed
+            // END Android-changed
         } else if (key instanceof DSAKey) {
             DSAKey pubk = (DSAKey)key;
-            // BEGIN android-changed
+            // BEGIN Android-changed
             // Was: size = pubk.getParams().getP().bitLength();
             DSAParams params = pubk.getParams();
             // According to RFC 3279 section 2.3.2, DSA keys are allowed
@@ -120,7 +102,7 @@ public final class KeyUtil {
             if (params != null) {
                 size = params.getP().bitLength();
             }
-            // END android-changed
+            // END Android-changed
         } else if (key instanceof DHKey) {
             DHKey pubk = (DHKey)key;
             size = pubk.getParams().getP().bitLength();
@@ -130,7 +112,8 @@ public final class KeyUtil {
         return size;
     }
 
-    /* BEGIN android-removed
+    // BEGIN Android-removed
+    /*
     /**
      * Returns whether the key is valid or not.
      * <P>
@@ -337,7 +320,7 @@ public final class KeyUtil {
         System.arraycopy(b, i, t, 0, t.length);
         return t;
     }
-
-     * END android-removed */
+    */
+    // END Android-removed
 }
 

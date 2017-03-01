@@ -102,10 +102,10 @@ class ReverseState implements State {
 
     /* the untrusted certificates checker */
     /**
-     * BEGIN ANDROID-REMOVED: this mechanism for checking untrusted certificates is not used in
+     * BEGIN Android-removed: this mechanism for checking untrusted certificates is not used in
      * Android.
     UntrustedChecker untrustedChecker;
-     * END ANDROID-REMOVED */
+     * END Android-removed */
 
     /* the trust anchor used to validate the path */
     TrustAnchor trustAnchor;

@@ -347,8 +347,8 @@ public class ObjectOutputStream
             writeObject0(obj, false);
         } catch (IOException ex) {
             if (depth == 0) {
-                /* ----- BEGIN android -----
-                writeFatalException(ex);*/
+                // BEGIN Android-changed
+                // writeFatalException(ex);
                 try {
                     writeFatalException(ex);
 
@@ -357,7 +357,7 @@ public class ObjectOutputStream
                     // is no need to propagate the second exception or generate a third exception,
                     // both of which might obscure details of the root cause.
                 }
-                // ----- END android -----
+                // END Android-changed
             }
             throw ex;
         }
@@ -378,12 +378,12 @@ public class ObjectOutputStream
      * @since 1.2
      */
     protected void writeObjectOverride(Object obj) throws IOException {
-        /* ----- BEGIN android ----- */
+        // BEGIN Android-changed
         if (!enableOverride) {
             // Subclasses must override.
             throw new IOException();
         }
-        /* ----- END android ----- */
+        // END Android-changed
     }
 
     /**
@@ -1132,14 +1132,16 @@ public class ObjectOutputStream
             } else if (!unshared && (h = handles.lookup(obj)) != -1) {
                 writeHandle(h);
                 return;
-            /* ----- BEGIN android -----
+            // BEGIN Android-changed
+            /*
             } else if (obj instanceof Class) {
                 writeClass((Class) obj, unshared);
                 return;
             } else if (obj instanceof ObjectStreamClass) {
                 writeClassDesc((ObjectStreamClass) obj, unshared);
                 return;
-              ----- END android ----- */
+            */
+            // END Android-changed
             }
 
             // check for replacement object
@@ -1147,7 +1149,8 @@ public class ObjectOutputStream
             Class<?> cl = obj.getClass();
             ObjectStreamClass desc;
 
-            /* ----- BEGIN android -----
+            // BEGIN Android-changed
+            /*
             for (;;) {
                 // REMIND: skip this check for strings/arrays?
                 Class<?> repCl;
@@ -1161,7 +1164,8 @@ public class ObjectOutputStream
                 cl = repCl;
                 desc = ObjectStreamClass.lookup(cl, true);
                 break;
-            }*/
+            }
+            */
             // Do only one replace pass
 
             Class repCl;
@@ -1173,7 +1177,7 @@ public class ObjectOutputStream
                 cl = repCl;
                 desc = ObjectStreamClass.lookup(cl, true);
             }
-            // ----- END android -----
+            // END Android-changed
 
             if (enableReplace) {
                 Object rep = replaceObject(obj);
@@ -1193,24 +1197,26 @@ public class ObjectOutputStream
                 } else if (!unshared && (h = handles.lookup(obj)) != -1) {
                     writeHandle(h);
                     return;
-                /* ----- BEGIN android -----
+// BEGIN Android-changed
+/*
                 } else if (obj instanceof Class) {
                     writeClass((Class) obj, unshared);
                     return;
                 } else if (obj instanceof ObjectStreamClass) {
                     writeClassDesc((ObjectStreamClass) obj, unshared);
                     return;
-                  ----- END android -----*/
+*/
+// END Android-changed
                 }
             }
 
             // remaining cases
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             if (obj instanceof Class) {
                 writeClass((Class) obj, unshared);
             } else if (obj instanceof ObjectStreamClass) {
                 writeClassDesc((ObjectStreamClass) obj, unshared);
-            // ----- END android -----
+            // END Android-changed
             } else if (obj instanceof String) {
                 writeString((String) obj, unshared);
             } else if (cl.isArray()) {

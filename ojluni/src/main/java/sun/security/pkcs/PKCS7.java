@@ -77,7 +77,8 @@ public class PKCS7 {
 
     private Principal[] certIssuerNames;
 
-    /* BEGIN ANDROID-REMOVED: unused in Android
+    // BEGIN Android-removed: unused in Android
+    /*
     /*
      * Random number generator for creating nonce values
      * (Lazy initialization)
@@ -104,8 +105,8 @@ public class PKCS7 {
      * Object identifier for extendedKeyUsage extension
      *
     private static final String EXTENDED_KEY_USAGE_OID = "2.5.29.37";
-
-    END ANDROID-REMOVED */
+    */
+    // END Android-removed: unused on Android
 
     /**
      * Unmarshals a PKCS7 block from its encoded form, parsing the
@@ -801,7 +802,7 @@ public class PKCS7 {
         return this.oldStyle;
     }
 
-    // BEGIN ANDROID-ADDED
+    // BEGIN Android-added
     /**
      * For legacy reasons we need to return exactly the original encoded certificate bytes, instead
      * of letting the underlying implementation have a shot at re-encoding the data.
@@ -993,9 +994,9 @@ public class PKCS7 {
             wrapped.verify(key, sigProvider);
         }
     }
-    // END ANDROID-ADDED
+    // END Android-added
 
-    // BEGIN ANDROID-REMOVED: unused in Android
+    // BEGIN Android-removed: unused in Android
     /**
      * Assembles a PKCS #7 signed data message that optionally includes a
      * signature timestamp.
@@ -1171,5 +1172,5 @@ public class PKCS7 {
         }
         return tsReply.getEncodedToken();
     }
-    END ANDROID-REMOVED */
+    END Android-removed */
 }

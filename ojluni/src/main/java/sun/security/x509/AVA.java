@@ -459,7 +459,7 @@ public class AVA implements DerEncoder {
                                  "' in AVA appears without escape");
                     }
                 }
-                // BEGIN android-removed
+                // BEGIN Android-removed
                 // Added in jdk860. rev/d1c04dac850d
                 // If present breaks X500PrincipalTest#testIllegalInputName_07
                 // else if (escapedDefault.indexOf((char)c) != -1) {
