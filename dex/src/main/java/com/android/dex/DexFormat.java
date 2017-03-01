@@ -23,17 +23,38 @@ package com.android.dex;
 public final class DexFormat {
     private DexFormat() {}
 
-    /**
-     * API level to target in order to produce the most modern file
-     * format
-     */
-    public static final int API_CURRENT = 26;
+    /** API level to target in order to generate invoke-polymorphic */
+    public static final int API_INVOKE_POLYMORPHIC = 26;
 
     /** API level to target in order to pass through default and static interface methods */
     public static final int API_DEFAULT_INTERFACE_METHODS = 24;
 
     /** API level to target in order to suppress extended opcode usage */
     public static final int API_NO_EXTENDED_OPCODES = 13;
+
+    /**
+     * API level to target in order to produce the most modern file
+     * format
+     */
+    public static final int API_CURRENT = API_INVOKE_POLYMORPHIC;
+
+    /** dex file version number for API level 26 and earlier */
+    public static final String VERSION_FOR_API_26 = "038";
+
+    /** dex file version number for API level 24 and earlier */
+    public static final String VERSION_FOR_API_24 = "037";
+
+    /** dex file version number for API level 13 and earlier */
+    public static final String VERSION_FOR_API_13 = "035";
+
+    /**
+     * Dex file version number for dalvik.
+     * <p>
+     * Note: Dex version 36 was loadable in some versions of Dalvik but was never fully supported or
+     * completed and is not considered a valid dex file format.
+     * </p>
+     */
+    public static final String VERSION_CURRENT = VERSION_FOR_API_26;
 
     /**
      * file name of the primary {@code .dex} file inside an
@@ -46,21 +67,6 @@ public final class DexFormat {
 
     /** common suffix for all dex file "magic numbers" */
     public static final String MAGIC_SUFFIX = "\0";
-
-    /**
-     * Dex file version number for dalvik.
-     * <p>
-     * Note: Dex version 36 was loadable in some versions of Dalvik but was never fully supported or
-     * completed and is not considered a valid dex file format.
-     * </p>
-     */
-    public static final String VERSION_CURRENT = "038";
-
-    /** dex file version number for API level 24 and earlier */
-    public static final String VERSION_FOR_API_24 = "037";
-
-    /** dex file version number for API level 13 and earlier */
-    public static final String VERSION_FOR_API_13 = "035";
 
     /**
      * value used to indicate endianness of file contents
@@ -101,6 +107,8 @@ public final class DexFormat {
             return API_NO_EXTENDED_OPCODES;
         } else if (version.equals(VERSION_FOR_API_24)) {
             return API_DEFAULT_INTERFACE_METHODS;
+        } else if (version.equals(VERSION_FOR_API_26)) {
+            return API_INVOKE_POLYMORPHIC;
         } else if (version.equals(VERSION_CURRENT)) {
             return API_CURRENT;
         }
@@ -116,6 +124,8 @@ public final class DexFormat {
 
         if (targetApiLevel >= API_CURRENT) {
             version = VERSION_CURRENT;
+        } else if (targetApiLevel >= API_INVOKE_POLYMORPHIC) {
+            version = VERSION_FOR_API_26;
         } else if (targetApiLevel >= API_DEFAULT_INTERFACE_METHODS) {
             version = VERSION_FOR_API_24;
         } else {
