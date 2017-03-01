@@ -153,8 +153,9 @@ LOCAL_UNINSTALLABLE_MODULE := true
 include $(BUILD_JAVA_LIBRARY)
 
 ifeq ($(LIBCORE_SKIP_TESTS),)
-# A guaranteed unstripped version of core-oj and core-libart. This is required for ART testing in
-# preopted configurations. See b/24535627.
+# A guaranteed unstripped version of core-oj and core-libart.
+# The build system may or may not strip the core-oj and core-libart jars,
+# but these will not be stripped. See b/24535627.
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(openjdk_java_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
