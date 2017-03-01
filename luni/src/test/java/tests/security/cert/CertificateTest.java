@@ -184,7 +184,7 @@ public class CertificateTest extends TestCase {
     }
 
     /**
-     * This test just calls <code>verify(PublicKey)</code> method<br>
+     * <code>verify(PublicKey)</code> with null args
      *
      * @throws InvalidKeyException
      * @throws CertificateException
@@ -203,7 +203,7 @@ public class CertificateTest extends TestCase {
     }
 
     /**
-     * This test just calls <code>verify(PublicKey,String)</code> method<br>
+     * <code>verify(PublicKey,String)</code> with null args
      *
      * @throws InvalidKeyException
      * @throws CertificateException
@@ -219,6 +219,25 @@ public class CertificateTest extends TestCase {
                SignatureException {
         Certificate c1 = new MyCertificate("TEST_TYPE", testEncoding);
         c1.verify((PublicKey) null, (String) null);
+    }
+
+    /**
+     * <code>verify(PublicKey,Provider)</code> with null args
+     *
+     * @throws InvalidKeyException
+     * @throws CertificateException
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchProviderException
+     * @throws SignatureException
+     */
+    public final void testVerifyPublicKeyProvider()
+        throws Exception  {
+        Certificate c1 = new MyCertificate("TEST_TYPE", testEncoding);
+        try {
+            // Android-changed: throw UOE instead of infinite recursion.
+            c1.verify((PublicKey) null, (Provider) null);
+            fail();
+        } catch(UnsupportedOperationException expected) {}
     }
 
     /**
@@ -377,6 +396,15 @@ public class MyModifiablePublicKey implements PublicKey {
         } catch (InvalidKeyException expected) {
         }
         */
+    }
+
+    public final void testVerifyPublicKeyProvider2() throws Exception {
+        final Signature sig = Signature.getInstance("SHA1WithRSA");
+        sig.initVerify(cert.getPublicKey());
+        final Provider provider = sig.getProvider();
+        cert.verify(cert.getPublicKey(), provider);
+        // equivalent to calling cert.verify(cert.getPublicKey())
+        cert.verify(cert.getPublicKey(), (Provider)null);
     }
 
     /**
