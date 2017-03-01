@@ -1,5 +1,5 @@
 /*
- * This file contains expectations for tests known to fail on virtual device
+ * List of test cases known to fail on a virtual device.
  */
 [
 {
@@ -7,5 +7,10 @@
   result: EXEC_FAILED,
   name: "libcore.java.net.SocketTest#testSocketTestAllAddresses",
   bug: 30965313
+},
+{
+  description: "Virtual devices do not implement the SELinux policy (forbid hard link) asserted by this test",
+  name: "libcore.java.nio.file.Files2Test#test_createLink",
+  bug: 35670953
 }
 ]
