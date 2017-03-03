@@ -51,7 +51,15 @@ public final class VMRuntime {
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a", "arm64");
     }
 
-    private int targetSdkVersion;
+    /**
+     * Magic version number for a current development build, which has not
+     * yet turned into an official release. This number must be larger than
+     * any released version in {@code android.os.Build.VERSION_CODES}.
+     * @hide
+     */
+    public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000;
+
+    private int targetSdkVersion = SDK_VERSION_CUR_DEVELOPMENT;
 
     /**
      * Prevents this class from being instantiated.
@@ -154,10 +162,7 @@ public final class VMRuntime {
     /**
      * Sets the target SDK version. Should only be called before the
      * app starts to run, because it may change the VM's behavior in
-     * dangerous ways. Use 0 to mean "current" (since callers won't
-     * necessarily know the actual current SDK version, and the
-     * allocated version numbers start at 1), and 10000 to mean
-     * CUR_DEVELOPMENT.
+     * dangerous ways. Defaults to {@link #SDK_VERSION_CUR_DEVELOPMENT}.
      */
     public synchronized void setTargetSdkVersion(int targetSdkVersion) {
         this.targetSdkVersion = targetSdkVersion;
