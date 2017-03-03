@@ -647,9 +647,9 @@ import static android.system.OsConstants.S_ISDIR;
             if (initialized) {
                 return;
             }
-            initialized = true;
 
             if (path == null || path.isDirectory()) {
+                initialized = true;
                 return;
             }
 
@@ -665,6 +665,13 @@ import static android.system.OsConstants.S_ISDIR;
                 System.logE("Unable to open zip file: " + path, ioe);
                 urlHandler = null;
             }
+
+            // Mark this element as initialized only after we've successfully created
+            // the associated ClassPathURLStreamHandler. That way, we won't leave this
+            // element in an inconsistent state if an exception is thrown during initialization.
+            //
+            // See b/35633614.
+            initialized = true;
         }
 
         public Class<?> findClass(String name, ClassLoader definingContext,
@@ -746,9 +753,9 @@ import static android.system.OsConstants.S_ISDIR;
             if (initialized) {
                 return;
             }
-            initialized = true;
 
             if (zipDir == null) {
+                initialized = true;
                 return;
             }
 
@@ -764,6 +771,13 @@ import static android.system.OsConstants.S_ISDIR;
                 System.logE("Unable to open zip file: " + path, ioe);
                 urlHandler = null;
             }
+
+            // Mark this element as initialized only after we've successfully created
+            // the associated ClassPathURLStreamHandler. That way, we won't leave this
+            // element in an inconsistent state if an exception is thrown during initialization.
+            //
+            // See b/35633614.
+            initialized = true;
         }
 
         public String findNativeLibrary(String name) {
