@@ -1730,7 +1730,10 @@ public final class System {
         FileInputStream fdIn = new FileInputStream(FileDescriptor.in);
         FileOutputStream fdOut = new FileOutputStream(FileDescriptor.out);
         FileOutputStream fdErr = new FileOutputStream(FileDescriptor.err);
-        in = new BufferedInputStream(fdIn);
+        // BEGIN Android-changed: lower buffer size.
+        // in = new BufferedInputStream(fdIn);
+        in = new BufferedInputStream(fdIn, 128);
+        // END Android-changed: lower buffer size.
         out = newPrintStream(fdOut, props.getProperty("sun.stdout.encoding"));
         err = newPrintStream(fdErr, props.getProperty("sun.stderr.encoding"));
 
