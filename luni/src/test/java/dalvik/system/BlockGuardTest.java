@@ -16,9 +16,12 @@
 
 package dalvik.system;
 
+import android.system.Os;
+import android.system.OsConstants;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
@@ -243,6 +246,22 @@ public class BlockGuardTest extends TestCase {
             }
             recorder.expectNoViolations();
         }
+    }
+
+    public void testOpen() throws Exception {
+        File temp = File.createTempFile("foo", "bar");
+        recorder.clear();
+
+        // Open in read/write mode : should be recorded as a read and a write to disk.
+        FileDescriptor fd = Os.open(temp.getPath(), OsConstants.O_RDWR, 0);
+        recorder.expectAndClear("onReadFromDisk", "onWriteToDisk");
+        Os.close(fd);
+
+        // Open in read only mode : should be recorded as a read from disk.
+        recorder.clear();
+        fd = Os.open(temp.getPath(), OsConstants.O_RDONLY, 0);
+        recorder.expectAndClear("onReadFromDisk");
+        Os.close(fd);
     }
 
     public static class RecordingPolicy implements BlockGuard.Policy {
