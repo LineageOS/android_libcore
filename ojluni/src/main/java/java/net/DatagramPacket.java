@@ -118,12 +118,18 @@ class DatagramPacket {
         setPort(port);
     }
 
+    // Android-changed: Added Android-specific notes regarding the exception signature change.
     /**
      * Constructs a datagram packet for sending packets of length
      * {@code length} with offset {@code ioffset}to the
      * specified port number on the specified host. The
      * {@code length} argument must be less than or equal to
      * {@code buf.length}.
+     *
+     * <p>
+     * <em>Android note</em>: Up to and including API 25 this method declared that a SocketException
+     * can be thrown, although the exception is never thrown. Code compiled against a newer SDK does
+     * not need to catch the exception and will be binary compatible with older versions of Android.
      *
      * @param   buf      the packet data.
      * @param   offset   the packet data offset.
@@ -139,11 +145,17 @@ class DatagramPacket {
         setSocketAddress(address);
     }
 
+    // Android-changed: Added Android-specific notes regarding the exception signature change.
     /**
      * Constructs a datagram packet for sending packets of length
      * {@code length} to the specified port number on the specified
      * host. The {@code length} argument must be less than or equal
      * to {@code buf.length}.
+     *
+     * <p>
+     * <em>Android note</em>: Up to and including API 25 this method declared that a SocketException
+     * can be thrown, although the exception is never thrown. Code compiled against a newer SDK does
+     * not need to catch the exception and will be binary compatible with older versions of Android.
      *
      * @param   buf      the packet data.
      * @param   length   the packet length.
