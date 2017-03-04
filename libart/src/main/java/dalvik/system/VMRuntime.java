@@ -365,10 +365,11 @@ public final class VMRuntime {
     public native void preloadDexCaches();
 
     /**
-     * Register application info
+     * Register application info.
+     * @param profileFile the path of the file where the profile information should be stored.
+     * @param codePaths the code paths that should be profiled.
      */
-    public static native void registerAppInfo(String packageName, String appDir,
-             String[] codePaths, String foreignDexProfileDir);
+    public static native void registerAppInfo(String profileFile, String[] codePaths);
 
     /**
      * Returns the runtime instruction set corresponding to a given ABI. Multiple
