@@ -37,10 +37,6 @@ import javax.crypto.SecretKey;
 import javax.security.auth.DestroyFailedException;
 import javax.security.auth.callback.*;
 
-/* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
-import sun.security.util.Debug;
-*/
-
 /**
  * This class represents a storage facility for cryptographic
  * keys and certificates.
@@ -214,12 +210,14 @@ import sun.security.util.Debug;
 
 public class KeyStore {
 
-    /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+    // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+    /*
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
         Debug.isOn("engine=") && !Debug.isOn("keystore");
     */
+    // END Android-removed: this debugging mechanism is not supported in Android.
 
     /*
      * Constant to lookup in the Security properties file to determine
@@ -846,12 +844,14 @@ public class KeyStore {
         this.provider = provider;
         this.type = type;
 
-        /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("KeyStore." + type.toUpperCase() + " type from: " +
                 this.provider.getName());
         }
         */
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**

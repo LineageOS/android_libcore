@@ -95,10 +95,10 @@ public class Net {
 
     public static InetSocketAddress checkAddress(SocketAddress sa) {
         if (sa == null)
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             //throw new NullPointerException();
             throw new IllegalArgumentException("sa == null");
-            // ----- END android -----
+            // END Android-changed
 
         if (!(sa instanceof InetSocketAddress))
             throw new UnsupportedAddressTypeException(); // ## needs arg
@@ -136,7 +136,7 @@ public class Net {
         else if (x instanceof UnresolvedAddressException) {
             nx = new SocketException("Unresolved address");
         } else if (x instanceof AlreadyConnectedException) {
-            // Android added.
+            // Android-added.
             nx = new SocketException("Already connected");
         }
         if (nx != x)

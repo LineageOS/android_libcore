@@ -205,9 +205,8 @@ public abstract class CharsetDecoder {
         this.replacement = replacement;
         this.averageCharsPerByte = averageCharsPerByte;
         this.maxCharsPerByte = maxCharsPerByte;
-        /* ----- BEGIN android -----
-        replaceWith(replacement);
-        ----- END android ----- */
+        // Android-removed
+        // replaceWith(replacement);
     }
 
     /**

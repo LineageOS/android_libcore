@@ -496,7 +496,7 @@ public class Executors {
         final ClassLoader ccl;
 
         PrivilegedCallableUsingCurrentClassLoader(Callable<T> task) {
-            // BEGIN android-removed
+            // BEGIN Android-removed
             // SecurityManager sm = System.getSecurityManager();
             // if (sm != null) {
             //     // Calls to getContextClassLoader from this class
@@ -508,7 +508,7 @@ public class Executors {
             //     // or not, we fail fast if permission is not available.
             //     sm.checkPermission(new RuntimePermission("setContextClassLoader"));
             // }
-            // END android-removed
+            // END Android-removed
             this.task = task;
             this.acc = AccessController.getContext();
             this.ccl = Thread.currentThread().getContextClassLoader();
@@ -578,7 +578,7 @@ public class Executors {
 
         PrivilegedThreadFactory() {
             super();
-            // BEGIN android-removed
+            // BEGIN Android-removed
             // SecurityManager sm = System.getSecurityManager();
             // if (sm != null) {
             //     // Calls to getContextClassLoader from this class
@@ -589,7 +589,7 @@ public class Executors {
             //     // Fail fast
             //     sm.checkPermission(new RuntimePermission("setContextClassLoader"));
             // }
-            // END android-removed
+            // END Android-removed
             this.acc = AccessController.getContext();
             this.ccl = Thread.currentThread().getContextClassLoader();
         }

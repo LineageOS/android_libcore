@@ -118,7 +118,7 @@ public class LocalGregorianCalendar extends BaseCalendar {
     }
 
     static LocalGregorianCalendar getLocalGregorianCalendar(String name) {
-        // Android changed: use getCalendarProperties()
+        // Android-changed: use getCalendarProperties()
         Properties calendarProps;
         try {
             calendarProps = getCalendarProperties();

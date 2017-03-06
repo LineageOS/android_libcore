@@ -220,14 +220,14 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
         if (mode.equals("r")) {
             this.mode = O_RDONLY;
         } else if (mode.startsWith("rw")) {
-            // Android changed: Added. O_CREAT
+            // Android-changed: Added. O_CREAT
             this.mode = O_RDWR | O_CREAT;
             rw = true;
             if (mode.length() > 2) {
                 if (mode.equals("rws")) {
                     syncMetadata = true;
                 } else if (mode.equals("rwd")) {
-                    // Android-changeD: Should this be O_DSYNC and the above O_SYNC ?
+                    // Android-changed: Should this be O_DSYNC and the above O_SYNC ?
                     this.mode |= O_SYNC;
                 } else {
                     this.mode = -1;

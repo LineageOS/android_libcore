@@ -2536,7 +2536,7 @@ public final class Formatter implements Closeable, Flushable {
         return this;
     }
 
-    // Android-changed BEGIN: changed parse() to manual parsing instead of regex.
+    // BEGIN Android-changed: changed parse() to manual parsing instead of regex.
     /**
      * Finds format specifiers in the format string.
      */
@@ -2666,7 +2666,7 @@ public final class Formatter implements Closeable, Flushable {
             return cursor;
         }
     }
-    // Android-changed END: changed parse() to manual parsing instead of regex.
+    // END Android-changed: changed parse() to manual parsing instead of regex.
 
     private interface FormatString {
         int index();
@@ -2792,7 +2792,7 @@ public final class Formatter implements Closeable, Flushable {
             return c;
         }
 
-        // Android-changed BEGIN: FormatSpecifierParser passes in the values instead of a Matcher.
+        // BEGIN Android-changed: FormatSpecifierParser passes in the values instead of a Matcher.
         FormatSpecifier(String indexStr, String flagsStr, String widthStr,
                         String precisionStr, String tTStr, String convStr) {
             int idx = 1;
@@ -2809,7 +2809,7 @@ public final class Formatter implements Closeable, Flushable {
             }
 
             conversion(convStr);
-        // Android-changed END: FormatSpecifierParser passes in the values instead of a Matcher.
+        // END Android-changed: FormatSpecifierParser passes in the values instead of a Matcher.
             if (dt)
                 checkDateTime();
             else if (Conversion.isGeneral(c))
@@ -3373,13 +3373,13 @@ public final class Formatter implements Closeable, Flushable {
                     newW = adjustWidth(width - exp.length - 1, f, neg);
                 localizedMagnitude(sb, mant, f, newW, l);
 
-                // Android-changed BEGIN: Use localized exponent separator for %e.
+                // BEGIN Android-changed: Use localized exponent separator for %e.
                 Locale separatorLocale = (l != null) ? l : Locale.getDefault();
                 LocaleData localeData = LocaleData.get(separatorLocale);
                 sb.append(f.contains(Flags.UPPERCASE) ?
                         localeData.exponentSeparator.toUpperCase(separatorLocale) :
                         localeData.exponentSeparator.toLowerCase(separatorLocale));
-                // Android-changed END: Use localized exponent separator for %e.
+                // END Android-changed: Use localized exponent separator for %e.
 
                 Flags flags = f.dup().remove(Flags.GROUP);
                 char sign = exp[0];
@@ -4460,14 +4460,14 @@ public final class Formatter implements Closeable, Flushable {
                     grpSep = dfs.getGroupingSeparator();
                     DecimalFormat df = (DecimalFormat) NumberFormat.getIntegerInstance(l);
                     grpSize = df.getGroupingSize();
-                    // Android-changed BEGIN: http://b/33245708
+                    // BEGIN Android-changed: http://b/33245708
                     // Some locales have a group separator but also patterns without groups.
                     // If we do not clear the group separator in these cases a divide by zero
                     // is thrown when determining where to place the separators.
                     if (!df.isGroupingUsed() || df.getGroupingSize() == 0) {
                         grpSep = '\0';
                     }
-                    // Android-changed END: http://b/33245708.
+                    // END Android-changed: http://b/33245708.
                 }
             }
 

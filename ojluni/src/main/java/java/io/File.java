@@ -1883,7 +1883,7 @@ public class File
                 n = Math.abs(n);
             }
 
-            // Android changed: Reject invalid file prefixes
+            // Android-changed: Reject invalid file prefixes
             // Use only the file name from the supplied prefix
             //prefix = (new File(prefix)).getName();
 

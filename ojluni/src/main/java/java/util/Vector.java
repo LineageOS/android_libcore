@@ -1122,7 +1122,7 @@ public class Vector<E>
      * An optimized version of AbstractList.Itr
      */
     private class Itr implements Iterator<E> {
-        // Android changed: changes around elementCount, introduced limit.
+        // Android-changed: changes around elementCount, introduced limit.
         // b/27430229 AOSP commit 6e5b758a4438d2c154dd11a5c04d14a5d2fc907c
         //
         // The "limit" of this iterator. This is the size of the list at the time the

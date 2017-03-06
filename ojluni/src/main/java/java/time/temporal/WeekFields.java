@@ -284,7 +284,7 @@ public final class WeekFields implements Serializable {
      */
     public static WeekFields of(Locale locale) {
         Objects.requireNonNull(locale, "locale");
-        // Android changed: get Week data from ICU4J
+        // Android-changed: get Week data from ICU4J
         ULocale ulocale = ULocale.forLocale(locale);
         String region = ULocale.getRegionForSupplementalData(ulocale, /* inferRegion */ true);
         Calendar.WeekData weekData = Calendar.getWeekDataForRegion(region);
@@ -1032,7 +1032,7 @@ public final class WeekFields implements Serializable {
         public String getDisplayName(Locale locale) {
             Objects.requireNonNull(locale, "locale");
             if (rangeUnit == YEARS) {  // only have values for week-of-year
-                // Android changed: Use ICU name values.
+                // Android-changed: Use ICU name values.
                 DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
                         .getFrozenInstance(ULocale.forLocale(locale));
                 String icuName = dateTimePatternGenerator

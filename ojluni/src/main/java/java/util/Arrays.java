@@ -127,7 +127,7 @@ public class Arrays {
      * Checks that the range described by {@code offset} and {@code count} doesn't exceed
      * {@code arrayLength}.
      *
-     * Android changed.
+     * Android-changed.
      * @hide
      */
     public static void checkOffsetAndCount(int arrayLength, int offset, int count) {

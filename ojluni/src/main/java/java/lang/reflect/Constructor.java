@@ -179,7 +179,7 @@ public final class Constructor<T> extends Executable {
         if (obj != null && obj instanceof Constructor) {
             Constructor<?> other = (Constructor<?>)obj;
             if (getDeclaringClass() == other.getDeclaringClass()) {
-                // Android changed: Use getParameterTypes.
+                // Android-changed: Use getParameterTypes.
                 return equalParamTypes(getParameterTypes(), other.getParameterTypes());
             }
         }
@@ -214,7 +214,7 @@ public final class Constructor<T> extends Executable {
      * @jls 8.8.3. Constructor Modifiers
      */
     public String toString() {
-        // Android changed: Use getParameterTypes().
+        // Android-changed: Use getParameterTypes().
         return sharedToString(Modifier.constructorModifiers(),
                               false,
                               getParameterTypes(),

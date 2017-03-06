@@ -440,7 +440,7 @@ public final class System {
                                         int length);
 
 
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     /**
      * The char array length threshold below which to use a Java
      * (non-native) version of arraycopy() instead of the native
@@ -872,7 +872,7 @@ public final class System {
     @FastNative
     private static native void arraycopyBooleanUnchecked(boolean[] src, int srcPos,
         boolean[] dst, int dstPos, int length);
-    // ----- END android -----
+    // END Android-changed
 
     /**
      * Returns the same hash code for the given object as

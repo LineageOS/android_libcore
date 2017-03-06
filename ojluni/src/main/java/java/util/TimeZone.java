@@ -161,7 +161,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
      */
     public static final int LONG  = 1;
 
-    // Android changed: Use a preload holder to allow compile-time initialization of TimeZone and
+    // Android-changed: Use a preload holder to allow compile-time initialization of TimeZone and
     // dependents.
     private static class NoImagePreloadHolder {
         public static final Pattern CUSTOM_ZONE_ID_PATTERN = Pattern.compile("^GMT[-+](\\d{1,2})(:?(\\d\\d))?$");
@@ -170,7 +170,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
     // Proclaim serialization compatibility with JDK 1.1
     static final long serialVersionUID = 3581463369166924961L;
 
-    // Android changed: common timezone instances.
+    // Android-changed: common timezone instances.
     private static final TimeZone GMT = new SimpleTimeZone(0, "GMT");
     private static final TimeZone UTC = new SimpleTimeZone(0, "UTC");
 
@@ -391,7 +391,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
             throw new IllegalArgumentException("Illegal style: " + style);
         }
 
-        // Android changed: implement using libcore.icu.TimeZoneNames
+        // Android-changed: implement using libcore.icu.TimeZoneNames
         String[][] zoneStrings = TimeZoneNames.getZoneStrings(locale);
         String result = TimeZoneNames.getDisplayName(zoneStrings, getID(), daylightTime, style);
         if (result != null) {
@@ -550,7 +550,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
      * @return the specified <code>TimeZone</code>, or the GMT zone if the given ID
      * cannot be understood.
      */
-    // Android changed: param s/ID/id; use ZoneInfoDB instead of ZoneInfo class.
+    // Android-changed: param s/ID/id; use ZoneInfoDB instead of ZoneInfo class.
     public static synchronized TimeZone getTimeZone(String id) {
         if (id == null) {
             throw new NullPointerException("id == null");
@@ -610,7 +610,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
      * @since 1.8
      */
     public ZoneId toZoneId() {
-        // Android changed: don't support "old mapping"
+        // Android-changed: don't support "old mapping"
         return ZoneId.of(getID(), ZoneId.SHORT_IDS);
     }
 
@@ -728,7 +728,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
      * @param timeZone the new default {@code TimeZone}, or null
      * @see #getDefault
      */
-    // Android changed: s/zone/timeZone, synchronized, removed mention of SecurityException
+    // Android-changed: s/zone/timeZone, synchronized, removed mention of SecurityException
     public synchronized static void setDefault(TimeZone timeZone)
     {
         SecurityManager sm = System.getSecurityManager();
@@ -737,7 +737,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
                     ("user.timezone", "write"));
         }
         defaultTimeZone = timeZone != null ? (TimeZone) timeZone.clone() : null;
-        // Android changed: notify ICU4J of changed default TimeZone.
+        // Android-changed: notify ICU4J of changed default TimeZone.
         android.icu.util.TimeZone.clearCachedDefault();
     }
 

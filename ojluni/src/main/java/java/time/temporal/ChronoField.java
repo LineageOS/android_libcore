@@ -619,7 +619,7 @@ public enum ChronoField implements TemporalField {
             return name;
         }
 
-        // Android changed: use ICU names.
+        // Android-changed: use ICU names.
         DateTimePatternGenerator generator = DateTimePatternGenerator
                 .getFrozenInstance(ULocale.forLocale(locale));
         String icuName = generator.getAppendItemName(getIcuFieldNumber(this));

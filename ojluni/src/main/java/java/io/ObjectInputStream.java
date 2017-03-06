@@ -2022,9 +2022,9 @@ public class ObjectInputStream
         }
         clear();
         IOException e = (IOException) readObject0(false);
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         clear();
-        // ----- END android -----
+        // END Android-changed
         return e;
     }
 

@@ -98,7 +98,7 @@ public class TestJapaneseChronoImpl {
         Locale locale = Locale.forLanguageTag("ja-JP-u-ca-japanese");
         assertEquals(locale.toString(), "ja_JP_#u-ca-japanese", "Unexpected locale");
 
-        // Android changed: Android doesn't return the Japanese Imperial Calendar from getInstance.
+        // Android-changed: Android doesn't return the Japanese Imperial Calendar from getInstance.
         Calendar cal = Calendar.getJapaneseImperialInstance(TimeZone.getDefault(), locale);
         assertEquals(cal.getCalendarType(), "japanese", "Unexpected calendar type");
 

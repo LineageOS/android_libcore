@@ -448,15 +448,17 @@ public class X509CRLImpl extends X509CRL implements DerEncoder {
      * Called from java.security.cert.X509CRL.verify(PublicKey key,
      * Provider sigProvider)
      */
-    /* BEGIN ANDROID-REMOVED
-     * TODO(31294527): in its only usage (the one mentioned in the javadoc) it causes an infinite
-     * loop. Then, the caller has been modified to throw UnsupportedOperationException.
+    // BEGIN Android-removed
+    // TODO(31294527): in its only usage (the one mentioned in the javadoc) it causes an infinite
+    // loop. Then, the caller has been modified to throw UnsupportedOperationException.
+    /*
     public static void verify(X509CRL crl, PublicKey key,
             Provider sigProvider) throws CRLException,
             NoSuchAlgorithmException, InvalidKeyException, SignatureException {
         crl.verify(key, sigProvider);
     }
-     * END ANDROID-REMOVED */
+    */
+    // END Android-removed
 
     /**
      * Encodes an X.509 CRL, and signs it using the given key.

@@ -117,9 +117,9 @@ class DatagramSocket implements java.io.Closeable {
     InetAddress connectedAddress = null;
     int connectedPort = -1;
 
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     private SocketException pendingConnectException;
-    // ----- END android -----
+    // END Android-changed
 
     /**
      * Connects this socket to a remote socket address (IP address + port number).
@@ -476,11 +476,11 @@ class DatagramSocket implements java.io.Closeable {
         try {
             connectInternal(address, port);
         } catch (SocketException se) {
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             //throw new Error("connect failed", se);
             // TODO: or just use SneakyThrow? There's a clear API bug here.
             pendingConnectException = se;
-            // ----- END android -----
+            // END Android-changed
         }
     }
 
@@ -677,11 +677,11 @@ class DatagramSocket implements java.io.Closeable {
     public void send(DatagramPacket p) throws IOException  {
         InetAddress packetAddress = null;
         synchronized (p) {
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             if (pendingConnectException != null) {
                 throw new SocketException("Pending connect failure", pendingConnectException);
             }
-            // ----- END android -----
+            // END Android-changed
             if (isClosed())
                 throw new SocketException("Socket is closed");
             checkAddress (p.getAddress(), "send");
@@ -758,11 +758,11 @@ class DatagramSocket implements java.io.Closeable {
             if (!isBound())
                 bind(new InetSocketAddress(0));
 
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             if (pendingConnectException != null) {
                 throw new SocketException("Pending connect failure", pendingConnectException);
             }
-            // ----- END android -----
+            // END Android-changed
 
             if (connectState == ST_NOT_CONNECTED) {
                 // check the address is ok with the security manager before every recv.

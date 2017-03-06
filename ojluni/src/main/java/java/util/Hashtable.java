@@ -900,12 +900,8 @@ public class Hashtable<K,V>
         }
     }
 
-    /*
-     * Android-changed BEGIN
-     * Just add method synchronization to Map's default implementation
-     * of these methods, rather than taking upstream's more different
-     * overridden implementations.
-     */
+    // BEGIN Android-changed: Just wrap synchronization around Map.super implementations.
+    // Upstream uses different overridden implementations.
     @Override
     public synchronized V getOrDefault(Object key, V defaultValue) {
         return Map.super.getOrDefault(key, defaultValue);
@@ -954,9 +950,7 @@ public class Hashtable<K,V>
             ? extends V> remappingFunction) {
         return Map.super.merge(key, value, remappingFunction);
     }
-    /*
-     * Android-changed END: End of synchronized default Map method overrides.
-     */
+    // END Android-changed: Just add synchronization around Map's default implementations.
 
     /**
      * Save the state of the Hashtable to a stream (i.e., serialize it).
@@ -1085,22 +1079,24 @@ public class Hashtable<K,V>
     /**
      * Hashtable bucket collision list entry
      */
-    /*
-     * Android-changed BEGIN
-     * HashtableEntry should not be renamed, for the corresponding
-     * reason as LinkedHashMap.Entry. Specifically, for source
-     * compatibility with earlier versions of Android, this nested
-     * class must not be named "Entry". Otherwise, it would hide
-     * Map.Entry which would break compilation of code like:
-     *
-     * Hashtable.Entry<K, V> entry = hashtable.entrySet().iterator.next();
-     *
-     * To compile, that code snippet's "HashtableMap.Entry" must
-     * mean java.util.Map.Entry which is the compile time type of
-     * entrySet()'s elements.
-     * Android-changed END
-     */
+    // BEGIN Android-changed: Renamed Entry -> HashtableEntry.
+    // Code references to "HashTable.Entry" must mean Map.Entry
+    //
+    // This mirrors the corresponding rename of LinkedHashMap's
+    // Entry->LinkedHashMapEntry.
+    //
+    // This is for source compatibility with earlier versions of Android.
+    // Otherwise, it would hide Map.Entry which would break compilation
+    // of code like:
+    //
+    // Hashtable.Entry<K, V> entry = hashtable.entrySet().iterator.next();
+    //
+    // To compile, that code snippet's "HashtableMap.Entry" must
+    // mean java.util.Map.Entry which is the compile time type of
+    // entrySet()'s elements.
+    //
     private static class HashtableEntry<K,V> implements Map.Entry<K,V> {
+    // END Android-changed: Renamed Entry -> HashtableEntry.
         final int hash;
         final K key;
         V value;

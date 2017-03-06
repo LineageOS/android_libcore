@@ -247,10 +247,10 @@ public final class Security {
     public static synchronized int insertProviderAt(Provider provider,
             int position) {
         String providerName = provider.getName();
-        // ANDROID-REMOVED
+        // Android-removed
         // Checks using SecurityManager, which is not functional in Android.
         // checkInsertProvider(providerName);
-        // ANDROID-REMOVED
+        // Android-removed
         ProviderList list = Providers.getFullProviderList();
         ProviderList newList = ProviderList.insertAt(list, provider, position - 1);
         if (list == newList) {
