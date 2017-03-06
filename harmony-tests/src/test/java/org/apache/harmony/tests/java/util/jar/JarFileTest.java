@@ -60,7 +60,7 @@ import tests.support.resource.Support_Resources;
 
 public class JarFileTest extends TestCase {
 
-    // BEGIN android-added
+    // BEGIN Android-added
     public byte[] getAllBytesFromStream(InputStream is) throws IOException {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         byte[] buf = new byte[666];
@@ -73,7 +73,7 @@ public class JarFileTest extends TestCase {
         return bs.toByteArray();
     }
 
-    // END android-added
+    // END Android-added
 
     private final String jarName = "hyts_patch.jar"; // a 'normal' jar file
 
@@ -572,9 +572,9 @@ public class JarFileTest extends TestCase {
             JarFile jar = new JarFile(signedFile);
             JarEntry entry = new JarEntry(entryName3);
             InputStream in = jar.getInputStream(entry);
-            // BEGIN android-added
+            // BEGIN Android-added
             byte[] dummy = getAllBytesFromStream(in);
-            // END android-added
+            // END Android-added
             assertNull("found certificates", entry.getCertificates());
         } catch (Exception e) {
             fail("Exception during test 4: " + e);
@@ -585,9 +585,9 @@ public class JarFileTest extends TestCase {
             JarEntry entry = jar.getJarEntry(entryName3);
             entry.setSize(1076);
             InputStream in = jar.getInputStream(entry);
-            // BEGIN android-added
+            // BEGIN Android-added
             byte[] dummy = getAllBytesFromStream(in);
-            // END android-added
+            // END Android-added
             fail("SecurityException should be thrown.");
         } catch (SecurityException e) {
             // expected
@@ -978,9 +978,9 @@ public class JarFileTest extends TestCase {
         try {
             JarFile jf = new JarFile(localFile);
             java.io.InputStream is = jf.getInputStream(jf.getEntry(entryName));
-            // BEGIN android-removed
+            // BEGIN Android-removed
             // jf.close();
-            // END android-removed
+            // END Android-removed
             assertTrue("Returned invalid stream", is.available() > 0);
             int r = is.read(b, 0, 1024);
             is.close();
@@ -990,9 +990,9 @@ public class JarFileTest extends TestCase {
             }
             String contents = sb.toString();
             assertTrue("Incorrect stream read", contents.indexOf("bar") > 0);
-            // BEGIN android-added
+            // BEGIN Android-added
             jf.close();
-            // END android-added
+            // END Android-added
         } catch (Exception e) {
             fail("Exception during test: " + e.toString());
         }
