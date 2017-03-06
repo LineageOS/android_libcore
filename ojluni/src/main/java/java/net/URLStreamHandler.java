@@ -134,9 +134,9 @@ public abstract class URLStreamHandler {
 
         boolean isRelPath = false;
         boolean queryOnly = false;
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         boolean querySet = false;
-        // ----- END android -----
+        // END Android-changed
 
 // FIX: should not assume query if opaque
         // Strip off the query part
@@ -148,22 +148,22 @@ public abstract class URLStreamHandler {
                 if (limit > queryStart)
                     limit = queryStart;
                 spec = spec.substring(0, queryStart);
-                // ----- BEGIN android -----
+                // BEGIN Android-changed
                 querySet = true;
-                // ----- END android -----
+                // END Android-changed
             }
         }
 
         int i = 0;
         // Parse the authority part if any
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         // boolean isUNCName = (start <= limit - 4) &&
         //                 (spec.charAt(start) == '/') &&
         //                 (spec.charAt(start + 1) == '/') &&
         //                 (spec.charAt(start + 2) == '/') &&
         //                 (spec.charAt(start + 3) == '/');
         boolean isUNCName = false;
-        // ----- END android -----
+        // END Android-changed
         if (!isUNCName && (start <= limit - 2) && (spec.charAt(start) == '/') &&
             (spec.charAt(start + 1) == '/')) {
             start += 2;
@@ -226,7 +226,7 @@ public abstract class URLStreamHandler {
                     if (ind >= 0) {
                         // port can be null according to RFC2396
                         if (host.length() > (ind + 1)) {
-                            // ----- BEGIN android -----
+                            // BEGIN Android-changed
                             // port = Integer.parseInt(host.substring(ind + 1));
                             char firstPortChar = host.charAt(ind+1);
                             if (firstPortChar >= '0' && firstPortChar <= '9') {
@@ -235,7 +235,7 @@ public abstract class URLStreamHandler {
                                 throw new IllegalArgumentException("invalid port: " +
                                                                    host.substring(ind + 1));
                             }
-                            // ----- END android -----
+                            // END Android-changed
                         }
                         host = host.substring(0, ind);
                     }
@@ -248,7 +248,7 @@ public abstract class URLStreamHandler {
                                                    port);
             start = i;
 
-            // ----- BEGIN android -----
+            // BEGIN Android-changed
             // If the authority is defined then the path is defined by the
             // spec only; See RFC 2396 Section 5.2.4.
             // if (authority != null && authority.length() > 0)
@@ -257,7 +257,7 @@ public abstract class URLStreamHandler {
             if (!querySet) {
                 query = null;
             }
-            // ----- END android -----
+            // END Android-changed
         }
 
         if (host == null) {
@@ -282,21 +282,21 @@ public abstract class URLStreamHandler {
                 path = seperator + spec.substring(start, limit);
             }
         }
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         //else if (queryOnly && path != null) {
         //    int ind = path.lastIndexOf('/');
         //    if (ind < 0)
         //        ind = 0;
         //    path = path.substring(0, ind) + "/";
         //}
-        // ----- END android -----
+        // END Android-changed
         if (path == null)
             path = "";
 
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         //if (isRelPath) {
         if (true) {
-        // ----- END android -----
+        // END Android-changed
             // Remove embedded /./
             while ((i = path.indexOf("/./")) >= 0) {
                 path = path.substring(0, i) + path.substring(i + 2);
@@ -304,14 +304,14 @@ public abstract class URLStreamHandler {
             // Remove embedded /../ if possible
             i = 0;
             while ((i = path.indexOf("/../", i)) >= 0) {
-                // ----- BEGIN android -----
+                // BEGIN Android-changed
                 /*
                  * Trailing /../
                  */
                 if (i == 0) {
                     path = path.substring(i + 3);
                     i = 0;
-                // ----- END android -----
+                // END Android-changed
                 /*
                  * A "/../" will cancel the previous segment and itself,
                  * unless that segment is a "/../" itself
@@ -474,7 +474,7 @@ public abstract class URLStreamHandler {
      * @since 1.3
      */
     protected boolean hostsEqual(URL u1, URL u2) {
-        // Android changed: Don't compare the InetAddresses of the hosts.
+        // Android-changed: Don't compare the InetAddresses of the hosts.
         if (u1.getHost() != null && u2.getHost() != null)
             return u1.getHost().equalsIgnoreCase(u2.getHost());
          else

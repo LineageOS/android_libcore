@@ -36,7 +36,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.ByteBuffer;
 
 /*
-ANDROID-REMOVED: this debugging mechanism is not available in Android.
+Android-removed: this debugging mechanism is not available in Android.
 import sun.security.util.Debug;
 */
 /**
@@ -135,7 +135,7 @@ import sun.security.util.Debug;
 public abstract class MessageDigest extends MessageDigestSpi {
 
     /*
-    ANDROID-REMOVED: this debugging mechanism is not available in Android.
+    Android-removed: this debugging mechanism is not available in Android.
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -206,7 +206,7 @@ public abstract class MessageDigest extends MessageDigestSpi {
             md.provider = (Provider)objs[1];
 
             /*
-            ANDROID-REMOVED: this debugging mechanism is not available in Android.
+            Android-removed: this debugging mechanism is not available in Android.
             if (!skipDebug && pdebug != null) {
                 pdebug.println("MessageDigest." + algorithm +
                     " algorithm from: " + md.provider.getName());

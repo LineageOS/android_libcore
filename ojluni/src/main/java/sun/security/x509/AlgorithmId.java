@@ -121,7 +121,7 @@ public class AlgorithmId implements Serializable, DerEncoder {
         try {
             algParams = AlgorithmParameters.getInstance(algidString);
         } catch (NoSuchAlgorithmException e) {
-            // BEGIN android-changed
+            // BEGIN Android-changed
             // It was searching for the EC parameters in an internal provider in the deleted package
             // sun.security.ec before setting them to null. Since EC is in the OpenSSL provider,
             // there's no need for such fallback. Setting it to null directly.
@@ -131,7 +131,7 @@ public class AlgorithmId implements Serializable, DerEncoder {
              */
             algParams = null;
             return;
-            // END android-changed
+            // END Android-changed
         }
         // Decode (parse) the parameters
         algParams.init(params.toByteArray());

@@ -138,7 +138,7 @@ public abstract class ZoneRulesProvider {
     private static final ConcurrentMap<String, ZoneRulesProvider> ZONES = new ConcurrentHashMap<>(512, 0.75f, 2);
 
     static {
-        // Android changed: use a single hard-coded provider.
+        // Android-changed: use a single hard-coded provider.
         ZoneRulesProvider provider = new IcuZoneRulesProvider();
         registerProvider(provider);
     }

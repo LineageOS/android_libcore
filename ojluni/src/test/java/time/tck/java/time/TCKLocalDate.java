@@ -138,7 +138,7 @@ public class TCKLocalDate extends AbstractDateTimeTest {
     private static final ZoneId ZONE_PARIS = ZoneId.of("Europe/Paris");
     private static final ZoneId ZONE_GAZA = ZoneId.of("Asia/Gaza");
 
-    // Android changed: These wer originally non-static and initialized in @BeforeMethod,
+    // Android-changed: These wer originally non-static and initialized in @BeforeMethod,
     // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
     // since multiple test methods were run and the first one did not require this value.
     private static LocalDate TEST_2007_07_15;

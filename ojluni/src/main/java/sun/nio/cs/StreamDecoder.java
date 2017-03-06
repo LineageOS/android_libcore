@@ -273,7 +273,7 @@ public class StreamDecoder extends Reader
         try {
         if (ch != null) {
             // Read from the channel
-            // Android-changed : Use ChannelInputStream.read to make sure we throw
+            // Android-changed: Use ChannelInputStream.read to make sure we throw
             // the right exception for non-blocking channels.
             int n = sun.nio.ch.ChannelInputStream.read(ch, bb);
             if (n < 0)
@@ -317,7 +317,7 @@ public class StreamDecoder extends Reader
         // Ensure that cb[0] == cbuf[off]
         cb = cb.slice();
 
-        // Android-changed : Support flushing the buffer properly.
+        // Android-changed: Support flushing the buffer properly.
         if (needsFlush) {
             CoderResult cr = decoder.flush(cb);
             if (cr.isOverflow()) {
@@ -351,7 +351,7 @@ public class StreamDecoder extends Reader
             int n = readBytes();
             if (n < 0) {
                 eof = true;
-                // Android-changed : We want to go 'round the loop one more time
+                // Android-changed: We want to go 'round the loop one more time
                 // with "eof = true". We also don't want to reset the decoder here
                 // because we might potentially need to flush it later.
                 //

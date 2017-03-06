@@ -35,7 +35,7 @@
 
 package java.util.concurrent.atomic;
 
-import dalvik.system.VMStack; // android-added
+import dalvik.system.VMStack; // Android-added
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
@@ -107,7 +107,7 @@ public abstract class AtomicReferenceFieldUpdater<T,V> {
                                                                     Class<W> vclass,
                                                                     String fieldName) {
         return new AtomicReferenceFieldUpdaterImpl<U,W>
-            (tclass, vclass, fieldName, VMStack.getStackClass1()); // android-changed
+            (tclass, vclass, fieldName, VMStack.getStackClass1()); // Android-changed
     }
 
     /**
@@ -317,9 +317,9 @@ public abstract class AtomicReferenceFieldUpdater<T,V> {
             final Class<?> fieldClass;
             final int modifiers;
             try {
-                field = tclass.getDeclaredField(fieldName); // android-changed
+                field = tclass.getDeclaredField(fieldName); // Android-changed
                 modifiers = field.getModifiers();
-                // BEGIN android-removed
+                // BEGIN Android-removed
                 // sun.reflect.misc.ReflectUtil.ensureMemberAccess(
                 //     caller, tclass, null, modifiers);
                 // ClassLoader cl = tclass.getClassLoader();
@@ -328,12 +328,12 @@ public abstract class AtomicReferenceFieldUpdater<T,V> {
                 //     ((cl == null) || !isAncestor(cl, ccl))) {
                 //     sun.reflect.misc.ReflectUtil.checkPackageAccess(tclass);
                 // }
-                // END android-removed
+                // END Android-removed
                 fieldClass = field.getType();
-            // BEGIN android-removed
+            // BEGIN Android-removed
             // } catch (PrivilegedActionException pae) {
             //     throw new RuntimeException(pae.getException());
-            // END android-removed
+            // END Android-removed
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -352,7 +352,7 @@ public abstract class AtomicReferenceFieldUpdater<T,V> {
             this.offset = U.objectFieldOffset(field);
         }
 
-        // BEGIN android-removed
+        // BEGIN Android-removed
         // /**
         //  * Returns true if the second classloader can be found in the first
         //  * classloader's delegation chain.
@@ -368,7 +368,7 @@ public abstract class AtomicReferenceFieldUpdater<T,V> {
         //     } while (acl != null);
         //     return false;
         // }
-        // END android-removed
+        // END Android-removed
 
         /**
          * Checks that target argument is instance of cclass.  On

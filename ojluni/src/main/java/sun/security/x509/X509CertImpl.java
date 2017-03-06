@@ -25,16 +25,7 @@
 
 package sun.security.x509;
 
-/* BEGIN android-removed
-import java.io.BufferedReader;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
- * END android-removed */
 import java.io.IOException;
-/* BEGIN android-removed
-import java.io.InputStream;
-import java.io.InputStreamReader;
-* END android-removed */
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.*;
@@ -45,9 +36,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.security.auth.x500.X500Principal;
 
 import sun.misc.HexDumpEncoder;
-/* BEGIN android-removed
-import java.util.Base64;
- * END android-removed */
 import sun.security.util.*;
 import sun.security.provider.X509Factory;
 
@@ -204,7 +192,8 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
         }
     }
 
-    /* BEGIN android-removed
+    // BEGIN Android-removed
+    /*
     /**
      * unmarshals an X.509 certificate from an input stream.  If the
      * certificate is RFC1421 hex-encoded, then it must begin with
@@ -290,7 +279,8 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
         }
         return der;
     }
-    * END android-removed */
+    */
+    // END Android-removed
 
     /**
      * Construct an initialized X509 Certificate. The certificate is stored
@@ -1977,12 +1967,12 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
     private ConcurrentHashMap<String,String> fingerprints =
             new ConcurrentHashMap<>(2);
 
-    /* BEGIN android-removed
-    public String getFingerprint(String algorithm) {
-        return fingerprints.computeIfAbsent(algorithm,
-                x -> getCertificateFingerPrint(x));
-    }
-     * END android-removed */
+// BEGIN Android-removed
+//    public String getFingerprint(String algorithm) {
+//        return fingerprints.computeIfAbsent(algorithm,
+//                x -> getCertificateFingerPrint(x));
+//    }
+// END Android-removed
 
     /**
      * Gets the requested finger print of the certificate. The result

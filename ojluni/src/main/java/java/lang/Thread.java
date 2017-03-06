@@ -521,7 +521,7 @@ class Thread implements Runnable {
 
 
     /** @hide */
-    // Android added : Private constructor - used by the runtime.
+    // Android-added: Private constructor - used by the runtime.
     Thread(ThreadGroup group, String name, int priority, boolean daemon) {
         this.group = group;
         this.group.addUnstarted();
@@ -981,7 +981,7 @@ class Thread implements Runnable {
      *     Why are Thread.stop, Thread.suspend and Thread.resume Deprecated?</a>.
      * @throws UnsupportedOperationException always
      */
-    // Android changed : Throw UnsupportedOperationException instead of
+    // Android-changed: Throw UnsupportedOperationException instead of
     // NoSuchMethodError.
     @Deprecated
     public void destroy() {

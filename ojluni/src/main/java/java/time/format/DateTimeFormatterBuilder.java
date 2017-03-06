@@ -211,7 +211,7 @@ public final class DateTimeFormatterBuilder {
             throw new IllegalArgumentException("Either dateStyle or timeStyle must be non-null");
         }
 
-        // Android changed: get format string from ICU.
+        // Android-changed: get format string from ICU.
         String pattern = Calendar.getDateTimeFormatString(
                 ULocale.forLocale(locale), chrono.getCalendarType(),
                 convertStyle(dateStyle), convertStyle(timeStyle));
@@ -3641,7 +3641,7 @@ public final class DateTimeFormatterBuilder {
         private static final int DST = 1;
         private static final int GENERIC = 2;
 
-        // Android changed: List of types used by getDisplayName().
+        // Android-changed: List of types used by getDisplayName().
         private static final TimeZoneNames.NameType[] TYPES = new TimeZoneNames.NameType[] {
                 TimeZoneNames.NameType.LONG_STANDARD,
                 TimeZoneNames.NameType.SHORT_STANDARD,
@@ -3675,7 +3675,7 @@ public final class DateTimeFormatterBuilder {
             Map<Locale, String[]> perLocale = null;
             if (ref == null || (perLocale = ref.get()) == null ||
                     (names = perLocale.get(locale)) == null) {
-                // Android changed: use ICU TimeZoneNames instead of TimeZoneNameUtility.
+                // Android-changed: use ICU TimeZoneNames instead of TimeZoneNameUtility.
                 TimeZoneNames timeZoneNames = TimeZoneNames.getInstance(locale);
                 names = new String[TYPES.length + 1];
                 // Zeroth index used for id, other indexes based on NameType constant + 1.
@@ -3768,7 +3768,7 @@ public final class DateTimeFormatterBuilder {
                 (entry.getKey() != regionIdsSize ||
                 (tree = entry.getValue().get()) == null)) {
                 tree = PrefixTree.newTree(context);
-                // Android changed: use ICU TimeZoneNames to get Zone names.
+                // Android-changed: use ICU TimeZoneNames to get Zone names.
                 TimeZoneNames timeZoneNames = TimeZoneNames.getInstance(locale);
                 long now = System.currentTimeMillis();
                 TimeZoneNames.NameType[] types =
@@ -4366,7 +4366,7 @@ public final class DateTimeFormatterBuilder {
          * @throws NullPointerException if chrono or locale is null
          */
         private String getChronologyName(Chronology chrono, Locale locale) {
-            // Android changed: Use ICU LocaleDisplayNames.
+            // Android-changed: Use ICU LocaleDisplayNames.
             LocaleDisplayNames displayNames = LocaleDisplayNames.getInstance(ULocale.forLocale(locale));
             String name = displayNames.keyValueDisplayName("calendar", chrono.getCalendarType());
             return name != null ? name : chrono.getId();

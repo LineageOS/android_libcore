@@ -430,7 +430,7 @@ class DateTimeTextProvider {
         }
 
         if (field == IsoFields.QUARTER_OF_YEAR) {
-            // Android changed: Use ICU resources.
+            // Android-changed: Use ICU resources.
             ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle
                     .getBundleInstance(ICUData.ICU_BASE_NAME, locale);
             ICUResourceBundle quartersRb = rb.getWithFallback("calendar/gregorian/quarters");
@@ -468,7 +468,7 @@ class DateTimeTextProvider {
         return new SimpleImmutableEntry<>(text, field);
     }
 
-    // Android changed: removed getLocalizedResource.
+    // Android-changed: removed getLocalizedResource.
 
     /**
      * Stores the text for a single locale.

@@ -25,24 +25,24 @@
 
 package sun.security.provider;
 
-/* BEGIN android-removed
+/* BEGIN Android-removed
 import java.io.*;
 import java.util.*;
- * END android-removed */
+ * END Android-removed */
 import java.security.cert.*;
 import sun.security.x509.X509CertImpl;
 import sun.security.x509.X509CRLImpl;
-/* BEGIN android-removed
+/* BEGIN Android-removed
 import sun.security.pkcs.PKCS7;
 import sun.security.provider.certpath.X509CertPath;
 import sun.security.provider.certpath.X509CertificatePair;
 import sun.security.util.DerValue;
- * END android-removed */
+ * END Android-removed */
 import sun.security.util.Cache;
-/* BEGIN android-removed
+/* BEGIN Android-removed
 import java.util.Base64;
 import sun.security.pkcs.ParsingException;
- * END android-removed */
+ * END Android-removed */
 
 /**
  * This class defines a certificate factory for X.509 v3 certificates &
@@ -63,15 +63,15 @@ import sun.security.pkcs.ParsingException;
  * @see sun.security.x509.X509CRLImpl
  */
 
-// BEGIN android-changed
+// BEGIN Android-changed
 // Was: public class X509Factory extends CertificateFactorySpi {
 public class X509Factory {
-// END android-changed
+// END Android-changed
 
-    /* BEGIN android-removed
+    /* BEGIN Android-removed
     public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     public static final String END_CERT = "-----END CERTIFICATE-----";
-     * END android-removed */
+     * END Android-removed */
 
     private static final int ENC_MAX_LENGTH = 4096 * 1024; // 4 MB MAX
 
@@ -80,7 +80,7 @@ public class X509Factory {
     private static final Cache<Object, X509CRLImpl> crlCache
         = Cache.newSoftMemoryCache(750);
 
-    /* BEGIN android-removed
+    /* BEGIN Android-removed
     /**
      * Generates an X.509 certificate object and initializes it with
      * the data read from the input stream <code>is</code>.
@@ -140,7 +140,7 @@ public class X509Factory {
         }
         return read;
     }
-     * END android-removed */
+     * END Android-removed */
 
     /**
      * Return an interned X509CertImpl for the given certificate.
@@ -244,7 +244,7 @@ public class X509Factory {
         cache.put(key, value);
     }
 
-    /* BEGIN android-removed
+    /* BEGIN Android-removed
     /**
      * Generates a <code>CertPath</code> object and initializes it with
      * the data read from the <code>InputStream</code> inStream. The data
@@ -767,5 +767,5 @@ public class X509Factory {
         }
         return tag;
     }
-     * END android-removed */
+     * END Android-removed */
 }

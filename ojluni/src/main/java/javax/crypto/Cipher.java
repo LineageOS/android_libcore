@@ -44,7 +44,7 @@ import javax.crypto.spec.*;
 
 import java.nio.ByteBuffer;
 import java.nio.ReadOnlyBufferException;
-/* ANDROID-REMOVED: this debugging mechanism is not used in Android
+/* Android-removed: this debugging mechanism is not used in Android
 import sun.security.util.Debug;
 */
 import sun.security.jca.*;
@@ -637,7 +637,7 @@ import sun.security.jca.*;
 
 public class Cipher {
 
-    /* ANDROID-REMOVED: this debugging mechanism is not used in Android
+    /* Android-removed: this debugging mechanism is not used in Android
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -1242,7 +1242,7 @@ public class Cipher {
 
         initialized = true;
         this.opmode = opmode;
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android
+        /* Android-removed: this debugging mechanism is not used in Android
         if (!skipDebug && pdebug != null) {
             pdebug.println("Cipher." + transformation + " " +
                 getOpmodeString(opmode) + " algorithm from: " +
@@ -1382,7 +1382,7 @@ public class Cipher {
         initialized = true;
         this.opmode = opmode;
 
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android
+        /* Android-removed: this debugging mechanism is not used in Android
         if (!skipDebug && pdebug != null) {
             pdebug.println("Cipher." + transformation + " " +
                 getOpmodeString(opmode) + " algorithm from: " +
@@ -1522,7 +1522,7 @@ public class Cipher {
         initialized = true;
         this.opmode = opmode;
 
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android
+        /* Android-removed: this debugging mechanism is not used in Android
         if (!skipDebug && pdebug != null) {
             pdebug.println("Cipher." + transformation + " " +
                 getOpmodeString(opmode) + " algorithm from: " +
@@ -1708,7 +1708,7 @@ public class Cipher {
         initialized = true;
         this.opmode = opmode;
 
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android
+        /* Android-removed: this debugging mechanism is not used in Android
         if (!skipDebug && pdebug != null) {
             pdebug.println("Cipher." + transformation + " " +
                 getOpmodeString(opmode) + " algorithm from: " +

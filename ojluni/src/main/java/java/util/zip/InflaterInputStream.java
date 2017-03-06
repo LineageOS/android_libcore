@@ -164,7 +164,7 @@ class InflaterInputStream extends FilterInputStream {
                 }
             }
 
-            // Android changed : Eagerly set reachEOF.
+            // Android-changed: Eagerly set reachEOF.
             if (inf.finished()) {
                 reachEOF = true;
             }

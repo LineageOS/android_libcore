@@ -75,11 +75,9 @@ class StringCoding {
     //
     private static byte[] safeTrim(byte[] ba, int len, Charset cs, boolean isTrusted) {
 
-        /* ----- BEGIN android -----
-        if (len == ba.length && (isTrusted || System.getSecurityManager() == null))
+        // Android-changed: System.getSecurityManager() == null is always true on Android.
         // Libcore tests expect a defensive copy in pretty much all cases.
-        // + System.getSecurityManager() == null is always true on android
-        */
+        // if (len == ba.length && (isTrusted || System.getSecurityManager() == null))
         if (len == ba.length && (isTrusted))
             return ba;
         else
@@ -90,11 +88,9 @@ class StringCoding {
     //
     private static char[] safeTrim(char[] ca, int len,
                                    Charset cs, boolean isTrusted) {
-        /* ----- BEGIN android -----
-        if (len == ca.length && (isTrusted || System.getSecurityManager() == null))
+        // Android-changed: System.getSecurityManager() == null is always true on Android.
         // Libcore tests expect a defensive copy in pretty much all cases.
-        // + System.getSecurityManager() == null is always true on android
-        */
+        // if (len == ca.length && (isTrusted || System.getSecurityManager() == null))
         if (len == ca.length && (isTrusted))
             return ca;
         else

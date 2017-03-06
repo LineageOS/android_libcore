@@ -73,7 +73,7 @@ final class JceSecurity {
     private JceSecurity() {
     }
 
-    /* ----- BEGIN android -----
+    /* BEGIN Android-changed
     static {
         try {
             AccessController.doPrivileged(
@@ -91,7 +91,7 @@ final class JceSecurity {
                     "Can not initialize cryptographic mechanism", e);
         }
     }
-    ----- END android ----- */
+    END Android-changed */
 
     static Instance getInstance(String type, Class<?> clazz, String algorithm,
             String provider) throws NoSuchAlgorithmException,
@@ -199,11 +199,11 @@ final class JceSecurity {
 
     // return whether this provider is properly signed and can be used by JCE
     static boolean canUseProvider(Provider p) {
-        /* ----- BEGIN android
+        /* BEGIN Android-changed
         return getVerificationResult(p) == null;
         */
         return true;
-        // ----- END android -----
+        // END Android-changed
     }
 
     // dummy object to represent null

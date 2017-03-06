@@ -1603,7 +1603,7 @@ class Socket implements java.io.Closeable {
      */
     public String toString() {
         try {
-            // Android changed : change localport to localPort, and addr to address.
+            // Android-changed: change localport to localPort, and addr to address.
             if (isConnected())
                 return "Socket[address=" + getImpl().getInetAddress() +
                     ",port=" + getImpl().getPort() +

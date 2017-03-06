@@ -491,7 +491,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/z/value
+    // Android-changed param name s/z/value
     public static void setBoolean(Object array, int index, boolean value) {
         if (array instanceof boolean[]) {
             ((boolean[]) array)[index] = value;
@@ -517,7 +517,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/b/value
+    // Android-changed param name s/b/value
     public static void setByte(Object array, int index, byte value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof byte[]) {
             ((byte[]) array)[index] = value;
@@ -553,7 +553,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/c/value
+    // Android-changed param name s/c/value
     public static void setChar(Object array, int index, char value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof char[]) {
             ((char[]) array)[index] = value;
@@ -587,7 +587,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/s/value
+    // Android-changed param name s/s/value
     public static void setShort(Object array, int index, short value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof short[]) {
             ((short[]) array)[index] = value;
@@ -621,7 +621,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/i/value
+    // Android-changed param name s/i/value
     public static void setInt(Object array, int index, int value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof int[]) {
             ((int[]) array)[index] = value;
@@ -653,7 +653,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/l/value
+    // Android-changed param name s/l/value
     public static void setLong(Object array, int index, long value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof long[]) {
             ((long[]) array)[index] = value;
@@ -683,7 +683,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/f/value
+    // Android-changed param name s/f/value
     public static void setFloat(Object array, int index, float value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof float[]) {
             ((float[]) array)[index] = value;
@@ -711,7 +711,7 @@ class Array {
      * the length of the specified array
      * @see Array#set
      */
-    // Android changed param name s/d/value
+    // Android-changed param name s/d/value
     public static void setDouble(Object array, int index, double value) throws IllegalArgumentException, ArrayIndexOutOfBoundsException {
         if (array instanceof double[]) {
             ((double[]) array)[index] = value;
