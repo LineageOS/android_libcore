@@ -231,7 +231,7 @@ public final class Method extends Executable  {
                 && (getName() == other.getName())) {
                 if (!getReturnType().equals(other.getReturnType()))
                     return false;
-                // Android changed: Use getParameterTypes.
+                // Android-changed: Use getParameterTypes.
                 return equalParamTypes(getParameterTypes(), other.getParameterTypes());
             }
         }
@@ -274,7 +274,7 @@ public final class Method extends Executable  {
      * @jls 8.4.3 Method Modifiers
      */
     public String toString() {
-        // Android changed: Use getParameterTypes.
+        // Android-changed: Use getParameterTypes.
         return sharedToString(Modifier.methodModifiers(),
                               isDefault(),
                               getParameterTypes(),

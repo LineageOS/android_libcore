@@ -70,7 +70,7 @@ class ZipFile implements ZipConstants, Closeable {
 
     private final CloseGuard guard = CloseGuard.get();
 
-    // Android changed, needed for alternative OPEN_DELETE implementation
+    // Android-changed, needed for alternative OPEN_DELETE implementation
     // that doesn't use unlink before closing the file.
     private final File fileToRemoveOnClose;
 
@@ -215,7 +215,7 @@ class ZipFile implements ZipConstants, Closeable {
             }
         }
 
-        // Android changed, handle OPEN_DELETE case in #close().
+        // Android-changed, handle OPEN_DELETE case in #close().
         fileToRemoveOnClose = ((mode & OPEN_DELETE) != 0) ? file : null;
 
         String name = file.getPath();
@@ -736,7 +736,7 @@ class ZipFile implements ZipConstants, Closeable {
         }
 
         public int read(byte b[], int off, int len) throws IOException {
-            // Android-changed : Always throw an exception on read if the zipfile
+            // Android-changed: Always throw an exception on read if the zipfile
             // has already been closed.
             ensureOpenOrZipException();
 

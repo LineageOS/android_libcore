@@ -1710,7 +1710,7 @@ public class LogManager {
      *
      * @since 1.5
      */
-    // Android-changed : Remove reference to java.lang.management.ObjectName.
+    // Android-changed: Remove reference to java.lang.management.ObjectName.
     //
     //@see java.lang.management.PlatformLoggingMXBean
     public final static String LOGGING_MXBEAN_NAME

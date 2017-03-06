@@ -138,7 +138,7 @@ public class TCKOffsetTime extends AbstractDateTimeTest {
     private static final ZoneOffset OFFSET_PTWO = ZoneOffset.ofHours(2);
     private static final LocalDate DATE = LocalDate.of(2008, 12, 3);
 
-    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // Android-changed: This was originally non-static and initialized in @BeforeMethod,
     // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
     // since multiple test methods were run and the first one did not require this value.
     private static OffsetTime TEST_11_30_59_500_PONE;

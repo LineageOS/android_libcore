@@ -422,7 +422,7 @@ public final class Scanner implements Iterator<String>, Closeable {
     private int SIMPLE_GROUP_INDEX = 5;
     private String buildIntegerPatternString() {
         String radixDigits = digits.substring(0, radix);
-        // Android-changed : Support non-decimal starting digits. (i.e, a-z are valid radix digits).
+        // Android-changed: Support non-decimal starting digits. (i.e, a-z are valid radix digits).
         String nonZeroRadixDigits = "((?i)[" + digits.substring(1, radix) + "]|(" + non0Digit + "))";
 
         // \\p{javaDigit} is not guaranteed to be appropriate
@@ -430,7 +430,7 @@ public final class Scanner implements Iterator<String>, Closeable {
         // whatever parse method is invoked, so ultimately the
         // Scanner will do the right thing
         String digit = "((?i)["+radixDigits+"]|\\p{javaDigit})";
-        // Android-changed : Support non-decimal starting digits.
+        // Android-changed: Support non-decimal starting digits.
         String groupedNumeral = "("+nonZeroRadixDigits+digit+"?"+digit+"?("+
                                 groupSeparator+digit+digit+digit+")+)";
         // digit++ is the possessive form which is necessary for reducing
@@ -827,7 +827,7 @@ public final class Scanner implements Iterator<String>, Closeable {
         // Restore current position and limit for reading
         buf.limit(buf.position());
         buf.position(p);
-        // Android changed : The matcher implementation eagerly calls toString() so we'll have
+        // Android-changed: The matcher implementation eagerly calls toString() so we'll have
         // to update its input whenever the buffer limit, position etc. changes.
         matcher.reset(buf);
     }
@@ -1274,7 +1274,7 @@ public final class Scanner implements Iterator<String>, Closeable {
     // The next operation should occur in the specified radix but
     // the default is left untouched.
     private void setRadix(int radix) {
-        // Android-changed : Complain loudly if a bogus radix is being set.
+        // Android-changed: Complain loudly if a bogus radix is being set.
         if (radix > Character.MAX_RADIX) {
             throw new IllegalArgumentException("radix == " + radix);
         }

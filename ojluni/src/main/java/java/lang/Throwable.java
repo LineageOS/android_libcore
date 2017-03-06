@@ -204,7 +204,7 @@ public class Throwable implements Serializable {
      * @serial
      * @since 1.4
      */
-    // Android changed.
+    // Android-changed.
     private StackTraceElement[] stackTrace = libcore.util.EmptyArray.STACK_TRACE_ELEMENT;
 
     /**
@@ -813,7 +813,7 @@ public class Throwable implements Serializable {
         // Initialize stack trace field with information from
         // backtrace if this is the first call to this method
         //
-        // Android changed - test explicitly for equality with
+        // Android-changed: test explicitly for equality with
         // STACK_TRACE_ELEMENT
         if (stackTrace == libcore.util.EmptyArray.STACK_TRACE_ELEMENT ||
             (stackTrace == null && backtrace != null) /* Out of protocol state */) {
@@ -821,7 +821,7 @@ public class Throwable implements Serializable {
             backtrace = null;
         }
 
-        // Android changed : Return an empty element both when the stack trace
+        // Android-changed: Return an empty element both when the stack trace
         // isn't writeable and also when nativeGetStackTrace returns null.
         if (stackTrace == null) {
             return libcore.util.EmptyArray.STACK_TRACE_ELEMENT;

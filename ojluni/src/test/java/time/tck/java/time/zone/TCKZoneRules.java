@@ -372,7 +372,7 @@ public class TCKZoneRules {
 
         ZoneOffsetTransitionRule in = rules.get(0);
         assertEquals(in.getMonth(), Month.MARCH);
-        // Android changed: check for -1, which matches the data, we don't do the "optimization"
+        // Android-changed: check for -1, which matches the data, we don't do the "optimization"
         assertEquals(in.getDayOfMonthIndicator(), -1);  // optimized from -1
         assertEquals(in.getDayOfWeek(), DayOfWeek.SUNDAY);
         assertEquals(in.getLocalTime(), LocalTime.of(1, 0));
@@ -383,7 +383,7 @@ public class TCKZoneRules {
 
         ZoneOffsetTransitionRule out = rules.get(1);
         assertEquals(out.getMonth(), Month.OCTOBER);
-        // Android changed: check for -1, which matches the data, we don't do the "optimization"
+        // Android-changed: check for -1, which matches the data, we don't do the "optimization"
         assertEquals(out.getDayOfMonthIndicator(), -1);  // optimized from -1
         assertEquals(out.getDayOfWeek(), DayOfWeek.SUNDAY);
         assertEquals(out.getLocalTime(), LocalTime.of(1, 0));

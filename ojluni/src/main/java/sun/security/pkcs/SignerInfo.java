@@ -26,10 +26,10 @@
 
 package sun.security.pkcs;
 
-// BEGIN android-added
+// BEGIN Android-added
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
-// END android-added
+// END Android-added
 import java.io.OutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
@@ -64,9 +64,9 @@ public class SignerInfo implements DerEncoder {
     byte[] encryptedDigest;
     Timestamp timestamp;
     private boolean hasTimestamp = true;
-    /* BEGIN android-removed
+    /* BEGIN Android-removed
     private static final Debug debug = Debug.getInstance("jar");
-     * END android-removed */
+     * END Android-removed */
 
     PKCS9Attributes authenticatedAttributes;
     PKCS9Attributes unauthenticatedAttributes;
@@ -288,7 +288,7 @@ public class SignerInfo implements DerEncoder {
         return certList;
     }
 
-    // BEGIN android-changed
+    // BEGIN Android-changed
     // Originally there's no overloading for InputStream.
     SignerInfo verify(PKCS7 block, byte[] data)
     throws NoSuchAlgorithmException, SignatureException {
@@ -439,16 +439,16 @@ public class SignerInfo implements DerEncoder {
         }
         return null;
     }
-    // END android-changed
+    // END Android-changed
 
     /* Verify the content of the pkcs7 block. */
     SignerInfo verify(PKCS7 block)
     throws NoSuchAlgorithmException, SignatureException {
-      // BEGIN android-changed
+      // BEGIN Android-changed
       // Was: return verify(block, null);
       // As in Android the method is overloaded, we need to disambiguate with a cast
       return verify(block, (byte[])null);
-      // END android-changed
+      // END Android-changed
     }
 
 
@@ -562,14 +562,14 @@ public class SignerInfo implements DerEncoder {
                 " is inapplicable");
         }
 
-        /* BEGIN android-removed
+        /* BEGIN Android-removed
         if (debug != null) {
             debug.println();
             debug.println("Detected signature timestamp (#" +
                 token.getSerialNumber() + ") generated on " + token.getDate());
             debug.println();
         }
-         * END android-removed */
+         * END Android-removed */
     }
 
     public String toString() {

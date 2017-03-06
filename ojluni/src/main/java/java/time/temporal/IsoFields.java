@@ -418,7 +418,7 @@ public final class IsoFields {
             @Override
             public String getDisplayName(Locale locale) {
                 Objects.requireNonNull(locale, "locale");
-                // Android changed: Use ICU name values.
+                // Android-changed: Use ICU name values.
                 DateTimePatternGenerator dateTimePatternGenerator = DateTimePatternGenerator
                         .getFrozenInstance(ULocale.forLocale(locale));
                 String icuName = dateTimePatternGenerator

@@ -929,15 +929,15 @@ public class FileChannelImpl
                 return null;
 
             if (filesize < position + size) { // Extend file size
-                /* ----- BEGIN android -----
+                /* BEGIN Android-changed
                 if (!writable) {
                     throw new IOException("Channel not open for writing " +
                         "- cannot extend file to required size");
                 }
-                ----- END android ----- */
+                END Android-changed */
                 int rv = 0;
                 do {
-                    // ----- BEGIN android -----
+                    // BEGIN Android-changed
                     //int rv = nd.truncate(fd, position + size);
                     try {
                         rv = nd.truncate(fd, position + size);
@@ -955,7 +955,7 @@ public class FileChannelImpl
                         }
                         break;
                     }
-                    // ----- END android -----
+                    // END Android-changed
                 } while ((rv == IOStatus.INTERRUPTED) && isOpen());
                 if (!isOpen())
                     return null;

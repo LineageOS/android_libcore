@@ -290,7 +290,7 @@ class DatagramPacket {
         address = iaddr;
     }
 
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     /**
      * Sets 'length' without changing 'userSuppliedLength', after receiving a packet.
      * @hide for IoBridge
@@ -298,7 +298,7 @@ class DatagramPacket {
     public void setReceivedLength(int length) {
         this.length = length;
     }
-    // ----- END android -----
+    // END Android-changed
 
     /**
      * Sets the port number on the remote host to which this datagram

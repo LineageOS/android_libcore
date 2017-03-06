@@ -241,7 +241,7 @@ public abstract class X509CRL extends CRL implements X509Extension {
     public void verify(PublicKey key, Provider sigProvider)
         throws CRLException, NoSuchAlgorithmException,
         InvalidKeyException, SignatureException {
-        // BEGIN ANDROID-CHANGED
+        // BEGIN Android-changed
         // TODO(31294527): was X509CRLImpl.verify(this, key, sigProvider);
         // As the javadoc says, this "default implementation" was introduced as to avoid breaking
         // providers that generate concrete subclasses of this class.
@@ -250,7 +250,7 @@ public abstract class X509CRL extends CRL implements X509Extension {
         // running a test with vogar --mode=jvm .
         throw new UnsupportedOperationException(
                 "X509CRL instance doesn't not support X509CRL#verify(PublicKey, Provider)");
-        // END ANDROID-CHANGED
+        // END Android-changed
     }
 
     /**

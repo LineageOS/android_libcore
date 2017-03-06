@@ -32,7 +32,7 @@ import java.security.*;
 import java.security.Provider.Service;
 import java.security.spec.*;
 
-/* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+/* Android-removed: this debugging mechanism is not used in Android.
 import sun.security.util.Debug;
 */
 import sun.security.jca.*;
@@ -91,7 +91,7 @@ import sun.security.jca.GetInstance.Instance;
 
 public class KeyAgreement {
 
-    /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+    /* Android-removed: this debugging mechanism is not used in Android.
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -293,7 +293,7 @@ public class KeyAgreement {
             if (spi != null) {
                 return;
             }
-            /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+            /* Android-removed: this debugging mechanism is not used in Android.
             if (debug != null) {
                 int w = --warnCount;
                 if (w >= 0) {
@@ -463,7 +463,7 @@ public class KeyAgreement {
             }
         }
 
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+        /* Android-removed: this debugging mechanism is not used in Android.
         if (!skipDebug && pdebug != null) {
             pdebug.println("KeyAgreement." + algorithm + " algorithm from: " +
                 this.provider.getName());
@@ -526,7 +526,7 @@ public class KeyAgreement {
             chooseProvider(I_PARAMS, key, params, random);
         }
 
-        /* ANDROID-REMOVED: this debugging mechanism is not used in Android.
+        /* Android-removed: this debugging mechanism is not used in Android.
         if (!skipDebug && pdebug != null) {
             pdebug.println("KeyAgreement." + algorithm + " algorithm from: " +
                 this.provider.getName());

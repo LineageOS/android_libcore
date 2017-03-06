@@ -111,7 +111,7 @@ public class ECParameterSpec implements AlgorithmParameterSpec {
     public int getCofactor() {
         return h;
     }
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     private String curveName;
 
     /**
@@ -132,5 +132,5 @@ public class ECParameterSpec implements AlgorithmParameterSpec {
     public String getCurveName() {
         return curveName;
     }
-    // ----- END android -----
+    // END Android-changed
 }

@@ -45,7 +45,7 @@ package java.util.logging;
  *
  */
 
-// Android-removed : References to java.lang.management.
+// Android-removed: References to java.lang.management.
 //
 // It is recommended
 // to use the {@link java.lang.management.PlatformLoggingMXBean} management

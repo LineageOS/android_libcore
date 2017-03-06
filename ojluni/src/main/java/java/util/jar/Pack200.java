@@ -798,7 +798,7 @@ public abstract class Pack200 {
                     new sun.security.action.GetPropertyAction(prop,""));
                 if (implName != null && !implName.equals(""))
                     impl = Class.forName(implName);
-                // Android changed : Remove default Packer Impl.
+                // Android-changed: Remove default Packer Impl.
                 //
                 // else if (PACK_PROVIDER.equals(prop))
                 //     impl = com.sun.java.util.jar.pack.PackerImpl.class;

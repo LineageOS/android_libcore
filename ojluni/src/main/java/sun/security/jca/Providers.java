@@ -91,16 +91,18 @@ public class Providers {
     // Hardcoded classnames of providers to use for JAR verification.
     // MUST NOT be on the bootclasspath and not in signed JAR files.
     private static final String[] jarVerificationProviders = {
-        /* ----- BEGIN android -----
+        // BEGIN Android-changed
+        /*
         "sun.security.provider.Sun",
         "sun.security.rsa.SunRsaSign",
         // Note: SunEC *is* in a signed JAR file, but it's not signed
         // by EC itself. So it's still safe to be listed here.
-        "sun.security.ec.SunEC",*/
+        "sun.security.ec.SunEC",
+        */
         "com.android.org.conscrypt.OpenSSLProvider",
         "com.android.org.bouncycastle.jce.provider.BouncyCastleProvider",
         "com.android.org.conscrypt.JSSEProvider",
-        // ----- END android -----
+        // END Android-changed
         BACKUP_PROVIDER_CLASSNAME,
     };
 

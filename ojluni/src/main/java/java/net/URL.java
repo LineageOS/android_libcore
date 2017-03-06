@@ -218,10 +218,10 @@ public final class URL implements java.io.Serializable {
     /* Our hash code.
      * @serial
      */
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     //private int hashCode = -1;
     private transient int hashCode = -1;
-    // ----- END android -----
+    // END Android-changed
 
     /**
      * Creates a {@code URL} object from the specified
@@ -1191,7 +1191,7 @@ public final class URL implements java.io.Serializable {
             // Makes okhttp the default http/https handler
             if (handler == null) {
                 try {
-                    // BEGIN android-changed
+                    // BEGIN Android-changed
                     // Use of okhttp for http and https
                     // Removed unnecessary use of reflection for sun classes
                     if (protocol.equals("file")) {
@@ -1207,7 +1207,7 @@ public final class URL implements java.io.Serializable {
                         handler = (URLStreamHandler)Class.
                             forName("com.android.okhttp.HttpsHandler").newInstance();
                     }
-                    // END android-changed
+                    // END Android-changed
                 } catch (Exception e) {
                     throw new AssertionError(e);
                 }

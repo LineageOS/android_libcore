@@ -68,7 +68,7 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
 
     public void test_printText() {
         Random r = RandomFactory.getRandom();
-        // Android changed: only run one iteration.
+        // Android-changed: only run one iteration.
         int N = 1;
         Locale[] locales = Locale.getAvailableLocales();
         Set<String> zids = ZoneRulesProvider.getAvailableZoneIds();

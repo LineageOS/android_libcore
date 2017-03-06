@@ -1302,7 +1302,7 @@ public abstract class ForkJoinTask<V> implements Future<V>, Serializable {
      * @since 9
      * @hide
      */
-    // android-changed - hidden
+    // Android-changed: hidden
     protected static ForkJoinTask<?> pollSubmission() {
         Thread t;
         return ((t = Thread.currentThread()) instanceof ForkJoinWorkerThread) ?
