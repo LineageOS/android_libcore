@@ -580,7 +580,7 @@ public class GregorianCalendarTest extends junit.framework.TestCase {
                 .get(Calendar.YEAR));
         assertEquals("Wrong month: " + cal.getTime(), Calendar.JANUARY, cal
                 .get(Calendar.MONTH));
-        // Android changed: Bugfix for https://bugs.openjdk.java.net/browse/JDK-6902861. This
+        // Android-changed: Bugfix for https://bugs.openjdk.java.net/browse/JDK-6902861. This
         // returned 9 before Android O.
         assertEquals("Wrong date: " + cal.getTime(), 2, cal.get(Calendar.DATE));
 
