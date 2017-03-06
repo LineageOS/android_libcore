@@ -229,11 +229,12 @@ LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 # be loaded by tests using ClassLoaders but are not in the main classes.dex.
 LOCAL_JAVA_RESOURCE_FILES := $(TARGET_OUT)/framework/filesystemstest.jar
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp junit bouncycastle mockito-target
+LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := \
 	core-test-rules \
 	core-tests-support \
 	mockftpserver \
+	mockito-target \
 	mockwebserver \
 	nist-pkix-tests \
 	slf4j-jdk14 \
