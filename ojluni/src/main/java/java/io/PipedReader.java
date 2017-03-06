@@ -26,9 +26,6 @@
 
 package java.io;
 
-/* ----- BEGIN android -----
-Import required for IoUtils.throwInterruptedIoException.
------ END android -----*/
 import libcore.io.IoUtils;
 
 /**
@@ -189,11 +186,8 @@ public class PipedReader extends Reader {
             try {
                 wait(1000);
             } catch (InterruptedException ex) {
-                /* ----- BEGIN android -----
+                // BEGIN Android-changed: re-set the thread's interrupt status
                 // throw new java.io.InterruptedIOException();
-                We need to re-set the interrupt status of the thread through
-                IoUtils.throwInterruptedIoException.
-                ----- END android ----- */
                 IoUtils.throwInterruptedIoException();
             }
         }
@@ -265,11 +259,8 @@ public class PipedReader extends Reader {
             try {
                 wait(1000);
             } catch (InterruptedException ex) {
-              /* ----- BEGIN android -----
+              // Android-changed: re-set the thread's interrupt status
               // throw new java.io.InterruptedIOException();
-              We need to re-set the interrupt status of the thread through
-              IoUtils.throwInterruptedIoException.
-              ----- END android ----- */
               IoUtils.throwInterruptedIoException();
             }
         }

@@ -188,7 +188,7 @@ public abstract class CharsetEncoder {
                    float averageBytesPerChar,
                    float maxBytesPerChar,
                    byte[] replacement)
-    // ----- BEGIN android -----
+    // BEGIN Android-changed
     {
       this(cs, averageBytesPerChar, maxBytesPerChar, replacement, false);
     }
@@ -198,7 +198,7 @@ public abstract class CharsetEncoder {
                    float maxBytesPerChar,
                    byte[] replacement,
                    boolean trusted)
-                   // ----- END android -----
+                   // END Android-changed
     {
         this.charset = cs;
         if (averageBytesPerChar <= 0.0f)
@@ -216,13 +216,13 @@ public abstract class CharsetEncoder {
         this.replacement = replacement;
         this.averageBytesPerChar = averageBytesPerChar;
         this.maxBytesPerChar = maxBytesPerChar;
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         if (!trusted) {
-        // ----- END android -----
+        // END Android-changed
         replaceWith(replacement);
-        // ----- BEGIN android -----
+        // BEGIN Android-changed
         }
-        // ----- END android -----
+        // END Android-changed
     }
 
     /**
@@ -926,7 +926,7 @@ public abstract class CharsetEncoder {
         try {
             onMalformedInput(CodingErrorAction.REPORT);
             onUnmappableCharacter(CodingErrorAction.REPORT);
-            // Android changed : Account for ignorable codepoints. ICU doesn't report
+            // Android-changed: Account for ignorable codepoints. ICU doesn't report
             // an error, but will return an empty buffer.
             ByteBuffer buf = encode(cb);
             return buf.hasRemaining();

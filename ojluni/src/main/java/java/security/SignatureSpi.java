@@ -370,7 +370,7 @@ public abstract class SignatureSpi {
      * @deprecated Deprecated.
      */
     @Deprecated
-    // Android changed add "Deprecated."
+    // Android-changed add "Deprecated."
     protected abstract Object engineGetParameter(String param)
         throws InvalidParameterException;
 

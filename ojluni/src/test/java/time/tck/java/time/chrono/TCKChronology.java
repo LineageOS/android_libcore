@@ -146,7 +146,7 @@ public class TCKChronology {
     //-----------------------------------------------------------------------
     @DataProvider(name = "calendarDisplayName")
     Object[][] data_of_calendarDisplayNames() {
-        // Android changed: Change expected values to CLDR values here. This test seems to be based
+        // Android-changed: Change expected values to CLDR values here. This test seems to be based
         // on an old CLDR version (21) with some "invented" values (specifically Hijrah and ISO).
         return new Object[][] {
                     {"Hijrah", "Islamic Calendar (Umm al-Qura)"},

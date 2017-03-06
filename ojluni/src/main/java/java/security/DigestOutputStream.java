@@ -142,7 +142,7 @@ public class DigestOutputStream extends FilterOutputStream {
      * @see MessageDigest#update(byte[], int, int)
      */
     public void write(byte[] b, int off, int len) throws IOException {
-        // BEGIN ANDROID-ADDED: perform checks for parameters first.
+        // BEGIN Android-added: perform checks for parameters first.
         // See org.apache.harmony.security.tests.j.s.DigestOutputStreamTest#test_write$BII_6
         if (b == null || off + len > b.length) {
             throw new IllegalArgumentException("wrong parameters for write");
@@ -150,7 +150,7 @@ public class DigestOutputStream extends FilterOutputStream {
         if (off < 0 || len < 0) {
             throw new IndexOutOfBoundsException("wrong index for write");
         }
-        // END ANDROID-ADDED
+        // END Android-added
         out.write(b, off, len);
         if (on) {
             digest.update(b, off, len);

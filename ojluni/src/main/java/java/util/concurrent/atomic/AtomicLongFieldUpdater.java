@@ -35,7 +35,7 @@
 
 package java.util.concurrent.atomic;
 
-import dalvik.system.VMStack; // android-added
+import dalvik.system.VMStack; // Android-added
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
@@ -84,7 +84,7 @@ public abstract class AtomicLongFieldUpdater<T> {
     @CallerSensitive
     public static <U> AtomicLongFieldUpdater<U> newUpdater(Class<U> tclass,
                                                            String fieldName) {
-      Class<?> caller = VMStack.getStackClass1(); // android-changed
+      Class<?> caller = VMStack.getStackClass1(); // Android-changed
         if (AtomicLong.VM_SUPPORTS_LONG_CAS)
             return new CASUpdater<U>(tclass, fieldName, caller);
         else
@@ -382,9 +382,9 @@ public abstract class AtomicLongFieldUpdater<T> {
             final Field field;
             final int modifiers;
             try {
-                field = tclass.getDeclaredField(fieldName); // android-changed
+                field = tclass.getDeclaredField(fieldName); // Android-changed
                 modifiers = field.getModifiers();
-                // BEGIN android-removed
+                // BEGIN Android-removed
                 // sun.reflect.misc.ReflectUtil.ensureMemberAccess(
                 //     caller, tclass, null, modifiers);
                 // ClassLoader cl = tclass.getClassLoader();
@@ -393,11 +393,11 @@ public abstract class AtomicLongFieldUpdater<T> {
                 //     ((cl == null) || !isAncestor(cl, ccl))) {
                 //     sun.reflect.misc.ReflectUtil.checkPackageAccess(tclass);
                 // }
-                // END android-removed
-            // BEGIN android-removed
+                // END Android-removed
+            // BEGIN Android-removed
             // } catch (PrivilegedActionException pae) {
             //     throw new RuntimeException(pae.getException());
-            // END android-removed
+            // END Android-removed
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -512,9 +512,9 @@ public abstract class AtomicLongFieldUpdater<T> {
             Field field = null;
             int modifiers = 0;
             try {
-                field = tclass.getDeclaredField(fieldName); // android-changed
+                field = tclass.getDeclaredField(fieldName); // Android-changed
                 modifiers = field.getModifiers();
-                // BEGIN android-removed
+                // BEGIN Android-removed
                 // sun.reflect.misc.ReflectUtil.ensureMemberAccess(
                 //     caller, tclass, null, modifiers);
                 // ClassLoader cl = tclass.getClassLoader();
@@ -523,11 +523,11 @@ public abstract class AtomicLongFieldUpdater<T> {
                 //     ((cl == null) || !isAncestor(cl, ccl))) {
                 //     sun.reflect.misc.ReflectUtil.checkPackageAccess(tclass);
                 // }
-                // END android-removed
-            // BEGIN android-removed
+                // END Android-removed
+            // BEGIN Android-removed
             // } catch (PrivilegedActionException pae) {
             //     throw new RuntimeException(pae.getException());
-            // END android-removed
+            // END Android-removed
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -604,7 +604,7 @@ public abstract class AtomicLongFieldUpdater<T> {
         }
     }
 
-    // BEGIN android-removed
+    // BEGIN Android-removed
     // /**
     //  * Returns true if the second classloader can be found in the first
     //  * classloader's delegation chain.
@@ -620,5 +620,5 @@ public abstract class AtomicLongFieldUpdater<T> {
     //     } while (acl != null);
     //     return false;
     // }
-    // END android-removed
+    // END Android-removed
 }

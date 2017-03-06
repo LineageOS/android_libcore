@@ -319,7 +319,7 @@ public abstract class Charset
     }
 
     /* The standard set of charsets */
-    // Android-Removed: We use ICU's list of standard charsets.
+    // Android-removed: We use ICU's list of standard charsets.
     // private static CharsetProvider standardProvider = new StandardCharsets();
 
     // Cache of the most-recently-returned charsets,
@@ -442,7 +442,7 @@ public abstract class Charset
         }
     }
 
-    // Android removed : Remove support for the extended charset provider.
+    // Android-removed: Remove support for the extended charset provider.
     //
     /* The extended set of charsets */
     // private static Object extendedProviderLock = new Object();
@@ -655,7 +655,7 @@ public abstract class Charset
      * @since 1.5
      */
     public static Charset defaultCharset() {
-        // Android changed : Use UTF_8 unconditionally.
+        // Android-changed: Use UTF_8 unconditionally.
         synchronized (Charset.class) {
             if (defaultCharset == null) {
                 defaultCharset = java.nio.charset.StandardCharsets.UTF_8;

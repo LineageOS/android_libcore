@@ -261,14 +261,14 @@ class ThreadGroup implements Thread.UncaughtExceptionHandler {
      * @see        java.lang.ThreadGroup#checkAccess()
      * @since      JDK1.0
      */
-    // Android changed: We clamp the priority to the range [MIN_PRIORITY, MAX_PRIORITY]
+    // Android-changed: We clamp the priority to the range [MIN_PRIORITY, MAX_PRIORITY]
     // before using it.
     public final void setMaxPriority(int pri) {
         int ngroupsSnapshot;
         ThreadGroup[] groupsSnapshot;
         synchronized (this) {
             checkAccess();
-            // Android changed: Clamp to MIN_PRIORITY, MAX_PRIORITY.
+            // Android-changed: Clamp to MIN_PRIORITY, MAX_PRIORITY.
             // if (pri < Thread.MIN_PRIORITY || pri > Thread.MAX_PRIORITY) {
             //     return;
             // }

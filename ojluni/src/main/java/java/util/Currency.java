@@ -86,7 +86,7 @@ public final class Currency implements Serializable {
      * a supported ISO 4217 code.
      */
     public static Currency getInstance(String currencyCode) {
-        // Android-changed BEGIN: use ICU
+        // BEGIN Android-changed: use ICU
         Currency instance = instances.get(currencyCode);
         if (instance != null) {
             return instance;
@@ -97,7 +97,7 @@ public final class Currency implements Serializable {
             return null;
         }
         Currency currencyVal = new Currency(icuInstance);
-        // ANDROID-changed END
+        // END Android-changed
         instance = instances.putIfAbsent(currencyCode, currencyVal);
         return (instance != null ? instance : currencyVal);
     }
@@ -124,7 +124,7 @@ public final class Currency implements Serializable {
      * is not a supported ISO 3166 country code.
      */
     public static Currency getInstance(Locale locale) {
-        // Android-changed BEGIN: use ICU
+        // BEGIN Android-changed: use ICU
         android.icu.util.Currency icuInstance =
                 android.icu.util.Currency.getInstance(locale);
         String variant = locale.getVariant();
@@ -141,7 +141,7 @@ public final class Currency implements Serializable {
             return null;
         }
         return getInstance(currencyCode);
-        // Android-changed END
+        // END Android-changed
     }
 
     /**
@@ -157,7 +157,7 @@ public final class Currency implements Serializable {
     public static Set<Currency> getAvailableCurrencies() {
         synchronized(Currency.class) {
             if (available == null) {
-                // Android-changed BEGIN: use ICU
+                // BEGIN Android-changed: use ICU
                 Set<android.icu.util.Currency> icuAvailableCurrencies
                         = android.icu.util.Currency.getAvailableCurrencies();
                 available = new HashSet<>();
@@ -169,7 +169,7 @@ public final class Currency implements Serializable {
                     }
                     available.add(currency);
                 }
-                // Android-changed END
+                // END Android-changed
             }
         }
 
@@ -217,12 +217,12 @@ public final class Currency implements Serializable {
      * @exception NullPointerException if <code>locale</code> is null
      */
     public String getSymbol(Locale locale) {
-        // Android-changed BEGIN: use ICU
+        // BEGIN Android-changed: use ICU
         if (locale == null) {
             throw new NullPointerException("locale == null");
         }
         return icuCurrency.getSymbol(locale);
-        // Android-changed END
+        // END Android-changed
     }
 
     /**
@@ -235,12 +235,12 @@ public final class Currency implements Serializable {
      * @return the default number of fraction digits used with this currency
      */
     public int getDefaultFractionDigits() {
-        // Android-changed BEGIN: use ICU
+        // BEGIN Android-changed: use ICU
         if (icuCurrency.getCurrencyCode().equals("XXX")) {
             return -1;
         }
         return icuCurrency.getDefaultFractionDigits();
-        // Android-changed END
+        // END Android-changed
     }
 
     /**

@@ -193,9 +193,8 @@ public class InetSocketAddress
     public InetSocketAddress(InetAddress addr, int port) {
         holder = new InetSocketAddressHolder(
                         null,
-                        /* ----- BEGIN android -----
-                           Return IPv4 address
-                           addr == null ? InetAddress.anyLocalAddress() : addr,*/
+                        // Android-changed: Return IPv4 address
+                        // addr == null ? InetAddress.anyLocalAddress() : addr,
                         addr == null ? Inet6Address.ANY : addr,
                         checkPort(port));
     }

@@ -104,7 +104,7 @@ import org.testng.annotations.Test;
 @Test
 public class TCKMonthDay extends AbstractDateTimeTest {
 
-    // Android changed: This was originally non-static and initialized in @BeforeMethod,
+    // Android-changed: This was originally non-static and initialized in @BeforeMethod,
     // but @BeforeMethod is run after @DataProvider methods are run, so it only worked by accident,
     // since multiple test methods were run and the first one did not require this value.
     private static MonthDay TEST_07_15;

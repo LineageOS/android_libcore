@@ -76,7 +76,7 @@ class ForwardState implements State {
 
     /* the untrusted certificates checker */
     /**
-     * BEGIN ANDROID-REMOVED: this mechanism for checking untrusted certificates is not used in
+     * BEGIN Android-removed: this mechanism for checking untrusted certificates is not used in
      * Android.
     UntrustedChecker untrustedChecker;
      * END ANDROID_REMOVED */

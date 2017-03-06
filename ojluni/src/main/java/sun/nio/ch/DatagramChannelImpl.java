@@ -367,7 +367,7 @@ class DatagramChannelImpl
             throw new IllegalArgumentException("Read-only buffer");
         if (dst == null)
             throw new NullPointerException();
-        // Android-changed : Do not attempt to bind to 0 (or 0.0.0.0) if there hasn't been
+        // Android-changed: Do not attempt to bind to 0 (or 0.0.0.0) if there hasn't been
         // an explicit call to bind() yet. Fail fast and return null.
         if (localAddress == null)
             return null;

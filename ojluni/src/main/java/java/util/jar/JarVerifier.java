@@ -447,7 +447,7 @@ class JarVerifier {
                        InputStream is,
                        JarVerifier jv) throws IOException
         {
-            // Android changed : Added to make sure inputs are not null. This allows to
+            // Android-changed: Added to make sure inputs are not null. This allows to
             // use is == null to detect closed verifier streams.
             if (is == null) {
                 throw new NullPointerException("is == null");
@@ -463,7 +463,7 @@ class JarVerifier {
 
         public int read() throws IOException
         {
-            // Android added.
+            // Android-added.
             if (is == null) {
                 throw new IOException("stream closed");
             }
@@ -481,7 +481,7 @@ class JarVerifier {
         }
 
         public int read(byte b[], int off, int len) throws IOException {
-            // Android added.
+            // Android-added.
             if (is == null) {
                 throw new IOException("stream closed");
             }
@@ -513,7 +513,7 @@ class JarVerifier {
         }
 
         public int available() throws IOException {
-            // Android added.
+            // Android-added.
             if (is == null) {
                 throw new IOException("stream closed");
             }

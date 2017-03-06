@@ -588,7 +588,7 @@ public final class ServiceLoader<S>
         return ServiceLoader.load(service, prev);
     }
 
-    // Android-changed BEGIN: Add a method to instantiate a class from a system
+    // BEGIN Android-changed: Add a method to instantiate a class from a system
     // property (used in other parts of libcore).
     /**
      * Internal API to support built-in SPIs that check a system property first.
@@ -608,7 +608,7 @@ public final class ServiceLoader<S>
             throw new Error(e);
         }
     }
-    // Android-changed END
+    // END Android-changed
 
     /**
      * Returns a string describing this service.

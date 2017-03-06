@@ -148,7 +148,7 @@ public class BufferedReader extends Reader {
                 } else {
                     /* Reallocate buffer to accommodate read-ahead limit */
                     //
-                    // Android changed : Use the same strategy as BufferedInputStream,
+                    // Android-changed: Use the same strategy as BufferedInputStream,
                     // i.e, double the size of the buffer on each fill. Do not directly
                     // size the buffer to the readAheadLimit.
                     //

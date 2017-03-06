@@ -42,9 +42,6 @@ import javax.crypto.CipherSpi;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.BadPaddingException;
 import javax.crypto.NoSuchPaddingException;
-/* BEGIN ANDROID-REMOVED: this debugging mechanism is not available in Android.
-import sun.security.util.Debug;
- * END ANDROID-REMOVED */
 import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
 
@@ -215,7 +212,8 @@ import sun.security.jca.GetInstance.Instance;
 
 public abstract class Signature extends SignatureSpi {
 
-    /* BEGIN ANDROID-REMOVED: this debugging mechanism not available in Android
+    // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+    /*
     private static final Debug debug =
                         Debug.getInstance("jca", "Signature");
 
@@ -223,7 +221,8 @@ public abstract class Signature extends SignatureSpi {
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
         Debug.isOn("engine=") && !Debug.isOn("signature");
-     * END ANDROID-REMOVED */
+    // END Android-removed: this debugging mechanism is not supported in Android.
+    */
 
     /*
      * The algorithm for this signature object.
@@ -394,13 +393,15 @@ public abstract class Signature extends SignatureSpi {
                 // instance of SignatureSpi but not Signature
                 boolean r = (instance instanceof SignatureSpi)
                                 && (instance instanceof Signature == false);
-                /* BEGIN ANDROID-REMOVED: this mechanism not available in Android
+                // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+                /*
                 if ((debug != null) && (r == false)) {
                     debug.println("Not a SignatureSpi " + className);
                     debug.println("Delayed provider selection may not be "
                         + "available for algorithm " + s.getAlgorithm());
                 }
-                 * END ANDROID-REMOVED */
+                */
+                // END Android-removed: this debugging mechanism is not supported in Android.
                 result = Boolean.valueOf(r);
                 signatureInfo.put(className, result);
             } catch (Exception e) {
@@ -558,12 +559,14 @@ public abstract class Signature extends SignatureSpi {
         engineInitVerify(publicKey);
         state = VERIFY;
 
-        /* BEGIN ANDROID-REMOVED: this debugging mechanism not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
                 " verification algorithm from: " + this.provider.getName());
         }
-         * END ANDROID-REMOVED */
+        */
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**
@@ -609,12 +612,14 @@ public abstract class Signature extends SignatureSpi {
         engineInitVerify(publicKey);
         state = VERIFY;
 
-        /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
                 " verification algorithm from: " + this.provider.getName());
         }
-         * END ANDROID-REMOVED */
+        */
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**
@@ -632,12 +637,14 @@ public abstract class Signature extends SignatureSpi {
         engineInitSign(privateKey);
         state = SIGN;
 
-        /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
                 " signing algorithm from: " + this.provider.getName());
         }
-         * END ANDROID-REMOVED */
+        */
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**
@@ -657,12 +664,14 @@ public abstract class Signature extends SignatureSpi {
         engineInitSign(privateKey, random);
         state = SIGN;
 
-        /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Signature." + algorithm +
                 " signing algorithm from: " + this.provider.getName());
         }
-         * END ANDROID-REMOVED */
+        */
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**
@@ -1019,7 +1028,7 @@ public abstract class Signature extends SignatureSpi {
      * @deprecated Deprecated.
      */
     @Deprecated
-    // Android changed add "Deprecated."
+    // Android-changed add "Deprecated."
     public final Object getParameter(String param)
             throws InvalidParameterException {
         return engineGetParameter(param);
@@ -1069,12 +1078,12 @@ public abstract class Signature extends SignatureSpi {
 
         // The provider implementation (delegate)
         // filled in once the provider is selected
-        // BEGIN android-added
+        // BEGIN Android-added
         // (Not necessarily Android specific)
         // Invariant to be preserved: sigSpi cannot be changed once it was assigned to something
         // different than null and lock is null. That is the case when sigSpi is specified in the
         // constructor.
-        // END android-added
+        // END Android-added
         private SignatureSpi sigSpi;
 
         // lock for mutex during provider selection
@@ -1153,7 +1162,8 @@ public abstract class Signature extends SignatureSpi {
                 if (sigSpi != null) {
                     return;
                 }
-                /* BEGIN ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+                // BEGIN Android-removed: this debugging mechanism is not supported in Android.
+                /*
                 if (debug != null) {
                     int w = --warnCount;
                     if (w >= 0) {
@@ -1166,7 +1176,8 @@ public abstract class Signature extends SignatureSpi {
                         new Exception("Call trace").printStackTrace();
                     }
                 }
-                 * END ANDROID-REMOVED */
+                */
+                // END Android-removed: this debugging mechanism is not supported in Android.
                 Exception lastException = null;
                 List<Service> list;
                 if (((Signature)this).algorithm.equalsIgnoreCase(RSA_SIGNATURE)) {

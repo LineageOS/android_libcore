@@ -35,7 +35,7 @@ import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
 
 /*
-ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+Android-removed: this debugging mechanism is not supported in Android.
 import sun.security.util.Debug;
 */
 
@@ -150,7 +150,7 @@ import sun.security.util.Debug;
 public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
 
     /*
-    ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+    Android-removed: this debugging mechanism is not supported in Android.
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -200,7 +200,7 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
         kpg.provider = instance.provider;
 
         /*
-        ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+        Android-removed: this debugging mechanism is not supported in Android.
         if (!skipDebug && pdebug != null) {
             pdebug.println("KeyPairGenerator." + algorithm +
                 " algorithm from: " + kpg.provider.getName());
@@ -599,7 +599,7 @@ public abstract class KeyPairGenerator extends KeyPairGeneratorSpi {
             initType = I_NONE;
 
             /*
-            ANDROID-REMOVED: this debugging mechanism is not supported in Android.
+            Android-removed: this debugging mechanism is not supported in Android.
             if (!skipDebug && pdebug != null) {
                 pdebug.println("KeyPairGenerator." + algorithm +
                     " algorithm from: " + provider.getName());

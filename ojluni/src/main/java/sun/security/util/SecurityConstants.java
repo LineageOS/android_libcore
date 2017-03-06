@@ -73,7 +73,8 @@ public final class SecurityConstants {
     /**
      * AWT Permissions used in the JDK.
      */
-    /* ----- BEGIN android -----
+    // BEGIN Android-removed
+    /*
     public static class AWT {
         private AWT() { }
 
@@ -144,7 +145,8 @@ public final class SecurityConstants {
         public static final Permission ACCESS_SYSTEM_TRAY_PERMISSION =
             newAWTPermission("accessSystemTray");
     }
-    ----- END android ----- */
+    */
+    // END Android-removed
 
     // java.net.URL
     public static final NetPermission SPECIFY_HANDLER_PERMISSION =
