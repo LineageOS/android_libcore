@@ -150,6 +150,9 @@ public class Observable {
              *   wrongly notified when it doesn't care
              */
             // Android-changed: Call out to hasChanged() to figure out if something changes.
+            // Upstream code avoids calling the nonfinal hasChanged() from the synchronized block,
+            // but that would break compatibility for apps that override that method.
+            // if (!changed)
             if (!hasChanged())
                 return;
             arrLocal = obs.toArray();

@@ -1901,12 +1901,11 @@ public class TreeMap<K,V>
         }
 
         public NavigableMap<K,V> headMap(K toKey, boolean inclusive) {
-            /* BEGIN Android-changed
-               Fix for edge cases
-               if (!inRange(toKey, inclusive)) */
+            // BEGIN Android-changed: Fix for edge cases
+            // if (!inRange(toKey, inclusive))
             if (!inRange(toKey) && !(!toEnd && m.compare(toKey, hi) == 0 &&
                 !hiInclusive && !inclusive))
-            // END Android-changed
+            // END Android-changed: Fix for edge cases
                 throw new IllegalArgumentException("toKey out of range");
             return new AscendingSubMap<>(m,
                                          fromStart, lo,    loInclusive,
@@ -1914,12 +1913,11 @@ public class TreeMap<K,V>
         }
 
         public NavigableMap<K,V> tailMap(K fromKey, boolean inclusive) {
-            /* BEGIN Android-changed
-               Fix for edge cases
-               if (!inRange(fromKey, inclusive)) */
+            // BEGIN Android-changed: Fix for edge cases
+            // if (!inRange(fromKey, inclusive))
             if (!inRange(fromKey) && !(!fromStart && m.compare(fromKey, lo) == 0 &&
                 !loInclusive && !inclusive))
-            // END Android-changed
+            // END Android-changed: Fix for edge cases
                 throw new IllegalArgumentException("fromKey out of range");
             return new AscendingSubMap<>(m,
                                          false, fromKey, inclusive,
@@ -1996,12 +1994,11 @@ public class TreeMap<K,V>
         }
 
         public NavigableMap<K,V> headMap(K toKey, boolean inclusive) {
-            /* BEGIN Android-changed
-               Fix for edge cases
-               if (!inRange(toKey, inclusive)) */
+            // BEGIN Android-changed: Fix for edge cases
+            // if (!inRange(toKey, inclusive))
             if (!inRange(toKey) && !(!fromStart && m.compare(toKey, lo) == 0 &&
                 !loInclusive && !inclusive))
-            // END Android-changed
+            // END Android-changed: Fix for edge cases
                 throw new IllegalArgumentException("toKey out of range");
             return new DescendingSubMap<>(m,
                                           false, toKey, inclusive,
@@ -2009,9 +2006,8 @@ public class TreeMap<K,V>
         }
 
         public NavigableMap<K,V> tailMap(K fromKey, boolean inclusive) {
-            /* BEGIN Android-changed
-               Fix for edge cases
-               if (!inRange(fromKey, inclusive)) */
+            // BEGIN Android-changed: Fix for edge cases
+            // if (!inRange(fromKey, inclusive))
             if (!inRange(fromKey) && !(!toEnd && m.compare(fromKey, hi) == 0 &&
                 !hiInclusive && !inclusive))
             // END Android-changed
@@ -2099,14 +2095,15 @@ public class TreeMap<K,V>
      * Node in the Tree.  Doubles as a means to pass key-value pairs back to
      * user (see Map.Entry).
      */
-    /*
-     * BEGIN Android-changed
-     * TreeMapEntry should not be renamed, specifically it must not
-     * be called "Entry" because that would hide Map.Entry and break
-     * source compatibility with earlier versions of Android.
-     * See LinkedHashMap$LinkedHashMapEntry for more details.
-     * END Android-changed
-     */
+    // BEGIN Android-changed: Renamed Entry -> TreeMapEntry.
+    // Code references to "TreeMap.Entry" must mean Map.Entry
+    //
+    // This mirrors the corresponding rename of LinkedHashMap's
+    // Entry->LinkedHashMapEntry.
+    //
+    // This is for source compatibility with earlier versions of Android.
+    // Otherwise, it would hide Map.Entry.
+    // END Android-changed: Renamed Entry -> TreeMapEntry.
     static final class TreeMapEntry<K,V> implements Map.Entry<K,V> {
         K key;
         V value;
