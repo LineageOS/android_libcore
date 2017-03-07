@@ -522,7 +522,7 @@ public class Date
 
                         if (prevc == '+')   // plus means east of GMT
                             n = -n;
-                        // END Android-changed
+                        // END Android-changed: Android specific time zone logic
 
                         tzoffset = n;
                     } else if (n >= 70)

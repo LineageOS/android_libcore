@@ -152,8 +152,8 @@ public class Collections {
     public static <T extends Comparable<? super T>> void sort(List<T> list) {
         // Android-changed: Call sort(list, null) here to be consistent
         // with that method's (Android-changed) behavior.
-        sort(list, null);
         // list.sort(null);
+        sort(list, null);
     }
 
     // Android-changed: Warn about Collections.sort() being built on top
@@ -194,8 +194,8 @@ public class Collections {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> void sort(List<T> list, Comparator<? super T> c) {
-        // Android-changed: Introduced compatibility behavior for apps
-        // targeting API levels <= 25.
+        // BEGIN Android-changed: Compat behavior for apps targeting APIs <= 25.
+        // list.sort(c);
         int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
         if (targetSdkVersion > 25) {
             list.sort(c);
@@ -214,6 +214,7 @@ public class Collections {
                 i.set((T) a[j]);
             }
         }
+        // END Android-changed: Compat behavior for apps targeting APIs <= 25.
     }
 
 
