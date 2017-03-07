@@ -189,6 +189,7 @@ public class Hashtable<K,V>
         this.loadFactor = loadFactor;
         table = new HashtableEntry<?,?>[initialCapacity];
         // Android-changed: Ignore loadFactor when calculating threshold from initialCapacity
+        // threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);
         threshold = (int)Math.min(initialCapacity, MAX_ARRAY_SIZE + 1);
     }
 
@@ -879,14 +880,15 @@ public class Hashtable<K,V>
             }
         }
     }
+
     @SuppressWarnings("unchecked")
     @Override
     public synchronized void replaceAll(BiFunction<? super K, ? super V, ? extends V> function) {
         Objects.requireNonNull(function);     // explicit check required in case
-        // table is empty.
+                                              // table is empty.
         final int expectedModCount = modCount;
 
-        HashtableEntry<K, V>[] tab = (HashtableEntry<K,V>[])table;
+        HashtableEntry<K, V>[] tab = (HashtableEntry<K, V>[])table;
         for (HashtableEntry<K, V> entry : tab) {
             while (entry != null) {
                 entry.value = Objects.requireNonNull(
@@ -1024,7 +1026,6 @@ public class Hashtable<K,V>
         // odd if it's large enough, this helps distribute the entries.
         // Guard against the length ending up zero, that's not valid.
         int length = (int)((elements + elements / 20) / loadFactor) + 3;
-
         if (length > elements && (length & 1) == 0)
             length--;
         length = Math.min(length, origlength);
@@ -1071,7 +1072,7 @@ public class Hashtable<K,V>
         }
         // Creates the new entry.
         @SuppressWarnings("unchecked")
-        HashtableEntry<K,V> e = (HashtableEntry<K,V>)tab[index];
+            HashtableEntry<K,V> e = (HashtableEntry<K,V>)tab[index];
         tab[index] = new HashtableEntry<>(hash, key, value, e);
         count++;
     }
