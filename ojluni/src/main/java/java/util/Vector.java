@@ -1173,7 +1173,7 @@ public class Vector<E>
                 if (i >= size) {
                     return;
                 }
-                @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked")
                 final E[] elementData = (E[]) Vector.this.elementData;
                 if (i >= elementData.length) {
                     throw new ConcurrentModificationException();
