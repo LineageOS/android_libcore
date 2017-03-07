@@ -78,6 +78,7 @@ public class Arrays {
      * tasks that makes parallel speedups unlikely.
      * @hide
      */
+    // Android-changed: make public (used by harmony ArraysTest)
     public static final int MIN_ARRAY_SORT_GRAN = 1 << 13;
 
     // Suppresses default constructor, ensuring non-instantiability.
@@ -108,17 +109,17 @@ public class Arrays {
 
     /**
      * Checks that {@code fromIndex} and {@code toIndex} are in
-     * the range and throws an appropriate exception, if they aren't.
+     * the range and throws an exception if they aren't.
      */
-    private static void rangeCheck(int length, int fromIndex, int toIndex) {
+    private static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
         if (fromIndex > toIndex) {
             throw new IllegalArgumentException(
-                "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+                    "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
         }
         if (fromIndex < 0) {
             throw new ArrayIndexOutOfBoundsException(fromIndex);
         }
-        if (toIndex > length) {
+        if (toIndex > arrayLength) {
             throw new ArrayIndexOutOfBoundsException(toIndex);
         }
     }
@@ -4112,7 +4113,7 @@ public class Arrays {
 
         for (Object element : a) {
             int elementHash = 0;
-            // Android-changed: getComponentType() is faster than instanceof()
+            // BEGIN Android-changed: getComponentType() is faster than instanceof()
             if (element != null) {
                 Class<?> cl = element.getClass().getComponentType();
                 if (cl == null)
@@ -4138,6 +4139,7 @@ public class Arrays {
                 else
                     elementHash = element.hashCode();
             }
+            // END Android-changed: getComponentType() is faster than instanceof()
             result = 31 * result + elementHash;
         }
 
@@ -4208,7 +4210,7 @@ public class Arrays {
     }
 
     static boolean deepEquals0(Object e1, Object e2) {
-        // Android-changed: getComponentType() is faster than instanceof()
+        // BEGIN Android-changed: getComponentType() is faster than instanceof()
         Class<?> cl1 = e1.getClass().getComponentType();
         Class<?> cl2 = e2.getClass().getComponentType();
 
@@ -4235,6 +4237,7 @@ public class Arrays {
             return equals((boolean[]) e1, (boolean[]) e2);
         else
             return e1.equals(e2);
+        // END Android-changed: getComponentType() is faster than instanceof()
     }
 
     /**

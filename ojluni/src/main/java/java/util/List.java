@@ -481,7 +481,6 @@ public interface List<E> extends Collection<E> {
      * Fourth Annual ACM-SIAM Symposium on Discrete Algorithms, pp 467-474,
      * January 1993.
      *
-     *
      * @param c the {@code Comparator} used to compare list elements.
      *          A {@code null} value indicates that the elements'
      *          {@linkplain Comparable natural ordering} should be used
