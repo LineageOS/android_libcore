@@ -106,7 +106,11 @@ import java.util.function.UnaryOperator;
 /*
  * Android-changed:
  * - AOSP commit 3be987f0f18648b3c532c8b89d09505e18594241
- *   Inline ArrayList rangeCheck&elementData methods
+ *   Inline for improved performance:
+ *   - checkForComodification
+ *   - elementData()
+ *   - rangeCheck()
+ *   - rangeCheckForAdd()
  * - AOSP commit b10b2a3ab693cfd6156d06ffe4e00ce69b9c9194
  *   Fix ConcurrentModificationException in ArrayList iterators.
  * - AOSP commit a68b1a5ba82ef8cc19aafdce7d9c7f9631943f84
@@ -834,6 +838,7 @@ public class ArrayList<E> extends AbstractList<E>
      * An optimized version of AbstractList.Itr
      */
     private class Itr implements Iterator<E> {
+        // Android-changed: Add "limit" field to detect end of iteration.
         // The "limit" of this iterator. This is the size of the list at the time the
         // iterator was created. Adding & removing elements will invalidate the iteration
         // anyway (and cause next() to throw) so saving this value will guarantee that the

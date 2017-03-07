@@ -193,7 +193,7 @@ public final class ServiceLoader<S>
     private final ClassLoader loader;
 
     // The access control context taken when the ServiceLoader is created
-    // Android-changed: do not use legacy security code
+    // Android-changed: do not use legacy security code.
     // private final AccessControlContext acc;
 
     // Cached providers, in instantiation order
@@ -221,8 +221,8 @@ public final class ServiceLoader<S>
     private ServiceLoader(Class<S> svc, ClassLoader cl) {
         service = Objects.requireNonNull(svc, "Service interface cannot be null");
         loader = (cl == null) ? ClassLoader.getSystemClassLoader() : cl;
-        // Android-changed: Do not use legacy security code (System.getSecurtiyManager()
-        // is always null).
+        // Android-changed: Do not use legacy security code.
+        // On Android, System.getSecurityManager() is always null.
         // acc = (System.getSecurityManager() != null) ? AccessController.getContext() : null;
         reload();
     }
@@ -588,8 +588,8 @@ public final class ServiceLoader<S>
         return ServiceLoader.load(service, prev);
     }
 
-    // BEGIN Android-changed: Add a method to instantiate a class from a system
-    // property (used in other parts of libcore).
+    // BEGIN Android-added: loadFromSystemProperty(), for internal use.
+    // Instantiates a class from a system property (used elsewhere in libcore).
     /**
      * Internal API to support built-in SPIs that check a system property first.
      * Returns an instance specified by a property with the class' binary name, or null if
@@ -608,7 +608,7 @@ public final class ServiceLoader<S>
             throw new Error(e);
         }
     }
-    // END Android-changed
+    // END Android-added: loadFromSystemProperty(), for internal use.
 
     /**
      * Returns a string describing this service.
