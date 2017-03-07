@@ -1465,7 +1465,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                 type = locale.getUnicodeLocaleType("ca");
             }
             if (type == null) {
-                // Android-changed: don't switch to buddhist calendar based on locale.
+                // BEGIN Android-changed: don't switch to buddhist calendar based on locale.
                 // See http://b/35138741
                 /*
                 if (locale.getCountry() == "TH"
@@ -1476,6 +1476,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
                 }
                 */
                 type = "gregory";
+                // END Android-changed: don't switch to buddhist calendar based on locale.
             }
             switch (type) {
             case "gregory":
@@ -1773,9 +1774,9 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         // If we don't need to recalculate the calendar field values,
         // do nothing.
 // BEGIN Android-changed: Removed ZoneInfo support
-        if (time == millis && isTimeSet && areFieldsSet && areAllFieldsSet) {
 //        if (time == millis && isTimeSet && areFieldsSet && areAllFieldsSet
 //            && (zone instanceof ZoneInfo) && !((ZoneInfo)zone).isDirty()) {
+        if (time == millis && isTimeSet && areFieldsSet && areAllFieldsSet) {
 // END Android-changed: Removed ZoneInfo support
 
             return;
@@ -2627,6 +2628,8 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
             Set<String> set = new HashSet<>(3);
             set.add("gregory");
             // Android-changed: removed "buddhist" and "japanese".
+            // set.add("buddhist");
+            // set.add("japanese");
             SET = Collections.unmodifiableSet(set);
         }
         private AvailableCalendarTypes() {
@@ -3371,11 +3374,14 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         /* try to get the Locale data from the cache */
         int[] data = cachedLocaleData.get(desiredLocale);
         if (data == null) {  /* cache miss */
-            // Android-changed: Use ICU4C to get week data.
-            LocaleData localeData = LocaleData.get(desiredLocale);
             data = new int[2];
+            // BEGIN Android-changed: Use ICU4C to get week data.
+            // data[0] = CalendarDataUtility.retrieveFirstDayOfWeek(desiredLocale);
+            // data[1] = CalendarDataUtility.retrieveMinimalDaysInFirstWeek(desiredLocale);
+            LocaleData localeData = LocaleData.get(desiredLocale);
             data[0] = localeData.firstDayOfWeek.intValue();
             data[1] = localeData.minimalDaysInFirstWeek.intValue();
+            // END Android-changed: Use ICU4C to get week data.
             cachedLocaleData.putIfAbsent(desiredLocale, data);
         }
         firstDayOfWeek = data[0];

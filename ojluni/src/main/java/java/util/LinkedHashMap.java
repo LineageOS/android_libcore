@@ -488,11 +488,9 @@ public class LinkedHashMap<K,V>
         head = tail = null;
     }
 
+    // Android-added: eldest(), for internal use in LRU caches
     /**
      * Returns the eldest entry in the map, or {@code null} if the map is empty.
-     *
-     * Android-added.
-     *
      * @hide
      */
     public Map.Entry<K, V> eldest() {

@@ -32,6 +32,8 @@ import java.util.concurrent.ConcurrentMap;
 
 import libcore.icu.ICU;
 
+// BEGIN Android-changed: Removed docs about superseding runtime currency data.
+// Doing so via a properties file is not supported on Android.
 /**
  * Represents a currency. Currencies are identified by their ISO 4217 currency
  * codes. Visit the <a href="http://www.iso.org/iso/home/standards/currency_codes.htm">
@@ -44,8 +46,7 @@ import libcore.icu.ICU;
  *
  * @since 1.4
  */
-// Android-changed: Superseding runtime currency data via a properties file is not
-// supported on Android.
+// END Android-changed: Removed docs about superseding runtime currency data.
 public final class Currency implements Serializable {
 
     private static final long serialVersionUID = -158308464356906721L;
