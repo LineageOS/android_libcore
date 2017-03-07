@@ -323,7 +323,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      *   return ks;
      * }
      *}</pre>
-      */
+     */
     transient Set<K>        keySet;
     transient Collection<V> values;
 
@@ -343,7 +343,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * is performed, so there is a slight chance that multiple calls to this
      * method will not all return the same set.
      */
-  public Set<K> keySet() {
+    public Set<K> keySet() {
         Set<K> ks = keySet;
         if (ks == null) {
             ks = new AbstractSet<K>() {
@@ -380,7 +380,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
                 public boolean contains(Object k) {
                     return AbstractMap.this.containsKey(k);
                 }
-              };
+            };
             keySet = ks;
         }
         return ks;
@@ -402,7 +402,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
      * performed, so there is a slight chance that multiple calls to this
      * method will not all return the same collection.
      */
-  public Collection<V> values() {
+    public Collection<V> values() {
         Collection<V> vals = values;
         if (vals == null) {
             vals = new AbstractCollection<V>() {
@@ -439,7 +439,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
                 public boolean contains(Object v) {
                     return AbstractMap.this.containsValue(v);
                 }
-              };
+            };
             values = vals;
         }
         return vals;
