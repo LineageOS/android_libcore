@@ -32,7 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.NonReadableChannelException;
 import java.nio.channels.NonWritableChannelException;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.Charset;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AccessDeniedException;
@@ -68,8 +67,6 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import sun.security.action.GetPropertyAction;
-
 import static java.nio.file.FileVisitResult.CONTINUE;
 import static java.nio.file.FileVisitResult.TERMINATE;
 import static java.nio.file.StandardOpenOption.APPEND;
@@ -78,7 +75,6 @@ import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.SYNC;
 import static java.nio.file.StandardOpenOption.TRUNCATE_EXISTING;
 import static java.nio.file.StandardOpenOption.WRITE;
-import static java.security.AccessController.doPrivileged;
 import static junit.framework.TestCase.assertTrue;
 import static libcore.java.nio.file.FilesSetup.DATA_FILE;
 import static libcore.java.nio.file.FilesSetup.NON_EXISTENT_FILE;
@@ -1800,6 +1796,15 @@ public class Files2Test {
             Files.createTempFile(tmpFilePrefix, tmpFileSuffix, null);
             fail();
         } catch (NullPointerException expected) {}
+    }
+
+    @Test
+    public void test_newByteChannel$Path$Set_OpenOption$FileAttributes() throws Exception {
+        FileAttribute stubFileAttribute = mock(FileAttribute.class);
+        Set<OpenOption> stubSet = new HashSet<>();
+        Files.newByteChannel(mockPath, stubSet, stubFileAttribute);
+
+        verify(mockFileSystemProvider).newByteChannel(mockPath, stubSet, stubFileAttribute);
     }
 
     // -- Mock Class --
