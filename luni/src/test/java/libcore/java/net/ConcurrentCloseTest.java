@@ -40,7 +40,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ConcurrentCloseTest extends junit.framework.TestCase {
     private static final InetSocketAddress UNREACHABLE_ADDRESS
-            = new InetSocketAddress("192.0.2.0", 80); // RFC 6666
+            = new InetSocketAddress("192.0.2.0", 80); // RFC 5737
 
     public void test_accept() throws Exception {
         ServerSocket ss = new ServerSocket(0);
