@@ -43,7 +43,7 @@ import tests.support.Support_Configuration;
 public class OldSocketTest extends OldSocketTestCase {
 
     private static final InetSocketAddress UNREACHABLE_ADDRESS
-            = new InetSocketAddress("192.0.2.0", 0); // RFC 6666
+            = new InetSocketAddress("192.0.2.0", 0); // RFC 5737
 
     ServerSocket ss;
 
