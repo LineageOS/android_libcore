@@ -783,11 +783,9 @@ public final class StandardNames {
         addBoth(   "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA");
         addBoth(   "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA");
         addBoth(   "TLS_RSA_WITH_AES_256_CBC_SHA");
-        addBoth(   "TLS_DHE_RSA_WITH_AES_256_CBC_SHA");
         addBoth(   "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA");
         addBoth(   "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA");
         addBoth(   "TLS_RSA_WITH_AES_128_CBC_SHA");
-        addBoth(   "TLS_DHE_RSA_WITH_AES_128_CBC_SHA");
         addBoth(   "SSL_RSA_WITH_3DES_EDE_CBC_SHA");
 
         // TLSv1.2 cipher suites
@@ -795,10 +793,6 @@ public final class StandardNames {
         addBoth(   "TLS_RSA_WITH_AES_256_CBC_SHA256");
         addOpenSsl("TLS_RSA_WITH_AES_128_GCM_SHA256");
         addOpenSsl("TLS_RSA_WITH_AES_256_GCM_SHA384");
-        addBoth(   "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256");
-        addBoth(   "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256");
-        addOpenSsl("TLS_DHE_RSA_WITH_AES_128_GCM_SHA256");
-        addOpenSsl("TLS_DHE_RSA_WITH_AES_256_GCM_SHA384");
         addBoth(   "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256");
         addBoth(   "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384");
         addOpenSsl("TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256");
@@ -856,11 +850,11 @@ public final class StandardNames {
         addRi(     "SSL_RSA_WITH_RC4_128_MD5");
 
         // Dropped
-        addNeither("SSL_DH_DSS_EXPORT_WITH_DES40_CBC_SHA");
-        addNeither("SSL_DH_RSA_EXPORT_WITH_DES40_CBC_SHA");
         addRi(     "SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA");
         addRi(     "SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA");
         addRi(     "SSL_DHE_RSA_WITH_DES_CBC_SHA");
+        addNeither("SSL_DH_DSS_EXPORT_WITH_DES40_CBC_SHA");
+        addNeither("SSL_DH_RSA_EXPORT_WITH_DES40_CBC_SHA");
         addRi(     "SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA");
         addRi(     "SSL_DH_anon_EXPORT_WITH_RC4_40_MD5");
         addRi(     "SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
@@ -871,6 +865,12 @@ public final class StandardNames {
         addRi(     "SSL_RSA_WITH_DES_CBC_SHA");
         addRi(     "SSL_RSA_WITH_NULL_MD5");
         addRi(     "SSL_RSA_WITH_NULL_SHA");
+        addRi(     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA");
+        addRi(     "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256");
+        addNeither("TLS_DHE_RSA_WITH_AES_128_GCM_SHA256");
+        addNeither("TLS_DHE_RSA_WITH_AES_128_GCM_SHA384");
+        addRi(     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA");
+        addRi(     "TLS_DHE_RSA_WITH_AES_256_CBC_SHA256");
         addRi(     "TLS_DH_anon_WITH_AES_128_CBC_SHA");
         addRi(     "TLS_DH_anon_WITH_AES_128_CBC_SHA256");
         addNeither("TLS_DH_anon_WITH_AES_128_GCM_SHA256");
@@ -945,14 +945,10 @@ public final class StandardNames {
             "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
             "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
             "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
-            "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
             "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
             "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
             "TLS_RSA_WITH_AES_128_GCM_SHA256",
             "TLS_RSA_WITH_AES_256_GCM_SHA384",
             "TLS_RSA_WITH_AES_128_CBC_SHA",
@@ -969,14 +965,10 @@ public final class StandardNames {
             "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256",
             "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
             "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_DHE_RSA_WITH_AES_256_GCM_SHA384",
             "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
             "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
             "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_128_CBC_SHA",
-            "TLS_DHE_RSA_WITH_AES_256_CBC_SHA",
             "TLS_RSA_WITH_AES_128_GCM_SHA256",
             "TLS_RSA_WITH_AES_256_GCM_SHA384",
             "TLS_RSA_WITH_AES_128_CBC_SHA",
