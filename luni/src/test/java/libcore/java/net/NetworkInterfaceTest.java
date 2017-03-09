@@ -25,6 +25,7 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
+import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Collections;
@@ -231,5 +232,11 @@ public class NetworkInterfaceTest extends TestCase {
     private static Pattern ethernetNamePattern = Pattern.compile("^(eth|wlan)[0-9]+$");
     private static boolean isEthernet(String ifName) throws Exception {
         return ethernetNamePattern.matcher(ifName).matches();
+    }
+
+    public void testGetInterfaceAddressesDoesNotThrowNPE() throws Exception {
+        try (MulticastSocket mcastSock = new MulticastSocket()) {
+            mcastSock.getNetworkInterface().getInterfaceAddresses();
+        }
     }
 }
