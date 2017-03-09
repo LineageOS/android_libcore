@@ -129,6 +129,8 @@ public final class Dex {
      * both {@code .dex} and {@code .odex} input. Calling this constructor
      * transfers ownership of {@code bytes} to the returned Dex: it is an error
      * to access the buffer after calling this method.
+     *
+     * NOTE: This method is called by the runtime.
      */
     public static Dex create(ByteBuffer data) throws IOException {
         data.order(ByteOrder.LITTLE_ENDIAN);
@@ -351,56 +353,6 @@ public final class Dex {
         return data.getInt(position);  // nameIndex
     }
 
-    public int findStringIndex(String s) {
-        return Collections.binarySearch(strings, s);
-    }
-
-    public int findTypeIndex(String descriptor) {
-        return Collections.binarySearch(typeNames, descriptor);
-    }
-
-    public int findFieldIndex(FieldId fieldId) {
-        return Collections.binarySearch(fieldIds, fieldId);
-    }
-
-    public int findMethodIndex(MethodId methodId) {
-        return Collections.binarySearch(methodIds, methodId);
-    }
-
-    public int findClassDefIndexFromTypeIndex(int typeIndex) {
-        checkBounds(typeIndex, tableOfContents.typeIds.size);
-        if (!tableOfContents.classDefs.exists()) {
-            return -1;
-        }
-        for (int i = 0; i < tableOfContents.classDefs.size; i++) {
-            if (typeIndexFromClassDefIndex(i) == typeIndex) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    /**
-     * Look up a field id type index from a field index. Cheaper than:
-     * {@code fieldIds().get(fieldDexIndex).getTypeIndex();}
-     */
-    public int typeIndexFromFieldIndex(int fieldIndex) {
-        checkBounds(fieldIndex, tableOfContents.fieldIds.size);
-        int position = tableOfContents.fieldIds.off + (SizeOf.MEMBER_ID_ITEM * fieldIndex);
-        position += SizeOf.USHORT;  // declaringClassIndex
-        return data.getShort(position) & 0xFFFF;  // typeIndex
-    }
-
-    /**
-     * Look up a method id declaring class index from a method index. Cheaper than:
-     * {@code methodIds().get(methodIndex).getDeclaringClassIndex();}
-     */
-    public int declaringClassIndexFromMethodIndex(int methodIndex) {
-        checkBounds(methodIndex, tableOfContents.methodIds.size);
-        int position = tableOfContents.methodIds.off + (SizeOf.MEMBER_ID_ITEM * methodIndex);
-        return data.getShort(position) & 0xFFFF;  // declaringClassIndex
-    }
-
     /**
      * Look up a method id name index from a method index. Cheaper than:
      * {@code methodIds().get(methodIndex).getNameIndex();}
@@ -467,29 +419,6 @@ public final class Dex {
        checkBounds(typeIndex, tableOfContents.typeIds.size);
        int position = tableOfContents.typeIds.off + (SizeOf.TYPE_ID_ITEM * typeIndex);
        return data.getInt(position);
-    }
-
-    /**
-     * Look up a type index index from a class def index.
-     */
-    public int typeIndexFromClassDefIndex(int classDefIndex) {
-        checkBounds(classDefIndex, tableOfContents.classDefs.size);
-        int position = tableOfContents.classDefs.off + (SizeOf.CLASS_DEF_ITEM * classDefIndex);
-        return data.getInt(position);
-    }
-
-    /**
-     * Look up an annotation directory offset from a class def index.
-     */
-    public int annotationDirectoryOffsetFromClassDefIndex(int classDefIndex) {
-        checkBounds(classDefIndex, tableOfContents.classDefs.size);
-        int position = tableOfContents.classDefs.off + (SizeOf.CLASS_DEF_ITEM * classDefIndex);
-        position += SizeOf.UINT;  // type
-        position += SizeOf.UINT;  // accessFlags
-        position += SizeOf.UINT;  // superType
-        position += SizeOf.UINT;  // interfacesOffset
-        position += SizeOf.UINT;  // sourceFileIndex
-        return data.getInt(position);
     }
 
     /**
@@ -880,13 +809,6 @@ public final class Dex {
                 writeShort(type);
             }
             alignToFourBytesWithZeroFill();
-        }
-
-        /**
-         * Returns the number of bytes remaining in this section.
-         */
-        public int remaining() {
-            return data.remaining();
         }
 
         /**
