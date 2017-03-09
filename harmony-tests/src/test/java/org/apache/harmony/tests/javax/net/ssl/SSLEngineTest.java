@@ -1013,7 +1013,11 @@ public class SSLEngineTest extends TestCase {
 
         SSLEngineResult res = sse.wrap(bbA, bb);
         assertEquals(0, res.bytesConsumed());
-        assertEquals(0, res.bytesProduced());
+        if (res.bytesProduced() == 0) {
+            assertEquals(HandshakeStatus.NEED_WRAP, res.getHandshakeStatus());
+        } else {
+            assertEquals(HandshakeStatus.NEED_UNWRAP, res.getHandshakeStatus());
+        }
     }
 
     private SSLEngine getEngine() throws Exception {

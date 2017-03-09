@@ -563,35 +563,35 @@ import java.nio.ReadOnlyBufferException;
  *             <td>1&ndash;8</td>
  *             <td>1&ndash;8</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_128_CBC_SHA</td>
- *             <td>9+</td>
- *             <td>9+</td>
+ *             <td>9&ndash;TBD</td>
+ *             <td>9&ndash;TBD</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_128_CBC_SHA256</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_128_GCM_SHA256</td>
- *             <td>20+</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
+ *             <td>20&ndash;TBD</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_256_CBC_SHA</td>
- *             <td>9+</td>
- *             <td>20+</td>
+ *             <td>9&ndash;TBD</td>
+ *             <td>20&ndash;TBD</td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_256_CBC_SHA256</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
  *             <td></td>
  *         </tr>
- *         <tr>
+ *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_AES_256_GCM_SHA384</td>
- *             <td>20+</td>
- *             <td>20+</td>
+ *             <td>20&ndash;TBD</td>
+ *             <td>20&ndash;TBD</td>
  *         </tr>
  *         <tr class="deprecated">
  *             <td>TLS_DHE_RSA_WITH_DES_CBC_SHA</td>
