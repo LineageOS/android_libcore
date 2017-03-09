@@ -2677,91 +2677,7 @@ public final class Class<T> implements java.io.Serializable,
         }
         return resolvedType;
     }
-    /**
-     * The annotation directory offset of this class in its own Dex, or 0 if it
-     * is unknown.
-     *
-     * TODO: 0 is a sentinel that means 'no annotations directory'; this should be -1 if unknown
-     *
-     * @hide
-     */
-    public int getDexAnnotationDirectoryOffset() {
-        Dex dex = getDex();
-        if (dex == null) {
-            return 0;
-        }
-        int classDefIndex = getDexClassDefIndex();
-        if (classDefIndex < 0) {
-            return 0;
-        }
-        return dex.annotationDirectoryOffsetFromClassDefIndex(classDefIndex);
-    }
-    /**
-     * The type index of this class in its own Dex, or -1 if it is unknown. If a class is referenced
-     * by multiple Dex files, it will have a different type index in each. Dex files support 65534
-     * type indices, with 65535 representing no index.
-     *
-     * @hide
-     */
-    public int getDexTypeIndex() {
-        int typeIndex = dexTypeIndex;
-        if (typeIndex != 65535) {
-            return typeIndex;
-        }
-        synchronized (this) {
-            typeIndex = dexTypeIndex;
-            if (typeIndex == 65535) {
-                if (dexClassDefIndex >= 0) {
-                    typeIndex = getDex().typeIndexFromClassDefIndex(dexClassDefIndex);
-                } else {
-                    typeIndex = getDex().findTypeIndex(InternalNames.getInternalName(this));
-                    if (typeIndex < 0) {
-                        typeIndex = -1;
-                    }
-                }
-                dexTypeIndex = typeIndex;
-            }
-        }
-        return typeIndex;
-    }
-    private boolean canAccess(Class<?> c) {
-        if(Modifier.isPublic(c.accessFlags)) {
-            return true;
-        }
-        return inSamePackage(c);
-    }
 
-    private boolean canAccessMember(Class<?> memberClass, int memberModifiers) {
-        if (memberClass == this || Modifier.isPublic(memberModifiers)) {
-            return true;
-        }
-        if (Modifier.isPrivate(memberModifiers)) {
-            return false;
-        }
-        if (Modifier.isProtected(memberModifiers)) {
-            for (Class<?> parent = this.superClass; parent != null; parent = parent.superClass) {
-                if (parent == memberClass) {
-                    return true;
-                }
-            }
-        }
-        return inSamePackage(memberClass);
-    }
-
-    private boolean inSamePackage(Class<?> c) {
-        if (classLoader != c.classLoader) {
-            return false;
-        }
-        String packageName1 = getPackageName$();
-        String packageName2 = c.getPackageName$();
-        if (packageName1 == null) {
-            return packageName2 == null;
-        } else if (packageName2 == null) {
-            return false;
-        } else {
-            return packageName1.equals(packageName2);
-        }
-    }
     /**
      * @hide
      */
@@ -2780,14 +2696,6 @@ public final class Class<T> implements java.io.Serializable,
     @FastNative
     private native Method getDeclaredMethodInternal(String name, Class<?>[] args);
 
-    /**
-     * The class def of this class in its own Dex, or -1 if there is no class def.
-     *
-     * @hide
-     */
-    public int getDexClassDefIndex() {
-        return (dexClassDefIndex == 65535) ? -1 : dexClassDefIndex;
-    }
     private static class Caches {
         /**
          * Cache to avoid frequent recalculation of generic interfaces, which is generally uncommon.
