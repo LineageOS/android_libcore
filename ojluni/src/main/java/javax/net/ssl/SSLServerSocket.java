@@ -524,4 +524,10 @@ public abstract class SSLServerSocket extends ServerSocket {
         }
     }
 
+    // Android-added: Make toString explicit that this is an SSLServerSocket (http://b/6602228)
+    @Override
+    public String toString() {
+        return "SSL" + super.toString();
+    }
+
 }
