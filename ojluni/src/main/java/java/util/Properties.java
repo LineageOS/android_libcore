@@ -36,6 +36,7 @@ import java.io.Writer;
 import java.io.OutputStreamWriter;
 import java.io.BufferedWriter;
 
+// Android-changed: Removed dead native2ascii links
 /**
  * The {@code Properties} class represents a persistent set of
  * properties. The {@code Properties} can be saved to a stream
@@ -106,9 +107,6 @@ import java.io.BufferedWriter;
  *
  * <p>This class is thread-safe: multiple threads can share a single
  * <tt>Properties</tt> object without the need for external synchronization.
- *
- * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/tools/solaris/native2ascii.html">native2ascii tool for Solaris</a>
- * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/tools/windows/native2ascii.html">native2ascii tool for Windows</a>
  *
  * @author  Arthur van Hoff
  * @author  Michael McCloskey
