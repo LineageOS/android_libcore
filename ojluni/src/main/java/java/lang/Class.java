@@ -2670,9 +2670,31 @@ public final class Class<T> implements java.io.Serializable,
     public Class<?> getDexCacheType(Dex dex, int dexTypeIndex) {
         Class<?> resolvedType = dexCache.getResolvedType(dexTypeIndex);
         if (resolvedType == null) {
-            int descriptorIndex = dex.typeIds().get(dexTypeIndex);
-            String descriptor = getDexCacheString(dex, descriptorIndex);
-            resolvedType = InternalNames.getClass(getClassLoader(), descriptor);
+
+            // Temporary debugging code for issue b/35970927. In the absence of reproducibility,
+            // we want more information on :
+            //
+            // (a) This class: a proxy for the dex file whose cache is being queried.
+            // (b) The dex type index & descriptor index.
+            // (c) The resolved descriptor.
+            // (d) The wrapper message : this is the name of the class used by InternalNames
+            // for its loadClass call.
+            //
+            // (c) & (d) should help us rule out string compression issues.
+            // (a) & (b) should help us rule out some classes of heap corruption issues.
+            int descriptorIndex = 0;
+            String descriptor = "";
+            try {
+                descriptorIndex = dex.typeIds().get(dexTypeIndex);
+                descriptor = getDexCacheString(dex, descriptorIndex);
+                resolvedType = InternalNames.getClass(getClassLoader(), descriptor);
+            } catch (NoClassDefFoundError error) {
+                throw new NoClassDefFoundError("class: " + getName()
+                        + ", dexTypeIndex=" + dexTypeIndex
+                        + ", descriptorIndex=" + descriptorIndex + ", desc=" + descriptor
+                        + ", wrapped Msg= " + error.getMessage());
+            }
+
             dexCache.setResolvedType(dexTypeIndex, resolvedType);
         }
         return resolvedType;
