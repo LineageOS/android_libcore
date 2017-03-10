@@ -16,29 +16,31 @@
 
 package libcore.javax.crypto;
 
+import junit.framework.TestCase;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
+import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 import java.security.spec.AlgorithmParameterSpec;
 import java.util.Arrays;
+import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.CipherSpi;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import junit.framework.TestCase;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 
 public final class CipherInputStreamTest extends TestCase {
@@ -286,5 +288,76 @@ public final class CipherInputStreamTest extends TestCase {
             // and will throw ShortBufferException buffer is smaller.
             assertEquals(513, is.read(buffer));
         }
+    }
+
+    // From b/31590622. CipherInputStream had a bug where it would ignore exceptions
+    // thrown during close(), because it was expecting exceptions to be thrown by read().
+    public void testDecryptCorruptGCM() throws Exception {
+        for (Provider provider : Security.getProviders()) {
+            Cipher cipher;
+            try {
+                cipher = Cipher.getInstance("AES/GCM/NoPadding", provider);
+            } catch (NoSuchAlgorithmException e) {
+                continue;
+            }
+            SecretKey key;
+            if (provider.getName().equals("AndroidKeyStoreBCWorkaround")) {
+                key = getAndroidKeyStoreSecretKey();
+            } else {
+                KeyGenerator keygen = KeyGenerator.getInstance("AES");
+                keygen.init(256);
+                key = keygen.generateKey();
+            }
+            GCMParameterSpec params = new GCMParameterSpec(128, new byte[12]);
+            byte[] unencrypted = new byte[200];
+
+            // Normal providers require specifying the IV, but KeyStore prohibits it, so
+            // we have to special-case it
+            if (provider.getName().equals("AndroidKeyStoreBCWorkaround")) {
+                cipher.init(Cipher.ENCRYPT_MODE, key);
+            } else {
+                cipher.init(Cipher.ENCRYPT_MODE, key, params);
+            }
+            byte[] encrypted = cipher.doFinal(unencrypted);
+
+            // Corrupt the final byte, which will corrupt the authentication tag
+            encrypted[encrypted.length - 1] ^= 1;
+
+            cipher.init(Cipher.DECRYPT_MODE, key, params);
+            CipherInputStream cis = new CipherInputStream(
+                    new ByteArrayInputStream(encrypted), cipher);
+            try {
+                cis.read(unencrypted);
+                cis.close();
+                fail("Reading a corrupted stream should throw an exception."
+                        + "  Provider: " + provider);
+            } catch (IOException expected) {
+                assertTrue(expected.getCause() instanceof AEADBadTagException);
+            }
+        }
+
+    }
+
+    // The AndroidKeyStoreBCWorkaround provider can't use keys created by anything
+    // but Android KeyStore, which requires using its own parameters class to create
+    // keys.  Since we're in javax, we can't link against the frameworks classes, so
+    // we have to use reflection to make a suitable key.  This will always be safe
+    // because if we're making a key for AndroidKeyStoreBCWorkaround, the KeyStore
+    // classes must be present.
+    private static SecretKey getAndroidKeyStoreSecretKey() throws Exception {
+        KeyGenerator keygen = KeyGenerator.getInstance("AES", "AndroidKeyStore");
+        Class<?> keyParamsBuilderClass = keygen.getClass().getClassLoader().loadClass(
+                "android.security.keystore.KeyGenParameterSpec$Builder");
+        Object keyParamsBuilder = keyParamsBuilderClass.getConstructor(String.class, Integer.TYPE)
+                // 3 is PURPOSE_ENCRYPT | PURPOSE_DECRYPT
+                .newInstance("testDecryptCorruptGCM", 3);
+        keyParamsBuilderClass.getMethod("setBlockModes", new Class[]{String[].class})
+                .invoke(keyParamsBuilder, new Object[]{new String[]{"GCM"}});
+        keyParamsBuilderClass.getMethod("setEncryptionPaddings", new Class[]{String[].class})
+                .invoke(keyParamsBuilder, new Object[]{new String[]{"NoPadding"}});
+        AlgorithmParameterSpec spec = (AlgorithmParameterSpec)
+                keyParamsBuilderClass.getMethod("build", new Class[]{}).invoke(keyParamsBuilder);
+        keygen.init(spec);
+        return keygen.generateKey();
     }
 }
