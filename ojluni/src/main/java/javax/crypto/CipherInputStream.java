@@ -325,15 +325,16 @@ public class CipherInputStream extends FilterInputStream {
         closed = true;
         input.close();
 
-        // Throw away the unprocessed data and throw no crypto exceptions.
-        // AEAD ciphers are fully readed before closing.  Any authentication
-        // exceptions would occur while reading.
+        // Android-removed: Removed a now-inaccurate comment
         if (!done) {
             try {
                 cipher.doFinal();
             }
             catch (BadPaddingException | IllegalBlockSizeException ex) {
-                // Catch exceptions as the rest of the stream is unused.
+                // Android-changed: Added throw if bad tag is seen.  See b/31590622.
+                if (ex instanceof AEADBadTagException) {
+                    throw new IOException(ex);
+                }
             }
         }
         ostart = 0;
