@@ -525,8 +525,8 @@ public final class NetworkInterface {
     public int getMTU() throws SocketException {
         FileDescriptor fd = null;
         try {
-            fd = Libcore.os.socket(AF_INET, SOCK_DGRAM, 0);
-            return Libcore.os.ioctlMTU(fd, name);
+            fd = Libcore.rawOs.socket(AF_INET, SOCK_DGRAM, 0);
+            return Libcore.rawOs.ioctlMTU(fd, name);
         } catch (ErrnoException e) {
             throw e.rethrowAsSocketException();
         } catch (Exception ex) {
@@ -556,8 +556,8 @@ public final class NetworkInterface {
     private int getFlags() throws SocketException {
         FileDescriptor fd = null;
         try {
-            fd = Libcore.os.socket(AF_INET, SOCK_DGRAM, 0);
-            return Libcore.os.ioctlFlags(fd, name);
+            fd = Libcore.rawOs.socket(AF_INET, SOCK_DGRAM, 0);
+            return Libcore.rawOs.ioctlFlags(fd, name);
         } catch (ErrnoException e) {
             throw e.rethrowAsSocketException();
         } catch (Exception ex) {
