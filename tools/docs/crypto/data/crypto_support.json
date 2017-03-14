@@ -300,6 +300,10 @@
           "supported_api_levels": "14+"
         },
         {
+          "name": "ANDROIDKEYSTORE",
+          "supported_api_levels": "18+"
+        },
+        {
           "deprecated": "true",
           "name": "BCPKCS12",
           "supported_api_levels": "1-8"
@@ -478,12 +482,36 @@
     {
       "algorithms": [
         {
+          "name": "AES",
+          "supported_api_levels": "23+"
+        },
+        {
           "name": "DES",
           "supported_api_levels": "1+"
         },
         {
           "name": "DESEDE",
           "supported_api_levels": "1+"
+        },
+        {
+          "name": "HMACSHA1",
+          "supported_api_levels": "23+"
+        },
+        {
+          "name": "HMACSHA224",
+          "supported_api_levels": "23+"
+        },
+        {
+          "name": "HMACSHA256",
+          "supported_api_levels": "23+"
+        },
+        {
+          "name": "HMACSHA384",
+          "supported_api_levels": "23+"
+        },
+        {
+          "name": "HMACSHA512",
+          "supported_api_levels": "23+"
         },
         {
           "name": "PBEWITHHMACSHA1",
@@ -655,5 +683,5 @@
       "name": "TrustManagerFactory"
     }
   ],
-  "last_updated": "2017-03-14 12:51:49 UTC"
+  "last_updated": "2017-03-14 14:23:50 UTC"
 }
