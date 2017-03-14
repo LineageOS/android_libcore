@@ -27,6 +27,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
+import tests.net.StuckServer;
 
 public class SelectorTest extends TestCase {
     public void testNonBlockingConnect_immediate() throws Exception {
@@ -47,6 +48,24 @@ public class SelectorTest extends TestCase {
         } finally {
             selector.close();
             ssc.close();
+        }
+    }
+
+    public void testNonBlockingConnect_slow() throws Exception {
+        // Test the case where we have to wait for the connection.
+        Selector selector = Selector.open();
+        StuckServer ss = new StuckServer(true);
+        try {
+            SocketChannel sc = SocketChannel.open();
+            sc.configureBlocking(false);
+            sc.connect(ss.getLocalSocketAddress());
+            SelectionKey key = sc.register(selector, SelectionKey.OP_CONNECT);
+            assertEquals(1, selector.select());
+            assertEquals(SelectionKey.OP_CONNECT, key.readyOps());
+            sc.finishConnect();
+        } finally {
+            selector.close();
+            ss.close();
         }
     }
 
