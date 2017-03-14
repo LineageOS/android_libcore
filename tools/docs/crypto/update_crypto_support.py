@@ -31,8 +31,24 @@ import sys
 
 # TODO(b/35793879): Support more categories
 SUPPORTED_CATEGORIES = [
+    'AlgorithmParameterGenerator',
+    'AlgorithmParameters',
+    'CertificateFactory',
+    'CertPathBuilder',
+    'CertPathValidator',
+    'CertStore',
+    'KeyAgreement',
+    'KeyFactory',
+    'KeyGenerator',
+    'KeyManagerFactory',
+    'KeyPairGenerator',
+    'KeyStore',
     'Mac',
     'MessageDigest',
+    'SecretKeyFactory',
+    'SecureRandom',
+    'SSLContext',
+    'TrustManagerFactory',
 ]
 
 
@@ -49,6 +65,15 @@ def sort_by_name(seq):
     return sorted(seq, key=lambda x: x['name'])
 
 
+def normalize_name(name):
+    """Returns a normalized version of the given algorithm name."""
+    name = name.upper()
+    # BouncyCastle uses X.509 with an alias of X509, Conscrypt does the
+    # reverse.  X.509 is the official name of the standard, so use that.
+    if name == "X509":
+        name = "X.509"
+    return name
+
 def get_current_data(f):
     """Returns a map of the algorithms in the given input.
 
@@ -58,7 +83,7 @@ def get_current_data(f):
     input can supply arbitrary values outside of the BEGIN and END lines, it
     will be ignored.
 
-    The returned algorithms will have their names normalized to all-uppercase.
+    The returned algorithms will have their names normalized.
 
     Raises:
       EOFError: If either the BEGIN or END sentinel lines are not present.
@@ -81,7 +106,7 @@ def get_current_data(f):
         category, algorithm = line.split()
         if category not in SUPPORTED_CATEGORIES:
             continue
-        current_data[category].append(algorithm.upper())
+        current_data[category].append(normalize_name(algorithm))
 
     if not saw_begin:
         raise EOFError(
