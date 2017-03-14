@@ -47,6 +47,7 @@ SUPPORTED_CATEGORIES = [
     'MessageDigest',
     'SecretKeyFactory',
     'SecureRandom',
+    'Signature',
     'SSLContext',
     'TrustManagerFactory',
 ]
