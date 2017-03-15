@@ -18,7 +18,11 @@ package libcore.java.security;
 
 import java.security.Provider;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -29,6 +33,16 @@ import java.util.TreeSet;
  * {@code vogar libcore/tools/src/java/libcore/java/security/ListProviders.java}
  */
 public class ListProviders {
+
+    // These algorithms were previously provided, but now are aliases for a different
+    // algorithm.  For documentation purposes, we want to continue having them show up
+    // as supported.
+    private static final Set<String> KNOWN_ALIASES = new HashSet<>(Arrays.asList(new String[]{
+            "Alg.Alias.Signature.DSA",
+            "Alg.Alias.Signature.DSAwithSHA1",
+            "Alg.Alias.Signature.ECDSA",
+            "Alg.Alias.Signature.ECDSAwithSHA1",
+    }));
     public static void main(String[] argv) {
         System.out.println("BEGIN ALGORITHM LIST");
         for (Provider p : Security.getProviders()) {
@@ -45,6 +59,12 @@ public class ListProviders {
             services.addAll(p.getServices());
             for (Provider.Service s : services) {
                 System.out.println(s.getType() + " " + s.getAlgorithm());
+            }
+            for (String alias : KNOWN_ALIASES) {
+                if (p.containsKey(alias)) {
+                    String[] elements = alias.split("\\.");  // Split takes a regex
+                    System.out.println(elements[2] + " " + elements[3]);
+                }
             }
         }
         System.out.println("END ALGORITHM LIST");
