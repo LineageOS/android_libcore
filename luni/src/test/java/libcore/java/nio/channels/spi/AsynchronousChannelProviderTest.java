@@ -39,6 +39,9 @@ public class AsynchronousChannelProviderTest extends TestCase {
         assertNotNull(provider.openAsynchronousServerSocketChannel(
                 AsynchronousChannelGroup.withFixedThreadPool(1, new TestThreadFactory())));
 
+        assertNotNull(provider.openAsynchronousSocketChannel(
+                AsynchronousChannelGroup.withFixedThreadPool(1, new TestThreadFactory())));
+
         assertNotNull(provider.openAsynchronousChannelGroup(1, new TestThreadFactory()));
     }
 
