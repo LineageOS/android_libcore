@@ -16,6 +16,7 @@
 
 package libcore.java.security;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Prints a list of all algorithms provided by security providers.  Intended to be run
@@ -34,15 +37,50 @@ import java.util.TreeSet;
  */
 public class ListProviders {
 
+    private static final boolean SHOW_PROVIDER = false;
+
     // These algorithms were previously provided, but now are aliases for a different
     // algorithm.  For documentation purposes, we want to continue having them show up
     // as supported.
-    private static final Set<String> KNOWN_ALIASES = new HashSet<>(Arrays.asList(new String[]{
+    private static final Set<String> KNOWN_ALIASES = new TreeSet<>(Arrays.asList(new String[]{
             "Alg.Alias.Signature.DSA",
             "Alg.Alias.Signature.DSAwithSHA1",
             "Alg.Alias.Signature.ECDSA",
             "Alg.Alias.Signature.ECDSAwithSHA1",
     }));
+
+    // Ciphers come in algorithm/mode/padding combinations, and not all combinations are explicitly
+    // registered by the providers (sometimes only the base algorithm is registered).  While there
+    // is a mechanism for providers to specify which modes and/or paddings are supported for a
+    // given algorithm, none of our providers use it.  Thus, when a base algorithm is seen, all
+    // combinations of modes and paddings will be tried to see which ones are supported.
+    private static final Set<String> CIPHER_MODES = new TreeSet<>(Arrays.asList(new String[]{
+            "CBC",
+            "CFB",
+            "CTR",
+            "CTS",
+            "ECB",
+            "GCM",
+            "OFB",
+            "NONE",
+    }));
+    private static final Set<String> CIPHER_PADDINGS = new TreeSet<>(Arrays.asList(new String[]{
+            "NoPadding",
+            "OAEPPadding",
+            "OAEPwithSHA-1andMGF1Padding",
+            "OAEPwithSHA-224andMGF1Padding",
+            "OAEPwithSHA-256andMGF1Padding",
+            "OAEPwithSHA-384andMGF1Padding",
+            "OAEPwithSHA-512andMGF1Padding",
+            "PKCS1Padding",
+            "PKCS5Padding",
+            "ISO10126Padding",
+    }));
+
+    private static void print(Provider p, String type, String algorithm) {
+        System.out.println((SHOW_PROVIDER ? p.getName() + ": " : "") + type + " " + algorithm);
+    }
+
     public static void main(String[] argv) {
         System.out.println("BEGIN ALGORITHM LIST");
         for (Provider p : Security.getProviders()) {
@@ -58,12 +96,33 @@ public class ListProviders {
                     });
             services.addAll(p.getServices());
             for (Provider.Service s : services) {
-                System.out.println(s.getType() + " " + s.getAlgorithm());
+                if (s.getType().equals("Cipher") && s.getAlgorithm().startsWith("PBE")) {
+                    // PBE ciphers are a mess and generally don't do anything but delegate
+                    // to the underlying cipher.  We don't want to document them.
+                    continue;
+                }
+                if (s.getType().equals("Cipher") && s.getAlgorithm().indexOf('/') == -1) {
+                    for (String mode : CIPHER_MODES) {
+                        for (String padding : CIPHER_PADDINGS) {
+                            try {
+                                String name = s.getAlgorithm() + "/" + mode + "/" + padding;
+                                Cipher.getInstance(name, p);
+                                print(p, s.getType(), name);
+                            } catch (NoSuchAlgorithmException
+                                    |NoSuchPaddingException
+                                    |IllegalArgumentException e) {
+                                // This combination doesn't work
+                            }
+                        }
+                    }
+                } else {
+                    print(p, s.getType(), s.getAlgorithm());
+                }
             }
             for (String alias : KNOWN_ALIASES) {
                 if (p.containsKey(alias)) {
                     String[] elements = alias.split("\\.");  // Split takes a regex
-                    System.out.println(elements[2] + " " + elements[3]);
+                    print(p, elements[2], elements[3]);
                 }
             }
         }

@@ -29,7 +29,6 @@ import datetime
 import json
 import sys
 
-# TODO(b/35793879): Support more categories
 SUPPORTED_CATEGORIES = [
     'AlgorithmParameterGenerator',
     'AlgorithmParameters',
@@ -37,6 +36,7 @@ SUPPORTED_CATEGORIES = [
     'CertPathBuilder',
     'CertPathValidator',
     'CertStore',
+    'Cipher',
     'KeyAgreement',
     'KeyFactory',
     'KeyGenerator',
@@ -73,6 +73,12 @@ def normalize_name(name):
     # reverse.  X.509 is the official name of the standard, so use that.
     if name == "X509":
         name = "X.509"
+    # PKCS5PADDING and PKCS7PADDING are the same thing (more accurately, PKCS#5
+    # is a special case of PKCS#7), but providers are inconsistent in their
+    # naming.  Use PKCS5PADDING because that's what our docs have used
+    # historically.
+    if name.endswith("/PKCS7PADDING"):
+        name = name[:-1 * len("/PKCS7PADDING")] + "/PKCS5PADDING"
     return name
 
 def get_current_data(f):
