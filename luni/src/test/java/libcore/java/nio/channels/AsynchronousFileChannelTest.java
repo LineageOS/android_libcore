@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.CompletionHandler;
 import java.nio.channels.NonReadableChannelException;
 import java.nio.channels.NonWritableChannelException;
@@ -680,4 +681,24 @@ public class AsynchronousFileChannelTest {
         assertSame(serviceThread.get(), observedThreads.take());
         assertEquals(0, observedThreads.size());
     }
+
+    @Test
+    public void testForce() throws Throwable {
+        Path tempDir = Files.createTempFile("ASFCTest_test_force", "");
+
+        AsynchronousFileChannel afc = AsynchronousFileChannel.open(tempDir,
+                StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        // Test that force can be called, not much else can be tested.
+        assertEquals(2, (int) afc.write(ByteBuffer.wrap(new byte[] { 'x', 'y'}), 0).get());
+        afc.force(false);
+        assertEquals(2, (int) afc.write(ByteBuffer.wrap(new byte[] { 'x', 'y'}), 0).get());
+        afc.force(true);
+        afc.close();
+
+        try {
+            afc.force(true);
+            fail();
+        } catch(ClosedChannelException expected) {}
+    }
+
 }
