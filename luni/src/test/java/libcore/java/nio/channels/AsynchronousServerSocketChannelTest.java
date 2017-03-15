@@ -236,6 +236,7 @@ public class AsynchronousServerSocketChannelTest extends TestCaseWithRules {
         assertNull(assc.getLocalAddress());
         assc.bind(new InetSocketAddress(0));
         assertNotNull(assc.getLocalAddress());
+        assertEquals(provider, assc.provider());
         assc.close();
     }
 
