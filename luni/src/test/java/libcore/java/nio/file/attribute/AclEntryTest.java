@@ -40,6 +40,7 @@ public class AclEntryTest {
         AclEntry aclEntry = AclEntry.newBuilder()
             .setType(AclEntryType.ALLOW)
             .setPrincipal(user)
+            .setFlags(AclEntryFlag.INHERIT_ONLY)
             .setPermissions(AclEntryPermission.READ_DATA, AclEntryPermission.READ_ATTRIBUTES)
             .build();
         assertEquals(AclEntryType.ALLOW, aclEntry.type());
@@ -49,5 +50,9 @@ public class AclEntryTest {
         assertEquals(2, permissions.size());
         assertTrue(permissions.contains(AclEntryPermission.READ_DATA));
         assertTrue(permissions.contains(AclEntryPermission.READ_ATTRIBUTES));
+
+        Set<AclEntryFlag> flags = aclEntry.flags();
+        assertEquals(1, flags.size());
+        assertTrue(flags.contains(AclEntryFlag.INHERIT_ONLY));
     }
 }
