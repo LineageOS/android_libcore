@@ -167,11 +167,8 @@ public final class PKIXCertPathValidator extends CertPathValidatorSpi {
         // create PKIXCertPathCheckers
         List<PKIXCertPathChecker> certPathCheckers = new ArrayList<>();
         // add standard checkers that we will be using
-        /**
-         * BEGIN Android-removed: this mechanism for checking untrusted certificates is not used in
-         * Android.
-        certPathCheckers.add(new UntrustedChecker());
-         * END Android-removed */
+        // Android-removed: Android doesn't use this mechanism for checking untrusted certificates.
+        // certPathCheckers.add(new UntrustedChecker());
         certPathCheckers.add(new AlgorithmChecker(anchor));
         certPathCheckers.add(new KeyChecker(certPathLen,
                                             params.targetCertConstraints()));
