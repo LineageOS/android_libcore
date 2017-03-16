@@ -77,7 +77,6 @@ import javax.net.ssl.X509TrustManager;
 import libcore.java.security.TestKeyStore;
 import libcore.java.util.AbstractResourceLeakageDetectorTestCase;
 import libcore.javax.net.ssl.TestSSLContext;
-import tests.net.StuckServer;
 
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
@@ -1750,11 +1749,11 @@ public final class URLConnectionTest extends AbstractResourceLeakageDetectorTest
      * addresses. This is typically one IPv4 address and one IPv6 address.
      */
     public void testConnectTimeouts() throws IOException {
-        StuckServer ss = new StuckServer(true);
-        int serverPort = ss.getLocalPort();
-        String hostName = ss.getLocalSocketAddress().getAddress().getHostAddress();
-        URLConnection urlConnection = new URL("http://" + hostName + ":" + serverPort + "/")
-                .openConnection();
+        // This test is suppressed in M branches via libcore/expectations/brokentests.txt.
+        // This test has been modified in M to remove a dependency on StuckServer testing
+        // infrastructure. It is not expected to work in M.
+        // The 192.0.2.0 address is an unreachable address from RFC 5737.
+        URLConnection urlConnection = new URL("http://192.0.2.0:80/").openConnection();
 
         int timeout = 1000;
         urlConnection.setConnectTimeout(timeout);
@@ -1767,8 +1766,6 @@ public final class URLConnectionTest extends AbstractResourceLeakageDetectorTest
             int attempts = InetAddress.getAllByName("localhost").length; // one per IP address
             assertTrue("timeout=" +timeout + ", elapsed=" + elapsed + ", attempts=" + attempts,
                     Math.abs((attempts * timeout) - elapsed) < 500);
-        } finally {
-            ss.close();
         }
     }
 
