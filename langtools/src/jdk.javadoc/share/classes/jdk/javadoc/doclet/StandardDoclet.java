@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,29 +22,49 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package java.lang;
+
+package jdk.javadoc.doclet;
+
+import java.util.Locale;
+import java.util.Set;
+
+import javax.lang.model.SourceVersion;
+
+import jdk.javadoc.internal.doclets.formats.html.HtmlDoclet;
 
 /**
- * Permission to access {@link StackWalker.StackFrame}.
- *
- * @see java.lang.StackWalker.Option#RETAIN_CLASS_REFERENCE
- * @see StackWalker.StackFrame#getDeclaringClass()
+ * This doclet generates HTML-formatted documentation for the specified modules, packages and types.
  */
-public class StackFramePermission extends java.security.BasicPermission {
-    private static final long serialVersionUID = 2841894854386706014L;
+public class StandardDoclet implements Doclet {
 
-    /**
-     * Creates a new {@code StackFramePermission} object.
-     *
-     * @param name Permission name.  Must be "retainClassReference".
-     *
-     * @throws IllegalArgumentException if {@code name} is invalid.
-     * @throws NullPointerException if {@code name} is {@code null}.
-     */
-    public StackFramePermission(String name) {
-        super(name);
-        if (!name.equals("retainClassReference")) {
-            throw new IllegalArgumentException("name: " + name);
-        }
+    private final HtmlDoclet htmlDoclet;
+
+    public StandardDoclet() {
+        htmlDoclet = new HtmlDoclet();
+    }
+
+    @Override
+    public void init(Locale locale, Reporter reporter) {
+        htmlDoclet.init(locale, reporter);
+    }
+
+    @Override
+    public String getName() {
+        return "Standard";
+    }
+
+    @Override
+    public Set<Doclet.Option> getSupportedOptions() {
+        return htmlDoclet.getSupportedOptions();
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return htmlDoclet.getSupportedSourceVersion();
+    }
+
+    @Override
+    public boolean run(DocletEnvironment docEnv) {
+        return htmlDoclet.run(docEnv);
     }
 }
