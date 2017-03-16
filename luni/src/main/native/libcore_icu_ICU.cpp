@@ -57,6 +57,7 @@
 #include "unicode/timezone.h"
 #include "unicode/ubrk.h"
 #include "unicode/ucal.h"
+#include "unicode/ucasemap.h"
 #include "unicode/uclean.h"
 #include "unicode/ucol.h"
 #include "unicode/ucurr.h"
