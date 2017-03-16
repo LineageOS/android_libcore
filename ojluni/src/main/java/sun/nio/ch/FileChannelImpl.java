@@ -929,12 +929,14 @@ public class FileChannelImpl
                 return null;
 
             if (filesize < position + size) { // Extend file size
-                /* BEGIN Android-changed
+                // BEGIN Android-changed
+                /*
                 if (!writable) {
                     throw new IOException("Channel not open for writing " +
                         "- cannot extend file to required size");
                 }
-                END Android-changed */
+                */
+                // END Android-changed
                 int rv = 0;
                 do {
                     // BEGIN Android-changed
