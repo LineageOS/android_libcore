@@ -22,6 +22,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.NonReadableChannelException;
@@ -47,6 +48,7 @@ import java.nio.file.spi.FileSystemProvider;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -69,6 +71,7 @@ import static libcore.java.nio.file.FilesSetup.TEST_FILE_DATA;
 import static libcore.java.nio.file.FilesSetup.TEST_FILE_DATA_2;
 import static libcore.java.nio.file.FilesSetup.readFromFile;
 import static libcore.java.nio.file.FilesSetup.writeToFile;
+import static libcore.java.nio.file.LinuxFileSystemTestData.getPath_URI_InputOutputTestData;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -589,6 +592,55 @@ public class DefaultFileSystemProvider2Test {
             provider.newByteChannel(filesSetup.getTestPath(), new HashSet<>(), null);
             fail();
         } catch (NullPointerException expected) {}
+    }
+
+    @Test
+    public void test_getPath() throws Exception {
+        List<LinuxFileSystemTestData.TestData> inputOutputTestCases = getPath_URI_InputOutputTestData();
+        for (LinuxFileSystemTestData.TestData inputOutputTestCase : inputOutputTestCases) {
+            assertEquals(inputOutputTestCase.output,
+                    provider.getPath(new URI(inputOutputTestCase.input)).toString());
+        }
+
+        // When URI is null.
+        try {
+            provider.getPath(null);
+            fail();
+        } catch (NullPointerException expected) {}
+
+        // When Schema is not supported.
+        try {
+            provider.getPath(new URI("scheme://d"));
+            fail();
+        } catch (IllegalArgumentException expected) {}
+    }
+
+    @Test
+    public void test_getScheme() {
+        assertEquals("file", provider.getScheme());
+    }
+
+    @Test
+    public void test_installedProviders() {
+        assertNotNull(provider.installedProviders());
+    }
+
+    @Test
+    public void test_newFileSystem$URI$Map() throws Exception {
+        Path testPath = Paths.get("/");
+        assertNotNull(provider.getFileSystem(testPath.toUri()));
+
+        try {
+            provider.getFileSystem(null);
+            fail();
+        } catch (NullPointerException expected) {}
+
+        // Test the case when URI has illegal scheme.
+        URI stubURI = new URI("scheme://path");
+        try {
+            provider.getFileSystem(stubURI);
+            fail();
+        } catch (IllegalArgumentException expected) {}
     }
 
     String readFromFileChannel(FileChannel fc) throws IOException {
