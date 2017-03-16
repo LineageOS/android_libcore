@@ -356,13 +356,11 @@ class ReverseBuilder extends Builder {
             return;
         }
 
-        /**
-         * BEGIN Android-removed: this mechanism for checking untrusted certificates is not used in
-         * Android.
-        // Don't bother to verify untrusted certificate more.
-        currentState.untrustedChecker.check(cert,
-                                    Collections.<String>emptySet());
-         * END Android-removed */
+        // BEGIN Android-removed: Android doesn't use this mechanism for checking untrusted certificates.
+        // // Don't bother to verify untrusted certificate more.
+        // currentState.untrustedChecker.check(cert,
+        //                             Collections.<String>emptySet());
+        // END Android-removed: Android doesn't use this mechanism for checking untrusted certificates.
 
         /*
          * check for looping - abort a loop if
