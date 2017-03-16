@@ -64,9 +64,8 @@ public class SignerInfo implements DerEncoder {
     byte[] encryptedDigest;
     Timestamp timestamp;
     private boolean hasTimestamp = true;
-    /* BEGIN Android-removed
-    private static final Debug debug = Debug.getInstance("jar");
-     * END Android-removed */
+    // Android-removed
+    // private static final Debug debug = Debug.getInstance("jar");
 
     PKCS9Attributes authenticatedAttributes;
     PKCS9Attributes unauthenticatedAttributes;
@@ -562,14 +561,16 @@ public class SignerInfo implements DerEncoder {
                 " is inapplicable");
         }
 
-        /* BEGIN Android-removed
+        // BEGIN Android-removed
+        /*
         if (debug != null) {
             debug.println();
             debug.println("Detected signature timestamp (#" +
                 token.getSerialNumber() + ") generated on " + token.getDate());
             debug.println();
         }
-         * END Android-removed */
+        */
+        // END Android-removed
     }
 
     public String toString() {

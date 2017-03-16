@@ -666,12 +666,11 @@ class ForwardBuilder extends Builder {
 
         ForwardState currState = (ForwardState)currentState;
 
-        /**
-         * BEGIN Android-removed: this mechanism for checking untrusted certificates is not used in
-         * Android.
-        // Don't bother to verify untrusted certificate more.
-        currState.untrustedChecker.check(cert, Collections.<String>emptySet());
-         * END Android-removed */
+        // BEGIN Android-removed: Certificate checking
+        // Android doesn't use this mechanism for checking untrusted certificates.
+        // // Don't bother to verify untrusted certificate more.
+        // currState.untrustedChecker.check(cert, Collections.<String>emptySet());
+        // END Android-removed: Certificate checking
 
         /*
          * check for looping - abort a loop if we encounter the same
