@@ -922,4 +922,12 @@ class ServerSocket implements java.io.Closeable {
         /* Not implemented yet */
     }
 
+    /**
+     * Android-added: for testing and internal use.
+     *
+     * @hide internal use only
+     */
+    public FileDescriptor getFileDescriptor$() {
+        return impl.getFileDescriptor();
+    }
 }
