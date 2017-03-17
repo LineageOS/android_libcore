@@ -20,6 +20,10 @@ import android.util.Slog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import libcore.tzdata.shared2.DistroException;
+import libcore.tzdata.shared2.DistroVersion;
+import libcore.tzdata.shared2.FileUtils;
+import libcore.tzdata.shared2.TimeZoneDistro;
 import libcore.util.ZoneInfoDB;
 
 /**
@@ -246,8 +250,7 @@ public final class TimeZoneDistroInstaller {
 
     private DistroVersion readDistroVersion(File distroDir) throws DistroException, IOException {
         Slog.i(logTag, "Reading distro format version");
-        File distroVersionFile =
-                new File(distroDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
+        File distroVersionFile = new File(distroDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
         if (!distroVersionFile.exists()) {
             throw new DistroException("No distro version file found: " + distroVersionFile);
         }
