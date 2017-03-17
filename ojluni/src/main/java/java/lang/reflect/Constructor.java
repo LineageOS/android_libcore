@@ -27,6 +27,8 @@
 package java.lang.reflect;
 
 import dalvik.annotation.optimization.FastNative;
+import libcore.util.EmptyArray;
+
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
 
@@ -127,7 +129,12 @@ public final class Constructor<T> extends Executable {
     @Override
     public Class<?>[] getParameterTypes() {
         // Android-changed: This is handled by Executable.
-        return super.getParameterTypesInternal();
+        Class<?>[] paramTypes = super.getParameterTypesInternal();
+        if (paramTypes == null) {
+            return EmptyArray.CLASS;
+        }
+
+        return paramTypes;
     }
 
     /**
