@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.tzdata.update2;
+package libcore.tzdata.shared2;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
@@ -63,7 +63,7 @@ public class DistroVersion {
      * The length of a well-formed distro version file:
      * {Distro version}|{Rule version}|{Revision}
      */
-    static final int DISTRO_VERSION_FILE_LENGTH = FORMAT_VERSION_STRING_LENGTH + 1
+    public static final int DISTRO_VERSION_FILE_LENGTH = FORMAT_VERSION_STRING_LENGTH + 1
             + RULES_VERSION_LENGTH
             + 1 + REVISION_LENGTH;
 

@@ -14,22 +14,33 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-# The classes needed to handle installation of time zone updates.
+# Library of support classes for tzdata updates. Used on-device for handling distros and for
+# testing.
 include $(CLEAR_VARS)
-LOCAL_MODULE := tzdata_update2
+LOCAL_MODULE := tzdata_shared2
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_JAVA_LIBRARIES := tzdata_shared2
+LOCAL_JAVA_LIBRARIES := core-oj core-libart
+LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
+# Library of support classes for tzdata updates. Used on host for host-side tests.
+include $(CLEAR_VARS)
+LOCAL_MODULE := tzdata_shared2-host
+LOCAL_MODULE_TAGS := optional
+LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
+LOCAL_JAVACFLAGS := -encoding UTF-8
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+include $(BUILD_HOST_JAVA_LIBRARY)
+
 # Tests for tzdata_update2 code
 include $(CLEAR_VARS)
-LOCAL_MODULE := tzdata_update2-tests
+LOCAL_MODULE := tzdata_shared2-tests
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/test)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_STATIC_JAVA_LIBRARIES := tzdata_shared2 tzdata_update2 tzdata_tools2 tzdata-testing junit
+LOCAL_STATIC_JAVA_LIBRARIES := tzdata_shared2 junit
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)

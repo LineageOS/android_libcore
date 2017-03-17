@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.tzdata.update2;
+package libcore.tzdata.shared2;
 
 /**
  * A checked exception used in connection with time zone distro creation / installation.
