@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#define LOG_TAG "Posix"
+#define LOG_TAG "Linux"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -100,7 +100,7 @@ static bool isIPv4MappedAddress(const sockaddr *sa) {
  *
  * This is needed because all sockets created by the java.net APIs are IPv6 sockets, and on those
  * sockets, IPv4 operations use IPv4-mapped addresses stored in a struct sockaddr_in6. But sockets
- * created using Posix.socket(AF_INET, ...) are IPv4 sockets and only support operations using IPv4
+ * created using Linux.socket(AF_INET, ...) are IPv4 sockets and only support operations using IPv4
  * socket addresses structures.
  */
 #define NET_IPV4_FALLBACK(jni_env, return_type, syscall_name, java_fd, java_addr, port, null_addr_ok, args...) ({ \
@@ -732,7 +732,7 @@ private:
     struct passwd* mResult;
 };
 
-static jobject Posix_accept(JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
+static jobject Linux_accept(JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
     sockaddr_storage ss;
     socklen_t sl = sizeof(ss);
     memset(&ss, 0, sizeof(ss));
@@ -746,7 +746,7 @@ static jobject Posix_accept(JNIEnv* env, jobject, jobject javaFd, jobject javaSo
     return (clientFd != -1) ? jniCreateFileDescriptor(env, clientFd) : NULL;
 }
 
-static jboolean Posix_access(JNIEnv* env, jobject, jstring javaPath, jint mode) {
+static jboolean Linux_access(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return JNI_FALSE;
@@ -758,12 +758,12 @@ static jboolean Posix_access(JNIEnv* env, jobject, jstring javaPath, jint mode) 
     return (rc == 0);
 }
 
-static void Posix_bind(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
+static void Linux_bind(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
     // We don't need the return value because we'll already have thrown.
     (void) NET_IPV4_FALLBACK(env, int, bind, javaFd, javaAddress, port, NULL_ADDR_FORBIDDEN);
 }
 
-static void Posix_bindSocketAddress(
+static void Linux_bindSocketAddress(
         JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
     sockaddr_storage ss;
     socklen_t sa_len;
@@ -776,7 +776,7 @@ static void Posix_bindSocketAddress(
     (void) NET_FAILURE_RETRY(env, int, bind, javaFd, sa, sa_len);
 }
 
-static void Posix_chmod(JNIEnv* env, jobject, jstring javaPath, jint mode) {
+static void Linux_chmod(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -784,7 +784,7 @@ static void Posix_chmod(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     throwIfMinusOne(env, "chmod", TEMP_FAILURE_RETRY(chmod(path.c_str(), mode)));
 }
 
-static void Posix_chown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint gid) {
+static void Linux_chown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint gid) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -792,7 +792,7 @@ static void Posix_chown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint g
     throwIfMinusOne(env, "chown", TEMP_FAILURE_RETRY(chown(path.c_str(), uid, gid)));
 }
 
-static void Posix_close(JNIEnv* env, jobject, jobject javaFd) {
+static void Linux_close(JNIEnv* env, jobject, jobject javaFd) {
     // Get the FileDescriptor's 'fd' field and clear it.
     // We need to do this before we can throw an IOException (http://b/3222087).
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
@@ -804,11 +804,11 @@ static void Posix_close(JNIEnv* env, jobject, jobject javaFd) {
     throwIfMinusOne(env, "close", close(fd));
 }
 
-static void Posix_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
+static void Linux_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
     (void) NET_IPV4_FALLBACK(env, int, connect, javaFd, javaAddress, port, NULL_ADDR_FORBIDDEN);
 }
 
-static void Posix_connectSocketAddress(
+static void Linux_connectSocketAddress(
         JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
     sockaddr_storage ss;
     socklen_t sa_len;
@@ -821,24 +821,24 @@ static void Posix_connectSocketAddress(
     (void) NET_FAILURE_RETRY(env, int, connect, javaFd, sa, sa_len);
 }
 
-static jobject Posix_dup(JNIEnv* env, jobject, jobject javaOldFd) {
+static jobject Linux_dup(JNIEnv* env, jobject, jobject javaOldFd) {
     int oldFd = jniGetFDFromFileDescriptor(env, javaOldFd);
     int newFd = throwIfMinusOne(env, "dup", TEMP_FAILURE_RETRY(dup(oldFd)));
     return (newFd != -1) ? jniCreateFileDescriptor(env, newFd) : NULL;
 }
 
-static jobject Posix_dup2(JNIEnv* env, jobject, jobject javaOldFd, jint newFd) {
+static jobject Linux_dup2(JNIEnv* env, jobject, jobject javaOldFd, jint newFd) {
     int oldFd = jniGetFDFromFileDescriptor(env, javaOldFd);
     int fd = throwIfMinusOne(env, "dup2", TEMP_FAILURE_RETRY(dup2(oldFd, newFd)));
     return (fd != -1) ? jniCreateFileDescriptor(env, fd) : NULL;
 }
 
-static jobjectArray Posix_environ(JNIEnv* env, jobject) {
+static jobjectArray Linux_environ(JNIEnv* env, jobject) {
     extern char** environ; // Standard, but not in any header file.
     return toStringArray(env, environ);
 }
 
-static void Posix_execve(JNIEnv* env, jobject, jstring javaFilename, jobjectArray javaArgv, jobjectArray javaEnvp) {
+static void Linux_execve(JNIEnv* env, jobject, jstring javaFilename, jobjectArray javaArgv, jobjectArray javaEnvp) {
     ScopedUtfChars path(env, javaFilename);
     if (path.c_str() == NULL) {
         return;
@@ -851,7 +851,7 @@ static void Posix_execve(JNIEnv* env, jobject, jstring javaFilename, jobjectArra
     throwErrnoException(env, "execve");
 }
 
-static void Posix_execv(JNIEnv* env, jobject, jstring javaFilename, jobjectArray javaArgv) {
+static void Linux_execv(JNIEnv* env, jobject, jstring javaFilename, jobjectArray javaArgv) {
     ScopedUtfChars path(env, javaFilename);
     if (path.c_str() == NULL) {
         return;
@@ -863,17 +863,17 @@ static void Posix_execv(JNIEnv* env, jobject, jstring javaFilename, jobjectArray
     throwErrnoException(env, "execv");
 }
 
-static void Posix_fchmod(JNIEnv* env, jobject, jobject javaFd, jint mode) {
+static void Linux_fchmod(JNIEnv* env, jobject, jobject javaFd, jint mode) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "fchmod", TEMP_FAILURE_RETRY(fchmod(fd, mode)));
 }
 
-static void Posix_fchown(JNIEnv* env, jobject, jobject javaFd, jint uid, jint gid) {
+static void Linux_fchown(JNIEnv* env, jobject, jobject javaFd, jint uid, jint gid) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "fchown", TEMP_FAILURE_RETRY(fchown(fd, uid, gid)));
 }
 
-static jint Posix_fcntlFlock(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobject javaFlock) {
+static jint Linux_fcntlFlock(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobject javaFlock) {
     static jfieldID typeFid = env->GetFieldID(JniConstants::structFlockClass, "l_type", "S");
     static jfieldID whenceFid = env->GetFieldID(JniConstants::structFlockClass, "l_whence", "S");
     static jfieldID startFid = env->GetFieldID(JniConstants::structFlockClass, "l_start", "J");
@@ -899,22 +899,22 @@ static jint Posix_fcntlFlock(JNIEnv* env, jobject, jobject javaFd, jint cmd, job
     return rc;
 }
 
-static jint Posix_fcntlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jint arg) {
+static jint Linux_fcntlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jint arg) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return throwIfMinusOne(env, "fcntl", TEMP_FAILURE_RETRY(fcntl(fd, cmd, arg)));
 }
 
-static jint Posix_fcntlVoid(JNIEnv* env, jobject, jobject javaFd, jint cmd) {
+static jint Linux_fcntlVoid(JNIEnv* env, jobject, jobject javaFd, jint cmd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return throwIfMinusOne(env, "fcntl", TEMP_FAILURE_RETRY(fcntl(fd, cmd)));
 }
 
-static void Posix_fdatasync(JNIEnv* env, jobject, jobject javaFd) {
+static void Linux_fdatasync(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "fdatasync", TEMP_FAILURE_RETRY(fdatasync(fd)));
 }
 
-static jobject Posix_fstat(JNIEnv* env, jobject, jobject javaFd) {
+static jobject Linux_fstat(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     struct stat64 sb;
     int rc = TEMP_FAILURE_RETRY(fstat64(fd, &sb));
@@ -925,7 +925,7 @@ static jobject Posix_fstat(JNIEnv* env, jobject, jobject javaFd) {
     return makeStructStat(env, sb);
 }
 
-static jobject Posix_fstatvfs(JNIEnv* env, jobject, jobject javaFd) {
+static jobject Linux_fstatvfs(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     struct statvfs sb;
     int rc = TEMP_FAILURE_RETRY(fstatvfs(fd, &sb));
@@ -936,21 +936,21 @@ static jobject Posix_fstatvfs(JNIEnv* env, jobject, jobject javaFd) {
     return makeStructStatVfs(env, sb);
 }
 
-static void Posix_fsync(JNIEnv* env, jobject, jobject javaFd) {
+static void Linux_fsync(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "fsync", TEMP_FAILURE_RETRY(fsync(fd)));
 }
 
-static void Posix_ftruncate(JNIEnv* env, jobject, jobject javaFd, jlong length) {
+static void Linux_ftruncate(JNIEnv* env, jobject, jobject javaFd, jlong length) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "ftruncate", TEMP_FAILURE_RETRY(ftruncate64(fd, length)));
 }
 
-static jstring Posix_gai_strerror(JNIEnv* env, jobject, jint error) {
+static jstring Linux_gai_strerror(JNIEnv* env, jobject, jint error) {
     return env->NewStringUTF(gai_strerror(error));
 }
 
-static jobjectArray Posix_android_getaddrinfo(JNIEnv* env, jobject, jstring javaNode,
+static jobjectArray Linux_android_getaddrinfo(JNIEnv* env, jobject, jstring javaNode,
         jobject javaHints, jint netId) {
     ScopedUtfChars node(env, javaNode);
     if (node.c_str() == NULL) {
@@ -1018,19 +1018,19 @@ static jobjectArray Posix_android_getaddrinfo(JNIEnv* env, jobject, jstring java
     return result;
 }
 
-static jint Posix_getegid(JNIEnv*, jobject) {
+static jint Linux_getegid(JNIEnv*, jobject) {
     return getegid();
 }
 
-static jint Posix_geteuid(JNIEnv*, jobject) {
+static jint Linux_geteuid(JNIEnv*, jobject) {
     return geteuid();
 }
 
-static jint Posix_getgid(JNIEnv*, jobject) {
+static jint Linux_getgid(JNIEnv*, jobject) {
     return getgid();
 }
 
-static jstring Posix_getenv(JNIEnv* env, jobject, jstring javaName) {
+static jstring Linux_getenv(JNIEnv* env, jobject, jstring javaName) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return NULL;
@@ -1038,7 +1038,7 @@ static jstring Posix_getenv(JNIEnv* env, jobject, jstring javaName) {
     return env->NewStringUTF(getenv(name.c_str()));
 }
 
-static jstring Posix_getnameinfo(JNIEnv* env, jobject, jobject javaAddress, jint flags) {
+static jstring Linux_getnameinfo(JNIEnv* env, jobject, jobject javaAddress, jint flags) {
     sockaddr_storage ss;
     socklen_t sa_len;
     if (!inetAddressToSockaddrVerbatim(env, javaAddress, 0, ss, sa_len)) {
@@ -1054,23 +1054,23 @@ static jstring Posix_getnameinfo(JNIEnv* env, jobject, jobject javaAddress, jint
     return env->NewStringUTF(buf);
 }
 
-static jobject Posix_getpeername(JNIEnv* env, jobject, jobject javaFd) {
+static jobject Linux_getpeername(JNIEnv* env, jobject, jobject javaFd) {
   return doGetSockName(env, javaFd, false);
 }
 
-static jint Posix_getpgid(JNIEnv* env, jobject, jint pid) {
+static jint Linux_getpgid(JNIEnv* env, jobject, jint pid) {
     return throwIfMinusOne(env, "getpgid", TEMP_FAILURE_RETRY(getpgid(pid)));
 }
 
-static jint Posix_getpid(JNIEnv*, jobject) {
+static jint Linux_getpid(JNIEnv*, jobject) {
     return TEMP_FAILURE_RETRY(getpid());
 }
 
-static jint Posix_getppid(JNIEnv*, jobject) {
+static jint Linux_getppid(JNIEnv*, jobject) {
     return TEMP_FAILURE_RETRY(getppid());
 }
 
-static jobject Posix_getpwnam(JNIEnv* env, jobject, jstring javaName) {
+static jobject Linux_getpwnam(JNIEnv* env, jobject, jstring javaName) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return NULL;
@@ -1078,15 +1078,15 @@ static jobject Posix_getpwnam(JNIEnv* env, jobject, jstring javaName) {
     return Passwd(env).getpwnam(name.c_str());
 }
 
-static jobject Posix_getpwuid(JNIEnv* env, jobject, jint uid) {
+static jobject Linux_getpwuid(JNIEnv* env, jobject, jint uid) {
     return Passwd(env).getpwuid(uid);
 }
 
-static jobject Posix_getsockname(JNIEnv* env, jobject, jobject javaFd) {
+static jobject Linux_getsockname(JNIEnv* env, jobject, jobject javaFd) {
   return doGetSockName(env, javaFd, true);
 }
 
-static jint Posix_getsockoptByte(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jint Linux_getsockoptByte(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     u_char result = 0;
     socklen_t size = sizeof(result);
@@ -1094,7 +1094,7 @@ static jint Posix_getsockoptByte(JNIEnv* env, jobject, jobject javaFd, jint leve
     return result;
 }
 
-static jobject Posix_getsockoptInAddr(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jobject Linux_getsockoptInAddr(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     sockaddr_storage ss;
     memset(&ss, 0, sizeof(ss));
@@ -1109,7 +1109,7 @@ static jobject Posix_getsockoptInAddr(JNIEnv* env, jobject, jobject javaFd, jint
     return sockaddrToInetAddress(env, ss, NULL);
 }
 
-static jint Posix_getsockoptInt(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jint Linux_getsockoptInt(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     jint result = 0;
     socklen_t size = sizeof(result);
@@ -1117,7 +1117,7 @@ static jint Posix_getsockoptInt(JNIEnv* env, jobject, jobject javaFd, jint level
     return result;
 }
 
-static jobject Posix_getsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jobject Linux_getsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     struct linger l;
     socklen_t size = sizeof(l);
@@ -1130,7 +1130,7 @@ static jobject Posix_getsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint
     return makeStructLinger(env, l);
 }
 
-static jobject Posix_getsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jobject Linux_getsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     struct timeval tv;
     socklen_t size = sizeof(tv);
@@ -1143,7 +1143,7 @@ static jobject Posix_getsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jin
     return makeStructTimeval(env, tv);
 }
 
-static jobject Posix_getsockoptUcred(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
+static jobject Linux_getsockoptUcred(JNIEnv* env, jobject, jobject javaFd, jint level, jint option) {
   int fd = jniGetFDFromFileDescriptor(env, javaFd);
   struct ucred u;
   socklen_t size = sizeof(u);
@@ -1156,7 +1156,7 @@ static jobject Posix_getsockoptUcred(JNIEnv* env, jobject, jobject javaFd, jint 
   return makeStructUcred(env, u);
 }
 
-static jint Posix_gettid(JNIEnv* env __unused, jobject) {
+static jint Linux_gettid(JNIEnv* env __unused, jobject) {
 #if defined(__BIONIC__)
   return TEMP_FAILURE_RETRY(gettid());
 #else
@@ -1164,11 +1164,11 @@ static jint Posix_gettid(JNIEnv* env __unused, jobject) {
 #endif
 }
 
-static jint Posix_getuid(JNIEnv*, jobject) {
+static jint Linux_getuid(JNIEnv*, jobject) {
     return getuid();
 }
 
-static jbyteArray Posix_getxattr(JNIEnv* env, jobject, jstring javaPath,
+static jbyteArray Linux_getxattr(JNIEnv* env, jobject, jstring javaPath,
         jstring javaName) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
@@ -1207,7 +1207,7 @@ static jbyteArray Posix_getxattr(JNIEnv* env, jobject, jstring javaPath,
     }
 }
 
-static jobjectArray Posix_getifaddrs(JNIEnv* env, jobject) {
+static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
     static jmethodID ctor = env->GetMethodID(JniConstants::structIfaddrs, "<init>",
             "(Ljava/lang/String;ILjava/net/InetAddress;Ljava/net/InetAddress;Ljava/net/InetAddress;[B)V");
 
@@ -1302,7 +1302,7 @@ static jobjectArray Posix_getifaddrs(JNIEnv* env, jobject) {
     return result;
 }
 
-static jstring Posix_if_indextoname(JNIEnv* env, jobject, jint index) {
+static jstring Linux_if_indextoname(JNIEnv* env, jobject, jint index) {
     char buf[IF_NAMESIZE];
     char* name = if_indextoname(index, buf);
     // if_indextoname(3) returns NULL on failure, which will come out of NewStringUTF unscathed.
@@ -1310,7 +1310,7 @@ static jstring Posix_if_indextoname(JNIEnv* env, jobject, jint index) {
     return env->NewStringUTF(name);
 }
 
-static jint Posix_if_nametoindex(JNIEnv* env, jobject, jstring name) {
+static jint Linux_if_nametoindex(JNIEnv* env, jobject, jstring name) {
     ScopedUtfChars cname(env, name);
     if (cname.c_str() == NULL) {
         return 0;
@@ -1320,7 +1320,7 @@ static jint Posix_if_nametoindex(JNIEnv* env, jobject, jstring name) {
     return if_nametoindex(cname.c_str());
 }
 
-static jobject Posix_inet_pton(JNIEnv* env, jobject, jint family, jstring javaName) {
+static jobject Linux_inet_pton(JNIEnv* env, jobject, jint family, jstring javaName) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return NULL;
@@ -1336,7 +1336,7 @@ static jobject Posix_inet_pton(JNIEnv* env, jobject, jint family, jstring javaNa
     return sockaddrToInetAddress(env, ss, NULL);
 }
 
-static jint Posix_ioctlFlags(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
+static jint Linux_ioctlFlags(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
      struct ifreq req;
      if (!fillIfreq(env, javaInterfaceName, req)) {
         return 0;
@@ -1346,7 +1346,7 @@ static jint Posix_ioctlFlags(JNIEnv* env, jobject, jobject javaFd, jstring javaI
      return req.ifr_flags;
 }
 
-static jobject Posix_ioctlInetAddress(JNIEnv* env, jobject, jobject javaFd, jint cmd, jstring javaInterfaceName) {
+static jobject Linux_ioctlInetAddress(JNIEnv* env, jobject, jobject javaFd, jint cmd, jstring javaInterfaceName) {
     struct ifreq req;
     if (!fillIfreq(env, javaInterfaceName, req)) {
         return NULL;
@@ -1359,7 +1359,7 @@ static jobject Posix_ioctlInetAddress(JNIEnv* env, jobject, jobject javaFd, jint
     return sockaddrToInetAddress(env, reinterpret_cast<sockaddr_storage&>(req.ifr_addr), NULL);
 }
 
-static jint Posix_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobject javaArg) {
+static jint Linux_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobject javaArg) {
     // This is complicated because ioctls may return their result by updating their argument
     // or via their return value, so we need to support both.
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
@@ -1372,7 +1372,7 @@ static jint Posix_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobje
     return rc;
 }
 
-static jint Posix_ioctlMTU(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
+static jint Linux_ioctlMTU(JNIEnv* env, jobject, jobject javaFd, jstring javaInterfaceName) {
      struct ifreq req;
      if (!fillIfreq(env, javaInterfaceName, req)) {
         return 0;
@@ -1382,16 +1382,16 @@ static jint Posix_ioctlMTU(JNIEnv* env, jobject, jobject javaFd, jstring javaInt
      return req.ifr_mtu;
 }
 
-static jboolean Posix_isatty(JNIEnv* env, jobject, jobject javaFd) {
+static jboolean Linux_isatty(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return TEMP_FAILURE_RETRY(isatty(fd)) == 1;
 }
 
-static void Posix_kill(JNIEnv* env, jobject, jint pid, jint sig) {
+static void Linux_kill(JNIEnv* env, jobject, jint pid, jint sig) {
     throwIfMinusOne(env, "kill", TEMP_FAILURE_RETRY(kill(pid, sig)));
 }
 
-static void Posix_lchown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint gid) {
+static void Linux_lchown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint gid) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -1399,7 +1399,7 @@ static void Posix_lchown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint 
     throwIfMinusOne(env, "lchown", TEMP_FAILURE_RETRY(lchown(path.c_str(), uid, gid)));
 }
 
-static void Posix_link(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
+static void Linux_link(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
     ScopedUtfChars oldPath(env, javaOldPath);
     if (oldPath.c_str() == NULL) {
         return;
@@ -1411,12 +1411,12 @@ static void Posix_link(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNe
     throwIfMinusOne(env, "link", TEMP_FAILURE_RETRY(link(oldPath.c_str(), newPath.c_str())));
 }
 
-static void Posix_listen(JNIEnv* env, jobject, jobject javaFd, jint backlog) {
+static void Linux_listen(JNIEnv* env, jobject, jobject javaFd, jint backlog) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "listen", TEMP_FAILURE_RETRY(listen(fd, backlog)));
 }
 
-static jobjectArray Posix_listxattr(JNIEnv* env, jobject, jstring javaPath) {
+static jobjectArray Linux_listxattr(JNIEnv* env, jobject, jstring javaPath) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return NULL;
@@ -1451,16 +1451,16 @@ static jobjectArray Posix_listxattr(JNIEnv* env, jobject, jstring javaPath) {
     }
 }
 
-static jlong Posix_lseek(JNIEnv* env, jobject, jobject javaFd, jlong offset, jint whence) {
+static jlong Linux_lseek(JNIEnv* env, jobject, jobject javaFd, jlong offset, jint whence) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return throwIfMinusOne(env, "lseek", TEMP_FAILURE_RETRY(lseek64(fd, offset, whence)));
 }
 
-static jobject Posix_lstat(JNIEnv* env, jobject, jstring javaPath) {
+static jobject Linux_lstat(JNIEnv* env, jobject, jstring javaPath) {
     return doStat(env, javaPath, true);
 }
 
-static void Posix_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, jbyteArray javaVector) {
+static void Linux_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, jbyteArray javaVector) {
     ScopedByteArrayRW vector(env, javaVector);
     if (vector.get() == NULL) {
         return;
@@ -1470,7 +1470,7 @@ static void Posix_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, 
     throwIfMinusOne(env, "mincore", TEMP_FAILURE_RETRY(mincore(ptr, byteCount, vec)));
 }
 
-static void Posix_mkdir(JNIEnv* env, jobject, jstring javaPath, jint mode) {
+static void Linux_mkdir(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -1478,7 +1478,7 @@ static void Posix_mkdir(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     throwIfMinusOne(env, "mkdir", TEMP_FAILURE_RETRY(mkdir(path.c_str(), mode)));
 }
 
-static void Posix_mkfifo(JNIEnv* env, jobject, jstring javaPath, jint mode) {
+static void Linux_mkfifo(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -1486,12 +1486,12 @@ static void Posix_mkfifo(JNIEnv* env, jobject, jstring javaPath, jint mode) {
     throwIfMinusOne(env, "mkfifo", TEMP_FAILURE_RETRY(mkfifo(path.c_str(), mode)));
 }
 
-static void Posix_mlock(JNIEnv* env, jobject, jlong address, jlong byteCount) {
+static void Linux_mlock(JNIEnv* env, jobject, jlong address, jlong byteCount) {
     void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
     throwIfMinusOne(env, "mlock", TEMP_FAILURE_RETRY(mlock(ptr, byteCount)));
 }
 
-static jlong Posix_mmap(JNIEnv* env, jobject, jlong address, jlong byteCount, jint prot, jint flags, jobject javaFd, jlong offset) {
+static jlong Linux_mmap(JNIEnv* env, jobject, jlong address, jlong byteCount, jint prot, jint flags, jobject javaFd, jlong offset) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     void* suggestedPtr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
     void* ptr = mmap64(suggestedPtr, byteCount, prot, flags, fd, offset);
@@ -1501,22 +1501,22 @@ static jlong Posix_mmap(JNIEnv* env, jobject, jlong address, jlong byteCount, ji
     return static_cast<jlong>(reinterpret_cast<uintptr_t>(ptr));
 }
 
-static void Posix_msync(JNIEnv* env, jobject, jlong address, jlong byteCount, jint flags) {
+static void Linux_msync(JNIEnv* env, jobject, jlong address, jlong byteCount, jint flags) {
     void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
     throwIfMinusOne(env, "msync", TEMP_FAILURE_RETRY(msync(ptr, byteCount, flags)));
 }
 
-static void Posix_munlock(JNIEnv* env, jobject, jlong address, jlong byteCount) {
+static void Linux_munlock(JNIEnv* env, jobject, jlong address, jlong byteCount) {
     void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
     throwIfMinusOne(env, "munlock", TEMP_FAILURE_RETRY(munlock(ptr, byteCount)));
 }
 
-static void Posix_munmap(JNIEnv* env, jobject, jlong address, jlong byteCount) {
+static void Linux_munmap(JNIEnv* env, jobject, jlong address, jlong byteCount) {
     void* ptr = reinterpret_cast<void*>(static_cast<uintptr_t>(address));
     throwIfMinusOne(env, "munmap", TEMP_FAILURE_RETRY(munmap(ptr, byteCount)));
 }
 
-static jobject Posix_open(JNIEnv* env, jobject, jstring javaPath, jint flags, jint mode) {
+static jobject Linux_open(JNIEnv* env, jobject, jstring javaPath, jint flags, jint mode) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return NULL;
@@ -1525,7 +1525,7 @@ static jobject Posix_open(JNIEnv* env, jobject, jstring javaPath, jint flags, ji
     return fd != -1 ? jniCreateFileDescriptor(env, fd) : NULL;
 }
 
-static jobjectArray Posix_pipe2(JNIEnv* env, jobject, jint flags __unused) {
+static jobjectArray Linux_pipe2(JNIEnv* env, jobject, jint flags __unused) {
     int fds[2];
     throwIfMinusOne(env, "pipe2", TEMP_FAILURE_RETRY(pipe2(&fds[0], flags)));
     jobjectArray result = env->NewObjectArray(2, JniConstants::fileDescriptorClass, NULL);
@@ -1545,7 +1545,7 @@ static jobjectArray Posix_pipe2(JNIEnv* env, jobject, jint flags __unused) {
     return result;
 }
 
-static jint Posix_poll(JNIEnv* env, jobject, jobjectArray javaStructs, jint timeoutMs) {
+static jint Linux_poll(JNIEnv* env, jobject, jobjectArray javaStructs, jint timeoutMs) {
     static jfieldID fdFid = env->GetFieldID(JniConstants::structPollfdClass, "fd", "Ljava/io/FileDescriptor;");
     static jfieldID eventsFid = env->GetFieldID(JniConstants::structPollfdClass, "events", "S");
     static jfieldID reventsFid = env->GetFieldID(JniConstants::structPollfdClass, "revents", "S");
@@ -1626,7 +1626,7 @@ static jint Posix_poll(JNIEnv* env, jobject, jobjectArray javaStructs, jint time
     return rc;
 }
 
-static void Posix_posix_fallocate(JNIEnv* env, jobject, jobject javaFd __unused,
+static void Linux_posix_fallocate(JNIEnv* env, jobject, jobject javaFd __unused,
                                   jlong offset __unused, jlong length __unused) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     while ((errno = posix_fallocate64(fd, offset, length)) == EINTR) {
@@ -1636,7 +1636,7 @@ static void Posix_posix_fallocate(JNIEnv* env, jobject, jobject javaFd __unused,
     }
 }
 
-static jint Posix_prctl(JNIEnv* env, jobject, jint option __unused, jlong arg2 __unused,
+static jint Linux_prctl(JNIEnv* env, jobject, jint option __unused, jlong arg2 __unused,
                         jlong arg3 __unused, jlong arg4 __unused, jlong arg5 __unused) {
     int result = TEMP_FAILURE_RETRY(prctl(static_cast<int>(option),
                                           static_cast<unsigned long>(arg2),
@@ -1646,7 +1646,7 @@ static jint Posix_prctl(JNIEnv* env, jobject, jint option __unused, jlong arg2 _
     return throwIfMinusOne(env, "prctl", result);
 }
 
-static jint Posix_preadBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jlong offset) {
+static jint Linux_preadBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jlong offset) {
     ScopedBytesRW bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -1654,7 +1654,7 @@ static jint Posix_preadBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaB
     return IO_FAILURE_RETRY(env, ssize_t, pread64, javaFd, bytes.get() + byteOffset, byteCount, offset);
 }
 
-static jint Posix_pwriteBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray javaBytes, jint byteOffset, jint byteCount, jlong offset) {
+static jint Linux_pwriteBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray javaBytes, jint byteOffset, jint byteCount, jlong offset) {
     ScopedBytesRO bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -1662,7 +1662,7 @@ static jint Posix_pwriteBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray j
     return IO_FAILURE_RETRY(env, ssize_t, pwrite64, javaFd, bytes.get() + byteOffset, byteCount, offset);
 }
 
-static jint Posix_readBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount) {
+static jint Linux_readBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount) {
     ScopedBytesRW bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -1670,7 +1670,7 @@ static jint Posix_readBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBy
     return IO_FAILURE_RETRY(env, ssize_t, read, javaFd, bytes.get() + byteOffset, byteCount);
 }
 
-static jstring Posix_readlink(JNIEnv* env, jobject, jstring javaPath) {
+static jstring Linux_readlink(JNIEnv* env, jobject, jstring javaPath) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return NULL;
@@ -1684,7 +1684,7 @@ static jstring Posix_readlink(JNIEnv* env, jobject, jstring javaPath) {
     return env->NewStringUTF(result.c_str());
 }
 
-static jstring Posix_realpath(JNIEnv* env, jobject, jstring javaPath) {
+static jstring Linux_realpath(JNIEnv* env, jobject, jstring javaPath) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return NULL;
@@ -1699,7 +1699,7 @@ static jstring Posix_realpath(JNIEnv* env, jobject, jstring javaPath) {
     return env->NewStringUTF(real_path.get());
 }
 
-static jint Posix_readv(JNIEnv* env, jobject, jobject javaFd, jobjectArray buffers, jintArray offsets, jintArray byteCounts) {
+static jint Linux_readv(JNIEnv* env, jobject, jobject javaFd, jobjectArray buffers, jintArray offsets, jintArray byteCounts) {
     IoVec<ScopedBytesRW> ioVec(env, env->GetArrayLength(buffers));
     if (!ioVec.init(buffers, offsets, byteCounts)) {
         return -1;
@@ -1707,7 +1707,7 @@ static jint Posix_readv(JNIEnv* env, jobject, jobject javaFd, jobjectArray buffe
     return IO_FAILURE_RETRY(env, ssize_t, readv, javaFd, ioVec.get(), ioVec.size());
 }
 
-static jint Posix_recvfromBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaInetSocketAddress) {
+static jint Linux_recvfromBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaInetSocketAddress) {
     ScopedBytesRW bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -1729,7 +1729,7 @@ static jint Posix_recvfromBytes(JNIEnv* env, jobject, jobject javaFd, jobject ja
     return recvCount;
 }
 
-static void Posix_remove(JNIEnv* env, jobject, jstring javaPath) {
+static void Linux_remove(JNIEnv* env, jobject, jstring javaPath) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -1737,7 +1737,7 @@ static void Posix_remove(JNIEnv* env, jobject, jstring javaPath) {
     throwIfMinusOne(env, "remove", TEMP_FAILURE_RETRY(remove(path.c_str())));
 }
 
-static void Posix_removexattr(JNIEnv* env, jobject, jstring javaPath, jstring javaName) {
+static void Linux_removexattr(JNIEnv* env, jobject, jstring javaPath, jstring javaName) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return;
@@ -1753,7 +1753,7 @@ static void Posix_removexattr(JNIEnv* env, jobject, jstring javaPath, jstring ja
     }
 }
 
-static void Posix_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
+static void Linux_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
     ScopedUtfChars oldPath(env, javaOldPath);
     if (oldPath.c_str() == NULL) {
         return;
@@ -1765,7 +1765,7 @@ static void Posix_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring java
     throwIfMinusOne(env, "rename", TEMP_FAILURE_RETRY(rename(oldPath.c_str(), newPath.c_str())));
 }
 
-static jlong Posix_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject javaInFd, jobject javaOffset, jlong byteCount) {
+static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject javaInFd, jobject javaOffset, jlong byteCount) {
     int outFd = jniGetFDFromFileDescriptor(env, javaOutFd);
     int inFd = jniGetFDFromFileDescriptor(env, javaInFd);
     static jfieldID valueFid = env->GetFieldID(JniConstants::mutableLongClass, "value", "J");
@@ -1783,7 +1783,7 @@ static jlong Posix_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject jav
     return result;
 }
 
-static jint Posix_sendtoBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaInetAddress, jint port) {
+static jint Linux_sendtoBytes(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaInetAddress, jint port) {
     ScopedBytesRO bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -1793,13 +1793,13 @@ static jint Posix_sendtoBytes(JNIEnv* env, jobject, jobject javaFd, jobject java
                              NULL_ADDR_OK, bytes.get() + byteOffset, byteCount, flags);
 }
 
-static jint Posix_sendtoBytesSocketAddress(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaSocketAddress) {
+static jint Linux_sendtoBytesSocketAddress(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaSocketAddress) {
     if (env->IsInstanceOf(javaSocketAddress, JniConstants::inetSocketAddressClass)) {
         // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
         jobject javaInetAddress;
         jint port;
         javaInetSocketAddressToInetAddressAndPort(env, javaSocketAddress, javaInetAddress, port);
-        return Posix_sendtoBytes(env, NULL, javaFd, javaBytes, byteOffset, byteCount, flags,
+        return Linux_sendtoBytes(env, NULL, javaFd, javaBytes, byteOffset, byteCount, flags,
                                  javaInetAddress, port);
     }
 
@@ -1819,11 +1819,11 @@ static jint Posix_sendtoBytesSocketAddress(JNIEnv* env, jobject, jobject javaFd,
     return NET_FAILURE_RETRY(env, ssize_t, sendto, javaFd, bytes.get() + byteOffset, byteCount, flags, sa, sa_len);
 }
 
-static void Posix_setegid(JNIEnv* env, jobject, jint egid) {
+static void Linux_setegid(JNIEnv* env, jobject, jint egid) {
     throwIfMinusOne(env, "setegid", TEMP_FAILURE_RETRY(setegid(egid)));
 }
 
-static void Posix_setenv(JNIEnv* env, jobject, jstring javaName, jstring javaValue, jboolean overwrite) {
+static void Linux_setenv(JNIEnv* env, jobject, jstring javaName, jstring javaValue, jboolean overwrite) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return;
@@ -1835,37 +1835,37 @@ static void Posix_setenv(JNIEnv* env, jobject, jstring javaName, jstring javaVal
     throwIfMinusOne(env, "setenv", setenv(name.c_str(), value.c_str(), overwrite));
 }
 
-static void Posix_seteuid(JNIEnv* env, jobject, jint euid) {
+static void Linux_seteuid(JNIEnv* env, jobject, jint euid) {
     throwIfMinusOne(env, "seteuid", TEMP_FAILURE_RETRY(seteuid(euid)));
 }
 
-static void Posix_setgid(JNIEnv* env, jobject, jint gid) {
+static void Linux_setgid(JNIEnv* env, jobject, jint gid) {
     throwIfMinusOne(env, "setgid", TEMP_FAILURE_RETRY(setgid(gid)));
 }
 
-static void Posix_setpgid(JNIEnv* env, jobject, jint pid, int pgid) {
+static void Linux_setpgid(JNIEnv* env, jobject, jint pid, int pgid) {
     throwIfMinusOne(env, "setpgid", TEMP_FAILURE_RETRY(setpgid(pid, pgid)));
 }
 
-static void Posix_setregid(JNIEnv* env, jobject, jint rgid, int egid) {
+static void Linux_setregid(JNIEnv* env, jobject, jint rgid, int egid) {
     throwIfMinusOne(env, "setregid", TEMP_FAILURE_RETRY(setregid(rgid, egid)));
 }
 
-static void Posix_setreuid(JNIEnv* env, jobject, jint ruid, int euid) {
+static void Linux_setreuid(JNIEnv* env, jobject, jint ruid, int euid) {
     throwIfMinusOne(env, "setreuid", TEMP_FAILURE_RETRY(setreuid(ruid, euid)));
 }
 
-static jint Posix_setsid(JNIEnv* env, jobject) {
+static jint Linux_setsid(JNIEnv* env, jobject) {
     return throwIfMinusOne(env, "setsid", TEMP_FAILURE_RETRY(setsid()));
 }
 
-static void Posix_setsockoptByte(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
+static void Linux_setsockoptByte(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     u_char byte = value;
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &byte, sizeof(byte))));
 }
 
-static void Posix_setsockoptIfreq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jstring javaInterfaceName) {
+static void Linux_setsockoptIfreq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jstring javaInterfaceName) {
     struct ifreq req;
     if (!fillIfreq(env, javaInterfaceName, req)) {
         return;
@@ -1874,12 +1874,12 @@ static void Posix_setsockoptIfreq(JNIEnv* env, jobject, jobject javaFd, jint lev
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &req, sizeof(req))));
 }
 
-static void Posix_setsockoptInt(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
+static void Linux_setsockoptInt(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &value, sizeof(value))));
 }
 
-static void Posix_setsockoptIpMreqn(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
+static void Linux_setsockoptIpMreqn(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jint value) {
     ip_mreqn req;
     memset(&req, 0, sizeof(req));
     req.imr_ifindex = value;
@@ -1887,7 +1887,7 @@ static void Posix_setsockoptIpMreqn(JNIEnv* env, jobject, jobject javaFd, jint l
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &req, sizeof(req))));
 }
 
-static void Posix_setsockoptGroupReq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaGroupReq) {
+static void Linux_setsockoptGroupReq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaGroupReq) {
     struct group_req req;
     memset(&req, 0, sizeof(req));
 
@@ -1920,7 +1920,7 @@ static void Posix_setsockoptGroupReq(JNIEnv* env, jobject, jobject javaFd, jint 
     throwIfMinusOne(env, "setsockopt", rc);
 }
 
-static void Posix_setsockoptGroupSourceReq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaGroupSourceReq) {
+static void Linux_setsockoptGroupSourceReq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaGroupSourceReq) {
     socklen_t sa_len;
     struct group_source_req req;
     memset(&req, 0, sizeof(req));
@@ -1962,7 +1962,7 @@ static void Posix_setsockoptGroupSourceReq(JNIEnv* env, jobject, jobject javaFd,
     throwIfMinusOne(env, "setsockopt", rc);
 }
 
-static void Posix_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaLinger) {
+static void Linux_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaLinger) {
     static jfieldID lOnoffFid = env->GetFieldID(JniConstants::structLingerClass, "l_onoff", "I");
     static jfieldID lLingerFid = env->GetFieldID(JniConstants::structLingerClass, "l_linger", "I");
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
@@ -1972,7 +1972,7 @@ static void Posix_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint le
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &value, sizeof(value))));
 }
 
-static void Posix_setsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaTimeval) {
+static void Linux_setsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaTimeval) {
     static jfieldID tvSecFid = env->GetFieldID(JniConstants::structTimevalClass, "tv_sec", "J");
     static jfieldID tvUsecFid = env->GetFieldID(JniConstants::structTimevalClass, "tv_usec", "J");
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
@@ -1982,11 +1982,11 @@ static void Posix_setsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint l
     throwIfMinusOne(env, "setsockopt", TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &value, sizeof(value))));
 }
 
-static void Posix_setuid(JNIEnv* env, jobject, jint uid) {
+static void Linux_setuid(JNIEnv* env, jobject, jint uid) {
     throwIfMinusOne(env, "setuid", TEMP_FAILURE_RETRY(setuid(uid)));
 }
 
-static void Posix_setxattr(JNIEnv* env, jobject, jstring javaPath, jstring javaName,
+static void Linux_setxattr(JNIEnv* env, jobject, jstring javaPath, jstring javaName,
         jbyteArray javaValue, jint flags) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
@@ -2007,12 +2007,12 @@ static void Posix_setxattr(JNIEnv* env, jobject, jstring javaPath, jstring javaN
     }
 }
 
-static void Posix_shutdown(JNIEnv* env, jobject, jobject javaFd, jint how) {
+static void Linux_shutdown(JNIEnv* env, jobject, jobject javaFd, jint how) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "shutdown", TEMP_FAILURE_RETRY(shutdown(fd, how)));
 }
 
-static jobject Posix_socket(JNIEnv* env, jobject, jint domain, jint type, jint protocol) {
+static jobject Linux_socket(JNIEnv* env, jobject, jint domain, jint type, jint protocol) {
     if (domain == AF_PACKET) {
         protocol = htons(protocol);  // Packet sockets specify the protocol in host byte order.
     }
@@ -2020,7 +2020,7 @@ static jobject Posix_socket(JNIEnv* env, jobject, jint domain, jint type, jint p
     return fd != -1 ? jniCreateFileDescriptor(env, fd) : NULL;
 }
 
-static void Posix_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint protocol, jobject javaFd1, jobject javaFd2) {
+static void Linux_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint protocol, jobject javaFd1, jobject javaFd2) {
     int fds[2];
     int rc = throwIfMinusOne(env, "socketpair", TEMP_FAILURE_RETRY(socketpair(domain, type, protocol, fds)));
     if (rc != -1) {
@@ -2029,11 +2029,11 @@ static void Posix_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint 
     }
 }
 
-static jobject Posix_stat(JNIEnv* env, jobject, jstring javaPath) {
+static jobject Linux_stat(JNIEnv* env, jobject, jstring javaPath) {
     return doStat(env, javaPath, false);
 }
 
-static jobject Posix_statvfs(JNIEnv* env, jobject, jstring javaPath) {
+static jobject Linux_statvfs(JNIEnv* env, jobject, jstring javaPath) {
     ScopedUtfChars path(env, javaPath);
     if (path.c_str() == NULL) {
         return NULL;
@@ -2047,17 +2047,17 @@ static jobject Posix_statvfs(JNIEnv* env, jobject, jstring javaPath) {
     return makeStructStatVfs(env, sb);
 }
 
-static jstring Posix_strerror(JNIEnv* env, jobject, jint errnum) {
+static jstring Linux_strerror(JNIEnv* env, jobject, jint errnum) {
     char buffer[BUFSIZ];
     const char* message = jniStrError(errnum, buffer, sizeof(buffer));
     return env->NewStringUTF(message);
 }
 
-static jstring Posix_strsignal(JNIEnv* env, jobject, jint signal) {
+static jstring Linux_strsignal(JNIEnv* env, jobject, jint signal) {
     return env->NewStringUTF(strsignal(signal));
 }
 
-static void Posix_symlink(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
+static void Linux_symlink(JNIEnv* env, jobject, jstring javaOldPath, jstring javaNewPath) {
     ScopedUtfChars oldPath(env, javaOldPath);
     if (oldPath.c_str() == NULL) {
         return;
@@ -2069,7 +2069,7 @@ static void Posix_symlink(JNIEnv* env, jobject, jstring javaOldPath, jstring jav
     throwIfMinusOne(env, "symlink", TEMP_FAILURE_RETRY(symlink(oldPath.c_str(), newPath.c_str())));
 }
 
-static jlong Posix_sysconf(JNIEnv* env, jobject, jint name) {
+static jlong Linux_sysconf(JNIEnv* env, jobject, jint name) {
     // Since -1 is a valid result from sysconf(3), detecting failure is a little more awkward.
     errno = 0;
     long result = sysconf(name);
@@ -2079,21 +2079,21 @@ static jlong Posix_sysconf(JNIEnv* env, jobject, jint name) {
     return result;
 }
 
-static void Posix_tcdrain(JNIEnv* env, jobject, jobject javaFd) {
+static void Linux_tcdrain(JNIEnv* env, jobject, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     throwIfMinusOne(env, "tcdrain", TEMP_FAILURE_RETRY(tcdrain(fd)));
 }
 
-static void Posix_tcsendbreak(JNIEnv* env, jobject, jobject javaFd, jint duration) {
+static void Linux_tcsendbreak(JNIEnv* env, jobject, jobject javaFd, jint duration) {
   int fd = jniGetFDFromFileDescriptor(env, javaFd);
   throwIfMinusOne(env, "tcsendbreak", TEMP_FAILURE_RETRY(tcsendbreak(fd, duration)));
 }
 
-static jint Posix_umaskImpl(JNIEnv*, jobject, jint mask) {
+static jint Linux_umaskImpl(JNIEnv*, jobject, jint mask) {
     return umask(mask);
 }
 
-static jobject Posix_uname(JNIEnv* env, jobject) {
+static jobject Linux_uname(JNIEnv* env, jobject) {
     struct utsname buf;
     if (TEMP_FAILURE_RETRY(uname(&buf)) == -1) {
         return NULL; // Can't happen.
@@ -2101,7 +2101,7 @@ static jobject Posix_uname(JNIEnv* env, jobject) {
     return makeStructUtsname(env, buf);
 }
 
-static void Posix_unlink(JNIEnv* env, jobject, jstring javaPathname) {
+static void Linux_unlink(JNIEnv* env, jobject, jstring javaPathname) {
     ScopedUtfChars pathname(env, javaPathname);
     if (pathname.c_str() == NULL) {
         return;
@@ -2109,7 +2109,7 @@ static void Posix_unlink(JNIEnv* env, jobject, jstring javaPathname) {
     throwIfMinusOne(env, "unlink", unlink(pathname.c_str()));
 }
 
-static void Posix_unsetenv(JNIEnv* env, jobject, jstring javaName) {
+static void Linux_unsetenv(JNIEnv* env, jobject, jstring javaName) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
         return;
@@ -2117,7 +2117,7 @@ static void Posix_unsetenv(JNIEnv* env, jobject, jstring javaName) {
     throwIfMinusOne(env, "unsetenv", unsetenv(name.c_str()));
 }
 
-static jint Posix_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, jint options) {
+static jint Linux_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, jint options) {
     int status;
     int rc = throwIfMinusOne(env, "waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)));
     if (rc != -1) {
@@ -2127,7 +2127,7 @@ static jint Posix_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, ji
     return rc;
 }
 
-static jint Posix_writeBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray javaBytes, jint byteOffset, jint byteCount) {
+static jint Linux_writeBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray javaBytes, jint byteOffset, jint byteCount) {
     ScopedBytesRO bytes(env, javaBytes);
     if (bytes.get() == NULL) {
         return -1;
@@ -2135,7 +2135,7 @@ static jint Posix_writeBytes(JNIEnv* env, jobject, jobject javaFd, jbyteArray ja
     return IO_FAILURE_RETRY(env, ssize_t, write, javaFd, bytes.get() + byteOffset, byteCount);
 }
 
-static jint Posix_writev(JNIEnv* env, jobject, jobject javaFd, jobjectArray buffers, jintArray offsets, jintArray byteCounts) {
+static jint Linux_writev(JNIEnv* env, jobject, jobject javaFd, jobjectArray buffers, jintArray offsets, jintArray byteCounts) {
     IoVec<ScopedBytesRO> ioVec(env, env->GetArrayLength(buffers));
     if (!ioVec.init(buffers, offsets, byteCounts)) {
         return -1;
@@ -2147,132 +2147,132 @@ static jint Posix_writev(JNIEnv* env, jobject, jobject javaFd, jobjectArray buff
     { #functionName, signature, reinterpret_cast<void*>(className ## _ ## functionName ## variant) }
 
 static JNINativeMethod gMethods[] = {
-    NATIVE_METHOD(Posix, accept, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, access, "(Ljava/lang/String;I)Z"),
-    NATIVE_METHOD(Posix, android_getaddrinfo, "(Ljava/lang/String;Landroid/system/StructAddrinfo;I)[Ljava/net/InetAddress;"),
-    NATIVE_METHOD(Posix, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
-    NATIVE_METHOD_OVERLOAD(Posix, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
-    NATIVE_METHOD(Posix, chmod, "(Ljava/lang/String;I)V"),
-    NATIVE_METHOD(Posix, chown, "(Ljava/lang/String;II)V"),
-    NATIVE_METHOD(Posix, close, "(Ljava/io/FileDescriptor;)V"),
-    NATIVE_METHOD(Posix, connect, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
-    NATIVE_METHOD_OVERLOAD(Posix, connect, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
-    NATIVE_METHOD(Posix, dup, "(Ljava/io/FileDescriptor;)Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, dup2, "(Ljava/io/FileDescriptor;I)Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, environ, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, execv, "(Ljava/lang/String;[Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, execve, "(Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, fchmod, "(Ljava/io/FileDescriptor;I)V"),
-    NATIVE_METHOD(Posix, fchown, "(Ljava/io/FileDescriptor;II)V"),
-    NATIVE_METHOD(Posix, fcntlFlock, "(Ljava/io/FileDescriptor;ILandroid/system/StructFlock;)I"),
-    NATIVE_METHOD(Posix, fcntlInt, "(Ljava/io/FileDescriptor;II)I"),
-    NATIVE_METHOD(Posix, fcntlVoid, "(Ljava/io/FileDescriptor;I)I"),
-    NATIVE_METHOD(Posix, fdatasync, "(Ljava/io/FileDescriptor;)V"),
-    NATIVE_METHOD(Posix, fstat, "(Ljava/io/FileDescriptor;)Landroid/system/StructStat;"),
-    NATIVE_METHOD(Posix, fstatvfs, "(Ljava/io/FileDescriptor;)Landroid/system/StructStatVfs;"),
-    NATIVE_METHOD(Posix, fsync, "(Ljava/io/FileDescriptor;)V"),
-    NATIVE_METHOD(Posix, ftruncate, "(Ljava/io/FileDescriptor;J)V"),
-    NATIVE_METHOD(Posix, gai_strerror, "(I)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, getegid, "()I"),
-    NATIVE_METHOD(Posix, geteuid, "()I"),
-    NATIVE_METHOD(Posix, getgid, "()I"),
-    NATIVE_METHOD(Posix, getenv, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, getnameinfo, "(Ljava/net/InetAddress;I)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, getpeername, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
-    NATIVE_METHOD(Posix, getpgid, "(I)I"),
-    NATIVE_METHOD(Posix, getpid, "()I"),
-    NATIVE_METHOD(Posix, getppid, "()I"),
-    NATIVE_METHOD(Posix, getpwnam, "(Ljava/lang/String;)Landroid/system/StructPasswd;"),
-    NATIVE_METHOD(Posix, getpwuid, "(I)Landroid/system/StructPasswd;"),
-    NATIVE_METHOD(Posix, getsockname, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
-    NATIVE_METHOD(Posix, getsockoptByte, "(Ljava/io/FileDescriptor;II)I"),
-    NATIVE_METHOD(Posix, getsockoptInAddr, "(Ljava/io/FileDescriptor;II)Ljava/net/InetAddress;"),
-    NATIVE_METHOD(Posix, getsockoptInt, "(Ljava/io/FileDescriptor;II)I"),
-    NATIVE_METHOD(Posix, getsockoptLinger, "(Ljava/io/FileDescriptor;II)Landroid/system/StructLinger;"),
-    NATIVE_METHOD(Posix, getsockoptTimeval, "(Ljava/io/FileDescriptor;II)Landroid/system/StructTimeval;"),
-    NATIVE_METHOD(Posix, getsockoptUcred, "(Ljava/io/FileDescriptor;II)Landroid/system/StructUcred;"),
-    NATIVE_METHOD(Posix, gettid, "()I"),
-    NATIVE_METHOD(Posix, getuid, "()I"),
-    NATIVE_METHOD(Posix, getxattr, "(Ljava/lang/String;Ljava/lang/String;)[B"),
-    NATIVE_METHOD(Posix, getifaddrs, "()[Landroid/system/StructIfaddrs;"),
-    NATIVE_METHOD(Posix, if_indextoname, "(I)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, if_nametoindex, "(Ljava/lang/String;)I"),
-    NATIVE_METHOD(Posix, inet_pton, "(ILjava/lang/String;)Ljava/net/InetAddress;"),
-    NATIVE_METHOD(Posix, ioctlFlags, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
-    NATIVE_METHOD(Posix, ioctlInetAddress, "(Ljava/io/FileDescriptor;ILjava/lang/String;)Ljava/net/InetAddress;"),
-    NATIVE_METHOD(Posix, ioctlInt, "(Ljava/io/FileDescriptor;ILandroid/util/MutableInt;)I"),
-    NATIVE_METHOD(Posix, ioctlMTU, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
-    NATIVE_METHOD(Posix, isatty, "(Ljava/io/FileDescriptor;)Z"),
-    NATIVE_METHOD(Posix, kill, "(II)V"),
-    NATIVE_METHOD(Posix, lchown, "(Ljava/lang/String;II)V"),
-    NATIVE_METHOD(Posix, link, "(Ljava/lang/String;Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, listen, "(Ljava/io/FileDescriptor;I)V"),
-    NATIVE_METHOD(Posix, listxattr, "(Ljava/lang/String;)[Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, lseek, "(Ljava/io/FileDescriptor;JI)J"),
-    NATIVE_METHOD(Posix, lstat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
-    NATIVE_METHOD(Posix, mincore, "(JJ[B)V"),
-    NATIVE_METHOD(Posix, mkdir, "(Ljava/lang/String;I)V"),
-    NATIVE_METHOD(Posix, mkfifo, "(Ljava/lang/String;I)V"),
-    NATIVE_METHOD(Posix, mlock, "(JJ)V"),
-    NATIVE_METHOD(Posix, mmap, "(JJIILjava/io/FileDescriptor;J)J"),
-    NATIVE_METHOD(Posix, msync, "(JJI)V"),
-    NATIVE_METHOD(Posix, munlock, "(JJ)V"),
-    NATIVE_METHOD(Posix, munmap, "(JJ)V"),
-    NATIVE_METHOD(Posix, open, "(Ljava/lang/String;II)Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, pipe2, "(I)[Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, poll, "([Landroid/system/StructPollfd;I)I"),
-    NATIVE_METHOD(Posix, posix_fallocate, "(Ljava/io/FileDescriptor;JJ)V"),
-    NATIVE_METHOD(Posix, prctl, "(IJJJJ)I"),
-    NATIVE_METHOD(Posix, preadBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIJ)I"),
-    NATIVE_METHOD(Posix, pwriteBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIJ)I"),
-    NATIVE_METHOD(Posix, readBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;II)I"),
-    NATIVE_METHOD(Posix, readlink, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, realpath, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, readv, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
-    NATIVE_METHOD(Posix, recvfromBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/InetSocketAddress;)I"),
-    NATIVE_METHOD(Posix, remove, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, removexattr, "(Ljava/lang/String;Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, rename, "(Ljava/lang/String;Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, sendfile, "(Ljava/io/FileDescriptor;Ljava/io/FileDescriptor;Landroid/util/MutableLong;J)J"),
-    NATIVE_METHOD(Posix, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/InetAddress;I)I"),
-    NATIVE_METHOD_OVERLOAD(Posix, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/SocketAddress;)I", SocketAddress),
-    NATIVE_METHOD(Posix, setegid, "(I)V"),
-    NATIVE_METHOD(Posix, setenv, "(Ljava/lang/String;Ljava/lang/String;Z)V"),
-    NATIVE_METHOD(Posix, seteuid, "(I)V"),
-    NATIVE_METHOD(Posix, setgid, "(I)V"),
-    NATIVE_METHOD(Posix, setpgid, "(II)V"),
-    NATIVE_METHOD(Posix, setregid, "(II)V"),
-    NATIVE_METHOD(Posix, setreuid, "(II)V"),
-    NATIVE_METHOD(Posix, setsid, "()I"),
-    NATIVE_METHOD(Posix, setsockoptByte, "(Ljava/io/FileDescriptor;III)V"),
-    NATIVE_METHOD(Posix, setsockoptIfreq, "(Ljava/io/FileDescriptor;IILjava/lang/String;)V"),
-    NATIVE_METHOD(Posix, setsockoptInt, "(Ljava/io/FileDescriptor;III)V"),
-    NATIVE_METHOD(Posix, setsockoptIpMreqn, "(Ljava/io/FileDescriptor;III)V"),
-    NATIVE_METHOD(Posix, setsockoptGroupReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupReq;)V"),
-    NATIVE_METHOD(Posix, setsockoptGroupSourceReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupSourceReq;)V"),
-    NATIVE_METHOD(Posix, setsockoptLinger, "(Ljava/io/FileDescriptor;IILandroid/system/StructLinger;)V"),
-    NATIVE_METHOD(Posix, setsockoptTimeval, "(Ljava/io/FileDescriptor;IILandroid/system/StructTimeval;)V"),
-    NATIVE_METHOD(Posix, setuid, "(I)V"),
-    NATIVE_METHOD(Posix, setxattr, "(Ljava/lang/String;Ljava/lang/String;[BI)V"),
-    NATIVE_METHOD(Posix, shutdown, "(Ljava/io/FileDescriptor;I)V"),
-    NATIVE_METHOD(Posix, socket, "(III)Ljava/io/FileDescriptor;"),
-    NATIVE_METHOD(Posix, socketpair, "(IIILjava/io/FileDescriptor;Ljava/io/FileDescriptor;)V"),
-    NATIVE_METHOD(Posix, stat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
-    NATIVE_METHOD(Posix, statvfs, "(Ljava/lang/String;)Landroid/system/StructStatVfs;"),
-    NATIVE_METHOD(Posix, strerror, "(I)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, strsignal, "(I)Ljava/lang/String;"),
-    NATIVE_METHOD(Posix, symlink, "(Ljava/lang/String;Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, sysconf, "(I)J"),
-    NATIVE_METHOD(Posix, tcdrain, "(Ljava/io/FileDescriptor;)V"),
-    NATIVE_METHOD(Posix, tcsendbreak, "(Ljava/io/FileDescriptor;I)V"),
-    NATIVE_METHOD(Posix, umaskImpl, "(I)I"),
-    NATIVE_METHOD(Posix, uname, "()Landroid/system/StructUtsname;"),
-    NATIVE_METHOD(Posix, unlink, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, unsetenv, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(Posix, waitpid, "(ILandroid/util/MutableInt;I)I"),
-    NATIVE_METHOD(Posix, writeBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;II)I"),
-    NATIVE_METHOD(Posix, writev, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
+    NATIVE_METHOD(Linux, accept, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, access, "(Ljava/lang/String;I)Z"),
+    NATIVE_METHOD(Linux, android_getaddrinfo, "(Ljava/lang/String;Landroid/system/StructAddrinfo;I)[Ljava/net/InetAddress;"),
+    NATIVE_METHOD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
+    NATIVE_METHOD_OVERLOAD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
+    NATIVE_METHOD(Linux, chmod, "(Ljava/lang/String;I)V"),
+    NATIVE_METHOD(Linux, chown, "(Ljava/lang/String;II)V"),
+    NATIVE_METHOD(Linux, close, "(Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, connect, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
+    NATIVE_METHOD_OVERLOAD(Linux, connect, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
+    NATIVE_METHOD(Linux, dup, "(Ljava/io/FileDescriptor;)Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, dup2, "(Ljava/io/FileDescriptor;I)Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, environ, "()[Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, execv, "(Ljava/lang/String;[Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, execve, "(Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, fchmod, "(Ljava/io/FileDescriptor;I)V"),
+    NATIVE_METHOD(Linux, fchown, "(Ljava/io/FileDescriptor;II)V"),
+    NATIVE_METHOD(Linux, fcntlFlock, "(Ljava/io/FileDescriptor;ILandroid/system/StructFlock;)I"),
+    NATIVE_METHOD(Linux, fcntlInt, "(Ljava/io/FileDescriptor;II)I"),
+    NATIVE_METHOD(Linux, fcntlVoid, "(Ljava/io/FileDescriptor;I)I"),
+    NATIVE_METHOD(Linux, fdatasync, "(Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, fstat, "(Ljava/io/FileDescriptor;)Landroid/system/StructStat;"),
+    NATIVE_METHOD(Linux, fstatvfs, "(Ljava/io/FileDescriptor;)Landroid/system/StructStatVfs;"),
+    NATIVE_METHOD(Linux, fsync, "(Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, ftruncate, "(Ljava/io/FileDescriptor;J)V"),
+    NATIVE_METHOD(Linux, gai_strerror, "(I)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, getegid, "()I"),
+    NATIVE_METHOD(Linux, geteuid, "()I"),
+    NATIVE_METHOD(Linux, getgid, "()I"),
+    NATIVE_METHOD(Linux, getenv, "(Ljava/lang/String;)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, getnameinfo, "(Ljava/net/InetAddress;I)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, getpeername, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
+    NATIVE_METHOD(Linux, getpgid, "(I)I"),
+    NATIVE_METHOD(Linux, getpid, "()I"),
+    NATIVE_METHOD(Linux, getppid, "()I"),
+    NATIVE_METHOD(Linux, getpwnam, "(Ljava/lang/String;)Landroid/system/StructPasswd;"),
+    NATIVE_METHOD(Linux, getpwuid, "(I)Landroid/system/StructPasswd;"),
+    NATIVE_METHOD(Linux, getsockname, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
+    NATIVE_METHOD(Linux, getsockoptByte, "(Ljava/io/FileDescriptor;II)I"),
+    NATIVE_METHOD(Linux, getsockoptInAddr, "(Ljava/io/FileDescriptor;II)Ljava/net/InetAddress;"),
+    NATIVE_METHOD(Linux, getsockoptInt, "(Ljava/io/FileDescriptor;II)I"),
+    NATIVE_METHOD(Linux, getsockoptLinger, "(Ljava/io/FileDescriptor;II)Landroid/system/StructLinger;"),
+    NATIVE_METHOD(Linux, getsockoptTimeval, "(Ljava/io/FileDescriptor;II)Landroid/system/StructTimeval;"),
+    NATIVE_METHOD(Linux, getsockoptUcred, "(Ljava/io/FileDescriptor;II)Landroid/system/StructUcred;"),
+    NATIVE_METHOD(Linux, gettid, "()I"),
+    NATIVE_METHOD(Linux, getuid, "()I"),
+    NATIVE_METHOD(Linux, getxattr, "(Ljava/lang/String;Ljava/lang/String;)[B"),
+    NATIVE_METHOD(Linux, getifaddrs, "()[Landroid/system/StructIfaddrs;"),
+    NATIVE_METHOD(Linux, if_indextoname, "(I)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, if_nametoindex, "(Ljava/lang/String;)I"),
+    NATIVE_METHOD(Linux, inet_pton, "(ILjava/lang/String;)Ljava/net/InetAddress;"),
+    NATIVE_METHOD(Linux, ioctlFlags, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
+    NATIVE_METHOD(Linux, ioctlInetAddress, "(Ljava/io/FileDescriptor;ILjava/lang/String;)Ljava/net/InetAddress;"),
+    NATIVE_METHOD(Linux, ioctlInt, "(Ljava/io/FileDescriptor;ILandroid/util/MutableInt;)I"),
+    NATIVE_METHOD(Linux, ioctlMTU, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
+    NATIVE_METHOD(Linux, isatty, "(Ljava/io/FileDescriptor;)Z"),
+    NATIVE_METHOD(Linux, kill, "(II)V"),
+    NATIVE_METHOD(Linux, lchown, "(Ljava/lang/String;II)V"),
+    NATIVE_METHOD(Linux, link, "(Ljava/lang/String;Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, listen, "(Ljava/io/FileDescriptor;I)V"),
+    NATIVE_METHOD(Linux, listxattr, "(Ljava/lang/String;)[Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, lseek, "(Ljava/io/FileDescriptor;JI)J"),
+    NATIVE_METHOD(Linux, lstat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
+    NATIVE_METHOD(Linux, mincore, "(JJ[B)V"),
+    NATIVE_METHOD(Linux, mkdir, "(Ljava/lang/String;I)V"),
+    NATIVE_METHOD(Linux, mkfifo, "(Ljava/lang/String;I)V"),
+    NATIVE_METHOD(Linux, mlock, "(JJ)V"),
+    NATIVE_METHOD(Linux, mmap, "(JJIILjava/io/FileDescriptor;J)J"),
+    NATIVE_METHOD(Linux, msync, "(JJI)V"),
+    NATIVE_METHOD(Linux, munlock, "(JJ)V"),
+    NATIVE_METHOD(Linux, munmap, "(JJ)V"),
+    NATIVE_METHOD(Linux, open, "(Ljava/lang/String;II)Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, pipe2, "(I)[Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, poll, "([Landroid/system/StructPollfd;I)I"),
+    NATIVE_METHOD(Linux, posix_fallocate, "(Ljava/io/FileDescriptor;JJ)V"),
+    NATIVE_METHOD(Linux, prctl, "(IJJJJ)I"),
+    NATIVE_METHOD(Linux, preadBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIJ)I"),
+    NATIVE_METHOD(Linux, pwriteBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIJ)I"),
+    NATIVE_METHOD(Linux, readBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;II)I"),
+    NATIVE_METHOD(Linux, readlink, "(Ljava/lang/String;)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, realpath, "(Ljava/lang/String;)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, readv, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
+    NATIVE_METHOD(Linux, recvfromBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/InetSocketAddress;)I"),
+    NATIVE_METHOD(Linux, remove, "(Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, removexattr, "(Ljava/lang/String;Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, rename, "(Ljava/lang/String;Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, sendfile, "(Ljava/io/FileDescriptor;Ljava/io/FileDescriptor;Landroid/util/MutableLong;J)J"),
+    NATIVE_METHOD(Linux, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/InetAddress;I)I"),
+    NATIVE_METHOD_OVERLOAD(Linux, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/SocketAddress;)I", SocketAddress),
+    NATIVE_METHOD(Linux, setegid, "(I)V"),
+    NATIVE_METHOD(Linux, setenv, "(Ljava/lang/String;Ljava/lang/String;Z)V"),
+    NATIVE_METHOD(Linux, seteuid, "(I)V"),
+    NATIVE_METHOD(Linux, setgid, "(I)V"),
+    NATIVE_METHOD(Linux, setpgid, "(II)V"),
+    NATIVE_METHOD(Linux, setregid, "(II)V"),
+    NATIVE_METHOD(Linux, setreuid, "(II)V"),
+    NATIVE_METHOD(Linux, setsid, "()I"),
+    NATIVE_METHOD(Linux, setsockoptByte, "(Ljava/io/FileDescriptor;III)V"),
+    NATIVE_METHOD(Linux, setsockoptIfreq, "(Ljava/io/FileDescriptor;IILjava/lang/String;)V"),
+    NATIVE_METHOD(Linux, setsockoptInt, "(Ljava/io/FileDescriptor;III)V"),
+    NATIVE_METHOD(Linux, setsockoptIpMreqn, "(Ljava/io/FileDescriptor;III)V"),
+    NATIVE_METHOD(Linux, setsockoptGroupReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupReq;)V"),
+    NATIVE_METHOD(Linux, setsockoptGroupSourceReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupSourceReq;)V"),
+    NATIVE_METHOD(Linux, setsockoptLinger, "(Ljava/io/FileDescriptor;IILandroid/system/StructLinger;)V"),
+    NATIVE_METHOD(Linux, setsockoptTimeval, "(Ljava/io/FileDescriptor;IILandroid/system/StructTimeval;)V"),
+    NATIVE_METHOD(Linux, setuid, "(I)V"),
+    NATIVE_METHOD(Linux, setxattr, "(Ljava/lang/String;Ljava/lang/String;[BI)V"),
+    NATIVE_METHOD(Linux, shutdown, "(Ljava/io/FileDescriptor;I)V"),
+    NATIVE_METHOD(Linux, socket, "(III)Ljava/io/FileDescriptor;"),
+    NATIVE_METHOD(Linux, socketpair, "(IIILjava/io/FileDescriptor;Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, stat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
+    NATIVE_METHOD(Linux, statvfs, "(Ljava/lang/String;)Landroid/system/StructStatVfs;"),
+    NATIVE_METHOD(Linux, strerror, "(I)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, strsignal, "(I)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, symlink, "(Ljava/lang/String;Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, sysconf, "(I)J"),
+    NATIVE_METHOD(Linux, tcdrain, "(Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, tcsendbreak, "(Ljava/io/FileDescriptor;I)V"),
+    NATIVE_METHOD(Linux, umaskImpl, "(I)I"),
+    NATIVE_METHOD(Linux, uname, "()Landroid/system/StructUtsname;"),
+    NATIVE_METHOD(Linux, unlink, "(Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, unsetenv, "(Ljava/lang/String;)V"),
+    NATIVE_METHOD(Linux, waitpid, "(ILandroid/util/MutableInt;I)I"),
+    NATIVE_METHOD(Linux, writeBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;II)I"),
+    NATIVE_METHOD(Linux, writev, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
 };
-void register_libcore_io_Posix(JNIEnv* env) {
-    jniRegisterNativeMethods(env, "libcore/io/Posix", gMethods, NELEM(gMethods));
+void register_libcore_io_Linux(JNIEnv* env) {
+    jniRegisterNativeMethods(env, "libcore/io/Linux", gMethods, NELEM(gMethods));
 }
