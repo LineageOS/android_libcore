@@ -30,7 +30,7 @@ import libcore.util.ZoneInfoDB;
  * A distro-validation / extraction class. Separate from the services code that uses it for easier
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
-public final class TimeZoneDistroInstaller {
+public class TimeZoneDistroInstaller {
     /** {@link #installWithErrorCode(byte[])} result code: Success. */
     public final static int INSTALL_SUCCESS = 0;
     /** {@link #installWithErrorCode(byte[])} result code: Distro corrupt. */
