@@ -14,14 +14,23 @@
 
 LOCAL_PATH:= $(call my-dir)
 
-# Library of tools classes for tzdata updates. Not required on device, except in tests.
+# Library of tools classes for tzdata updates. Only used in tests.
 include $(CLEAR_VARS)
 LOCAL_MODULE := tzdata_tools2
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_JAVA_LIBRARIES := core-oj core-libart
+LOCAL_JAVA_LIBRARIES := core-oj core-libart tzdata_shared2
 LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_STATIC_JAVA_LIBRARIES := tzdata_update2
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
+
+# Library of tools classes for tzdata updates. Used when generating distros and in host-side tests.
+include $(CLEAR_VARS)
+LOCAL_MODULE := tzdata_tools2-host
+LOCAL_MODULE_TAGS := optional
+LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
+LOCAL_JAVACFLAGS := -encoding UTF-8
+LOCAL_JAVA_LIBRARIES := tzdata_shared2-host
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+include $(BUILD_HOST_JAVA_LIBRARY)

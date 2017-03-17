@@ -25,6 +25,15 @@ LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
+# Library of test-support classes for tzdata updates. Shared between CTS and other tests.
+include $(CLEAR_VARS)
+LOCAL_MODULE := tzdata-testing-host
+LOCAL_MODULE_TAGS := optional
+LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
+LOCAL_JAVACFLAGS := -encoding UTF-8
+LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
+include $(BUILD_HOST_JAVA_LIBRARY)
+
 # Host version of the above library. For libcore host testing.
 include $(CLEAR_VARS)
 LOCAL_MODULE := tzdata-testing-hostdex
