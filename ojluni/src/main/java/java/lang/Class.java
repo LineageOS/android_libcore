@@ -128,7 +128,7 @@ public final class Class<T> implements java.io.Serializable,
      * DexCache of resolved constant pool entries. Will be null for certain runtime-generated classes
      * e.g. arrays and primitive classes.
      */
-    private transient DexCache dexCache;
+    private transient Object dexCache;
 
     /**
      * Extra data that only some classes possess. This is allocated lazily as needed.
@@ -960,24 +960,19 @@ public final class Class<T> implements java.io.Serializable,
     public Class<?>[] getInterfaces() {
         if (isArray()) {
             return new Class<?>[] { Cloneable.class, Serializable.class };
-        } else if (isProxy()) {
-            return getProxyInterfaces();
         }
-        Dex dex = getDex();
-        if (dex == null) {
+
+        final Class<?>[] ifaces = getInterfacesInternal();
+        if (ifaces == null) {
             return EmptyArray.CLASS;
         }
-        short[] interfaces = dex.interfaceTypeIndicesFromClassDefIndex(dexClassDefIndex);
-        Class<?>[] result = new Class<?>[interfaces.length];
-        for (int i = 0; i < interfaces.length; i++) {
-            result[i] = getDexCacheType(dex, interfaces[i]);
-        }
-        return result;
+
+        return ifaces;
     }
 
-    // Returns the interfaces that this proxy class directly implements.
     @FastNative
-    private native Class<?>[] getProxyInterfaces();
+    private native Class<?>[] getInterfacesInternal();
+
 
     /**
      * Returns the {@code Type}s representing the interfaces
@@ -2634,70 +2629,6 @@ public final class Class<T> implements java.io.Serializable,
      */
     public boolean isProxy() {
         return (accessFlags & 0x00040000) != 0;
-    }
-
-    /**
-     * Returns the dex file from which this class was loaded.
-     *
-     * @hide
-     */
-    public Dex getDex() {
-        if (dexCache == null) {
-            return null;
-        }
-        return dexCache.getDex();
-    }
-    /**
-     * Returns a string from the dex cache, computing the string from the dex file if necessary.
-     *
-     * @hide
-     */
-    public String getDexCacheString(Dex dex, int dexStringIndex) {
-        String s = dexCache.getResolvedString(dexStringIndex);
-        if (s == null) {
-            s = dex.strings().get(dexStringIndex).intern();
-            dexCache.setResolvedString(dexStringIndex, s);
-        }
-        return s;
-    }
-
-    /**
-     * Returns a resolved type from the dex cache, computing the type from the dex file if
-     * necessary.
-     *
-     * @hide
-     */
-    public Class<?> getDexCacheType(Dex dex, int dexTypeIndex) {
-        Class<?> resolvedType = dexCache.getResolvedType(dexTypeIndex);
-        if (resolvedType == null) {
-
-            // Temporary debugging code for issue b/35970927. In the absence of reproducibility,
-            // we want more information on :
-            //
-            // (a) This class: a proxy for the dex file whose cache is being queried.
-            // (b) The dex type index & descriptor index.
-            // (c) The resolved descriptor.
-            // (d) The wrapper message : this is the name of the class used by InternalNames
-            // for its loadClass call.
-            //
-            // (c) & (d) should help us rule out string compression issues.
-            // (a) & (b) should help us rule out some classes of heap corruption issues.
-            int descriptorIndex = 0;
-            String descriptor = "";
-            try {
-                descriptorIndex = dex.typeIds().get(dexTypeIndex);
-                descriptor = getDexCacheString(dex, descriptorIndex);
-                resolvedType = InternalNames.getClass(getClassLoader(), descriptor);
-            } catch (NoClassDefFoundError error) {
-                throw new NoClassDefFoundError("class: " + getName()
-                        + ", dexTypeIndex=" + dexTypeIndex
-                        + ", descriptorIndex=" + descriptorIndex + ", desc=" + descriptor
-                        + ", wrapped Msg= " + error.getMessage());
-            }
-
-            dexCache.setResolvedType(dexTypeIndex, resolvedType);
-        }
-        return resolvedType;
     }
 
     /**
