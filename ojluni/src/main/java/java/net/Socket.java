@@ -1769,6 +1769,8 @@ class Socket implements java.io.Closeable {
     }
 
     /**
+     * Android-added: for testing and internal use.
+     *
      * @hide internal use only
      */
     public FileDescriptor getFileDescriptor$() {
