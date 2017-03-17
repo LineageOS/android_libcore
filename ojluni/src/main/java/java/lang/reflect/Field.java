@@ -85,10 +85,12 @@ class Field extends AccessibleObject implements Member {
             }
             return "throws";
         }
-        Dex dex = declaringClass.getDex();
-        int nameIndex = dex.nameIndexFromFieldIndex(dexFieldIndex);
-        return declaringClass.getDexCacheString(dex, nameIndex);
+
+        return getNameInternal();
     }
+
+    @FastNative
+    private native String getNameInternal();
 
     /**
      * Returns the Java language modifiers for the field represented

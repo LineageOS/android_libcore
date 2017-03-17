@@ -30,6 +30,7 @@ import dalvik.annotation.optimization.FastNative;
 import java.lang.annotation.Annotation;
 import java.util.Comparator;
 import libcore.reflect.Types;
+import libcore.util.EmptyArray;
 
 /**
  * A {@code Method} provides information about, and access to, a single method
@@ -64,7 +65,7 @@ public final class Method extends Executable  {
             }
             int comparison = a.getName().compareTo(b.getName());
             if (comparison == 0) {
-                comparison = a.compareMethodParametersInternal(b.getParameterTypes());
+                comparison = a.compareMethodParametersInternal(b);
                 if (comparison == 0) {
                     // This is necessary for methods that have covariant return types.
                     Class<?> aReturnType = a.getReturnType();
@@ -137,7 +138,6 @@ public final class Method extends Executable  {
      * @return the return type for the method this object represents
      */
     public Class<?> getReturnType() {
-        // Android-changed: This is handled by Executable.
         return getMethodReturnTypeInternal();
     }
 
@@ -176,7 +176,12 @@ public final class Method extends Executable  {
     @Override
     public Class<?>[] getParameterTypes() {
         // Android-changed: This is handled by Executable.
-        return super.getParameterTypesInternal();
+        Class<?>[] paramTypes = super.getParameterTypesInternal();
+        if (paramTypes == null) {
+            return EmptyArray.CLASS;
+        }
+
+        return paramTypes;
     }
 
     /**
