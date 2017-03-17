@@ -29,6 +29,8 @@ import datetime
 import json
 import sys
 
+import crypto_docs
+
 SUPPORTED_CATEGORIES = [
     'AlgorithmParameterGenerator',
     'AlgorithmParameters',
@@ -80,6 +82,7 @@ def normalize_name(name):
     if name.endswith("/PKCS7PADDING"):
         name = name[:-1 * len("/PKCS7PADDING")] + "/PKCS5PADDING"
     return name
+
 
 def get_current_data(f):
     """Returns a map of the algorithms in the given input.
@@ -205,15 +208,7 @@ def main():
                         help='The JSON file to update')
     args = parser.parse_args()
 
-    f = open(args.file)
-    # JSON doesn't allow comments, but we have some header docs in our file,
-    # so strip comments out before parsing
-    stripped_contents = ''
-    for line in f:
-        if not line.strip().startswith('#'):
-            stripped_contents += line
-    prev_data = json.loads(stripped_contents)
-    f.close()
+    prev_data = crypto_docs.load_json(args.file)
 
     current_data = get_current_data(sys.stdin)
 
