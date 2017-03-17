@@ -17,10 +17,12 @@
 
 package org.apache.harmony.tests.java.net;
 
+import libcore.io.Libcore;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
+
 import tests.support.Support_Configuration;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +43,9 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Properties;
+
+import static android.system.OsConstants.F_GETFL;
+import static android.system.OsConstants.O_NONBLOCK;
 
 public class ServerSocketTest extends TestCaseWithRules {
     @Rule
@@ -174,12 +179,16 @@ public class ServerSocketTest extends TestCaseWithRules {
     /**
      * java.net.ServerSocket#accept()
      */
-    public void test_accept() throws IOException {
+    public void test_accept() throws Exception {
         s = new ServerSocket(0);
         try {
             s.setSoTimeout(5000);
             startClient(s.getLocalPort());
             sconn = s.accept();
+
+            // The new socket should not be blocking.
+            assertEquals(0, Libcore.os.fcntlVoid(sconn.getFileDescriptor$(), F_GETFL) & O_NONBLOCK);
+
             int localPort1 = s.getLocalPort();
             int localPort2 = sconn.getLocalPort();
             sconn.close();
