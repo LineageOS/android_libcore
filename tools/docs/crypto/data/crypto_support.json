@@ -224,7 +224,7 @@
         },
         {
           "name": "AES/GCM/NOPADDING",
-          "supported_api_levels": "21+"
+          "supported_api_levels": "10+"
         },
         {
           "name": "AES/OFB/ISO10126PADDING",
@@ -1227,5 +1227,5 @@
       "name": "TrustManagerFactory"
     }
   ],
-  "last_updated": "2017-03-16 10:29:21 UTC"
+  "last_updated": "2017-03-16 12:35:47 UTC"
 }
