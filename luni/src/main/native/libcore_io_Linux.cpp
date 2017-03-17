@@ -29,6 +29,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <sys/capability.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
@@ -732,6 +733,154 @@ private:
     struct passwd* mResult;
 };
 
+static void AssertException(JNIEnv* env) {
+    if (env->ExceptionCheck() == JNI_FALSE) {
+        env->FatalError("Expected exception");
+    }
+}
+
+// Note for capabilities functions:
+// We assume the calls are rare enough that it does not make sense to cache class objects. The
+// advantage is lower maintenance burden.
+
+static bool ReadStructCapUserHeader(
+        JNIEnv* env, jobject java_header, __user_cap_header_struct* c_header) {
+    if (java_header == nullptr) {
+        jniThrowNullPointerException(env, "header is null");
+        return false;
+    }
+
+    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructCapUserHeader"));
+    if (header_class.get() == nullptr) {
+        return false;
+    }
+
+    {
+        static jfieldID version_fid = env->GetFieldID(header_class.get(), "version", "I");
+        if (version_fid == nullptr) {
+            return false;
+        }
+        c_header->version = env->GetIntField(java_header, version_fid);
+    }
+
+    {
+        static jfieldID pid_fid = env->GetFieldID(header_class.get(), "pid", "I");
+        if (pid_fid == nullptr) {
+            return false;
+        }
+        c_header->pid = env->GetIntField(java_header, pid_fid);
+    }
+
+    return true;
+}
+
+static void SetStructCapUserHeaderVersion(
+        JNIEnv* env, jobject java_header, __user_cap_header_struct* c_header) {
+    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructCapUserHeader"));
+    if (header_class.get() == nullptr) {
+        env->ExceptionClear();
+        return;
+    }
+
+    static jfieldID version_fid = env->GetFieldID(header_class.get(), "version", "I");
+    if (version_fid == nullptr) {
+        env->ExceptionClear();
+        return;
+    }
+    env->SetIntField(java_header, version_fid, c_header->version);
+}
+
+static jobject CreateStructCapUserData(
+        JNIEnv* env, jclass data_class, __user_cap_data_struct* c_data) {
+    if (c_data == nullptr) {
+        // Should not happen.
+        jniThrowNullPointerException(env, "data is null");
+        return nullptr;
+    }
+
+    static jmethodID data_cons = env->GetMethodID(data_class, "<init>", "(III)V");
+    if (data_cons == nullptr) {
+        return nullptr;
+    }
+
+    jint e = static_cast<jint>(c_data->effective);
+    jint p = static_cast<jint>(c_data->permitted);
+    jint i = static_cast<jint>(c_data->inheritable);
+    return env->NewObject(data_class, data_cons, e, p, i);
+}
+
+static bool ReadStructCapUserData(JNIEnv* env, jobject java_data, __user_cap_data_struct* c_data) {
+    if (java_data == nullptr) {
+        jniThrowNullPointerException(env, "data is null");
+        return false;
+    }
+
+    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructCapUserData"));
+    if (data_class.get() == nullptr) {
+        return false;
+    }
+
+    {
+        static jfieldID effective_fid = env->GetFieldID(data_class.get(), "effective", "I");
+        if (effective_fid == nullptr) {
+            return false;
+        }
+        c_data->effective = env->GetIntField(java_data, effective_fid);
+    }
+
+    {
+        static jfieldID permitted_fid = env->GetFieldID(data_class.get(), "permitted", "I");
+        if (permitted_fid == nullptr) {
+            return false;
+        }
+        c_data->permitted = env->GetIntField(java_data, permitted_fid);
+    }
+
+
+    {
+        static jfieldID inheritable_fid = env->GetFieldID(data_class.get(), "inheritable", "I");
+        if (inheritable_fid == nullptr) {
+            return false;
+        }
+        c_data->inheritable = env->GetIntField(java_data, inheritable_fid);
+    }
+
+    return true;
+}
+
+static constexpr size_t kMaxCapUserDataLength = 2U;
+#ifdef _LINUX_CAPABILITY_VERSION_1
+static_assert(kMaxCapUserDataLength >= _LINUX_CAPABILITY_U32S_1, "Length too small.");
+#endif
+#ifdef _LINUX_CAPABILITY_VERSION_2
+static_assert(kMaxCapUserDataLength >= _LINUX_CAPABILITY_U32S_2, "Length too small.");
+#endif
+#ifdef _LINUX_CAPABILITY_VERSION_3
+static_assert(kMaxCapUserDataLength >= _LINUX_CAPABILITY_U32S_3, "Length too small.");
+#endif
+#ifdef _LINUX_CAPABILITY_VERSION_4
+static_assert(false, "Unsupported capability version, please update.");
+#endif
+
+static size_t GetCapUserDataLength(uint32_t version) {
+#ifdef _LINUX_CAPABILITY_VERSION_1
+    if (version == _LINUX_CAPABILITY_VERSION_1) {
+        return _LINUX_CAPABILITY_U32S_1;
+    }
+#endif
+#ifdef _LINUX_CAPABILITY_VERSION_2
+    if (version == _LINUX_CAPABILITY_VERSION_2) {
+        return _LINUX_CAPABILITY_U32S_2;
+    }
+#endif
+#ifdef _LINUX_CAPABILITY_VERSION_3
+    if (version == _LINUX_CAPABILITY_VERSION_3) {
+        return _LINUX_CAPABILITY_U32S_3;
+    }
+#endif
+    return 0;
+}
+
 static jobject Linux_accept(JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
     sockaddr_storage ss;
     socklen_t sl = sizeof(ss);
@@ -774,6 +923,83 @@ static void Linux_bindSocketAddress(
     const sockaddr* sa = reinterpret_cast<const sockaddr*>(&ss);
     // We don't need the return value because we'll already have thrown.
     (void) NET_FAILURE_RETRY(env, int, bind, javaFd, sa, sa_len);
+}
+
+static jobjectArray Linux_capget(JNIEnv* env, jobject, jobject header) {
+    // Convert Java header struct to kernel datastructure.
+    __user_cap_header_struct cap_header;
+    if (!ReadStructCapUserHeader(env, header, &cap_header)) {
+        AssertException(env);
+        return nullptr;
+    }
+
+    // Call capget.
+    __user_cap_data_struct cap_data[kMaxCapUserDataLength];
+    if (capget(&cap_header, &cap_data[0]) == -1) {
+        // Check for EINVAL. In that case, mutate the header.
+        if (errno == EINVAL) {
+            int saved_errno = errno;
+            SetStructCapUserHeaderVersion(env, header, &cap_header);
+            errno = saved_errno;
+        }
+        throwErrnoException(env, "capget");
+        return nullptr;
+    }
+
+    // Create the result array.
+    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructCapUserData"));
+    if (data_class.get() == nullptr) {
+        return nullptr;
+    }
+    size_t result_size = GetCapUserDataLength(cap_header.version);
+    ScopedLocalRef<jobjectArray> result(
+            env, env->NewObjectArray(result_size, data_class.get(), nullptr));
+    if (result.get() == nullptr) {
+        return nullptr;
+    }
+    // Translate the values we got.
+    for (size_t i = 0; i < result_size; ++i) {
+        ScopedLocalRef<jobject> value(
+                env, CreateStructCapUserData(env, data_class.get(), &cap_data[i]));
+        if (value.get() == nullptr) {
+            AssertException(env);
+            return nullptr;
+        }
+        env->SetObjectArrayElement(result.get(), i, value.get());
+    }
+    return result.release();
+}
+
+static void Linux_capset(
+        JNIEnv* env, jobject, jobject header, jobjectArray data) {
+    // Convert Java header struct to kernel datastructure.
+    __user_cap_header_struct cap_header;
+    if (!ReadStructCapUserHeader(env, header, &cap_header)) {
+        AssertException(env);
+        return;
+    }
+    size_t result_size = GetCapUserDataLength(cap_header.version);
+    // Ensure that the array has the expected length.
+    if (env->GetArrayLength(data) != static_cast<jint>(result_size)) {
+        jniThrowExceptionFmt(env,
+                             "java/lang/IllegalArgumentException",
+                             "Unsupported input length %d (expected %zu)",
+                             env->GetArrayLength(data),
+                             result_size);
+        return;
+    }
+
+    __user_cap_data_struct cap_data[kMaxCapUserDataLength];
+    // Translate the values we got.
+    for (size_t i = 0; i < result_size; ++i) {
+        ScopedLocalRef<jobject> value(env, env->GetObjectArrayElement(data, i));
+        if (!ReadStructCapUserData(env, value.get(), &cap_data[i])) {
+            AssertException(env);
+            return;
+        }
+    }
+
+    throwIfMinusOne(env, "capset", capset(&cap_header, &cap_data[0]));
 }
 
 static void Linux_chmod(JNIEnv* env, jobject, jstring javaPath, jint mode) {
@@ -2152,6 +2378,10 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, android_getaddrinfo, "(Ljava/lang/String;Landroid/system/StructAddrinfo;I)[Ljava/net/InetAddress;"),
     NATIVE_METHOD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
     NATIVE_METHOD_OVERLOAD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
+    NATIVE_METHOD(Linux, capget,
+                  "(Landroid/system/StructCapUserHeader;)[Landroid/system/StructCapUserData;"),
+    NATIVE_METHOD(Linux, capset,
+                  "(Landroid/system/StructCapUserHeader;[Landroid/system/StructCapUserData;)V"),
     NATIVE_METHOD(Linux, chmod, "(Ljava/lang/String;I)V"),
     NATIVE_METHOD(Linux, chown, "(Ljava/lang/String;II)V"),
     NATIVE_METHOD(Linux, close, "(Ljava/io/FileDescriptor;)V"),
