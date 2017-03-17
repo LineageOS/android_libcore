@@ -23,8 +23,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.util.Properties;
-import libcore.tzdata.update2.DistroVersion;
-import libcore.tzdata.update2.TimeZoneDistro;
+import libcore.tzdata.shared2.DistroVersion;
+import libcore.tzdata.shared2.TimeZoneDistro;
 
 /**
  * A command-line tool for creating a timezone update distro.

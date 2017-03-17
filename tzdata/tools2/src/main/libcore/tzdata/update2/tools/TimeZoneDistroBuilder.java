@@ -21,9 +21,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import libcore.tzdata.update2.DistroException;
-import libcore.tzdata.update2.DistroVersion;
-import libcore.tzdata.update2.TimeZoneDistro;
+import libcore.tzdata.shared2.DistroException;
+import libcore.tzdata.shared2.DistroVersion;
+import libcore.tzdata.shared2.TimeZoneDistro;
 
 /**
  * A class for creating a {@link TimeZoneDistro} containing timezone update data. Used in real
