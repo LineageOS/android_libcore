@@ -39,11 +39,8 @@ import com.android.dex.Dex;
  * A dex cache holds resolved copies of strings, fields, methods, and classes from the dexfile.
  */
 final class DexCache {
-    /** Lazily initialized dex file wrapper. Volatile to avoid double-check locking issues. */
-    private volatile Dex dex;
-
     /** The location of the associated dex file. */
-    String location;
+    private String location;
 
     /** Holds C pointer to dexFile. */
     private long dexFile;
@@ -116,29 +113,5 @@ final class DexCache {
 
     // Only created by the VM.
     private DexCache() {}
-
-    Dex getDex() {
-        Dex result = dex;
-        if (result == null) {
-            synchronized (this) {
-                result = dex;
-                if (result == null) {
-                    dex = result = getDexNative();
-                }
-            }
-        }
-        return result;
-    }
-
-    @FastNative
-    native Class<?> getResolvedType(int typeIndex);
-    @FastNative
-    native String getResolvedString(int stringIndex);
-    @FastNative
-    native void setResolvedType(int typeIndex, Class<?> type);
-    @FastNative
-    native void setResolvedString(int stringIndex, String string);
-    @FastNative
-    private native Dex getDexNative();
 }
 
