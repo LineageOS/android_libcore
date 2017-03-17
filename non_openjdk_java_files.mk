@@ -294,11 +294,11 @@ non_openjdk_java_files := \
   luni/src/main/java/libcore/io/IoTracker.java \
   luni/src/main/java/libcore/io/IoUtils.java \
   luni/src/main/java/libcore/io/Libcore.java \
+  luni/src/main/java/libcore/io/Linux.java \
   luni/src/main/java/libcore/io/Memory.java \
   luni/src/main/java/libcore/io/MemoryMappedFile.java \
   luni/src/main/java/libcore/io/NioBufferIterator.java \
   luni/src/main/java/libcore/io/Os.java \
-  luni/src/main/java/libcore/io/Posix.java \
   luni/src/main/java/libcore/io/SizeOf.java \
   luni/src/main/java/libcore/io/Streams.java \
   luni/src/main/java/libcore/math/MathUtils.java \

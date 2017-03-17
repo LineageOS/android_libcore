@@ -21,8 +21,8 @@ LOCAL_SRC_FILES := \
     libcore_icu_NativeConverter.cpp \
     libcore_icu_TimeZoneNames.cpp \
     libcore_io_AsynchronousCloseMonitor.cpp \
+    libcore_io_Linux.cpp \
     libcore_io_Memory.cpp \
-    libcore_io_Posix.cpp \
     libcore_util_NativeAllocationRegistry.cpp \
     org_apache_harmony_xml_ExpatParser.cpp \
     sun_misc_Unsafe.cpp \
