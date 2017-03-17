@@ -42,8 +42,8 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.NioUtils;
 
-public final class Posix implements Os {
-    Posix() { }
+public final class Linux implements Os {
+    Linux() { }
 
     public native FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException;
     public native boolean access(String path, int mode) throws ErrnoException;

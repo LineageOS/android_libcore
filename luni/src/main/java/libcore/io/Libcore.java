@@ -24,7 +24,7 @@ public final class Libcore {
      * unless it has a strong reason to bypass the helpful checks/guards that it
      * provides.
      */
-    public static Os rawOs = new Posix();
+    public static Os rawOs = new Linux();
 
     /**
      * Access to syscalls with helpful checks/guards.
