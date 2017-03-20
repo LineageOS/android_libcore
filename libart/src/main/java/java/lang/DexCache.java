@@ -33,7 +33,6 @@
 package java.lang;
 
 import dalvik.annotation.optimization.FastNative;
-import com.android.dex.Dex;
 
 /**
  * A dex cache holds resolved copies of strings, fields, methods, and classes from the dexfile.
