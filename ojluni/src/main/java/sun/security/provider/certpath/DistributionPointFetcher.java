@@ -753,9 +753,7 @@ public class DistributionPointFetcher {
          * issued. [section 5.2.1, RFC 2459]
          */
         AuthorityKeyIdentifierExtension crlAKID = crl.getAuthKeyIdExtension();
-        if (crlAKID != null) {
-            issuerSelector.parseAuthorityKeyIdentifierExtension(crlAKID);
-        }
+        issuerSelector.setSkiAndSerialNumber(crlAKID);
 
         matched = issuerSelector.match(cert);
 
