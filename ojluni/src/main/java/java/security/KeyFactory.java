@@ -69,34 +69,34 @@ import sun.security.jca.GetInstance.Instance;
  *
  * <p> Android provides the following <code>KeyFactory</code> algorithms:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>DH</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>DSA</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>EC</td>
- *             <td>11+</td>
- *         </tr>
- *         <tr>
- *             <td>RSA</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>X.509</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>DH</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>DSA</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>EC</td>
+ *       <td>11+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>RSA</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>X.509</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * These algorithms are described in the <a href=
