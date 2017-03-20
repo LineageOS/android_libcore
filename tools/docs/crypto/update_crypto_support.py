@@ -24,7 +24,6 @@ record of algorithm support.
 
 import argparse
 import collections
-import copy
 import datetime
 import json
 import sys
