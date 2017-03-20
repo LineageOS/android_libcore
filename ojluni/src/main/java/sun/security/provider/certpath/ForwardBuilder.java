@@ -269,7 +269,7 @@ class ForwardBuilder extends Builder {
              */
             AuthorityKeyIdentifierExtension akidext =
                     currentState.cert.getAuthorityKeyIdentifierExtension();
-            caSelector.parseAuthorityKeyIdentifierExtension(akidext);
+            caSelector.setSkiAndSerialNumber(akidext);
 
             /*
              * check the validity period
