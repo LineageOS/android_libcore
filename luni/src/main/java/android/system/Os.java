@@ -63,6 +63,25 @@ public final class Os {
   /** @hide */ public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
   /**
+   * See <a href="http://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
+   *
+   * @hide
+   */
+  public static StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException {
+      return Libcore.os.capget(hdr);
+  }
+
+  /**
+   * See <a href="http://man7.org/linux/man-pages/man2/capset.2.html">capset(2)</a>.
+   *
+   * @hide
+   */
+  public static void capset(StructCapUserHeader hdr, StructCapUserData[] data)
+          throws ErrnoException {
+      Libcore.os.capset(hdr, data);
+  }
+
+  /**
    * See <a href="http://man7.org/linux/man-pages/man2/chmod.2.html">chmod(2)</a>.
    */
   public static void chmod(String path, int mode) throws ErrnoException { Libcore.os.chmod(path, mode); }
