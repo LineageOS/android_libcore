@@ -342,6 +342,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "IP_RECVTOS", IP_RECVTOS);
     initConstant(env, c, "IP_TOS", IP_TOS);
     initConstant(env, c, "IP_TTL", IP_TTL);
+#if defined(_LINUX_CAPABILITY_VERSION_3)
+    initConstant(env, c, "_LINUX_CAPABILITY_VERSION_3", _LINUX_CAPABILITY_VERSION_3);
+#endif
     initConstant(env, c, "MAP_FIXED", MAP_FIXED);
     initConstant(env, c, "MAP_POPULATE", MAP_POPULATE);
     initConstant(env, c, "MAP_PRIVATE", MAP_PRIVATE);
@@ -406,6 +409,12 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "POLLRDNORM", POLLRDNORM);
     initConstant(env, c, "POLLWRBAND", POLLWRBAND);
     initConstant(env, c, "POLLWRNORM", POLLWRNORM);
+#if defined(PR_CAP_AMBIENT)
+    initConstant(env, c, "PR_CAP_AMBIENT", PR_CAP_AMBIENT);
+#endif
+#if defined(PR_CAP_AMBIENT_RAISE)
+    initConstant(env, c, "PR_CAP_AMBIENT_RAISE", PR_CAP_AMBIENT_RAISE);
+#endif
 #if defined(PR_GET_DUMPABLE)
     initConstant(env, c, "PR_GET_DUMPABLE", PR_GET_DUMPABLE);
 #endif
