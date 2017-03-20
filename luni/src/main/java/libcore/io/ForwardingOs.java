@@ -19,6 +19,8 @@ package libcore.io;
 import android.system.ErrnoException;
 import android.system.GaiException;
 import android.system.StructAddrinfo;
+import android.system.StructCapUserData;
+import android.system.StructCapUserHeader;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructGroupSourceReq;
@@ -56,6 +58,14 @@ public class ForwardingOs implements Os {
     public InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException { return os.android_getaddrinfo(node, hints, netId); }
     public void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { os.bind(fd, address, port); }
     public void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { os.bind(fd, address); }
+    @Override
+    public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException {
+        return os.capget(hdr);
+    }
+    @Override
+    public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException {
+        os.capset(hdr, data);
+    }
     public void chmod(String path, int mode) throws ErrnoException { os.chmod(path, mode); }
     public void chown(String path, int uid, int gid) throws ErrnoException { os.chown(path, uid, gid); }
     public void close(FileDescriptor fd) throws ErrnoException { os.close(fd); }

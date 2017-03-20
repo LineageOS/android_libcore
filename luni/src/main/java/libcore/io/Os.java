@@ -19,6 +19,8 @@ package libcore.io;
 import android.system.ErrnoException;
 import android.system.GaiException;
 import android.system.StructAddrinfo;
+import android.system.StructCapUserData;
+import android.system.StructCapUserHeader;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructGroupSourceReq;
@@ -47,6 +49,8 @@ public interface Os {
     public InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException;
     public void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
+    public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException;
+    public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException;
     public void chmod(String path, int mode) throws ErrnoException;
     public void chown(String path, int uid, int gid) throws ErrnoException;
     public void close(FileDescriptor fd) throws ErrnoException;
