@@ -27,7 +27,6 @@
 package java.lang;
 
 import dalvik.annotation.optimization.FastNative;
-import com.android.dex.Dex;
 
 import java.io.InputStream;
 import java.io.Serializable;
