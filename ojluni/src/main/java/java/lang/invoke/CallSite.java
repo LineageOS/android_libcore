@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -61,7 +61,7 @@ import static java.lang.invoke.MethodHandles.Lookup.IMPL_LOOKUP;
  * <p>
  * Here is a sample use of call sites and bootstrap methods which links every
  * dynamic call site to print its arguments:
-<blockquote><pre><!-- see indy-demo/src/PrintArgsDemo.java -->
+<blockquote><pre>{@code
 static void test() throws Throwable {
     // THE FOLLOWING LINE IS PSEUDOCODE FOR A JVM INSTRUCTION
     InvokeDynamic[#bootstrapDynamic].baz("baz arg", 2, 3.14);
@@ -80,7 +80,7 @@ private static CallSite bootstrapDynamic(MethodHandles.Lookup caller, String nam
   // ignore caller and name, but match the type:
   return new ConstantCallSite(printArgs.asType(type));
 }
-</pre></blockquote>
+}</pre></blockquote>
  * @author John Rose, JSR 292 EG
  */
 abstract
@@ -102,13 +102,12 @@ public class CallSite {
      * via a call to {@link CallSite#setTarget(MethodHandle) setTarget}.
      * @throws NullPointerException if the proposed type is null
      */
-
     /*package-private*/
     CallSite(MethodType type) {
         // Android-changed: No cache for these so create uninitializedCallSite target here using
         // method handle transformations to create a method handle that has the expected method
         // type but throws an IllegalStateException.
-        // target = type.invokers().uninitializedCallSite();
+        // target = makeUninitializedCallSite(type);
         this.target = MethodHandles.throwException(type.returnType(), IllegalStateException.class);
         this.target = MethodHandles.insertArguments(
             this.target, 0, new IllegalStateException("uninitialized call site"));
@@ -144,7 +143,7 @@ public class CallSite {
      *         or if the target returned by the hook is not of the given {@code targetType}
      * @throws NullPointerException if the hook returns a null value
      * @throws ClassCastException if the hook returns something other than a {@code MethodHandle}
-     * @throws Throwable anything else thrown by the the hook function
+     * @throws Throwable anything else thrown by the hook function
      */
     /*package-private*/
     CallSite(MethodType targetType, MethodHandle createTargetHook) throws Throwable {
@@ -223,19 +222,19 @@ public class CallSite {
      * which has been linked to this call site.
      * <p>
      * This method is equivalent to the following code:
-     * <blockquote><pre>
+     * <blockquote><pre>{@code
      * MethodHandle getTarget, invoker, result;
      * getTarget = MethodHandles.publicLookup().bind(this, "getTarget", MethodType.methodType(MethodHandle.class));
      * invoker = MethodHandles.exactInvoker(this.type());
      * result = MethodHandles.foldArguments(invoker, getTarget)
-     * </pre></blockquote>
+     * }</pre></blockquote>
      *
      * @return a method handle which always invokes this call site's current target
      */
     public abstract MethodHandle dynamicInvoker();
 
     /*non-public*/ MethodHandle makeDynamicInvoker() {
-        // Android-changed: Use bindTo() rather than bindReceiver() (not implemented).
+        // Android-changed: Use bindTo() rather than bindArgumentL() (not implemented).
         MethodHandle getTarget = GET_TARGET.bindTo(this);
         MethodHandle invoker = MethodHandles.exactInvoker(this.type());
         return MethodHandles.foldArguments(invoker, getTarget);
@@ -302,7 +301,7 @@ public class CallSite {
     //                          Object info,
     //                          // Caller information:
     //                          Class<?> callerClass) {
-    //     Object caller = IMPL_LOOKUP.in(callerClass);
+    //     MethodHandles.Lookup caller = IMPL_LOOKUP.in(callerClass);
     //     CallSite site;
     //     try {
     //         Object binding;
@@ -314,14 +313,44 @@ public class CallSite {
     //         } else {
     //             Object[] argv = (Object[]) info;
     //             maybeReBoxElements(argv);
-    //             if (3 + argv.length > 255)
-    //                 throw new BootstrapMethodError("too many bootstrap method arguments");
-    //             MethodType bsmType = bootstrapMethod.type();
-    //             if (bsmType.parameterCount() == 4 && bsmType.parameterType(3) == Object[].class)
-    //                 binding = bootstrapMethod.invoke(caller, name, type, argv);
-    //             else
-    //                 binding = MethodHandles.spreadInvoker(bsmType, 3)
-    //                     .invoke(bootstrapMethod, caller, name, type, argv);
+    //             switch (argv.length) {
+    //             case 0:
+    //                 binding = bootstrapMethod.invoke(caller, name, type);
+    //                 break;
+    //             case 1:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0]);
+    //                 break;
+    //             case 2:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0], argv[1]);
+    //                 break;
+    //             case 3:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0], argv[1], argv[2]);
+    //                 break;
+    //             case 4:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0], argv[1], argv[2], argv[3]);
+    //                 break;
+    //             case 5:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0], argv[1], argv[2], argv[3], argv[4]);
+    //                 break;
+    //             case 6:
+    //                 binding = bootstrapMethod.invoke(caller, name, type,
+    //                                                  argv[0], argv[1], argv[2], argv[3], argv[4], argv[5]);
+    //                 break;
+    //             default:
+    //                 final int NON_SPREAD_ARG_COUNT = 3;  // (caller, name, type)
+    //                 if (NON_SPREAD_ARG_COUNT + argv.length > MethodType.MAX_MH_ARITY)
+    //                     throw new BootstrapMethodError("too many bootstrap method arguments");
+    //                 MethodType bsmType = bootstrapMethod.type();
+    //                 MethodType invocationType = MethodType.genericMethodType(NON_SPREAD_ARG_COUNT + argv.length);
+    //                 MethodHandle typedBSM = bootstrapMethod.asType(invocationType);
+    //                 MethodHandle spreader = invocationType.invokers().spreadInvoker(NON_SPREAD_ARG_COUNT);
+    //                 binding = spreader.invokeExact(typedBSM, (Object)caller, (Object)name, (Object)type, argv);
+    //             }
     //         }
     //         //System.out.println("BSM for "+name+type+" => "+binding);
     //         if (binding instanceof CallSite) {
@@ -330,7 +359,7 @@ public class CallSite {
     //             throw new ClassCastException("bootstrap method failed to produce a CallSite");
     //         }
     //         if (!site.getTarget().type().equals(type))
-    //             throw new WrongMethodTypeException("wrong type: "+site.getTarget());
+    //             throw wrongTargetType(site.getTarget(), type);
     //     } catch (Throwable ex) {
     //         BootstrapMethodError bex;
     //         if (ex instanceof BootstrapMethodError)
@@ -341,6 +370,7 @@ public class CallSite {
     //     }
     //     return site;
     // }
+
     // private static Object maybeReBox(Object x) {
     //     if (x instanceof Integer) {
     //         int xi = (int) x;
