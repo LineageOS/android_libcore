@@ -330,12 +330,6 @@ endif
 ifeq ($(HOST_OS),linux)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(call all-java-files-under, dex/src/main)
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := dex-host
-include $(BUILD_HOST_JAVA_LIBRARY)
-
-include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(non_openjdk_java_files) $(openjdk_java_files) $(android_icu4j_src_files) $(openjdk_lambda_stub_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
