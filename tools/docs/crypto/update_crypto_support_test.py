@@ -20,10 +20,11 @@ import unittest
 import update_crypto_support
 
 
-def do_update_data(prev_data, current_data):
+def do_update_data(prev_data, current_data, name_dict={}):
     return update_crypto_support.update_data(
         prev_data,
         current_data,
+        name_dict,
         72,
         datetime.datetime.utcfromtimestamp(1234567890))
 
@@ -88,8 +89,12 @@ class TestUpdateData(unittest.TestCase):
                 OtherThing Mary
                 END ALGORITHM LIST
                 ''')),
-            {'Mac': ['BOB', 'JONES', 'AMY'],
-             'MessageDigest': ['JIM']})
+            ({'Mac': ['BOB', 'JONES', 'AMY'],
+              'MessageDigest': ['JIM']},
+             {'AMY': 'Amy',
+              'BOB': 'Bob',
+              'JONES': 'Jones',
+              'JIM': 'Jim'}))
         self.assertEqual(update_crypto_support.get_current_data(
             StringIO.StringIO(
                 '''
@@ -102,8 +107,12 @@ class TestUpdateData(unittest.TestCase):
                 OtherThing Mary
                 END ALGORITHM LIST
                 ''')),
-            {'Mac': ['DUPE', 'JONES', 'AMY', 'DUPE'],
-             'MessageDigest': ['JIM']})
+            ({'Mac': ['DUPE', 'JONES', 'AMY', 'DUPE'],
+              'MessageDigest': ['JIM']},
+             {'AMY': 'Amy',
+              'DUPE': 'Dupe',
+              'JONES': 'Jones',
+              'JIM': 'Jim'}))
         self.assertEqual(update_crypto_support.get_current_data(
             StringIO.StringIO(
                 '''
@@ -117,8 +126,12 @@ class TestUpdateData(unittest.TestCase):
                 END ALGORITHM LIST
                 Mac AlsoNotAValue
                 ''')),
-            {'Mac': ['BOB', 'JONES', 'AMY'],
-             'MessageDigest': ['JIM']})
+            ({'Mac': ['BOB', 'JONES', 'AMY'],
+              'MessageDigest': ['JIM']},
+             {'AMY': 'Amy',
+              'BOB': 'Bob',
+              'JONES': 'Jones',
+              'JIM': 'Jim'}))
         self.assertEqual(update_crypto_support.get_current_data(
             StringIO.StringIO(
                 '''
@@ -132,8 +145,12 @@ class TestUpdateData(unittest.TestCase):
                 OtherThing Mary
                 END ALGORITHM LIST
                 ''')),
-            {'Mac': ['BOB', 'JONES', 'AMY'],
-             'MessageDigest': ['JIM']})
+            ({'Mac': ['BOB', 'JONES', 'AMY'],
+              'MessageDigest': ['JIM']},
+             {'AMY': 'Amy',
+              'BOB': 'Bob',
+              'JONES': 'Jones',
+              'JIM': 'Jim'}))
         with self.assertRaises(EOFError):
             update_crypto_support.get_current_data(StringIO.StringIO(
                 '''
@@ -339,6 +356,59 @@ class TestUpdateData(unittest.TestCase):
                      {'name': 'SHA-2',
                       'supported_api_levels': '1-22',
                       'deprecated': 'true'}]}],
+                'api_level': '72',
+                'last_updated': LAST_UPDATED_TEXT})
+
+    def test_update_name_matching(self):
+        self.assertEqual(
+            do_update_data(
+                {'categories': [
+                    {'name': 'MessageDigest',
+                     'algorithms': [
+                         {'name': 'sha-1',
+                          'supported_api_levels': '1+'},
+                         {'name': 'Sha-2',
+                          'supported_api_levels': '1-22',
+                          'deprecated': 'true'},
+                         {'name': 'SHA-3',
+                          'supported_api_levels': '7+'}]}]},
+                {'MessageDigest': ['SHA-1', 'SHA-2', 'SHA-3']},
+                {'SHA-1': 'Sha-1', 'SHA-2': 'Sha-2', 'SHA-3': 'Sha-3'}),
+            {'categories': [
+                {'name': 'MessageDigest',
+                 'algorithms': [
+                     {'name': 'Sha-1',
+                      'supported_api_levels': '1+'},
+                     {'name': 'Sha-2',
+                      'supported_api_levels': '1-22,72+'},
+                     {'name': 'Sha-3',
+                      'supported_api_levels': '7+'}]}],
+                'api_level': '72',
+                'last_updated': LAST_UPDATED_TEXT})
+        self.assertEqual(
+            do_update_data(
+                {'categories': [
+                    {'name': 'MessageDigest',
+                     'algorithms': [
+                         {'name': 'sha-1',
+                          'supported_api_levels': '1+'},
+                         {'name': 'Sha-2',
+                          'supported_api_levels': '1-22',
+                          'deprecated': 'true'},
+                         {'name': 'SHA-3',
+                          'supported_api_levels': '7+'}]}]},
+                {'MessageDigest': ['SHA-1', 'SHA-3']},
+                {'SHA-1': 'Sha-1', 'SHA-3': 'Sha-3'}),
+            {'categories': [
+                {'name': 'MessageDigest',
+                 'algorithms': [
+                     {'name': 'Sha-1',
+                      'supported_api_levels': '1+'},
+                     {'name': 'Sha-2',
+                      'supported_api_levels': '1-22',
+                      'deprecated': 'true'},
+                     {'name': 'Sha-3',
+                      'supported_api_levels': '7+'}]}],
                 'api_level': '72',
                 'last_updated': LAST_UPDATED_TEXT})
 

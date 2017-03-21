@@ -26,6 +26,7 @@ import argparse
 import collections
 import datetime
 import json
+import re
 import sys
 
 import crypto_docs
@@ -62,6 +63,14 @@ def find_by_name(seq, name):
     return None
 
 
+def find_by_normalized_name(seq, name):
+    """Returns the first element in seq with the given normalized name."""
+    for item in seq:
+        if normalize_name(item['name']) == name:
+            return item
+    return None
+
+
 def sort_by_name(seq):
     """Returns a copy of the input sequence sorted by name."""
     return sorted(seq, key=lambda x: x['name'])
@@ -83,6 +92,22 @@ def normalize_name(name):
     return name
 
 
+def fix_name_caps_for_output(name):
+    """Returns a version of the given algorithm name with capitalization fixed."""
+    # It's important that this must only change the capitalization of the
+    # name, not any of its text, otherwise future runs won't be able to
+    # match this name with the name coming from the device.
+
+    # We current make the following capitalization fixes
+    # DESede (not DESEDE)
+    # FOOwithBAR (not FOOWITHBAR or FOOWithBAR)
+    # Hmac (not HMAC)
+    name = re.sub('WITH', 'with', name, flags=re.I)
+    name = re.sub('DESEDE', 'DESede', name, flags=re.I)
+    name = re.sub('HMAC', 'Hmac', name, flags=re.I)
+    return name
+
+
 def get_current_data(f):
     """Returns a map of the algorithms in the given input.
 
@@ -94,12 +119,17 @@ def get_current_data(f):
 
     The returned algorithms will have their names normalized.
 
+    Returns:
+      A dict of categories to lists of normalized algorithm names and a
+        dict of normalized algorithm names to original algorithm names.
+
     Raises:
       EOFError: If either the BEGIN or END sentinel lines are not present.
       ValueError: If a line between the BEGIN and END sentinel lines is not
         made up of two identifiers separated by whitespace.
     """
     current_data = collections.defaultdict(list)
+    name_dict = {}
 
     saw_begin = False
     saw_end = False
@@ -115,7 +145,9 @@ def get_current_data(f):
         category, algorithm = line.split()
         if category not in SUPPORTED_CATEGORIES:
             continue
-        current_data[category].append(normalize_name(algorithm))
+        normalized_name = normalize_name(algorithm)
+        current_data[category].append(normalized_name)
+        name_dict[normalized_name] = algorithm
 
     if not saw_begin:
         raise EOFError(
@@ -123,10 +155,10 @@ def get_current_data(f):
     if not saw_end:
         raise EOFError(
             'Reached the end of input without encountering the end sentinel')
-    return dict(current_data)
+    return dict(current_data), name_dict
 
 
-def update_data(prev_data, current_data, api_level, date):
+def update_data(prev_data, current_data, name_dict, api_level, date):
     """Returns a copy of prev_data, modified to take into account current_data.
 
     Updates the algorithm support metadata structure by starting with the
@@ -151,14 +183,20 @@ def update_data(prev_data, current_data, api_level, date):
         current_category = (
             current_data[category] if category in current_data else [])
         new_category = {'name': category, 'algorithms': []}
-        prev_algorithms = [x['name'] for x in prev_category['algorithms']]
+        prev_algorithms = [normalize_name(x['name']) for x in prev_category['algorithms']]
         alg_union = set(prev_algorithms) | set(current_category)
         for alg in alg_union:
-            new_algorithm = {'name': alg}
+            prev_alg = find_by_normalized_name(prev_category['algorithms'], alg)
+            if alg in name_dict:
+                new_algorithm = {'name': name_dict[alg]}
+            elif prev_alg is not None:
+                new_algorithm = {'name': prev_alg['name']}
+            else:
+                new_algorithm = {'name': alg}
+            new_algorithm['name'] = fix_name_caps_for_output(new_algorithm['name'])
             new_level = None
             if alg in current_category and alg in prev_algorithms:
                 # Both old and new have it, just ensure the API level is right
-                prev_alg = find_by_name(prev_category['algorithms'], alg)
                 if prev_alg['supported_api_levels'].endswith('+'):
                     new_level = prev_alg['supported_api_levels']
                 else:
@@ -167,7 +205,6 @@ def update_data(prev_data, current_data, api_level, date):
             elif alg in prev_algorithms:
                 # Only in the old set, so ensure the API level is marked
                 # as ending
-                prev_alg = find_by_name(prev_category['algorithms'], alg)
                 if prev_alg['supported_api_levels'].endswith('+'):
                     # The algorithm is newly missing, so modify the support
                     # to end at the previous level
@@ -209,10 +246,11 @@ def main():
 
     prev_data = crypto_docs.load_json(args.file)
 
-    current_data = get_current_data(sys.stdin)
+    current_data, name_dict = get_current_data(sys.stdin)
 
     new_data = update_data(prev_data,
                            current_data,
+                           name_dict,
                            args.api_level,
                            datetime.datetime.utcnow())
 
