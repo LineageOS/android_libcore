@@ -27,7 +27,6 @@
 package java.lang.reflect;
 
 import dalvik.annotation.optimization.FastNative;
-import com.android.dex.Dex;
 
 import java.lang.annotation.Annotation;
 import java.util.Objects;
