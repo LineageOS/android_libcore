@@ -17,6 +17,8 @@ package libcore.tzdata.shared2;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -172,5 +174,15 @@ public final class FileUtils {
             System.arraycopy(max, 0, toReturn, 0, bytesRead);
             return toReturn;
         }
+    }
+
+    /**
+     * Creates an empty file.
+     *
+     * @param file the file to create
+     * @throws IOException if the file cannot be created
+     */
+    public static void createEmptyFile(File file) throws IOException {
+        new FileOutputStream(file, false /* append */).close();
     }
 }

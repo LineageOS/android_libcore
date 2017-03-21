@@ -152,6 +152,15 @@ public class DistroVersion {
     }
 
     @Override
+    public int hashCode() {
+        int result = formatMajorVersion;
+        result = 31 * result + formatMinorVersion;
+        result = 31 * result + rulesVersion.hashCode();
+        result = 31 * result + revision;
+        return result;
+    }
+
+    @Override
     public String toString() {
         return "DistroVersion{" +
                 "formatMajorVersion=" + formatMajorVersion +
