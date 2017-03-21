@@ -91,7 +91,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-all
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_REQUIRED_MODULES := tzdata
 LOCAL_CORE_LIBRARY := true
 LOCAL_UNINSTALLABLE_MODULE := true
@@ -109,7 +108,6 @@ LOCAL_DX_FLAGS := --core-library --min-sdk-version=26
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
 LOCAL_REQUIRED_MODULES := tzdata
@@ -126,7 +124,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-libart
-LOCAL_ADDITIONAL_DEPENDENCIES += $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all
 ifeq ($(EMMA_INSTRUMENT),true)
 ifneq ($(EMMA_INSTRUMENT_STATIC),true)
@@ -148,7 +145,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-lambda-stubs
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
 LOCAL_CORE_LIBRARY := true
@@ -169,7 +165,6 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_DEX_PREOPT := false
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj-testdex
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
 LOCAL_REQUIRED_MODULES := tzdata
@@ -204,7 +199,6 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_DEX_PREOPT := false
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-libart-testdex
-LOCAL_ADDITIONAL_DEPENDENCIES += $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_CORE_LIBRARY := true
 LOCAL_REQUIRED_MODULES := tzdata
@@ -221,6 +215,9 @@ LOCAL_MODULE := filesystemstest
 LOCAL_JAVA_LIBRARIES := core-oj core-libart
 LOCAL_DEX_PREOPT := false
 include $(BUILD_JAVA_LIBRARY)
+my_filesystemstest_jar := $(intermediates)/filesystemstest.jar
+$(my_filesystemstest_jar): $(LOCAL_BUILT_MODULE)
+	$(call copy-file-to-target)
 endif
 
 ifeq ($(LIBCORE_SKIP_TESTS),)
@@ -230,7 +227,7 @@ LOCAL_SRC_FILES := $(test_src_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 # Include individual dex.jar files (jars containing resources and a classes.dex) so that they
 # be loaded by tests using ClassLoaders but are not in the main classes.dex.
-LOCAL_JAVA_RESOURCE_FILES := $(TARGET_OUT)/framework/filesystemstest.jar
+LOCAL_JAVA_RESOURCE_FILES := $(my_filesystemstest_jar)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := \
@@ -248,7 +245,6 @@ LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-tests
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 endif
 
@@ -262,7 +258,6 @@ LOCAL_JAVA_LIBRARIES := core-oj core-libart junit bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-bcpkix bouncycastle-ocsp
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE := core-tests-support
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 endif
 
@@ -276,7 +271,6 @@ LOCAL_JAVA_LIBRARIES := core-oj core-libart junit
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE := jsr166-tests
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 endif
 
@@ -292,7 +286,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
     LOCAL_MODULE := core-ojtests
-    LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
     # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
     LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
     include $(BUILD_JAVA_LIBRARY)
@@ -317,7 +310,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
     LOCAL_MODULE := core-ojtests-public
-    LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
     # jack bug workaround: int[] java.util.stream.StatefulTestOp.-getjava-util-stream-StreamShapeSwitchesValues() is a private synthetic method in an interface which causes a hard verifier error
     LOCAL_DEX_PREOPT := false # disable AOT preverification which breaks the build. it will still throw VerifyError at runtime.
     include $(BUILD_JAVA_LIBRARY)
@@ -344,7 +336,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-all-hostdex
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_REQUIRED_MODULES := tzdata-host
 LOCAL_CORE_LIBRARY := true
 LOCAL_UNINSTALLABLE_MODULE := true
@@ -360,7 +351,6 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj-hostdex
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all-hostdex
 LOCAL_REQUIRED_MODULES := tzdata-host
 LOCAL_CORE_LIBRARY := true
@@ -376,7 +366,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-libart-hostdex
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-oj-hostdex
 LOCAL_REQUIRED_MODULES := tzdata-host
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
@@ -391,7 +380,6 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-lambda-stubs-hostdex
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 LOCAL_JAVA_LIBRARIES := core-all-hostdex
 LOCAL_CORE_LIBRARY := true
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
@@ -423,7 +411,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
     LOCAL_MODULE := core-tests-hostdex
-    LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -444,7 +431,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-tests-support-hostdex
-    LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -464,7 +450,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
     LOCAL_MODULE := core-ojtests-hostdex
-    LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
@@ -502,7 +487,6 @@ LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE_CLASS:=JAVA_LIBRARIES
 
 LOCAL_MODULE := libcore
-LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/JavaLibrary.mk
 
 LOCAL_DROIDDOC_OPTIONS := \
  -offlinemode \
