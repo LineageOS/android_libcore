@@ -49,6 +49,8 @@ public class BlockGuardOsTest {
                 "android_getaddrinfo(java.lang.String,android.system.StructAddrinfo,int)",
                 "bind(java.io.FileDescriptor,java.net.InetAddress,int)",
                 "bind(java.io.FileDescriptor,java.net.SocketAddress)",
+                "capget(android.system.StructCapUserHeader)",
+                "capset(android.system.StructCapUserHeader,android.system.StructCapUserData[])",
                 "dup(java.io.FileDescriptor)",
                 "dup2(java.io.FileDescriptor,int)",
                 "environ()",
