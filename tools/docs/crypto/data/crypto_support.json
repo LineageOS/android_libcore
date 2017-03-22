@@ -16,7 +16,7 @@
         },
         {
           "deprecated": "true",
-          "name": "DESEDE",
+          "name": "DESede",
           "supported_api_levels": "1-8"
         },
         {
@@ -45,7 +45,7 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE",
+          "name": "DESede",
           "supported_api_levels": "1+"
         },
         {
@@ -74,43 +74,43 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHHMACSHA1ANDAES_128",
+          "name": "PBEwithHmacSHA1AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA1ANDAES_256",
+          "name": "PBEwithHmacSHA1AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA224ANDAES_128",
+          "name": "PBEwithHmacSHA224AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA224ANDAES_256",
+          "name": "PBEwithHmacSHA224AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA256ANDAES_128",
+          "name": "PBEwithHmacSHA256AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA256ANDAES_256",
+          "name": "PBEwithHmacSHA256AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA384ANDAES_128",
+          "name": "PBEwithHmacSHA384AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA384ANDAES_256",
+          "name": "PBEwithHmacSHA384AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA512ANDAES_128",
+          "name": "PBEwithHmacSHA512AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA512ANDAES_256",
+          "name": "PBEwithHmacSHA512AndAES_256",
           "supported_api_levels": "26+"
         },
         {
@@ -145,7 +145,7 @@
     {
       "algorithms": [
         {
-          "name": "COLLECTION",
+          "name": "Collection",
           "supported_api_levels": "1+"
         }
       ],
@@ -163,63 +163,63 @@
     {
       "algorithms": [
         {
-          "name": "AES/CBC/ISO10126PADDING",
+          "name": "AES/CBC/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CBC/NOPADDING",
+          "name": "AES/CBC/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CBC/PKCS5PADDING",
+          "name": "AES/CBC/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CFB/ISO10126PADDING",
+          "name": "AES/CFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CFB/NOPADDING",
+          "name": "AES/CFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CFB/PKCS5PADDING",
+          "name": "AES/CFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTR/ISO10126PADDING",
+          "name": "AES/CTR/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTR/NOPADDING",
+          "name": "AES/CTR/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTR/PKCS5PADDING",
+          "name": "AES/CTR/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTS/ISO10126PADDING",
+          "name": "AES/CTS/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTS/NOPADDING",
+          "name": "AES/CTS/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/CTS/PKCS5PADDING",
+          "name": "AES/CTS/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/ECB/ISO10126PADDING",
+          "name": "AES/ECB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/ECB/NOPADDING",
+          "name": "AES/ECB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/ECB/PKCS5PADDING",
+          "name": "AES/ECB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
@@ -227,339 +227,339 @@
           "supported_api_levels": "10+"
         },
         {
-          "name": "AES/OFB/ISO10126PADDING",
+          "name": "AES/OFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/OFB/NOPADDING",
+          "name": "AES/OFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/OFB/PKCS5PADDING",
+          "name": "AES/OFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES_128/CBC/NOPADDING",
+          "name": "AES_128/CBC/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_128/CBC/PKCS5PADDING",
+          "name": "AES_128/CBC/PKCS5Padding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_128/ECB/NOPADDING",
+          "name": "AES_128/ECB/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_128/ECB/PKCS5PADDING",
+          "name": "AES_128/ECB/PKCS5Padding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_128/GCM/NOPADDING",
+          "name": "AES_128/GCM/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_256/CBC/NOPADDING",
+          "name": "AES_256/CBC/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_256/CBC/PKCS5PADDING",
+          "name": "AES_256/CBC/PKCS5Padding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_256/ECB/NOPADDING",
+          "name": "AES_256/ECB/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_256/ECB/PKCS5PADDING",
+          "name": "AES_256/ECB/PKCS5Padding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "AES_256/GCM/NOPADDING",
+          "name": "AES_256/GCM/NoPadding",
           "supported_api_levels": "26+"
         },
         {
-          "name": "ARC4/ECB/NOPADDING",
+          "name": "ARC4/ECB/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CBC/ISO10126PADDING",
+          "name": "BLOWFISH/CBC/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CBC/NOPADDING",
+          "name": "BLOWFISH/CBC/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CBC/PKCS5PADDING",
+          "name": "BLOWFISH/CBC/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CFB/ISO10126PADDING",
+          "name": "BLOWFISH/CFB/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CFB/NOPADDING",
+          "name": "BLOWFISH/CFB/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CFB/PKCS5PADDING",
+          "name": "BLOWFISH/CFB/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTR/ISO10126PADDING",
+          "name": "BLOWFISH/CTR/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTR/NOPADDING",
+          "name": "BLOWFISH/CTR/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTR/PKCS5PADDING",
+          "name": "BLOWFISH/CTR/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTS/ISO10126PADDING",
+          "name": "BLOWFISH/CTS/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTS/NOPADDING",
+          "name": "BLOWFISH/CTS/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/CTS/PKCS5PADDING",
+          "name": "BLOWFISH/CTS/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/ECB/ISO10126PADDING",
+          "name": "BLOWFISH/ECB/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/ECB/NOPADDING",
+          "name": "BLOWFISH/ECB/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/ECB/PKCS5PADDING",
+          "name": "BLOWFISH/ECB/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/OFB/ISO10126PADDING",
+          "name": "BLOWFISH/OFB/ISO10126Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/OFB/NOPADDING",
+          "name": "BLOWFISH/OFB/NoPadding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "BLOWFISH/OFB/PKCS5PADDING",
+          "name": "BLOWFISH/OFB/PKCS5Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "DES/CBC/ISO10126PADDING",
+          "name": "DES/CBC/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CBC/NOPADDING",
+          "name": "DES/CBC/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CBC/PKCS5PADDING",
+          "name": "DES/CBC/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CFB/ISO10126PADDING",
+          "name": "DES/CFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CFB/NOPADDING",
+          "name": "DES/CFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CFB/PKCS5PADDING",
+          "name": "DES/CFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTR/ISO10126PADDING",
+          "name": "DES/CTR/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTR/NOPADDING",
+          "name": "DES/CTR/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTR/PKCS5PADDING",
+          "name": "DES/CTR/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTS/ISO10126PADDING",
+          "name": "DES/CTS/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTS/NOPADDING",
+          "name": "DES/CTS/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/CTS/PKCS5PADDING",
+          "name": "DES/CTS/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/ECB/ISO10126PADDING",
+          "name": "DES/ECB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/ECB/NOPADDING",
+          "name": "DES/ECB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/ECB/PKCS5PADDING",
+          "name": "DES/ECB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/OFB/ISO10126PADDING",
+          "name": "DES/OFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/OFB/NOPADDING",
+          "name": "DES/OFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DES/OFB/PKCS5PADDING",
+          "name": "DES/OFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CBC/ISO10126PADDING",
+          "name": "DESede/CBC/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CBC/NOPADDING",
+          "name": "DESede/CBC/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CBC/PKCS5PADDING",
+          "name": "DESede/CBC/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CFB/ISO10126PADDING",
+          "name": "DESede/CFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CFB/NOPADDING",
+          "name": "DESede/CFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CFB/PKCS5PADDING",
+          "name": "DESede/CFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTR/ISO10126PADDING",
+          "name": "DESede/CTR/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTR/NOPADDING",
+          "name": "DESede/CTR/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTR/PKCS5PADDING",
+          "name": "DESede/CTR/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTS/ISO10126PADDING",
+          "name": "DESede/CTS/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTS/NOPADDING",
+          "name": "DESede/CTS/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/CTS/PKCS5PADDING",
+          "name": "DESede/CTS/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/ECB/ISO10126PADDING",
+          "name": "DESede/ECB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/ECB/NOPADDING",
+          "name": "DESede/ECB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/ECB/PKCS5PADDING",
+          "name": "DESede/ECB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/OFB/ISO10126PADDING",
+          "name": "DESede/OFB/ISO10126Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/OFB/NOPADDING",
+          "name": "DESede/OFB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE/OFB/PKCS5PADDING",
+          "name": "DESede/OFB/PKCS5Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/ECB/NOPADDING",
+          "name": "RSA/ECB/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/ECB/OAEPPADDING",
+          "name": "RSA/ECB/OAEPPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/ECB/OAEPWITHSHA-1ANDMGF1PADDING",
+          "name": "RSA/ECB/OAEPwithSHA-1andMGF1Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "RSA/ECB/OAEPWITHSHA-224ANDMGF1PADDING",
+          "name": "RSA/ECB/OAEPwithSHA-224andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/ECB/OAEPWITHSHA-256ANDMGF1PADDING",
+          "name": "RSA/ECB/OAEPwithSHA-256andMGF1Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "RSA/ECB/OAEPWITHSHA-384ANDMGF1PADDING",
+          "name": "RSA/ECB/OAEPwithSHA-384andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/ECB/OAEPWITHSHA-512ANDMGF1PADDING",
+          "name": "RSA/ECB/OAEPwithSHA-512andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/ECB/PKCS1PADDING",
+          "name": "RSA/ECB/PKCS1Padding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/NONE/NOPADDING",
+          "name": "RSA/NONE/NoPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/NONE/OAEPPADDING",
+          "name": "RSA/NONE/OAEPPadding",
           "supported_api_levels": "1+"
         },
         {
-          "name": "RSA/NONE/OAEPWITHSHA-1ANDMGF1PADDING",
+          "name": "RSA/NONE/OAEPwithSHA-1andMGF1Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "RSA/NONE/OAEPWITHSHA-224ANDMGF1PADDING",
+          "name": "RSA/NONE/OAEPwithSHA-224andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/NONE/OAEPWITHSHA-256ANDMGF1PADDING",
+          "name": "RSA/NONE/OAEPwithSHA-256andMGF1Padding",
           "supported_api_levels": "10+"
         },
         {
-          "name": "RSA/NONE/OAEPWITHSHA-384ANDMGF1PADDING",
+          "name": "RSA/NONE/OAEPwithSHA-384andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/NONE/OAEPWITHSHA-512ANDMGF1PADDING",
+          "name": "RSA/NONE/OAEPwithSHA-512andMGF1Padding",
           "supported_api_levels": "23+"
         },
         {
-          "name": "RSA/NONE/PKCS1PADDING",
+          "name": "RSA/NONE/PKCS1Padding",
           "supported_api_levels": "1+"
         }
       ],
@@ -628,36 +628,36 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE",
+          "name": "DESede",
           "supported_api_levels": "1+"
         },
         {
           "deprecated": "true",
-          "name": "DESEDEWRAP",
+          "name": "DESedeWRAP",
           "supported_api_levels": "1-8"
         },
         {
-          "name": "HMACMD5",
+          "name": "HmacMD5",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA1",
+          "name": "HmacSHA1",
           "supported_api_levels": "11+"
         },
         {
-          "name": "HMACSHA224",
+          "name": "HmacSHA224",
           "supported_api_levels": "1-8,22+"
         },
         {
-          "name": "HMACSHA256",
+          "name": "HmacSHA256",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA384",
+          "name": "HmacSHA384",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA512",
+          "name": "HmacSHA512",
           "supported_api_levels": "1+"
         },
         {
@@ -701,11 +701,11 @@
     {
       "algorithms": [
         {
-          "name": "ANDROIDCASTORE",
+          "name": "AndroidCAStore",
           "supported_api_levels": "14+"
         },
         {
-          "name": "ANDROIDKEYSTORE",
+          "name": "AndroidKeyStore",
           "supported_api_levels": "18+"
         },
         {
@@ -718,7 +718,7 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "BOUNCYCASTLE",
+          "name": "BouncyCastle",
           "supported_api_levels": "1+"
         },
         {
@@ -737,21 +737,6 @@
       "algorithms": [
         {
           "deprecated": "true",
-          "name": "DESEDEMAC",
-          "supported_api_levels": "1-8"
-        },
-        {
-          "deprecated": "true",
-          "name": "DESEDEMAC/CFB8",
-          "supported_api_levels": "1-8"
-        },
-        {
-          "deprecated": "true",
-          "name": "DESEDEMAC64",
-          "supported_api_levels": "1-8"
-        },
-        {
-          "deprecated": "true",
           "name": "DESMAC",
           "supported_api_levels": "1-8"
         },
@@ -762,31 +747,46 @@
         },
         {
           "deprecated": "true",
-          "name": "DESWITHISO9797",
+          "name": "DESedeMAC",
           "supported_api_levels": "1-8"
         },
         {
-          "name": "HMACMD5",
+          "deprecated": "true",
+          "name": "DESedeMAC/CFB8",
+          "supported_api_levels": "1-8"
+        },
+        {
+          "deprecated": "true",
+          "name": "DESedeMAC64",
+          "supported_api_levels": "1-8"
+        },
+        {
+          "deprecated": "true",
+          "name": "DESwithISO9797",
+          "supported_api_levels": "1-8"
+        },
+        {
+          "name": "HmacMD5",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA1",
+          "name": "HmacSHA1",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA224",
+          "name": "HmacSHA224",
           "supported_api_levels": "1-8,22+"
         },
         {
-          "name": "HMACSHA256",
+          "name": "HmacSHA256",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA384",
+          "name": "HmacSHA384",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA512",
+          "name": "HmacSHA512",
           "supported_api_levels": "1+"
         },
         {
@@ -795,27 +795,27 @@
           "supported_api_levels": "1-8"
         },
         {
-          "name": "PBEWITHHMACSHA",
+          "name": "PBEwithHmacSHA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHHMACSHA1",
+          "name": "PBEwithHmacSHA1",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHHMACSHA224",
+          "name": "PBEwithHmacSHA224",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA256",
+          "name": "PBEwithHmacSHA256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA384",
+          "name": "PBEwithHmacSHA384",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA512",
+          "name": "PBEwithHmacSHA512",
           "supported_api_levels": "26+"
         }
       ],
@@ -853,7 +853,7 @@
     {
       "algorithms": [
         {
-          "name": "DEFAULT",
+          "name": "Default",
           "supported_api_levels": "10+"
         },
         {
@@ -862,7 +862,7 @@
         },
         {
           "deprecated": "true",
-          "name": "SSLV3",
+          "name": "SSLv3",
           "supported_api_levels": "10-25"
         },
         {
@@ -870,15 +870,15 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "TLSV1",
+          "name": "TLSv1",
           "supported_api_levels": "10+"
         },
         {
-          "name": "TLSV1.1",
+          "name": "TLSv1.1",
           "supported_api_levels": "16+"
         },
         {
-          "name": "TLSV1.2",
+          "name": "TLSv1.2",
           "supported_api_levels": "16+"
         }
       ],
@@ -895,175 +895,175 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "DESEDE",
+          "name": "DESede",
           "supported_api_levels": "1+"
         },
         {
-          "name": "HMACSHA1",
+          "name": "HmacSHA1",
           "supported_api_levels": "23+"
         },
         {
-          "name": "HMACSHA224",
+          "name": "HmacSHA224",
           "supported_api_levels": "23+"
         },
         {
-          "name": "HMACSHA256",
+          "name": "HmacSHA256",
           "supported_api_levels": "23+"
         },
         {
-          "name": "HMACSHA384",
+          "name": "HmacSHA384",
           "supported_api_levels": "23+"
         },
         {
-          "name": "HMACSHA512",
+          "name": "HmacSHA512",
           "supported_api_levels": "23+"
         },
         {
-          "name": "PBEWITHHMACSHA1",
+          "name": "PBEwithHmacSHA1",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHHMACSHA1ANDAES_128",
+          "name": "PBEwithHmacSHA1AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA1ANDAES_256",
+          "name": "PBEwithHmacSHA1AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA224ANDAES_128",
+          "name": "PBEwithHmacSHA224AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA224ANDAES_256",
+          "name": "PBEwithHmacSHA224AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA256ANDAES_128",
+          "name": "PBEwithHmacSHA256AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA256ANDAES_256",
+          "name": "PBEwithHmacSHA256AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA384ANDAES_128",
+          "name": "PBEwithHmacSHA384AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA384ANDAES_256",
+          "name": "PBEwithHmacSHA384AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA512ANDAES_128",
+          "name": "PBEwithHmacSHA512AndAES_128",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHHMACSHA512ANDAES_256",
+          "name": "PBEwithHmacSHA512AndAES_256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBEWITHMD5AND128BITAES-CBC-OPENSSL",
+          "name": "PBEwithMD5AND128BITAES-CBC-OPENSSL",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHMD5AND192BITAES-CBC-OPENSSL",
+          "name": "PBEwithMD5AND192BITAES-CBC-OPENSSL",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHMD5AND256BITAES-CBC-OPENSSL",
+          "name": "PBEwithMD5AND256BITAES-CBC-OPENSSL",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHMD5ANDDES",
+          "name": "PBEwithMD5ANDDES",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHMD5ANDRC2",
+          "name": "PBEwithMD5ANDRC2",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHA1ANDDES",
+          "name": "PBEwithSHA1ANDDES",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHA1ANDRC2",
+          "name": "PBEwithSHA1ANDRC2",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHA256AND128BITAES-CBC-BC",
+          "name": "PBEwithSHA256AND128BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHA256AND192BITAES-CBC-BC",
+          "name": "PBEwithSHA256AND192BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHA256AND256BITAES-CBC-BC",
+          "name": "PBEwithSHA256AND256BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND128BITAES-CBC-BC",
+          "name": "PBEwithSHAAND128BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND128BITRC2-CBC",
+          "name": "PBEwithSHAAND128BITRC2-CBC",
           "supported_api_levels": "10+"
         },
         {
-          "name": "PBEWITHSHAAND128BITRC4",
+          "name": "PBEwithSHAAND128BITRC4",
           "supported_api_levels": "10+"
         },
         {
-          "name": "PBEWITHSHAAND192BITAES-CBC-BC",
+          "name": "PBEwithSHAAND192BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND2-KEYTRIPLEDES-CBC",
+          "name": "PBEwithSHAAND2-KEYTRIPLEDES-CBC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND256BITAES-CBC-BC",
+          "name": "PBEwithSHAAND256BITAES-CBC-BC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND3-KEYTRIPLEDES-CBC",
+          "name": "PBEwithSHAAND3-KEYTRIPLEDES-CBC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND40BITRC2-CBC",
+          "name": "PBEwithSHAAND40BITRC2-CBC",
           "supported_api_levels": "1+"
         },
         {
-          "name": "PBEWITHSHAAND40BITRC4",
+          "name": "PBEwithSHAAND40BITRC4",
           "supported_api_levels": "10+"
         },
         {
-          "name": "PBEWITHSHAANDTWOFISH-CBC",
+          "name": "PBEwithSHAANDTWOFISH-CBC",
           "supported_api_levels": "10+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA1",
+          "name": "PBKDF2withHmacSHA1",
           "supported_api_levels": "10+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA1AND8BIT",
+          "name": "PBKDF2withHmacSHA1And8BIT",
           "supported_api_levels": "19+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA224",
+          "name": "PBKDF2withHmacSHA224",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA256",
+          "name": "PBKDF2withHmacSHA256",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA384",
+          "name": "PBKDF2withHmacSHA384",
           "supported_api_levels": "26+"
         },
         {
-          "name": "PBKDF2WITHHMACSHA512",
+          "name": "PBKDF2withHmacSHA512",
           "supported_api_levels": "26+"
         }
       ],
@@ -1085,7 +1085,7 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "DSAWITHSHA1",
+          "name": "DSAwithSHA1",
           "supported_api_levels": "1+"
         },
         {
@@ -1098,38 +1098,38 @@
           "supported_api_levels": "11+"
         },
         {
-          "name": "ECDSAWITHSHA1",
+          "name": "ECDSAwithSHA1",
           "supported_api_levels": "11+"
         },
         {
           "deprecated": "true",
-          "name": "MD2WITHRSA",
+          "name": "MD2withRSA",
           "supported_api_levels": "1-3"
         },
         {
           "deprecated": "true",
-          "name": "MD4WITHRSA",
+          "name": "MD4withRSA",
           "supported_api_levels": "1-8"
         },
         {
-          "name": "MD5WITHRSA",
+          "name": "MD5withRSA",
           "supported_api_levels": "1+"
         },
         {
           "deprecated": "true",
-          "name": "MD5WITHRSA/ISO9796-2",
+          "name": "MD5withRSA/ISO9796-2",
           "supported_api_levels": "1-8"
         },
         {
-          "name": "NONEWITHDSA",
+          "name": "NONEwithDSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "NONEWITHECDSA",
+          "name": "NONEwithECDSA",
           "supported_api_levels": "11+"
         },
         {
-          "name": "NONEWITHRSA",
+          "name": "NONEwithRSA",
           "supported_api_levels": "17+"
         },
         {
@@ -1138,80 +1138,80 @@
           "supported_api_levels": "1-8"
         },
         {
-          "name": "SHA1WITHDSA",
+          "name": "SHA1withDSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "SHA1WITHECDSA",
+          "name": "SHA1withECDSA",
           "supported_api_levels": "11+"
         },
         {
-          "name": "SHA1WITHRSA",
+          "name": "SHA1withRSA",
           "supported_api_levels": "1+"
         },
         {
           "deprecated": "true",
-          "name": "SHA1WITHRSA/ISO9796-2",
+          "name": "SHA1withRSA/ISO9796-2",
           "supported_api_levels": "1-8"
         },
         {
-          "name": "SHA1WITHRSA/PSS",
+          "name": "SHA1withRSA/PSS",
           "supported_api_levels": "23+"
         },
         {
-          "name": "SHA224WITHDSA",
+          "name": "SHA224withDSA",
           "supported_api_levels": "20+"
         },
         {
-          "name": "SHA224WITHECDSA",
+          "name": "SHA224withECDSA",
           "supported_api_levels": "20+"
         },
         {
-          "name": "SHA224WITHRSA",
+          "name": "SHA224withRSA",
           "supported_api_levels": "20+"
         },
         {
-          "name": "SHA224WITHRSA/PSS",
+          "name": "SHA224withRSA/PSS",
           "supported_api_levels": "23+"
         },
         {
-          "name": "SHA256WITHDSA",
+          "name": "SHA256withDSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "SHA256WITHECDSA",
+          "name": "SHA256withECDSA",
           "supported_api_levels": "11+"
         },
         {
-          "name": "SHA256WITHRSA",
+          "name": "SHA256withRSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "SHA256WITHRSA/PSS",
+          "name": "SHA256withRSA/PSS",
           "supported_api_levels": "23+"
         },
         {
-          "name": "SHA384WITHECDSA",
+          "name": "SHA384withECDSA",
           "supported_api_levels": "11+"
         },
         {
-          "name": "SHA384WITHRSA",
+          "name": "SHA384withRSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "SHA384WITHRSA/PSS",
+          "name": "SHA384withRSA/PSS",
           "supported_api_levels": "23+"
         },
         {
-          "name": "SHA512WITHECDSA",
+          "name": "SHA512withECDSA",
           "supported_api_levels": "11+"
         },
         {
-          "name": "SHA512WITHRSA",
+          "name": "SHA512withRSA",
           "supported_api_levels": "1+"
         },
         {
-          "name": "SHA512WITHRSA/PSS",
+          "name": "SHA512withRSA/PSS",
           "supported_api_levels": "23+"
         }
       ],
@@ -1227,5 +1227,5 @@
       "name": "TrustManagerFactory"
     }
   ],
-  "last_updated": "2017-03-16 12:35:47 UTC"
+  "last_updated": "2017-03-21 16:04:30 UTC"
 }
