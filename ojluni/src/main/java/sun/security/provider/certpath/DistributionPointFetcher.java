@@ -320,6 +320,14 @@ public class DistributionPointFetcher {
         Set<TrustAnchor> trustAnchors, List<CertStore> certStores,
         Date validity) throws CRLException, IOException {
 
+        if (debug != null) {
+            debug.println("DistributionPointFetcher.verifyCRL: " +
+                "checking revocation status for" +
+                "\n  SN: " + Debug.toHexString(certImpl.getSerialNumber()) +
+                "\n  Subject: " + certImpl.getSubjectX500Principal() +
+                "\n  Issuer: " + certImpl.getIssuerX500Principal());
+        }
+
         boolean indirectCRL = false;
         X509CRLImpl crlImpl = X509CRLImpl.toImpl(crl);
         IssuingDistributionPointExtension idpExt =
