@@ -36,6 +36,22 @@ import sun.security.jca.GetInstance;
  * type of key material for use by secure sockets. The key
  * material is based on a KeyStore and/or provider specific sources.
  *
+ * <p> Android provides the following <code>KeyManagerFactory</code> algorithms:
+ * <table>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>PKIX</td>
+ *       <td>1+</td>
+ *     </tr>
+ *   </tbody>
+ * </table>
+ *
  * @since 1.4
  * @see KeyManager
  */

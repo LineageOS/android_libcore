@@ -39,42 +39,42 @@ import sun.security.jca.GetInstance;
  *
  * <p> Android provides the following <code>SSLContext</code> protocols:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>Default</td>
- *             <td>10+</td>
- *         </tr>
- *         <tr class="deprecated">
- *             <td>SSL</td>
- *             <td>10&ndash;TBD</td>
- *         </tr>
- *         <tr class="deprecated">
- *             <td>SSLv3</td>
- *             <td>10&ndash;TBD</td>
- *         </tr>
- *         <tr>
- *             <td>TLS</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>TLSv1</td>
- *             <td>10+</td>
- *         </tr>
- *         <tr>
- *             <td>TLSv1.1</td>
- *             <td>16+</td>
- *         </tr>
- *         <tr>
- *             <td>TLSv1.2</td>
- *             <td>16+</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>Default</td>
+ *       <td>10+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SSL</td>
+ *       <td>10+</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>SSLv3</td>
+ *       <td>10-25</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLS</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLSv1</td>
+ *       <td>10+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLSv1.1</td>
+ *       <td>16+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLSv1.2</td>
+ *       <td>16+</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * This protocol is described in the <a href=

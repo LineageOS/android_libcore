@@ -93,18 +93,18 @@ import sun.security.jca.GetInstance.Instance;
  *
  * <p> Android provides the following <code>CertificateFactory</code> types:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>X.509</td>
- *             <td>1+</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>X.509</td>
+ *       <td>1+</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  * and the following <code>CertPath</code> encodings:
  * <table>

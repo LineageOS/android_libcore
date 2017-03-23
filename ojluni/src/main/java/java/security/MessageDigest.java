@@ -87,38 +87,38 @@ import sun.security.util.Debug;
  *
  * <p> Android provides the following <code>MessageDigest</code> algorithms:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>MD5</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>SHA-1</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>SHA-224</td>
- *             <td>1&ndash;8,22+</td>
- *         </tr>
- *         <tr>
- *             <td>SHA-256</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>SHA-384</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>SHA-512</td>
- *             <td>1+</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>MD5</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SHA-1</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SHA-224</td>
+ *       <td>1-8,22+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SHA-256</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SHA-384</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>SHA-512</td>
+ *       <td>1+</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * These algorithms are described in the <a href=
