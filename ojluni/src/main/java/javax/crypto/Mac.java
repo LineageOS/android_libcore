@@ -56,76 +56,92 @@ import sun.security.jca.GetInstance.Instance;
  * e.g., MD5 or SHA-1, in combination with a secret shared key. HMAC is
  * specified in RFC 2104.
  *
- * <p> Android provides the following <code>Mac</code> algorithms
+ * <p> Android provides the following <code>Mac</code> algorithms:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>DESedeMAC</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>DESedeMAC/CFB8</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>DESedeMAC64</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>DESMAC</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>DESMAC/CFB8</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>DESwithISO9797</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>HmacMD5</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>HmacSHA1</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>HmacSHA224</td>
- *             <td>1&ndash;8, 22+</td>
- *         </tr>
- *         <tr>
- *             <td>HmacSHA256</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>HmacSHA384</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>HmacSHA512</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>ISO9797ALG3MAC</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>PBEwithHmacSHA</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>PBEwithHmacSHA1</td>
- *             <td>1+</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr class="deprecated">
+ *       <td>DESMAC</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>DESMAC/CFB8</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>DESedeMAC</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>DESedeMAC/CFB8</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>DESedeMAC64</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>DESwithISO9797</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacMD5</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacSHA1</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacSHA224</td>
+ *       <td>1-8,22+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacSHA256</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacSHA384</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>HmacSHA512</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>ISO9797ALG3MAC</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA1</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA224</td>
+ *       <td>26+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA256</td>
+ *       <td>26+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA384</td>
+ *       <td>26+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PBEwithHmacSHA512</td>
+ *       <td>26+</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * These algorithms are described in the
