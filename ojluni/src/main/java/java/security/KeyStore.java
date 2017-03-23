@@ -156,42 +156,42 @@ import javax.security.auth.callback.*;
  *
  * <p> Android provides the following <code>KeyStore</code> types:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>AndroidCAStore</td>
- *             <td>14+</td>
- *         </tr>
- *         <tr>
- *             <td>AndroidKeyStore</td>
- *             <td>18+</td>
- *         </tr>
- *         <tr>
- *             <td>BCPKCS12</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *         <tr>
- *             <td>BKS</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>BouncyCastle</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>PKCS12</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>PKCS12-DEF</td>
- *             <td>1&ndash;8</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>AndroidCAStore</td>
+ *       <td>14+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>AndroidKeyStore</td>
+ *       <td>18+</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>BCPKCS12</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *     <tr>
+ *       <td>BKS</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>BouncyCastle</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>PKCS12</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr class="deprecated">
+ *       <td>PKCS12-DEF</td>
+ *       <td>1-8</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * These types are described in the <a href=
