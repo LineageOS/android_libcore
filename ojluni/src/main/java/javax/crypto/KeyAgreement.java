@@ -59,22 +59,22 @@ import sun.security.jca.GetInstance.Instance;
  *
  * <p> Android provides the following <code>KeyAgreement</code> algorithms:
  * <table>
- *     <thead>
- *         <tr>
- *             <th>Name</th>
- *             <th>Supported (API Levels)</th>
- *         </tr>
- *     </thead>
- *     <tbody>
- *         <tr>
- *             <td>DH</td>
- *             <td>1+</td>
- *         </tr>
- *         <tr>
- *             <td>ECDH</td>
- *             <td>11+</td>
- *         </tr>
- *     </tbody>
+ *   <thead>
+ *     <tr>
+ *       <th>Algorithm</th>
+ *       <th>Supported API Levels</th>
+ *     </tr>
+ *   </thead>
+ *   <tbody>
+ *     <tr>
+ *       <td>DH</td>
+ *       <td>1+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>ECDH</td>
+ *       <td>11+</td>
+ *     </tr>
+ *   </tbody>
  * </table>
  *
  * This algorithm is described in the <a href=
