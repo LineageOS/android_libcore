@@ -37,9 +37,12 @@ import libcore.io.MemoryMappedFile;
  * @hide - used to implement TimeZone
  */
 public final class ZoneInfoDB {
-  private static final TzData DATA = TzData.loadTzDataWithFallback(
-          System.getenv("ANDROID_DATA") + "/misc/zoneinfo/current/tzdata",
-          System.getenv("ANDROID_ROOT") + "/usr/share/zoneinfo/tzdata");
+
+  // VisibleForTesting
+  public static final String TZDATA_FILE = "tzdata";
+
+  private static final TzData DATA =
+          TzData.loadTzDataWithFallback(TimeZoneDataFiles.getTimeZoneFilePaths(TZDATA_FILE));
 
   public static class TzData {
 
@@ -114,7 +117,7 @@ public final class ZoneInfoDB {
       // We didn't find any usable tzdata on disk, so let's just hard-code knowledge of "GMT".
       // This is actually implemented in TimeZone itself, so if this is the only time zone
       // we report, we won't be asked any more questions.
-      System.logE("Couldn't find any tzdata!");
+      System.logE("Couldn't find any " + TZDATA_FILE + " file!");
       return TzData.createFallback();
     }
 
@@ -183,7 +186,7 @@ public final class ZoneInfoDB {
 
         // Something's wrong with the file.
         // Log the problem and return false so we try the next choice.
-        System.logE("tzdata file \"" + path + "\" was present but invalid!", ex);
+        System.logE(TZDATA_FILE + " file \"" + path + "\" was present but invalid!", ex);
         return false;
       }
     }
