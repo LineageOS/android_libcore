@@ -216,15 +216,26 @@ public class TimeZoneTest extends TestCase {
 
     // http://b/7955614 and http://b/8026776.
     public void testDisplayNames() throws Exception {
+        checkDisplayNames(Locale.US);
+    }
+
+    public void testDisplayNames_nonUS() throws Exception {
+        // run checkDisplayNames with an arbitrary set of Locales.
+        checkDisplayNames(Locale.CHINESE);
+        checkDisplayNames(Locale.FRENCH);
+        checkDisplayNames(Locale.forLanguageTag("bn-BD"));
+    }
+
+    public void checkDisplayNames(Locale locale) throws Exception {
         // Check that there are no time zones that use DST but have the same display name for
         // both standard and daylight time.
         StringBuilder failures = new StringBuilder();
         for (String id : TimeZone.getAvailableIDs()) {
             TimeZone tz = TimeZone.getTimeZone(id);
-            String longDst = tz.getDisplayName(true, TimeZone.LONG, Locale.US);
-            String longStd = tz.getDisplayName(false, TimeZone.LONG, Locale.US);
-            String shortDst = tz.getDisplayName(true, TimeZone.SHORT, Locale.US);
-            String shortStd = tz.getDisplayName(false, TimeZone.SHORT, Locale.US);
+            String longDst = tz.getDisplayName(true, TimeZone.LONG, locale);
+            String longStd = tz.getDisplayName(false, TimeZone.LONG, locale);
+            String shortDst = tz.getDisplayName(true, TimeZone.SHORT, locale);
+            String shortStd = tz.getDisplayName(false, TimeZone.SHORT, locale);
 
             if (tz.useDaylightTime()) {
                 // The long std and dst strings must differ!
@@ -327,15 +338,6 @@ public class TimeZoneTest extends TestCase {
             offset = -offset;
         }
         return String.format("GMT%c%02d:%02d", sign, offset / 60, offset % 60);
-    }
-
-    public void testAllDisplayNames() throws Exception {
-      for (Locale locale : Locale.getAvailableLocales()) {
-        for (String id : TimeZone.getAvailableIDs()) {
-          TimeZone tz = TimeZone.getTimeZone(id);
-          assertNotNull(tz.getDisplayName(false, TimeZone.LONG, locale));
-        }
-      }
     }
 
     // http://b/18839557
