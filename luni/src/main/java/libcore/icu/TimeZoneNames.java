@@ -43,15 +43,6 @@ public final class TimeZoneNames {
     public static final int NAME_COUNT = 5;
 
     private static final ZoneStringsCache cachedZoneStrings = new ZoneStringsCache();
-    static {
-        // Ensure that we pull in the zone strings for the root locale, en_US, and the
-        // user's default locale. (All devices must support the root locale and en_US,
-        // and they're used for various system things like HTTP headers.) Pre-populating
-        // the cache is especially useful on Android because we'll share this via the Zygote.
-        cachedZoneStrings.get(Locale.ROOT);
-        cachedZoneStrings.get(Locale.US);
-        cachedZoneStrings.get(Locale.getDefault());
-    }
 
     public static class ZoneStringsCache extends BasicLruCache<Locale, String[][]> {
         public ZoneStringsCache() {
