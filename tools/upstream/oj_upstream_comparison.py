@@ -46,10 +46,12 @@ The newly created openjdk directory is then a suitable argument for the
 """
 
 import argparse
+import csv
 import filecmp
 import os
 import re
 import shutil
+import sys
 
 def rel_paths_from_makefile(build_top):
     """Returns the list of relative paths to .java files parsed from openjdk_java_files.mk"""
@@ -83,28 +85,75 @@ def upstream_path(upstream_root, upstream, rel_path):
             return result
     return None
 
-def compare_to_upstreams(build_top, upstream_root, upstreams, rel_paths):
+
+# For files with N and M lines, respectively, this runs in time
+# O(N+M) if the files are identical or O(N*M) if not. This could
+# be improved to O(D*(N+M)) for files with at most D lines
+# difference by only considering array elements within D cells
+# from the diagonal.
+def edit_distance_lines(file_a, file_b):
     """
-    Returns a dict from rel_path to lists of length len(upstreams)
-    Each list entry specifies whether the file at a particular
-    rel_path is missing from, identical to, or different from
-    a particular upstream.
+    Computes the line-based edit distance between two text files, i.e.
+    the smallest number of line deletions, additions or replacements
+    that would transform the content of one file into that of the other.
     """
-    result = {}
+    if filecmp.cmp(file_a, file_b, shallow=False):
+        return 0 # files identical
+    with open(file_a) as f:
+        lines_a = f.readlines()
+    with open(file_b) as f:
+        lines_b = f.readlines()
+    prev_cost = range(0, len(lines_b) + 1)
+    for end_a in range(1, len(lines_a) + 1):
+        # For each valid index i, prev_cost[i] is the edit distance between
+        # lines_a[:end_a-1] and lines_b[:i].
+        # We now calculate cur_cost[end_b] as the edit distance between
+        # line_a[:end_a] and lines_b[:end_b]
+        cur_cost = [end_a]
+        for end_b in range(1, len(lines_b) + 1):
+            c = min(
+                cur_cost[-1] + 1, # append line from b
+                prev_cost[end_b] + 1, # append line from a
+                # match or replace line
+                prev_cost[end_b - 1] + (0 if lines_a[end_a - 1] == lines_b[end_b - 1] else 1)
+                )
+            cur_cost.append(c)
+        prev_cost = cur_cost
+    return prev_cost[-1]
+
+def compare_to_upstreams_and_save(out_file, build_top, upstream_root, upstreams, rel_paths, best_only=False):
+    """
+    Prints tab-separated values comparing ojluni files vs. each
+    upstream, for each of the rel_paths, suitable for human
+    analysis in a spreadsheet.
+    This includes whether the corresponding upstream file is
+    missing, identical, or by how many lines it differs, and
+    a guess as to the correct upstream based on minimal line
+    difference (ties broken in favor of upstreams that occur
+    earlier in the list).
+    """
+    writer = csv.writer(out_file, delimiter='\t')
+    writer.writerow(["rel_path", "guessed_upstream"] + upstreams)
     for rel_path in rel_paths:
         ojluni_file = ojluni_path(build_top, rel_path)
-        status = []
+        upstream_comparisons = []
+        best_distance = sys.maxint
+        guessed_upstream = ""
         for upstream in upstreams:
             upstream_file = upstream_path(upstream_root, upstream, rel_path)
             if upstream_file is None:
-                upstream_status = "missing"
-            elif filecmp.cmp(upstream_file, ojluni_file, shallow=False):
-                upstream_status = "identical"
+                upstream_comparison = "missing"
             else:
-                upstream_status = "different"
-            status.append(upstream_status)
-        result[rel_path] = status
-    return result
+                edit_distance = edit_distance_lines(upstream_file, ojluni_file)
+                if edit_distance == 0:
+                    upstream_comparison = "identical"
+                else:
+                    upstream_comparison = "different (%d lines)" % (edit_distance)
+                if edit_distance < best_distance:
+                    best_distance = edit_distance
+                    guessed_upstream = upstream
+            upstream_comparisons.append(upstream_comparison)
+        writer.writerow([rel_path, guessed_upstream ] + upstream_comparisons)
 
 def copy_files(rel_paths, upstream_root, upstream, output_dir):
     """Copies files at the given rel_paths from upstream to output_dir"""
@@ -148,13 +197,12 @@ def main():
             raise Exception("Upstream not found: " + upstream_path)
 
     rel_paths = rel_paths_from_makefile(args.build_top)
-    upstream_infos = compare_to_upstreams(args.build_top, args.upstream_root, upstreams, rel_paths)
+
+    compare_to_upstreams_and_save(
+        sys.stdout, args.build_top, args.upstream_root, upstreams, rel_paths)
 
     if args.output_dir is not None:
         copy_files(rel_paths, args.upstream_root, default_upstream, args.output_dir)
-
-    for rel_path in rel_paths:
-        print(rel_path + "\t" +  "\t".join(upstream_infos[rel_path]))
 
 if __name__ == '__main__':
     main()
