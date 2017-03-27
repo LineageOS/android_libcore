@@ -210,6 +210,8 @@ public class CipherOutputStream extends FilterOutputStream {
             obuffer = cipher.doFinal();
         } catch (IllegalBlockSizeException | BadPaddingException e) {
             obuffer = null;
+            // Android-added: Throw an exception when the underlying cipher does.  http://b/36636576
+            throw new IOException(e);
         }
         try {
             flush();
