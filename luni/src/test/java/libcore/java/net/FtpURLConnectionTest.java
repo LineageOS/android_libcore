@@ -217,6 +217,34 @@ public class FtpURLConnectionTest extends TestCase {
         }
     }
 
+    // http://b/35784677
+    public void testCRLFInUserinfo() throws Exception {
+        int serverPort = fakeFtpServer.getServerControlPort();
+        // '/r/n' in the username, no password
+        String url1String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand@%s:%s/%s",
+            SERVER_HOSTNAME, serverPort, FILE_PATH);
+        // '/r/n' in the username with password
+        String url2String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand:foo@%s:%s/%s",
+            SERVER_HOSTNAME, serverPort, FILE_PATH);
+        // '/r/n' in the password
+        String url3String = String.format(Locale.US, "ftp://foo:bar%%0D%%0Acommand@%s:%s/%s",
+            SERVER_HOSTNAME, serverPort, FILE_PATH);
+        // just '/r' in the password
+        String url4String = String.format(Locale.US, "ftp://foo:bar%%0Dcommand@%s:%s/%s",
+            SERVER_HOSTNAME, serverPort, FILE_PATH);
+        // just '/n' in the username
+        String url5String = String.format(Locale.US, "ftp://foo%%0Acommand:bar@%s:%s/%s",
+            SERVER_HOSTNAME, serverPort, FILE_PATH);
+
+        for (String urlString : new String[]{ url1String, url2String, url3String, url4String,
+                url5String }) {
+            try {
+                new URL(urlString).openConnection();
+                fail();
+            } catch(IOException expected) {}
+        }
+    }
+
     private InputStream openFileSystemContents(String fileName) throws IOException {
         String fullFileName = USER_HOME_DIR + "/" + fileName;
         FileEntry entry = (FileEntry) fileSystem.getEntry(fullFileName);
