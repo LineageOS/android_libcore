@@ -139,6 +139,7 @@ public final class Constructor<T> extends Executable {
 
     /**
      * {@inheritDoc}
+     * @since 1.8
      */
     public int getParameterCount() {
         // Android-changed: This is handled by Executable.
