@@ -41,6 +41,8 @@ import java.util.Properties;
 import java.util.PropertyPermission;
 import libcore.icu.ICU;
 import libcore.io.Libcore;
+import libcore.util.TimeZoneDataFiles;
+
 import sun.reflect.CallerSensitive;
 import sun.security.util.SecurityConstants;
 /**
@@ -996,7 +998,7 @@ public final class System {
         // is prioritized over the properties in ICUConfig.properties. The issue with using
         // that is that it doesn't play well with jarjar and it needs complicated build rules
         // to change its default value.
-        String icuDataPath = generateIcuDataPath();
+        String icuDataPath = TimeZoneDataFiles.generateIcuDataPath();
         p.put("android.icu.impl.ICUBinary.dataPath", icuDataPath);
 
         parsePropertyAssignments(p, specialProperties());
@@ -1021,37 +1023,6 @@ public final class System {
         }
 
         return p;
-    }
-
-    private static String generateIcuDataPath() {
-        StringBuilder icuDataPathBuilder = new StringBuilder();
-        // ICU should first look in ANDROID_DATA. This is used for (optional) timezone data.
-        String dataIcuDataPath = getEnvironmentPath("ANDROID_DATA", "/misc/zoneinfo/current/icu");
-        if (dataIcuDataPath != null) {
-            icuDataPathBuilder.append(dataIcuDataPath);
-        }
-
-        // ICU should always look in ANDROID_ROOT.
-        String systemIcuDataPath = getEnvironmentPath("ANDROID_ROOT", "/usr/icu");
-        if (systemIcuDataPath != null) {
-            if (icuDataPathBuilder.length() > 0) {
-                icuDataPathBuilder.append(":");
-            }
-            icuDataPathBuilder.append(systemIcuDataPath);
-        }
-        return icuDataPathBuilder.toString();
-    }
-
-    /**
-     * Creates a path by combining the value of an environment variable with a relative path.
-     * Returns {@code null} if the environment variable is not set.
-     */
-    private static String getEnvironmentPath(String environmentVariable, String path) {
-        String variable = getenv(environmentVariable);
-        if (variable == null) {
-            return null;
-        }
-        return variable + path;
     }
 
     private static Properties initProperties() {
