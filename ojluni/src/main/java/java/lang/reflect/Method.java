@@ -186,6 +186,7 @@ public final class Method extends Executable  {
 
     /**
      * {@inheritDoc}
+     * @since 1.8
      */
     public int getParameterCount() {
         // Android-changed: This is handled by Executable.
