@@ -253,6 +253,43 @@ public class FileUtilsTest extends TestCase {
         assertTrue(Arrays.equals(contents, exhaustedFileRead));
     }
 
+    public void testCreateEmptyFile() throws Exception {
+        File dir = createTempDir();
+        File file = new File(dir, "one");
+        assertFalse(file.exists());
+        FileUtils.createEmptyFile(file);
+        assertTrue(file.exists());
+        assertEquals(0, file.length());
+    }
+
+    public void testCreateEmptyFile_isDir() throws Exception {
+        File dir = createTempDir();
+        assertTrue(dir.exists());
+        assertTrue(dir.isDirectory());
+
+        try {
+            FileUtils.createEmptyFile(dir);
+        } catch (FileNotFoundException expected) {
+        }
+        assertTrue(dir.exists());
+        assertTrue(dir.isDirectory());
+    }
+
+    public void testCreateEmptyFile_truncatesExisting() throws Exception {
+        File dir = createTempDir();
+        File file = new File(dir, "one");
+
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(new byte[1000]);
+        }
+        assertTrue(file.exists());
+        assertEquals(1000, file.length());
+
+        FileUtils.createEmptyFile(file);
+        assertTrue(file.exists());
+        assertEquals(0, file.length());
+    }
+
     private File createFile(byte[] contents) throws IOException {
         File file = File.createTempFile(getClass().getSimpleName(), ".txt");
         try (FileOutputStream fos = new FileOutputStream(file)) {
