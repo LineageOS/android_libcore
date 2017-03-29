@@ -1970,7 +1970,7 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
 // BEGIN Android-removed
 //    public String getFingerprint(String algorithm) {
 //        return fingerprints.computeIfAbsent(algorithm,
-//                x -> getCertificateFingerPrint(x));
+//                x -> getFingerprint(x, this));
 //    }
 // END Android-removed
 
@@ -1978,11 +1978,12 @@ public class X509CertImpl extends X509Certificate implements DerEncoder {
      * Gets the requested finger print of the certificate. The result
      * only contains 0-9 and A-F. No small case, no colon.
      */
-    private String getCertificateFingerPrint(String mdAlg) {
+    public static String getFingerprint(String algorithm,
+            X509Certificate cert) {
         String fingerPrint = "";
         try {
-            byte[] encCertInfo = getEncoded();
-            MessageDigest md = MessageDigest.getInstance(mdAlg);
+            byte[] encCertInfo = cert.getEncoded();
+            MessageDigest md = MessageDigest.getInstance(algorithm);
             byte[] digest = md.digest(encCertInfo);
             StringBuffer buf = new StringBuffer();
             for (int i = 0; i < digest.length; i++) {
