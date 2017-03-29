@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -255,11 +255,11 @@ public class SSLContext {
      *
      * @return the new <code>SSLContext</code> object.
      *
-     * @throws NoSuchAlgorithmException if a KeyManagerFactorySpi
+     * @throws NoSuchAlgorithmException if a SSLContextSpi
      *          implementation for the specified protocol is not available
      *          from the specified Provider object.
      *
-     * @throws IllegalArgumentException if the provider name is null.
+     * @throws IllegalArgumentException if the provider is null.
      * @throws NullPointerException if protocol is null.
      *
      * @see java.security.Provider
