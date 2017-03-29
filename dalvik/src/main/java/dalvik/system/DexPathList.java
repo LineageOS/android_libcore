@@ -441,8 +441,6 @@ import static android.system.OsConstants.S_ISDIR;
             } else if (file.isDirectory()) {
                 // We support directories for looking up native libraries.
                 elements[elementsPos++] = new NativeLibraryElement(file);
-            } else {
-                System.logW("ClassLoader referenced unknown path: " + file);
             }
         }
         if (elementsPos != elements.length) {
