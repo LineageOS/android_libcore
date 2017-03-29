@@ -23,6 +23,7 @@ import java.io.IOException;
 import libcore.tzdata.shared2.DistroException;
 import libcore.tzdata.shared2.DistroVersion;
 import libcore.tzdata.shared2.FileUtils;
+import libcore.tzdata.shared2.StagedDistroOperation;
 import libcore.tzdata.shared2.TimeZoneDistro;
 import libcore.util.ZoneInfoDB;
 
@@ -31,38 +32,55 @@ import libcore.util.ZoneInfoDB;
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
 public class TimeZoneDistroInstaller {
-    /** {@link #installWithErrorCode(byte[])} result code: Success. */
+    /** {@link #stageInstallWithErrorCode(byte[])} result code: Success. */
     public final static int INSTALL_SUCCESS = 0;
-    /** {@link #installWithErrorCode(byte[])} result code: Distro corrupt. */
+    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro corrupt. */
     public final static int INSTALL_FAIL_BAD_DISTRO_STRUCTURE = 1;
-    /** {@link #installWithErrorCode(byte[])} result code: Distro version incompatible. */
+    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro version incompatible. */
     public final static int INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION = 2;
-    /** {@link #installWithErrorCode(byte[])} result code: Distro rules too old for device. */
+    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro rules too old for device. */
     public final static int INSTALL_FAIL_RULES_TOO_OLD = 3;
-    /** {@link #installWithErrorCode(byte[])} result code: Distro content failed validation. */
+    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro content failed validation. */
     public final static int INSTALL_FAIL_VALIDATION_ERROR = 4;
 
+    // This constant must match one in system/core/tzdatacheck.cpp.
+    private static final String STAGED_TZ_DATA_DIR_NAME = "staged";
+    // This constant must match one in system/core/tzdatacheck.cpp.
     private static final String CURRENT_TZ_DATA_DIR_NAME = "current";
     private static final String WORKING_DIR_NAME = "working";
     private static final String OLD_TZ_DATA_DIR_NAME = "old";
 
+    /**
+     * The name of the file in the staged directory used to indicate a staged uninstallation.
+     */
+    // This constant must match one in system/core/tzdatacheck.cpp.
+    // VisibleForTesting.
+    public static final String UNINSTALL_TOMBSTONE_FILE_NAME = "STAGED_UNINSTALL_TOMBSTONE";
+
     private final String logTag;
     private final File systemTzDataFile;
-    private final File oldTzDataDir;
+    private final File oldStagedDataDir;
+    private final File stagedTzDataDir;
     private final File currentTzDataDir;
     private final File workingDir;
 
     public TimeZoneDistroInstaller(String logTag, File systemTzDataFile, File installDir) {
         this.logTag = logTag;
         this.systemTzDataFile = systemTzDataFile;
-        oldTzDataDir = new File(installDir, OLD_TZ_DATA_DIR_NAME);
+        oldStagedDataDir = new File(installDir, OLD_TZ_DATA_DIR_NAME);
+        stagedTzDataDir = new File(installDir, STAGED_TZ_DATA_DIR_NAME);
         currentTzDataDir = new File(installDir, CURRENT_TZ_DATA_DIR_NAME);
         workingDir = new File(installDir, WORKING_DIR_NAME);
     }
 
     // VisibleForTesting
-    File getOldTzDataDir() {
-        return oldTzDataDir;
+    File getOldStagedDataDir() {
+        return oldStagedDataDir;
+    }
+
+    // VisibleForTesting
+    File getStagedTzDataDir() {
+        return stagedTzDataDir;
     }
 
     // VisibleForTesting
@@ -76,34 +94,35 @@ public class TimeZoneDistroInstaller {
     }
 
     /**
-     * Install the supplied content.
+     * Stage an install of the supplied content, to be installed the next time the device boots.
      *
-     * <p>Errors during unpacking or installation will throw an {@link IOException}.
+     * <p>Errors during unpacking or staging will throw an {@link IOException}.
      * If the distro content is invalid this method returns {@code false}.
      * If the installation completed successfully this method returns {@code true}.
      */
     public boolean install(byte[] content) throws IOException {
-        int result = installWithErrorCode(content);
+        int result = stageInstallWithErrorCode(content);
         return result == INSTALL_SUCCESS;
     }
 
     /**
-     * Install the supplied time zone distro.
+     * Stage an install of the supplied content, to be installed the next time the device boots.
      *
-     * <p>Errors during unpacking or installation will throw an {@link IOException}.
+     * <p>Errors during unpacking or staging will throw an {@link IOException}.
      * Returns {@link #INSTALL_SUCCESS} or an error code.
      */
-    public int installWithErrorCode(byte[] content) throws IOException {
-        if (oldTzDataDir.exists()) {
-            FileUtils.deleteRecursive(oldTzDataDir);
+    public int stageInstallWithErrorCode(byte[] content) throws IOException {
+        if (oldStagedDataDir.exists()) {
+            FileUtils.deleteRecursive(oldStagedDataDir);
         }
         if (workingDir.exists()) {
             FileUtils.deleteRecursive(workingDir);
         }
 
         Slog.i(logTag, "Unpacking / verifying time zone update");
-        unpackDistro(content, workingDir);
         try {
+            unpackDistro(content, workingDir);
+
             DistroVersion distroVersion;
             try {
                 distroVersion = readDistroVersion(workingDir);
@@ -151,52 +170,78 @@ public class TimeZoneDistroInstaller {
             Slog.i(logTag, "Applying time zone update");
             FileUtils.makeDirectoryWorldAccessible(workingDir);
 
-            if (currentTzDataDir.exists()) {
-                Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
-                FileUtils.rename(currentTzDataDir, oldTzDataDir);
+            // Check if there is already a staged install or uninstall and remove it if there is.
+            if (!stagedTzDataDir.exists()) {
+                Slog.i(logTag, "Nothing to unstage at " + stagedTzDataDir);
+            } else {
+                Slog.i(logTag, "Moving " + stagedTzDataDir + " to " + oldStagedDataDir);
+                // Move stagedTzDataDir out of the way in one operation so we can't partially delete
+                // the contents.
+                FileUtils.rename(stagedTzDataDir, oldStagedDataDir);
             }
-            Slog.i(logTag, "Moving " + workingDir + " to " + currentTzDataDir);
-            FileUtils.rename(workingDir, currentTzDataDir);
-            Slog.i(logTag, "Update applied: " + currentTzDataDir + " successfully created");
+
+            // Move the workingDir to be the new staged directory.
+            Slog.i(logTag, "Moving " + workingDir + " to " + stagedTzDataDir);
+            FileUtils.rename(workingDir, stagedTzDataDir);
+            Slog.i(logTag, "Install staged: " + stagedTzDataDir + " successfully created");
             return INSTALL_SUCCESS;
         } finally {
-            deleteBestEffort(oldTzDataDir);
+            deleteBestEffort(oldStagedDataDir);
             deleteBestEffort(workingDir);
         }
     }
 
     /**
-     * Uninstall the current timezone update in /data, returning the device to using data from
-     * /system. Returns {@code true} if uninstallation was successful, {@code false} if there was
-     * nothing installed in /data to uninstall.
+     * Stage an uninstall of the current timezone update in /data which, on reboot, will return the
+     * device to using data from /system. Returns {@code true} if staging the uninstallation was
+     * successful, {@code false} if there was nothing installed in /data to uninstall. If there was
+     * something else staged it will be replaced by this call.
      *
      * <p>Errors encountered during uninstallation will throw an {@link IOException}.
      */
-    public boolean uninstall() throws IOException {
+    public boolean stageUninstall() throws IOException {
         Slog.i(logTag, "Uninstalling time zone update");
 
-        // Make sure we don't have a dir where we're going to move the currently installed data to.
-        if (oldTzDataDir.exists()) {
+        if (oldStagedDataDir.exists()) {
             // If we can't remove this, an exception is thrown and we don't continue.
-            FileUtils.deleteRecursive(oldTzDataDir);
+            FileUtils.deleteRecursive(oldStagedDataDir);
+        }
+        if (workingDir.exists()) {
+            FileUtils.deleteRecursive(workingDir);
         }
 
-        if (!currentTzDataDir.exists()) {
-            Slog.i(logTag, "Nothing to uninstall at " + currentTzDataDir);
-            return false;
+        try {
+            // Check if there is already an install or uninstall staged and remove it.
+            if (!stagedTzDataDir.exists()) {
+                Slog.i(logTag, "Nothing to unstage at " + stagedTzDataDir);
+            } else {
+                Slog.i(logTag, "Moving " + stagedTzDataDir + " to " + oldStagedDataDir);
+                // Move stagedTzDataDir out of the way in one operation so we can't partially delete
+                // the contents.
+                FileUtils.rename(stagedTzDataDir, oldStagedDataDir);
+            }
+
+            // If there's nothing actually installed, there's nothing to uninstall so no need to
+            // stage anything.
+            if (!currentTzDataDir.exists()) {
+                Slog.i(logTag, "Nothing to uninstall at " + currentTzDataDir);
+                return false;
+            }
+
+            // Stage an uninstall in workingDir.
+            FileUtils.ensureDirectoriesExist(workingDir, true /* makeWorldReadable */);
+            FileUtils.createEmptyFile(new File(workingDir, UNINSTALL_TOMBSTONE_FILE_NAME));
+
+            // Move the workingDir to be the new staged directory.
+            Slog.i(logTag, "Moving " + workingDir + " to " + stagedTzDataDir);
+            FileUtils.rename(workingDir, stagedTzDataDir);
+            Slog.i(logTag, "Uninstall staged: " + stagedTzDataDir + " successfully created");
+
+            return true;
+        } finally {
+            deleteBestEffort(oldStagedDataDir);
+            deleteBestEffort(workingDir);
         }
-
-        Slog.i(logTag, "Moving " + currentTzDataDir + " to " + oldTzDataDir);
-        // Move currentTzDataDir out of the way in one operation so we can't partially delete
-        // the contents, which would leave a partial install.
-        FileUtils.rename(currentTzDataDir, oldTzDataDir);
-
-        // Do our best to delete the now uninstalled timezone data.
-        deleteBestEffort(oldTzDataDir);
-
-        Slog.i(logTag, "Time zone update uninstalled.");
-
-        return true;
     }
 
     /**
@@ -211,6 +256,24 @@ public class TimeZoneDistroInstaller {
             return null;
         }
         return readDistroVersion(currentTzDataDir);
+    }
+
+    /**
+     * Reads information about any currently staged distro operation. Returns {@code null} if there
+     * is no distro operation staged.
+     *
+     * @throws IOException if there was a problem reading data from /data
+     * @throws DistroException if there was a problem with the staged distro format/structure
+     */
+    public StagedDistroOperation getStagedDistroOperation() throws DistroException, IOException {
+        if (!stagedTzDataDir.exists()) {
+            return null;
+        }
+        if (new File(stagedTzDataDir, UNINSTALL_TOMBSTONE_FILE_NAME).exists()) {
+            return StagedDistroOperation.uninstall();
+        } else {
+            return StagedDistroOperation.install(readDistroVersion(stagedTzDataDir));
+        }
     }
 
     /**
