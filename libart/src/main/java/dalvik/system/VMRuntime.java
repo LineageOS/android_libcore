@@ -421,4 +421,9 @@ public final class VMRuntime {
      * Should be called just once. Subsequent calls are ignored.
      */
     public static native void registerSensitiveThread();
+
+    /**
+     * Sets up the priority of the system daemon thread (caller).
+     */
+    public static native void setSystemDaemonThreadPriority();
 }
