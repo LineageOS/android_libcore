@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -211,7 +211,7 @@ import java.nio.ReadOnlyBufferException;
  * that the source buffer has enough room to hold a record (enlarging if
  * necessary), and then obtain more inbound data.
  *
- * <pre>
+ * <pre>{@code
  *   SSLEngineResult r = engine.unwrap(src, dst);
  *   switch (r.getStatus()) {
  *   BUFFER_OVERFLOW:
@@ -238,7 +238,7 @@ import java.nio.ReadOnlyBufferException;
  *       break;
  *   // other cases: CLOSED, OK.
  *   }
- * </pre>
+ * }</pre>
  *
  * <P>
  * Unlike <code>SSLSocket</code>, all methods of SSLEngine are
@@ -329,7 +329,6 @@ import java.nio.ReadOnlyBufferException;
  * is saved.  All future delegated tasks will be processed using this
  * context:  that is, all access control decisions will be made using the
  * context captured at engine creation.
- * <P>
  * <HR>
  *
  * <B>Concurrency Notes</B>:
@@ -345,7 +344,7 @@ import java.nio.ReadOnlyBufferException;
  *      out-of-order, unexpected or fatal results may occur.
  * <P>
  *      For example:
- * <P>
+ *
  *      <pre>
  *              synchronized (outboundLock) {
  *                  sslEngine.wrap(src, dst);
@@ -1088,7 +1087,7 @@ public abstract class SSLEngine {
      * <blockquote><pre>
      * {@link #wrap(ByteBuffer [], int, int, ByteBuffer)
      *     engine.wrap(new ByteBuffer [] { src }, 0, 1, dst);}
-     * </pre</blockquote>
+     * </pre></blockquote>
      *
      * @param   src
      *          a <code>ByteBuffer</code> containing outbound application data
@@ -1124,7 +1123,7 @@ public abstract class SSLEngine {
      * <blockquote><pre>
      * {@link #wrap(ByteBuffer [], int, int, ByteBuffer)
      *     engine.wrap(srcs, 0, srcs.length, dst);}
-     * </pre</blockquote>
+     * </pre></blockquote>
      *
      * @param   srcs
      *          an array of <code>ByteBuffers</code> containing the
@@ -1243,7 +1242,7 @@ public abstract class SSLEngine {
      * <blockquote><pre>
      * {@link #unwrap(ByteBuffer, ByteBuffer [], int, int)
      *     engine.unwrap(src, new ByteBuffer [] { dst }, 0, 1);}
-     * </pre</blockquote>
+     * </pre></blockquote>
      *
      * @param   src
      *          a <code>ByteBuffer</code> containing inbound network data.
@@ -1279,7 +1278,7 @@ public abstract class SSLEngine {
      * <blockquote><pre>
      * {@link #unwrap(ByteBuffer, ByteBuffer [], int, int)
      *     engine.unwrap(src, dsts, 0, dsts.length);}
-     * </pre</blockquote>
+     * </pre></blockquote>
      *
      * @param   src
      *          a <code>ByteBuffer</code> containing inbound network data.
@@ -1860,15 +1859,19 @@ public abstract class SSLEngine {
      *
      * <p>This means:
      * <ul>
-     * <li>if <code>params.getCipherSuites()</code> is non-null,
-     *   <code>setEnabledCipherSuites()</code> is called with that value
-     * <li>if <code>params.getProtocols()</code> is non-null,
-     *   <code>setEnabledProtocols()</code> is called with that value
-     * <li>if <code>params.getNeedClientAuth()</code> or
-     *   <code>params.getWantClientAuth()</code> return <code>true</code>,
-     *   <code>setNeedClientAuth(true)</code> and
-     *   <code>setWantClientAuth(true)</code> are called, respectively;
-     *   otherwise <code>setWantClientAuth(false)</code> is called.
+     * <li>If {@code params.getCipherSuites()} is non-null,
+     *   {@code setEnabledCipherSuites()} is called with that value.</li>
+     * <li>If {@code params.getProtocols()} is non-null,
+     *   {@code setEnabledProtocols()} is called with that value.</li>
+     * <li>If {@code params.getNeedClientAuth()} or
+     *   {@code params.getWantClientAuth()} return {@code true},
+     *   {@code setNeedClientAuth(true)} and
+     *   {@code setWantClientAuth(true)} are called, respectively;
+     *   otherwise {@code setWantClientAuth(false)} is called.</li>
+     * <li>If {@code params.getServerNames()} is non-null, the engine will
+     *   configure its server names with that value.</li>
+     * <li>If {@code params.getSNIMatchers()} is non-null, the engine will
+     *   configure its SNI matchers with that value.</li>
      * </ul>
      *
      * @param params the parameters
