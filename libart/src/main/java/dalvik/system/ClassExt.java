@@ -48,7 +48,8 @@ public final class ClassExt {
     private Object obsoleteMethods;
 
     /**
-     * If set, the bytes or DexCache of the original dex-file associated with the related class.
+     * If set, the bytes, native pointer (as a java.lang.Long), or DexCache of the original dex-file
+     * associated with the related class.
      *
      * In this instance 'original' means either (1) the dex-file loaded for this class when it was
      * first loaded after all non-retransformation capable transformations had been performed but
