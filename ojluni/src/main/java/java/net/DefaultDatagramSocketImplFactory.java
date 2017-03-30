@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007,2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -35,7 +35,7 @@ import java.security.AccessController;
  */
 
 class DefaultDatagramSocketImplFactory {
-    static Class prefixImplClass = null;
+    static Class<?> prefixImplClass = null;
 
     static {
         String prefix = null;
@@ -53,10 +53,10 @@ class DefaultDatagramSocketImplFactory {
     }
 
     /**
-     * Creates a new {@code DatagramSocketImpl} instance.
+     * Creates a new <code>DatagramSocketImpl</code> instance.
      *
      * @param   isMulticast     true if this impl if for a MutlicastSocket
-     * @return  a new instance of a {@code DatagramSocketImpl}.
+     * @return  a new instance of a <code>DatagramSocketImpl</code>.
      */
     static DatagramSocketImpl createDatagramSocketImpl(boolean isMulticast /*unused on unix*/)
         throws SocketException {
