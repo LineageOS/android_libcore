@@ -34,6 +34,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.NoRouteToHostException;
 import java.net.PortUnreachableException;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -128,6 +129,12 @@ public final class IoBridge {
         try {
             connectErrno(fd, inetAddress, port, timeoutMs);
         } catch (ErrnoException errnoException) {
+            if (errnoException.errno == EHOSTUNREACH) {
+                throw new NoRouteToHostException("Host unreachable");
+            }
+            if (errnoException.errno == EADDRNOTAVAIL) {
+                throw new NoRouteToHostException("Address not available");
+            }
             throw new ConnectException(connectDetail(fd, inetAddress, port, timeoutMs,
                     errnoException), errnoException);
         } catch (SocketException ex) {
@@ -141,7 +148,7 @@ public final class IoBridge {
 
     private static void connectErrno(FileDescriptor fd, InetAddress inetAddress, int port, int timeoutMs) throws ErrnoException, IOException {
         // With no timeout, just call connect(2) directly.
-        if (timeoutMs == 0) {
+        if (timeoutMs <= 0) {
             Libcore.os.connect(fd, inetAddress, port);
             return;
         }
