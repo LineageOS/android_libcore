@@ -26,6 +26,14 @@ public final class TimeZoneDataFiles {
 
     private TimeZoneDataFiles() {}
 
+    /**
+     * Returns two time zone file paths for the specified file name in an array in the order they
+     * should be tried. See {@link #generateIcuDataPath()} for ICU files instead.
+     * <ul>
+     * <li>[0] - the location of the file in the /data partition (may not exist).</li>
+     * <li>[1] - the location of the file in the /system partition (should exist).</li>
+     * </ul>
+     */
     // VisibleForTesting
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {

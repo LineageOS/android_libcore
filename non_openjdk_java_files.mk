@@ -308,6 +308,7 @@ non_openjdk_java_files := \
   luni/src/main/java/libcore/util/RecoverySystem.java \
   luni/src/main/java/libcore/util/SneakyThrow.java \
   luni/src/main/java/libcore/util/TimeZoneDataFiles.java \
+  luni/src/main/java/libcore/util/TimeZoneFinder.java \
   luni/src/main/java/libcore/util/ZoneInfo.java \
   luni/src/main/java/libcore/util/ZoneInfoDB.java \
   luni/src/main/java/libcore/util/HexEncoding.java \

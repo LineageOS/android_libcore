@@ -26,6 +26,7 @@ echo "Current ICU version is ${ICU_VERSION}"
 
 # Get the current tzdata version and find both the previous and new versions.
 TZDATA=libc/zoneinfo/tzdata
+TZLOOKUP=libc/zoneinfo/tzlookup.xml
 
 TZHEADER=$(head -n1 bionic/$TZDATA | cut -c1-11)
 
@@ -88,6 +89,7 @@ revision=1
 rules.version=${TZ_PREVIOUS}
 bionic.file=${TMP_PREVIOUS}/tzdata
 icu.file=${TMP_PREVIOUS}/icu_tzdata.dat
+tzlookup.file=${ANDROID_BUILD_TOP}/bionic/${TZLOOKUP}
 EOF
 
 TZ_PREVIOUS_UPDATE_ZIP=update_${TZ_PREVIOUS}_test.zip
@@ -117,6 +119,7 @@ revision=1
 rules.version=${TZ_CURRENT}
 bionic.file=${TMP_CURRENT}/tzdata
 icu.file=${TMP_CURRENT}/icu_tzdata.dat
+tzlookup.file=${ANDROID_BUILD_TOP}/bionic/${TZLOOKUP}
 EOF
 
 TZ_CURRENT_UPDATE_ZIP=update_${TZ_CURRENT}_test.zip
@@ -146,6 +149,7 @@ revision=1
 rules.version=${TZ_NEXT}
 bionic.file=${TMP_NEXT}/tzdata
 icu.file=${TMP_NEXT}/icu_tzdata.dat
+tzlookup.file=${ANDROID_BUILD_TOP}/bionic/${TZLOOKUP}
 EOF
 
 TZ_NEXT_UPDATE_ZIP=update_${TZ_NEXT}_test.zip
