@@ -1503,13 +1503,5 @@
   names: [
     "com.android.org.apache.harmony.luni.tests.java.net.URLClassLoaderImplTest#test_Constructor$Ljava_net_URLLjava_lang_ClassLoaderLjava_net_URLStreamHandlerFactory"
   ]
-},
-{
-  description: "Waiting for ICU 58 to be merged",
-  bug: 31516121,
-  result: EXEC_FAILED,
-  names: [
-    "libcore.java.text.OldBidiTest#testUnicode9EmojisAreLtrNeutral"
-  ]
 }
 ]
