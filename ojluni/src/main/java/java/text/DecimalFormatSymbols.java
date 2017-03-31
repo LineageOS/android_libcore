@@ -712,24 +712,34 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
 
     // Android-changed: maybeStripMarkers added in b/26207216, fixed in b/32465689.
     /**
-     * Attempts to strip RTL, LTR and Arabic letter markers from {@code symbol}. If the symbol's
-     * length is 1, then the first char of the symbol is returned. If the symbol's length is more
-     * than 1 and the first char is a marker, then this marker is ignored. In all other cases,
-     * {@code fallback} is returned.
+     * Attempts to strip RTL, LTR and Arabic letter markers from {@code symbol}.
+     * If the string contains a single non-marker character (and any number of marker characters),
+     * then that character is returned, otherwise {@code fallback} is returned.
+     *
+     * @hide
      */
-    private static char maybeStripMarkers(String symbol, char fallback) {
+    // VisibleForTesting
+    public static char maybeStripMarkers(String symbol, char fallback) {
         final int length = symbol.length();
-        if (length == 1) {
-            return symbol.charAt(0);
-        }
-
-        if (length > 1) {
-            char first = symbol.charAt(0);
-            if (first =='\u200E' || first =='\u200F' || first =='\u061C') {
-                return symbol.charAt(1);
+        if (length >= 1) {
+            boolean sawNonMarker = false;
+            char nonMarker = 0;
+            for (int i = 0; i < length; i++) {
+                final char c = symbol.charAt(i);
+                if (c == '\u200E' || c == '\u200F' || c == '\u061C') {
+                    continue;
+                }
+                if (sawNonMarker) {
+                    // More than one non-marker character.
+                    return fallback;
+                }
+                sawNonMarker = true;
+                nonMarker = c;
+            }
+            if (sawNonMarker) {
+                return nonMarker;
             }
         }
-
         return fallback;
     }
 
