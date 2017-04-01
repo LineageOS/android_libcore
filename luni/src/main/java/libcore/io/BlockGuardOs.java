@@ -17,7 +17,9 @@
 package libcore.io;
 
 import android.system.ErrnoException;
+import android.system.GaiException;
 import android.system.OsConstants;
+import android.system.StructAddrinfo;
 import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructStat;
@@ -167,6 +169,16 @@ public class BlockGuardOs extends ForwardingOs {
     @Override public void ftruncate(FileDescriptor fd, long length) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         os.ftruncate(fd, length);
+    }
+
+    @Override public InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException {
+        // With AI_NUMERICHOST flag set, the node must a numerical network address, therefore no
+        // host address lookups will be performed. In this case, it is fine to perform on main
+        // thread.
+        if ((hints.ai_flags & AI_NUMERICHOST) != 0) {
+            BlockGuard.getThreadPolicy().onNetwork();
+        }
+        return os.android_getaddrinfo(node, hints, netId);
     }
 
     @Override public void lchown(String path, int uid, int gid) throws ErrnoException {
