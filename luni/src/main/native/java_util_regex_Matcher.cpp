@@ -16,10 +16,7 @@
 
 #define LOG_TAG "Matcher"
 
-#include <memory>
 #include <stdlib.h>
-
-#include <android-base/logging.h>
 
 #include "IcuUtilities.h"
 #include "JNIHelp.h"
@@ -33,77 +30,52 @@
 
 // ICU documentation: http://icu-project.org/apiref/icu4c/classRegexMatcher.html
 
+static icu::RegexMatcher* toRegexMatcher(jlong address) {
+    return reinterpret_cast<icu::RegexMatcher*>(static_cast<uintptr_t>(address));
+}
+
 /**
- * Encapsulates an instance of ICU4C's RegexMatcher class along with a copy of
- * the input it's currently operating on in the native heap.
- *
- * Rationale: We choose to make a copy here because it turns out to be a lot
- * cheaper when a moving GC and/or string compression is enabled. This is
- * because env->GetStringChars() always copies in this scenario. This becomes
- * especially bad when the String in question is long and/or contains a large
- * number of matches.
- *
- * Drawbacks: The native allocation associated with this class is no longer
- * fixed size, so we're effectively lying to the NativeAllocationRegistry about
- * the size of the object(s) we're allocating on the native heap. The peak
- * memory usage doesn't change though, given that GetStringChars would have
- * made an allocation of precisely the same size.
+ * We use ICU4C's RegexMatcher class, but our input is on the Java heap and potentially moving
+ * around between calls. This wrapper class ensures that our RegexMatcher is always pointing at
+ * the current location of the char[]. Earlier versions of Android simply copied the data to the
+ * native heap, but that's wasteful and hides allocations from the garbage collector.
  */
-class MatcherState {
+class MatcherAccessor {
 public:
-    MatcherState(icu::RegexMatcher* matcher) :
-        mMatcher(matcher),
-        mUChars(nullptr),
-        mUText(nullptr),
-        mStatus(U_ZERO_ERROR) {
+    MatcherAccessor(JNIEnv* env, jlong address, jstring javaInput, bool reset) {
+        init(env, address);
+
+        mJavaInput = javaInput;
+        mChars = env->GetStringChars(mJavaInput, NULL);
+        if (mChars == NULL) {
+            return;
+        }
+
+        mUText = utext_openUChars(NULL, mChars, env->GetStringLength(mJavaInput), &mStatus);
+        if (mUText == NULL) {
+            return;
+        }
+
+        if (reset) {
+            mMatcher->reset(mUText);
+        } else {
+            mMatcher->refreshInputText(mUText, mStatus);
+        }
     }
 
-    bool updateInput(JNIEnv* env, jstring input) {
-        // First, close the UText struct, since we're about to allocate a new one.
+    MatcherAccessor(JNIEnv* env, jlong address) {
+        init(env, address);
+    }
+
+    ~MatcherAccessor() {
         utext_close(mUText);
-        mUText = nullptr;
-        // Then delete the UChar* associated with the UText struct..
-        mUChars.reset(nullptr);
-
-        // TODO: We should investigate whether we can avoid an additional copy
-        // in the native heap when is_copy == JNI_TRUE. The problem with doing
-        // that is that we might call ReleaseStringChars with a different
-        // JNIEnv* on a different downcall. This is currently safe as
-        // implemented in ART, but is unlikely to be portable and the spec stays
-        // silent on the matter.
-        const jchar* chars = env->GetStringChars(input, NULL);
-        if (chars == nullptr) {
-            return false;
+        if (mJavaInput) {
+            mEnv->ReleaseStringChars(mJavaInput, mChars);
         }
-
-        // Make a copy of |input| on the native heap. This copy will be live
-        // until the next call to updateInput or close.
-        const jsize length = env->GetStringLength(input);
-        mUChars.reset(new UChar[length]);
-
-        static_assert(sizeof(UChar) == sizeof(jchar), "sizeof(Uchar) != sizeof(jchar)");
-        memcpy(mUChars.get(), chars, length * sizeof(jchar));
-
-        env->ReleaseStringChars(input, chars);
-
-        mUText = utext_openUChars(NULL, mUChars.get(), length, &mStatus);
-        if (mUText == nullptr) {
-            return false;
-        }
-
-        if (maybeThrowIcuException(env, "utext_openUChars", mStatus)) {
-            return false;
-        }
-
-        mMatcher->reset(mUText);
-        return true;
+        maybeThrowIcuException(mEnv, "utext_close", mStatus);
     }
 
-    ~MatcherState() {
-        utext_close(mUText);
-    }
-
-    icu::RegexMatcher* matcher() {
+    icu::RegexMatcher* operator->() {
         return mMatcher;
     }
 
@@ -111,8 +83,8 @@ public:
         return mStatus;
     }
 
-    void updateOffsets(JNIEnv* env, jintArray javaOffsets) {
-        ScopedIntArrayRW offsets(env, javaOffsets);
+    void updateOffsets(jintArray javaOffsets) {
+        ScopedIntArrayRW offsets(mEnv, javaOffsets);
         if (offsets.get() == NULL) {
             return;
         }
@@ -124,23 +96,29 @@ public:
     }
 
 private:
-    icu::RegexMatcher* const mMatcher;
-    std::unique_ptr<UChar[]> mUChars;
-    UText* mUText;
+    void init(JNIEnv* env, jlong address) {
+        mEnv = env;
+        mJavaInput = NULL;
+        mMatcher = toRegexMatcher(address);
+        mChars = NULL;
+        mStatus = U_ZERO_ERROR;
+        mUText = NULL;
+    }
+
+    JNIEnv* mEnv;
+    jstring mJavaInput;
+    icu::RegexMatcher* mMatcher;
+    const jchar* mChars;
     UErrorCode mStatus;
+    UText* mUText;
 
     // Disallow copy and assignment.
-    MatcherState(const MatcherState&);
-    void operator=(const MatcherState&);
+    MatcherAccessor(const MatcherAccessor&);
+    void operator=(const MatcherAccessor&);
 };
 
-static inline MatcherState* toMatcherState(jlong address) {
-    return reinterpret_cast<MatcherState*>(static_cast<uintptr_t>(address));
-}
-
 static void Matcher_free(void* address) {
-    MatcherState* state = reinterpret_cast<MatcherState*>(address);
-    delete state;
+    delete reinterpret_cast<icu::RegexMatcher*>(address);
 }
 
 static jlong Matcher_getNativeFinalizer(JNIEnv*, jclass) {
@@ -153,48 +131,51 @@ static jint Matcher_nativeSize(JNIEnv*, jclass) {
     return 200;  // Very rough guess based on a quick look at the implementation.
 }
 
-static jint Matcher_findImpl(JNIEnv* env, jclass, jlong addr, jint startIndex, jintArray offsets) {
-    MatcherState* state = toMatcherState(addr);
-    UBool result = state->matcher()->find(startIndex, state->status());
+static jint Matcher_findImpl(JNIEnv* env, jclass, jlong addr, jstring javaText, jint startIndex, jintArray offsets) {
+    MatcherAccessor matcher(env, addr, javaText, false);
+    UBool result = matcher->find(startIndex, matcher.status());
     if (result) {
-        state->updateOffsets(env, offsets);
+        matcher.updateOffsets(offsets);
     }
     return result;
 }
 
-static jint Matcher_findNextImpl(JNIEnv* env, jclass, jlong addr, jintArray offsets) {
-    MatcherState* state = toMatcherState(addr);
-    UBool result = state->matcher()->find();
+static jint Matcher_findNextImpl(JNIEnv* env, jclass, jlong addr, jstring javaText, jintArray offsets) {
+    MatcherAccessor matcher(env, addr, javaText, false);
+    if (matcher.status() != U_ZERO_ERROR) {
+        return -1;
+    }
+    UBool result = matcher->find();
     if (result) {
-        state->updateOffsets(env, offsets);
+        matcher.updateOffsets(offsets);
     }
     return result;
 }
 
-static jint Matcher_groupCountImpl(JNIEnv*, jclass, jlong addr) {
-    MatcherState* state = toMatcherState(addr);
-    return state->matcher()->groupCount();
+static jint Matcher_groupCountImpl(JNIEnv* env, jclass, jlong addr) {
+    MatcherAccessor matcher(env, addr);
+    return matcher->groupCount();
 }
 
-static jint Matcher_hitEndImpl(JNIEnv*, jclass, jlong addr) {
-    MatcherState* state = toMatcherState(addr);
-    return state->matcher()->hitEnd();
+static jint Matcher_hitEndImpl(JNIEnv* env, jclass, jlong addr) {
+    MatcherAccessor matcher(env, addr);
+    return matcher->hitEnd();
 }
 
-static jint Matcher_lookingAtImpl(JNIEnv* env, jclass, jlong addr, jintArray offsets) {
-    MatcherState* state = toMatcherState(addr);
-    UBool result = state->matcher()->lookingAt(state->status());
+static jint Matcher_lookingAtImpl(JNIEnv* env, jclass, jlong addr, jstring javaText, jintArray offsets) {
+    MatcherAccessor matcher(env, addr, javaText, false);
+    UBool result = matcher->lookingAt(matcher.status());
     if (result) {
-        state->updateOffsets(env, offsets);
+        matcher.updateOffsets(offsets);
     }
     return result;
 }
 
-static jint Matcher_matchesImpl(JNIEnv* env, jclass, jlong addr, jintArray offsets) {
-    MatcherState* state = toMatcherState(addr);
-    UBool result = state->matcher()->matches(state->status());
+static jint Matcher_matchesImpl(JNIEnv* env, jclass, jlong addr, jstring javaText, jintArray offsets) {
+    MatcherAccessor matcher(env, addr, javaText, false);
+    UBool result = matcher->matches(matcher.status());
     if (result) {
-        state->updateOffsets(env, offsets);
+        matcher.updateOffsets(offsets);
     }
     return result;
 }
@@ -203,32 +184,28 @@ static jlong Matcher_openImpl(JNIEnv* env, jclass, jlong patternAddr) {
     icu::RegexPattern* pattern = reinterpret_cast<icu::RegexPattern*>(static_cast<uintptr_t>(patternAddr));
     UErrorCode status = U_ZERO_ERROR;
     icu::RegexMatcher* result = pattern->matcher(status);
-    if (maybeThrowIcuException(env, "RegexPattern::matcher", status)) {
-        return 0;
-    }
-
-    return reinterpret_cast<uintptr_t>(new MatcherState(result));
+    maybeThrowIcuException(env, "RegexPattern::matcher", status);
+    return reinterpret_cast<uintptr_t>(result);
 }
 
-static jint Matcher_requireEndImpl(JNIEnv*, jclass, jlong addr) {
-    MatcherState* state = toMatcherState(addr);
-    return state->matcher()->requireEnd();
+static jint Matcher_requireEndImpl(JNIEnv* env, jclass, jlong addr) {
+    MatcherAccessor matcher(env, addr);
+    return matcher->requireEnd();
 }
 
 static void Matcher_setInputImpl(JNIEnv* env, jclass, jlong addr, jstring javaText, jint start, jint end) {
-    MatcherState* state = toMatcherState(addr);
-    state->updateInput(env, javaText);
-    state->matcher()->region(start, end, state->status());
+    MatcherAccessor matcher(env, addr, javaText, true);
+    matcher->region(start, end, matcher.status());
 }
 
-static void Matcher_useAnchoringBoundsImpl(JNIEnv*, jclass, jlong addr, jboolean value) {
-    MatcherState* state = toMatcherState(addr);
-    state->matcher()->useAnchoringBounds(value);
+static void Matcher_useAnchoringBoundsImpl(JNIEnv* env, jclass, jlong addr, jboolean value) {
+    MatcherAccessor matcher(env, addr);
+    matcher->useAnchoringBounds(value);
 }
 
-static void Matcher_useTransparentBoundsImpl(JNIEnv*, jclass, jlong addr, jboolean value) {
-    MatcherState* state = toMatcherState(addr);
-    state->matcher()->useTransparentBounds(value);
+static void Matcher_useTransparentBoundsImpl(JNIEnv* env, jclass, jlong addr, jboolean value) {
+    MatcherAccessor matcher(env, addr);
+    matcher->useTransparentBounds(value);
 }
 
 static jint Matcher_getMatchedGroupIndex0(JNIEnv* env, jclass, jlong patternAddr, jstring javaGroupName) {
@@ -250,13 +227,13 @@ static jint Matcher_getMatchedGroupIndex0(JNIEnv* env, jclass, jlong patternAddr
 
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Matcher, getMatchedGroupIndex0, "(JLjava/lang/String;)I"),
-    NATIVE_METHOD(Matcher, findImpl, "(JI[I)Z"),
-    NATIVE_METHOD(Matcher, findNextImpl, "(J[I)Z"),
+    NATIVE_METHOD(Matcher, findImpl, "(JLjava/lang/String;I[I)Z"),
+    NATIVE_METHOD(Matcher, findNextImpl, "(JLjava/lang/String;[I)Z"),
     NATIVE_METHOD(Matcher, getNativeFinalizer, "()J"),
     NATIVE_METHOD(Matcher, groupCountImpl, "(J)I"),
     NATIVE_METHOD(Matcher, hitEndImpl, "(J)Z"),
-    NATIVE_METHOD(Matcher, lookingAtImpl, "(J[I)Z"),
-    NATIVE_METHOD(Matcher, matchesImpl, "(J[I)Z"),
+    NATIVE_METHOD(Matcher, lookingAtImpl, "(JLjava/lang/String;[I)Z"),
+    NATIVE_METHOD(Matcher, matchesImpl, "(JLjava/lang/String;[I)Z"),
     NATIVE_METHOD(Matcher, nativeSize, "()I"),
     NATIVE_METHOD(Matcher, openImpl, "(J)J"),
     NATIVE_METHOD(Matcher, requireEndImpl, "(J)Z"),
