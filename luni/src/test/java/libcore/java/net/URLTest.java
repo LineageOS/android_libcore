@@ -194,6 +194,14 @@ public final class URLTest extends TestCase {
         assertEquals(null, url.getRef());
     }
 
+    public void testAtSignInUserInfo() throws Exception {
+        try {
+            new URL("http://user@userhost.com:password@host");
+            fail();
+        } catch (MalformedURLException expected) {
+        }
+    }
+
     public void testUserNoPassword() throws Exception {
         URL url = new URL("http://user@host");
         assertEquals("user@host", url.getAuthority());
@@ -753,13 +761,5 @@ public final class URLTest extends TestCase {
         assertEquals("/some/path", new URL("http://foobar.com/some/path?").getFile());
         assertEquals("/some/path", new URL("http://foobar.com/some/path#").getFile());
         assertEquals("/some/path", new URL("http://foobar.com/some/path?#").getFile());
-    }
-
-    // http://b/33351987
-    public void testMultipleUserField() throws Exception {
-        final String host = "http://multiple@users@url.com";
-        URL url = new URL(host);
-        assertNull(url.getUserInfo());
-        assertTrue(url.getHost().isEmpty());
     }
 }
