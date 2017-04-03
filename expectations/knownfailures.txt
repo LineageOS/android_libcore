@@ -1503,5 +1503,31 @@
   names: [
     "com.android.org.apache.harmony.luni.tests.java.net.URLClassLoaderImplTest#test_Constructor$Ljava_net_URLLjava_lang_ClassLoaderLjava_net_URLStreamHandlerFactory"
   ]
+},
+{
+  description: "Bouncy Castle doesn't prevent reusing initialization vectors",
+  bug: 31801320,
+  result: EXEC_FAILED,
+  names: [
+    "com.google.security.wycheproof.AesGcmTest#testIvReuse"
+  ]
+},
+{
+  description: "Conscrypt produces different exceptions under different circumstances",
+  bug: 36772622,
+  result: EXEC_FAILED,
+  names: [
+    "com.google.security.wycheproof.RsaEncryptionTest#testExceptionsPKCS1",
+    "com.google.security.wycheproof.RsaEncryptionTest#testGetExceptionsOAEP"
+  ]
+},
+{
+  description: "Conscrypt fails these tests in 32-bit mode",
+  bug: 36636626,
+  result: EXEC_FAILED,
+  names: [
+    "com.google.security.wycheproof.EcdhTest#testModifiedPublic",
+    "com.google.security.wycheproof.EcdhTest#testModifiedPublicSpec"
+  ]
 }
 ]
