@@ -1503,5 +1503,13 @@
   names: [
     "com.android.org.apache.harmony.luni.tests.java.net.URLClassLoaderImplTest#test_Constructor$Ljava_net_URLLjava_lang_ClassLoaderLjava_net_URLStreamHandlerFactory"
   ]
+},
+{
+  description: "Bullhead kernel does not block send when buffer is supposed to have saturated",
+  bug: 36691333,
+  result: EXEC_FAILED,
+  names: [
+    "libcore.java.net.SocketTimeoutTest#testSocketWriteNeverTimeouts"
+  ]
 }
 ]
