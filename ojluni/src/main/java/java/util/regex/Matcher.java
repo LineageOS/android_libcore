@@ -444,7 +444,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean matches() {
         synchronized (this) {
-            matchFound = matchesImpl(address, input, matchOffsets);
+            matchFound = matchesImpl(address, matchOffsets);
         }
         return matchFound;
     }
@@ -466,7 +466,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean find() {
         synchronized (this) {
-            matchFound = findNextImpl(address, input, matchOffsets);
+            matchFound = findNextImpl(address, matchOffsets);
         }
         return matchFound;
     }
@@ -495,7 +495,7 @@ public final class Matcher implements MatchResult {
         }
 
         synchronized (this) {
-            matchFound = findImpl(address, input, start, matchOffsets);
+            matchFound = findImpl(address, start, matchOffsets);
         }
         return matchFound;
     }
@@ -516,7 +516,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean lookingAt() {
         synchronized (this) {
-            matchFound = lookingAtImpl(address, input, matchOffsets);
+            matchFound = lookingAtImpl(address, matchOffsets);
         }
         return matchFound;
     }
@@ -1181,13 +1181,13 @@ public final class Matcher implements MatchResult {
     }
 
     private static native int getMatchedGroupIndex0(long patternAddr, String name);
-    private static native boolean findImpl(long addr, String s, int startIndex, int[] offsets);
-    private static native boolean findNextImpl(long addr, String s, int[] offsets);
+    private static native boolean findImpl(long addr, int startIndex, int[] offsets);
+    private static native boolean findNextImpl(long addr, int[] offsets);
     private static native long getNativeFinalizer();
     private static native int groupCountImpl(long addr);
     private static native boolean hitEndImpl(long addr);
-    private static native boolean lookingAtImpl(long addr, String s, int[] offsets);
-    private static native boolean matchesImpl(long addr, String s, int[] offsets);
+    private static native boolean lookingAtImpl(long addr, int[] offsets);
+    private static native boolean matchesImpl(long addr, int[] offsets);
     private static native int nativeSize();
     private static native long openImpl(long patternAddr);
     private static native boolean requireEndImpl(long addr);
