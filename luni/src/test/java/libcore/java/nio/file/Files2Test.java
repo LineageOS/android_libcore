@@ -138,9 +138,12 @@ public class Files2Test {
 
     @Test
     public void test_getFileStore() throws IOException {
-        FileStore mockFileStore = mock(FileStore.class);
-        when(mockFileSystemProvider.getFileStore(mockPath)).thenReturn(mockFileStore);
-        assertEquals(mockFileStore, Files.getFileStore(mockPath));
+        when(mockFileSystemProvider.getFileStore(mockPath)).thenThrow(new SecurityException());
+        try {
+            Files.getFileStore(mockPath);
+            fail();
+        } catch (SecurityException expected) {
+        }
     }
 
     @Test
