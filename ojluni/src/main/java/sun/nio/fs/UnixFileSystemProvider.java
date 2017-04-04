@@ -359,13 +359,17 @@ public abstract class UnixFileSystemProvider
 
     @Override
     public FileStore getFileStore(Path obj) throws IOException {
-        UnixPath file = UnixPath.toUnixPath(obj);
-        SecurityManager sm = System.getSecurityManager();
-        if (sm != null) {
-            sm.checkPermission(new RuntimePermission("getFileStoreAttributes"));
-            file.checkRead();
-        }
-        return getFileStore(file);
+        // Android-changed: Complete information about file systems is neither available to regular
+        // apps nor the system server due to SELinux policies.
+        //
+        // UnixPath file = UnixPath.toUnixPath(obj);
+        // SecurityManager sm = System.getSecurityManager();
+        // if (sm != null) {
+        //     sm.checkPermission(new RuntimePermission("getFileStoreAttributes"));
+        //     file.checkRead();
+        // }
+        // return getFileStore(file);
+        throw new SecurityException("getFileStore");
     }
 
     @Override
