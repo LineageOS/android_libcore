@@ -186,10 +186,8 @@ public class InetAddressTest extends junit.framework.TestCase {
     public void test_isReachable_neverThrows() throws Exception {
         InetAddress inetAddress = InetAddress.getByName("www.google.com");
 
-        final NetworkInterface netIf;
-        try {
-            netIf = NetworkInterface.getByName("dummy0");
-        } catch (SocketException e) {
+        final NetworkInterface netIf = NetworkInterface.getByName("dummy0");
+        if (netIf == null) {
             System.logI("Skipping test_isReachable_neverThrows because dummy0 isn't available");
             return;
         }

@@ -1983,13 +1983,30 @@ public class OldSocketTest extends OldSocketTestCase {
                         + e.toString());
             }
         }
+    }
 
+    // Calling sendUrgentData on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
+    public void test_sendUrgentDataI_leaky() throws IOException {
+        Socket theSocket = new Socket();
+        theSocket.close();
         try {
-            Socket theSocket = new Socket();
-            theSocket.close();
             theSocket.sendUrgentData(0);
             fail("IOException was not thrown.");
         } catch(IOException ioe) {
+            //expected
+        }
+    }
+
+    // Calling getTrafficClass on a closed socket should not allocate a new impl and leak resources.
+    // Bug: 31818400
+    public void test_getTrafficClass_leaky() throws IOException {
+        Socket theSocket = new Socket();
+        theSocket.close();
+        try {
+            theSocket.getTrafficClass();
+            fail();
+        } catch (IOException ioe) {
             //expected
         }
     }
