@@ -1529,5 +1529,13 @@
     "com.google.security.wycheproof.EcdhTest#testModifiedPublic",
     "com.google.security.wycheproof.EcdhTest#testModifiedPublicSpec"
   ]
+},
+{
+  description: "Bullhead kernel does not block send when buffer is supposed to have saturated",
+  bug: 36691333,
+  result: EXEC_FAILED,
+  names: [
+    "libcore.java.net.SocketTimeoutTest#testSocketWriteNeverTimeouts"
+  ]
 }
 ]
