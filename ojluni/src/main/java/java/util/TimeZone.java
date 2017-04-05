@@ -398,16 +398,8 @@ abstract public class TimeZone implements Serializable, Cloneable {
             return result;
         }
 
-        // If we get here, it's because icu4c has nothing for us. Most commonly, this is in the
-        // case of short names. For Pacific/Fiji, for example, icu4c has nothing better to offer
-        // than "GMT+12:00". Why do we re-do this work ourselves? Because we have up-to-date
-        // time zone transition data, which icu4c _doesn't_ use --- it uses its own baked-in copy,
-        // which only gets updated when we update icu4c. http://b/7955614 and http://b/8026776.
-
-        // TODO: should we generate these once, in TimeZoneNames.getDisplayName? Revisit when we
-        // upgrade to icu4c 50 and rewrite the underlying native code. See also the
-        // "element[j] != null" check in SimpleDateFormat.parseTimeZone, and the extra work in
-        // DateFormatSymbols.getZoneStrings.
+        // We get here if this is a custom timezone or ICU doesn't have name data for the specific
+        // style and locale.
         int offsetMillis = getRawOffset();
         if (daylightTime) {
             offsetMillis += getDSTSavings();
