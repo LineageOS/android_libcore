@@ -19,6 +19,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import libcore.tzdata.shared2.DistroException;
@@ -34,6 +35,7 @@ public final class TimeZoneDistroBuilder {
     private DistroVersion distroVersion;
     private byte[] tzData;
     private byte[] icuData;
+    private String tzLookupXml;
 
     public TimeZoneDistroBuilder setDistroVersion(DistroVersion distroVersion) {
         this.distroVersion = distroVersion;
@@ -56,11 +58,11 @@ public final class TimeZoneDistroBuilder {
         return this;
     }
 
-    public TimeZoneDistroBuilder setTzData(File tzDataFile) throws IOException {
-        return setTzData(readFileAsByteArray(tzDataFile));
+    public TimeZoneDistroBuilder setTzDataFile(File tzDataFile) throws IOException {
+        return setTzDataFile(readFileAsByteArray(tzDataFile));
     }
 
-    public TimeZoneDistroBuilder setTzData(byte[] tzData) {
+    public TimeZoneDistroBuilder setTzDataFile(byte[] tzData) {
         this.tzData = tzData;
         return this;
     }
@@ -71,12 +73,21 @@ public final class TimeZoneDistroBuilder {
         return this;
     }
 
-    public TimeZoneDistroBuilder setIcuData(File icuDataFile) throws IOException {
-        return setIcuData(readFileAsByteArray(icuDataFile));
+    public TimeZoneDistroBuilder setIcuDataFile(File icuDataFile) throws IOException {
+        return setIcuDataFile(readFileAsByteArray(icuDataFile));
     }
 
-    public TimeZoneDistroBuilder setIcuData(byte[] icuData) {
+    public TimeZoneDistroBuilder setIcuDataFile(byte[] icuData) {
         this.icuData = icuData;
+        return this;
+    }
+
+    public TimeZoneDistroBuilder setTzLookupFile(File tzLookupFile) throws IOException {
+        return setTzLookupXml(readFileAsUtf8(tzLookupFile));
+    }
+
+    public TimeZoneDistroBuilder setTzLookupXml(String tzlookupXml) {
+        this.tzLookupXml = tzlookupXml;
         return this;
     }
 
@@ -101,6 +112,10 @@ public final class TimeZoneDistroBuilder {
             }
             if (icuData != null) {
                 addZipEntry(zos, TimeZoneDistro.ICU_DATA_FILE_NAME, icuData);
+            }
+            if (tzLookupXml != null) {
+                addZipEntry(zos, TimeZoneDistro.TZLOOKUP_FILE_NAME,
+                        tzLookupXml.getBytes(StandardCharsets.UTF_8));
             }
         } catch (IOException e) {
             throw new DistroException("Unable to create zip file", e);
@@ -140,7 +155,7 @@ public final class TimeZoneDistroBuilder {
     /**
      * Returns the contents of 'path' as a byte array.
      */
-    public static byte[] readFileAsByteArray(File file) throws IOException {
+    private static byte[] readFileAsByteArray(File file) throws IOException {
         byte[] buffer = new byte[8192];
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (FileInputStream  fis = new FileInputStream(file)) {
@@ -150,6 +165,13 @@ public final class TimeZoneDistroBuilder {
             }
         }
         return baos.toByteArray();
+    }
+
+    /**
+     * Returns the contents of 'path' as a String, having interpreted the file as UTF-8.
+     */
+    private String readFileAsUtf8(File file) throws IOException {
+        return new String(readFileAsByteArray(file), StandardCharsets.UTF_8);
     }
 }
 

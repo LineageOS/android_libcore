@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -190,7 +189,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         assertNoInstalledDistro();
     }
 
-    /** Tests that a distro with a missing file will not update the content. */
+    /** Tests that a distro with a missing tzdata file will not update the content. */
     public void testStageInstallWithErrorCode_missingTzDataFile() throws Exception {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
@@ -209,7 +208,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         assertNoInstalledDistro();
     }
 
-    /** Tests that a distro with a missing file will not update the content. */
+    /** Tests that a distro with a missing ICU file will not update the content. */
     public void testStageInstallWithErrorCode_missingIcuFile() throws Exception {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
@@ -223,6 +222,44 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                         .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+        assertInstallDistroStaged(stagedDistro);
+        assertNoInstalledDistro();
+    }
+
+    /** Tests that a distro with a missing tzlookup file will not update the content. */
+    public void testStageInstallWithErrorCode_missingTzLookupFile() throws Exception {
+        TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
+        assertEquals(
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
+                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+        assertInstallDistroStaged(stagedDistro);
+
+        TimeZoneDistro incompleteDistro =
+                createValidTimeZoneDistroBuilder(NEWER_RULES_VERSION, 1)
+                        .setTzLookupXml(null)
+                        .buildUnvalidated();
+        assertEquals(
+                TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
+                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+        assertInstallDistroStaged(stagedDistro);
+        assertNoInstalledDistro();
+    }
+
+    /** Tests that a distro with a bad tzlookup file will not update the content. */
+    public void testStageInstallWithErrorCode_badTzLookupFile() throws Exception {
+        TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
+        assertEquals(
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
+                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+        assertInstallDistroStaged(stagedDistro);
+
+        TimeZoneDistro incompleteDistro =
+                createValidTimeZoneDistroBuilder(NEWER_RULES_VERSION, 1)
+                        .setTzLookupXml("<foo />")
+                        .buildUnvalidated();
+        assertEquals(
+                TimeZoneDistroInstaller.INSTALL_FAIL_VALIDATION_ERROR,
                 installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
         assertInstallDistroStaged(stagedDistro);
         assertNoInstalledDistro();
@@ -449,6 +486,17 @@ public class TimeZoneDistroInstallerTest extends TestCase {
 
         byte[] bionicTzData = createTzData(rulesVersion);
         byte[] icuData = new byte[] { 'a' };
+        String tzlookupXml = "<timezones>\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"us\">\n"
+                + "      <id>America/New_York\"</id>\n"
+                + "      <id>America/Los_Angeles</id>\n"
+                + "    </country>\n"
+                + "    <country code=\"gb\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n";
         DistroVersion distroVersion = new DistroVersion(
                 DistroVersion.CURRENT_FORMAT_MAJOR_VERSION,
                 DistroVersion.CURRENT_FORMAT_MINOR_VERSION,
@@ -456,8 +504,9 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 revision);
         return new TimeZoneDistroBuilder()
                 .setDistroVersion(distroVersion)
-                .setTzData(bionicTzData)
-                .setIcuData(icuData);
+                .setTzDataFile(bionicTzData)
+                .setIcuDataFile(icuData)
+                .setTzLookupXml(tzlookupXml);
     }
 
     private void assertInstallDistroStaged(TimeZoneDistro expectedDistro) throws Exception {
@@ -475,6 +524,9 @@ public class TimeZoneDistroInstallerTest extends TestCase {
 
         File icuFile = new File(stagedTzDataDir, TimeZoneDistro.ICU_DATA_FILE_NAME);
         assertTrue(icuFile.exists());
+
+        File tzLookupFile = new File(stagedTzDataDir, TimeZoneDistro.TZLOOKUP_FILE_NAME);
+        assertTrue(tzLookupFile.exists());
 
         // Assert getStagedDistroState() is reporting correctly.
         StagedDistroOperation stagedDistroOperation = installer.getStagedDistroOperation();
@@ -494,6 +546,8 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                     actualFile = icuFile;
                 } else if (entryName.endsWith(TimeZoneDistro.TZDATA_FILE_NAME)) {
                     actualFile = bionicFile;
+                } else if (entryName.endsWith(TimeZoneDistro.TZLOOKUP_FILE_NAME)) {
+                    actualFile = tzLookupFile;
                 } else {
                     throw new AssertionFailedError("Unknown file found");
                 }
