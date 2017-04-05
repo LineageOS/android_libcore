@@ -25,6 +25,7 @@ import libcore.tzdata.shared2.DistroVersion;
 import libcore.tzdata.shared2.FileUtils;
 import libcore.tzdata.shared2.StagedDistroOperation;
 import libcore.tzdata.shared2.TimeZoneDistro;
+import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
 /**
@@ -150,6 +151,7 @@ public class TimeZoneDistroInstaller {
                 return INSTALL_FAIL_RULES_TOO_OLD;
             }
 
+            // Validate the tzdata file.
             File zoneInfoFile = new File(workingDir, TimeZoneDistro.TZDATA_FILE_NAME);
             ZoneInfoDB.TzData tzData = ZoneInfoDB.TzData.loadTzData(zoneInfoFile.getPath());
             if (tzData == null) {
@@ -164,7 +166,23 @@ public class TimeZoneDistroInstaller {
             } finally {
                 tzData.close();
             }
-            // TODO(nfuller): Add deeper validity checks / canarying before applying.
+
+            // Validate the tzlookup.xml file.
+            File tzLookupFile = new File(workingDir, TimeZoneDistro.TZLOOKUP_FILE_NAME);
+            if (!tzLookupFile.exists()) {
+                Slog.i(logTag, "Update not applied: " + tzLookupFile + " does not exist");
+                return INSTALL_FAIL_BAD_DISTRO_STRUCTURE;
+            }
+            try {
+                TimeZoneFinder timeZoneFinder =
+                        TimeZoneFinder.createInstance(tzLookupFile.getPath());
+                timeZoneFinder.validate();
+            } catch (IOException e) {
+                Slog.i(logTag, "Update not applied: " + tzLookupFile + " failed validation", e);
+                return INSTALL_FAIL_VALIDATION_ERROR;
+            }
+
+            // TODO(nfuller): Add validity checks for ICU data / canarying before applying.
             // http://b/31008728
 
             Slog.i(logTag, "Applying time zone update");
