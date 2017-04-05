@@ -46,10 +46,7 @@ static bool isUtc(const icu::UnicodeString& id) {
 }
 
 static bool setStringArrayElement(JNIEnv* env, jobjectArray array, int i, const icu::UnicodeString& s) {
-  // Fill in whatever we got. We don't use the display names if they're "GMT[+-]xx:xx"
-  // because icu4c doesn't use the up-to-date time zone transition data, so it gets these
-  // wrong. TimeZone.getDisplayName creates accurate names on demand.
-  // TODO: investigate whether it's worth doing that work once in the Java wrapper instead of on-demand.
+  // Don't use "GMT" string, for backwards compatibility.
   static const icu::UnicodeString kGmt("GMT", 3, US_INV);
   if (!s.isBogus() && !s.startsWith(kGmt)) {
     ScopedLocalRef<jstring> javaString(env, env->NewString(s.getBuffer(), s.length()));
