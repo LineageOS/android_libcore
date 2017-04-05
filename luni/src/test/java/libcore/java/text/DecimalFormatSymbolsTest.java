@@ -124,7 +124,7 @@ public class DecimalFormatSymbolsTest extends junit.framework.TestCase {
         // It is expected that the symbols may change with future CLDR updates.
 
         dfs = new DecimalFormatSymbols(Locale.forLanguageTag("ar"));
-        assertEquals('%', dfs.getPercent());
+        assertEquals('٪', dfs.getPercent());
         assertEquals('-', dfs.getMinusSign());
 
         dfs = new DecimalFormatSymbols(Locale.forLanguageTag("fa"));
@@ -186,4 +186,26 @@ public class DecimalFormatSymbolsTest extends junit.framework.TestCase {
         compareDfs(dfs, icuSymb);
     }
 
+    // http://b/36562145
+    public void testMaybeStripMarkers() {
+        final char ltr = '\u200E';
+        final char rtl = '\u200F';
+        final char alm = '\u061C';
+        final char fallback = 'F';
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers("", fallback));
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers("XY", fallback));
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers("" + ltr, fallback));
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers("" + rtl, fallback));
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers("" + alm, fallback));
+        assertEquals(fallback,
+                DecimalFormatSymbols.maybeStripMarkers("X" + ltr + rtl + alm + "Y", fallback));
+        assertEquals(fallback,
+                DecimalFormatSymbols.maybeStripMarkers("" + ltr + rtl + alm, fallback));
+        assertEquals(fallback, DecimalFormatSymbols.maybeStripMarkers(alm + "XY" + rtl, fallback));
+        assertEquals('X', DecimalFormatSymbols.maybeStripMarkers("X", fallback));
+        assertEquals('X', DecimalFormatSymbols.maybeStripMarkers("X" + ltr, fallback));
+        assertEquals('X', DecimalFormatSymbols.maybeStripMarkers("X" + rtl, fallback));
+        assertEquals('X', DecimalFormatSymbols.maybeStripMarkers(alm + "X", fallback));
+        assertEquals('X', DecimalFormatSymbols.maybeStripMarkers(alm + "X" + rtl, fallback));
+    }
 }
