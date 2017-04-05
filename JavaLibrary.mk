@@ -91,7 +91,7 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-all
-LOCAL_REQUIRED_MODULES := tzdata
+LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
 LOCAL_CORE_LIBRARY := true
 LOCAL_UNINSTALLABLE_MODULE := true
 include $(BUILD_JAVA_LIBRARY)
@@ -110,7 +110,7 @@ LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_REQUIRED_MODULES := tzdata
+LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
 LOCAL_CORE_LIBRARY := true
 include $(BUILD_JAVA_LIBRARY)
 
@@ -132,7 +132,7 @@ ifneq ($(EMMA_INSTRUMENT_STATIC),true)
 endif # EMMA_INSTRUMENT_STATIC
 endif # EMMA_INSTRUMENT
 LOCAL_CORE_LIBRARY := true
-LOCAL_REQUIRED_MODULES := tzdata
+LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
 include $(BUILD_JAVA_LIBRARY)
 
 # A library that exists to satisfy javac when
@@ -167,7 +167,7 @@ LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj-testdex
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_REQUIRED_MODULES := tzdata
+LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
 LOCAL_CORE_LIBRARY := true
 include $(BUILD_JAVA_LIBRARY)
 
@@ -201,7 +201,7 @@ LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-libart-testdex
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_CORE_LIBRARY := true
-LOCAL_REQUIRED_MODULES := tzdata
+LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
 include $(BUILD_JAVA_LIBRARY)
 endif
 
@@ -330,7 +330,7 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-all-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host
+LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
 LOCAL_CORE_LIBRARY := true
 LOCAL_UNINSTALLABLE_MODULE := true
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
@@ -346,7 +346,7 @@ LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj-hostdex
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
 LOCAL_JAVA_LIBRARIES := core-all-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host
+LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
 LOCAL_CORE_LIBRARY := true
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 
@@ -361,7 +361,7 @@ LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-libart-hostdex
 LOCAL_JAVA_LIBRARIES := core-oj-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host
+LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 
 # A library that exists to satisfy javac when

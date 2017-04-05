@@ -30,7 +30,7 @@ import libcore.tzdata.shared2.TimeZoneDistro;
  * A command-line tool for creating a timezone update distro.
  *
  * Args:
- * tzdata.properties file - the file describing the distro (see template file in tzdata/tools)
+ * tzdata.properties file - the file describing the distro (see template file in tzdata/tools2)
  * output file - the name of the file to be generated
  */
 public class CreateTimeZoneDistro {
@@ -56,8 +56,9 @@ public class CreateTimeZoneDistro {
                 Integer.parseInt(getMandatoryProperty(p, "revision")));
         TimeZoneDistroBuilder builder = new TimeZoneDistroBuilder()
                 .setDistroVersion(distroVersion)
-                .setTzData(getMandatoryPropertyFile(p, "bionic.file"))
-                .setIcuData(getMandatoryPropertyFile(p, "icu.file"));
+                .setTzDataFile(getMandatoryPropertyFile(p, "bionic.file"))
+                .setIcuDataFile(getMandatoryPropertyFile(p, "icu.file"))
+                .setTzLookupFile(getMandatoryPropertyFile(p, "tzlookup.file"));
 
         TimeZoneDistro distro = builder.build();
         File outputFile = new File(args[1]);
