@@ -46,7 +46,11 @@ public class LinuxFileSystemProvider extends UnixFileSystemProvider {
 
     @Override
     LinuxFileStore getFileStore(UnixPath path) throws IOException {
-        return new LinuxFileStore(path);
+        // Android-changed: Complete information about file systems is neither available to regular
+        // apps nor the system server due to SELinux policies.
+        // return new LinuxFileStore(path);
+
+        throw new SecurityException("getFileStore");
     }
 
     @Override
@@ -55,14 +59,18 @@ public class LinuxFileSystemProvider extends UnixFileSystemProvider {
                                                                 Class<V> type,
                                                                 LinkOption... options)
     {
-        if (type == DosFileAttributeView.class) {
-            return (V) new LinuxDosFileAttributeView(UnixPath.toUnixPath(obj),
-                                                     Util.followLinks(options));
-        }
-        if (type == UserDefinedFileAttributeView.class) {
-            return (V) new LinuxUserDefinedFileAttributeView(UnixPath.toUnixPath(obj),
-                                                             Util.followLinks(options));
-        }
+        // Android-changed: Delegate to UnixFileSystemProvider, remove support for "dos" and
+        // "user" file attribute views which are not supported.
+        //
+        // if (type == DosFileAttributeView.class) {
+        //     return (V) new LinuxDosFileAttributeView(UnixPath.toUnixPath(obj),
+        //                                              Util.followLinks(options));
+        // }
+        // if (type == UserDefinedFileAttributeView.class) {
+        //     return (V) new LinuxUserDefinedFileAttributeView(UnixPath.toUnixPath(obj),
+        //                                                      Util.followLinks(options));
+        // }
+
         return super.getFileAttributeView(obj, type, options);
     }
 
@@ -71,14 +79,18 @@ public class LinuxFileSystemProvider extends UnixFileSystemProvider {
                                                          String name,
                                                          LinkOption... options)
     {
-        if (name.equals("dos")) {
-            return new LinuxDosFileAttributeView(UnixPath.toUnixPath(obj),
-                                                 Util.followLinks(options));
-        }
-        if (name.equals("user")) {
-            return new LinuxUserDefinedFileAttributeView(UnixPath.toUnixPath(obj),
-                                                         Util.followLinks(options));
-        }
+        // Android-changed: Delegate to UnixFileSystemProvider, remove support for "dos" and
+        // "user" file attribute views which are not supported.
+        //
+        // if (name.equals("dos")) {
+        //     return new LinuxDosFileAttributeView(UnixPath.toUnixPath(obj),
+        //                                          Util.followLinks(options));
+        // }
+        // if (name.equals("user")) {
+        //     return new LinuxUserDefinedFileAttributeView(UnixPath.toUnixPath(obj),
+        //                                                  Util.followLinks(options));
+        // }
+
         return super.getFileAttributeView(obj, name, options);
     }
 
@@ -89,13 +101,17 @@ public class LinuxFileSystemProvider extends UnixFileSystemProvider {
                                                             LinkOption... options)
         throws IOException
     {
-        if (type == DosFileAttributes.class) {
-            DosFileAttributeView view =
-                getFileAttributeView(file, DosFileAttributeView.class, options);
-            return (A) view.readAttributes();
-        } else {
-            return super.readAttributes(file, type, options);
-        }
+        // Android-changed: Delegate to UnixFileSystemProvider, remove support for "dos" and
+        // "user" file attribute views which are not supported.
+        //
+        // if (type == DosFileAttributes.class) {
+        //     DosFileAttributeView view =
+        //         getFileAttributeView(file, DosFileAttributeView.class, options);
+        //     return (A) view.readAttributes();
+        // } else {
+        //     return super.readAttributes(file, type, options);
+        // }
+        return super.readAttributes(file, type, options);
     }
 
     @Override
