@@ -80,15 +80,17 @@ public class BasicFileAttributeViewCreationTimeTest {
         boolean supportsCreationTimeRead = false;
         boolean supportsCreationTimeWrite = false;
         String os = System.getProperty("os.name");
-        if (os.contains("OS X") && Files.getFileStore(file).type().equals("hfs")) {
-            supportsCreationTimeRead = true;
-        } else if (os.startsWith("Windows")) {
-            String type = Files.getFileStore(file).type();
-            if (type.equals("NTFS") || type.equals("FAT")) {
-                supportsCreationTimeRead = true;
-                supportsCreationTimeWrite = true;
-            }
-        }
+        // Android-changed: This test is never run on Mac OS or windows hosts.
+        //
+        // if (os.contains("OS X") && Files.getFileStore(file).type().equals("hfs")) {
+        //     supportsCreationTimeRead = true;
+        // } else if (os.startsWith("Windows")) {
+        //     String type = Files.getFileStore(file).type();
+        //     if (type.equals("NTFS") || type.equals("FAT")) {
+        //         supportsCreationTimeRead = true;
+        //         supportsCreationTimeWrite = true;
+        //     }
+        // }
 
         /**
          * If the creation-time attribute is supported then change the file's
