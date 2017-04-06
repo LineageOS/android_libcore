@@ -388,10 +388,13 @@ public class PosixFileAttributeViewTest {
     public static void main() throws IOException {
         Path dir = TestUtil.createTemporaryDirectory();
         try {
-            if (!Files.getFileStore(dir).supportsFileAttributeView("posix")) {
-                System.out.println("PosixFileAttributeView not supported");
-                return;
-            }
+            // Android-changed: PosixFileAttributeViews are unconditionally supported in
+            // all writeable partitions.
+            //
+            // if (!Files.getFileStore(dir).supportsFileAttributeView("posix")) {
+            //     System.out.println("PosixFileAttributeView not supported");
+            //     return;
+            // }
 
             permissionTests(dir);
             createTests(dir);

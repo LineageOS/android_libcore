@@ -263,24 +263,35 @@ public class DefaultFileSystemProvider2Test {
 
     @Test
     public void test_getFileStore() throws IOException {
-        FileStore fileStore = provider.getFileStore(filesSetup.getDataFilePath());
-        assertNotNull(fileStore);
-    }
+        try {
+            provider.getFileStore(filesSetup.getDataFilePath());
+            fail();
+        } catch (SecurityException expected) {
+        }
 
-    @Test
-    public void test_getFileStore_NPE() throws IOException {
         try {
             provider.getFileStore(null);
             fail();
-        } catch(NullPointerException expected) {}
+        } catch (SecurityException expected) {
+        }
     }
 
     @Test
     public void test_isHidden() throws IOException {
         assertFalse(provider.isHidden(filesSetup.getDataFilePath()));
-        Files.setAttribute(filesSetup.getDataFilePath(), "dos:hidden", true);
 
-        // Files can't be hid.
+        // Files can't be hidden using the "dos" view, which is unsupported since it relies
+        // on a custom xattr, which may or may not be available on all FSs.
+        //
+        // Note that this weirdly asymmetric : setting the hidden attribute uses xattrs to
+        // emulate dos attributes whereas isHidden checks whether the the file name begins with a
+        // leading period. <shrug>
+        try {
+            Files.setAttribute(filesSetup.getDataFilePath(), "dos:hidden", true);
+            fail();
+        } catch (UnsupportedOperationException expected) {
+        }
+
         assertFalse(provider.isHidden(filesSetup.getDataFilePath()));
     }
 
