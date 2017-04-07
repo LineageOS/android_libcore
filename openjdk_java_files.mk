@@ -1596,13 +1596,10 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/security/provider/certpath/PKIXMasterCertPathValidator.java \
     ojluni/src/main/java/sun/security/provider/certpath/PolicyChecker.java \
     ojluni/src/main/java/sun/security/provider/certpath/PolicyNodeImpl.java \
-    ojluni/src/main/java/sun/security/provider/certpath/ReverseBuilder.java \
-    ojluni/src/main/java/sun/security/provider/certpath/ReverseState.java \
     ojluni/src/main/java/sun/security/provider/certpath/RevocationChecker.java \
     ojluni/src/main/java/sun/security/provider/certpath/State.java \
     ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilder.java \
     ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilderException.java \
-    ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilderParameters.java \
     ojluni/src/main/java/sun/security/provider/certpath/SunCertPathBuilderResult.java \
     ojluni/src/main/java/sun/security/provider/certpath/URICertStore.java \
     ojluni/src/main/java/sun/security/provider/certpath/Vertex.java \
