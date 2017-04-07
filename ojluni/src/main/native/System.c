@@ -244,10 +244,6 @@ static void System_log(JNIEnv* env, jclass ignored, jchar type, jstring javaMess
     }
 
     WITH_PLATFORM_STRING(env, javaMessage, message) {
-      if (message == NULL) {
-          // Since this function is used for last-gasp debugging output, be noisy on failure.
-          return;
-      }
       LOG_PRI(priority, "System", "%s", message);
     } END_PLATFORM_STRING(env, message);
 
