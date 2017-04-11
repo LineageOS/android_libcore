@@ -266,7 +266,7 @@ public class SocketTest extends TestCaseWithRules {
                 // accept either output.
                 int actual = s.getTrafficClass();
                 assertTrue(i == actual || // IPV6_TCLASS
-                        (actual == (i & ~INET_ECN_MASK)); // IP_TOS: ECN bits should be 0
+                        (actual == (i & ~INET_ECN_MASK))); // IP_TOS: ECN bits should be 0
             }
         }
     }
