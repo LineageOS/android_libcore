@@ -496,7 +496,30 @@ public class FtpURLConnection extends URLConnection {
         }
     }
 
+    // @VisibleForTesting
+    public static void validateCommand(String command) throws IOException {
+        final int terminatorIdx = command.length() - 2;
+
+        // First check that the command is terminated correctly, it must
+        // always end with '<CR><LF>'.
+        if (terminatorIdx < 0 ||
+            command.charAt(terminatorIdx) != '\r' ||
+            command.charAt(terminatorIdx + 1) != '\n') {
+            throw new IOException("Command terminated incorrectly");
+        }
+
+        // Then check that there are no <CR><LF> characters elsewhere in the
+        // command.
+        //
+        // NOTE: If we're being really pedantic, we'll need to check that this
+        // is the lower half of ASCII as well.
+        if (command.indexOf('\r') < terminatorIdx || command.indexOf('\n') < terminatorIdx) {
+            throw new IOException("Invalid character in command");
+        }
+    }
+
     private void write(String command) throws IOException {
+        validateCommand(command);
         ctrlOutput.write(command.getBytes(StandardCharsets.ISO_8859_1));
     }
 }
