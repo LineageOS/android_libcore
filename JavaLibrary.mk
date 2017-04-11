@@ -101,10 +101,7 @@ LOCAL_SRC_FILES := $(openjdk_java_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
-# TODO(oth): Remove --min-sdk-version=26 when the O SDK version is determined.
-# For now it represents the minimum sdk version required for invoke-polymorphic.
-# This is only needed when ANDROID_COMPILE_WITH_JACK=false (b/36118520).
-LOCAL_DX_FLAGS := --core-library --min-sdk-version=26
+LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-oj
