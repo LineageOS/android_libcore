@@ -262,8 +262,11 @@ public class SocketTest extends TestCaseWithRules {
                 s.setTrafficClass(i);
 
                 // b/30909505
-                // Linux does not set ECN bits for STREAM sockets, so these bits should be zero.
-                assertEquals(i & ~INET_ECN_MASK, s.getTrafficClass());
+                // Linux does not set ECN bits for IP_TOS, but sets for IPV6_TCLASS. We should
+                // accept either output.
+                int actual = s.getTrafficClass();
+                assertTrue(i == actual || // IPV6_TCLASS
+                        (actual == (i & ~INET_ECN_MASK)); // IP_TOS: ECN bits should be 0
             }
         }
     }
