@@ -1342,6 +1342,26 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/javax/sql/StatementEventListener.java \
     ojluni/src/main/java/sun/reflect/CallerSensitive.java \
 
+# Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
+# not used on Android devices or required by the Jack compiler.
+#
+# On aosp/master:
+# openjdk_lambda_stub_files : These are included in core-oj as stubs
+# openjdk_lambda_duplicate_stub_files : These contain complete implementations in core-oj.
+#
+# On older platforms : Both sets of stub files are used and core-oj does not contain
+# any of these classes.
+openjdk_lambda_stub_files := \
+    ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
+    ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
+openjdk_lambda_duplicate_stub_files := \
+    ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
+    ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
+    ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
+    ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \
+    ojluni/src/lambda/java/java/lang/invoke/MethodType.java \
+
+
 # NOTE: Files in java/lang/invoke are listed here because they're not being made public
 # until the entire package is available for use.
 openjdk_java_files := \
@@ -1738,21 +1758,3 @@ openjdk_java_files := \
     $(openjdk_javadoc_files) \
     $(openjdk_lambda_stub_files)
 
-# Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
-# not used on Android devices or required by the Jack compiler.
-#
-# On aosp/master:
-# openjdk_lambda_stub_files : These are included in core-oj as stubs
-# openjdk_lambda_duplicate_stub_files : These contain complete implementations in core-oj.
-#
-# On older platforms : Both sets of stub files are used and core-oj does not contain
-# any of these classes.
-openjdk_lambda_stub_files := \
-    ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java \
-    ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java
-openjdk_lambda_duplicate_stub_files := \
-    ojluni/src/lambda/java/java/lang/invoke/CallSite.java \
-    ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java \
-    ojluni/src/lambda/java/java/lang/invoke/LambdaConversionException.java \
-    ojluni/src/lambda/java/java/lang/invoke/MethodHandle.java \
-    ojluni/src/lambda/java/java/lang/invoke/MethodType.java \
