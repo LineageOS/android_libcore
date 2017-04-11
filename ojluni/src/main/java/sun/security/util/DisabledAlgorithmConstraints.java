@@ -56,6 +56,9 @@ public class DisabledAlgorithmConstraints extends AbstractAlgorithmConstraints {
     public final static String PROPERTY_TLS_DISABLED_ALGS =
             "jdk.tls.disabledAlgorithms";
 
+    // the known security property, jdk.jar.disabledAlgorithms
+    public static final String PROPERTY_JAR_DISABLED_ALGS =
+            "jdk.jar.disabledAlgorithms";
 
     private final String[] disabledAlgorithms;
     private final Constraints algorithmConstraints;
