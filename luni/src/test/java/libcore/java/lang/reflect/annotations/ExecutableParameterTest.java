@@ -108,6 +108,8 @@ public class ExecutableParameterTest extends TestCase {
 
         void singleAnnotation(@Repeated(1) String p0) {}
 
+        static void staticSingleAnnotation(@Repeated(1) String p0) {}
+
         static Method getMethodWithoutAnnotations() throws Exception {
             return AnnotatedMethodClass.class.getDeclaredMethod("noAnnotation", String.class);
         }
@@ -129,7 +131,22 @@ public class ExecutableParameterTest extends TestCase {
         static Method getMethodSingleAnnotation() throws Exception {
             return AnnotatedMethodClass.class.getDeclaredMethod("singleAnnotation", String.class);
         }
+
+        static Method getMethodStaticSingleAnnotation() throws Exception {
+            return AnnotatedMethodClass.class.getDeclaredMethod("staticSingleAnnotation",
+                    String.class);
+        }
     }
+
+    private static abstract class AnnotatedMethodAbstractClass {
+        abstract void abstractSingleAnnotation(@Repeated(1) String p0);
+
+        static Method getMethodAbstractSingleAnnotation() throws Exception {
+            return AnnotatedMethodAbstractClass.class.getDeclaredMethod(
+                    "abstractSingleAnnotation", String.class);
+        }
+    }
+
 
     public void testMethodGetParameterAnnotations_repeated() throws Exception {
         assertParameter0Annotations(
@@ -146,6 +163,13 @@ public class ExecutableParameterTest extends TestCase {
         assertParameter0Annotations(
                 AnnotatedMethodClass.getMethodSingleAnnotation(),
                 "@Repeated(1)");
+        assertParameter0Annotations(
+                AnnotatedMethodClass.getMethodStaticSingleAnnotation(),
+                "@Repeated(1)");
+        assertParameter0Annotations(
+                AnnotatedMethodAbstractClass.getMethodAbstractSingleAnnotation(),
+                "@Repeated(1)");
+
     }
 
     private static class AnnotatedConstructorClass {
