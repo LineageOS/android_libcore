@@ -39,20 +39,15 @@
 
 package java.util;
 
+import org.apache.harmony.luni.internal.util.TimezoneGetter;
+import android.icu.text.TimeZoneNames;
 import java.io.IOException;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.lang.ref.SoftReference;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.concurrent.ConcurrentHashMap;
-import libcore.icu.TimeZoneNames;
 import libcore.io.IoUtils;
 import libcore.util.ZoneInfoDB;
-import sun.security.action.GetPropertyAction;
-import org.apache.harmony.luni.internal.util.TimezoneGetter;
 
 /**
  * <code>TimeZone</code> represents a time zone offset, and also figures out daylight
@@ -387,15 +382,30 @@ abstract public class TimeZone implements Serializable, Cloneable {
      * @param locale the display locale.
      */
     public String getDisplayName(boolean daylightTime, int style, Locale locale) {
-        if (style != SHORT && style != LONG) {
-            throw new IllegalArgumentException("Illegal style: " + style);
+        // BEGIN Android-changed: implement using android.icu.text.TimeZoneNames
+        TimeZoneNames.NameType nameType;
+        switch (style) {
+            case SHORT:
+                nameType = daylightTime
+                        ? TimeZoneNames.NameType.SHORT_DAYLIGHT
+                        : TimeZoneNames.NameType.SHORT_STANDARD;
+                break;
+            case LONG:
+                nameType = daylightTime
+                        ? TimeZoneNames.NameType.LONG_DAYLIGHT
+                        : TimeZoneNames.NameType.LONG_STANDARD;
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal style: " + style);
         }
-
-        // Android-changed: implement using libcore.icu.TimeZoneNames
-        String[][] zoneStrings = TimeZoneNames.getZoneStrings(locale);
-        String result = TimeZoneNames.getDisplayName(zoneStrings, getID(), daylightTime, style);
-        if (result != null) {
-            return result;
+        String canonicalID = android.icu.util.TimeZone.getCanonicalID(getID());
+        if (canonicalID != null) {
+            TimeZoneNames names = TimeZoneNames.getInstance(locale);
+            long now = System.currentTimeMillis();
+            String displayName = names.getDisplayName(canonicalID, nameType, now);
+            if (displayName != null) {
+                return displayName;
+            }
         }
 
         // We get here if this is a custom timezone or ICU doesn't have name data for the specific
@@ -406,8 +416,10 @@ abstract public class TimeZone implements Serializable, Cloneable {
         }
         return createGmtOffsetString(true /* includeGmt */, true /* includeMinuteSeparator */,
                 offsetMillis);
+        // END Android-changed: implement using android.icu.text.TimeZoneNames
     }
 
+    // BEGIN Android-added: utility method to format an offset as a GMT offset string.
     /**
      * Returns a string representation of an offset from UTC.
      *
@@ -448,6 +460,7 @@ abstract public class TimeZone implements Serializable, Cloneable {
         }
         builder.append(string);
     }
+    // END Android-added: utility method to format an offset as a GMT offset string.
 
     /**
      * Returns the amount of time to be added to local standard time
