@@ -114,6 +114,8 @@ public class AnnotatedElementParameterTest extends TestCase {
 
         void singleAnnotation(@Repeated(1) String p0) {}
 
+        static void staticSingleAnnotation(@Repeated(1) String p0) {}
+
         static Method getMethodWithoutAnnotations() throws Exception {
             return AnnotatedMethodClass.class.getDeclaredMethod("noAnnotation", String.class);
         }
@@ -135,6 +137,20 @@ public class AnnotatedElementParameterTest extends TestCase {
         static Method getMethodSingleAnnotation() throws Exception {
             return AnnotatedMethodClass.class.getDeclaredMethod("singleAnnotation", String.class);
         }
+
+        static Method getMethodStaticSingleAnnotation() throws Exception {
+            return AnnotatedMethodClass.class.getDeclaredMethod("staticSingleAnnotation",
+                    String.class);
+        }
+    }
+
+    private static abstract class AnnotatedMethodAbstractClass {
+        abstract void abstractSingleAnnotation(@Repeated(1) String p0);
+
+        static Method getMethodAbstractSingleAnnotation() throws Exception {
+            return AnnotatedMethodAbstractClass.class.getDeclaredMethod(
+                    "abstractSingleAnnotation", String.class);
+        }
     }
 
     // Tests for isAnnotationPresent and getDeclaredAnnotation.
@@ -154,6 +170,12 @@ public class AnnotatedElementParameterTest extends TestCase {
                 repeated, null);
         checkParameter0DeclaredAnnotation(
                 AnnotatedMethodClass.getMethodSingleAnnotation(),
+                repeated, "@Repeated(1)");
+        checkParameter0DeclaredAnnotation(
+                AnnotatedMethodClass.getMethodStaticSingleAnnotation(),
+                repeated, "@Repeated(1)");
+        checkParameter0DeclaredAnnotation(
+                AnnotatedMethodAbstractClass.getMethodAbstractSingleAnnotation(),
                 repeated, "@Repeated(1)");
 
         Class<? extends Annotation> container = Container.class;
