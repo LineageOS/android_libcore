@@ -1924,4 +1924,417 @@ public class MethodHandleCombinersTest extends TestCase {
             MethodType.methodType(void.class, MethodHandle.class, String.class));
         invokeMultiThreaded(MethodHandles.insertArguments(mh, 0, adapter, "a: c+d ,b:c ,c:d ,d:e"));
     }
+
+    private static void checkBooleanCast_delegate(boolean expected, boolean z,  boolean b,
+                                                  boolean c, boolean s, boolean i, boolean j,
+                                                  boolean f, boolean d, boolean l) {
+        assertEquals(expected, z);
+        assertEquals(expected, b);
+        assertEquals(expected, c);
+        assertEquals(expected, s);
+        assertEquals(expected, i);
+        assertEquals(expected, j);
+        assertEquals(expected, f);
+        assertEquals(expected, d);
+        assertEquals(expected, l);
+    }
+
+    private static void checkByteCast_delegate(byte expected, byte z, byte b, byte c, byte s,
+                                               byte i, byte j, byte f, byte d, byte l) {
+        int mask = 0xff;
+        assertEquals(expected & 1, z);
+        assertEquals(expected, b);
+        assertEquals(expected, c & mask);
+        assertEquals(expected, s & mask);
+        assertEquals(expected, i & mask);
+        assertEquals(expected, j & mask);
+        assertEquals(expected, f & mask);
+        assertEquals(expected, d & mask);
+        assertEquals(expected, l);
+    }
+
+    private static void checkCharCast_delegate(char expected, char z, char b, char c, char s,
+                                               char i, char j, char f, char d, char l) {
+        int mask = 0xffff;
+        assertEquals(expected & 1, z);
+        assertEquals(expected & 0xff, b);
+        assertEquals(expected, c);
+        assertEquals(expected, s & mask);
+        assertEquals(expected, i & mask);
+        assertEquals(expected, j & mask);
+        assertEquals(expected, f & mask);
+        assertEquals(expected, d & mask);
+        assertEquals(expected, l);
+    }
+
+    private static void checkShortCast_delegate(short expected, short z, short b, short c, short s,
+                                                short i, short j, short f, short d, short l) {
+        int mask = 0xffff;
+        assertEquals(expected & 1, z);
+        assertEquals(expected & 0xff, b);
+        assertEquals(expected, c & mask);
+        assertEquals(expected, s);
+        assertEquals(expected, i & mask);
+        assertEquals(expected, j & mask);
+        assertEquals(expected, f & mask);
+        assertEquals(expected, d & mask);
+        assertEquals(expected, l);
+    }
+
+    private static void checkIntCast_delegate(int expected, int z, int b, int c, int s, int i,
+                                              int j, int f, int d, int l) {
+        int mask = 0xffffffff;
+        assertEquals(expected & 1, z);
+        assertEquals(expected & 0xff, b);
+        assertEquals(expected & 0xffff, c);
+        assertEquals(expected & 0xffff, s);
+        assertEquals(expected, i & mask);
+        assertEquals(expected, j & mask);
+        assertEquals(expected, f & mask);
+        assertEquals(expected, d & mask);
+        assertEquals(expected, l);
+    }
+
+    private static void checkLongCast_delegate(long expected, long z, long b, long c, long s,
+                                               long i, long j, long f, long d, long l) {
+        long mask = 0xffffffffl;
+        assertEquals(expected & 1, z);
+        assertEquals(expected & 0xff, b);
+        assertEquals(expected & 0xffff, c);
+        assertEquals(expected & 0xffff, s);
+        assertEquals(expected & mask, i & mask);
+        assertEquals(expected, j);
+        assertEquals(expected & mask, f & mask);
+        assertEquals(expected, d);
+        assertEquals(expected, l);
+    }
+
+    private static void checkFloatCast_delegate(float expected, float z, float b, float c, float s,
+                                                float i, float j, float f, float d, float l) {
+        assertEquals((byte) expected & 1, (int) z);
+        assertEquals((byte) expected, (int) b & 0xff);
+        assertEquals((char) expected & 0xffff, (int) c& 0xffff);
+        assertEquals((short) expected & 0xffff, (int) s & 0xffff);
+        assertEquals((int) expected, (int) i);
+        assertEquals((long) expected, (long) j);
+        assertEquals(expected, f);
+        assertEquals(expected, d);
+        assertEquals(expected, l);
+    }
+
+    private static void checkDoubleCast_delegate(double expected, double z, double b, double c,
+                                                 double s, double i, double j, double f, double d,
+                                                 double l) {
+        assertEquals((byte) expected & 1, (int) z);
+        assertEquals((byte) expected & 0xff, (int) b & 0xff);
+        assertEquals((int) expected & 0xffff, (int) c & 0xffff);
+        assertEquals((int) expected & 0xffff, (int) s & 0xffff);
+        assertEquals((int) expected, (int) i);
+        assertEquals((long) expected, (long) j);
+        assertEquals((float) expected, (float) f);
+        assertEquals(expected, d);
+        assertEquals(expected, l);
+    }
+
+    private static void checkBoxingCasts_delegate(boolean expected, Boolean z, Byte b, Character c,
+                                                  Short s, Integer i, Long j, Float f, Double d) {
+        int v = expected ? 1 : 0;
+        assertEquals(Boolean.valueOf(expected ? true : false), z);
+        assertEquals(Byte.valueOf((byte) v), b);
+        assertEquals(Character.valueOf((char) v), c);
+        assertEquals(Short.valueOf((short) v), s);
+        assertEquals(Integer.valueOf(v), i);
+        assertEquals(Long.valueOf(v), j);
+        assertEquals(Float.valueOf(v), f);
+        assertEquals(Double.valueOf(v), d);
+    }
+
+    public static void testExplicitCastArguments() throws Throwable {
+        MethodHandle target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkBooleanCast_delegate",
+            MethodType.methodType(void.class, boolean.class, boolean.class, boolean.class,
+                                  boolean.class, boolean.class, boolean.class, boolean.class,
+                                  boolean.class, boolean.class, boolean.class));
+        MethodHandle mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, boolean.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Boolean.class));
+        mh.invokeExact(false, false, (byte) 0, (char) 0, (short) 0, 0, 0l, 0.0f, 0.0,
+                       Boolean.valueOf(false));
+        mh.invokeExact(false, false, (byte) 2, (char) 2, (short) 2, 2, 2l, 2.2f, 2.2,
+                       Boolean.valueOf(false));
+        mh.invokeExact(true, true, (byte) 1, (char) 1, (short) 1, 1, 1l, 1.0f, 1.0,
+                       Boolean.valueOf(true));
+        mh.invokeExact(true, true, (byte) 51, (char) 51, (short) 51, 51, 51l, 51.0f, 51.0,
+                       Boolean.valueOf(true));
+        MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, boolean.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, String.class));
+        try {
+            mh.invoke(true, true, (byte) 51, (char) 51, (short) 51, 51, 51l, 51.0f, 51.0,
+                      "ClassCastException here!");
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkByteCast_delegate",
+            MethodType.methodType(void.class, byte.class, byte.class, byte.class,
+                                  byte.class, byte.class, byte.class, byte.class,
+                                  byte.class, byte.class, byte.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, byte.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Byte.class));
+        mh.invokeExact((byte) 0x5a, false, (byte) 0x5a, (char) 0x5a5a, (short) 0x5a5a, (int) 0x5a5a,
+                       (long) 0x5a5a, (float) 0x5a5a, (double) 0x5a5a, Byte.valueOf((byte) 0x5a));
+        try {
+            mh.invoke((byte) 0x5a, false, (byte) 0x5a, (char) 0x5a5a, (short) 0x5a5a, (int) 0x5a5a,
+                      (long) 0x5a5a, (float) 0x5a5a, (double) 0x5a5a,
+                      Short.valueOf((short) 0x5a5a));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkCharCast_delegate",
+            MethodType.methodType(void.class, char.class, char.class, char.class,
+                                  char.class, char.class, char.class, char.class,
+                                  char.class, char.class, char.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, char.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Character.class));
+        mh.invokeExact((char) 0x5555, true, (byte) 0x5555, (char) 0x5555, (short) 0x5555,
+                       (int) 0x5555, (long) 0x5555, (float) 0x5555, (double) 0x5555,
+                       Character.valueOf((char) 0x5555));
+        try {
+            mh.invoke((char) 0x5555, false, (byte) 0x5555, (char) 0x5555, (short) 0x5555,
+                      (int) 0x5555, (long) 0x5555, (float) 0x5555, (double) 0x5555,
+                      Integer.valueOf((int) 0x5555));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkShortCast_delegate",
+            MethodType.methodType(void.class, short.class, short.class, short.class,
+                                  short.class, short.class, short.class, short.class,
+                                  short.class, short.class, short.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, short.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Short.class));
+        mh.invokeExact((short) 0x3773, true, (byte) 0x3773, (char) 0x3773, (short) 0x3773,
+                       (int) 0x3773, (long) 0x3773, (float) 0x3773, (double) 0x3773,
+                       Short.valueOf((short) 0x3773));
+        try {
+            mh.invoke((short) 0x3773, true, (byte) 0x3773, (char) 0x3773, (short) 0x3773,
+                      (int) 0x3773, (long) 0x3773, (float) 0x3773, (double) 0x3773,
+                      Long.valueOf((long) 0x3773));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkIntCast_delegate",
+            MethodType.methodType(void.class, int.class, int.class, int.class,
+                                  int.class, int.class, int.class, int.class,
+                                  int.class, int.class, int.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, int.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Integer.class));
+        mh.invokeExact((int) 0x3773470, false, (byte) 0x3773470, (char) 0x3773470,
+                       (short) 0x3773470, (int) 0x3773470, (long) 0x3773470, (float) 0x3773470,
+                       (double) 0x3773470, Integer.valueOf(0x3773470));
+        try {
+            mh.invoke((int) 0x3773470, false, (byte) 0x3773470, (char) 0x3773470,
+                      (short) 0x3773470, (int) 0x3773470, (long) 0x3773470, (float) 0x3773470,
+                      (double) 0x3773470, Long.valueOf((long) 0x3773470));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkLongCast_delegate",
+            MethodType.methodType(void.class, long.class, long.class, long.class,
+                                  long.class, long.class, long.class, long.class,
+                                  long.class, long.class, long.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, long.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Long.class));
+        long longValue = 0x770000000l;
+        mh.invokeExact((long) longValue, false, (byte) longValue, (char) longValue,
+                       (short) longValue, (int) longValue, (long) longValue, (float) longValue,
+                       (double) longValue, Long.valueOf(longValue));
+        try {
+            mh.invoke((long) longValue, false, (byte) longValue, (char) longValue,
+                      (short) longValue, (int) longValue, (long) longValue, (float) longValue,
+                      (double) longValue, Integer.valueOf(3));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkFloatCast_delegate",
+            MethodType.methodType(void.class, float.class, float.class, float.class,
+                                  float.class, float.class, float.class, float.class,
+                                  float.class, float.class, float.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, float.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Float.class));
+        float floatValue = 33333.141f;
+        mh.invokeExact(floatValue, true, (byte) floatValue, (char) floatValue, (short) floatValue,
+                       (int) floatValue, (long) floatValue, floatValue, (double) floatValue,
+                       Float.valueOf(floatValue));
+        try {
+            mh.invoke(floatValue, true, (byte) floatValue, (char) floatValue,
+                      (short) floatValue, (int) floatValue, (long) floatValue, floatValue,
+                      (double) floatValue, Integer.valueOf((int) floatValue));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkDoubleCast_delegate",
+            MethodType.methodType(void.class, double.class, double.class, double.class,
+                                  double.class, double.class, double.class, double.class,
+                                  double.class, double.class, double.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, double.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class, Double.class));
+        double doubleValue = 33333333333.141;
+        mh.invokeExact(doubleValue, true, (byte) doubleValue, (char) doubleValue,
+                       (short) doubleValue, (int) doubleValue, (long) doubleValue,
+                       (float) doubleValue, doubleValue, Double.valueOf(doubleValue));
+        try {
+            mh.invoke(doubleValue, true, (byte) doubleValue, (char) doubleValue,
+                      (short) doubleValue, (int) doubleValue, (long) doubleValue,
+                      (float) doubleValue, (double) doubleValue,
+                      Integer.valueOf((int) doubleValue));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "checkBoxingCasts_delegate",
+            MethodType.methodType(void.class, boolean.class, Boolean.class, Byte.class,
+                                  Character.class, Short.class, Integer.class, Long.class,
+                                  Float.class, Double.class));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, boolean.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class));
+        mh.invokeExact(false, false, (byte) 0, (char) 0, (short) 0, 0, 0l, 0.0f, 0.0);
+        mh.invokeExact(true, true, (byte) 1, (char) 1, (short) 1, 1, 1l, 1.0f, 1.0);
+        mh.invoke(Boolean.valueOf(false), Boolean.valueOf(false), Byte.valueOf((byte) 0),
+                  Character.valueOf((char) 0), Short.valueOf((short) 0), Integer.valueOf(0),
+                  Long.valueOf(0l), Float.valueOf(0.0f), Double.valueOf(0.0));
+        mh.invoke(Boolean.valueOf(true), Boolean.valueOf(true), Byte.valueOf((byte) 1),
+                  Character.valueOf((char) 1), Short.valueOf((short) 1), Integer.valueOf(1),
+                  Long.valueOf(1l), Float.valueOf(1.0f), Double.valueOf(1.0));
+        mh = MethodHandles.explicitCastArguments(
+            target, MethodType.methodType(void.class, double.class, boolean.class, byte.class,
+                                          char.class, short.class, int.class, long.class,
+                                          float.class, double.class));
+        mh.invokeExact(0.0, false, (byte) 0, (char) 0, (short) 0, 0, 0l, 0.0f, 0.0);
+    }
+
+    static void returnVoid() {}
+
+    static boolean returnBoolean(boolean b) { return b; }
+
+    static Boolean returnBooleanObject(boolean b) { return b; }
+
+    public static void testExplicitCastReturnValues() throws Throwable {
+        MethodHandle target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "returnVoid", MethodType.methodType(void.class));
+        assertEquals(false,
+                     MethodHandles
+                     .explicitCastArguments(target, MethodType.methodType(boolean.class))
+                     .invoke());
+        assertEquals(null,
+                     MethodHandles
+                     .explicitCastArguments(target, MethodType.methodType(Boolean.class))
+                     .invoke());
+        assertEquals(0l,
+                     MethodHandles
+                     .explicitCastArguments(target, MethodType.methodType(long.class))
+                     .invoke());
+        assertEquals(null,
+                     MethodHandles
+                     .explicitCastArguments(target, MethodType.methodType(Long.class))
+                     .invoke());
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "returnBoolean",
+            MethodType.methodType(boolean.class, boolean.class));
+        assertEquals(false,
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(boolean.class, boolean.class))
+                     .invoke(false));
+        assertEquals(true,
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(boolean.class, boolean.class))
+                     .invoke(true));
+        assertEquals(Boolean.valueOf(false),
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(Boolean.class, boolean.class))
+                     .invoke(false));
+        assertEquals(Boolean.valueOf(true),
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(Boolean.class, boolean.class))
+                     .invoke(true));
+        assertEquals((byte) 0,
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(byte.class, boolean.class))
+                     .invoke(false));
+        assertEquals((byte) 1,
+                     MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(byte.class, boolean.class))
+                     .invoke(true));
+        try {
+            assertEquals(Byte.valueOf((byte) 0),
+                         MethodHandles
+                         .explicitCastArguments(target,
+                                                MethodType.methodType(Byte.class, boolean.class))
+                         .invoke(false));
+            fail();
+        } catch (ClassCastException e) {
+        }
+
+        try {
+            assertEquals(Byte.valueOf((byte) 1),
+                         MethodHandles
+                         .explicitCastArguments(target,
+                                                MethodType.methodType(Byte.class, boolean.class))
+                         .invoke(true));
+        } catch (ClassCastException e) {
+        }
+
+        target = MethodHandles.lookup().findStatic(
+            MethodHandleCombinersTest.class, "returnBooleanObject",
+            MethodType.methodType(Boolean.class, boolean.class));
+        assertEquals(false,
+                     (boolean) MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(boolean.class, boolean.class))
+                     .invokeExact(false));
+        assertEquals(true,
+                     (boolean) MethodHandles
+                     .explicitCastArguments(target,
+                                            MethodType.methodType(boolean.class, boolean.class))
+                     .invokeExact(true));
+    }
 }

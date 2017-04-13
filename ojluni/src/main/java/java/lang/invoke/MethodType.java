@@ -870,18 +870,20 @@ class MethodType implements java.io.Serializable {
      *  MHs.eCA has the following "upgrades" to MH.asType:
      *  1. interfaces are unchecked (that is, treated as if aliased to Object)
      *     Therefore, {@code Object->CharSequence} is possible in both cases but has different semantics
-     *  2. the full matrix of primitive-to-primitive conversions is supported
-     *     Narrowing like {@code long->byte} and basic-typing like {@code boolean->int}
-     *     are not supported by asType, but anything supported by asType is equivalent
-     *     with MHs.eCE.
+     *  2a. the full matrix of primitive-to-primitive conversions is supported
+     *      Narrowing like {@code long->byte} and basic-typing like {@code boolean->int}
+     *      are not supported by asType, but anything supported by asType is equivalent
+     *      with MHs.eCE.
+     *  2b. conversion of void->primitive means explicit cast has to insert zero/false/null.
      *  3a. unboxing conversions can be followed by the full matrix of primitive conversions
      *  3b. unboxing of null is permitted (creates a zero primitive value)
      * Other than interfaces, reference-to-reference conversions are the same.
      * Boxing primitives to references is the same for both operators.
      */
     private static boolean explicitCastEquivalentToAsType(Class<?> src, Class<?> dst) {
-        if (src == dst || dst == Object.class || dst == void.class)  return true;
-        if (src.isPrimitive()) {
+        if (src == dst || dst == Object.class || dst == void.class) {
+            return true;
+        } else if (src.isPrimitive() && src != void.class) {
             // Could be a prim/prim conversion, where casting is a strict superset.
             // Or a boxing conversion, which is always to an exact wrapper class.
             return canConvert(src, dst);
