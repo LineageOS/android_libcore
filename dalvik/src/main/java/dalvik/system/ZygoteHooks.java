@@ -84,7 +84,7 @@ public final class ZygoteHooks {
         File tasks = new File("/proc/self/task");
         // All Java daemons are stopped already. We're just waiting for their OS counterparts to
         // finish as well. This shouldn't take much time so spinning is ok here.
-        while (tasks.list().length > 1) {
+        while (tasks.list().length > 3) {
           Thread.yield();
         }
     }
