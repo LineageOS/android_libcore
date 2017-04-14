@@ -49,8 +49,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
 {
     /* instance variable for SO_TIMEOUT */
     int timeout;   // timeout in millisec
-    // traffic class
-    private int trafficClass;
+    // Android-removed: traffic class is set through socket
+    // private int trafficClass;
 
     private boolean shut_rd = false;
     private boolean shut_wr = false;
@@ -205,17 +205,19 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         if (isClosedOrPending()) {
             throw new SocketException("Socket Closed");
         }
+        // Android-removed: Logic dealing with value type moved to socketSetOption.
+        /*
         boolean on = true;
         switch (opt) {
             /* check type safety b4 going native.  These should never
              * fail, since only java.Socket* has access to
              * PlainSocketImpl.setOption().
-             */
+             *
         case SO_LINGER:
             if (val == null || (!(val instanceof Integer) && !(val instanceof Boolean)))
                 throw new SocketException("Bad parameter for option");
             if (val instanceof Boolean) {
-                /* true only if disabling - enabling should be Integer */
+                /* true only if disabling - enabling should be Integer *
                 on = false;
             }
             break;
@@ -267,6 +269,11 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
             throw new SocketException("unrecognized TCP option: " + opt);
         }
         socketSetOption(opt, on, val);
+        */
+        if (opt == SO_TIMEOUT) {
+            timeout = (Integer) val;
+        }
+        socketSetOption(opt, val);
     }
     public Object getOption(int opt) throws SocketException {
         if (isClosedOrPending()) {
@@ -275,6 +282,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         if (opt == SO_TIMEOUT) {
             return new Integer(timeout);
         }
+        // Android-removed: Logic dealing with value type moved to socketGetOption.
+        /*
         int ret = 0;
         /*
          * The native socketGetOption() knows about 3 options.
@@ -282,7 +291,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
          * to what we're asking.  A return of -1 means it understands
          * the option but its turned off.  It will raise a SocketException
          * if "opt" isn't one it understands.
-         */
+         *
 
         switch (opt) {
         case TCP_NODELAY:
@@ -324,6 +333,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         default:
             return null;
         }
+        */
+        return socketGetOption(opt);
     }
 
     /**
@@ -725,9 +736,12 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         throws IOException;
     abstract void socketShutdown(int howto)
         throws IOException;
-    abstract void socketSetOption(int cmd, boolean on, Object value)
-        throws SocketException;
-    abstract int socketGetOption(int opt, Object iaContainerObj) throws SocketException;
+
+    // Android-changed: Method signature changed, socket{Get,Set}Option work directly with Object
+    // values.
+    abstract void socketSetOption(int cmd, Object value) throws SocketException;
+    abstract Object socketGetOption(int opt) throws SocketException;
+
     abstract void socketSendUrgentData(int data)
         throws IOException;
 
