@@ -101,9 +101,9 @@ class PlainSocketImpl extends AbstractPlainSocketImpl
         return (T)flow;
     }
 
-    protected void socketSetOption(int opt, boolean b, Object val) throws SocketException {
+    protected void socketSetOption(int opt, Object val) throws SocketException {
         try {
-            socketSetOption0(opt, b, val);
+            socketSetOption0(opt, val);
         } catch (SocketException se) {
             if (socket == null || !socket.isConnected())
                 throw se;
@@ -268,10 +268,18 @@ class PlainSocketImpl extends AbstractPlainSocketImpl
         }
     }
 
-    native void socketSetOption0(int cmd, boolean on, Object value)
-        throws SocketException;
+    void socketSetOption0(int cmd, Object value) throws SocketException {
+        // OpenJDK does not set SO_TIMEOUT on Linux.
+        if (cmd == SO_TIMEOUT) {
+            return;
+        }
 
-    native int socketGetOption(int opt, Object iaContainerObj) throws SocketException;
+        IoBridge.setSocketOption(fd, cmd, value);
+    }
+
+    Object socketGetOption(int opt) throws SocketException {
+        return IoBridge.getSocketOption(fd, opt);
+    }
 
     void socketSendUrgentData(int data) throws IOException {
         if (fd == null || !fd.valid()) {
