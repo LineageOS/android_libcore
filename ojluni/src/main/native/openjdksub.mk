@@ -50,7 +50,6 @@ LOCAL_SRC_FILES := \
     Inet6Address.c \
     Inet4Address.c \
     linux_close.cpp \
-    PlainSocketImpl.c \
     ServerSocketChannelImpl.c \
     SocketInputStream.c \
     SocketOutputStream.c \
