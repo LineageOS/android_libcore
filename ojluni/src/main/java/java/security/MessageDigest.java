@@ -35,10 +35,6 @@ import java.io.ByteArrayInputStream;
 
 import java.nio.ByteBuffer;
 
-/*
-Android-removed: this debugging mechanism is not available in Android.
-import sun.security.util.Debug;
-*/
 /**
  * This MessageDigest class provides applications the functionality of a
  * message digest algorithm, such as SHA-1 or SHA-256.
@@ -134,8 +130,8 @@ import sun.security.util.Debug;
 
 public abstract class MessageDigest extends MessageDigestSpi {
 
+    // Android-removed: this debugging mechanism is not used in Android.
     /*
-    Android-removed: this debugging mechanism is not available in Android.
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -205,8 +201,8 @@ public abstract class MessageDigest extends MessageDigestSpi {
             }
             md.provider = (Provider)objs[1];
 
+            // Android-removed: this debugging mechanism is not used in Android.
             /*
-            Android-removed: this debugging mechanism is not available in Android.
             if (!skipDebug && pdebug != null) {
                 pdebug.println("MessageDigest." + algorithm +
                     " algorithm from: " + md.provider.getName());
