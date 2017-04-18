@@ -1172,5 +1172,6 @@ public class PKCS7 {
         }
         return tsReply.getEncodedToken();
     }
-    END Android-removed */
+    */
+    // END Android-removed: unused in Android
 }

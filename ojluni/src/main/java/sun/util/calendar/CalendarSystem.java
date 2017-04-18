@@ -122,7 +122,7 @@ public abstract class CalendarSystem {
             return GREGORIAN_INSTANCE;
         }
 
-        //Android-changed: remove lazy initialization, use classes instead of class names.
+        // Android-changed: remove lazy initialization, use classes instead of class names.
 
         CalendarSystem cal = calendars.get(calendarName);
         if (cal != null) {
