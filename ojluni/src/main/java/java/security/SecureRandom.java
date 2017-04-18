@@ -99,7 +99,7 @@ import sun.security.jca.GetInstance.Instance;
 
 public class SecureRandom extends java.util.Random {
 
-    // Android-removed: this debugging mechanism is not supported in Android.
+    // Android-removed: this debugging mechanism is not used in Android.
     /*
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");

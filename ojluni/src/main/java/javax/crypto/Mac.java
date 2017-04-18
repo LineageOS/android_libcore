@@ -34,9 +34,6 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import java.nio.ByteBuffer;
 
-/* Android-removed: this debugging mechanism is not used in Android.
-import sun.security.util.Debug;
-*/
 import sun.security.jca.*;
 import sun.security.jca.GetInstance.Instance;
 
@@ -156,7 +153,8 @@ import sun.security.jca.GetInstance.Instance;
 
 public class Mac implements Cloneable {
 
-    /* Android-removed: this debugging mechanism is not used in Android.
+    // Android-removed: this debugging mechanism is not used in Android.
+    /*
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -344,7 +342,8 @@ public class Mac implements Cloneable {
             if (spi != null) {
                 return;
             }
-            /* Android-removed: this debugging mechanism is not used in Android.
+            // Android-removed: this debugging mechanism is not used in Android.
+            /*
             if (debug != null) {
                 int w = --warnCount;
                 if (w >= 0) {
@@ -472,7 +471,8 @@ public class Mac implements Cloneable {
         }
         initialized = true;
 
-        /* Android-removed: this debugging mechanism is not used in Android.
+        // Android-removed: this debugging mechanism is not used in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Mac." + algorithm + " algorithm from: " +
                 this.provider.getName());
@@ -501,7 +501,8 @@ public class Mac implements Cloneable {
         }
         initialized = true;
 
-        /* Android-removed: this debugging mechanism is not used in Android.
+        // Android-removed: this debugging mechanism is not used in Android.
+        /*
         if (!skipDebug && pdebug != null) {
             pdebug.println("Mac." + algorithm + " algorithm from: " +
                 this.provider.getName());
