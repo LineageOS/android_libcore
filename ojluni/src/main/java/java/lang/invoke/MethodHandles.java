@@ -1978,22 +1978,18 @@ return invoker;
      * @throws NullPointerException if either argument is null
      * @throws WrongMethodTypeException if the conversion cannot be made
      * @see MethodHandle#asType
-     *
-     * @hide
      */
     public static
     MethodHandle explicitCastArguments(MethodHandle target, MethodType newType) {
         explicitCastArgumentsChecks(target, newType);
         // use the asTypeCache when possible:
         MethodType oldType = target.type();
-        if (oldType == newType)  return target;
+        if (oldType == newType) return target;
         if (oldType.explicitCastEquivalentToAsType(newType)) {
             return target.asFixedArity().asType(newType);
         }
 
-        // return MethodHandleImpl.makePairwiseConvert(target, newType, false);
-        // TODO(narayan): Implement explicitCastArguments, remove @hide.
-        throw new UnsupportedOperationException("MethodHandles.explicitCastArguments is not implemented");
+        return new Transformers.ExplicitCastArguments(target, newType);
     }
 
     private static void explicitCastArgumentsChecks(MethodHandle target, MethodType newType) {
