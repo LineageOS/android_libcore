@@ -47,6 +47,9 @@
 #include <linux/if_addr.h>
 #include <linux/rtnetlink.h>
 
+// Include linux socket constants for setting sockopts
+#include <linux/udp.h>
+
 #include <net/if.h> // After <sys/socket.h> to work around a Mac header file bug.
 
 #if defined(__BIONIC__)
@@ -577,6 +580,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "TCP_USER_TIMEOUT", TCP_USER_TIMEOUT);
 #endif
     initConstant(env, c, "TIOCOUTQ", TIOCOUTQ);
+    initConstant(env, c, "UDP_ENCAP", UDP_ENCAP);
+    initConstant(env, c, "UDP_ENCAP_ESPINUDP_NON_IKE", UDP_ENCAP_ESPINUDP_NON_IKE);
+    initConstant(env, c, "UDP_ENCAP_ESPINUDP", UDP_ENCAP_ESPINUDP);
     // UNIX_PATH_MAX is mentioned in some versions of unix(7), but not actually declared.
     initConstant(env, c, "UNIX_PATH_MAX", sizeof(sockaddr_un::sun_path));
     initConstant(env, c, "WCONTINUED", WCONTINUED);
