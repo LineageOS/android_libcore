@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -35,18 +36,22 @@ import java.util.concurrent.Callable;
 
 public class LambdaImplementationTest extends TestCase {
 
-    private static final String MSG = "Hello World";
+    private static final String STATIC_METHOD_RESPONSE = "StaticMethodResponse";
 
     public void testNonCapturingLambda() throws Exception {
-        Callable<String> r1 = () -> MSG;
+        Callable<String> r1 = () -> "Hello World";
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaImplementsInterfaces(r1, Callable.class);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertNonSerializableLambdaCharacteristics(r1);
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, "Hello World");
 
-        Callable<String> r2 = () -> MSG;
-        assertMultipleInstanceCharacteristics(r1, r2);
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            callables.add(() -> "Hello World");
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     interface Condition<T> {
@@ -83,65 +88,96 @@ public class LambdaImplementationTest extends TestCase {
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertNonSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, STATIC_METHOD_RESPONSE);
 
-        Callable<String> r2 = LambdaImplementationTest::staticMethod;
-        assertMultipleInstanceCharacteristics(r1, r2);
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            callables.add(LambdaImplementationTest::staticMethod);
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     public void testObjectMethodReferenceLambda() throws Exception {
-        StringBuilder o = new StringBuilder(MSG);
+        String msg = "Hello";
+        StringBuilder o = new StringBuilder(msg);
         Callable<String> r1 = o::toString;
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaImplementsInterfaces(r1, Callable.class);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertNonSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, msg);
 
-        Callable<String> r2 = o::toString;
-        assertMultipleInstanceCharacteristics(r1, r2);
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            callables.add(o::toString);
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     public void testArgumentCapturingLambda() throws Exception {
-        String msg = MSG;
+        checkArgumentCapturingLambda("Argument");
+    }
+
+    private void checkArgumentCapturingLambda(String msg) throws Exception {
         Callable<String> r1 = () -> msg;
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaImplementsInterfaces(r1, Callable.class);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertNonSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, msg);
 
-        Callable<String> r2 = () -> msg;
-        assertMultipleInstanceCharacteristics(r1, r2);
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            callables.add(() -> msg);
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     public void testSerializableLambda_withoutState() throws Exception {
-        Callable<String> r1 = (Callable<String> & Serializable) () -> MSG;
+        Callable<String> r1 = (Callable<String> & Serializable) () -> "No State";
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaImplementsInterfaces(r1, Callable.class, Serializable.class);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, "No State");
 
-        Callable<String> r2 = (Callable<String> & Serializable) () -> MSG;
-        assertMultipleInstanceCharacteristics(r1, r2);
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            Callable<String> callable = (Callable<String> & Serializable) () -> "No State";
+            assertLambdaImplementsInterfaces(callable, Callable.class, Serializable.class);
+            callables.add(callable);
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     public void testSerializableLambda_withState() throws Exception {
-        final int state = 123;
-        Callable<String> r1 = (Callable<String> & Serializable) () -> MSG + state;
+        final long state = System.currentTimeMillis();
+        Callable<String> r1 = (Callable<String> & Serializable) () -> "State:" + state;
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaImplementsInterfaces(r1, Callable.class, Serializable.class);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG + state);
+        assertCallableBehavior(r1, "State:" + state);
 
         Callable<String> deserializedR1 = roundtripSerialization(r1);
         assertEquals(r1.call(), deserializedR1.call());
+
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            Callable<String> callable = (Callable<String> & Serializable) () -> "State:" + state;
+            assertLambdaImplementsInterfaces(callable, Callable.class, Serializable.class);
+            callables.add(callable);
+        }
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     public void testBadSerializableLambda() throws Exception {
@@ -159,14 +195,25 @@ public class LambdaImplementationTest extends TestCase {
     }
 
     public void testMultipleInterfaceLambda() throws Exception {
-        Callable<String> r1 = (Callable<String> & MarkerInterface) () -> MSG;
+        Callable<String> r1 = (Callable<String> & MarkerInterface) () -> "MultipleInterfaces";
         assertTrue(r1 instanceof MarkerInterface);
         assertGeneralLambdaClassCharacteristics(r1);
         assertLambdaMethodCharacteristics(r1, Callable.class);
         assertLambdaImplementsInterfaces(r1, Callable.class, MarkerInterface.class);
         assertNonSerializableLambdaCharacteristics(r1);
 
-        assertCallableBehavior(r1, MSG);
+        assertCallableBehavior(r1, "MultipleInterfaces");
+
+        List<Callable<String>> callables = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            Callable<String> callable =
+                    (Callable<String> & MarkerInterface) () -> "MultipleInterfaces";
+            assertLambdaImplementsInterfaces(callable, Callable.class, MarkerInterface.class);
+            callables.add(callable);
+        }
+        assertLambdaImplementsInterfaces(r1, Callable.class, MarkerInterface.class);
+        assertMultipleDefinitionCharacteristics(r1, callables.get(0));
+        assertMultipleInstanceCharacteristics(callables.get(0), callables.get(1));
     }
 
     private static void assertSerializableLambdaCharacteristics(Object r1) throws Exception {
@@ -248,8 +295,15 @@ public class LambdaImplementationTest extends TestCase {
         }
     }
 
-    private static void assertMultipleInstanceCharacteristics(Object r1, Object r2)
-            throws Exception {
+    /**
+     * Asserts that necessary conditions hold when there are two lambdas with separate but identical
+     * definitions.
+     */
+    private static void assertMultipleDefinitionCharacteristics(
+            Callable<String> r1, Callable<String> r2) throws Exception {
+
+        // Sanity check that the lambdas do the same thing.
+        assertEquals(r1.call(), r2.call());
 
         // Unclear if any of this is *guaranteed* to be true.
 
@@ -258,10 +312,23 @@ public class LambdaImplementationTest extends TestCase {
         assertNotSame(r1, r2);
         assertTrue(!r1.equals(r2));
 
-        // Confirm the classes differ.
-        Class<?> lambda1Class = r1.getClass();
-        Class<?> lambda2Class = r2.getClass();
-        assertNotSame(lambda1Class, lambda2Class);
+        // Two lambdas from different definitions can share the same class or may not.
+        // See JLS 15.27.4.
+    }
+
+    /**
+     * Asserts that necessary conditions hold when there are two lambdas created from the same
+     * definition.
+     */
+    private static void assertMultipleInstanceCharacteristics(
+            Callable<String> r1, Callable<String> r2) throws Exception {
+
+        // Sanity check that the lambdas do the same thing.
+        assertEquals(r1.call(), r2.call());
+
+        // There doesn't appear to be anything else that is safe to assert here. Two lambdas
+        // created from the same definition can be the same, as can their class, but they can also
+        // be different. See JLS 15.27.4.
     }
 
     private static void assertGeneralLambdaClassCharacteristics(Object r1) throws Exception {
@@ -333,7 +400,7 @@ public class LambdaImplementationTest extends TestCase {
     }
 
     private static String staticMethod() {
-        return MSG;
+        return STATIC_METHOD_RESPONSE;
     }
 
     private interface MarkerInterface {
