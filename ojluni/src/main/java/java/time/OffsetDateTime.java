@@ -93,6 +93,7 @@ import java.time.zone.ZoneRules;
 import java.util.Comparator;
 import java.util.Objects;
 
+// Android-changed: removed ValueBased paragraph.
 /**
  * A date-time with an offset from UTC/Greenwich in the ISO-8601 calendar system,
  * such as {@code 2007-12-03T10:15:30+01:00}.
@@ -112,13 +113,6 @@ import java.util.Objects;
  * It is intended that {@code ZonedDateTime} or {@code Instant} is used to model data
  * in simpler applications. This class may be used when modeling date-time concepts in
  * more detail, or when communicating to a database or in a network protocol.
- *
- * <p>
- * This is a <a href="{@docRoot}/java/lang/doc-files/ValueBased.html">value-based</a>
- * class; use of identity-sensitive operations (including reference equality
- * ({@code ==}), identity hash code, or synchronization) on instances of
- * {@code OffsetDateTime} may have unpredictable results and should be avoided.
- * The {@code equals} method should be used for comparisons.
  *
  * @implSpec
  * This class is immutable and thread-safe.
