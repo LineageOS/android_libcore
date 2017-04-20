@@ -90,6 +90,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+// Android-changed: removed ValueBased paragraph.
 /**
  * A date-based amount of time in the ISO-8601 calendar system,
  * such as '2 years, 3 months and 4 days'.
@@ -119,13 +120,6 @@ import java.util.regex.Pattern;
  * <p>
  * The period is modeled as a directed amount of time, meaning that individual parts of the
  * period may be negative.
- *
- * <p>
- * This is a <a href="{@docRoot}/java/lang/doc-files/ValueBased.html">value-based</a>
- * class; use of identity-sensitive operations (including reference equality
- * ({@code ==}), identity hash code, or synchronization) on instances of
- * {@code Period} may have unpredictable results and should be avoided.
- * The {@code equals} method should be used for comparisons.
  *
  * @implSpec
  * This class is immutable and thread-safe.
