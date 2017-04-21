@@ -56,6 +56,9 @@ public class DisabledAlgorithmConstraints extends AbstractAlgorithmConstraints {
     public final static String PROPERTY_TLS_DISABLED_ALGS =
             "jdk.tls.disabledAlgorithms";
 
+    // the known security property, jdk.jar.disabledAlgorithms
+    public static final String PROPERTY_JAR_DISABLED_ALGS =
+            "jdk.jar.disabledAlgorithms";
 
     private final String[] disabledAlgorithms;
     private final Constraints algorithmConstraints;
@@ -257,9 +260,9 @@ public class DisabledAlgorithmConstraints extends AbstractAlgorithmConstraints {
                                     toUpperCase(Locale.ENGLISH));
                     policy = constraintEntry.substring(space + 1);
                 } else {
-                    constraintsMap.computeIfAbsent(
+                    constraintsMap.putIfAbsent(
                             constraintEntry.toUpperCase(Locale.ENGLISH),
-                            k -> new HashSet<>());
+                            new HashSet<>());
                     continue;
                 }
 
@@ -294,7 +297,6 @@ public class DisabledAlgorithmConstraints extends AbstractAlgorithmConstraints {
                         c = new jdkCAConstraint(algorithm);
                         jdkCALimit = true;
                     }
-
                     // Link multiple conditions for a single constraint
                     // into a linked list.
                     if (lastConstraint == null) {
