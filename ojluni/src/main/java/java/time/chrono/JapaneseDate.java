@@ -91,6 +91,7 @@ import java.util.Objects;
 import sun.util.calendar.CalendarDate;
 import sun.util.calendar.LocalGregorianCalendar;
 
+// Android-changed: removed ValueBased paragraph.
 /**
  * A date in the Japanese Imperial calendar system.
  * <p>
@@ -110,13 +111,6 @@ import sun.util.calendar.LocalGregorianCalendar;
  * Calling {@code japaneseDate.get(YEAR)} will return 2012.<br>
  * Calling {@code japaneseDate.get(ERA)} will return 2, corresponding to
  * {@code JapaneseChronology.ERA_HEISEI}.<br>
- *
- * <p>
- * This is a <a href="{@docRoot}/java/lang/doc-files/ValueBased.html">value-based</a>
- * class; use of identity-sensitive operations (including reference equality
- * ({@code ==}), identity hash code, or synchronization) on instances of
- * {@code JapaneseDate} may have unpredictable results and should be avoided.
- * The {@code equals} method should be used for comparisons.
  *
  * @implSpec
  * This class is immutable and thread-safe.
