@@ -85,6 +85,7 @@ import java.util.Set;
 import java.util.TimeZone;
 
 // Android-changed: removed ValueBased paragraph.
+// Android-changed: removed {@link ZoneRulesProvider}.
 /**
  * A time-zone ID, such as {@code Europe/Paris}.
  * <p>
@@ -126,7 +127,7 @@ import java.util.TimeZone;
  * <p>
  * The third type of ID are region-based IDs. A region-based ID must be of
  * two or more characters, and not start with 'UTC', 'GMT', 'UT' '+' or '-'.
- * Region-based IDs are defined by configuration, see {@link ZoneRulesProvider}.
+ * Region-based IDs are defined by configuration.
  * The configuration focuses on providing the lookup from the ID to the
  * underlying {@code ZoneRules}.
  * <p>
@@ -536,6 +537,7 @@ public abstract class ZoneId implements Serializable {
     }
 
     //-----------------------------------------------------------------------
+    // Android-removed: ZoneRulesProvider related paragraph
     /**
      * Gets the time-zone rules for this ID allowing calculations to be performed.
      * <p>
@@ -545,11 +547,6 @@ public abstract class ZoneId implements Serializable {
      * A time-zone can be invalid if it is deserialized in a Java Runtime which
      * does not have the same rules loaded as the Java Runtime that stored it.
      * In this case, calling this method will throw a {@code ZoneRulesException}.
-     * <p>
-     * The rules are supplied by {@link ZoneRulesProvider}. An advanced provider may
-     * support dynamic updates to the rules without restarting the Java Runtime.
-     * If so, then the result of this method may change over time.
-     * Each individual call will be still remain thread-safe.
      * <p>
      * {@link ZoneOffset} will always return a set of rules where the offset never changes.
      *
