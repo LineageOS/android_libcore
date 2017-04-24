@@ -19,8 +19,18 @@ package libcore.java.net;
 import junit.framework.TestCase;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import sun.net.ftp.FtpLoginException;
 
 /**
  * Tests URLConnections for ftp:// URLs.
@@ -28,36 +38,48 @@ import java.util.Locale;
 public class FtpURLConnectionTest extends TestCase {
 
     private static final String FILE_PATH = "test/file/for/FtpURLConnectionTest.txt";
-    private static final String USER = "user";
-    private static final String PASSWORD = "password";
     private static final String SERVER_HOSTNAME = "localhost";
-    private static final String USER_HOME_DIR = "/home/user";
 
-    // http://b/35784677
+     // http://b/35784677
     public void testCRLFInUserinfo() throws Exception {
-        int serverPort = 1234;
-        // '/r/n' in the username, no password
-        String url1String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // '/r/n' in the username with password
-        String url2String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand:foo@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // '/r/n' in the password
-        String url3String = String.format(Locale.US, "ftp://foo:bar%%0D%%0Acommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // just '/r' in the password
-        String url4String = String.format(Locale.US, "ftp://foo:bar%%0Dcommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // just '/n' in the username
-        String url5String = String.format(Locale.US, "ftp://foo%%0Acommand:bar@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
+        List<String> encodedUserInfos = Arrays.asList(
+                // '\r\n' in the username with password
+                "user%0D%0Acommand:password",
+                // '\r\n' in the password
+                "user:password%0D%0Acommand",
+                // just '\n' in the password
+                "user:password%0Acommand",
+                // just '\n' in the username
+                "user%0Acommand:password"
+        );
+        for (String encodedUserInfo : encodedUserInfos) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            ServerSocket mockFtpServerSocket = new ServerSocket(0);
+            Future<Void> future = executor.submit(new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    Socket clientSocket = mockFtpServerSocket.accept();
+                    clientSocket.getOutputStream().write("220 o/".getBytes());
+                    clientSocket.close();
+                    return null;
+                }
+              });
+            executor.shutdown();
 
-        for (String urlString : new String[]{ url1String, url2String, url3String, url4String,
-                url5String }) {
+            String urlString = String.format(Locale.US, "ftp://%s@%s:%s/%s",
+                    encodedUserInfo, SERVER_HOSTNAME, mockFtpServerSocket.getLocalPort(), FILE_PATH);
             try {
-                new URL(urlString).openConnection();
-                fail();
-            } catch(IOException expected) {}
+                new URL(urlString).openConnection().connect();
+                fail("Connection shouldn't have succeeded: " + urlString);
+            } catch (FtpLoginException expected) {
+                // The original message "Illegal carriage return" gets lost
+                // where FtpURLConnection.connect() translates the
+                // original FtpProtocolException into FtpLoginException.
+                assertEquals("Invalid username/password", expected.getMessage());
+            }
+
+            // Cleanup
+            future.get();
+            mockFtpServerSocket.close();
         }
     }
 }
