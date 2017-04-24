@@ -47,6 +47,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import sun.net.ftp.FtpLoginException;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -220,28 +222,28 @@ public class FtpURLConnectionTest extends TestCase {
     // http://b/35784677
     public void testCRLFInUserinfo() throws Exception {
         int serverPort = fakeFtpServer.getServerControlPort();
-        // '/r/n' in the username, no password
-        String url1String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // '/r/n' in the username with password
-        String url2String = String.format(Locale.US, "ftp://foo%%0D%%0Acommand:foo@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // '/r/n' in the password
-        String url3String = String.format(Locale.US, "ftp://foo:bar%%0D%%0Acommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // just '/r' in the password
-        String url4String = String.format(Locale.US, "ftp://foo:bar%%0Dcommand@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-        // just '/n' in the username
-        String url5String = String.format(Locale.US, "ftp://foo%%0Acommand:bar@%s:%s/%s",
-            SERVER_HOSTNAME, serverPort, FILE_PATH);
-
-        for (String urlString : new String[]{ url1String, url2String, url3String, url4String,
-                url5String }) {
+        List<String> encodedUserInfos = Arrays.asList(
+                // '\r\n' in the username with password
+                "user%0D%0Acommand:password",
+                // '\r\n' in the password
+                "user:password%0D%0Acommand",
+                // just '\n' in the password
+                "user:password%0Acommand",
+                // just '\n' in the username
+                "user%0Acommand:password"
+        );
+        for (String encodedUserInfo : encodedUserInfos) {
+            String urlString = String.format(Locale.US, "ftp://%s@%s:%s/%s",
+                    encodedUserInfo, SERVER_HOSTNAME, serverPort, FILE_PATH);
             try {
-                new URL(urlString).openConnection();
-                fail();
-            } catch(IOException expected) {}
+                new URL(urlString).openConnection().connect();
+                fail("Connection shouldn't have succeeded: " + urlString);
+            } catch (FtpLoginException expected) {
+                // The original message "Illegal carriage return" gets lost
+                // where FtpURLConnection.connect() translates the
+                // original FtpProtocolException into FtpLoginException.
+                assertEquals("Invalid username/password", expected.getMessage());
+            }
         }
     }
 
