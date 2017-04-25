@@ -19,6 +19,7 @@ package org.apache.harmony.tests.java.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
 import java.io.InputStreamReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -662,6 +663,59 @@ public class PrintStreamTest extends junit.framework.TestCase {
     }
 
     /**
+     * Tests that a PrintStream with {@code autoFlush == true} will call
+     * {@link OutputStream#flush()} at least once, after the last byte
+     * was written.
+     */
+    public void test_autoFlush_flushesEverything() {
+        CountFlushOutputStream counter = new CountFlushOutputStream(new ByteArrayOutputStream());
+        PrintStream printStream = new PrintStream(counter, true /* autoFlush */);
+        printStream.print("Hello, world!");
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.print(Math.PI);
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.print("\n");
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.println();
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.println("Lots\nof\nnewlines\n");
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.print("Line 1\nLine 2\n".toCharArray());
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+
+        byte[] bytes = "Line without a newline".getBytes(StandardCharsets.UTF_8);
+        printStream.write(bytes, 0, bytes.length);
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+    }
+
+    /**
+     * Tests that a PrintStream with {@code autoFlush == false} will not
+     * call {@link OutputStream#flush()} in regular (non-error) operation.
+     */
+    public void test_noAutoFlush() {
+        CountFlushOutputStream counter = new CountFlushOutputStream(new ByteArrayOutputStream());
+        PrintStream printStream = new PrintStream(counter, false /* autoFlush */);
+        printStream.print("Hello, world!");
+        printStream.print(Math.PI);
+        printStream.print("\n");
+        printStream.println();
+        printStream.println("Lots\nof\nnewlines\n");
+        printStream.print("Line 1\nLine 2\n".toCharArray());
+        byte[] bytes = "Line without a newline".getBytes(StandardCharsets.UTF_8);
+        printStream.write(bytes, 0, bytes.length);
+        assertFalse(counter.hasEverBeenFlushed());
+        assertFalse(counter.hasBeenFlushedSinceLastWrite());
+
+        // checkError() still causes the PrintStream to flush(), even when autoFlush == false.
+        printStream.checkError();
+        assertTrue(counter.hasEverBeenFlushed());
+        assertTrue(counter.hasBeenFlushedSinceLastWrite());
+        printStream.print("This data\nwill not be flushed.");
+        assertTrue(counter.hasEverBeenFlushed());
+        assertFalse(counter.hasBeenFlushedSinceLastWrite());
+    }
+
+    /**
      * java.io.PrintStream#printf(java.lang.String, java.lang.Object...)
      */
     public void test_printfLjava_lang_String$Ljava_lang_Object() {
@@ -714,6 +768,38 @@ public class PrintStreamTest extends junit.framework.TestCase {
     private static void assertFileContents(byte[] expected, File file) throws IOException {
         byte[] actual = IoUtils.readFileAsByteArray(file.getAbsolutePath());
         assertByteArraysEqual(expected, actual);
+    }
+
+    static class CountFlushOutputStream extends FilterOutputStream {
+        private boolean hasBeenFlushedSinceLastWrite = false;
+        private boolean hasEverBeenFlushed = false;
+
+        public CountFlushOutputStream(OutputStream delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            super.write(b);
+            hasBeenFlushedSinceLastWrite = false;
+        }
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            hasBeenFlushedSinceLastWrite = true;
+            hasEverBeenFlushed = true;
+        }
+
+        /** Whether {@link #flush()} has been called since the last write. */
+        public boolean hasBeenFlushedSinceLastWrite() {
+            return hasBeenFlushedSinceLastWrite;
+        }
+
+        /** Whether {@link #flush()} has ever been called after this stream was constructed. */
+        public boolean hasEverBeenFlushed() {
+            return hasEverBeenFlushed;
+        }
     }
 
 }
