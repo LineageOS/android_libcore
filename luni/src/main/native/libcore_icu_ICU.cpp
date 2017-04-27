@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#define LOG_NDEBUG 1
 #define LOG_TAG "ICU"
 
 #include <errno.h>
@@ -962,7 +963,7 @@ struct ICURegistration {
             ALOGW("TZ override file %s exists but could not be loaded. Skipping.", dataPath.c_str());
         }
     } else {
-        ALOGD("No timezone override file found: %s", dataPath.c_str());
+        ALOGV("No timezone override file found: %s", dataPath.c_str());
     }
 
     // Use the ICU data files that shipped with the device for everything else.
