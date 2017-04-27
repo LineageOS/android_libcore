@@ -29,12 +29,16 @@ import java.util.List;
 import libcore.io.Libcore;
 
 /**
- * Manipulates DEX files. The class is similar in principle to
- * {@link java.util.zip.ZipFile}. It is used primarily by class loaders.
- * <p>
- * Note we don't directly open and read the DEX file here. They're memory-mapped
- * read-only by the VM.
+ * Loads DEX files. This class is meant for internal use and should not be used
+ * by applications.
+ *
+ * @deprecated This class should not be used directly by applications. It will hurt
+ *     performance in most cases and will lead to incorrect execution of bytecode in
+ *     the worst case. Applications should use one of the standard classloaders such
+ *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
+ *     in a future Android release</b>.
  */
+@Deprecated
 public final class DexFile {
   /**
    * If close is called, mCookie becomes null but the internal cookie is preserved if the close
@@ -45,22 +49,13 @@ public final class DexFile {
     private final String mFileName;
 
     /**
-     * Opens a DEX file from a given File object. This will usually be a ZIP/JAR
-     * file with a "classes.dex" inside.
+     * Opens a DEX file from a given File object.
      *
-     * The VM will generate the name of the corresponding file in
-     * /data/dalvik-cache and open it, possibly creating or updating
-     * it first if system permissions allow.  Don't pass in the name of
-     * a file in /data/dalvik-cache, as the named file is expected to be
-     * in its original (pre-dexopt) state.
-     *
-     * @param file
-     *            the File object referencing the actual DEX file
-     *
-     * @throws IOException
-     *             if an I/O error occurs, such as the file not being found or
-     *             access rights missing for opening it
+     * @deprecated Applications should use one of the standard classloaders such
+     *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
+     *     in a future Android release</b>.
      */
+    @Deprecated
     public DexFile(File file) throws IOException {
         this(file.getPath());
     }
@@ -80,22 +75,13 @@ public final class DexFile {
     }
 
     /**
-     * Opens a DEX file from a given filename. This will usually be a ZIP/JAR
-     * file with a "classes.dex" inside.
+     * Opens a DEX file from a given filename.
      *
-     * The VM will generate the name of the corresponding file in
-     * /data/dalvik-cache and open it, possibly creating or updating
-     * it first if system permissions allow.  Don't pass in the name of
-     * a file in /data/dalvik-cache, as the named file is expected to be
-     * in its original (pre-dexopt) state.
-     *
-     * @param fileName
-     *            the filename of the DEX file
-     *
-     * @throws IOException
-     *             if an I/O error occurs, such as the file not being found or
-     *             access rights missing for opening it
+     * @deprecated Applications should use one of the standard classloaders such
+     *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
+     *     in a future Android release</b>.
      */
+    @Deprecated
     public DexFile(String fileName) throws IOException {
         this(fileName, null, null);
     }
@@ -165,24 +151,11 @@ public final class DexFile {
      * to be current, it will be used; if not, the VM will attempt to
      * regenerate it.
      *
-     * This is intended for use by applications that wish to download
-     * and execute DEX files outside the usual application installation
-     * mechanism.  This function should not be called directly by an
-     * application; instead, use a class loader such as
-     * dalvik.system.DexClassLoader.
-     *
-     * @param sourcePathName
-     *  Jar or APK file with "classes.dex".  (May expand this to include
-     *  "raw DEX" in the future.)
-     * @param outputPathName
-     *  File that will hold the optimized form of the DEX data.
-     * @param flags
-     *  Enable optional features.  (Currently none defined.)
-     * @return
-     *  A new or previously-opened DexFile.
-     * @throws IOException
-     *  If unable to open the source or output file.
+     * @deprecated Applications should use one of the standard classloaders such
+     *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
+     *     in a future Android release</b>.
      */
+    @Deprecated
     static public DexFile loadDex(String sourcePathName, String outputPathName,
         int flags) throws IOException {
 
