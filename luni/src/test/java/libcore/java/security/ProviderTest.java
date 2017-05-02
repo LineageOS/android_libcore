@@ -277,6 +277,84 @@ public class ProviderTest extends TestCase {
         }
     }
 
+    /**
+     * Helper function to fetch services for Service.Algorithm IDs
+     */
+    private static Provider.Service getService(Provider p, String id) {
+        String[] typeAndAlg = id.split("\\.", 2);
+        assertEquals(id + " is not formatted as expected.", 2, typeAndAlg.length);
+        return p.getService(typeAndAlg[0], typeAndAlg[1]);
+    }
+
+    /**
+     * Ensures that, for all algorithms provided by Conscrypt, there is no alias from
+     * the BC provider that's not provided by Conscrypt.  If there is, then a request
+     * for that alias with no provider specified will return the BC implementation of
+     * it even though we have a Conscrypt implementation available.
+     */
+    public void test_Provider_ConscryptOverridesBouncyCastle() throws Exception {
+        if (StandardNames.IS_RI) {
+            // These providers aren't installed on RI
+            return;
+        }
+        Provider conscrypt = Security.getProvider("AndroidOpenSSL");
+        Provider bc = Security.getProvider("BC");
+
+        // 1. Find all the algorithms provided by Conscrypt.
+        Set<String> conscryptAlgs = new HashSet<>();
+        for (Entry<Object, Object> entry : conscrypt.entrySet()) {
+            String key = (String) entry.getKey();
+            if (key.contains(" ")) {
+                // These are implementation properties like "Provider.id name"
+                continue;
+            }
+            if (key.startsWith("Alg.Alias.")) {
+                // Ignore aliases, we only want the concrete algorithms
+                continue;
+            }
+            conscryptAlgs.add(key);
+        }
+
+        // 2. Determine which classes in BC implement those algorithms
+        Set<String> bcClasses = new HashSet<>();
+        for (String conscryptAlg : conscryptAlgs) {
+            Provider.Service service = getService(bc, conscryptAlg);
+            if (service != null) {
+                bcClasses.add(service.getClassName());
+            }
+        }
+        assertTrue(bcClasses.size() > 0);  // Sanity check
+
+        // 3. Determine which IDs in BC point to that set of classes
+        Set<String> shouldBeOverriddenBcIds = new HashSet<>();
+        for (Object keyObject : bc.keySet()) {
+            String key = (String) keyObject;
+            if (key.contains(" ")) {
+                continue;
+            }
+            if (key.startsWith("Alg.Alias.")) {
+                key = key.substring("Alg.Alias.".length());
+            }
+            Provider.Service service = getService(bc, key);
+            if (bcClasses.contains(service.getClassName())) {
+                shouldBeOverriddenBcIds.add(key);
+            }
+        }
+        assertTrue(shouldBeOverriddenBcIds.size() > 0);  // Sanity check
+
+        // 4. Check each of those IDs to ensure that it's present in Conscrypt
+        Set<String> nonOverriddenIds = new TreeSet<>();
+        for (String shouldBeOverridenBcId : shouldBeOverriddenBcIds) {
+            if (getService(conscrypt, shouldBeOverridenBcId) == null) {
+                nonOverriddenIds.add(shouldBeOverridenBcId);
+            }
+        }
+        assertTrue("Conscrypt does not provide IDs " + nonOverriddenIds
+                + ", but it does provide other IDs that point to the same implementation(s)"
+                + " in BouncyCastle.",
+                nonOverriddenIds.isEmpty());
+    }
+
     private static final String[] TYPES_SERVICES_CHECKED = new String[] {
             "KeyFactory", "CertPathBuilder", "Cipher", "SecureRandom",
             "AlgorithmParameterGenerator", "Signature", "KeyPairGenerator", "CertificateFactory",
