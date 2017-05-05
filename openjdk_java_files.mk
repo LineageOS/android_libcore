@@ -1398,7 +1398,6 @@ openjdk_java_files := \
     ojluni/src/main/java/sun/misc/FloatConsts.java \
     ojluni/src/main/java/sun/misc/FormattedFloatingDecimal.java \
     ojluni/src/main/java/sun/misc/FpUtils.java \
-    ojluni/src/main/java/sun/misc/Hashing.java \
     ojluni/src/main/java/sun/misc/HexDumpEncoder.java \
     ojluni/src/main/java/sun/misc/InvalidJarIndexException.java \
     ojluni/src/main/java/sun/misc/IOUtils.java \
