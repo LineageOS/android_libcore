@@ -526,4 +526,13 @@ public final class DexFile {
      */
     public native static String getNonProfileGuidedCompilerFilter(String filter);
 
+    /**
+     * Returns the version of the compiler filter that is suitable for safe mode.
+     * If the input is not a valid filter, or the filter is already suitable for
+     * safe mode, this returns the input.
+     *
+     * @hide
+     */
+    public native static String getSafeModeCompilerFilter(String filter);
+
 }
