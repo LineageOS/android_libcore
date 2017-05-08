@@ -26,6 +26,9 @@ import operator
 import crypto_docs
 
 
+find_by_name = crypto_docs.find_by_name
+
+
 def sort_by_name(seq):
     return sorted(seq, key=lambda x: x['name'])
 
@@ -46,10 +49,14 @@ def main():
     output.append('')
     output.append('<ul>')
     for category in categories:
-        output.append('  <li><a href="#Supported{name}">'
-               '<code>{name}</code></a></li>'.format(**category))
+        if not category['name'].endswith('.Enabled'):
+            output.append('  <li><a href="#Supported{name}">'
+                   '<code>{name}</code></a></li>'.format(**category))
     output.append('</ul>')
     for category in categories:
+        if category['name'].endswith('.Enabled'):
+            # These are handled in the "Supported" section below
+            continue
         if category['name'] == 'Cipher':
             # We display ciphers in a four-column table to conserve space and
             # so that it's more comprehensible.  To do this, we have to
@@ -153,6 +160,39 @@ def main():
                 output.append('      <td>%s</td>' % row[3])
                 output.append('    </tr>')
                 i += 1
+            output.append('  </tbody>')
+            output.append('</table>')
+        elif category['name'].endswith('.Supported'):
+            # Some categories come with a "Supported" and "Enabled" list, and we
+            # group those together in one table for display.  Every entry that's enabled
+            # must be supported, so we can just look up the enabled version for each
+            # supported item
+            basename = category['name'][:-len('.Supported')]
+            supported = sort_by_name(category['algorithms'])
+            enabled = sort_by_name(find_by_name(categories, basename + '.Enabled')['algorithms'])
+            output.append('<h3 id="Supported{0}">{0}</h3>'.format(basename))
+            output.append('<table>')
+            output.append('  <thead>')
+            output.append('    <tr>')
+            output.append('      <th>Algorithm</th>')
+            output.append('      <th>Supported API Levels</th>')
+            output.append('      <th>Enabled By Default</th>')
+            output.append('    </tr>')
+            output.append('  </thead>')
+            output.append('  <tbody>')
+            for algorithm in supported:
+                if 'deprecated' in algorithm and algorithm['deprecated']:
+                    output.append('    <tr class="deprecated">')
+                else:
+                    output.append('    <tr>')
+                output.append('      <td>{name}</td>'.format(**algorithm))
+                output.append('      <td>{supported_api_levels}</td>'.format(**algorithm))
+                enabled_alg = find_by_name(enabled, algorithm['name'])
+                if enabled_alg is None:
+                    output.append('      <td></td>')
+                else:
+                    output.append('      <td>{supported_api_levels}</td>'.format(**enabled_alg))
+                output.append('    </tr>')
             output.append('  </tbody>')
             output.append('</table>')
         else:
