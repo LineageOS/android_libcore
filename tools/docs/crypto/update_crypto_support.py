@@ -51,16 +51,24 @@ SUPPORTED_CATEGORIES = [
     'SecureRandom',
     'Signature',
     'SSLContext',
+    'SSLEngine.Enabled',
+    'SSLEngine.Supported',
+    'SSLSocket.Enabled',
+    'SSLSocket.Supported',
     'TrustManagerFactory',
 ]
 
+# For these categories, we really want to maintain the casing that was in the
+# original data, so avoid changing it.
+CASE_SENSITIVE_CATEGORIES = [
+    'SSLEngine.Enabled',
+    'SSLEngine.Supported',
+    'SSLSocket.Enabled',
+    'SSLSocket.Supported',
+]
 
-def find_by_name(seq, name):
-    """Returns the first element in seq with the given name."""
-    for item in seq:
-        if item['name'] == name:
-            return item
-    return None
+
+find_by_name = crypto_docs.find_by_name
 
 
 def find_by_normalized_name(seq, name):
@@ -193,7 +201,8 @@ def update_data(prev_data, current_data, name_dict, api_level, date):
                 new_algorithm = {'name': prev_alg['name']}
             else:
                 new_algorithm = {'name': alg}
-            new_algorithm['name'] = fix_name_caps_for_output(new_algorithm['name'])
+            if category not in CASE_SENSITIVE_CATEGORIES:
+                new_algorithm['name'] = fix_name_caps_for_output(new_algorithm['name'])
             new_level = None
             if alg in current_category and alg in prev_algorithms:
                 # Both old and new have it, just ensure the API level is right
