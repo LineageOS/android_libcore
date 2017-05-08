@@ -29,3 +29,11 @@ def load_json(filename):
     data = json.loads(stripped_contents)
     f.close()
     return data
+
+
+def find_by_name(seq, name):
+    """Returns the first element in seq with the given name."""
+    for item in seq:
+        if item['name'] == name:
+            return item
+    return None
