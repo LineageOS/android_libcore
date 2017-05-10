@@ -25,6 +25,7 @@
 
 package javax.crypto;
 
+// Android-changed: We don't implement this permission system on Android.
 /**
  * Legacy security code; do not use.
  */
