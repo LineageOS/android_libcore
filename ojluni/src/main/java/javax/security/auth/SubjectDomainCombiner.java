@@ -27,6 +27,7 @@ package javax.security.auth;
 
 import java.security.ProtectionDomain;
 
+// Android-changed: We don't implement this permission system on Android.
 /**
  * Legacy security code; do not use.
  */
