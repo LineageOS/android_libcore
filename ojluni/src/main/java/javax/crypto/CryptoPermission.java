@@ -28,6 +28,7 @@ package javax.crypto;
 import java.security.*;
 import java.security.spec.AlgorithmParameterSpec;
 
+// Android-changed: We don't implement this permission system on Android.
 /**
  * Legacy security code; do not use.
  */
