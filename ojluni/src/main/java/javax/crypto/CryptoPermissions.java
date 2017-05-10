@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.io.InputStream;
 import java.io.IOException;
 
+// Android-changed: We don't implement this permission system on Android.
 /**
  * Legacy security code; do not use.
  */
