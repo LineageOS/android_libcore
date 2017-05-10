@@ -29,6 +29,7 @@ import java.util.*;
 import java.security.Permission;
 import java.security.Principal;
 
+// Android-changed: We don't implement this permission system on Android.
 /**
  * Legacy security code; do not use.
  */
