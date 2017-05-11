@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2003, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,13 +33,14 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.io.IOException;
-import sun.misc.RegexpPool;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.StringJoiner;
+import java.util.regex.Pattern;
 import sun.net.NetProperties;
 import sun.net.SocksProxy;
+import static java.util.regex.Pattern.quote;
 
 /**
  * Supports proxy settings using system properties This proxy selector
@@ -98,7 +99,12 @@ public class DefaultProxySelector extends ProxySelector {
                 }});
         if (b != null && b.booleanValue()) {
             java.security.AccessController.doPrivileged(
-                      new sun.security.action.LoadLibraryAction("net"));
+                new java.security.PrivilegedAction<Void>() {
+                    public Void run() {
+                        System.loadLibrary("net");
+                        return null;
+                    }
+                });
             hasSystemProxies = init();
         }
     }
@@ -106,7 +112,7 @@ public class DefaultProxySelector extends ProxySelector {
 
     /**
      * How to deal with "non proxy hosts":
-     * since we do have to generate a RegexpPool we don't want to do that if
+     * since we do have to generate a pattern we don't want to do that if
      * it's not necessary. Therefore we do cache the result, on a per-protocol
      * basis, and change it only when the "source", i.e. the system property,
      * did change.
@@ -118,18 +124,19 @@ public class DefaultProxySelector extends ProxySelector {
         static final String defStringVal = "localhost|127.*|[::1]|0.0.0.0|[::0]";
 
         String hostsSource;
-        RegexpPool hostsPool;
+        Pattern pattern;
         final String property;
         final String defaultVal;
         static NonProxyInfo ftpNonProxyInfo = new NonProxyInfo("ftp.nonProxyHosts", null, null, defStringVal);
         static NonProxyInfo httpNonProxyInfo = new NonProxyInfo("http.nonProxyHosts", null, null, defStringVal);
+        static NonProxyInfo socksNonProxyInfo = new NonProxyInfo("socksNonProxyHosts", null, null, defStringVal);
         // Android-changed: Different NonProxyInfo flags for https hosts vs. http.
         static NonProxyInfo httpsNonProxyInfo = new NonProxyInfo("https.nonProxyHosts", null, null, defStringVal);
 
-        NonProxyInfo(String p, String s, RegexpPool pool, String d) {
+        NonProxyInfo(String p, String s, Pattern pattern, String d) {
             property = p;
             hostsSource = s;
-            hostsPool = pool;
+            this.pattern = pattern;
             defaultVal = d;
         }
     }
@@ -189,6 +196,8 @@ public class DefaultProxySelector extends ProxySelector {
             pinfo = NonProxyInfo.httpsNonProxyInfo;
         } else if ("ftp".equalsIgnoreCase(protocol)) {
             pinfo = NonProxyInfo.ftpNonProxyInfo;
+        } else if ("socket".equalsIgnoreCase(protocol)) {
+            pinfo = NonProxyInfo.socksNonProxyInfo;
         }
 
         /**
@@ -258,7 +267,7 @@ public class DefaultProxySelector extends ProxySelector {
                                             nphosts = nprop.defaultVal;
                                         } else {
                                             nprop.hostsSource = null;
-                                            nprop.hostsPool = null;
+                                            nprop.pattern = null;
                                         }
                                     } else if (nphosts.length() != 0) {
                                         // add the required default patterns
@@ -269,20 +278,11 @@ public class DefaultProxySelector extends ProxySelector {
                                     }
                                     if (nphosts != null) {
                                         if (!nphosts.equals(nprop.hostsSource)) {
-                                            RegexpPool pool = new RegexpPool();
-                                            StringTokenizer st = new StringTokenizer(nphosts, "|", false);
-                                            try {
-                                                while (st.hasMoreTokens()) {
-                                                    pool.add(st.nextToken().toLowerCase(), Boolean.TRUE);
-                                                }
-                                            } catch (sun.misc.REException ex) {
-                                            }
-                                            nprop.hostsPool = pool;
+                                            nprop.pattern = toPattern(nphosts);
                                             nprop.hostsSource = nphosts;
                                         }
                                     }
-                                    if (nprop.hostsPool != null &&
-                                        nprop.hostsPool.match(urlhost) != null) {
+                                    if (shouldNotUseProxyFor(nprop.pattern, urlhost)) {
                                         return Proxy.NO_PROXY;
                                     }
                                 }
@@ -361,4 +361,49 @@ public class DefaultProxySelector extends ProxySelector {
     private native static boolean init();
     private synchronized native Proxy getSystemProxy(String protocol, String host);
     */
+
+    /**
+     * @return {@code true} if given this pattern for non-proxy hosts and this
+     *         urlhost the proxy should NOT be used to access this urlhost
+     */
+    static boolean shouldNotUseProxyFor(Pattern pattern, String urlhost) {
+        if (pattern == null || urlhost.isEmpty())
+            return false;
+        boolean matches = pattern.matcher(urlhost).matches();
+        return matches;
+    }
+
+    /**
+     * @param mask non-null mask
+     * @return {@link java.util.regex.Pattern} corresponding to this mask
+     *         or {@code null} in case mask should not match anything
+     */
+    static Pattern toPattern(String mask) {
+        boolean disjunctionEmpty = true;
+        StringJoiner joiner = new StringJoiner("|");
+        for (String disjunct : mask.split("\\|")) {
+            if (disjunct.isEmpty())
+                continue;
+            disjunctionEmpty = false;
+            String regex = disjunctToRegex(disjunct.toLowerCase());
+            joiner.add(regex);
+        }
+        return disjunctionEmpty ? null : Pattern.compile(joiner.toString());
+    }
+
+    /**
+     * @param disjunct non-null mask disjunct
+     * @return java regex string corresponding to this mask
+     */
+    static String disjunctToRegex(String disjunct) {
+        String regex;
+        if (disjunct.startsWith("*")) {
+            regex = ".*" + quote(disjunct.substring(1));
+        } else if (disjunct.endsWith("*")) {
+            regex = quote(disjunct.substring(0, disjunct.length() - 1)) + ".*";
+        } else {
+            regex = quote(disjunct);
+        }
+        return regex;
+    }
 }
