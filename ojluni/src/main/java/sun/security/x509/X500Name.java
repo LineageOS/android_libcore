@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1996, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -876,6 +876,7 @@ public class X500Name implements GeneralNameInterface, Principal {
             return;
         }
 
+        // Android-added: refuse DN starting with new line or tab
         checkNoNewLinesNorTabsAtBeginningOfDN(input);
 
         List<RDN> dnVector = new ArrayList<>();
@@ -944,6 +945,7 @@ public class X500Name implements GeneralNameInterface, Principal {
         names = dnVector.toArray(new RDN[dnVector.size()]);
     }
 
+    // BEGIN Android-added: refuse DN starting with new line or tab
     /**
      * Disallow new lines and tabs at the beginning of DN.
      *
@@ -960,6 +962,7 @@ public class X500Name implements GeneralNameInterface, Principal {
             }
         }
     }
+    // END Android-added: refuse DN starting with new line or tab
 
     private void parseRFC2253DN(String dnString) throws IOException {
         if (dnString.length() == 0) {
@@ -1019,6 +1022,7 @@ public class X500Name implements GeneralNameInterface, Principal {
     static int countQuotes(String string, int from, int to) {
         int count = 0;
 
+        // BEGIN Android-changed: Fix countQuotes in case of escaped backslashes: \\"
         int escape = 0;
         for (int i = from; i < to; i++) {
             if (string.charAt(i) == '"' && escape % 2 == 0) {
@@ -1026,6 +1030,7 @@ public class X500Name implements GeneralNameInterface, Principal {
             }
             escape = (string.charAt(i) == '\\') ? escape + 1 : 0;
         }
+        // END Android-changed: Fix countQuotes in case of escaped backslashes: \\"
 
         return count;
     }
