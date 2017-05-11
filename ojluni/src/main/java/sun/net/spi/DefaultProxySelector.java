@@ -87,6 +87,23 @@ public class DefaultProxySelector extends ProxySelector {
 
     private static boolean hasSystemProxies = false;
 
+    // Android-removed: Nonfunctional init logic: "net" library does not exist on Android.
+    /*
+    static {
+        final String key = "java.net.useSystemProxies";
+        Boolean b = AccessController.doPrivileged(
+            new PrivilegedAction<Boolean>() {
+                public Boolean run() {
+                    return NetProperties.getBoolean(key);
+                }});
+        if (b != null && b.booleanValue()) {
+            java.security.AccessController.doPrivileged(
+                      new sun.security.action.LoadLibraryAction("net"));
+            hasSystemProxies = init();
+        }
+    }
+    */
+
     /**
      * How to deal with "non proxy hosts":
      * since we do have to generate a RegexpPool we don't want to do that if
@@ -106,6 +123,7 @@ public class DefaultProxySelector extends ProxySelector {
         final String defaultVal;
         static NonProxyInfo ftpNonProxyInfo = new NonProxyInfo("ftp.nonProxyHosts", null, null, defStringVal);
         static NonProxyInfo httpNonProxyInfo = new NonProxyInfo("http.nonProxyHosts", null, null, defStringVal);
+        // Android-changed: Different NonProxyInfo flags for https hosts vs. http.
         static NonProxyInfo httpsNonProxyInfo = new NonProxyInfo("https.nonProxyHosts", null, null, defStringVal);
 
         NonProxyInfo(String p, String s, RegexpPool pool, String d) {
@@ -166,8 +184,8 @@ public class DefaultProxySelector extends ProxySelector {
         } else if ("https".equalsIgnoreCase(protocol)) {
             // HTTPS uses the same property as HTTP, for backward
             // compatibility
-            //
-            // Android-changed: Allow a different set of flags for https hosts.
+            // Android-changed: Different NonProxyInfo flags for https hosts vs. http.
+            // pinfo = NonProxyInfo.httpNonProxyInfo;
             pinfo = NonProxyInfo.httpsNonProxyInfo;
         } else if ("ftp".equalsIgnoreCase(protocol)) {
             pinfo = NonProxyInfo.ftpNonProxyInfo;
@@ -214,7 +232,20 @@ public class DefaultProxySelector extends ProxySelector {
                                  * settings (Gnome & Windows) if we were
                                  * instructed to.
                                  */
-                                // Android-changed, hasSystemProxies is always false
+                                // Android-removed: Dead code, hasSystemProxies is always false.
+                                /*
+                                if (hasSystemProxies) {
+                                    String sproto;
+                                    if (proto.equalsIgnoreCase("socket"))
+                                        sproto = "socks";
+                                    else
+                                        sproto = proto;
+                                    Proxy sproxy = getSystemProxy(sproto, urlhost);
+                                    if (sproxy != null) {
+                                        return sproxy;
+                                    }
+                                }
+                                */
                                 return Proxy.NO_PROXY;
                             }
                             // If a Proxy Host is defined for that protocol
@@ -324,4 +355,10 @@ public class DefaultProxySelector extends ProxySelector {
             return -1;
         }
     }
+
+    // Android-removed: Native logic not available/used on Android.
+    /*
+    private native static boolean init();
+    private synchronized native Proxy getSystemProxy(String protocol, String host);
+    */
 }
