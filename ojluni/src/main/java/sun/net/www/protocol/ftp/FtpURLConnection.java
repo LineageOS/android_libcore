@@ -184,12 +184,6 @@ public class FtpURLConnection extends URLConnection {
         }
 
         if (userInfo != null) { // get the user and password
-            // Android-changed: Added a test for CR/LF presence in the userInfo
-            if (userInfo.indexOf("\r") != -1 || userInfo.indexOf("\n") != -1) {
-                throw new IOException("<CR> and/or <LF> characters in username and password are"
-                        + " not permitted");
-            }
-
             int delimiter = userInfo.indexOf(':');
             if (delimiter == -1) {
                 user = ParseUtil.decode(userInfo);
