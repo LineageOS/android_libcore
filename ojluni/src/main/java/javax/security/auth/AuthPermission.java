@@ -25,7 +25,8 @@
 
 package javax.security.auth;
 
-// Android-changed: We don't implement this permission system on Android.
+// Android-changed: Stubbed the implementation.  Android doesn't support SecurityManager.
+// See comments in java.lang.SecurityManager for details.
 /**
  * Legacy security code; do not use.
  */
