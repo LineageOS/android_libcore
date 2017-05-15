@@ -30,6 +30,10 @@ import java.security.*;
 import java.io.FileDescriptor;
 import java.net.InetAddress;
 
+// Android-changed: Stubbed the implementation.  Android doesn't support SecurityManager.
+// SecurityManager can only check access by Java code, so it can be bypassed by using
+// native code.  Applications should rely on Android permissions, process separation,
+// other other methods for security purposes.
 /**
  * Legacy security code; do not use.
  */
