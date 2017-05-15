@@ -43,9 +43,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
+
+ import sun.net.ftp.FtpLoginException;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -240,6 +246,49 @@ public class FtpURLConnectionTest extends TestCase {
             }
         } finally {
             inputStream.close();
+        }
+    }
+
+    // http://b/35784677
+    public void testCRLFInUserinfo() throws Exception {
+        List<String> encodedUserInfos = Arrays.asList(
+                // '\r\n' in the username with password
+                "user%0D%0Acommand:password",
+                // '\r\n' in the password
+                "user:password%0D%0Acommand",
+                // just '\n' in the password
+                "user:password%0Acommand",
+                // just '\n' in the username
+                "user%0Acommand:password"
+        );
+        for (String encodedUserInfo : encodedUserInfos) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            ServerSocket mockFtpServerSocket = new ServerSocket(0);
+            Future<Void> future = executor.submit(new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    Socket clientSocket = mockFtpServerSocket.accept();
+                    clientSocket.getOutputStream().write("220 o/".getBytes());
+                    clientSocket.close();
+                    return null;
+                }
+              });
+            executor.shutdown();
+
+            String urlString = String.format(Locale.US, "ftp://%s@%s:%s/%s",
+                    encodedUserInfo, SERVER_HOSTNAME, mockFtpServerSocket.getLocalPort(), FILE_PATH);
+            try {
+                new URL(urlString).openConnection().connect();
+                fail("Connection shouldn't have succeeded: " + urlString);
+            } catch (FtpLoginException expected) {
+                // The original message "Illegal carriage return" gets lost
+                // where FtpURLConnection.connect() translates the
+                // original FtpProtocolException into FtpLoginException.
+                assertEquals("Invalid username/password", expected.getMessage());
+            }
+
+            // Cleanup
+            future.get();
+            mockFtpServerSocket.close();
         }
     }
 
