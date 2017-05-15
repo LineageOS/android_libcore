@@ -1,5 +1,0 @@
-/*
- * TODO: Remove this file entirely.
- */
-[
-]
