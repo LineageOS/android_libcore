@@ -496,11 +496,11 @@ public final class DexFile {
         throws FileNotFoundException;
 
     /**
-     * Returns the full file path of the optimized dex file {@code fileName}.  The returned string
-     * is the full file name including path of optimized dex file, if it exists.
+     * Returns the paths of the optimized files generated for {@code fileName}.
+     * If no optimized code exists the method returns null.
      * @hide
      */
-    public static native String getDexFileOutputPath(String fileName, String instructionSet)
+    public static native String[] getDexFileOutputPaths(String fileName, String instructionSet)
         throws FileNotFoundException;
 
     /**
