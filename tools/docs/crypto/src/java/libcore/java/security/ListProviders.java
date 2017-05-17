@@ -16,18 +16,22 @@
 
 package libcore.java.security;
 
+import android.net.PskKeyManager;
+
 import java.security.NoSuchAlgorithmException;
 import java.security.Provider;
 import java.security.Security;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 
 /**
  * Prints a list of all algorithms provided by security providers.  Intended to be run
@@ -81,7 +85,7 @@ public class ListProviders {
         System.out.println((SHOW_PROVIDER ? p.getName() + ": " : "") + type + " " + algorithm);
     }
 
-    public static void main(String[] argv) {
+    public static void main(String[] argv) throws Exception {
         System.out.println("BEGIN ALGORITHM LIST");
         for (Provider p : Security.getProviders()) {
             Set<Provider.Service> services = new TreeSet<Provider.Service>(
@@ -124,6 +128,31 @@ public class ListProviders {
                     String[] elements = alias.split("\\.");  // Split takes a regex
                     print(p, elements[2], elements[3]);
                 }
+            }
+        }
+        // SSLEngine and SSLSocket algorithms are handled outside the default provider system
+        SSLContext defaultContext = SSLContext.getDefault();
+        // PSK cipher suites are only enabled when a PskKeyManager is available, but some other
+        // suites are disabled in that case, so check for both
+        SSLContext pskContext = SSLContext.getInstance("TLS");
+        pskContext.init(
+                new KeyManager[] {new PskKeyManager(){}},
+                new TrustManager[0],
+                null);
+        for (SSLContext sslContext : new SSLContext[] {defaultContext, pskContext}) {
+            SSLEngine engine = sslContext.createSSLEngine();
+            for (String suite : engine.getSupportedCipherSuites()) {
+                print(sslContext.getProvider(), "SSLEngine.Supported", suite);
+            }
+            for (String suite : engine.getEnabledCipherSuites()) {
+                print(sslContext.getProvider(), "SSLEngine.Enabled", suite);
+            }
+            SSLSocketFactory socketFactory = sslContext.getSocketFactory();
+            for (String suite : socketFactory.getSupportedCipherSuites()) {
+                print(sslContext.getProvider(), "SSLSocket.Supported", suite);
+            }
+            for (String suite : socketFactory.getDefaultCipherSuites()) {
+                print(sslContext.getProvider(), "SSLSocket.Enabled", suite);
             }
         }
         System.out.println("END ALGORITHM LIST");

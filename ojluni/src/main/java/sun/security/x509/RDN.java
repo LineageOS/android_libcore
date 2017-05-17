@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2002, 2006, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2002, 2011, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -478,11 +478,11 @@ class AVAComparator implements Comparator<AVA> {
      * AVA's containing a standard keyword are ordered alphabetically,
      * followed by AVA's containing an OID keyword, ordered numerically
      */
-    @Override
     public int compare(AVA a1, AVA a2) {
         boolean a1Has2253 = a1.hasRFC2253Keyword();
         boolean a2Has2253 = a2.hasRFC2253Keyword();
 
+        // BEGIN Android-changed: Keep sort order of RDN from Android M
         if (a1Has2253) {
             if (a2Has2253) {
                 return a1.toRFC2253CanonicalString().compareTo
@@ -506,6 +506,7 @@ class AVAComparator implements Comparator<AVA> {
                         a1Oid[pos] - a2Oid[pos];
             }
         }
+        // BEGIN Android-changed: Keep sort order of RDN from prev impl
     }
 
 }
