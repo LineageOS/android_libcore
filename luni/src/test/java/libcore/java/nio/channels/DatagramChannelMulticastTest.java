@@ -711,6 +711,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that block() works when the receiver is bound to the multicast group address */
     public void test_block_filtersAsExpected_groupBind_ipv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
         test_block_filtersAsExpected(
                 ipv4LocalAddress /* senderBindAddress */,
@@ -721,6 +724,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that block() works when the receiver is bound to the multicast group address */
     public void test_block_filtersAsExpected_groupBind_ipv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
         test_block_filtersAsExpected(
                 ipv6LocalAddress /* senderBindAddress */,
@@ -731,6 +737,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that block() works when the receiver is bound to the "any" address */
     public void test_block_filtersAsExpected_anyBind_ipv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
         test_block_filtersAsExpected(
                 ipv4LocalAddress /* senderBindAddress */,
@@ -741,6 +750,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that block() works when the receiver is bound to the "any" address */
     public void test_block_filtersAsExpected_anyBind_ipv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
         test_block_filtersAsExpected(
                 ipv6LocalAddress /* senderBindAddress */,
@@ -753,9 +765,6 @@ public class DatagramChannelMulticastTest extends TestCase {
             InetAddress senderBindAddress, InetAddress receiverBindAddress,
             InetAddress groupAddress, NetworkInterface networkInterface)
             throws Exception {
-        if (!supportsMulticast) {
-            return;
-        }
         DatagramChannel sendingChannel = DatagramChannel.open();
         // In order to block a sender the sender's address must be known. The sendingChannel is
         // explicitly bound to a known, non-loopback address.
@@ -973,6 +982,9 @@ public class DatagramChannelMulticastTest extends TestCase {
      * address
      */
     public void test_joinSourceSpecific_null() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
         test_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
@@ -987,6 +999,9 @@ public class DatagramChannelMulticastTest extends TestCase {
      * address
      */
     public void test_joinSourceSpecific_groupBind_ipv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
         test_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
@@ -1001,6 +1016,9 @@ public class DatagramChannelMulticastTest extends TestCase {
      * address
      */
     public void test_joinSourceSpecific_groupBind_ipv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
         test_joinSourceSpecific(
                 ipv6LocalAddress /* senderBindAddress */,
@@ -1012,6 +1030,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that a source-specific join() works when the receiver is bound to the "any" address */
     public void test_joinSourceSpecific_anyBind_ipv4() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
         test_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
@@ -1023,6 +1044,9 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     /** Checks that a source-specific join() works when the receiver is bound to the "any" address */
     public void test_joinSourceSpecific_anyBind_ipv6() throws Exception {
+        if (!supportsMulticast) {
+            return;
+        }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
         test_joinSourceSpecific(
                 ipv6LocalAddress /* senderBindAddress */,
@@ -1044,9 +1068,6 @@ public class DatagramChannelMulticastTest extends TestCase {
             InetAddress senderBindAddress, InetAddress receiverBindAddress, InetAddress groupAddress,
             InetAddress badSenderAddress, NetworkInterface networkInterface)
             throws Exception {
-        if (!supportsMulticast) {
-            return;
-        }
         DatagramChannel sendingChannel = DatagramChannel.open();
         // In order to be source-specific the sender's address must be known. The sendingChannel is
         // explicitly bound to a known, non-loopback address.
