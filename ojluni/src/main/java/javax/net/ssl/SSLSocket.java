@@ -155,7 +155,7 @@ import java.net.*;
  *     <tbody>
  *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>1&ndash;TBD</td>
+ *             <td>1&ndash;25</td>
  *             <td>1&ndash;22</td>
  *         </tr>
  *         <tr>
@@ -188,7 +188,7 @@ import java.net.*;
  *     <tbody>
  *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>1&ndash;TBD</td>
+ *             <td>1&ndash;25</td>
  *             <td>1&ndash;22</td>
  *         </tr>
  *         <tr>
@@ -849,13 +849,13 @@ import java.net.*;
  *         <tr class="deprecated">
  *             <td>RC4-MD5</td>
  *             <td>SSL_RSA_WITH_RC4_128_MD5</td>
- *             <td>1&ndash;TBD</td>
+ *             <td>1&ndash;25</td>
  *             <td>1&ndash;19</td>
  *         </tr>
  *         <tr class="deprecated">
  *             <td>RC4-SHA</td>
  *             <td>SSL_RSA_WITH_RC4_128_SHA</td>
- *             <td>1&ndash;TBD</td>
+ *             <td>1&ndash;25</td>
  *             <td>1&ndash;23</td>
  *         </tr>
  *     </tbody>
