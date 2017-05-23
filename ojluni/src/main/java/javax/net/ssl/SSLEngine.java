@@ -381,7 +381,7 @@ import java.nio.ReadOnlyBufferException;
  *     <tbody>
  *         <tr class="deprecated">
  *             <td>SSLv3</td>
- *             <td>1&ndash;TBD</td>
+ *             <td>1&ndash;25</td>
  *             <td>1&ndash;22</td>
  *         </tr>
  *         <tr>
