@@ -235,4 +235,14 @@ public class AlgorithmParametersTestPBES2 extends TestCase {
             }
         }
     }
+
+    public void test_encryptWithNoSalt() throws Exception {
+        // Encrypting with no salt is allowed if using a PKCS5 scheme, which
+        // the SHA-based ones aren't but MD5-based ones are.
+        String algorithmName = "PBEwithMD5andDES";
+        SecretKeyFactory skf = SecretKeyFactory.getInstance(algorithmName, "BC");
+        Key key = skf.generateSecret(new PBEKeySpec("aaaaa".toCharArray()));
+        Cipher c = Cipher.getInstance(algorithmName, "BC");
+        c.init(Cipher.DECRYPT_MODE, key, new PBEParameterSpec(new byte[0], 1000));
+    }
 }
