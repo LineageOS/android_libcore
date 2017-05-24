@@ -231,16 +231,17 @@ LOCAL_JAVA_RESOURCE_FILES := $(my_filesystemstest_jar)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := \
+	archive-patcher \
 	core-test-rules \
 	core-tests-support \
+	junit-params \
 	mockftpserver \
 	mockito-target \
 	mockwebserver \
 	nist-pkix-tests \
 	slf4j-jdk14 \
 	sqlite-jdbc \
-	tzdata-testing \
-        junit-params
+	tzdata-testing
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
@@ -393,14 +394,15 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
         mockito-api-hostdex \
         okhttp-hostdex
     LOCAL_STATIC_JAVA_LIBRARIES := \
+        archive-patcher-hostdex \
         core-test-rules-hostdex \
+        junit-params-hostdex \
         mockftpserver-hostdex \
         mockwebserver-host \
         nist-pkix-tests-host \
         slf4j-jdk14-hostdex \
         sqlite-jdbc-host \
-        tzdata-testing-hostdex \
-        junit-params-hostdex
+        tzdata-testing-hostdex
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_JAVA_LANGUAGE_VERSION := 1.8
