@@ -124,8 +124,8 @@ public class TimeZoneFinder {
     }
 
     /**
-     * Return a time zone that has / would have had the specified offset and DST value at the
-     * specified moment in the specified country.
+     * Returns a frozen ICU time zone that has / would have had the specified offset and DST value
+     * at the specified moment in the specified country.
      *
      * <p>In order to be considered a configured zone must match the supplied offset information.
      *
@@ -186,10 +186,11 @@ public class TimeZoneFinder {
     }
 
     /**
-     * Returns a list of time zones known to be used in the specified country. If the country code
-     * is not recognized or there is an error during lookup this can return null. The TimeZones
-     * returned will never contain {@link TimeZone#UNKNOWN_ZONE}. This method can return an empty
-     * list in a case when the underlying configuration references only unknown zone IDs.
+     * Returns an immutable list of frozen ICU time zones known to be used in the specified country.
+     * If the country code is not recognized or there is an error during lookup this can return
+     * null. The TimeZones returned will never contain {@link TimeZone#UNKNOWN_ZONE}. This method
+     * can return an empty list in a case when the underlying configuration references only unknown
+     * zone IDs.
      */
     public List<TimeZone> lookupTimeZonesByCountry(String countryIso) {
         synchronized(this) {
