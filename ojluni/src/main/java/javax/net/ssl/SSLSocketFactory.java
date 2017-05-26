@@ -45,8 +45,16 @@ import sun.security.action.GetPropertyAction;
  */
 public abstract class SSLSocketFactory extends SocketFactory
 {
+    // Android-changed: Renamed field.
+    // Some apps rely on changing this field via reflection, so we can't change the name
+    // without introducing app compatibility problems.  See http://b/62248930.
     private static SSLSocketFactory defaultSocketFactory;
 
+    // Android-changed: Check Security.getVersion() on each update.
+    // If the set of providers or other such things changes, it may change the default
+    // factory, so we track the version returned from Security.getVersion() instead of
+    // only having a flag that says if we've ever initialized the default.
+    // private static boolean propertyChecked;
     private static int lastVersion = -1;
 
     static final boolean DEBUG;
@@ -87,7 +95,7 @@ public abstract class SSLSocketFactory extends SocketFactory
      * @see SSLContext#getDefault
      */
     public static synchronized SocketFactory getDefault() {
-        // Android-changed: Use security version instead of propertyChecked.
+        // Android-changed: Check Security.getVersion() on each update.
         if (defaultSocketFactory != null && lastVersion == Security.getVersion()) {
             return defaultSocketFactory;
         }
@@ -99,6 +107,7 @@ public abstract class SSLSocketFactory extends SocketFactory
         String clsName = getSecurityProperty("ssl.SocketFactory.provider");
 
         if (clsName != null) {
+            // Android-changed: Check if we already have an instance of the default factory class.
             // The instance for the default socket factory is checked for updates quite
             // often (for instance, every time a security provider is added). Which leads
             // to unnecessary overload and excessive error messages in case of class-loading
@@ -110,49 +119,49 @@ public abstract class SSLSocketFactory extends SocketFactory
             }
             log("setting up default SSLSocketFactory");
             try {
-                Class cls = null;
+                Class<?> cls = null;
                 try {
                     cls = Class.forName(clsName);
                 } catch (ClassNotFoundException e) {
-                    // Android-changed; Try the contextClassLoader first.
+                    // Android-changed: Try the contextClassLoader first.
                     ClassLoader cl = Thread.currentThread().getContextClassLoader();
                     if (cl == null) {
                         cl = ClassLoader.getSystemClassLoader();
                     }
 
                     if (cl != null) {
+                        // Android-changed: Use Class.forName() so the class gets initialized.
                         cls = Class.forName(clsName, true, cl);
                     }
                 }
                 log("class " + clsName + " is loaded");
-                defaultSocketFactory = (SSLSocketFactory)cls.newInstance();
+                SSLSocketFactory fac = (SSLSocketFactory)cls.newInstance();
                 log("instantiated an instance of class " + clsName);
-                if (defaultSocketFactory != null) {
-                    return defaultSocketFactory;
-                }
+                defaultSocketFactory = fac;
+                return fac;
             } catch (Exception e) {
                 log("SSLSocketFactory instantiation failed: " + e.toString());
+                // Android-changed: Fallback to the default SSLContext on exception.
             }
         }
 
-        // Android-changed: Allow for {@code null} SSLContext.getDefault.
         try {
+            // Android-changed: Allow for {@code null} SSLContext.getDefault.
             SSLContext context = SSLContext.getDefault();
             if (context != null) {
                 defaultSocketFactory = context.getSocketFactory();
+            } else {
+                defaultSocketFactory = new DefaultSSLSocketFactory(new IllegalStateException("No factory found."));
             }
+            return defaultSocketFactory;
         } catch (NoSuchAlgorithmException e) {
+            return new DefaultSSLSocketFactory(e);
         }
-
-        if (defaultSocketFactory == null) {
-            defaultSocketFactory = new DefaultSSLSocketFactory(new IllegalStateException("No factory found."));
-        }
-
-        return defaultSocketFactory;
     }
 
     static String getSecurityProperty(final String name) {
         return AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
             public String run() {
                 String s = java.security.Security.getProperty(name);
                 if (s != null) {
