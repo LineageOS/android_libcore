@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1997, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -90,6 +90,9 @@ public class KeyAgreement {
 
     // Android-removed: this debugging mechanism is not used in Android.
     /*
+    private static final Debug debug =
+                        Debug.getInstance("jca", "KeyAgreement");
+
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
@@ -104,6 +107,23 @@ public class KeyAgreement {
 
     // The name of the key agreement algorithm.
     private final String algorithm;
+
+    // BEGIN Android-removed: Redo the provider selection logic to allow reselecting provider.
+    // When only the algorithm is specified, we want to allow the KeyAgreement provider for that
+    // algorithm to change if multiple providers exist and they support different subsets of
+    // keys.  To that end, we don't hold an iterator and exhaust it when we need to choose
+    // a provider like the upstream implementation, we reestablish the list of providers
+    // each time.
+    /*
+    // next service to try in provider selection
+    // null once provider is selected
+    private Service firstService;
+
+    // remaining services to try in provider selection
+    // null once provider is selected
+    private Iterator<Service> serviceIterator;
+    */
+    // END Android-removed: Redo the provider selection logic to allow reselecting provider.
 
     private final Object lock;
 
@@ -122,6 +142,7 @@ public class KeyAgreement {
         lock = null;
     }
 
+    // Android-changed: Remove Service and Iterator from constructor args.
     private KeyAgreement(String algorithm) {
         this.algorithm = algorithm;
         lock = new Object();
@@ -182,6 +203,8 @@ public class KeyAgreement {
             if (JceSecurity.canUseProvider(s.getProvider()) == false) {
                 continue;
             }
+            // Android-changed: Remove Service and Iterator from constructor args.
+            // return new KeyAgreement(s, t, algorithm);
             return new KeyAgreement(algorithm);
         }
         throw new NoSuchAlgorithmException
@@ -307,6 +330,7 @@ public class KeyAgreement {
             }
             */
             Exception lastException = null;
+            // Android-changed: Provider selection; loop over a new list each time.
             for (Service s : GetInstance.getServices("KeyAgreement", algorithm)) {
                 if (JceSecurity.canUseProvider(s.getProvider()) == false) {
                     continue;
@@ -318,7 +342,12 @@ public class KeyAgreement {
                     }
                     spi = (KeyAgreementSpi)obj;
                     provider = s.getProvider();
+                    // Android-removed: Provider selection; loop over a new list each time.
+                    /*
                     // not needed any more
+                    firstService = null;
+                    serviceIterator = null;
+                    */
                     return;
                 } catch (Exception e) {
                     lastException = e;
@@ -350,11 +379,14 @@ public class KeyAgreement {
             AlgorithmParameterSpec params, SecureRandom random)
             throws InvalidKeyException, InvalidAlgorithmParameterException {
         synchronized (lock) {
+            // Android-changed: Use the currently-selected provider only if no key was provided.
+            // if (spi != null) {
             if (spi != null && key == null) {
                 implInit(spi, initType, key, params, random);
                 return;
             }
             Exception lastException = null;
+            // Android-changed: Provider selection; loop over a new list each time.
             for (Service s : GetInstance.getServices("KeyAgreement", algorithm)) {
                 // if provider says it does not support this key, ignore it
                 if (s.supportsParameter(key) == false) {
@@ -368,6 +400,11 @@ public class KeyAgreement {
                     implInit(spi, initType, key, params, random);
                     provider = s.getProvider();
                     this.spi = spi;
+                    // Android-removed: Provider selection; loop over a new list each time.
+                    /*
+                    firstService = null;
+                    serviceIterator = null;
+                    */
                     return;
                 } catch (Exception e) {
                     // NoSuchAlgorithmException from newInstance()
@@ -451,6 +488,8 @@ public class KeyAgreement {
      */
     public final void init(Key key, SecureRandom random)
             throws InvalidKeyException {
+        // Android-changed: Use the currently-selected provider only if no key was provided.
+        // if (spi != null) {
         if (spi != null && (key == null || lock == null)) {
             spi.engineInit(key, random);
         } else {
