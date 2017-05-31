@@ -229,6 +229,9 @@ public class Cipher {
 
     // Android-removed: this debugging mechanism is not used in Android.
     /*
+    private static final Debug debug =
+                        Debug.getInstance("jca", "Cipher");
+
     private static final Debug pdebug =
                         Debug.getInstance("provider", "Provider");
     private static final boolean skipDebug =
