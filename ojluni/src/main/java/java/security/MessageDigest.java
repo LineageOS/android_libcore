@@ -446,6 +446,7 @@ public abstract class MessageDigest extends MessageDigestSpi {
      * Returns a string representation of this message digest object.
      */
     public String toString() {
+        // BEGIN Android-changed: Use StringBuilder instead of a ByteArrayOutputStream.
         StringBuilder builder = new StringBuilder();
         builder.append(algorithm);
         builder.append(" Message Digest from ");
@@ -462,6 +463,7 @@ public abstract class MessageDigest extends MessageDigestSpi {
         }
 
         return builder.toString();
+        // END Android-changed: Use StringBuilder instead of a ByteArrayOutputStream.
     }
 
     /**
