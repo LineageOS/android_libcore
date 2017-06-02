@@ -152,7 +152,6 @@ openjdk_javadoc_files := \
     ojluni/src/main/java/java/lang/InternalError.java \
     ojluni/src/main/java/java/lang/InterruptedException.java \
     ojluni/src/main/java/java/lang/Iterable.java \
-    ojluni/src/main/java/java/lang/JavaLangAccess.java \
     ojluni/src/main/java/java/lang/LinkageError.java \
     ojluni/src/main/java/java/lang/Long.java \
     ojluni/src/main/java/java/lang/Math.java \
