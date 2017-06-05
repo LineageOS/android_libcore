@@ -237,17 +237,6 @@ non_openjdk_javadoc_files := \
   xml/src/main/java/org/xmlpull/v1/sax2/Driver.java \
 
 non_openjdk_java_files := \
-  dalvik/src/main/java/dalvik/system/profiler/AsciiHprofWriter.java \
-  dalvik/src/main/java/dalvik/system/profiler/BinaryHprof.java \
-  dalvik/src/main/java/dalvik/system/profiler/BinaryHprofReader.java \
-  dalvik/src/main/java/dalvik/system/profiler/BinaryHprofWriter.java \
-  dalvik/src/main/java/dalvik/system/profiler/DalvikThreadSampler.java \
-  dalvik/src/main/java/dalvik/system/profiler/HprofBinaryToAscii.java \
-  dalvik/src/main/java/dalvik/system/profiler/HprofData.java \
-  dalvik/src/main/java/dalvik/system/profiler/MalformedHprofException.java \
-  dalvik/src/main/java/dalvik/system/profiler/PortableThreadSampler.java \
-  dalvik/src/main/java/dalvik/system/profiler/SamplingProfiler.java \
-  dalvik/src/main/java/dalvik/system/profiler/ThreadSampler.java \
   luni/src/main/java/android/system/UnixSocketAddress.java \
   luni/src/main/java/java/net/AddressCache.java \
   luni/src/main/java/libcore/icu/CollationKeyICU.java \
