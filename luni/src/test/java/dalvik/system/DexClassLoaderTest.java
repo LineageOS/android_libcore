@@ -16,8 +16,6 @@
 
 package dalvik.system;
 
-import java.io.FilenameFilter;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +35,6 @@ public class DexClassLoaderTest extends TestCase {
     private File dex2;
     private File jar1;
     private File jar2;
-    private File optimizedDir;
 
     protected void setUp() throws Exception {
         srcDir = File.createTempFile("src", "");
@@ -53,15 +50,10 @@ public class DexClassLoaderTest extends TestCase {
         copyResource("loading-test2.dex", dex2);
         copyResource("loading-test.jar", jar1);
         copyResource("loading-test2.jar", jar2);
-
-        optimizedDir = File.createTempFile("optimized", "");
-        assertTrue(optimizedDir.delete());
-        assertTrue(optimizedDir.mkdirs());
     }
 
     protected void tearDown() {
         cleanUpDir(srcDir);
-        cleanUpDir(optimizedDir);
     }
 
     private static void cleanUpDir(File dir) {
@@ -99,13 +91,6 @@ public class DexClassLoaderTest extends TestCase {
         }
     }
 
-    static final FilenameFilter DEX_FILE_NAME_FILTER = new FilenameFilter() {
-        @Override
-        public boolean accept(File file, String s) {
-            return s.endsWith(".dex");
-        }
-    };
-
     /**
      * Helper to construct a DexClassLoader instance to test.
      *
@@ -118,7 +103,7 @@ public class DexClassLoaderTest extends TestCase {
         for (int i = 1; i < files.length; i++) {
             path += File.pathSeparator + files[i].getAbsolutePath();
         }
-        return new DexClassLoader(path, optimizedDir.getAbsolutePath(), null,
+        return new DexClassLoader(path, null, null,
             ClassLoader.getSystemClassLoader());
     }
 
