@@ -43,11 +43,26 @@ import java.security.cert.*;
 
 public class CodeSource implements java.io.Serializable {
 
-    public CodeSource(URL url, java.security.cert.Certificate certs[]) { }
+    /**
+     * The code location.
+     *
+     * @serial
+     */
+    private URL location;
 
-    public CodeSource(URL url, CodeSigner[] signers) { }
+    public CodeSource(URL url, java.security.cert.Certificate certs[]) {
+        this.location = url;
+    }
 
-    public final URL getLocation() { return null; }
+    public CodeSource(URL url, CodeSigner[] signers) {
+        this.location = url;
+    }
+
+    public final URL getLocation() {
+        /* since URL is practically immutable, returning itself is not
+           a security problem */
+        return this.location;
+    }
 
     public final java.security.cert.Certificate[] getCertificates() { return null; }
 
