@@ -286,6 +286,16 @@ public class ProviderTest extends TestCase {
         return p.getService(typeAndAlg[0], typeAndAlg[1]);
     }
 
+    private static final Set<String> BC_OVERRIDE_EXCEPTIONS = new HashSet<>();
+    static {
+        // BC uses the same class to implement AlgorithmParameters.DES and
+        // AlgorithmParameters.DESEDE.  Conscrypt doesn't support DES, so it doesn't
+        // include an implementation of AlgorithmParameters.DES, and this isn't a problem.
+        BC_OVERRIDE_EXCEPTIONS.add("AlgorithmParameters.DES");
+        BC_OVERRIDE_EXCEPTIONS.add("Alg.Alias.AlgorithmParameters.1.3.14.3.2.7");
+        BC_OVERRIDE_EXCEPTIONS.add("Alg.Alias.AlgorithmParameters.OID.1.3.14.3.2.7");
+    }
+
     /**
      * Ensures that, for all algorithms provided by Conscrypt, there is no alias from
      * the BC provider that's not provided by Conscrypt.  If there is, then a request
@@ -330,6 +340,9 @@ public class ProviderTest extends TestCase {
         for (Object keyObject : bc.keySet()) {
             String key = (String) keyObject;
             if (key.contains(" ")) {
+                continue;
+            }
+            if (BC_OVERRIDE_EXCEPTIONS.contains(key)) {
                 continue;
             }
             if (key.startsWith("Alg.Alias.")) {
