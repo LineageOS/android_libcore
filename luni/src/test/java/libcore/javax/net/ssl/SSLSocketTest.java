@@ -354,6 +354,68 @@ public class SSLSocketTest extends TestCase {
         }
     }
 
+    /**
+     * Tests that when the client has a hole in their supported protocol list, the
+     * lower span of contiguous protocols is used in practice.
+     */
+    public void test_SSLSocket_noncontiguousProtocols_useLower() throws Exception {
+        TestSSLContext c = TestSSLContext.create();
+        SSLContext serverContext = c.serverContext;
+        SSLContext clientContext = c.clientContext;
+        SSLSocket client = (SSLSocket)
+                clientContext.getSocketFactory().createSocket(c.host, c.port);
+        client.setEnabledProtocols(new String[] {"TLSv1.2", "TLSv1"});
+        final SSLSocket server = (SSLSocket) c.serverSocket.accept();
+        server.setEnabledProtocols(new String[] {"TLSv1.2", "TLSv1.1", "TLSv1"});
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Void> future = executor.submit(new Callable<Void>() {
+            @Override public Void call() throws Exception {
+                server.startHandshake();
+                return null;
+            }
+        });
+        executor.shutdown();
+        client.startHandshake();
+
+        assertEquals("TLSv1", client.getSession().getProtocol());
+
+        future.get();
+        client.close();
+        server.close();
+        c.close();
+    }
+
+    /**
+     * Tests that protocol negotiation succeeds when the highest-supported protocol
+     * for both client and server isn't supported by the other.
+     */
+    public void test_SSLSocket_noncontiguousProtocols_canNegotiate() throws Exception {
+        TestSSLContext c = TestSSLContext.create();
+        SSLContext serverContext = c.serverContext;
+        SSLContext clientContext = c.clientContext;
+        SSLSocket client = (SSLSocket)
+                clientContext.getSocketFactory().createSocket(c.host, c.port);
+        client.setEnabledProtocols(new String[] {"TLSv1.2", "TLSv1"});
+        final SSLSocket server = (SSLSocket) c.serverSocket.accept();
+        server.setEnabledProtocols(new String[] {"TLSv1.1", "TLSv1"});
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Void> future = executor.submit(new Callable<Void>() {
+            @Override public Void call() throws Exception {
+                server.startHandshake();
+                return null;
+            }
+        });
+        executor.shutdown();
+        client.startHandshake();
+
+        assertEquals("TLSv1", client.getSession().getProtocol());
+
+        future.get();
+        client.close();
+        server.close();
+        c.close();
+    }
+
     public void test_SSLSocket_getSession() throws Exception {
         SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
         SSLSocket ssl = (SSLSocket) sf.createSocket();
