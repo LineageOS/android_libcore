@@ -51,6 +51,7 @@ non_openjdk_javadoc_files := \
   dalvik/src/main/java/dalvik/system/CloseGuard.java \
   dalvik/src/main/java/dalvik/system/DalvikLogHandler.java \
   dalvik/src/main/java/dalvik/system/DalvikLogging.java \
+  dalvik/src/main/java/dalvik/system/DelegateLastClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexClassLoader.java \
   dalvik/src/main/java/dalvik/system/DexFile.java \
   dalvik/src/main/java/dalvik/system/DexPathList.java \
