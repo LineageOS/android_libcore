@@ -58,7 +58,7 @@ public final class FileDescriptor {
      * Constructs an (invalid) FileDescriptor
      * object.
      */
-    public /* */ FileDescriptor() {
+    public /**/ FileDescriptor() {
         descriptor = -1;
     }
 
