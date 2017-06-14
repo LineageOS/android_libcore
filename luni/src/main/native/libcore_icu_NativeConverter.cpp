@@ -160,11 +160,26 @@ static jstring getJavaCanonicalName(JNIEnv* env, const char* icuCanonicalName) {
 static jlong NativeConverter_openConverter(JNIEnv* env, jclass, jstring converterName) {
     ScopedUtfChars converterNameChars(env, converterName);
     if (converterNameChars.c_str() == NULL) {
+        // Extra debugging check that we do have an exception if the we could not
+        // create a string. See b/62612946.
+        if (env->ExceptionCheck()) {
+            return 0;
+        }
+        maybeThrowIcuException(env, "openConverter", U_ILLEGAL_ARGUMENT_ERROR);
         return 0;
     }
     UErrorCode status = U_ZERO_ERROR;
     UConverter* cnv = ucnv_open(converterNameChars.c_str(), &status);
     maybeThrowIcuException(env, "ucnv_open", status);
+    if (env->ExceptionCheck()) {
+        return 0;
+    }
+    if (cnv == NULL) {
+        // Extra debugging exception in case cnv is null but ICU did not report
+        // an error. See b/62612946.
+        maybeThrowIcuException(env, "openConverter", U_ILLEGAL_ARGUMENT_ERROR);
+        return 0;
+    }
     return reinterpret_cast<uintptr_t>(cnv);
 }
 
