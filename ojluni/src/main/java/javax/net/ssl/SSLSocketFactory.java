@@ -260,6 +260,8 @@ public abstract class SSLSocketFactory extends SocketFactory
      * @throws NullPointerException if {@code s} is {@code null}
      *
      * @since 1.8
+     *
+     * @hide
      */
     public Socket createSocket(Socket s, InputStream consumed,
             boolean autoClose) throws IOException {
