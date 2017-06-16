@@ -15,16 +15,17 @@
  */
 package libcore.tzdata.update2;
 
+import com.android.timezone.distro.DistroException;
+import com.android.timezone.distro.DistroVersion;
+import com.android.timezone.distro.FileUtils;
+import com.android.timezone.distro.StagedDistroOperation;
+import com.android.timezone.distro.TimeZoneDistro;
+
 import android.util.Slog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import libcore.tzdata.shared2.DistroException;
-import libcore.tzdata.shared2.DistroVersion;
-import libcore.tzdata.shared2.FileUtils;
-import libcore.tzdata.shared2.StagedDistroOperation;
-import libcore.tzdata.shared2.TimeZoneDistro;
 import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
