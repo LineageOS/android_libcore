@@ -15,6 +15,12 @@
  */
 package libcore.tzdata.update2;
 
+import com.android.timezone.distro.DistroVersion;
+import com.android.timezone.distro.FileUtils;
+import com.android.timezone.distro.StagedDistroOperation;
+import com.android.timezone.distro.TimeZoneDistro;
+import com.android.timezone.distro.tools.TimeZoneDistroBuilder;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -29,12 +35,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
 import libcore.io.Streams;
-import libcore.tzdata.shared2.DistroVersion;
-import libcore.tzdata.shared2.FileUtils;
-import libcore.tzdata.shared2.StagedDistroOperation;
-import libcore.tzdata.shared2.TimeZoneDistro;
 import libcore.tzdata.testing.ZoneInfoTestHelper;
-import libcore.tzdata.update2.tools.TimeZoneDistroBuilder;
 
 import static org.junit.Assert.assertArrayEquals;
 
@@ -484,7 +485,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
     private static TimeZoneDistroBuilder createValidTimeZoneDistroBuilder(
             String rulesVersion, int revision) throws Exception {
 
-        byte[] bionicTzData = createTzData(rulesVersion);
+        byte[] tzData = createTzData(rulesVersion);
         byte[] icuData = new byte[] { 'a' };
         String tzlookupXml = "<timezones>\n"
                 + "  <countryzones>\n"
@@ -504,7 +505,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 revision);
         return new TimeZoneDistroBuilder()
                 .setDistroVersion(distroVersion)
-                .setTzDataFile(bionicTzData)
+                .setTzDataFile(tzData)
                 .setIcuDataFile(icuData)
                 .setTzLookupXml(tzlookupXml);
     }
@@ -519,8 +520,8 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 new File(stagedTzDataDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
         assertTrue(distroVersionFile.exists());
 
-        File bionicFile = new File(stagedTzDataDir, TimeZoneDistro.TZDATA_FILE_NAME);
-        assertTrue(bionicFile.exists());
+        File tzdataFile = new File(stagedTzDataDir, TimeZoneDistro.TZDATA_FILE_NAME);
+        assertTrue(tzdataFile.exists());
 
         File icuFile = new File(stagedTzDataDir, TimeZoneDistro.ICU_DATA_FILE_NAME);
         assertTrue(icuFile.exists());
@@ -545,7 +546,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 } else if (entryName.endsWith(TimeZoneDistro.ICU_DATA_FILE_NAME)) {
                     actualFile = icuFile;
                 } else if (entryName.endsWith(TimeZoneDistro.TZDATA_FILE_NAME)) {
-                    actualFile = bionicFile;
+                    actualFile = tzdataFile;
                 } else if (entryName.endsWith(TimeZoneDistro.TZLOOKUP_FILE_NAME)) {
                     actualFile = tzLookupFile;
                 } else {
