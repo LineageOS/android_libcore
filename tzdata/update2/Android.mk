@@ -20,7 +20,7 @@ LOCAL_MODULE := tzdata_update2
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/main)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_JAVA_LIBRARIES := tzdata_shared2
+LOCAL_JAVA_LIBRARIES := time_zone_distro
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
 
@@ -30,6 +30,6 @@ LOCAL_MODULE := tzdata_update2-tests
 LOCAL_MODULE_TAGS := optional
 LOCAL_SRC_FILES := $(call all-java-files-under, src/test)
 LOCAL_JAVACFLAGS := -encoding UTF-8
-LOCAL_STATIC_JAVA_LIBRARIES := tzdata_shared2 tzdata_update2 tzdata_tools2 tzdata-testing junit
+LOCAL_STATIC_JAVA_LIBRARIES := time_zone_distro time_zone_distro_tools tzdata_update2 tzdata-testing junit
 LOCAL_ADDITIONAL_DEPENDENCIES := $(LOCAL_PATH)/Android.mk
 include $(BUILD_STATIC_JAVA_LIBRARY)
