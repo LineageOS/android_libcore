@@ -357,6 +357,7 @@ public final class OsConstants {
     public static final int MS_ASYNC = placeholder();
     public static final int MS_INVALIDATE = placeholder();
     public static final int MS_SYNC = placeholder();
+    /** @hide */ public static final int NETLINK_NETFILTER = placeholder();
     /** @hide */ public static final int NETLINK_ROUTE = placeholder();
     public static final int NI_DGRAM = placeholder();
     public static final int NI_NAMEREQD = placeholder();
