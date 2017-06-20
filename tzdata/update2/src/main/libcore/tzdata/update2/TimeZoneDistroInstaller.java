@@ -34,15 +34,15 @@ import libcore.util.ZoneInfoDB;
  * testing. This class is not thread-safe: callers are expected to handle mutual exclusion.
  */
 public class TimeZoneDistroInstaller {
-    /** {@link #stageInstallWithErrorCode(byte[])} result code: Success. */
+    /** {@link #stageInstallWithErrorCode(TimeZoneDistro)} result code: Success. */
     public final static int INSTALL_SUCCESS = 0;
-    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro corrupt. */
+    /** {@link #stageInstallWithErrorCode(TimeZoneDistro)} result code: Distro corrupt. */
     public final static int INSTALL_FAIL_BAD_DISTRO_STRUCTURE = 1;
-    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro version incompatible. */
+    /** {@link #stageInstallWithErrorCode(TimeZoneDistro)} result code: Distro version incompatible. */
     public final static int INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION = 2;
-    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro rules too old for device. */
+    /** {@link #stageInstallWithErrorCode(TimeZoneDistro)} result code: Distro rules too old for device. */
     public final static int INSTALL_FAIL_RULES_TOO_OLD = 3;
-    /** {@link #stageInstallWithErrorCode(byte[])} result code: Distro content failed validation. */
+    /** {@link #stageInstallWithErrorCode(TimeZoneDistro)} result code: Distro content failed validation. */
     public final static int INSTALL_FAIL_VALIDATION_ERROR = 4;
 
     // This constant must match one in system/core/tzdatacheck.cpp.
@@ -102,8 +102,8 @@ public class TimeZoneDistroInstaller {
      * If the distro content is invalid this method returns {@code false}.
      * If the installation completed successfully this method returns {@code true}.
      */
-    public boolean install(byte[] content) throws IOException {
-        int result = stageInstallWithErrorCode(content);
+    public boolean install(TimeZoneDistro distro) throws IOException {
+        int result = stageInstallWithErrorCode(distro);
         return result == INSTALL_SUCCESS;
     }
 
@@ -113,7 +113,7 @@ public class TimeZoneDistroInstaller {
      * <p>Errors during unpacking or staging will throw an {@link IOException}.
      * Returns {@link #INSTALL_SUCCESS} or an error code.
      */
-    public int stageInstallWithErrorCode(byte[] content) throws IOException {
+    public int stageInstallWithErrorCode(TimeZoneDistro distro) throws IOException {
         if (oldStagedDataDir.exists()) {
             FileUtils.deleteRecursive(oldStagedDataDir);
         }
@@ -123,7 +123,7 @@ public class TimeZoneDistroInstaller {
 
         Slog.i(logTag, "Unpacking / verifying time zone update");
         try {
-            unpackDistro(content, workingDir);
+            unpackDistro(distro, workingDir);
 
             DistroVersion distroVersion;
             try {
@@ -317,9 +317,8 @@ public class TimeZoneDistroInstaller {
         }
     }
 
-    private void unpackDistro(byte[] content, File targetDir) throws IOException {
+    private void unpackDistro(TimeZoneDistro distro, File targetDir) throws IOException {
         Slog.i(logTag, "Unpacking update content to: " + targetDir);
-        TimeZoneDistro distro = new TimeZoneDistro(content);
         distro.extractTo(targetDir);
     }
 
