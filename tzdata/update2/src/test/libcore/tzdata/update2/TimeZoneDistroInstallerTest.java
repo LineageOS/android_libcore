@@ -21,20 +21,23 @@ import com.android.timezone.distro.StagedDistroOperation;
 import com.android.timezone.distro.TimeZoneDistro;
 import com.android.timezone.distro.tools.TimeZoneDistroBuilder;
 
-import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import libcore.io.IoUtils;
-import libcore.io.Streams;
 import libcore.tzdata.testing.ZoneInfoTestHelper;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -58,9 +61,9 @@ public class TimeZoneDistroInstallerTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        tempDir = createDirectory("tempDir");
-        testInstallDir =  createDirectory("testInstall");
-        testSystemTzDataDir =  createDirectory("testSystemTzData");
+        tempDir = createUniqueDirectory(null, "tempDir");
+        testInstallDir = createSubDirectory(tempDir, "testInstall");
+        testSystemTzDataDir =  createSubDirectory(tempDir, "testSystemTzData");
 
         // Create a file to represent the tzdata file in the /system partition of the device.
         File testSystemTzDataFile = new File(testSystemTzDataDir, "tzdata");
@@ -71,21 +74,25 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 "TimeZoneDistroInstallerTest", testSystemTzDataFile, testInstallDir);
     }
 
-    private static File createDirectory(String prefix) throws Exception {
-        File dir = File.createTempFile(prefix, "");
+    /**
+     * Creates a unique temporary directory. rootDir can be null, in which case the directory will
+     * be created beneath the directory pointed to by the java.io.tmpdir system property.
+     */
+    private static File createUniqueDirectory(File rootDir, String prefix) throws Exception {
+        File dir = File.createTempFile(prefix, "", rootDir);
         assertTrue(dir.delete());
+        assertTrue(dir.mkdir());
+        return dir;
+    }
+
+    private static File createSubDirectory(File parent, String subDirName) {
+        File dir = new File(parent, subDirName);
         assertTrue(dir.mkdir());
         return dir;
     }
 
     @Override
     public void tearDown() throws Exception {
-        if (testSystemTzDataDir.exists()) {
-            FileUtils.deleteRecursive(testInstallDir);
-        }
-        if (testInstallDir.exists()) {
-            FileUtils.deleteRecursive(testInstallDir);
-        }
         if (tempDir.exists()) {
             FileUtils.deleteRecursive(tempDir);
         }
@@ -97,10 +104,10 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         File doesNotExist = new File(testSystemTzDataDir, "doesNotExist");
         TimeZoneDistroInstaller brokenSystemInstaller = new TimeZoneDistroInstaller(
                 "TimeZoneDistroInstallerTest", doesNotExist, testInstallDir);
-        TimeZoneDistro tzData = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
+        TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
 
         try {
-            brokenSystemInstaller.stageInstallWithErrorCode(tzData.getBytes());
+            brokenSystemInstaller.stageInstallWithErrorCode(distro);
             fail();
         } catch (IOException expected) {}
 
@@ -114,7 +121,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
 
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertInstallDistroStaged(distro);
         assertNoInstalledDistro();
     }
@@ -127,7 +134,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createValidTimeZoneDistro(SYSTEM_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertInstallDistroStaged(distro);
         assertNoInstalledDistro();
     }
@@ -140,7 +147,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_RULES_TOO_OLD,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -153,19 +160,19 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro1.getBytes()));
+                installer.stageInstallWithErrorCode(distro1));
         assertInstallDistroStaged(distro1);
 
         TimeZoneDistro distro2 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro2.getBytes()));
+                installer.stageInstallWithErrorCode(distro2));
         assertInstallDistroStaged(distro2);
 
         TimeZoneDistro distro3 = createValidTimeZoneDistro(NEWER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro3.getBytes()));
+                installer.stageInstallWithErrorCode(distro3));
         assertInstallDistroStaged(distro3);
         assertNoInstalledDistro();
     }
@@ -179,13 +186,13 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro1 = createValidTimeZoneDistro(NEW_RULES_VERSION, 2);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro1.getBytes()));
+                installer.stageInstallWithErrorCode(distro1));
         assertInstallDistroStaged(distro1);
 
         TimeZoneDistro distro2 = createValidTimeZoneDistro(OLDER_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_RULES_TOO_OLD,
-                installer.stageInstallWithErrorCode(distro2.getBytes()));
+                installer.stageInstallWithErrorCode(distro2));
         assertInstallDistroStaged(distro1);
         assertNoInstalledDistro();
     }
@@ -195,7 +202,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+                installer.stageInstallWithErrorCode(stagedDistro));
         assertInstallDistroStaged(stagedDistro);
 
         TimeZoneDistro incompleteDistro =
@@ -204,7 +211,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                         .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+                installer.stageInstallWithErrorCode(incompleteDistro));
         assertInstallDistroStaged(stagedDistro);
         assertNoInstalledDistro();
     }
@@ -214,7 +221,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+                installer.stageInstallWithErrorCode(stagedDistro));
         assertInstallDistroStaged(stagedDistro);
 
         TimeZoneDistro incompleteDistro =
@@ -223,7 +230,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                         .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+                installer.stageInstallWithErrorCode(incompleteDistro));
         assertInstallDistroStaged(stagedDistro);
         assertNoInstalledDistro();
     }
@@ -233,7 +240,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+                installer.stageInstallWithErrorCode(stagedDistro));
         assertInstallDistroStaged(stagedDistro);
 
         TimeZoneDistro incompleteDistro =
@@ -242,7 +249,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                         .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+                installer.stageInstallWithErrorCode(incompleteDistro));
         assertInstallDistroStaged(stagedDistro);
         assertNoInstalledDistro();
     }
@@ -252,7 +259,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro stagedDistro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(stagedDistro.getBytes()));
+                installer.stageInstallWithErrorCode(stagedDistro));
         assertInstallDistroStaged(stagedDistro);
 
         TimeZoneDistro incompleteDistro =
@@ -261,7 +268,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                         .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_VALIDATION_ERROR,
-                installer.stageInstallWithErrorCode(incompleteDistro.getBytes()));
+                installer.stageInstallWithErrorCode(incompleteDistro));
         assertInstallDistroStaged(stagedDistro);
         assertNoInstalledDistro();
     }
@@ -277,7 +284,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertInstallDistroStaged(distro);
         assertNoInstalledDistro();
     }
@@ -292,7 +299,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -307,7 +314,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
                 .buildUnvalidated();
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_FORMAT_VERSION,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -325,7 +332,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidFormatVersionBytes);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -342,7 +349,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRevisionBytes);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -359,7 +366,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         TimeZoneDistro distro = createTimeZoneDistroWithVersionBytes(invalidRulesVersionBytes);
         assertEquals(
                 TimeZoneDistroInstaller.INSTALL_FAIL_BAD_DISTRO_STRUCTURE,
-                installer.stageInstallWithErrorCode(distro.getBytes()));
+                installer.stageInstallWithErrorCode(distro));
         assertNoDistroOperationStaged();
         assertNoInstalledDistro();
     }
@@ -442,7 +449,9 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         assertNoInstalledDistro();
 
         // Check result after staging an install.
-        assertTrue(installer.install(distro1.getBytes()));
+        assertEquals(
+                TimeZoneDistroInstaller.INSTALL_SUCCESS,
+                installer.stageInstallWithErrorCode(distro1));
         StagedDistroOperation expectedStagedInstall =
                 StagedDistroOperation.install(distro1.getDistroVersion());
         assertEquals(expectedStagedInstall, installer.getStagedDistroOperation());
@@ -469,7 +478,7 @@ public class TimeZoneDistroInstallerTest extends TestCase {
 
         // Check state after successfully staging an install.
         assertEquals(TimeZoneDistroInstaller.INSTALL_SUCCESS,
-                installer.stageInstallWithErrorCode(distro2.getBytes()));
+                installer.stageInstallWithErrorCode(distro2));
         StagedDistroOperation expectedStagedInstall2 =
                 StagedDistroOperation.install(distro2.getDistroVersion());
         assertEquals(expectedStagedInstall2, installer.getStagedDistroOperation());
@@ -535,36 +544,45 @@ public class TimeZoneDistroInstallerTest extends TestCase {
         assertFalse(stagedDistroOperation.isUninstall);
         assertEquals(expectedDistro.getDistroVersion(), stagedDistroOperation.distroVersion);
 
-        try (ZipInputStream zis = new ZipInputStream(
-                new ByteArrayInputStream(expectedDistro.getBytes()))) {
-            ZipEntry entry;
-            while ((entry = zis.getNextEntry()) != null) {
-                String entryName = entry.getName();
-                File actualFile;
-                if (entryName.endsWith(TimeZoneDistro.DISTRO_VERSION_FILE_NAME)) {
-                   actualFile = distroVersionFile;
-                } else if (entryName.endsWith(TimeZoneDistro.ICU_DATA_FILE_NAME)) {
-                    actualFile = icuFile;
-                } else if (entryName.endsWith(TimeZoneDistro.TZDATA_FILE_NAME)) {
-                    actualFile = tzdataFile;
-                } else if (entryName.endsWith(TimeZoneDistro.TZLOOKUP_FILE_NAME)) {
-                    actualFile = tzLookupFile;
-                } else {
-                    throw new AssertionFailedError("Unknown file found");
-                }
-                assertContentsMatches(zis, actualFile);
-            }
-        }
+        File expectedZipContentDir = createUniqueDirectory(tempDir, "expectedZipContent");
+        expectedDistro.extractTo(expectedZipContentDir);
+
+        assertContentsMatches(
+                new File(expectedZipContentDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME),
+                distroVersionFile);
+        assertContentsMatches(
+                new File(expectedZipContentDir, TimeZoneDistro.ICU_DATA_FILE_NAME),
+                icuFile);
+        assertContentsMatches(
+                new File(expectedZipContentDir, TimeZoneDistro.TZDATA_FILE_NAME),
+                tzdataFile);
+        assertContentsMatches(
+                new File(expectedZipContentDir, TimeZoneDistro.TZLOOKUP_FILE_NAME),
+                tzLookupFile);
+        assertFileCount(4, expectedZipContentDir);
 
         // Also check no working directory is left lying around.
         File workingDir = installer.getWorkingDir();
         assertFalse(workingDir.exists());
     }
 
-    private void assertContentsMatches(InputStream expected, File actual)
-            throws Exception {
+    private static void assertFileCount(int expectedFiles, File rootDir) throws Exception {
+        final List<Path> paths = new ArrayList<>();
+        FileVisitor<Path> visitor = new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path filePath, BasicFileAttributes attrs)
+                        throws IOException {
+                paths.add(filePath);
+                return FileVisitResult.CONTINUE;
+            }
+        };
+        Files.walkFileTree(rootDir.toPath(), visitor);
+        assertEquals("Found: " + paths, expectedFiles, paths.size());
+    }
+
+    private void assertContentsMatches(File expected, File actual) throws IOException {
         byte[] actualBytes = IoUtils.readFileAsByteArray(actual.getPath());
-        byte[] expectedBytes = Streams.readFullyNoClose(expected);
+        byte[] expectedBytes = IoUtils.readFileAsByteArray(expected.getPath());
         assertArrayEquals(expectedBytes, actualBytes);
     }
 
@@ -642,32 +660,46 @@ public class TimeZoneDistroInstallerTest extends TestCase {
      * Creates a TimeZoneDistro containing arbitrary bytes in the version file. Used for testing
      * distros with badly formed version info.
      */
-    private static TimeZoneDistro createTimeZoneDistroWithVersionBytes(byte[] versionBytes)
+    private TimeZoneDistro createTimeZoneDistroWithVersionBytes(byte[] versionBytes)
             throws Exception {
 
-        // Create a valid distro, then manipulate the version file.
+        // Extract the distro to a working dir.
         TimeZoneDistro distro = createValidTimeZoneDistro(NEW_RULES_VERSION, 1);
-        byte[] distroBytes = distro.getBytes();
+        File workingDir = createUniqueDirectory(tempDir, "versionBytes");
+        distro.extractTo(workingDir);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(distroBytes.length);
-        try (ZipInputStream zipInputStream =
-                     new ZipInputStream(new ByteArrayInputStream(distroBytes));
-             ZipOutputStream zipOutputStream = new ZipOutputStream(baos)) {
-
-            ZipEntry entry;
-            while ((entry = zipInputStream.getNextEntry()) != null) {
-                zipOutputStream.putNextEntry(entry);
-                if (entry.getName().equals(TimeZoneDistro.DISTRO_VERSION_FILE_NAME)) {
-                    // Replace the content.
-                    zipOutputStream.write(versionBytes);
-                }  else {
-                    // Just copy the content.
-                    Streams.copy(zipInputStream, zipOutputStream);
-                }
-                zipOutputStream.closeEntry();
-                zipInputStream.closeEntry();
-            }
+        // Modify the version file.
+        File versionFile = new File(workingDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
+        assertTrue(versionFile.exists());
+        try (FileOutputStream fos = new FileOutputStream(versionFile, false /* append */)) {
+            fos.write(versionBytes);
         }
+
+        // Zip the distro back up again.
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
+            Path workingDirPath = workingDir.toPath();
+            Files.walkFileTree(workingDirPath, new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+                        throws IOException {
+                    byte[] bytes = IoUtils.readFileAsByteArray(file.toString());
+                    String relativeFileName = workingDirPath.relativize(file).toString();
+                    addZipEntry(zos, relativeFileName, bytes);
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        }
+
         return new TimeZoneDistro(baos.toByteArray());
+    }
+
+    private static void addZipEntry(ZipOutputStream zos, String name, byte[] content)
+            throws IOException {
+        ZipEntry zipEntry = new ZipEntry(name);
+        zipEntry.setSize(content.length);
+        zos.putNextEntry(zipEntry);
+        zos.write(content);
+        zos.closeEntry();
     }
 }
