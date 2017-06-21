@@ -286,8 +286,21 @@ public class ProviderTest extends TestCase {
         return p.getService(typeAndAlg[0], typeAndAlg[1]);
     }
 
+    /**
+     * Identifiers provided by Bouncy Castle that we exclude from consideration
+     * when checking that all Bouncy Castle identifiers are also covered by Conscrypt.
+     * Each block of excluded identifiers is preceded by the justification specific
+     * to those IDs.
+     */
     private static final Set<String> BC_OVERRIDE_EXCEPTIONS = new HashSet<>();
     static {
+        // A typo caused Bouncy Castle to accept these incorrect OIDs for AES, and they
+        // maintain these aliases for backwards compatibility.  We don't want to continue
+        // this in Conscrypt.
+        BC_OVERRIDE_EXCEPTIONS.add("Alg.Alias.AlgorithmParameters.2.16.840.1.101.3.4.2");
+        BC_OVERRIDE_EXCEPTIONS.add("Alg.Alias.AlgorithmParameters.2.16.840.1.101.3.4.22");
+        BC_OVERRIDE_EXCEPTIONS.add("Alg.Alias.AlgorithmParameters.2.16.840.1.101.3.4.42");
+
         // BC uses the same class to implement AlgorithmParameters.DES and
         // AlgorithmParameters.DESEDE.  Conscrypt doesn't support DES, so it doesn't
         // include an implementation of AlgorithmParameters.DES, and this isn't a problem.
