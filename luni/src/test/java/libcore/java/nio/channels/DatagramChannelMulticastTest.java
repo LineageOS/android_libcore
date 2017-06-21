@@ -218,14 +218,14 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_joinAnySource_IPv4() throws Exception {
-        test_joinAnySource(GOOD_MULTICAST_IPv4, BAD_MULTICAST_IPv4, ipv4NetworkInterface);
+        check_joinAnySource(GOOD_MULTICAST_IPv4, BAD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_joinAnySource_IPv6() throws Exception {
-        test_joinAnySource(GOOD_MULTICAST_IPv6, BAD_MULTICAST_IPv6, ipv6NetworkInterface);
+        check_joinAnySource(GOOD_MULTICAST_IPv6, BAD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
-    private void test_joinAnySource(InetAddress group, InetAddress group2,
+    private void check_joinAnySource(InetAddress group, InetAddress group2,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
@@ -398,15 +398,15 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     public void test_joinAnySource_multiple_joins_IPv4()
             throws Exception {
-        test_joinAnySource_multiple_joins(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
+        check_joinAnySource_multiple_joins(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_joinAnySource_multiple_joins_IPv6()
             throws Exception {
-        test_joinAnySource_multiple_joins(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
+        check_joinAnySource_multiple_joins(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
-    private void test_joinAnySource_multiple_joins(InetAddress group,
+    private void check_joinAnySource_multiple_joins(InetAddress group,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
@@ -425,14 +425,14 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_joinAnySource_multicastLoopOption_IPv4() throws Exception {
-        test_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
+        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_multicastLoopOption_IPv6() throws Exception {
-        test_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
+        check_joinAnySource_multicastLoopOption(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
-    private void test_joinAnySource_multicastLoopOption(InetAddress group,
+    private void check_joinAnySource_multicastLoopOption(InetAddress group,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
@@ -474,14 +474,14 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void testMembershipKeyAccessors_IPv4() throws Exception {
-        testMembershipKeyAccessors(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
+        checkMembershipKeyAccessors(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void testMembershipKeyAccessors_IPv6() throws Exception {
-        testMembershipKeyAccessors(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
+        checkMembershipKeyAccessors(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
-    private void testMembershipKeyAccessors(InetAddress group,
+    private void checkMembershipKeyAccessors(InetAddress group,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
@@ -498,14 +498,14 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_dropAnySource_twice_IPv4() throws Exception {
-        test_dropAnySource_twice(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
+        check_dropAnySource_twice(GOOD_MULTICAST_IPv4, ipv4NetworkInterface);
     }
 
     public void test_dropAnySource_twice_IPv6() throws Exception {
-        test_dropAnySource_twice(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
+        check_dropAnySource_twice(GOOD_MULTICAST_IPv6, ipv6NetworkInterface);
     }
 
-    private void test_dropAnySource_twice(InetAddress group,
+    private void check_dropAnySource_twice(InetAddress group,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
             return;
@@ -715,7 +715,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
-        test_block_filtersAsExpected(
+        check_block_filtersAsExpected(
                 ipv4LocalAddress /* senderBindAddress */,
                 GOOD_MULTICAST_IPv4 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
@@ -728,7 +728,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
-        test_block_filtersAsExpected(
+        check_block_filtersAsExpected(
                 ipv6LocalAddress /* senderBindAddress */,
                 GOOD_MULTICAST_IPv6 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv6 /* groupAddress */,
@@ -741,7 +741,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
-        test_block_filtersAsExpected(
+        check_block_filtersAsExpected(
                 ipv4LocalAddress /* senderBindAddress */,
                 WILDCARD_IPv4 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
@@ -754,14 +754,14 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
-        test_block_filtersAsExpected(
+        check_block_filtersAsExpected(
                 ipv6LocalAddress /* senderBindAddress */,
                 WILDCARD_IPv6 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv6 /* groupAddress */,
                 ipv6NetworkInterface);
     }
 
-    private void test_block_filtersAsExpected(
+    private void check_block_filtersAsExpected(
             InetAddress senderBindAddress, InetAddress receiverBindAddress,
             InetAddress groupAddress, NetworkInterface networkInterface)
             throws Exception {
@@ -986,7 +986,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
-        test_joinSourceSpecific(
+        check_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
                 GOOD_MULTICAST_IPv4 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
@@ -1003,7 +1003,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
-        test_joinSourceSpecific(
+        check_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
                 GOOD_MULTICAST_IPv4 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
@@ -1020,7 +1020,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
-        test_joinSourceSpecific(
+        check_joinSourceSpecific(
                 ipv6LocalAddress /* senderBindAddress */,
                 GOOD_MULTICAST_IPv6 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv6 /* groupAddress */,
@@ -1034,7 +1034,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv4LocalAddress = getLocalIpv4Address(ipv4NetworkInterface);
-        test_joinSourceSpecific(
+        check_joinSourceSpecific(
                 ipv4LocalAddress /* senderBindAddress */,
                 WILDCARD_IPv4 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
@@ -1048,7 +1048,7 @@ public class DatagramChannelMulticastTest extends TestCase {
             return;
         }
         InetAddress ipv6LocalAddress = getLocalIpv6Address(ipv6NetworkInterface);
-        test_joinSourceSpecific(
+        check_joinSourceSpecific(
                 ipv6LocalAddress /* senderBindAddress */,
                 WILDCARD_IPv6 /* receiverBindAddress */,
                 GOOD_MULTICAST_IPv6 /* groupAddress */,
@@ -1064,7 +1064,7 @@ public class DatagramChannelMulticastTest extends TestCase {
      * @param groupAddress the group address to join
      * @param badSenderAddress a unicast address to join to perform a negative test
      */
-    private void test_joinSourceSpecific(
+    private void check_joinSourceSpecific(
             InetAddress senderBindAddress, InetAddress receiverBindAddress, InetAddress groupAddress,
             InetAddress badSenderAddress, NetworkInterface networkInterface)
             throws Exception {
@@ -1110,18 +1110,18 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_dropSourceSpecific_twice_IPv4() throws Exception {
-        test_dropSourceSpecific_twice(
+        check_dropSourceSpecific_twice(
                 GOOD_MULTICAST_IPv4 /* groupAddress */, UNICAST_IPv4_1 /* sourceAddress */,
                 ipv4NetworkInterface);
     }
 
     public void test_dropSourceSpecific_twice_IPv6() throws Exception {
-        test_dropSourceSpecific_twice(
+        check_dropSourceSpecific_twice(
                 GOOD_MULTICAST_IPv6 /* groupAddress */, UNICAST_IPv6_1 /* sourceAddress */,
                 ipv6NetworkInterface);
     }
 
-    private void test_dropSourceSpecific_twice(InetAddress groupAddress, InetAddress sourceAddress,
+    private void check_dropSourceSpecific_twice(InetAddress groupAddress, InetAddress sourceAddress,
             NetworkInterface networkInterface)
             throws Exception {
         if (!supportsMulticast) {
@@ -1141,7 +1141,7 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_dropSourceSpecific_sourceKeysAreIndependent_IPv4() throws Exception {
-        test_dropSourceSpecific_sourceKeysAreIndependent(
+        check_dropSourceSpecific_sourceKeysAreIndependent(
                 GOOD_MULTICAST_IPv4 /* groupAddress */,
                 UNICAST_IPv4_1 /* sourceAddress1 */,
                 UNICAST_IPv4_2 /* sourceAddress2 */,
@@ -1149,14 +1149,14 @@ public class DatagramChannelMulticastTest extends TestCase {
     }
 
     public void test_dropSourceSpecific_sourceKeysAreIndependent_IPv6() throws Exception {
-        test_dropSourceSpecific_sourceKeysAreIndependent(
+        check_dropSourceSpecific_sourceKeysAreIndependent(
                 GOOD_MULTICAST_IPv6 /* groupAddress */,
                 UNICAST_IPv6_1 /* sourceAddress1 */,
                 UNICAST_IPv6_2 /* sourceAddress2 */,
                 ipv6NetworkInterface);
     }
 
-    private void test_dropSourceSpecific_sourceKeysAreIndependent(
+    private void check_dropSourceSpecific_sourceKeysAreIndependent(
             InetAddress groupAddress, InetAddress sourceAddress1, InetAddress sourceAddress2,
             NetworkInterface networkInterface) throws Exception {
         if (!supportsMulticast) {
