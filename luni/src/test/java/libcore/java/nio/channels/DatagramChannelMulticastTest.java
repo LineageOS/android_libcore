@@ -236,7 +236,7 @@ public class DatagramChannelMulticastTest extends TestCase {
         receiverChannel.join(group, networkInterface);
 
         String msg = "Hello World";
-        sendMulticastMessage(group, localAddress.getPort(), msg);
+        sendMulticastMessage(group, localAddress.getPort(), msg, networkInterface);
 
         // now verify that we received the data as expected
         ByteBuffer recvBuffer = ByteBuffer.allocate(100);
@@ -246,7 +246,7 @@ public class DatagramChannelMulticastTest extends TestCase {
 
         // now verify that we didn't receive the second message
         String msg2 = "Hello World - Different Group";
-        sendMulticastMessage(group2, localAddress.getPort(), msg2);
+        sendMulticastMessage(group2, localAddress.getPort(), msg2, networkInterface);
         recvBuffer.position(0);
         SocketAddress sourceAddress2 = receiverChannel.receive(recvBuffer);
         assertNull(sourceAddress2);
@@ -1221,11 +1221,6 @@ public class DatagramChannelMulticastTest extends TestCase {
                 // explicitly here anyway.
                 && !iface.isLoopback() && iface.supportsMulticast()
                 && iface.getInetAddresses().hasMoreElements();
-    }
-
-    private static void sendMulticastMessage(InetAddress group, int port, String msg)
-            throws IOException {
-        sendMulticastMessage(group, port, msg, null /* networkInterface */);
     }
 
     private static void sendMulticastMessage(
