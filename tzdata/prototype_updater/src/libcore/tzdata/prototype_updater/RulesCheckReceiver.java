@@ -152,8 +152,8 @@ public class RulesCheckReceiver extends BroadcastReceiver {
 
         // Decide whether to proceed with the install.
         RulesState rulesState = mRulesManager.getRulesState();
-        if (!(rulesState.isDistroFormatVersionSupported(distroVersionInfo.mDistroFormatVersion)
-            && rulesState.isSystemVersionOlderThan(distroVersionInfo.mDistroRulesVersion))) {
+        if (!rulesState.isDistroFormatVersionSupported(distroVersionInfo.mDistroFormatVersion)
+            || rulesState.isSystemVersionNewerThan(distroVersionInfo.mDistroRulesVersion)) {
             // Nothing to do.
             handleCheckComplete(checkToken, true /* success */);
             return;
