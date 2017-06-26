@@ -17,7 +17,7 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="libcore.tzdata.prototype_data"
-          android:versionCode="1">
+          android:versionCode="4">
 
     <application
         android:allowBackup="false"
@@ -31,16 +31,6 @@
                 android:exported="true">
             <meta-data android:name="android.timezoneprovider.OPERATION"
                      android:value="INSTALL"/>
-            <meta-data android:name="android.timezoneprovider.DATA_ASSET"
-                     android:value="test_2030a.zip"/>
-            <meta-data android:name="android.timezoneprovider.DISTRO_MAJOR_VERSION"
-                     android:value="1"/>
-            <meta-data android:name="android.timezoneprovider.DISTRO_MINOR_VERSION"
-                     android:value="1"/>
-            <meta-data android:name="android.timezoneprovider.RULES_VERSION"
-                     android:value="2030a"/>
-            <meta-data android:name="android.timezoneprovider.REVISION"
-                     android:value="1"/>
         </provider>
     </application>
 </manifest>
