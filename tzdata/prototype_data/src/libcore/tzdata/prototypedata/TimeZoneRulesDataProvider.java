@@ -48,7 +48,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import static android.content.res.AssetManager.ACCESS_STREAMING;
 import static android.provider.TimeZoneRulesDataContract.COLUMN_DISTRO_MAJOR_VERSION;
@@ -144,15 +143,14 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
         // Fill in version information if this is an install operation.
         if (OPERATION_INSTALL.equals(operation)) {
             // Extract the version information from the distro.
-            Supplier<InputStream> distroBytesSupplier = () -> {
-                try {
-                    return context.getAssets().open(TimeZoneDistro.FILE_NAME);
-                } catch (IOException e) {
-                    throw new SecurityException(
-                            "Unable to open asset: " + TimeZoneDistro.FILE_NAME, e);
-                }
-            };
-            TimeZoneDistro distro = new TimeZoneDistro(distroBytesSupplier);
+            InputStream distroBytesInputStream;
+            try {
+                distroBytesInputStream = context.getAssets().open(TimeZoneDistro.FILE_NAME);
+            } catch (IOException e) {
+                throw new SecurityException(
+                        "Unable to open asset: " + TimeZoneDistro.FILE_NAME, e);
+            }
+            TimeZoneDistro distro = new TimeZoneDistro(distroBytesInputStream);
             try {
                 DistroVersion distroVersion = distro.getDistroVersion();
                 mColumnData.put(COLUMN_DISTRO_MAJOR_VERSION, distroVersion.formatMajorVersion);
