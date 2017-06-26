@@ -16,19 +16,21 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
-LOCAL_PROGUARD_ENABLED := disabled
+LOCAL_PROGUARD_FLAG_FILES := proguard.cfg
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_PACKAGE_NAME := PrototypeTimeZoneDataApp
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true
+LOCAL_STATIC_JAVA_LIBRARIES := time_zone_distro
 include $(BUILD_PACKAGE)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
-LOCAL_PROGUARD_ENABLED := disabled
+LOCAL_PROGUARD_FLAG_FILES := proguard.cfg
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 LOCAL_PACKAGE_NAME := PrototypeTimeZoneDataApp_data
 LOCAL_CERTIFICATE := platform
 # Needed to ensure the .apk can be installed. Without it the .apk is missing a .dex.
 LOCAL_DEX_PREOPT := false
+LOCAL_STATIC_JAVA_LIBRARIES := time_zone_distro
 include $(BUILD_PACKAGE)
