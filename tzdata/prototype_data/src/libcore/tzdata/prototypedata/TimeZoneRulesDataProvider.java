@@ -16,6 +16,10 @@
 
 package libcore.tzdata.prototypedata;
 
+import com.android.timezone.distro.DistroException;
+import com.android.timezone.distro.DistroVersion;
+import com.android.timezone.distro.TimeZoneDistro;
+
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.content.ContentProvider;
@@ -23,21 +27,20 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.content.res.AssetManager;
 import android.database.AbstractCursor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.provider.TimeZoneRulesDataContract;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -45,7 +48,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import libcore.io.Streams;
 
 import static android.content.res.AssetManager.ACCESS_STREAMING;
 import static android.provider.TimeZoneRulesDataContract.COLUMN_DISTRO_MAJOR_VERSION;
@@ -64,18 +66,10 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
     static final String TAG = "TimeZoneRulesDataProvider";
 
     private static final String METADATA_KEY_OPERATION = "android.timezoneprovider.OPERATION";
-    private static final String METADATA_KEY_ASSET = "android.timezoneprovider.DATA_ASSET";
-    private static final String METADATA_KEY_DISTRO_MAJOR_VERSION
-            = "android.timezoneprovider.DISTRO_MAJOR_VERSION";
-    private static final String METADATA_KEY_DISTRO_MINOR_VERSION
-            = "android.timezoneprovider.DISTRO_MINOR_VERSION";
-    private static final String METADATA_KEY_RULES_VERSION
-            = "android.timezoneprovider.RULES_VERSION";
-    private static final String METADATA_KEY_REVISION
-            = "android.timezoneprovider.REVISION";
 
     private static final Set<String> KNOWN_COLUMN_NAMES;
     private static final Map<String, Class<?>> KNOWN_COLUMN_TYPES;
+
     static {
         Set<String> columnNames = new HashSet<>();
         columnNames.add(COLUMN_OPERATION);
@@ -94,8 +88,7 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
         KNOWN_COLUMN_TYPES = Collections.unmodifiableMap(columnTypes);
     }
 
-    private Map<String, Object> mColumnData = new HashMap<>();
-    private String mAssetName;
+    private final Map<String, Object> mColumnData = new HashMap<>();
 
     @Override
     public boolean onCreate() {
@@ -138,6 +131,7 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
             throw new SecurityException("meta-data must be set");
         }
 
+        // Work out what the operation is.
         String operation;
         try {
             operation = getMandatoryMetaDataString(metaData, METADATA_KEY_OPERATION);
@@ -145,31 +139,28 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
         } catch (IllegalArgumentException e) {
             throw new SecurityException(METADATA_KEY_OPERATION + " meta-data not set.");
         }
-        if (OPERATION_INSTALL.equals(operation)) {
-            mColumnData.put(
-                    COLUMN_DISTRO_MAJOR_VERSION,
-                    getMandatoryMetaDataInt(metaData, METADATA_KEY_DISTRO_MAJOR_VERSION));
-            mColumnData.put(
-                    COLUMN_DISTRO_MINOR_VERSION,
-                    getMandatoryMetaDataInt(metaData, METADATA_KEY_DISTRO_MINOR_VERSION));
-            mColumnData.put(
-                    COLUMN_RULES_VERSION,
-                    getMandatoryMetaDataString(metaData, METADATA_KEY_RULES_VERSION));
-            mColumnData.put(
-                    COLUMN_REVISION,
-                    getMandatoryMetaDataInt(metaData, METADATA_KEY_REVISION));
 
-            // Make sure the asset containing the data to install exists.
-            String assetName = getMandatoryMetaDataString(metaData, METADATA_KEY_ASSET);
+        // Fill in version information if this is an install operation.
+        if (OPERATION_INSTALL.equals(operation)) {
+            // Extract the version information from the distro.
+            InputStream distroBytesInputStream;
             try {
-                InputStream is = context.getAssets().open(assetName);
-                // An exception is thrown if the asset does not exist. list(assetName) appears not
-                // to work with file paths.
-                is.close();
+                distroBytesInputStream = context.getAssets().open(TimeZoneDistro.FILE_NAME);
             } catch (IOException e) {
-                throw new SecurityException("Unable to open asset:" + assetName);
+                throw new SecurityException(
+                        "Unable to open asset: " + TimeZoneDistro.FILE_NAME, e);
             }
-            mAssetName = assetName;
+            TimeZoneDistro distro = new TimeZoneDistro(distroBytesInputStream);
+            try {
+                DistroVersion distroVersion = distro.getDistroVersion();
+                mColumnData.put(COLUMN_DISTRO_MAJOR_VERSION, distroVersion.formatMajorVersion);
+                mColumnData.put(COLUMN_DISTRO_MINOR_VERSION, distroVersion.formatMinorVersion);
+                mColumnData.put(COLUMN_RULES_VERSION, distroVersion.rulesVersion);
+                mColumnData.put(COLUMN_REVISION, distroVersion.revision);
+            } catch (IOException | DistroException e) {
+                throw new SecurityException("Invalid asset: " + TimeZoneDistro.FILE_NAME, e);
+            }
+
         }
     }
 
@@ -264,54 +255,37 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
     public ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
             throws FileNotFoundException {
         if (!TimeZoneRulesDataContract.DATA_URI.equals(uri)) {
-            return null;
+            throw new FileNotFoundException("Unknown URI: " + uri);
         }
-        if (mAssetName == null) {
-            throw new FileNotFoundException();
-        }
-        if (!mode.equals("r")) {
-            throw new SecurityException("Only read-only access supported.");
+        if (!"r".equals(mode)) {
+            throw new FileNotFoundException("Only read-only access supported.");
         }
 
-        // Extract the asset to a local dir. We do it every time: we don't make assumptions that the
-        // current copy (if any) is valid.
-        File localFile = extractAssetToLocalFile();
-
-        // Create a read-only ParcelFileDescriptor that can be passed to the caller process.
+        // We cannot return the asset ParcelFileDescriptor from
+        // assets.openFd(name).getParcelFileDescriptor() here as the receiver in the reading
+        // process gets a ParcelFileDescriptor pointing at the whole .apk. Instead, we extract
+        // the asset file we want to storage then wrap that in a ParcelFileDescriptor.
+        File distroFile = null;
         try {
-            return ParcelFileDescriptor.open(localFile, ParcelFileDescriptor.MODE_READ_ONLY,
-                    new Handler(Looper.getMainLooper()),
-                    e -> {
-                        if (e != null) {
-                            Log.w(TAG, "Error in OnCloseListener for " + localFile, e);
-                        }
-                        localFile.delete();
-                    });
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to open asset file", e);
-        }
-    }
+            distroFile = File.createTempFile("distro", null, getContext().getFilesDir());
 
-    private File extractAssetToLocalFile() throws FileNotFoundException {
-        File extractedFile = new File(getContext().getFilesDir(), "timezone_data.zip");
-        InputStream is;
-        try {
-            is = getContext().getAssets().open(mAssetName, ACCESS_STREAMING);
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (IOException e) {
-            FileNotFoundException fnfe = new FileNotFoundException("Problem reading asset");
-            fnfe.initCause(e);
-            throw fnfe;
-        }
+            AssetManager assets = getContext().getAssets();
+            try (InputStream is = assets.open(TimeZoneDistro.FILE_NAME, ACCESS_STREAMING);
+                 FileOutputStream fos = new FileOutputStream(distroFile, false /* append */)) {
+                copy(is, fos);
+            }
 
-        try (InputStream fis = is;
-                FileOutputStream fos = new FileOutputStream(extractedFile, false /* append */)) {
-            Streams.copy(fis, fos);
+            return ParcelFileDescriptor.open(distroFile, ParcelFileDescriptor.MODE_READ_ONLY);
         } catch (IOException e) {
-            throw new RuntimeException("Unable to create asset storage file: " + extractedFile, e);
+            throw new RuntimeException("Unable to copy distro asset file", e);
+        } finally {
+            if (distroFile != null) {
+                // Even if we have an open file descriptor pointing at the file it should be safe to
+                // delete because of normal Unix file behavior. Deleting here avoids leaking any
+                // storage.
+                distroFile.delete();
+            }
         }
-        return extractedFile;
     }
 
     @Override
@@ -343,10 +317,14 @@ public final class TimeZoneRulesDataProvider extends ContentProvider {
         return metaData.getString(key);
     }
 
-    private static int getMandatoryMetaDataInt(Bundle metaData, String key) {
-        if (!metaData.containsKey(key)) {
-            throw new SecurityException("No metadata with key " + key + " found.");
+    /**
+     * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
+     */
+    private static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[8192];
+        int c;
+        while ((c = in.read(buffer)) != -1) {
+            out.write(buffer, 0, c);
         }
-        return metaData.getInt(key, -1);
     }
 }
