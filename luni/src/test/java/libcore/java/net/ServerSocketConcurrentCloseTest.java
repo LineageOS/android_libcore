@@ -76,7 +76,7 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
         int numIterations = 100;
         for (int i = 0; i < numIterations; i++) {
             checkConnectIterationAndCloseSocket("Iteration " + (i+1) + " of " + numIterations,
-                    /* msecPerIteration */ 50);
+                    /* sleepMsec */ 50, /* maxSleepsPerIteration */ 3);
         }
     }
 
@@ -84,11 +84,13 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
      * Checks that a concurrent {@link ServerSocket#close()} reliably causes
      * {@link ServerSocket#accept()} to throw {@link SocketException}.
      *
-     * <p>Spawns a server and client thread that continuously connect to each other
-     * for {@code msecPerIteration} msec. Then, closes the {@link ServerSocket} and
-     * verifies that the server quickly shuts down.
+     * <p>Spawns a server and client thread that continuously connect to each
+     * other for up to {@code maxSleepsPerIteration * sleepMsec} msec.
+     * Then, closes the {@link ServerSocket} and verifies that the server
+     * quickly shuts down.
      */
-    private void checkConnectIterationAndCloseSocket(String iterationName, int msecPerIteration) {
+    private void checkConnectIterationAndCloseSocket(String iterationName,
+        int sleepMsec, int maxSleepsPerIteration) {
         ServerSocket serverSocket;
         try {
             serverSocket = new ServerSocket(0 /* allocate port number automatically */);
@@ -110,7 +112,12 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
                 fail("Server prematurely shut down");
             }
             // Let server and client keep connecting for some time, then close the socket.
-            Thread.sleep(msecPerIteration);
+            for (int i = 0; i < maxSleepsPerIteration; i++) {
+              Thread.sleep(sleepMsec);
+              if (serverRunnable.numSuccessfulConnections > 0) {
+                break;
+              }
+            }
             try {
                 serverSocket.close();
             } catch (IOException e) {
@@ -129,9 +136,9 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
             // later iterations because TCP connections cannot be closed immediately (they stay
             // in TIME_WAIT state for a few minutes) and only some number (tens of thousands?)
             // can be open at a time. If this assertion turns out flaky in future, consider
-            // reducing msecPerIteration or number of iterations.
+            // reducing the iteration time or number of iterations.
             assertTrue(String.format(Locale.US, "%s: No connections in %d msec.",
-                    iterationName, msecPerIteration),
+                    iterationName, maxSleepsPerIteration * sleepMsec),
                     serverRunnable.numSuccessfulConnections > 0);
 
             assertTrue(serverRunnable.isShutdown());
