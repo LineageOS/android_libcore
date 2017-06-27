@@ -330,7 +330,7 @@ public class TimeZoneDistroInstaller {
     }
 
     private DistroVersion readDistroVersion(File distroDir) throws DistroException, IOException {
-        Slog.i(logTag, "Reading distro format version");
+        Slog.i(logTag, "Reading distro format version: " + distroDir);
         File distroVersionFile = new File(distroDir, TimeZoneDistro.DISTRO_VERSION_FILE_NAME);
         if (!distroVersionFile.exists()) {
             throw new DistroException("No distro version file found: " + distroVersionFile);
