@@ -66,104 +66,100 @@ public class RulesCheckReceiver extends BroadcastReceiver {
         // the data application.
 
         // Obtain the information about what the data app is telling us to do.
-        String operation = getOperation(context);
+        DistroOperation operation = getOperation(context);
         if (operation == null) {
-            // TODO Log
+            Log.w(TAG, "Unable to read time zone operation. Halting check.");
             boolean success = true; // No point in retrying.
             handleCheckComplete(token, success);
             return;
         }
-        switch (operation) {
+
+        // Try to do what the data app asked.
+        Log.d(TAG, "Time zone operation: " + operation + " received.");
+        switch (operation.mOperationString) {
             case TimeZoneRulesDataContract.OPERATION_NO_OP:
-                // TODO Log
                 // No-op. Just acknowledge the check.
                 handleCheckComplete(token, true /* success */);
                 break;
             case TimeZoneRulesDataContract.OPERATION_UNINSTALL:
-                // TODO Log
                 handleUninstall(token);
                 break;
             case TimeZoneRulesDataContract.OPERATION_INSTALL:
-                // TODO Log
-                DistroVersionInfo distroVersionInfo = getDistroVersionInfo(context);
-                handleCopyAndInstall(context, token, distroVersionInfo);
+                handleCopyAndInstall(context, token, operation.mDistroFormatVersion,
+                        operation.mDistroRulesVersion);
                 break;
             default:
-                // TODO Log
+                Log.w(TAG, "Unknown time zone operation: " + operation
+                        + " received. Halting check.");
                 final boolean success = true; // No point in retrying.
                 handleCheckComplete(token, success);
         }
     }
 
-    private String getOperation(Context context) {
-        Cursor cursor = context.getContentResolver()
-                .query(TimeZoneRulesDataContract.OPERATION_URI,
-                        new String[] { TimeZoneRulesDataContract.COLUMN_OPERATION },
-                        null /* selection */, null /* selectionArgs */, null /* sortOrder */);
-        if (cursor == null) {
-            Log.e(TAG, "getOperation: query returned null");
-            return null;
-        }
-        if (!cursor.moveToFirst()) {
-            Log.e(TAG, "getOperation: query returned empty results");
-            return null;
-        }
-
-        try {
-            return cursor.getString(0);
-        } catch (Exception e) {
-            Log.e(TAG, "getOperation: getString() threw an exception", e);
-            return null;
-        }
-    }
-
-    private DistroVersionInfo getDistroVersionInfo(Context context) {
-        Cursor cursor = context.getContentResolver()
+    private DistroOperation getOperation(Context context) {
+        Cursor c = context.getContentResolver()
                 .query(TimeZoneRulesDataContract.OPERATION_URI,
                         new String[] {
+                                TimeZoneRulesDataContract.COLUMN_OPERATION,
                                 TimeZoneRulesDataContract.COLUMN_DISTRO_MAJOR_VERSION,
                                 TimeZoneRulesDataContract.COLUMN_DISTRO_MINOR_VERSION,
                                 TimeZoneRulesDataContract.COLUMN_RULES_VERSION,
-                                TimeZoneRulesDataContract.COLUMN_REVISION},
+                                TimeZoneRulesDataContract.COLUMN_REVISION
+                        },
                         null /* selection */, null /* selectionArgs */, null /* sortOrder */);
-        if (cursor == null) {
-            Log.e(TAG, "getDistroVersionInfo: query returned null");
-            return null;
-        }
-        if (!cursor.moveToFirst()) {
-            Log.e(TAG, "getDistroVersionInfo: query returned empty results");
-            return null;
-        }
+        try (Cursor cursor = c) {
+            if (cursor == null) {
+                Log.e(TAG, "Query returned null");
+                return null;
+            }
+            if (!cursor.moveToFirst()) {
+                Log.e(TAG, "Query returned empty results");
+                return null;
+            }
 
-        try {
-            return new DistroVersionInfo(
-                    cursor.getInt(0),
-                    cursor.getInt(1),
-                    cursor.getString(2),
-                    cursor.getInt(3));
-        } catch (Exception e) {
-            Log.e(TAG, "getDistroVersionInfo: getInt()/getString() threw an exception", e);
-            return null;
+            try {
+                String operation = cursor.getString(0);
+                DistroFormatVersion distroFormatVersion = null;
+                DistroRulesVersion distroRulesVersion = null;
+                if (TimeZoneRulesDataContract.OPERATION_INSTALL.equals(operation)) {
+                    distroFormatVersion = new DistroFormatVersion(cursor.getInt(1),
+                            cursor.getInt(2));
+                    distroRulesVersion = new DistroRulesVersion(cursor.getString(3),
+                            cursor.getInt(4));
+                }
+                return new DistroOperation(operation, distroFormatVersion, distroRulesVersion);
+            } catch (Exception e) {
+                Log.e(TAG, "Error looking up distro operation / version", e);
+                return null;
+            }
         }
     }
 
     private void handleCopyAndInstall(Context context, byte[] checkToken,
-            DistroVersionInfo distroVersionInfo) {
-
+            DistroFormatVersion distroFormatVersion, DistroRulesVersion distroRulesVersion) {
         // Decide whether to proceed with the install.
         RulesState rulesState = mRulesManager.getRulesState();
-        if (!rulesState.isDistroFormatVersionSupported(distroVersionInfo.mDistroFormatVersion)
-            || rulesState.isSystemVersionNewerThan(distroVersionInfo.mDistroRulesVersion)) {
+        if (!rulesState.isDistroFormatVersionSupported(distroFormatVersion)
+            || rulesState.isSystemVersionNewerThan(distroRulesVersion)) {
             // Nothing to do.
             handleCheckComplete(checkToken, true /* success */);
             return;
         }
 
-        // Copy the data locally before passing it on....security and whatnot.
-        // TODO(nfuller): Need to do the copy here?
-        File file = copyDataToLocalFile(context);
+        ParcelFileDescriptor inputFileDescriptor = getDistroParcelFileDescriptor(context);
+        if (inputFileDescriptor == null) {
+            Log.e(TAG, "No local file created for distro. Halting.");
+            return;
+        }
+
+        // Copying the ParcelFileDescriptor to a local file proves we can read it before passing it
+        // on to the next stage. It also ensures that we have a hermetic copy of the data we know
+        // the originating content provider cannot modify unexpectedly. If the next stage wants to
+        // "seek" the ParcelFileDescriptor it can do so with fewer processes affected.
+        File file = copyDataToLocalFile(context, inputFileDescriptor);
         if (file == null) {
-            // It's possible this may get better if the problem is related to storage space.
+            // It's possible this may get better if the problem is related to storage space so we
+            // signal success := false so it may be retried.
             boolean success = false;
             handleCheckComplete(checkToken, success);
             return;
@@ -171,67 +167,81 @@ public class RulesCheckReceiver extends BroadcastReceiver {
         handleInstall(checkToken, file);
     }
 
-    private static File copyDataToLocalFile(Context context) {
-        File extractedFile = new File(context.getFilesDir(), "temp.zip");
-        ParcelFileDescriptor fileDescriptor;
+    private static ParcelFileDescriptor getDistroParcelFileDescriptor(Context context) {
+        ParcelFileDescriptor inputFileDescriptor;
         try {
-            fileDescriptor = context.getContentResolver().openFileDescriptor(
+            inputFileDescriptor = context.getContentResolver().openFileDescriptor(
                     TimeZoneRulesDataContract.DATA_URI, "r");
-            if (fileDescriptor == null) {
+            if (inputFileDescriptor == null) {
                 throw new FileNotFoundException("ContentProvider returned null");
             }
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "copyDataToLocalFile: Unable to open file descriptor"
-                    + TimeZoneRulesDataContract.DATA_URI, e);
+            Log.e(TAG, "Unable to open file descriptor" + TimeZoneRulesDataContract.DATA_URI, e);
             return null;
         }
-
-        try (ParcelFileDescriptor pfd = fileDescriptor;
-             InputStream fis = new FileInputStream(pfd.getFileDescriptor());
-             FileOutputStream fos = new FileOutputStream(extractedFile, false /* append */)) {
-            Streams.copy(fis, fos);
-        } catch (IOException e) {
-            Log.e(TAG, "Unable to create asset storage file: " + extractedFile, e);
-            return null;
-        }
-        return extractedFile;
+        return inputFileDescriptor;
     }
 
-    private void handleInstall(final byte[] checkToken, final File contentFile) {
-        // Convert the distroFile to a ParcelFileDescriptor.
+    private static File copyDataToLocalFile(
+            Context context, ParcelFileDescriptor inputFileDescriptor) {
+
+        // Adopt the ParcelFileDescriptor into a try-with-resources so we will close it when we're
+        // done regardless of the outcome.
+        try (ParcelFileDescriptor pfd = inputFileDescriptor) {
+            File localFile;
+            try {
+                localFile = File.createTempFile("temp", ".zip", context.getFilesDir());
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to create local storage file", e);
+                return null;
+            }
+
+            InputStream fis = new FileInputStream(pfd.getFileDescriptor(), false /* isFdOwner */);
+            try (FileOutputStream fos = new FileOutputStream(localFile, false /* append */)) {
+                Streams.copy(fis, fos);
+            } catch (IOException e) {
+                Log.e(TAG, "Unable to create asset storage file: " + localFile, e);
+                return null;
+            }
+            return localFile;
+        } catch (IOException e) {
+            Log.e(TAG, "Unable to close ParcelFileDescriptor", e);
+            return null;
+        }
+    }
+
+    private void handleInstall(final byte[] checkToken, final File localFile) {
+        // Create a ParcelFileDescriptor pointing to localFile.
         final ParcelFileDescriptor distroFileDescriptor;
         try {
             distroFileDescriptor =
-                    ParcelFileDescriptor.open(contentFile, ParcelFileDescriptor.MODE_READ_ONLY);
+                    ParcelFileDescriptor.open(localFile, ParcelFileDescriptor.MODE_READ_ONLY);
         } catch (FileNotFoundException e) {
-            Log.e(TAG, "Unable to create ParcelFileDescriptor from " + contentFile);
+            Log.e(TAG, "Unable to create ParcelFileDescriptor from " + localFile);
             handleCheckComplete(checkToken, false /* success */);
             return;
+        } finally {
+            // It is safe to delete the File at this point. The ParcelFileDescriptor has an open
+            // file descriptor to it if we are successful, or it is not going to be used if we are
+            // returning early.
+            localFile.delete();
         }
 
         Callback callback = new Callback() {
             @Override
             public void onFinished(int status) {
-                Log.i(TAG, "onFinished: Finished install: " + status);
-
-                // TODO(nfuller): Can this be closed sooner?
-                try {
-                    distroFileDescriptor.close();
-                } catch (IOException e) {
-                    Log.e(TAG, "Unable to close ParcelFileDescriptor for " + contentFile, e);
-                } finally {
-                    // Delete the file we no longer need.
-                    contentFile.delete();
-                }
+                Log.i(TAG, "Finished install: " + status);
             }
         };
 
-        try {
-            int requestStatus =
-                    mRulesManager.requestInstall(distroFileDescriptor, checkToken, callback);
-            Log.i(TAG, "handleInstall: Request sent:" + requestStatus);
+        // Adopt the distroFileDescriptor here so the local file descriptor is closed, whatever the
+        // outcome.
+        try (ParcelFileDescriptor pfd = distroFileDescriptor) {
+            int requestStatus = mRulesManager.requestInstall(pfd, checkToken, callback);
+            Log.i(TAG, "requestInstall() called, token=" + Arrays.toString(checkToken)
+                    + ", returned " + requestStatus);
         } catch (Exception e) {
-            Log.e(TAG, "handleInstall: Error", e);
+            Log.e(TAG, "Error calling requestInstall()", e);
         }
     }
 
@@ -239,38 +249,48 @@ public class RulesCheckReceiver extends BroadcastReceiver {
         Callback callback = new Callback() {
             @Override
             public void onFinished(int status) {
-                Log.i(TAG, "onFinished: Finished uninstall: " + status);
+                Log.i(TAG, "Finished uninstall: " + status);
             }
         };
 
         try {
-            int requestStatus =
-                    mRulesManager.requestUninstall(checkToken, callback);
-            Log.i(TAG, "handleUninstall: Request sent" + requestStatus);
+            int requestStatus = mRulesManager.requestUninstall(checkToken, callback);
+            Log.i(TAG, "requestUninstall() called, token=" + Arrays.toString(checkToken)
+                    + ", returned " + requestStatus);
         } catch (Exception e) {
-            Log.e(TAG, "handleUninstall: Error", e);
+            Log.e(TAG, "Error calling requestUninstall()", e);
         }
     }
 
     private void handleCheckComplete(final byte[] token, final boolean success) {
         try {
             mRulesManager.requestNothing(token, success);
-            Log.i(TAG, "doInBackground: Called checkComplete: token="
-                    + Arrays.toString(token) + ", success=" + success);
+            Log.i(TAG, "requestNothing() called, token=" + Arrays.toString(token)
+                    + ", success=" + success);
         } catch (Exception e) {
-            Log.e(TAG, "doInBackground: Error calling checkComplete()", e);
+            Log.e(TAG, "Error calling requestNothing()", e);
         }
     }
 
-    private static class DistroVersionInfo {
-
+    private static class DistroOperation {
+        final String mOperationString;
         final DistroFormatVersion mDistroFormatVersion;
         final DistroRulesVersion mDistroRulesVersion;
 
-        DistroVersionInfo(int distroMajorVersion, int distroMinorVersion,
-                String rulesVersion, int revision) {
-            mDistroFormatVersion = new DistroFormatVersion(distroMajorVersion, distroMinorVersion);
-            mDistroRulesVersion = new DistroRulesVersion(rulesVersion, revision);
+        DistroOperation(String operationString, DistroFormatVersion distroFormatVersion,
+                DistroRulesVersion distroRulesVersion) {
+            mOperationString = operationString;
+            mDistroFormatVersion = distroFormatVersion;
+            mDistroRulesVersion = distroRulesVersion;
+        }
+
+        @Override
+        public String toString() {
+            return "DistroOperation{" +
+                    "mOperationString='" + mOperationString + '\'' +
+                    ", mDistroFormatVersion=" + mDistroFormatVersion +
+                    ", mDistroRulesVersion=" + mDistroRulesVersion +
+                    '}';
         }
     }
 }
