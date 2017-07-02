@@ -68,7 +68,6 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
     // BEGIN Android-added: CloseGuard and some helper fields for Android changes in this file.
     private final CloseGuard guard = CloseGuard.get();
     private final byte[] scratch = new byte[8];
-    private boolean syncMetadata = false;
     private int mode;
     // END Android-added: CloseGuard and some helper fields for Android changes in this file.
 
@@ -231,13 +230,9 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
             rw = true;
             if (mode.length() > 2) {
                 if (mode.equals("rws")) {
-                    // Android-changed: Don't use O_SYNC for "rws". Is this correct?
-                    // imode |= O_SYNC;
-                    syncMetadata = true;
-                } else if (mode.equals("rwd")) {
-                    // Android-changed: Use O_SYNC rather than O_DSYNC for "rwd". Is this correct?
-                    // imode |= O_DSYNC;
                     imode |= O_SYNC;
+                } else if (mode.equals("rwd")) {
+                    imode |= O_DSYNC;
                 } else {
                     imode = -1;
                 }
@@ -272,13 +267,6 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
 
         // BEGIN Android-changed: Use IoBridge.open() instead of open.
         fd = IoBridge.open(name, imode);
-        if (syncMetadata) {
-            try {
-                fd.sync();
-            } catch (IOException e) {
-                // Ignored
-            }
-        }
         guard.open("close");
         // END Android-changed: Use IoBridge.open() instead of open.
     }
@@ -515,10 +503,6 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
         // Android-changed: Implement on top of low-level API, not directly natively.
         ioTracker.trackIo(len, IoTracker.Mode.WRITE);
         IoBridge.write(fd, b, off, len);
-        // if we are in "rws" mode, attempt to sync file+metadata
-        if (syncMetadata) {
-            fd.sync();
-        }
     }
 
     /**
@@ -642,10 +626,6 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
         long filePointer = getFilePointer();
         if (filePointer > newLength) {
             seek(newLength);
-        }
-        // if we are in "rws" mode, attempt to sync file+metadata
-        if (syncMetadata) {
-            fd.sync();
         }
         // END Android-changed: Implement on top of low-level API, not directly natively.
     }

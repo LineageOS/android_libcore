@@ -1546,14 +1546,6 @@
   ]
 },
 {
-  description: "Bouncy Castle doesn't prevent reusing initialization vectors",
-  bug: 31801320,
-  result: EXEC_FAILED,
-  names: [
-    "com.google.security.wycheproof.AesGcmTest#testIvReuse"
-  ]
-},
-{
   description: "Conscrypt produces different exceptions under different circumstances",
   bug: 36772622,
   result: EXEC_FAILED,
