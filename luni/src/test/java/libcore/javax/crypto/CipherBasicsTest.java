@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import libcore.util.HexEncoding;
 
 /**
  * Test for basic compliance for ciphers.  This test uses reference vectors produced by
@@ -139,15 +140,6 @@ public final class CipherBasicsTest extends TestCase {
     }
 
     private static byte[] toBytes(String hex) {
-        if (hex.length() % 2 == 1) {
-            hex = "0" + hex;
-        }
-        byte[] data = new byte[hex.length() / 2];
-        for (int i = 0; i < hex.length(); i += 2) {
-            int high = Character.digit(hex.charAt(i), 16);
-            int low = Character.digit(hex.charAt(i + 1), 16);
-            data[i / 2] = (byte) ((high << 4) + low);
-        }
-        return data;
+        return HexEncoding.decode(hex, /* allowSingleChar= */ true);
     }
 }
