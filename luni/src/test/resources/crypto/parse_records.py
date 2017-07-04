@@ -19,29 +19,38 @@
 Reads in a selection of test cases in NIST response file format on standard
 input and outputs a CSV representation of them to standard output, with the
 NIST-recommended statement in a header at the top, prefixed by #
-characters.  The data is in the format:
+characters.  The data is in one of the following formats:
 
-key,iv,plaintext,ciphertext"""
+key,iv,plaintext,ciphertext
+key,iv,plaintext,ciphertext,tag,aad"""
 
 import sys
 
-def print_records(record):
+def format_records(record):
     # There are a number of different input formats, depending on whether the
     # particular operation includes an IV, single or multiple cipher operations,
     # etc.  Just check for each possibility.
     if 'key' in record and 'iv' in record and 'plaintext' in record and 'ciphertext' in record:
         # A normal operation with an IV
-        print "{key},{iv},{plaintext},{ciphertext}".format(**record)
+        return ["{key},{iv},{plaintext},{ciphertext}".format(**record)]
     elif 'key' in record and 'plaintext' in record and 'ciphertext' in record:
         # A normal operation without IV
-        print "{key},,{plaintext},{ciphertext}".format(**record)
+        return ["{key},,{plaintext},{ciphertext}".format(**record)]
     elif 'keys' in record and 'iv' in record and 'plaintext' in record and 'ciphertext' in record:
         # A single triple-DES operation where all keys are the same
-        print "{keys}{keys}{keys},{iv},{plaintext},{ciphertext}".format(**record)
+        return ["{keys}{keys}{keys},{iv},{plaintext},{ciphertext}".format(**record)]
+    elif 'keys' in record and 'plaintext' in record and 'ciphertext' in record:
+        # A single triple-DES operation where all keys are the same without IV
+        return ["{keys}{keys}{keys},,{plaintext},{ciphertext}".format(**record)]
     elif ('key1' in record and 'key2' in record and 'key3' in record and 'iv' in record
           and 'plaintext' in record and 'ciphertext' in record):
         # A single triple-DES operation with different keys for each step
-        print "{key1}{key2}{key3},{iv},{plaintext},{ciphertext}".format(**record)
+        return ["{key1}{key2}{key3},{iv},{plaintext},{ciphertext}".format(**record)]
+    elif ('key' in record and 'iv' in record and 'pt' in record and 'aad' in record
+          and 'ct' in record and 'tag' in record):
+        # An AEAD operation
+        return ["{key},{iv},{pt},{ct},{tag},{aad}".format(**record)]
+    return []
 
 
 def main():
@@ -82,19 +91,31 @@ def main():
 #
 # Permission to use this data is contingent upon your acceptance of
 # the terms of this agreement and upon your providing appropriate
-# acknowledgments of NIST's creation of the data.
-#
-# Data is in the format:
-# key,iv,plaintext,ciphertext"""
+# acknowledgments of NIST's creation of the data."""
     record = {}
+    output_lines = []
     for line in sys.stdin.readlines():
         line = line.strip()
         if line == '':
-            print_records(record)
+            output_lines.extend(format_records(record))
             record = {}
-        if ' = ' in line:
+        if ' =' in line:
             record[line[:line.index('=') - 1].lower()] = line[line.index('=') + 2:]
-    print_records(record)
+        if line == 'FAIL':
+            record['fail'] = True
+    output_lines.extend(format_records(record))
+    if len(output_lines) > 0:
+        if output_lines[0].count(',') == 3:
+            print """#
+# Data is in the format:
+# key,iv,plaintext,ciphertext"""
+        elif output_lines[0].count(',') == 5:
+            print """#
+# Data is in the format:
+# key,iv,plaintext,ciphertext,tag,aad"""
+        for output_line in output_lines:
+            print output_line
+
 
 
 if __name__ == '__main__':
