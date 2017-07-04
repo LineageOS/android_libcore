@@ -20,3 +20,4 @@ cat "$1"/TCFB8*.rsp | ./parse_records.py > desede-cfb8.csv
 cat "$1"/TCFB64*.rsp | ./parse_records.py > desede-cfb64.csv
 cat "$1"/TECB*.rsp | ./parse_records.py > desede-ecb.csv
 cat "$1"/TOFB*.rsp | ./parse_records.py > desede-ofb.csv
+cat "$1"/gcm*.rsp | ./parse_records.py > aes-gcm.csv
