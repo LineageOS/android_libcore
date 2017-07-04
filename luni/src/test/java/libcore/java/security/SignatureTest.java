@@ -68,6 +68,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import junit.framework.TestCase;
 
+import libcore.util.HexEncoding;
+
 public class SignatureTest extends TestCase {
     private static abstract class MockProvider extends Provider {
         public MockProvider(String name) {
@@ -558,13 +560,13 @@ public class SignatureTest extends TestCase {
         testSignature_MultipleThreads_Misuse(sig);
     }
 
-    private static final byte[] PK_BYTES = hexToBytes(
+    private static final byte[] PK_BYTES = HexEncoding.decode(
             "30819f300d06092a864886f70d010101050003818d0030818902818100cd769d178f61475fce3001"
             + "2604218320c77a427121d3b41dd76756c8fc0c428cd15cb754adc85466f47547b1c85623d9c17fc6"
             + "4f202fca21099caf99460c824ad657caa8c2db34996838d32623c4f23c8b6a4e6698603901262619"
             + "4840e0896b1a6ec4f6652484aad04569bb6a885b822a10d700224359c632dc7324520cbb3d020301"
             + "0001");
-    private static final byte[] CONTENT = hexToBytes(
+    private static final byte[] CONTENT = HexEncoding.decode(
             "f2fa9d73656e00fa01edc12e73656e2e7670632e6432004867268c46dd95030b93ce7260423e5c00"
             + "fabd4d656d6265727300fa018dc12e73656e2e7670632e643100d7c258dc00fabd44657669636573"
             + "00faa54b65797300fa02b5c12e4d2e4b009471968cc68835f8a68dde10f53d19693d480de767e5fb"
@@ -579,21 +581,12 @@ public class SignatureTest extends TestCase {
             + "c77a427121d3b41dd76756c8fc0c428cd15cb754adc85466f47547b1c85623d9c17fc64f202fca21"
             + "099caf99460c824ad657caa8c2db34996838d32623c4f23c8b6a4e66986039012626194840e0896b"
             + "1a6ec4f6652484aad04569bb6a885b822a10d700224359c632dc7324520cbb3d020301000100");
-    private static final byte[] SIGNATURE = hexToBytes(
+    private static final byte[] SIGNATURE = HexEncoding.decode(
             "b4016456148cd2e9f580470aad63d19c1fee52b38c9dcb5b4d61a7ca369a7277497775d106d86394"
             + "a69229184333b5a3e6261d5bcebdb02530ca9909f4d790199eae7c140f7db39dee2232191bdf0bfb"
             + "34fdadc44326b9b3f3fa828652bab07f0362ac141c8c3784ebdec44e0b156a5e7bccdc81a56fe954"
             + "56ac8c0e4ae12d97");
 
-    public static byte[] hexToBytes(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                                  + Character.digit(s.charAt(i+1), 16));
-        }
-        return data;
-    }
 
     /**
      * This should actually fail because the ASN.1 encoding is incorrect. It is
@@ -3340,7 +3333,7 @@ public class SignatureTest extends TestCase {
     private static final byte[] NAMED_CURVE_VECTOR = "Satoshi Nakamoto".getBytes(UTF_8);
     // $ echo -n "Satoshi Nakamoto" > signed
     // $ openssl dgst -ecdsa-with-SHA1 -sign key.pem -out sig signed
-    private static final byte[] NAMED_CURVE_SIGNATURE = hexToBytes("304402205b41ece6dcc1c5bfcfdae74658d99c08c5e783f3926c11ecc1a8bea5d95cdf27022061a7d5fc687287e2e02dd7c6723e2e27fe0555f789590a37e96b1bb0355b4df0");
+    private static final byte[] NAMED_CURVE_SIGNATURE = HexEncoding.decode("304402205b41ece6dcc1c5bfcfdae74658d99c08c5e783f3926c11ecc1a8bea5d95cdf27022061a7d5fc687287e2e02dd7c6723e2e27fe0555f789590a37e96b1bb0355b4df0");
 
     private static PublicKey getNamedCurveEcPublicKey() throws Exception {
         // These are the parameters for the BitCoin curve (secp256k1). See
