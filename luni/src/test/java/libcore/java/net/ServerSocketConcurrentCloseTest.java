@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -114,7 +115,7 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
             // Let server and client keep connecting for some time, then close the socket.
             for (int i = 0; i < maxSleepsPerIteration; i++) {
               Thread.sleep(sleepMsec);
-              if (serverRunnable.numSuccessfulConnections > 0) {
+              if (serverRunnable.numSuccessfulConnections.get() > 0) {
                 break;
               }
             }
@@ -139,7 +140,7 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
             // reducing the iteration time or number of iterations.
             assertTrue(String.format(Locale.US, "%s: No connections in %d msec.",
                     iterationName, maxSleepsPerIteration * sleepMsec),
-                    serverRunnable.numSuccessfulConnections > 0);
+                    serverRunnable.numSuccessfulConnections.get() > 0);
 
             assertTrue(serverRunnable.isShutdown());
             // Sanity check to ensure the threads don't live into the next iteration. This should
@@ -194,7 +195,7 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
      */
     static class ServerRunnable implements Runnable {
         private final ServerSocket serverSocket;
-        volatile int numSuccessfulConnections;
+        final AtomicInteger numSuccessfulConnections = new AtomicInteger();
         private final CountDownLatch startLatch = new CountDownLatch(1);
         private final CountDownLatch shutdownLatch = new CountDownLatch(1);
 
@@ -205,14 +206,12 @@ public class ServerSocketConcurrentCloseTest extends TestCase {
         @Override
         public void run() {
             startLatch.countDown();
-            int numSuccessfulConnections = 0;
             while (true) {
                 try {
                     Socket socket = serverSocket.accept();
-                    numSuccessfulConnections++;
+                    numSuccessfulConnections.incrementAndGet();
                     socket.close();
                 } catch (SocketException e) {
-                    this.numSuccessfulConnections = numSuccessfulConnections;
                     shutdownLatch.countDown();
                     return;
                 } catch (IOException e) {
