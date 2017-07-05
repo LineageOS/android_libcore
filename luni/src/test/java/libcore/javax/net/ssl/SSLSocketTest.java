@@ -64,6 +64,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -1816,9 +1817,17 @@ public class SSLSocketTest extends TestCase {
         client.startHandshake();
 
         // Reflection is used so this can compile on the RI
-        String expectedClassName = "com.android.org.conscrypt.OpenSSLSocketImpl";
+        String expectedClassName = "com.android.org.conscrypt.ConscryptFileDescriptorSocket";
         Class<?> actualClass = client.getClass();
         assertEquals(expectedClassName, actualClass.getName());
+        // The concrete class that Conscrypt returns has methods on it that have no
+        // equivalent on the public API (like setSoWriteTimeout), so users have
+        // previously used reflection to access those otherwise-inaccessible methods
+        // on that class.  The concrete class used to be named OpenSSLSocketImpl, so
+        // check that OpenSSLSocketImpl is still in the class hierarchy so applications
+        // that rely on getting that class back still work.
+        Class<?> superClass = actualClass.getSuperclass();
+        assertEquals("com.android.org.conscrypt.OpenSSLSocketImpl", superClass.getName());
         Method setSoWriteTimeout = actualClass.getMethod("setSoWriteTimeout",
                                                          new Class<?>[] { Integer.TYPE });
         setSoWriteTimeout.invoke(client, 1);
@@ -1853,7 +1862,7 @@ public class SSLSocketTest extends TestCase {
         SSLSocket client = (SSLSocket) c.clientContext.getSocketFactory().createSocket();
 
         // Reflection is used so this can compile on the RI
-        String expectedClassName = "com.android.org.conscrypt.OpenSSLSocketImpl";
+        String expectedClassName = "com.android.org.conscrypt.ConscryptFileDescriptorSocket";
         Class<?> actualClass = client.getClass();
         assertEquals(expectedClassName, actualClass.getName());
         Method setNpnProtocols = actualClass.getMethod("setNpnProtocols", byte[].class);
@@ -1989,7 +1998,12 @@ public class SSLSocketTest extends TestCase {
                     wrapping.startHandshake();
                     assertFalse(StandardNames.IS_RI);
                     wrapping.setSoTimeout(readingTimeoutMillis);
-                    assertEquals(-1, wrapping.getInputStream().read());
+                    wrapping.getInputStream().read();
+                    fail();
+                } catch (SocketException e) {
+                    // Conscrypt throws an exception complaining that the socket is closed
+                    // if it's interrupted by a close() in the middle of a read()
+                    assertTrue(e.getMessage().contains("closed"));
                 } catch (Exception e) {
                     if (!StandardNames.IS_RI) {
                         throw e;
