@@ -1950,7 +1950,7 @@ public class SSLSocketTest extends TestCase {
             fail();
         } catch (SocketTimeoutException e) {
             throw e;
-        } catch (SocketException expected) {
+        } catch (IOException expected) {
         }
         future.get();
 
