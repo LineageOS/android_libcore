@@ -80,6 +80,7 @@ public class TimeZoneFinder {
 
     // VisibleForTesting
     public static TimeZoneFinder createInstanceWithFallback(String... tzLookupFilePaths) {
+        IOException lastException = null;
         for (String tzLookupFilePath : tzLookupFilePaths) {
             try {
                 // We assume that any file in /data was validated before install, and the system
@@ -87,12 +88,18 @@ public class TimeZoneFinder {
                 // validation cost here.
                 return createInstance(tzLookupFilePath);
             } catch (IOException e) {
-                System.logE("Unable to process file: " + tzLookupFilePath + " Trying next one.", e);
+                // There's expected to be two files, and it's normal for the first file not to
+                // exist so we don't log, but keep the lastException so we can log it if there
+                // are no valid files available.
+                if (lastException != null) {
+                    e.addSuppressed(lastException);
+                }
+                lastException = e;
             }
         }
 
         System.logE("No valid file found in set: " + Arrays.toString(tzLookupFilePaths)
-                + " Falling back to empty map.");
+                + " Printing exceptions and falling back to empty map.", lastException);
         return createInstanceForTests("<timezones><countryzones /></timezones>");
     }
 
