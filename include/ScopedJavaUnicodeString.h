@@ -56,7 +56,7 @@ class ScopedJavaUnicodeString {
  private:
   JNIEnv* mEnv;
   jstring mString;
-  const UChar* mChars;
+  const jchar* mChars;
   icu::UnicodeString mUnicodeString;
 
   // Disallow copy and assignment.

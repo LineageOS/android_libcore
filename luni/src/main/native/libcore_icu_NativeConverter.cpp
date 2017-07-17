@@ -224,11 +224,11 @@ static jint NativeConverter_encode(JNIEnv* env, jclass, jlong address,
     jint* sourceOffset = &myData[0];
     jint* targetOffset = &myData[1];
     const jchar* mySource = uSource.get() + *sourceOffset;
-    const UChar* mySourceLimit= uSource.get() + sourceEnd;
+    const UChar* mySourceLimit= reinterpret_cast<const UChar*>(uSource.get()) + sourceEnd;
     char* cTarget = reinterpret_cast<char*>(uTarget.get() + *targetOffset);
     const char* cTargetLimit = reinterpret_cast<const char*>(uTarget.get() + targetEnd);
     UErrorCode errorCode = U_ZERO_ERROR;
-    ucnv_fromUnicode(cnv , &cTarget, cTargetLimit, &mySource, mySourceLimit, NULL, (UBool) flush, &errorCode);
+    ucnv_fromUnicode(cnv, &cTarget, cTargetLimit, reinterpret_cast<const UChar**>(&mySource), mySourceLimit, NULL, (UBool) flush, &errorCode);
     *sourceOffset = (mySource - uSource.get()) - *sourceOffset;
     *targetOffset = (reinterpret_cast<jbyte*>(cTarget) - uTarget.get());
 
@@ -281,12 +281,12 @@ static jint NativeConverter_decode(JNIEnv* env, jclass, jlong address,
     jint* targetOffset = &myData[1];
     const char* mySource = reinterpret_cast<const char*>(uSource.get() + *sourceOffset);
     const char* mySourceLimit = reinterpret_cast<const char*>(uSource.get() + sourceEnd);
-    UChar* cTarget = uTarget.get() + *targetOffset;
-    const UChar* cTargetLimit = uTarget.get() + targetEnd;
+    UChar* cTarget = reinterpret_cast<UChar*>(uTarget.get()) + *targetOffset;
+    const UChar* cTargetLimit = reinterpret_cast<UChar*>(uTarget.get()) + targetEnd;
     UErrorCode errorCode = U_ZERO_ERROR;
     ucnv_toUnicode(cnv, &cTarget, cTargetLimit, &mySource, mySourceLimit, NULL, flush, &errorCode);
     *sourceOffset = mySource - reinterpret_cast<const char*>(uSource.get()) - *sourceOffset;
-    *targetOffset = cTarget - uTarget.get() - *targetOffset;
+    *targetOffset = cTarget - reinterpret_cast<UChar*>(uTarget.get()) - *targetOffset;
 
     // If there was an error, count the problematic bytes.
     if (errorCode == U_ILLEGAL_CHAR_FOUND || errorCode == U_INVALID_CHAR_FOUND ||
@@ -510,7 +510,7 @@ static void NativeConverter_setCallbackDecode(JNIEnv* env, jclass, jlong address
         maybeThrowIcuException(env, "replacement", U_ILLEGAL_ARGUMENT_ERROR);
         return;
     }
-    u_strncpy(callbackContext->replacementChars, replacement.get(), replacement.size());
+    u_strncpy(callbackContext->replacementChars, reinterpret_cast<const UChar*>(replacement.get()), replacement.size());
     callbackContext->replacementCharCount = replacement.size();
 
     UErrorCode errorCode = U_ZERO_ERROR;
