@@ -22,6 +22,7 @@
 
 #include "JniConstants.h"
 #include "JniException.h"
+#include "JNIHelp.h"
 #include "ScopedLocalRef.h"
 #include "ScopedUtfChars.h"
 #include "unicode/strenum.h"
@@ -44,7 +45,7 @@ jobjectArray fromStringEnumeration(JNIEnv* env, UErrorCode& status, const char* 
     if (maybeThrowIcuException(env, "StringEnumeration::snext", status)) {
       return NULL;
     }
-    ScopedLocalRef<jstring> javaString(env, env->NewString(string->getBuffer(), string->length()));
+    ScopedLocalRef<jstring> javaString(env, jniCreateString(env, string->getBuffer(), string->length()));
     env->SetObjectArrayElement(result, i, javaString.get());
   }
   return result;
