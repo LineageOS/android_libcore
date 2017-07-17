@@ -423,16 +423,23 @@ static jobject makeStructPasswd(JNIEnv* env, const struct passwd& pw) {
             pw_name, static_cast<jint>(pw.pw_uid), static_cast<jint>(pw.pw_gid), pw_dir, pw_shell);
 }
 
+static jobject makeStructTimespec(JNIEnv* env, const struct timespec& ts) {
+    static jmethodID ctor = env->GetMethodID(JniConstants::structTimespecClass, "<init>",
+            "(JJ)V");
+    return env->NewObject(JniConstants::structTimespecClass, ctor,
+            static_cast<jlong>(ts.tv_sec), static_cast<jlong>(ts.tv_nsec));
+}
+
 static jobject makeStructStat(JNIEnv* env, const struct stat64& sb) {
     static jmethodID ctor = env->GetMethodID(JniConstants::structStatClass, "<init>",
-            "(JJIJIIJJJJJJJ)V");
+            "(JJIJIIJJLandroid/system/StructTimespec;Landroid/system/StructTimespec;Landroid/system/StructTimespec;JJ)V");
     return env->NewObject(JniConstants::structStatClass, ctor,
             static_cast<jlong>(sb.st_dev), static_cast<jlong>(sb.st_ino),
             static_cast<jint>(sb.st_mode), static_cast<jlong>(sb.st_nlink),
             static_cast<jint>(sb.st_uid), static_cast<jint>(sb.st_gid),
             static_cast<jlong>(sb.st_rdev), static_cast<jlong>(sb.st_size),
-            static_cast<jlong>(sb.st_atime), static_cast<jlong>(sb.st_mtime),
-            static_cast<jlong>(sb.st_ctime), static_cast<jlong>(sb.st_blksize),
+            makeStructTimespec(env, sb.st_atim), makeStructTimespec(env, sb.st_mtim),
+            makeStructTimespec(env, sb.st_ctim), static_cast<jlong>(sb.st_blksize),
             static_cast<jlong>(sb.st_blocks));
 }
 
