@@ -20,6 +20,7 @@ import android.system.ErrnoException;
 import android.system.NetlinkSocketAddress;
 import android.system.OsConstants;
 import android.system.PacketSocketAddress;
+import android.system.StructStat;
 import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.UnixSocketAddress;
@@ -783,4 +784,23 @@ public class OsTest extends TestCase {
       assertEquals(srcSock.getLocalPort(), address.getPort());
     }
   }
+
+  public void test_fstat_times() throws Exception {
+    File file = File.createTempFile("OsTest", "fstattest");
+    FileOutputStream fos = new FileOutputStream(file);
+    StructStat structStat1 = Libcore.os.fstat(fos.getFD());
+    assertEquals(structStat1.st_mtim.tv_sec, structStat1.st_mtime);
+    assertEquals(structStat1.st_ctim.tv_sec, structStat1.st_ctime);
+    assertEquals(structStat1.st_atim.tv_sec, structStat1.st_atime);
+    Thread.sleep(100);
+    fos.write(new byte[]{1,2,3});
+    fos.flush();
+    StructStat structStat2 = Libcore.os.fstat(fos.getFD());
+    fos.close();
+
+    assertEquals(-1, structStat1.st_mtim.compareTo(structStat2.st_mtim));
+    assertEquals(-1, structStat1.st_ctim.compareTo(structStat2.st_ctim));
+    assertEquals(0, structStat1.st_atim.compareTo(structStat2.st_atim));
+  }
+
 }
