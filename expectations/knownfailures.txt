@@ -89,23 +89,6 @@
   bug: 2985901
 },
 {
-  description: "UTF-16 and UTF-32 encoders don't write big-endian output on little-endian devices",
-  names: [
-    "libcore.java.nio.charset.CharsetEncoderTest#test_defaultReplacementBytesUtf_16",
-    "libcore.java.nio.charset.OldCharset_MultiByte_UTF_16#test_Encode",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_16",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_16BE",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_16LE",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_32",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_32BE",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_UTF_32LE",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_x_UTF_16LE_BOM",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_X_UTF_32BE_BOM",
-    "org.apache.harmony.tests.java.nio.charset.CharsetTest#test_X_UTF_32LE_BOM"
-  ],
-  bug: 2702411
-},
-{
   description: "It's not allowed to pass null as parent class loader to a new ClassLoader anymore. Maybe we need
                 to change URLClassLoader to allow this? It's not specified.",
   result: EXEC_FAILED,
