@@ -18,15 +18,15 @@
 
 #include <memory>
 
+#include <nativehelper/JNIHelp.h>
+#include <nativehelper/JniConstants.h>
+#include <nativehelper/ScopedLocalRef.h>
+#include <nativehelper/ScopedUtfChars.h>
+
 #include "IcuUtilities.h"
-#include "JNIHelp.h"
-#include "JniConstants.h"
 #include "JniException.h"
-#include "JNIHelp.h"
 #include "ScopedIcuLocale.h"
 #include "ScopedJavaUnicodeString.h"
-#include "ScopedLocalRef.h"
-#include "ScopedUtfChars.h"
 #include "unicode/calendar.h"
 #include "unicode/timezone.h"
 #include "unicode/tznames.h"

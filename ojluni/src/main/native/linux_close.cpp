@@ -38,7 +38,7 @@
 #include <sys/poll.h>
 
 
-#include "AsynchronousCloseMonitor.h"
+#include <nativehelper/AsynchronousCloseMonitor.h>
 
 extern "C" {
 
