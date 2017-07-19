@@ -30,7 +30,7 @@
 #include "jvm.h"
 #include "jlong.h"
 #include "nio_util.h"
-#include "JNIHelp.h"
+#include <nativehelper/JNIHelp.h>
 
 #ifdef __linux__
   #include <pthread.h>

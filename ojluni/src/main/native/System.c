@@ -37,7 +37,7 @@
 
 #include "openssl/opensslv.h"
 #include "zlib.h"
-#include "JNIHelp.h"
+#include <nativehelper/JNIHelp.h>
 #if defined(__ANDROID__)
 void android_get_LD_LIBRARY_PATH(char*, size_t);
 #endif

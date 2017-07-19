@@ -17,9 +17,9 @@
 #define LOG_TAG "NetworkUtilities"
 
 #include "NetworkUtilities.h"
-#include "JNIHelp.h"
-#include "JniConstants.h"
-#include "ScopedLocalRef.h"
+#include <nativehelper/JNIHelp.h>
+#include <nativehelper/JniConstants.h>
+#include <nativehelper/ScopedLocalRef.h>
 
 #include <arpa/inet.h>
 #include <fcntl.h>

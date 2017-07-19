@@ -22,16 +22,16 @@
 #include <vector>
 
 #include <android/log.h>
+#include <nativehelper/JNIHelp.h>
+#include <nativehelper/JniConstants.h>
+#include <nativehelper/ScopedLocalRef.h>
+#include <nativehelper/ScopedPrimitiveArray.h>
+#include <nativehelper/ScopedStringChars.h>
+#include <nativehelper/ScopedUtfChars.h>
+#include <nativehelper/toStringArray.h>
 
 #include "IcuUtilities.h"
-#include "JNIHelp.h"
-#include "JniConstants.h"
 #include "JniException.h"
-#include "ScopedLocalRef.h"
-#include "ScopedPrimitiveArray.h"
-#include "ScopedStringChars.h"
-#include "ScopedUtfChars.h"
-#include "toStringArray.h"
 #include "unicode/ucnv.h"
 #include "unicode/ucnv_cb.h"
 #include "unicode/uniset.h"
