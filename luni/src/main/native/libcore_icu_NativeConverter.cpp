@@ -157,6 +157,19 @@ static jstring getJavaCanonicalName(JNIEnv* env, const char* icuCanonicalName) {
   return env->NewStringUTF(&result[0]);
 }
 
+// Returns a canonical ICU converter name which may have a version number appended to it, based on
+// the normal canonical name. This is used to determine the actual native converter to use (the
+// normal unversioned name is used to determine the aliases and the Java name).
+static char const * getVersionedIcuCanonicalName(char const * icuCanonicalName) {
+  if (strcmp(icuCanonicalName, "UTF-16") == 0) {
+    // The ICU UTF-16 converter encodes strings as platform-endian bytes with a BOM. The
+    // UTF-16,version=2 one encodes as big-endian with a BOM, as what the Charset javadoc requires.
+    return "UTF-16,version=2";
+  } else {
+    return icuCanonicalName;
+  }
+}
+
 static jlong NativeConverter_openConverter(JNIEnv* env, jclass, jstring converterName) {
     ScopedUtfChars converterNameChars(env, converterName);
     if (converterNameChars.c_str() == NULL) {
@@ -618,13 +631,14 @@ static jobject NativeConverter_charsetForName(JNIEnv* env, jclass, jstring chars
         return NULL;
     }
 
-    jstring icuCanonicalNameStr = env->NewStringUTF(icuCanonicalName);
+    char const * versionedIcuCanonicalName = getVersionedIcuCanonicalName(icuCanonicalName);
+    jstring versionedIcuCanonicalNameStr = env->NewStringUTF(versionedIcuCanonicalName);
     if (env->ExceptionCheck()) {
         return NULL;
     }
 
     return env->NewObject(JniConstants::charsetICUClass, charsetConstructor,
-            javaCanonicalName, icuCanonicalNameStr, javaAliases);
+            javaCanonicalName, versionedIcuCanonicalNameStr, javaAliases);
 }
 
 static void FreeNativeConverter(void *converter) {

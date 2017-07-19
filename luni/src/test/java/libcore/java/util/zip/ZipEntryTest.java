@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -39,12 +40,6 @@ public class ZipEntryTest extends junit.framework.TestCase {
   // tests is independent of the system clock.
   private static final long ENTRY_TIME = 1262304000000L; //  January 1, 2010 12:00:00 AM GMT
 
-  private static File createTemporaryZipFile() throws IOException {
-    File result = File.createTempFile("ZipFileTest", "zip");
-    result.deleteOnExit();
-    return result;
-  }
-
   private static ZipOutputStream createZipOutputStream(File f) throws IOException {
     return new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
   }
@@ -55,6 +50,23 @@ public class ZipEntryTest extends junit.framework.TestCase {
       sb.append(s);
     }
     return sb.toString();
+  }
+
+  private List<File> temporaryFiles = new ArrayList<>();
+
+  private File createTemporaryZipFile() throws IOException {
+    File result = File.createTempFile("ZipFileTest", "zip");
+    temporaryFiles.add(result);
+    return result;
+  }
+
+  @Override
+  public void tearDown() throws Exception {
+    for (File file : temporaryFiles) {
+      file.delete();
+    }
+    temporaryFiles.clear();
+    super.tearDown();
   }
 
   // http://code.google.com/p/android/issues/detail?id=4690
@@ -174,7 +186,7 @@ public class ZipEntryTest extends junit.framework.TestCase {
     checkSetTime(4134153600000L); // January 3, 2101 12:00:00 AM GMT
   }
 
-  private static void checkSetTime(long time) throws IOException {
+  private void checkSetTime(long time) throws IOException {
     File f = createTemporaryZipFile();
     ZipOutputStream out = createZipOutputStream(f);
     ZipEntry ze = new ZipEntry("x");
