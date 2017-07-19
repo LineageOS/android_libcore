@@ -16,8 +16,8 @@
 
 #define LOG_TAG "OsConstants"
 
-#include "JNIHelp.h"
-#include "JniConstants.h"
+#include <nativehelper/JNIHelp.h>
+#include <nativehelper/JniConstants.h>
 #include "Portability.h"
 
 #include <errno.h>
