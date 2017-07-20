@@ -124,8 +124,9 @@ public final class Matcher implements MatchResult {
             Matcher.class.getClassLoader(), getNativeFinalizer(), nativeSize());
 
     /**
-     * Holds the original CharSequence for {@link #reset} only. Any reference to the content after
-     * {@link #reset} can direct to {@link #input}.
+     * Holds the original CharSequence for use in {@link #reset}. {@link #input} is used during
+     * matching. Note that CharSequence is mutable while String is not, so reset can cause the input
+     * to match to change.
      */
     private CharSequence originalInput;
 
