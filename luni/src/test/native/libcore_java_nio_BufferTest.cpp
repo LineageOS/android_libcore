@@ -15,7 +15,7 @@
  */
 
 #include <jni.h>
-#include "JNIHelp.h"
+#include <nativehelper/JNIHelp.h>
 
 extern "C" jlong Java_libcore_java_nio_BufferTest_jniGetDirectBufferAddress(
     JNIEnv* env, jobject /* clazz */, jobject buffer) {

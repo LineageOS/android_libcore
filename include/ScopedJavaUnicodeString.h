@@ -17,7 +17,7 @@
 #ifndef SCOPED_JAVA_UNICODE_STRING_H_included
 #define SCOPED_JAVA_UNICODE_STRING_H_included
 
-#include "JNIHelp.h"
+#include <nativehelper/JNIHelp.h>
 #include "unicode/unistr.h"
 
 // A smart pointer that provides access to an ICU UnicodeString given a JNI

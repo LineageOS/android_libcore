@@ -34,16 +34,16 @@
 
 #include <android-base/unique_fd.h>
 #include <log/log.h>
+#include <nativehelper/JNIHelp.h>
+#include <nativehelper/JniConstants.h>
+#include <nativehelper/ScopedLocalRef.h>
+#include <nativehelper/ScopedUtfChars.h>
+#include <nativehelper/toStringArray.h>
 
 #include "IcuUtilities.h"
-#include "JNIHelp.h"
-#include "JniConstants.h"
 #include "JniException.h"
 #include "ScopedIcuLocale.h"
 #include "ScopedJavaUnicodeString.h"
-#include "ScopedLocalRef.h"
-#include "ScopedUtfChars.h"
-#include "toStringArray.h"
 #include "unicode/brkiter.h"
 #include "unicode/calendar.h"
 #include "unicode/datefmt.h"
