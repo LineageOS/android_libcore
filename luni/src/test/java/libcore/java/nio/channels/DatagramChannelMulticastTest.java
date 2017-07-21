@@ -441,6 +441,7 @@ public class DatagramChannelMulticastTest extends TestCase {
 
         DatagramChannel dc = createReceiverChannel();
         dc.setOption(StandardSocketOptions.IP_MULTICAST_LOOP, true /* enable loop */);
+        dc.setOption(StandardSocketOptions.IP_MULTICAST_IF, networkInterface);
         configureChannelForReceiving(dc);
         dc.join(group, networkInterface);
 
