@@ -48,6 +48,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1593,36 +1594,87 @@ public class DecimalFormat extends NumberFormat {
         ObjectInputStream.GetField fields = stream.readFields();
         this.symbols = (DecimalFormatSymbols) fields.get("symbols", null);
 
-        init("");
+        init("#");
 
-        icuDecimalFormat.setPositivePrefix((String) fields.get("positivePrefix", ""));
-        icuDecimalFormat.setPositiveSuffix((String) fields.get("positiveSuffix", ""));
-        icuDecimalFormat.setNegativePrefix((String) fields.get("negativePrefix", "-"));
-        icuDecimalFormat.setNegativeSuffix((String) fields.get("negativeSuffix", ""));
-        icuDecimalFormat.setMultiplier(fields.get("multiplier", 1));
-        icuDecimalFormat.setGroupingSize(fields.get("groupingSize", (byte) 3));
-        icuDecimalFormat.setGroupingUsed(fields.get("groupingUsed", true));
-        icuDecimalFormat.setDecimalSeparatorAlwaysShown(fields.get("decimalSeparatorAlwaysShown",
-                false));
+        // Calling a setter method on an ICU DecimalFormat object will change the object's internal
+        // state, even if the value set is the same as the default value (ICU Ticket #13266).
+        //
+        // In an attempt to create objects that are equals() to the ones that were serialized, it's
+        // therefore assumed here that any values that are the same as the default values were the
+        // default values (ie. no setter was called to explicitly set that value).
 
-        setRoundingMode((RoundingMode) fields.get("roundingMode", RoundingMode.HALF_EVEN));
+        String positivePrefix = (String) fields.get("positivePrefix", "");
+        if (!Objects.equals(positivePrefix, icuDecimalFormat.getPositivePrefix())) {
+            icuDecimalFormat.setPositivePrefix(positivePrefix);
+        }
 
-        final int maximumIntegerDigits = fields.get("maximumIntegerDigits", 309);
-        final int minimumIntegerDigits = fields.get("minimumIntegerDigits", 309);
-        final int maximumFractionDigits = fields.get("maximumFractionDigits", 340);
-        final int minimumFractionDigits = fields.get("minimumFractionDigits", 340);
-        // Tell ICU what we want, then ask it what we can have, and then
-        // set that in our Java object. This isn't RI-compatible, but then very little of our
-        // behavior in this area is, and it's not obvious how we can second-guess ICU (or tell
-        // it to just do exactly what we ask). We only need to do this with maximumIntegerDigits
-        // because ICU doesn't seem to have its own ideas about the other options.
-        icuDecimalFormat.setMaximumIntegerDigits(maximumIntegerDigits);
-        super.setMaximumIntegerDigits(icuDecimalFormat.getMaximumIntegerDigits());
+        String positiveSuffix = (String) fields.get("positiveSuffix", "");
+        if (!Objects.equals(positiveSuffix, icuDecimalFormat.getPositiveSuffix())) {
+            icuDecimalFormat.setPositiveSuffix(positiveSuffix);
+        }
 
-        setMinimumIntegerDigits(minimumIntegerDigits);
-        setMinimumFractionDigits(minimumFractionDigits);
-        setMaximumFractionDigits(maximumFractionDigits);
-        setParseBigDecimal(fields.get("parseBigDecimal", false));
+        String negativePrefix = (String) fields.get("negativePrefix", "-");
+        if (!Objects.equals(negativePrefix, icuDecimalFormat.getNegativePrefix())) {
+            icuDecimalFormat.setNegativePrefix(negativePrefix);
+        }
+
+        String negativeSuffix = (String) fields.get("negativeSuffix", "");
+        if (!Objects.equals(negativeSuffix, icuDecimalFormat.getNegativeSuffix())) {
+            icuDecimalFormat.setNegativeSuffix(negativeSuffix);
+        }
+
+        int multiplier = fields.get("multiplier", 1);
+        if (multiplier != icuDecimalFormat.getMultiplier()) {
+            icuDecimalFormat.setMultiplier(multiplier);
+        }
+
+        boolean groupingUsed = fields.get("groupingUsed", true);
+        if (groupingUsed != icuDecimalFormat.isGroupingUsed()) {
+            icuDecimalFormat.setGroupingUsed(groupingUsed);
+        }
+
+        int groupingSize = fields.get("groupingSize", (byte) 3);
+        if (groupingSize != icuDecimalFormat.getGroupingSize()) {
+            icuDecimalFormat.setGroupingSize(groupingSize);
+        }
+
+        boolean decimalSeparatorAlwaysShown = fields.get("decimalSeparatorAlwaysShown", false);
+        if (decimalSeparatorAlwaysShown != icuDecimalFormat.isDecimalSeparatorAlwaysShown()) {
+            icuDecimalFormat.setDecimalSeparatorAlwaysShown(decimalSeparatorAlwaysShown);
+        }
+
+        RoundingMode roundingMode =
+                (RoundingMode) fields.get("roundingMode", RoundingMode.HALF_EVEN);
+        if (convertRoundingMode(roundingMode) != icuDecimalFormat.getRoundingMode()) {
+            setRoundingMode(roundingMode);
+        }
+
+        int maximumIntegerDigits = fields.get("maximumIntegerDigits", 309);
+        if (maximumIntegerDigits != icuDecimalFormat.getMaximumIntegerDigits()) {
+            icuDecimalFormat.setMaximumIntegerDigits(maximumIntegerDigits);
+        }
+
+        int minimumIntegerDigits = fields.get("minimumIntegerDigits", 309);
+        if (minimumIntegerDigits != icuDecimalFormat.getMinimumIntegerDigits()) {
+            icuDecimalFormat.setMinimumIntegerDigits(minimumIntegerDigits);
+        }
+
+        int maximumFractionDigits = fields.get("maximumFractionDigits", 340);
+        if (maximumFractionDigits != icuDecimalFormat.getMaximumFractionDigits()) {
+            icuDecimalFormat.setMaximumFractionDigits(maximumFractionDigits);
+        }
+
+        int minimumFractionDigits = fields.get("minimumFractionDigits", 340);
+        if (minimumFractionDigits != icuDecimalFormat.getMinimumFractionDigits()) {
+            icuDecimalFormat.setMinimumFractionDigits(minimumFractionDigits);
+        }
+
+        boolean parseBigDecimal = fields.get("parseBigDecimal", true);
+        if (parseBigDecimal != icuDecimalFormat.isParseBigDecimal()) {
+            icuDecimalFormat.setParseBigDecimal(parseBigDecimal);
+        }
+
+        updateFieldsFromIcu();
 
         if (fields.get("serialVersionOnStream", 0) < 3) {
             setMaximumIntegerDigits(super.getMaximumIntegerDigits());
