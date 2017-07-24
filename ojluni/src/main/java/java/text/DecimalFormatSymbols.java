@@ -757,6 +757,10 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         cachedIcuDFS.setDigit(digit);
         cachedIcuDFS.setDecimalSeparator(decimalSeparator);
         cachedIcuDFS.setGroupingSeparator(groupingSeparator);
+        // {@link #setGroupingSeparator(char)} should set grouping separator for currency, but
+        // ICU has a separate API setMonetaryGroupingSeparator. Need to call it explicitly here.
+        // http://b/38021063
+        cachedIcuDFS.setMonetaryGroupingSeparator(groupingSeparator);
         cachedIcuDFS.setPatternSeparator(patternSeparator);
         cachedIcuDFS.setPercent(percent);
         cachedIcuDFS.setMonetaryDecimalSeparator(monetarySeparator);
