@@ -335,4 +335,42 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         localeCurrencyFormat.setCurrency(currency);
         return localeCurrencyFormat.format(1000);
     }
+
+    /**
+     * DecimalFormat doesn't support different group separator for currency and non-currency
+     * number formats. Ensure normal group separator is used, and ignore monetary group separator
+     * when formatting currency. http://b/37135768
+     */
+    public void testLocaleGroupingSeparator() {
+        // CLDR uses '.' for currency and '\u00a0' for non-currency number formats in de_AT
+        // Assert ICU is using these characters
+        Locale locale = new Locale("de", "AT");
+        android.icu.text.DecimalFormatSymbols icuDfs =
+                new android.icu.text.DecimalFormatSymbols(locale);
+        assertEquals(icuDfs.getGroupingSeparator(), '\u00a0');
+        assertEquals(icuDfs.getMonetaryGroupingSeparator(), '.');
+
+        // In this class, only '\u00a0' should be used for both cases.
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols(locale);
+        // Assert CLDR uses '\u00a0' as grouping separator
+        assertEquals(dfs.getGroupingSeparator(), '\u00a0');
+
+        // Test non-currency number formats
+        assertEquals("1\u00a0234,00", new DecimalFormat("#,##0.00", dfs).format(1234));
+        // Test currency format
+        assertEquals("\u20ac1\u00a0234,00", new DecimalFormat("¤#,##0.00", dfs).format(1234));
+    }
+
+    /**
+     * Test {@link DecimalFormatSymbols#setGroupingSeparator(char)} for currency and non-currency
+     * number formats. http://b/37135768
+     */
+    public void testSetGroupingSeparator() {
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
+        dfs.setGroupingSeparator(' ');
+        // Test non-currency number formats
+        assertEquals("1 234.00", new DecimalFormat("#,##0.00", dfs).format(1234));
+        // Test currency format
+        assertEquals("$1 234.00", new DecimalFormat("¤#,##0.00", dfs).format(1234));
+    }
 }
