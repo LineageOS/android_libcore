@@ -16,11 +16,23 @@
 
 package libcore.javax.net.ssl;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
+import junit.framework.TestCase;
 import libcore.java.security.StandardNames;
 import libcore.java.security.TestKeyStore;
-import java.util.Arrays;
-import javax.net.ssl.SSLPeerUnverifiedException;
-import junit.framework.TestCase;
+
 
 public class SSLSessionTest extends TestCase {
 
@@ -309,5 +321,48 @@ public class SSLSessionTest extends TestCase {
         assertNull(s.invalid.getValue(key));
         assertEquals(0, s.invalid.getValueNames().length);
         s.close();
+    }
+
+    private static String alterOriginalHostName(InetAddress inetAddress, String originalHostName)
+           throws Exception {
+        Method getHolder = InetAddress.class.getDeclaredMethod("holder");
+        getHolder.setAccessible(true);
+
+        Field originalHostNameField = Class.forName("java.net.InetAddress$InetAddressHolder")
+            .getDeclaredField("originalHostName");
+        originalHostNameField.setAccessible(true);
+
+        Object holder = getHolder.invoke(inetAddress);
+        String oldValue = (String)originalHostNameField.get(holder);
+        originalHostNameField.set(holder, originalHostName);
+        return oldValue;
+    }
+
+    // http://b/35942385
+    public void test_SSLSession_getPeerHostFromInetAddress() throws Exception {
+        InetAddress inetAddress = InetAddress.getByName("localhost");
+        String oldOriginalHostName = alterOriginalHostName(inetAddress, "foobar");
+        try {
+            final TestSSLContext c = TestSSLContext.create();
+            final SSLSocket client = (SSLSocket) c.clientContext.getSocketFactory().createSocket(
+                    InetAddress.getByName("localhost"), c.port);
+            final SSLSocket server = (SSLSocket) c.serverSocket.accept();
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            Future<Void> future = executor.submit(() -> {server.startHandshake(); return null;});
+            executor.shutdown();
+            client.startHandshake();
+
+            SSLSession sslSession = client.getSession();
+            assertEquals("foobar", sslSession.getPeerHost());
+
+            future.get();
+            client.close();
+            server.close();
+            c.close();
+        } finally {
+            // Restore the original value (InetAddress objects are cached).
+            alterOriginalHostName(inetAddress, oldOriginalHostName);
+        }
     }
 }
