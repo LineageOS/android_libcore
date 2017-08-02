@@ -123,11 +123,13 @@ class Inet4Address extends InetAddress {
                 holder().address = address;
             }
         }
+        holder().originalHostName = hostName;
     }
     Inet4Address(String hostName, int address) {
         holder().hostName = hostName;
         holder().family = AF_INET;
         holder().address = address;
+        holder().originalHostName = hostName;
     }
 
     /**
