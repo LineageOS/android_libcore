@@ -53,7 +53,8 @@ public final class BaseDexClassLoaderTest extends TestCase {
         Reporter reporter = new Reporter();
         BaseDexClassLoader.setReporter(reporter);
         // Load the jar file using a PathClassLoader.
-        BaseDexClassLoader cl1 = new PathClassLoader(jar.getPath(), pcl);
+        BaseDexClassLoader cl1 = new PathClassLoader(jar.getPath(),
+            ClassLoader.getSystemClassLoader());
 
         // Verify the reporter files.
         assertEquals(2, reporter.loadedDexPaths.size());
@@ -63,7 +64,7 @@ public final class BaseDexClassLoaderTest extends TestCase {
         assertEquals(jar.getPath(), reporter.loadedDexPaths.get(0));
         assertEquals(cl1, reporter.classLoaders.get(0));
         // Second class loader should be the system class loader.
-        assertEquals(System.getProperty("java.class.path", "."), reporter.loadedDexPaths.get(1));
+        // Don't check the actual classpath as that might vary based on system properties.
         assertEquals(ClassLoader.getSystemClassLoader(), reporter.classLoaders.get(1));
 
         // Reset the reporter and check we don't report anymore.
@@ -78,8 +79,6 @@ public final class BaseDexClassLoaderTest extends TestCase {
 
         assertEquals(jar.getPath(), reporter.loadedDexPaths.get(0));
         assertEquals(cl1, reporter.classLoaders.get(0));
-
-        assertEquals(System.getProperty("java.class.path", "."), reporter.loadedDexPaths.get(1));
         assertEquals(ClassLoader.getSystemClassLoader(), reporter.classLoaders.get(1));
 
         // Clean up the extracted jar file.
