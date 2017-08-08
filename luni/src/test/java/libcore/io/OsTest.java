@@ -20,6 +20,7 @@ import android.system.ErrnoException;
 import android.system.NetlinkSocketAddress;
 import android.system.OsConstants;
 import android.system.PacketSocketAddress;
+import android.system.StructRlimit;
 import android.system.StructStat;
 import android.system.StructTimeval;
 import android.system.StructUcred;
@@ -803,4 +804,12 @@ public class OsTest extends TestCase {
     assertEquals(0, structStat1.st_atim.compareTo(structStat2.st_atim));
   }
 
+  public void test_getrlimit() throws Exception {
+    StructRlimit rlimit = Libcore.os.getrlimit(OsConstants.RLIMIT_NOFILE);
+    // We can't really make any assertions about these values since they might vary from
+    // device to device and even process to process. We do know that they will be greater
+    // than zero, though.
+    assertTrue(rlimit.rlim_cur > 0);
+    assertTrue(rlimit.rlim_max > 0);
+  }
 }
