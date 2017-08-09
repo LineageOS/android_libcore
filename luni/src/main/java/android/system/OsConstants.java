@@ -398,6 +398,7 @@ public final class OsConstants {
     public static final int PROT_READ = placeholder();
     public static final int PROT_WRITE = placeholder();
     public static final int R_OK = placeholder();
+    /** @hide */ public static final int RLIMIT_NOFILE = placeholder();
     public static final int RT_SCOPE_HOST = placeholder();
     public static final int RT_SCOPE_LINK = placeholder();
     public static final int RT_SCOPE_NOWHERE = placeholder();
