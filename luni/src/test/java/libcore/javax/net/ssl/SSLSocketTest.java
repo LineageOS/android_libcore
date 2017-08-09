@@ -791,7 +791,7 @@ public class SSLSocketTest extends TestCase {
         try {
             test_SSLSocket_setUseClientMode(false, false);
             fail();
-        } catch (SocketTimeoutException expected) {
+        } catch (SocketTimeoutException|SSLHandshakeException expected) {
         }
     }
 
