@@ -2167,48 +2167,6 @@ static void Linux_setsockoptGroupReq(JNIEnv* env, jobject, jobject javaFd, jint 
     throwIfMinusOne(env, "setsockopt", rc);
 }
 
-static void Linux_setsockoptGroupSourceReq(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaGroupSourceReq) {
-    socklen_t sa_len;
-    struct group_source_req req;
-    memset(&req, 0, sizeof(req));
-
-    static jfieldID gsrInterfaceFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_interface", "I");
-    req.gsr_interface = env->GetIntField(javaGroupSourceReq, gsrInterfaceFid);
-    // Get the IPv4 or IPv6 multicast address to join or leave.
-    static jfieldID gsrGroupFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_group", "Ljava/net/InetAddress;");
-    ScopedLocalRef<jobject> javaGroup(env, env->GetObjectField(javaGroupSourceReq, gsrGroupFid));
-    if (!inetAddressToSockaddrVerbatim(env, javaGroup.get(), 0, req.gsr_group, sa_len)) {
-        return;
-    }
-
-    // Get the IPv4 or IPv6 multicast address to add to the filter.
-    static jfieldID gsrSourceFid = env->GetFieldID(JniConstants::structGroupSourceReqClass, "gsr_source", "Ljava/net/InetAddress;");
-    ScopedLocalRef<jobject> javaSource(env, env->GetObjectField(javaGroupSourceReq, gsrSourceFid));
-    if (!inetAddressToSockaddrVerbatim(env, javaSource.get(), 0, req.gsr_source, sa_len)) {
-        return;
-    }
-
-    int fd = jniGetFDFromFileDescriptor(env, javaFd);
-    int rc = TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &req, sizeof(req)));
-    if (rc == -1 && errno == EINVAL) {
-        // Maybe we're a 32-bit binary talking to a 64-bit kernel?
-        // glibc doesn't automatically handle this.
-        // http://sourceware.org/bugzilla/show_bug.cgi?id=12080
-        struct group_source_req64 {
-            uint32_t gsr_interface;
-            uint32_t my_padding;
-            sockaddr_storage gsr_group;
-            sockaddr_storage gsr_source;
-        };
-        group_source_req64 req64;
-        req64.gsr_interface = req.gsr_interface;
-        memcpy(&req64.gsr_group, &req.gsr_group, sizeof(req.gsr_group));
-        memcpy(&req64.gsr_source, &req.gsr_source, sizeof(req.gsr_source));
-        rc = TEMP_FAILURE_RETRY(setsockopt(fd, level, option, &req64, sizeof(req64)));
-    }
-    throwIfMinusOne(env, "setsockopt", rc);
-}
-
 static void Linux_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaLinger) {
     static jfieldID lOnoffFid = env->GetFieldID(JniConstants::structLingerClass, "l_onoff", "I");
     static jfieldID lLingerFid = env->GetFieldID(JniConstants::structLingerClass, "l_linger", "I");
@@ -2501,7 +2459,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, setsockoptInt, "(Ljava/io/FileDescriptor;III)V"),
     NATIVE_METHOD(Linux, setsockoptIpMreqn, "(Ljava/io/FileDescriptor;III)V"),
     NATIVE_METHOD(Linux, setsockoptGroupReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupReq;)V"),
-    NATIVE_METHOD(Linux, setsockoptGroupSourceReq, "(Ljava/io/FileDescriptor;IILandroid/system/StructGroupSourceReq;)V"),
     NATIVE_METHOD(Linux, setsockoptLinger, "(Ljava/io/FileDescriptor;IILandroid/system/StructLinger;)V"),
     NATIVE_METHOD(Linux, setsockoptTimeval, "(Ljava/io/FileDescriptor;IILandroid/system/StructTimeval;)V"),
     NATIVE_METHOD(Linux, setuid, "(I)V"),

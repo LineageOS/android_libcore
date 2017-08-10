@@ -23,7 +23,6 @@ import android.system.StructCapUserData;
 import android.system.StructCapUserHeader;
 import android.system.StructFlock;
 import android.system.StructGroupReq;
-import android.system.StructGroupSourceReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
 import android.system.StructPasswd;
@@ -244,7 +243,6 @@ public final class Linux implements Os {
     public native void setsockoptInt(FileDescriptor fd, int level, int option, int value) throws ErrnoException;
     public native void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException;
     public native void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException;
-    public native void setsockoptGroupSourceReq(FileDescriptor fd, int level, int option, StructGroupSourceReq value) throws ErrnoException;
     public native void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException;
     public native void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException;
     public native void setuid(int uid) throws ErrnoException;

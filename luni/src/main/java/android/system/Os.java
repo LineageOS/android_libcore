@@ -516,7 +516,6 @@ public final class Os {
 
   /** @hide */ public static void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptIpMreqn(fd, level, option, value); }
   /** @hide */ public static void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException { Libcore.os.setsockoptGroupReq(fd, level, option, value); }
-  /** @hide */ public static void setsockoptGroupSourceReq(FileDescriptor fd, int level, int option, StructGroupSourceReq value) throws ErrnoException { Libcore.os.setsockoptGroupSourceReq(fd, level, option, value); }
   /** @hide */ public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
   /** @hide */ public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
