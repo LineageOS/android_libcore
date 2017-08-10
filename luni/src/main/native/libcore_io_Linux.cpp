@@ -1324,7 +1324,9 @@ static jobject Linux_getrlimit(JNIEnv* env, jobject, jint resource) {
 
     ScopedLocalRef<jclass> rlimit_class(env, env->FindClass("android/system/StructRlimit"));
     jmethodID ctor = env->GetMethodID(rlimit_class.get(), "<init>", "(JJ)V");
-    return env->NewObject(rlimit_class.get(), ctor, r.rlim_cur, r.rlim_max);
+    return env->NewObject(rlimit_class.get(), ctor,
+                          static_cast<jlong>(r.rlim_cur),
+                          static_cast<jlong>(r.rlim_max));
 }
 
 static jobject Linux_getsockname(JNIEnv* env, jobject, jobject javaFd) {
