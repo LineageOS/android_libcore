@@ -91,6 +91,9 @@ openjdk_cflags := $(libart_cflags) \
     -Wno-constant-logical-operand \
     -Wno-sometimes-uninitialized
 
+# TODO(http://b/64362645): remove when upstream replaces readdir_r with readdir.
+openjdk_cflags += -Wno-deprecated-declarations
+
 core_test_files := \
   luni/src/test/native/dalvik_system_JniTest.cpp \
   luni/src/test/native/libcore_java_io_FileTest.cpp \
