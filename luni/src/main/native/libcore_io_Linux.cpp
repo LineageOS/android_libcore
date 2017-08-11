@@ -33,6 +33,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
+#include <sys/resource.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>
@@ -1315,6 +1316,19 @@ static jobject Linux_getpwuid(JNIEnv* env, jobject, jint uid) {
     return Passwd(env).getpwuid(uid);
 }
 
+static jobject Linux_getrlimit(JNIEnv* env, jobject, jint resource) {
+    struct rlimit r;
+    if (throwIfMinusOne(env, "getrlimit", TEMP_FAILURE_RETRY(getrlimit(resource, &r))) == -1) {
+        return nullptr;
+    }
+
+    ScopedLocalRef<jclass> rlimit_class(env, env->FindClass("android/system/StructRlimit"));
+    jmethodID ctor = env->GetMethodID(rlimit_class.get(), "<init>", "(JJ)V");
+    return env->NewObject(rlimit_class.get(), ctor,
+                          static_cast<jlong>(r.rlim_cur),
+                          static_cast<jlong>(r.rlim_max));
+}
+
 static jobject Linux_getsockname(JNIEnv* env, jobject, jobject javaFd) {
   return doGetSockName(env, javaFd, true);
 }
@@ -2421,6 +2435,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, getppid, "()I"),
     NATIVE_METHOD(Linux, getpwnam, "(Ljava/lang/String;)Landroid/system/StructPasswd;"),
     NATIVE_METHOD(Linux, getpwuid, "(I)Landroid/system/StructPasswd;"),
+    NATIVE_METHOD(Linux, getrlimit, "(I)Landroid/system/StructRlimit;"),
     NATIVE_METHOD(Linux, getsockname, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
     NATIVE_METHOD(Linux, getsockoptByte, "(Ljava/io/FileDescriptor;II)I"),
     NATIVE_METHOD(Linux, getsockoptInAddr, "(Ljava/io/FileDescriptor;II)Ljava/net/InetAddress;"),
