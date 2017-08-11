@@ -16,6 +16,7 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/android/system/StructLinger.java \
   luni/src/main/java/android/system/StructPasswd.java \
   luni/src/main/java/android/system/StructPollfd.java \
+  luni/src/main/java/android/system/StructRlimit.java \
   luni/src/main/java/android/system/StructStat.java \
   luni/src/main/java/android/system/StructStatVfs.java \
   luni/src/main/java/android/system/StructTimeval.java \
