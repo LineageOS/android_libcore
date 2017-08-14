@@ -248,11 +248,29 @@ public class DecimalFormatTest extends junit.framework.TestCase {
       } catch (NullPointerException expected) {
       }
 
-      // These just ignore null.
-      df.setNegativePrefix(null);
-      df.setNegativeSuffix(null);
-      df.setPositivePrefix(null);
-      df.setPositiveSuffix(null);
+      try {
+        df.setNegativePrefix(null);
+        fail();
+      } catch (NullPointerException expected) {
+      }
+
+      try {
+        df.setNegativeSuffix(null);
+        fail();
+      } catch (NullPointerException expected) {
+      }
+
+      try {
+        df.setPositivePrefix(null);
+        fail();
+      } catch (NullPointerException expected) {
+      }
+
+      try {
+        df.setPositiveSuffix(null);
+        fail();
+      } catch (NullPointerException expected) {
+      }
 
       try {
         df.setRoundingMode(null);
