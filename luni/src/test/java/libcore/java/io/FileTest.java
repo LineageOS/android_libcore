@@ -371,19 +371,22 @@ public class FileTest extends junit.framework.TestCase {
 
     // http://b/62301183
     public void test_canonicalCachesAreOff() throws Exception {
-        File f1 = File.createTempFile("testCannonCachesOff1", "tmp");
-        File f2 = File.createTempFile("testCannonCachesOff2", "tmp");
-        File symlinkFile = new File("test_sl");
+        File tempDir = createTemporaryDirectory();
+        File f1 = new File(tempDir, "testCannonCachesOff1");
+        f1.createNewFile();
+        File f2  = new File(tempDir, "testCannonCachesOff2");
+        f2.createNewFile();
+        File symlinkFile = new File(tempDir, "symlink");
 
         // Create a symlink from symlink to f1 and populate canonical path cache
         assertEquals(0, Runtime.getRuntime().exec("ln -s " + f1.getAbsolutePath() + " " + symlinkFile.getAbsolutePath()).waitFor());
-        assertEquals(symlinkFile.getCanonicalPath(), f1.toString());
+        assertEquals(symlinkFile.getCanonicalPath(), f1.getCanonicalPath());
 
         // Remove it and replace it with a symlink to f2 (using java File/Files would flush caches).
         assertEquals(0, Runtime.getRuntime().exec("rm " + symlinkFile.getAbsolutePath()).waitFor());
         assertEquals(0, Runtime.getRuntime().exec("ln -s " + f2.getAbsolutePath() + " " + symlinkFile.getAbsolutePath()).waitFor());
 
         // Did we cache canonical path results? hope not!
-        assertEquals(symlinkFile.getCanonicalPath(), f2.toString());
+        assertEquals(symlinkFile.getCanonicalPath(), f2.getCanonicalPath());
     }
 }
