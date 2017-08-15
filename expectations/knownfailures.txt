@@ -1826,5 +1826,23 @@
   names: [
       "com.android.org.apache.harmony.luni.tests.internal.process.SystemProcessTest#test_interrupt"
   ]
+},
+{
+  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13021 has been resolved",
+  result: EXEC_FAILED,
+  bug: 64092664,
+  name: "libcore.java.text.OldDecimalFormatTestICU#test_positiveExponentSign"
+},
+{
+  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13309 has been resolved",
+  result: EXEC_FAILED,
+  bug: 64092664,
+  name: "org.apache.harmony.tests.java.text.SimpleDateFormatTest#test_parse_with_spaces"
+},
+{
+  description: "Revisit this after http://bugs.icu-project.org/trac/ticket/13310 has been resolved",
+  result: EXEC_FAILED,
+  bug: 64092664,
+  name: "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_withFieldPosition"
 }
 ]
