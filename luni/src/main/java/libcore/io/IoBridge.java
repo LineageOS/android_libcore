@@ -276,10 +276,6 @@ public final class IoBridge {
     // Socket options used by java.net but not exposed in SocketOptions.
     public static final int JAVA_MCAST_JOIN_GROUP = 19;
     public static final int JAVA_MCAST_LEAVE_GROUP = 20;
-    public static final int JAVA_MCAST_JOIN_SOURCE_GROUP = 21;
-    public static final int JAVA_MCAST_LEAVE_SOURCE_GROUP = 22;
-    public static final int JAVA_MCAST_BLOCK_SOURCE = 23;
-    public static final int JAVA_MCAST_UNBLOCK_SOURCE = 24;
     public static final int JAVA_IP_MULTICAST_TTL = 17;
     public static final int JAVA_IP_TTL = 25;
 
@@ -451,36 +447,8 @@ public final class IoBridge {
             Libcore.os.setsockoptGroupReq(fd, level, op, groupReq);
             return;
         }
-        case IoBridge.JAVA_MCAST_JOIN_SOURCE_GROUP:
-        case IoBridge.JAVA_MCAST_LEAVE_SOURCE_GROUP:
-        case IoBridge.JAVA_MCAST_BLOCK_SOURCE:
-        case IoBridge.JAVA_MCAST_UNBLOCK_SOURCE:
-        {
-            StructGroupSourceReq groupSourceReq = (StructGroupSourceReq) value;
-            int level = (groupSourceReq.gsr_group instanceof Inet4Address)
-                ? IPPROTO_IP : IPPROTO_IPV6;
-            int op = getGroupSourceReqOp(option);
-            Libcore.os.setsockoptGroupSourceReq(fd, level, op, groupSourceReq);
-            return;
-        }
         default:
             throw new SocketException("Unknown socket option: " + option);
-        }
-    }
-
-    private static int getGroupSourceReqOp(int javaValue) {
-        switch (javaValue) {
-            case IoBridge.JAVA_MCAST_JOIN_SOURCE_GROUP:
-                return MCAST_JOIN_SOURCE_GROUP;
-            case IoBridge.JAVA_MCAST_LEAVE_SOURCE_GROUP:
-                return MCAST_LEAVE_SOURCE_GROUP;
-            case IoBridge.JAVA_MCAST_BLOCK_SOURCE:
-                return MCAST_BLOCK_SOURCE;
-            case IoBridge.JAVA_MCAST_UNBLOCK_SOURCE:
-                return MCAST_UNBLOCK_SOURCE;
-            default:
-                throw new AssertionError(
-                        "Unknown java value for setsocketopt op lookup: " + javaValue);
         }
     }
 
