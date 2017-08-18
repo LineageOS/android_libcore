@@ -463,7 +463,6 @@ public class TimeZoneTest extends TestCase {
                 android.icu.util.TimeZone.clearCachedDefault();
             }
         });
-        clearer.setPriority(Thread.MAX_PRIORITY);
         clearer.setName("testSetDefaultRace clearer");
         clearer.setUncaughtExceptionHandler(handler);
 
@@ -473,15 +472,15 @@ public class TimeZoneTest extends TestCase {
                 android.icu.util.TimeZone.getDefault();
             }
         });
-        getter.setPriority(Thread.MAX_PRIORITY);
         getter.setName("testSetDefaultRace getter");
         getter.setUncaughtExceptionHandler(handler);
 
         clearer.start();
         getter.start();
 
-        clearer.join();
-        getter.join();
+        // 20 seconds is plenty: If successful, we usually complete much faster.
+        clearer.join(10000);
+        getter.join(10000);
 
         if (!exceptions.isEmpty()) {
             Throwable firstException = exceptions.get(0);
