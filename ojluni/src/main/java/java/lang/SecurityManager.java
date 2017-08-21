@@ -36,6 +36,12 @@ import java.net.InetAddress;
 // other other methods for security purposes.
 /**
  * Legacy security code; do not use.
+ *
+ * <p>Security managers do <i>not</i> provide a secure environment for
+ * executing untrusted code and are unsupported on Android. Untrusted code
+ * cannot be safely isolated within a single VM on Android. Application
+ * developers can assume that there's no SecurityManager installed,
+ * i.e. {@link java.lang.System#getSecurityManager()} will return null.
  */
 public
 class SecurityManager {
