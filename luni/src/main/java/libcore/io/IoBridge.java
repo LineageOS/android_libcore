@@ -135,7 +135,7 @@ public final class IoBridge {
             if (errnoException.errno == EADDRNOTAVAIL) {
                 throw new NoRouteToHostException("Address not available");
             }
-            throw new ConnectException(connectDetail(fd, inetAddress, port, timeoutMs,
+            throw new ConnectException(createMessageForException(fd, inetAddress, port, timeoutMs,
                     errnoException), errnoException);
         } catch (SocketException ex) {
             throw ex; // We don't want to doubly wrap these.
@@ -182,20 +182,25 @@ public final class IoBridge {
             remainingTimeoutMs =
                     (int) TimeUnit.NANOSECONDS.toMillis(finishTimeNanos - System.nanoTime());
             if (remainingTimeoutMs <= 0) {
-                throw new SocketTimeoutException(connectDetail(fd, inetAddress, port, timeoutMs,
-                        null));
+                throw new SocketTimeoutException(
+                        createMessageForException(fd, inetAddress, port, timeoutMs, null));
             }
         } while (!IoBridge.isConnected(fd, inetAddress, port, timeoutMs, remainingTimeoutMs));
         IoUtils.setBlocking(fd, true); // 4. set the socket back to blocking.
     }
 
-    private static String connectDetail(FileDescriptor fd, InetAddress inetAddress, int port,
-            int timeoutMs, Exception cause) {
+    /**
+     * Constructs the message for an exception that the caller is about to throw.
+     */
+    private static String createMessageForException(FileDescriptor fd, InetAddress inetAddress,
+            int port, int timeoutMs, Exception causeOrNull) {
         // Figure out source address from fd.
         InetSocketAddress localAddress = null;
         try {
             localAddress = getLocalInetSocketAddress(fd);
-        } catch (SocketException ignored) { }
+        } catch (SocketException ignored) {
+            // The caller is about to throw an exception, so this one would only distract.
+        }
 
         StringBuilder sb = new StringBuilder("failed to connect")
               .append(" to ")
@@ -215,9 +220,9 @@ public final class IoBridge {
               .append(timeoutMs)
               .append("ms");
         }
-        if (cause != null) {
+        if (causeOrNull != null) {
             sb.append(": ")
-              .append(cause.getMessage());
+              .append(causeOrNull.getMessage());
         }
         return sb.toString();
     }
@@ -245,7 +250,8 @@ public final class IoBridge {
         }
     }
 
-    public static boolean isConnected(FileDescriptor fd, InetAddress inetAddress, int port, int timeoutMs, int remainingTimeoutMs) throws IOException {
+    public static boolean isConnected(FileDescriptor fd, InetAddress inetAddress, int port,
+            int timeoutMs, int remainingTimeoutMs) throws IOException {
         ErrnoException cause;
         try {
             StructPollfd[] pollFds = new StructPollfd[] { new StructPollfd() };
@@ -266,7 +272,7 @@ public final class IoBridge {
             }
             cause = errnoException;
         }
-        String detail = connectDetail(fd, inetAddress, port, timeoutMs, cause);
+        String detail = createMessageForException(fd, inetAddress, port, timeoutMs, cause);
         if (cause.errno == ETIMEDOUT) {
             throw new SocketTimeoutException(detail, cause);
         }
@@ -663,7 +669,11 @@ public final class IoBridge {
         }
     }
 
-    public static InetSocketAddress getLocalInetSocketAddress(FileDescriptor fd) throws SocketException {
+    /**
+     * @throws SocketException if fd is not currently bound to an InetSocketAddress
+     */
+    public static InetSocketAddress getLocalInetSocketAddress(FileDescriptor fd)
+            throws SocketException {
         try {
             SocketAddress socketAddress = Libcore.os.getsockname(fd);
             // When a Socket is pending closure because socket.close() was called but other threads
