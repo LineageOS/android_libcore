@@ -1202,10 +1202,10 @@ public final class URL implements java.io.Serializable {
                         handler = new sun.net.www.protocol.jar.Handler();
                     } else if (protocol.equals("http")) {
                         handler = (URLStreamHandler)Class.
-                            forName("com.android.okhttp.HttpHandler").newInstance();
+                            forName("libcore.net.http.HttpHandler").newInstance();
                     } else if (protocol.equals("https")) {
                         handler = (URLStreamHandler)Class.
-                            forName("com.android.okhttp.HttpsHandler").newInstance();
+                            forName("libcore.net.http.HttpsHandler").newInstance();
                     }
                     // END Android-changed
                 } catch (Exception e) {
