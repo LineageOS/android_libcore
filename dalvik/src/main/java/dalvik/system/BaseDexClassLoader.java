@@ -53,7 +53,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @param dexPath the list of jar/apk files containing classes and
      * resources, delimited by {@code File.pathSeparator}, which
      * defaults to {@code ":"} on Android.
-     * @param optimizedDirectory this parameter is deprecated and has no effect
+     * @param optimizedDirectory this parameter is deprecated and has no effect since API level 26.
      * @param librarySearchPath the list of directories containing native
      * libraries, delimited by {@code File.pathSeparator}; may be
      * {@code null}
