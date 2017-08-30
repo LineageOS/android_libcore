@@ -26,14 +26,16 @@
 
 package java.net;
 
+import static android.system.OsConstants.SOL_SOCKET;
+import static android.system.OsConstants.SO_BINDTODEVICE;
+
+import android.system.ErrnoException;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.channels.DatagramChannel;
 import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
-import android.system.ErrnoException;
 import libcore.io.Libcore;
-import static android.system.OsConstants.*;
 
 /**
  * This class represents a socket for sending and receiving datagram packets.
@@ -117,9 +119,8 @@ class DatagramSocket implements java.io.Closeable {
     InetAddress connectedAddress = null;
     int connectedPort = -1;
 
-    // BEGIN Android-changed
+    // Android-added: Store pending exception from connect
     private SocketException pendingConnectException;
-    // END Android-changed
 
     /**
      * Connects this socket to a remote socket address (IP address + port number).
@@ -476,11 +477,10 @@ class DatagramSocket implements java.io.Closeable {
         try {
             connectInternal(address, port);
         } catch (SocketException se) {
-            // BEGIN Android-changed
-            //throw new Error("connect failed", se);
+            // Android-changed: this method can't throw checked SocketException. Throw it later
+            // throw new Error("connect failed", se);
             // TODO: or just use SneakyThrow? There's a clear API bug here.
             pendingConnectException = se;
-            // END Android-changed
         }
     }
 
