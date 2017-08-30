@@ -25,6 +25,7 @@ import android.system.StructStat;
 import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.UnixSocketAddress;
+import android.util.MutableLong;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -811,5 +812,26 @@ public class OsTest extends TestCase {
     // than zero, though.
     assertTrue(rlimit.rlim_cur > 0);
     assertTrue(rlimit.rlim_max > 0);
+  }
+
+  // http://b/65051835
+  public void test_pipe2_errno() throws Exception {
+    try {
+        // flag=-1 is not a valid value for pip2, will EINVAL
+        Libcore.os.pipe2(-1);
+        fail();
+    } catch(ErrnoException expected) {
+    }
+  }
+
+  // http://b/65051835
+  public void test_sendfile_errno() throws Exception {
+    try {
+        // FileDescriptor.out is not open for input, will cause EBADF
+        MutableLong offset = new MutableLong(10);
+        Libcore.os.sendfile(FileDescriptor.out, FileDescriptor.out, offset, 10);
+        fail();
+    } catch(ErrnoException expected) {
+    }
   }
 }
