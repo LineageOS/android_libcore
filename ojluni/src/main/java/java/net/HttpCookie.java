@@ -99,13 +99,9 @@ public final class HttpCookie implements Cloneable {
     private boolean httpOnly;   // HttpOnly ... i.e. not accessible to scripts
     private int version = 1;    // Version=1 ... RFC 2965 style
 
-    /**
-     * The original header this cookie was consructed from, if it was
-     * constructed by parsing a header, otherwise null.
-     *
-     * @hide
-     */
-    public final String header;
+    // The original header this cookie was consructed from, if it was
+    // constructed by parsing a header, otherwise null.
+    private final String header;
 
     //
     // Android-changed: Fixed units, s/seconds/milliseconds/, in comment below.
