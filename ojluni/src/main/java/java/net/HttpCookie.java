@@ -148,6 +148,7 @@ public final class HttpCookie implements Cloneable {
      * cookie specification. The version can be changed with the
      * {@code setVersion} method.
      *
+     *
      * @param  name
      *         a {@code String} specifying the name of the cookie
      *
@@ -303,7 +304,6 @@ public final class HttpCookie implements Cloneable {
      * @param  purpose
      *         a {@code String} specifying the comment URL to display to the user
      *
-     *
      * @see  #getCommentURL
      */
     public void setCommentURL(String purpose) {
@@ -312,7 +312,7 @@ public final class HttpCookie implements Cloneable {
 
     /**
      * Returns the comment URL describing the purpose of this cookie, or
-     * {@code null} if the cookie has no comment url.
+     * {@code null} if the cookie has no comment URL.
      *
      * @return  a {@code String} containing the comment URL, or {@code null}
      *          if none
