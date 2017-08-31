@@ -1774,7 +1774,10 @@ static jobject Linux_open(JNIEnv* env, jobject, jstring javaPath, jint flags, ji
 
 static jobjectArray Linux_pipe2(JNIEnv* env, jobject, jint flags __unused) {
     int fds[2];
-    throwIfMinusOne(env, "pipe2", TEMP_FAILURE_RETRY(pipe2(&fds[0], flags)));
+    int pipe2_result = throwIfMinusOne(env, "pipe2", TEMP_FAILURE_RETRY(pipe2(&fds[0], flags)));
+    if (pipe2_result == -1) {
+        return NULL;
+    }
     jobjectArray result = env->NewObjectArray(2, JniConstants::fileDescriptorClass, NULL);
     if (result == NULL) {
         return NULL;
@@ -2024,6 +2027,9 @@ static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject jav
         offsetPtr = &offset;
     }
     jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile(outFd, inFd, offsetPtr, byteCount)));
+    if (result == -1) {
+        return -1;
+    }
     if (javaOffset != NULL) {
         env->SetLongField(javaOffset, valueFid, offset);
     }
