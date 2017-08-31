@@ -699,4 +699,14 @@ public class RelativeDateTimeFormatterTest extends junit.framework.TestCase {
     assertEquals("In 2 wk", getRelativeTimeSpanString(
         locale, tz, time, base, WEEK_IN_MILLIS, FORMAT_ABBREV_RELATIVE));
   }
+
+  // http://b/63745717
+  public void test_combineDateAndTime_apostrophe() {
+    final Locale locale = new Locale("fr");
+    android.icu.text.RelativeDateTimeFormatter icuFormatter =
+            android.icu.text.RelativeDateTimeFormatter.getInstance(locale);
+    assertEquals("D à T", icuFormatter.combineDateAndTime("D", "T"));
+    // Ensure single quote ' and curly braces {} are not interpreted in input values.
+    assertEquals("D'x' à T{0}", icuFormatter.combineDateAndTime("D'x'", "T{0}"));
+  }
 }
