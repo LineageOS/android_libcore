@@ -78,6 +78,24 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     */
     protected boolean stream;
 
+    // BEGIN Android-removed: Android doesn't need to load native net library
+    /*
+    /**
+     * Load net library into runtime.
+     *
+    static {
+        java.security.AccessController.doPrivileged(
+            new java.security.PrivilegedAction<Void>() {
+                public Void run() {
+                    System.loadLibrary("net");
+                    return null;
+                }
+            });
+    }
+    */
+    // END Android-removed: Android doesn't need to load native net library
+
+    // Android-added: logs a warning if socket is not closed
     private final CloseGuard guard = CloseGuard.get();
 
     /**
@@ -88,13 +106,19 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         this.stream = stream;
         if (!stream) {
             ResourceManager.beforeUdpCreate();
+            // Android-removed: socketCreate should set fd if it succeeds
+            // fd = new FileDescriptor();
             try {
                 socketCreate(false);
             } catch (IOException ioe) {
                 ResourceManager.afterUdpClose();
+                // Android-removed: b/26470377 Represent closed sockets with invalid fd, not null.
+                // fd = null;
                 throw ioe;
             }
         } else {
+            // Android-removed: socketCreate should set fd if it succeeds
+            // fd = new FileDescriptor();
             socketCreate(true);
         }
         if (socket != null)
@@ -102,7 +126,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         if (serverSocket != null)
             serverSocket.setCreated();
 
-        // socketCreate will set |fd| if it succeeds.
+        // Android-added: CloseGuard
         if (fd != null && fd.valid()) {
             guard.open("close");
         }
@@ -205,7 +229,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         if (isClosedOrPending()) {
             throw new SocketException("Socket Closed");
         }
-        // Android-removed: Logic dealing with value type moved to socketSetOption.
+        // BEGIN Android-removed: Logic dealing with value type moved to socketSetOption.
         /*
         boolean on = true;
         switch (opt) {
@@ -270,6 +294,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         }
         socketSetOption(opt, on, val);
         */
+        // END Android-removed: Logic dealing with value type moved to socketSetOption.
+        // Android-added: Keep track of timeout value not handled by socketSetOption
         if (opt == SO_TIMEOUT) {
             timeout = (Integer) val;
         }
@@ -282,7 +308,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         if (opt == SO_TIMEOUT) {
             return new Integer(timeout);
         }
-        // Android-removed: Logic dealing with value type moved to socketGetOption.
+        // BEGIN Android-changed: Logic dealing with value type moved to socketGetOption.
         /*
         int ret = 0;
         /*
@@ -335,6 +361,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         }
         */
         return socketGetOption(opt);
+        // END Android-changed: Logic dealing with value type moved to socketGetOption.
     }
 
     /**
@@ -352,6 +379,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         try {
             acquireFD();
             try {
+                // Android-added: BlockGuard
                 BlockGuard.getThreadPolicy().onNetwork();
                 socketConnect(address, port, timeout);
                 /* socket may have been closed during poll/select */
@@ -412,6 +440,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     protected void accept(SocketImpl s) throws IOException {
         acquireFD();
         try {
+            // Android-added: BlockGuard
             BlockGuard.getThreadPolicy().onNetwork();
             socketAccept(s);
         } finally {
@@ -478,10 +507,10 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
         }
 
         /*
-         * If connection has been reset then return 0 to indicate
-         * there are no buffered bytes.
+         * If connection has been reset or shut down for input, then return 0
+         * to indicate there are no buffered bytes.
          */
-        if (isConnectionReset()) {
+        if (isConnectionReset() || shut_rd) {
             return 0;
         }
 
@@ -570,6 +599,8 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
             // Android-changed: Notified the CloseGuard object as the fd has been released.
             guard.close();
         }
+        // Android-removed: b/26470377 Represent closed sockets with invalid fd, not null.
+        // fd = null;
         super.reset();
     }
 
@@ -578,6 +609,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      * Shutdown read-half of the socket connection;
      */
     protected void shutdownInput() throws IOException {
+      // Android-changed: b/26470377 Represent closed sockets with invalid fd, not null.
       if (fd != null && fd.valid()) {
           socketShutdown(SHUT_RD);
           if (socketInputStream != null) {
@@ -591,6 +623,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      * Shutdown write-half of the socket connection;
      */
     protected void shutdownOutput() throws IOException {
+      // Android-changed: b/26470377 Represent closed sockets with invalid fd, not null.
       if (fd != null && fd.valid()) {
           socketShutdown(SHUT_WR);
           shut_wr = true;
@@ -602,6 +635,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     }
 
     protected void sendUrgentData (int data) throws IOException {
+        // Android-changed: b/26470377 Represent closed sockets with invalid fd, not null.
         if (fd == null || !fd.valid()) {
             throw new IOException("Socket Closed");
         }
@@ -612,6 +646,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
      * Cleans up if the user forgets to close it.
      */
     protected void finalize() throws IOException {
+        // Android-added: CloseGuard
         if (guard != null) {
             guard.warnIfOpen();
         }
@@ -645,7 +680,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
                     try {
                         socketClose();
                     } catch (IOException e) {
-                        // Android-changed(http://b/26470377): Some Android code doesn't expect file
+                        // Android-removed: b/26470377 Some Android code doesn't expect file
                         // descriptor to be null. socketClose invalidates the fd by closing the fd.
                         // } finally {
                         //     fd = null;
@@ -691,6 +726,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
          * close is in progress.
          */
         synchronized (fdLock) {
+            // Android-changed: b/26470377 Represent closed sockets with invalid fd, not null.
             if (closePending || (fd == null) || !fd.valid()) {
                 return true;
             } else {
