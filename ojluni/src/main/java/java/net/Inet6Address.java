@@ -401,12 +401,16 @@ class Inet6Address extends InetAddress {
         } catch (UnknownHostException e) {} /* cant happen if ifname is null */
     }
 
-    Inet6Address (String hostName, byte addr[], NetworkInterface nif) throws UnknownHostException {
+    Inet6Address (String hostName, byte addr[], NetworkInterface nif)
+        throws UnknownHostException
+    {
         holder6 = new Inet6AddressHolder();
         initif (hostName, addr, nif);
     }
 
-    Inet6Address (String hostName, byte addr[], String ifname) throws UnknownHostException {
+    Inet6Address (String hostName, byte addr[], String ifname)
+        throws UnknownHostException
+    {
         holder6 = new Inet6AddressHolder();
         initstr (hostName, addr, ifname);
     }
@@ -495,7 +499,9 @@ class Inet6Address extends InetAddress {
         }
     }
 
-    private void initif(String hostName, byte addr[],NetworkInterface nif) throws UnknownHostException {
+    private void initif(String hostName, byte addr[], NetworkInterface nif)
+        throws UnknownHostException
+    {
         int family = -1;
         holder6.init(addr, nif);
 
