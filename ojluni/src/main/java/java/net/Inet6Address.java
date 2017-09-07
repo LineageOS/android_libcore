@@ -496,7 +496,6 @@ class Inet6Address extends InetAddress {
     }
 
     private void initif(String hostName, byte addr[],NetworkInterface nif) throws UnknownHostException {
-        holder().hostName = hostName;
         int family = -1;
         holder6.init(addr, nif);
 
