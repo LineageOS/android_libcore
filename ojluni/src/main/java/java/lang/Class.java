@@ -180,6 +180,9 @@ public final class Class<T> implements java.io.Serializable,
     /** Static fields */
     private transient long sFields;
 
+    /** State of class initialization */
+    private transient long status;
+
     /** access flags; low 16 bits are defined by VM spec */
     private transient int accessFlags;
 
@@ -237,9 +240,6 @@ public final class Class<T> implements java.io.Serializable,
 
     /** Bitmap of offsets of iFields. */
     private transient int referenceInstanceOffsets;
-
-    /** State of class initialization */
-    private transient int status;
 
     /** Offset of the first virtual method copied from an interface in the methods array. */
     private transient short copiedMethodsOffset;
