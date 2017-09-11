@@ -29,11 +29,6 @@ subdir_makefiles := $(call all-named-subdir-makefiles,$(subdirs))
 include $(LOCAL_PATH)/JavaLibrary.mk
 
 #
-# Include the definitions to build the native code.
-#
-
-include $(LOCAL_PATH)/NativeCode.mk
-
 # Disable test modules if LIBCORE_SKIP_TESTS environment variable is set.
 #
 
