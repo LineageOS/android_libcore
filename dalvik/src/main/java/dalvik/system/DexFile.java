@@ -456,6 +456,21 @@ public final class DexFile {
      */
     public static final int DEX2OAT_FOR_RELOCATION = 4;
 
+
+    /**
+     * Calls {@link #getDexOptNeeded(String, String, String, String, String, boolean, boolean)}
+     * with a null class loader context.
+     *
+     * TODO(ngeoffray, calin): deprecate / remove.
+     * @hide
+     */
+    public static int getDexOptNeeded(String fileName,
+        String instructionSet, String compilerFilter, boolean newProfile, boolean downgrade)
+        throws FileNotFoundException, IOException {
+            return getDexOptNeeded(
+                fileName, instructionSet, compilerFilter, null, newProfile, downgrade);
+    }
+
     /**
      * Returns the VM's opinion of what kind of dexopt is needed to make the
      * apk/jar file up to date, where {@code targetMode} is used to indicate what
@@ -464,6 +479,8 @@ public final class DexFile {
      *
      * @param fileName the absolute path to the apk/jar file to examine.
      * @param compilerFilter a compiler filter to use for what a caller considers up-to-date.
+     * @param classLoaderContext a string encoding the class loader context the dex file
+     *        is intended to have at runtime.
      * @param newProfile flag that describes whether a profile corresponding
      *        to the dex file has been recently updated and should be considered
      *        in the state of the file.
@@ -483,7 +500,8 @@ public final class DexFile {
      * @hide
      */
     public static native int getDexOptNeeded(String fileName,
-            String instructionSet, String compilerFilter, boolean newProfile, boolean downgrade)
+            String instructionSet, String compilerFilter, String classLoaderContext,
+            boolean newProfile, boolean downgrade)
             throws FileNotFoundException, IOException;
 
     /**
