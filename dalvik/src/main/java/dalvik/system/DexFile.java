@@ -555,4 +555,23 @@ public final class DexFile {
      */
     public native static String getSafeModeCompilerFilter(String filter);
 
+    /**
+     * Returns the static file size of the original dex file.
+     * The original size of the uncompressed dex file is returned.
+     * On device the dex file may be compressed or embedded in some other
+     * file (e.g. oat) in a platform implementation dependent manner. This
+     * method abstracts away from those details and provides an efficient
+     * implementation given that the dex file in question has already been
+     * uncompressed, extracted, and/or loaded by the runtime as appropriate.
+     * <p>
+     * In the case of multidex, returns the sum of the original uncompressed
+     * multidex entry file sizes.
+     *
+     * @hide
+     */
+    public long getStaticSizeOfDexFile() {
+      return getStaticSizeOfDexFile(mCookie);
+    }
+
+    private static native long getStaticSizeOfDexFile(Object cookie);
 }
