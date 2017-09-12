@@ -33,6 +33,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
+import javax.net.ssl.SSLEngineResult.Status;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLParameters;
@@ -848,6 +849,35 @@ public class SSLEngineTest extends TestCase {
             executor.shutdown();
             client.get();
             server.get();
+        }
+    }
+
+    public void test_SSLEngine_CloseOutbound() throws Exception {
+        try (final TestSSLEnginePair pair = TestSSLEnginePair.create()) {
+            assertConnected(pair);
+
+            pair.client.closeOutbound();
+            ByteBuffer clientOut = ByteBuffer.allocate(pair.client.getSession().getPacketBufferSize());
+            SSLEngineResult res = pair.client.wrap(ByteBuffer.wrap(new byte[0]), clientOut);
+            assertEquals(Status.CLOSED, res.getStatus());
+            assertEquals(HandshakeStatus.NOT_HANDSHAKING, res.getHandshakeStatus());
+
+            clientOut.flip();
+            ByteBuffer serverIn = ByteBuffer.allocate(pair.server.getSession().getApplicationBufferSize());
+            res = pair.server.unwrap(clientOut, serverIn);
+            assertEquals(Status.CLOSED, res.getStatus());
+            assertEquals(HandshakeStatus.NEED_WRAP, res.getHandshakeStatus());
+
+            ByteBuffer serverOut = ByteBuffer.allocate(pair.server.getSession().getPacketBufferSize());
+            res = pair.server.wrap(ByteBuffer.wrap(new byte[0]), serverOut);
+            assertEquals(Status.CLOSED, res.getStatus());
+            assertEquals(HandshakeStatus.NOT_HANDSHAKING, res.getHandshakeStatus());
+
+            serverOut.flip();
+            ByteBuffer clientIn = ByteBuffer.allocate(pair.client.getSession().getApplicationBufferSize());
+            res = pair.client.unwrap(serverOut, clientIn);
+            assertEquals(Status.CLOSED, res.getStatus());
+            assertEquals(HandshakeStatus.NOT_HANDSHAKING, res.getHandshakeStatus());
         }
     }
 }
