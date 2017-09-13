@@ -53,12 +53,12 @@ public final class ZygoteHooks {
     }
 
     /**
-     * Called by the zygote in the child process after every fork. The debug
-     * flags from {@code debugFlags} are applied to the child process. The string
+     * Called by the zygote in the child process after every fork. The runtime
+     * flags from {@code runtimeFlags} are applied to the child process. The string
      * {@code instructionSet} determines whether to use a native bridge.
      */
-    public void postForkChild(int debugFlags, boolean isSystemServer, String instructionSet) {
-        nativePostForkChild(token, debugFlags, isSystemServer, instructionSet);
+    public void postForkChild(int runtimeFlags, boolean isSystemServer, String instructionSet) {
+        nativePostForkChild(token, runtimeFlags, isSystemServer, instructionSet);
 
         Math.setRandomSeedInternal(System.currentTimeMillis());
     }
@@ -73,7 +73,7 @@ public final class ZygoteHooks {
     }
 
     private static native long nativePreFork();
-    private static native void nativePostForkChild(long token, int debugFlags,
+    private static native void nativePostForkChild(long token, int runtimeFlags,
                                                    boolean isSystemServer, String instructionSet);
 
     /**
