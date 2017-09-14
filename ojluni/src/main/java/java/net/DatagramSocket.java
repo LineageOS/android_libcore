@@ -1355,24 +1355,4 @@ class DatagramSocket implements java.io.Closeable {
         return impl.fd;
     }
 
-    // Android-added: setNetworkInterface() to set the network interface used by this socket.
-    /**
-     * Sets the network interface used by this socket.  Any packets sent
-     * via this socket are transmitted via the specified interface.  Any
-     * packets received by this socket will come from the specified
-     * interface.  Broadcast datagrams received on this interface will
-     * be processed by this socket. This corresponds to Linux's SO_BINDTODEVICE.
-     *
-     * @hide used by GoogleTV for DHCP
-     */
-    public void setNetworkInterface(NetworkInterface netInterface) throws SocketException {
-        if (netInterface == null) {
-            throw new NullPointerException("netInterface == null");
-        }
-        try {
-            Libcore.os.setsockoptIfreq(impl.fd, SOL_SOCKET, SO_BINDTODEVICE, netInterface.getName());
-        } catch (ErrnoException errnoException) {
-            throw errnoException.rethrowAsSocketException();
-        }
-    }
 }
