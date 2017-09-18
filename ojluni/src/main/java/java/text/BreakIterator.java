@@ -424,6 +424,8 @@ public abstract class BreakIterator implements Cloneable
      */
     public abstract void setText(CharacterIterator newText);
 
+    // Android-removed: Removed code related to BreakIteratorProvider support.
+
     /**
      * Returns a new <code>BreakIterator</code> instance
      * for <a href="BreakIterator.html#word">word breaks</a>
@@ -528,7 +530,9 @@ public abstract class BreakIterator implements Cloneable
                 android.icu.text.BreakIterator.getSentenceInstance(locale));
     }
 
-    // Android-changed: Removed references to BreakIteratorProvider.
+    // Android-removed: Removed code related to BreakIteratorProvider support.
+
+    // Android-changed: Removed references to BreakIteratorProvider from JavaDoc.
     /**
      * Returns an array of all locales for which the
      * <code>get*Instance</code> methods of this class can return
