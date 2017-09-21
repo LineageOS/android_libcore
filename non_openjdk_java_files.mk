@@ -10,7 +10,6 @@ non_openjdk_javadoc_files := \
   luni/src/main/java/android/system/StructCapUserHeader.java \
   luni/src/main/java/android/system/StructFlock.java \
   luni/src/main/java/android/system/StructGroupReq.java \
-  luni/src/main/java/android/system/StructGroupSourceReq.java \
   luni/src/main/java/android/system/StructIcmpHdr.java \
   luni/src/main/java/android/system/StructIfaddrs.java \
   luni/src/main/java/android/system/StructLinger.java \
