@@ -37,9 +37,6 @@
 #
 # All subdirectories are optional (hence the "2> /dev/null"s below).
 
-include $(LOCAL_PATH)/openjdk_java_files.mk
-include $(LOCAL_PATH)/non_openjdk_java_files.mk
-
 define all-test-java-files-under
 $(foreach dir,$(1),$(patsubst ./%,%,$(shell cd $(LOCAL_PATH) && (find $(dir)/src/test/java -name "*.java" 2> /dev/null) | grep -v -f java_tests_blacklist)))
 endef
@@ -94,72 +91,12 @@ android_icu4j_resource_dirs := $(android_icu4j_root)/resources
 # Build for the target (device).
 #
 
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_java_files) $(non_openjdk_java_files) $(android_icu4j_src_files) $(openjdk_lambda_stub_files)
-LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs) $(android_icu4j_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-all
-LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
-LOCAL_CORE_LIBRARY := true
-LOCAL_UNINSTALLABLE_MODULE := true
-include $(BUILD_JAVA_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_java_files)
-LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-oj
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
-LOCAL_CORE_LIBRARY := true
-include $(BUILD_JAVA_LIBRARY)
-
-# Definitions to make the core library.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(non_openjdk_java_files) $(android_icu4j_src_files)
-LOCAL_JAVA_RESOURCE_DIRS := $(android_icu4j_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-libart
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_CORE_LIBRARY := true
-LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
-include $(BUILD_JAVA_LIBRARY)
-
-# A library that exists to satisfy javac when
-# compiling source code that contains lambdas.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-lambda-stubs
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_CORE_LIBRARY := true
-LOCAL_UNINSTALLABLE_MODULE := true
-include $(BUILD_JAVA_LIBRARY)
-
 ifeq ($(LIBCORE_SKIP_TESTS),)
 # A guaranteed unstripped version of core-oj and core-libart.
 # The build system may or may not strip the core-oj and core-libart jars,
 # but these will not be stripped. See b/24535627.
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_java_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_java_files))
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -193,7 +130,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := junit-hostdex
 include $(BUILD_HOST_DALVIK_STATIC_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(non_openjdk_java_files) $(android_icu4j_src_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(android_icu4j_src_files))
 LOCAL_JAVA_RESOURCE_DIRS := $(android_icu4j_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -327,7 +264,7 @@ endif
 ifeq ($(HOST_OS),linux)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(non_openjdk_java_files) $(openjdk_java_files) $(android_icu4j_src_files) $(openjdk_lambda_stub_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(openjdk_java_files) $(android_icu4j_src_files) $(openjdk_lambda_stub_files))
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -340,7 +277,7 @@ LOCAL_UNINSTALLABLE_MODULE := true
 include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_java_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_java_files))
 LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -355,7 +292,7 @@ include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 
 # Definitions to make the core library.
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(non_openjdk_java_files) $(android_icu4j_src_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(android_icu4j_src_files))
 LOCAL_JAVA_RESOURCE_DIRS := $(android_icu4j_resource_dirs)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
@@ -369,7 +306,7 @@ include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 # A library that exists to satisfy javac when
 # compiling source code that contains lambdas.
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files)
+LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files))
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_DX_FLAGS := --core-library
@@ -493,6 +430,3 @@ LOCAL_DROIDDOC_OPTIONS := \
 LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=external/doclava/res/assets/templates-sdk
 
 include $(BUILD_DROIDDOC)
-
-openjdk_java_files :=
-non_openjdk_java_files :=
