@@ -5,13 +5,8 @@
 
 ifndef libcore_docs_include_once
 
-include libcore/openjdk_java_files.mk
-include libcore/non_openjdk_java_files.mk
-
-
 # List of libcore javadoc source files
 _libcore_files := $(openjdk_javadoc_files) $(non_openjdk_javadoc_files)
-_libcore_files := $(addprefix libcore/, $(_libcore_files))
 
 _icu_files := \
  $(call find-files-in-subdirs, external/icu, \
