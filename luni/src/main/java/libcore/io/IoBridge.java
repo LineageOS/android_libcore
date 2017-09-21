@@ -18,7 +18,6 @@ package libcore.io;
 
 import android.system.ErrnoException;
 import android.system.StructGroupReq;
-import android.system.StructGroupSourceReq;
 import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructTimeval;
