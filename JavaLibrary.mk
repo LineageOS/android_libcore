@@ -158,6 +158,11 @@ LOCAL_DX_FLAGS := --core-library
 LOCAL_MODULE_TAGS := optional
 LOCAL_JAVA_LANGUAGE_VERSION := 1.8
 LOCAL_MODULE := core-lambda-stubs
+# Deliberately include the sources alongside the .class files to simplify
+# distribution
+LOCAL_JAVA_RESOURCE_FILES := \
+  $(patsubst ojluni/src/lambda/java/%, \
+    $(LOCAL_PATH)/ojluni/src/lambda/java:%,$(LOCAL_SRC_FILES))
 LOCAL_JAVA_LIBRARIES := core-all
 LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
 LOCAL_CORE_LIBRARY := true
