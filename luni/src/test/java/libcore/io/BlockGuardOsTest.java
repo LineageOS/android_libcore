@@ -108,7 +108,6 @@ public class BlockGuardOsTest {
                 "setsid()",
                 "setsockoptByte(java.io.FileDescriptor,int,int,int)",
                 "setsockoptGroupReq(java.io.FileDescriptor,int,int,android.system.StructGroupReq)",
-                "setsockoptGroupSourceReq(java.io.FileDescriptor,int,int,android.system.StructGroupSourceReq)",
                 "setsockoptIfreq(java.io.FileDescriptor,int,int,java.lang.String)",
                 "setsockoptInt(java.io.FileDescriptor,int,int,int)",
                 "setsockoptIpMreqn(java.io.FileDescriptor,int,int,int)",
