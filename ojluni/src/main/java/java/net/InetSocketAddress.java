@@ -151,6 +151,7 @@ public class InetSocketAddress
         return hostname;
     }
 
+    // BEGIN Android-added: InetSocketAddress() ctor used by IoBridge.
     /**
      * @hide internal use only
      */
@@ -158,6 +159,7 @@ public class InetSocketAddress
         // These will be filled in the native implementation of recvfrom.
         holder = new InetSocketAddressHolder(null, null, 0);
     }
+    // END Android-added: InetSocketAddress() ctor used by IoBridge.
 
     /**
      * Creates a socket address where the IP address is the wildcard address
@@ -172,7 +174,9 @@ public class InetSocketAddress
      * range of valid port values.
      */
     public InetSocketAddress(int port) {
-      this((InetAddress)null, port);
+        // Android-changed: Defaults to IPv6.
+        // this(InetAddress.anyLocalAddress(), port);
+        this((InetAddress)null, port);
     }
 
     /**
@@ -193,7 +197,7 @@ public class InetSocketAddress
     public InetSocketAddress(InetAddress addr, int port) {
         holder = new InetSocketAddressHolder(
                         null,
-                        // Android-changed: Return IPv4 address
+                        // Android-changed: Defaults to IPv6 if addr is null.
                         // addr == null ? InetAddress.anyLocalAddress() : addr,
                         addr == null ? Inet6Address.ANY : addr,
                         checkPort(port));
