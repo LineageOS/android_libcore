@@ -66,6 +66,7 @@ cc_library_shared {
         "libicuuc",
         "libicui18n",
         "libnativehelper",
+        "libz",
     ],
     static_libs: [
         "libziparchive",
@@ -75,12 +76,6 @@ cc_library_shared {
         android: {
             shared_libs: [
                 "libutils",
-                "libz",
-            ],
-        },
-        host: {
-            shared_libs: [
-                "libz-host",
             ],
         },
     },
@@ -111,6 +106,7 @@ cc_defaults {
         "libcrypto",
         "libicuuc",
         "libssl",
+        "libz",
 
         "libnativehelper",
     ],
@@ -124,12 +120,6 @@ cc_defaults {
                 "-DLINUX",
                 "-D__GLIBC__",
             ],
-        },
-        android: {
-            shared_libs: ["libz"],
-        },
-        host: {
-            shared_libs: ["libz-host"],
         },
     },
 
