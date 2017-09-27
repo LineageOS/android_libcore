@@ -446,8 +446,7 @@ class ServerSocket implements java.io.Closeable {
     }
 
     /**
-     * Returns the address of the endpoint this socket is bound to, or
-     * {@code null} if it is not bound yet.
+     * Returns the address of the endpoint this socket is bound to.
      * <p>
      * If the socket was bound prior to being {@link #close closed},
      * then this method will continue to return the address of the endpoint
