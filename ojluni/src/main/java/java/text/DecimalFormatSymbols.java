@@ -666,7 +666,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         minusSign = maybeStripMarkers(numberElements[6], '-');
         exponential = numberElements[7].charAt(0);
         exponentialSeparator = numberElements[7]; //string representation new since 1.6
-        perMill = numberElements[8].charAt(0);
+        perMill = maybeStripMarkers(numberElements[8], '\u2030');
         infinity  = numberElements[9];
         NaN = numberElements[10];
 
@@ -753,6 +753,9 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         }
 
         cachedIcuDFS = new android.icu.text.DecimalFormatSymbols(this.locale);
+        // Do not localize plus sign. See "Special Pattern Characters" section in DecimalFormat.
+        // http://b/67034519
+        cachedIcuDFS.setPlusSign('+');
         cachedIcuDFS.setZeroDigit(zeroDigit);
         cachedIcuDFS.setDigit(digit);
         cachedIcuDFS.setDecimalSeparator(decimalSeparator);
@@ -763,6 +766,7 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         cachedIcuDFS.setMonetaryGroupingSeparator(groupingSeparator);
         cachedIcuDFS.setPatternSeparator(patternSeparator);
         cachedIcuDFS.setPercent(percent);
+        cachedIcuDFS.setPerMill(perMill);
         cachedIcuDFS.setMonetaryDecimalSeparator(monetarySeparator);
         cachedIcuDFS.setMinusSign(minusSign);
         cachedIcuDFS.setInfinity(infinity);
