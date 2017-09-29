@@ -67,7 +67,7 @@ import java.io.*;
  * <p>
  * There are two possible ways in which this decoder could deal with
  * illegal strings.  It could either leave illegal characters alone or
- * it could throw an {@code {@link java.lang.IllegalArgumentException}}.
+ * it could throw an {@link java.lang.IllegalArgumentException}.
  * Which approach the decoder takes is left to the
  * implementation.
  *

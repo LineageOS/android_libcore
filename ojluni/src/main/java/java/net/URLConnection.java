@@ -659,7 +659,7 @@ public abstract class URLConnection {
      * Returns the key for the {@code n}<sup>th</sup> header field.
      * It returns {@code null} if there are fewer than {@code n+1} fields.
      *
-     * @param   n   an index, where n>=0
+     * @param   n   an index, where {@code n>=0}
      * @return  the key for the {@code n}<sup>th</sup> header field,
      *          or {@code null} if there are fewer than {@code n+1}
      *          fields.
@@ -677,7 +677,7 @@ public abstract class URLConnection {
      * {@link #getHeaderFieldKey(int) getHeaderFieldKey} method to iterate through all
      * the headers in the message.
      *
-     * @param   n   an index, where n>=0
+     * @param   n   an index, where {@code n>=0}
      * @return  the value of the {@code n}<sup>th</sup> header field
      *          or {@code null} if there are fewer than {@code n+1} fields
      * @see     java.net.URLConnection#getHeaderFieldKey(int)
