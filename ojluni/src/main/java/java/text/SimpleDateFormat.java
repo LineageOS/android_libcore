@@ -559,6 +559,7 @@ public class SimpleDateFormat extends DateFormat {
      */
     transient boolean useDateFormatSymbols;
 
+    // Android-added: ICU TimeZoneNames field.
     /**
      * ICU TimeZoneNames used to format and parse time zone names.
      */
@@ -656,6 +657,7 @@ public class SimpleDateFormat extends DateFormat {
         // initialize calendar and related fields
         initializeCalendar(loc);
 
+        // BEGIN Android-changed: Use ICU for locale data.
         formatData = DateFormatSymbols.getInstanceRef(loc);
         LocaleData localeData = LocaleData.get(loc);
         if ((timeStyle >= 0) && (dateStyle >= 0)) {
@@ -674,6 +676,7 @@ public class SimpleDateFormat extends DateFormat {
         else {
             throw new IllegalArgumentException("No date or time style specified");
         }
+        // END Android-changed: Use ICU for locale data.
 
         initialize(loc);
     }
@@ -1072,8 +1075,8 @@ public class SimpleDateFormat extends DateFormat {
         CalendarBuilder.WEEK_YEAR,         // Pseudo Calendar field
         CalendarBuilder.ISO_DAY_OF_WEEK,   // Pseudo Calendar field
         Calendar.ZONE_OFFSET,
-        // 'L' and 'c',
         Calendar.MONTH,
+        // Android-added: 'c' for standalone day of week.
         Calendar.DAY_OF_WEEK
     };
 
@@ -1101,8 +1104,8 @@ public class SimpleDateFormat extends DateFormat {
         DateFormat.YEAR_FIELD,
         DateFormat.DAY_OF_WEEK_FIELD,
         DateFormat.TIMEZONE_FIELD,
-        // 'L' and 'c'
         DateFormat.MONTH_FIELD,
+        // Android-added: 'c' for standalone day of week.
         DateFormat.DAY_OF_WEEK_FIELD
     };
 
@@ -1130,11 +1133,12 @@ public class SimpleDateFormat extends DateFormat {
         Field.YEAR,
         Field.DAY_OF_WEEK,
         Field.TIME_ZONE,
-        // 'L' and 'c'
         Field.MONTH,
+        // Android-added: 'c' for standalone day of week.
         Field.DAY_OF_WEEK
     };
 
+    // BEGIN Android-added: Special handling for UTC time zone.
     private static final String UTC = "UTC";
 
     /**
@@ -1144,6 +1148,7 @@ public class SimpleDateFormat extends DateFormat {
     private static final Set<String> UTC_ZONE_IDS = Collections.unmodifiableSet(new HashSet<>(
             Arrays.asList("Etc/UCT", "Etc/UTC", "Etc/Universal", "Etc/Zulu", "UCT", "UTC",
                     "Universal", "Zulu")));
+    // END Android-added: Special handling for UTC time zone.
 
     /**
      * Private member function that does the real date/time formatting.
@@ -1238,15 +1243,19 @@ public class SimpleDateFormat extends DateFormat {
 
         case PATTERN_DAY_OF_WEEK: // 'E'
             if (current == null) {
+                // Android-changed: extract formatWeekday() method.
                 current = formatWeekday(count, value, useDateFormatSymbols, false /* standalone */);
             }
             break;
 
+        // BEGIN Android-added: support for 'c' (standalone day of week).
         case PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
             if (current == null) {
+                // Android-changed: extract formatWeekday() method.
                 current = formatWeekday(count, value, useDateFormatSymbols, true /* standalone */);
             }
             break;
+        // END Android-added: support for 'c' (standalone day of week).
 
         case PATTERN_AM_PM:    // 'a'
             if (useDateFormatSymbols) {
@@ -1268,6 +1277,7 @@ public class SimpleDateFormat extends DateFormat {
 
         case PATTERN_ZONE_NAME: // 'z'
             if (current == null) {
+                // BEGIN Android-changed: format time zone name using ICU.
                 TimeZone tz = calendar.getTimeZone();
                 boolean daylight = (calendar.get(Calendar.DST_OFFSET) != 0);
                 String zoneString;
@@ -1279,7 +1289,8 @@ public class SimpleDateFormat extends DateFormat {
                             formatData.getZoneStringsWrapper(), tz.getID(), daylight, tzstyle);
                 } else {
                     if (UTC_ZONE_IDS.contains(tz.getID())) {
-                        // ICU doesn't have name strings for UTC, explicitly print it as "UTC".
+                        // ICU used to not have name strings UTC, explicitly print it as "UTC".
+                        // TODO: remove special case now that ICU has that data (http://b/36337342).
                         zoneString = UTC;
                     } else {
                         TimeZoneNames.NameType nameType;
@@ -1304,10 +1315,12 @@ public class SimpleDateFormat extends DateFormat {
                         calendar.get(Calendar.DST_OFFSET);
                     buffer.append(TimeZone.createGmtOffsetString(true, true, offsetMillis));
                 }
+                // END Android-changed: format time zone name using ICU.
             }
             break;
 
         case PATTERN_ZONE_VALUE: // 'Z' ("-/+hhmm" form)
+        // BEGIN Android-Changed: use shared code in TimeZone for zone offset string.
         {
             value = calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET);
             final boolean includeSeparator = (count >= 4);
@@ -1316,6 +1329,7 @@ public class SimpleDateFormat extends DateFormat {
 
             break;
         }
+        // END Android-Changed: use shared code in TimeZone for zone offset string.
 
         case PATTERN_ISO_ZONE:   // 'X'
             value = calendar.get(Calendar.ZONE_OFFSET)
@@ -1344,6 +1358,7 @@ public class SimpleDateFormat extends DateFormat {
             }
             CalendarUtils.sprintf0d(buffer, value % 60, 2);
             break;
+        // BEGIN Android-added: Better UTS#35 conformity for fractional seconds.
         case PATTERN_MILLISECOND: // 'S'
             // Fractional seconds must be treated specially. We must always convert the parsed
             // value into a fractional second [0, 1) and then widen it out to the appropriate
@@ -1355,12 +1370,15 @@ public class SimpleDateFormat extends DateFormat {
                 zeroPaddingNumber(value, count, count, buffer);
             }
             break;
+        // END Android-added: Better UTS#35 conformity for fractional seconds.
 
         default:
      // case PATTERN_DAY_OF_MONTH:         // 'd'
      // case PATTERN_HOUR_OF_DAY0:         // 'H' 0-based.  eg, 23:59 + 1 hour =>> 00:59
      // case PATTERN_MINUTE:               // 'm'
      // case PATTERN_SECOND:               // 's'
+     // Android-removed: PATTERN_MILLISECONDS handled in an explicit case above.
+     //// case PATTERN_MILLISECOND:          // 'S'
      // case PATTERN_DAY_OF_YEAR:          // 'D'
      // case PATTERN_DAY_OF_WEEK_IN_MONTH: // 'F'
      // case PATTERN_WEEK_OF_YEAR:         // 'w'
@@ -1383,6 +1401,7 @@ public class SimpleDateFormat extends DateFormat {
         delegate.formatted(fieldID, f, f, beginOffset, buffer.length(), buffer);
     }
 
+    // BEGIN Android-added: formatWeekday and formatMonth methods to format using ICU data.
     private String formatWeekday(int count, int value, boolean useDateFormatSymbols,
                                  boolean standalone) {
         if (useDateFormatSymbols) {
@@ -1433,6 +1452,7 @@ public class SimpleDateFormat extends DateFormat {
 
         return current;
     }
+    // END Android-added: formatWeekday and formatMonth methods to format using ICU data.
 
     /**
      * Formats a number with the specified minimum and maximum number of digits.
@@ -1521,6 +1541,7 @@ public class SimpleDateFormat extends DateFormat {
      */
     @Override
     public Date parse(String text, ParsePosition pos) {
+        // BEGIN Android-changed: extract parseInternal() and avoid modifying timezone during parse.
         // Make sure the timezone associated with this dateformat instance (set via
         // {@code setTimeZone} isn't change as a side-effect of parsing a date.
         final TimeZone tz = getTimeZone();
@@ -1533,6 +1554,7 @@ public class SimpleDateFormat extends DateFormat {
 
     private Date parseInternal(String text, ParsePosition pos)
     {
+        // END Android-changed: extract parseInternal() and avoid modifying timezone during parse.
         checkNegativeNumberExpression();
 
         int start = pos.index;
@@ -1685,6 +1707,7 @@ public class SimpleDateFormat extends DateFormat {
                 bestMatchLength = length;
             }
 
+            // BEGIN Android-changed: Handle abbreviated fields that end with a '.'.
             // When the input option ends with a period (usually an abbreviated form), attempt
             // to match all chars up to that period.
             if ((data[i].charAt(length - 1) == '.') &&
@@ -1693,6 +1716,7 @@ public class SimpleDateFormat extends DateFormat {
                 bestMatch = i;
                 bestMatchLength = (length - 1);
             }
+            // END Android-changed: Handle abbreviated fields that end with a '.'.
         }
         if (bestMatch >= 0)
         {
@@ -1742,6 +1766,12 @@ public class SimpleDateFormat extends DateFormat {
         return -1;
     }
 
+    // Android-removed: unused private method matchDSTString.
+
+    // BEGIN Android-changed: Parse time zone strings using ICU TimeZoneNames.
+    // Note that this change falls back to the upstream zone names parsing code if the zoneStrings
+    // for the formatData field has been set by the user. The original code of subParseZoneString
+    // can be found in subParseZoneStringFromSymbols().
     /**
      * Parses the string in {@code text} (starting at {@code start}), interpreting it as a time zone
      * name. If a time zone is found, the internal calendar is set to that timezone and the index of
@@ -1863,6 +1893,7 @@ public class SimpleDateFormat extends DateFormat {
      * Parses the time zone string using the information in {@link #formatData}.
      */
     private int subParseZoneStringFromSymbols(String text, int start, CalendarBuilder calb) {
+        // END Android-changed: Parse time zone strings using ICU TimeZoneNames.
         boolean useSameName = false; // true if standard and daylight time use the same abbreviation.
         TimeZone currentTimeZone = getTimeZone();
 
@@ -1967,9 +1998,9 @@ public class SimpleDateFormat extends DateFormat {
             if (count != 1) {
                 // Proceed with parsing mm
                 c = text.charAt(index++);
-                // Intentional change in behavior from OpenJDK. OpenJDK will return an error code
-                // if a : is found and colonRequired is false, this will return an error code if
-                // a : is not found and colonRequired is true.
+                // BEGIN Android-changed: Intentional change in behavior from OpenJDK.
+                // OpenJDK will return an error code if a : is found and colonRequired is false,
+                // this will return an error code if a : is not found and colonRequired is true.
                 //
                 // colonRequired | c == ':' | OpenJDK | this
                 //   false       |  false   |   ok    |  ok
@@ -1981,6 +2012,7 @@ public class SimpleDateFormat extends DateFormat {
                 } else if (colonRequired) {
                     break parse;
                 }
+                // END Android-changed: Intentional change in behavior from OpenJDK.
                 if (!isDigit(c)) {
                     break parse;
                 }
@@ -2152,6 +2184,7 @@ public class SimpleDateFormat extends DateFormat {
                 return pos.index;
 
             case PATTERN_MONTH: // 'M'
+            // BEGIN Android-changed: extract parseMonth method.
             {
                 final int idx = parseMonth(text, count, value, start, field, pos,
                         useDateFormatSymbols, false /* isStandalone */, calb);
@@ -2171,6 +2204,7 @@ public class SimpleDateFormat extends DateFormat {
                 }
                 break parsing;
             }
+            // END Android-changed: extract parseMonth method.
 
             case PATTERN_HOUR_OF_DAY1: // 'k' 1-based.  eg, 23:59 + 1 hour =>> 24:59
                 if (!isLenient()) {
@@ -2187,6 +2221,7 @@ public class SimpleDateFormat extends DateFormat {
                 return pos.index;
 
             case PATTERN_DAY_OF_WEEK:  // 'E'
+            // BEGIN Android-changed: extract parseWeekday method.
             {
                 final int idx = parseWeekday(text, start, field, useDateFormatSymbols,
                         false /* standalone */, calb);
@@ -2195,7 +2230,9 @@ public class SimpleDateFormat extends DateFormat {
                 }
                 break parsing;
             }
+            // END Android-changed: extract parseWeekday method.
 
+            // BEGIN Android-added: support for 'c' (standalone day of week).
             case PATTERN_STANDALONE_DAY_OF_WEEK: // 'c'
             {
                 final int idx = parseWeekday(text, start, field, useDateFormatSymbols,
@@ -2206,6 +2243,7 @@ public class SimpleDateFormat extends DateFormat {
 
                 break parsing;
             }
+            // END Android-added: support for 'c' (standalone day of week).
 
             case PATTERN_AM_PM:    // 'a'
                 if (useDateFormatSymbols) {
@@ -2267,7 +2305,7 @@ public class SimpleDateFormat extends DateFormat {
                                         .set(Calendar.DST_OFFSET, 0);
                                     return pos.index;
                                 }
-
+                                // Android-changed: tolerate colon in zone offset.
                                 // Parse the rest as "hh[:]?mm"
                                 int i = subParseNumericZone(text, ++pos.index, sign, 0,
                                         false, calb);
@@ -2285,6 +2323,7 @@ public class SimpleDateFormat extends DateFormat {
                                 pos.index = -i;
                             }
                         } else {
+                            // Android-changed: tolerate colon in zone offset.
                             // Parse the rest as "hh[:]?mm" (RFC 822)
                             int i = subParseNumericZone(text, ++pos.index, sign, 0,
                                     false, calb);
@@ -2353,6 +2392,7 @@ public class SimpleDateFormat extends DateFormat {
                     number = numberFormat.parse(text, pos);
                 }
                 if (number != null) {
+                    // BEGIN Android-changed: Better UTS#35 conformity for fractional seconds.
                     if (patternCharIndex == PATTERN_MILLISECOND) {
                         // Fractional seconds must be treated specially. We must always
                         // normalize them to their fractional second value [0, 1) before we attempt
@@ -2367,6 +2407,7 @@ public class SimpleDateFormat extends DateFormat {
                     } else {
                         value = number.intValue();
                     }
+                    // END Android-changed: Better UTS#35 conformity for fractional seconds.
 
                     if (useFollowingMinusSignAsDelimiter && (value < 0) &&
                         (((pos.index < text.length()) &&
@@ -2389,6 +2430,7 @@ public class SimpleDateFormat extends DateFormat {
         return -1;
     }
 
+    // BEGIN Android-added: parseMonth and parseWeekday methods to parse using ICU data.
     private int parseMonth(String text, int count, int value, int start,
                            int field, ParsePosition pos, boolean useDateFormatSymbols,
                            boolean standalone,
@@ -2464,7 +2506,7 @@ public class SimpleDateFormat extends DateFormat {
 
         return index;
     }
-
+    // END Android-added: parseMonth and parseWeekday methods to parse using ICU data.
 
     private final String getCalendarName() {
         return calendar.getClass().getName();
