@@ -286,12 +286,9 @@ public abstract class NumberFormat extends Format  {
      * @see java.text.Format#format
      */
     public final String format(double number) {
-        // Android-removed: fast-path code.
         return format(number, new StringBuffer(),
                       DontCareFieldPosition.INSTANCE).toString();
     }
-
-    // Android-removed: fastFormat method.
 
    /**
      * Specialization of format.
@@ -547,8 +544,6 @@ public abstract class NumberFormat extends Format  {
     public static NumberFormat getPercentInstance(Locale inLocale) {
         return getInstance(inLocale, PERCENTSTYLE);
     }
-
-    // Android-removed: non-API methods getScientificInstance([Locale]).
 
     // Android-changed: Removed reference to NumberFormatProvider.
     /**
@@ -917,7 +912,6 @@ public abstract class NumberFormat extends Format  {
         stream.defaultWriteObject();
     }
 
-    // Android-added: cachedLocaleData.
     /**
      * Cache to hold the NumberPatterns of a Locale.
      */
@@ -927,8 +921,6 @@ public abstract class NumberFormat extends Format  {
     private static final int NUMBERSTYLE = 0;
     private static final int CURRENCYSTYLE = 1;
     private static final int PERCENTSTYLE = 2;
-    // Android-changed: changed: removed SCIENTIFICSTYLE and pull down INTEGERSTYLE value.
-    //private static final int SCIENTIFICSTYLE = 3;
     private static final int INTEGERSTYLE = 3;
 
     /**
