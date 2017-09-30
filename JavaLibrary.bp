@@ -1,0 +1,142 @@
+// Copyright (C) 2007 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+//
+// Definitions for building the Java library and associated tests.
+//
+
+// libcore is divided into modules.
+//
+// The structure of each module is:
+//
+//   src/
+//       main/               # To be shipped on every device.
+//            java/          # Java source for library code.
+//            native/        # C++ source for library code.
+//            resources/     # Support files.
+//       test/               # Built only on demand, for testing.
+//            java/          # Java source for tests.
+//            native/        # C++ source for tests (rare).
+//            resources/     # Support files.
+//
+// All subdirectories are optional
+
+build = [
+    "openjdk_java_files.bp",
+    "non_openjdk_java_files.bp",
+]
+
+// The Java files and their associated resources.
+core_resource_dirs = [
+    "luni/src/main/java",
+    "ojluni/src/main/resources/",
+]
+
+java_defaults {
+    name: "libcore_java_defaults",
+    javacflags: [
+        //"-Xlint:all",
+        //"-Xlint:-serial,-deprecation,-unchecked",
+    ],
+    dxflags: ["--core-library"],
+    no_standard_libs: true,
+
+    // For user / userdebug builds, strip the local variable table and the local variable
+    // type table. This has no bearing on stack traces, but will leave less information
+    // available via JDWP.
+    //
+    // TODO: Should this be conditioned on a PRODUCT_ flag or should we just turn this
+    // on for all builds. Also, name of the flag TBD.
+    // TODO(ccross): PRODUCT_MINIMIZE_JAVA_DEBUG_INFO
+    // local_javac_flags += ["-g:source,lines"]
+}
+
+//
+// Build for the target (device).
+//
+
+java_library {
+    name: "core-all",
+    defaults: ["libcore_java_defaults"],
+
+    srcs: [
+        ":openjdk_java_files",
+        ":non_openjdk_java_files",
+        ":android_icu4j_src_files",
+        ":openjdk_lambda_stub_files",
+    ],
+    java_resource_dirs: core_resource_dirs,
+    static_libs: ["android_icu4j_res"],
+
+    required: [
+        "tzdata",
+        "tzlookup.xml",
+    ],
+
+    installable: false,
+}
+
+java_library {
+    name: "core-oj",
+    defaults: ["libcore_java_defaults"],
+
+    srcs: [":openjdk_java_files"],
+    java_resource_dirs: core_resource_dirs,
+    libs: ["core-all"],
+
+    notice: "ojluni/NOTICE",
+
+    required: [
+        "tzdata",
+        "tzlookup.xml",
+    ],
+}
+
+// Definitions to make the core library.
+java_library {
+    name: "core-libart",
+    defaults: ["libcore_java_defaults"],
+
+    srcs: [
+        ":non_openjdk_java_files",
+        ":android_icu4j_src_files",
+    ],
+    static_libs: ["android_icu4j_res"],
+
+    libs: ["core-all"],
+
+    required: [
+        "tzdata",
+        "tzlookup.xml",
+    ],
+}
+
+// A library that exists to satisfy javac when
+// compiling source code that contains lambdas.
+java_library {
+    name: "core-lambda-stubs",
+    defaults: ["libcore_java_defaults"],
+
+    srcs: [
+        ":openjdk_lambda_stub_files",
+        ":openjdk_lambda_duplicate_stub_files",
+    ],
+
+    libs: ["core-all"],
+
+    notice: "ojluni/NOTICE",
+
+    installable: false,
+    include_srcs: true,
+}
