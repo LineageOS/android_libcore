@@ -256,6 +256,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/invoke/MutableCallSite.java",
         "ojluni/src/main/java/java/lang/invoke/Stable.java",
         "ojluni/src/main/java/java/lang/invoke/Transformers.java",
+        "ojluni/src/main/java/java/lang/invoke/VarHandle.java",
         "ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java",
         "ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java",
         "ojluni/src/main/java/java/net/AbstractPlainDatagramSocketImpl.java",
