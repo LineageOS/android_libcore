@@ -37,6 +37,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
     REGISTER(register_android_system_OsConstants);
     //    REGISTER(register_java_lang_StringToReal);
     REGISTER(register_java_lang_invoke_MethodHandle);
+    REGISTER(register_java_lang_invoke_VarHandle);
     REGISTER(register_java_math_NativeBN);
     REGISTER(register_java_util_regex_Matcher);
     REGISTER(register_java_util_regex_Pattern);
