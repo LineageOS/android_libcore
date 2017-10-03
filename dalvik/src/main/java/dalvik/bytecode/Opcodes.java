@@ -249,6 +249,8 @@ public interface Opcodes {
     int OP_INVOKE_POLYMORPHIC_RANGE     = 0x00fb;
     int OP_INVOKE_CUSTOM                = 0x00fc;
     int OP_INVOKE_CUSTOM_RANGE          = 0x00fd;
+    int OP_CONST_METHOD_HANDLE          = 0x00fe;
+    int OP_CONST_METHOD_TYPE            = 0x00ff;
     // END(libcore-opcodes)
 
     /** Never implemented; do not use. */
