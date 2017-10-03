@@ -253,6 +253,7 @@ class ServerSocket implements java.io.Closeable {
      * @since 1.4
      * @hide
      */
+    // Android-changed: Make ctor public and @hide, for internal use.
     public SocketImpl getImpl() throws SocketException {
         if (!created)
             createImpl();
@@ -921,7 +922,7 @@ class ServerSocket implements java.io.Closeable {
         /* Not implemented yet */
     }
 
-    // Android-added: for testing and internal use.
+    // Android-added: getFileDescriptor$(), for testing / internal use.
     /**
      * @hide internal use only
      */
