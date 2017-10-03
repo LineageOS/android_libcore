@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,6 +23,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+
 package java.lang;
 
 import dalvik.annotation.optimization.FastNative;
@@ -2226,8 +2227,6 @@ public final class String
      * @param  target The sequence of char values to be replaced
      * @param  replacement The replacement sequence of char values
      * @return  The resulting string
-     * @throws NullPointerException if <code>target</code> or
-     *         <code>replacement</code> is <code>null</code>.
      * @since 1.5
      */
     public String replace(CharSequence target, CharSequence replacement) {
@@ -2380,7 +2379,6 @@ public final class String
         if (fast != null) {
             return fast;
         }
-
         return Pattern.compile(regex).split(this, limit);
     }
 
@@ -2758,9 +2756,6 @@ public final class String
      *          href="../util/Formatter.html#detail">Details</a> section of the
      *          formatter class specification.
      *
-     * @throws  NullPointerException
-     *          If the <tt>format</tt> is <tt>null</tt>
-     *
      * @return  A formatted string
      *
      * @see  java.util.Formatter
@@ -2801,9 +2796,6 @@ public final class String
      *          formatting errors, see the <a
      *          href="../util/Formatter.html#detail">Details</a> section of the
      *          formatter class specification
-     *
-     * @throws  NullPointerException
-     *          If the <tt>format</tt> is <tt>null</tt>
      *
      * @return  A formatted string
      *
