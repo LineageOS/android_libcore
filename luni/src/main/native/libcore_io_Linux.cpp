@@ -455,14 +455,26 @@ static jobject makeStructStat(JNIEnv* env, const struct stat64& sb) {
         return NULL;
     }
 
+    jobject atim_timespec = makeStructTimespec(env, sb.st_atim);
+    if (atim_timespec == NULL) {
+        return NULL;
+    }
+    jobject mtim_timespec = makeStructTimespec(env, sb.st_mtim);
+    if (mtim_timespec == NULL) {
+        return NULL;
+    }
+    jobject ctim_timespec = makeStructTimespec(env, sb.st_ctim);
+    if (ctim_timespec == NULL) {
+        return NULL;
+    }
+
     return env->NewObject(JniConstants::structStatClass, ctor,
             static_cast<jlong>(sb.st_dev), static_cast<jlong>(sb.st_ino),
             static_cast<jint>(sb.st_mode), static_cast<jlong>(sb.st_nlink),
             static_cast<jint>(sb.st_uid), static_cast<jint>(sb.st_gid),
             static_cast<jlong>(sb.st_rdev), static_cast<jlong>(sb.st_size),
-            makeStructTimespec(env, sb.st_atim), makeStructTimespec(env, sb.st_mtim),
-            makeStructTimespec(env, sb.st_ctim), static_cast<jlong>(sb.st_blksize),
-            static_cast<jlong>(sb.st_blocks));
+            atim_timespec, mtim_timespec, ctim_timespec,
+            static_cast<jlong>(sb.st_blksize), static_cast<jlong>(sb.st_blocks));
 }
 
 static jobject makeStructStatVfs(JNIEnv* env, const struct statvfs& sb) {
