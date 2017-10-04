@@ -1844,5 +1844,11 @@
   result: EXEC_FAILED,
   bug: 64092664,
   name: "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_withFieldPosition"
+},
+{
+  description: "Broken after zlib update in 7291b8caf1884",
+  result: EXEC_FAILED,
+  bug: 67395816,
+  name: "libcore.java.util.zip.DeflateRegressionTest#deterministicOutput"
 }
 ]
