@@ -396,7 +396,9 @@ class ZipFile implements ZipConstants, Closeable {
             case DEFLATED:
                 // MORE: Compute good size for inflater stream:
                 long size = getEntrySize(jzentry) + 2; // Inflater likes a bit of slack
-                if (size > 65536) size = 8192;
+                // Android-changed: Use 64k buffer size, performs better than 8k.
+                // if (size > 65536) size = 8192;
+                if (size > 65536) size = 65536;
                 if (size <= 0) size = 4096;
                 Inflater inf = getInflater();
                 InputStream is =
