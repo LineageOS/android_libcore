@@ -224,7 +224,6 @@ filegroup {
         "ojluni/src/main/java/java/lang/StrictMath.java",
         "ojluni/src/main/java/java/lang/StringBuffer.java",
         "ojluni/src/main/java/java/lang/StringBuilder.java",
-        "ojluni/src/main/java/java/lang/StringCoding.java",
         "ojluni/src/main/java/java/lang/StringIndexOutOfBoundsException.java",
         "ojluni/src/main/java/java/lang/String.java",
         "ojluni/src/main/java/java/lang/SuppressWarnings.java",
