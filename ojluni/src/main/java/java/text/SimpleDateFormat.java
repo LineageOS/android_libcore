@@ -128,7 +128,7 @@ import static java.text.DateFormatSymbols.*;
  *         <td>Week year
  *         <td><a href="#year">Year</a>
  *         <td><code>2009</code>; <code>09</code>
- *         <td>1+</td>
+ *         <td>24+</td>
  *     <tr style="background-color: rgb(238, 238, 255);">
  *         <td><code>M</code>
  *         <td>Month in year (context sensitive)
@@ -242,7 +242,7 @@ import static java.text.DateFormatSymbols.*;
  *         <td>Time zone
  *         <td><a href="#iso8601timezone">ISO 8601 time zone</a>
  *         <td><code>-08</code>; <code>-0800</code>;  <code>-08:00</code>
- *         <td>1+</td>
+ *         <td>24+</td>
  * </table>
  * </blockquote>
  * Pattern letters are usually repeated, as their number determines the
