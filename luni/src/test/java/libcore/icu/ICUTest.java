@@ -20,6 +20,7 @@ import java.text.BreakIterator;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Locale;
+import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
 public class ICUTest extends junit.framework.TestCase {
@@ -258,10 +259,14 @@ public class ICUTest extends junit.framework.TestCase {
   /** Confirms that ICU agrees with the rest of libcore about the version of the TZ data in use. */
   public void testTimeZoneDataVersion() {
     String icu4cTzVersion = ICU.getTZDataVersion();
+
     String zoneInfoTzVersion = ZoneInfoDB.getInstance().getVersion();
     assertEquals(icu4cTzVersion, zoneInfoTzVersion);
 
     String icu4jTzVersion = android.icu.util.TimeZone.getTZDataVersion();
     assertEquals(icu4jTzVersion, zoneInfoTzVersion);
+
+    String tzLookupTzVersion = TimeZoneFinder.getInstance().getIanaVersion();
+    assertEquals(icu4jTzVersion, tzLookupTzVersion);
   }
 }
