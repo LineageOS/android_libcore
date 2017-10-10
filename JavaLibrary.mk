@@ -263,59 +263,6 @@ endif
 
 ifeq ($(HOST_OS),linux)
 
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(openjdk_java_files) $(android_icu4j_src_files) $(openjdk_lambda_stub_files))
-LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-all-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
-LOCAL_CORE_LIBRARY := true
-LOCAL_UNINSTALLABLE_MODULE := true
-include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_java_files))
-LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-oj-hostdex
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_JAVA_LIBRARIES := core-all-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
-LOCAL_CORE_LIBRARY := true
-include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
-
-# Definitions to make the core library.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(android_icu4j_src_files))
-LOCAL_JAVA_RESOURCE_DIRS := $(android_icu4j_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-libart-hostdex
-LOCAL_JAVA_LIBRARIES := core-oj-hostdex
-LOCAL_REQUIRED_MODULES := tzdata-host tzlookup.xml-host
-include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
-
-# A library that exists to satisfy javac when
-# compiling source code that contains lambdas.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_lambda_stub_files) $(openjdk_lambda_duplicate_stub_files))
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_MODULE := core-lambda-stubs-hostdex
-LOCAL_JAVA_LIBRARIES := core-all-hostdex
-LOCAL_CORE_LIBRARY := true
-include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
-
 # Make the core-tests-hostdex library.
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
