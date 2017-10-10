@@ -90,6 +90,7 @@ java_library {
 java_library {
     name: "core-oj",
     defaults: ["libcore_java_defaults"],
+    hostdex: true,
 
     srcs: [":openjdk_java_files"],
     java_resource_dirs: core_resource_dirs,
@@ -101,12 +102,14 @@ java_library {
         "tzdata",
         "tzlookup.xml",
     ],
+
 }
 
 // Definitions to make the core library.
 java_library {
     name: "core-libart",
     defaults: ["libcore_java_defaults"],
+    hostdex: true,
 
     srcs: [
         ":non_openjdk_java_files",
