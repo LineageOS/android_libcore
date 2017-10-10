@@ -1060,7 +1060,7 @@ class Socket implements java.io.Closeable {
      *
      * The setting only affects socket close.
      *
-     * @return the setting for SO_LINGER.
+     * @return the setting for {@link SocketOptions#SO_LINGER SO_LINGER}.
      * @exception SocketException if there is an error
      * in the underlying protocol, such as a TCP error.
      * @since   JDK1.1
