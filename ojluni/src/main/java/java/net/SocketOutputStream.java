@@ -43,6 +43,11 @@ import dalvik.system.BlockGuard;
  */
 class SocketOutputStream extends FileOutputStream
 {
+    // Android-removed: Android doesn't need to call native init.
+    // static {
+    //    init();
+    //}
+
     private AbstractPlainSocketImpl impl = null;
     private byte temp[] = new byte[1];
     private Socket socket = null;
@@ -105,6 +110,7 @@ class SocketOutputStream extends FileOutputStream
 
         FileDescriptor fd = impl.acquireFD();
         try {
+            // Android-added: Check BlockGuard policy in socketWrite.
             BlockGuard.getThreadPolicy().onNetwork();
             socketWrite0(fd, b, off, len);
         } catch (SocketException se) {
@@ -174,4 +180,11 @@ class SocketOutputStream extends FileOutputStream
      * Overrides finalize, the fd is closed by the Socket.
      */
     protected void finalize() {}
+
+    // Android-removed: Android doesn't need native init.
+    /*
+     * Perform class load-time initializations.
+     *
+    private native static void init();
+    */
 }
