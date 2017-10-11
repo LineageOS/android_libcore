@@ -456,12 +456,16 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
             // Use (direct) ByteBuffer:
             CodeSigner[] signers = res.getCodeSigners();
             CodeSource cs = new CodeSource(url, signers);
+            // Android-removed: Android doesn't use sun.misc.PerfCounter.
+            // sun.misc.PerfCounter.getReadClassBytesTime().addElapsedTimeFrom(t0);
             return defineClass(name, bb, cs);
         } else {
             byte[] b = res.getBytes();
             // must read certificates AFTER reading bytes.
             CodeSigner[] signers = res.getCodeSigners();
             CodeSource cs = new CodeSource(url, signers);
+            // Android-removed: Android doesn't use sun.misc.PerfCounter.
+            // sun.misc.PerfCounter.getReadClassBytesTime().addElapsedTimeFrom(t0);
             return defineClass(name, b, 0, b.length, cs);
         }
     }
@@ -767,6 +771,7 @@ public class URLClassLoader extends SecureClassLoader implements Closeable {
     }
 
     static {
+        // Android-removed: SharedSecrets.setJavaNetAccess call. Android doesn't use it.
         /*sun.misc.SharedSecrets.setJavaNetAccess (
             new sun.misc.JavaNetAccess() {
                 public URLClassPath getURLClassPath (URLClassLoader u) {
