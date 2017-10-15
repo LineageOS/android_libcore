@@ -25,6 +25,10 @@
 
 package java.lang.invoke;
 
+import dalvik.system.VMRuntime;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -442,9 +446,16 @@ public abstract class VarHandle {
     */
     // END Android-removed: No VarForm in Android implementation.
 
-    RuntimeException unsupported() {
-        return new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: fields for common metadata.
+    /** The target type for accesses. */
+    private final Class<?> varType;
+
+    /** The coordinate types of a VarHandle instance. */
+    private final List<Class<?>> coordinateTypes;
+
+    /** BitMask of supported access mode indexed by AccessMode.ordinal(). */
+    private final int accessModesBitMask;
+    // END Android-added: fields for common metadata.
 
     // Plain accessors
 
@@ -474,8 +485,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object get(Object... args);
 
@@ -501,8 +512,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     void set(Object... args);
 
@@ -534,8 +545,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getVolatile(Object... args);
 
@@ -565,8 +576,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     void setVolatile(Object... args);
 
@@ -596,8 +607,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getOpaque(Object... args);
 
@@ -624,8 +635,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     void setOpaque(Object... args);
 
@@ -662,8 +673,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAcquire(Object... args);
 
@@ -694,8 +705,8 @@ public abstract class VarHandle {
      * symbolic type descriptor, but a reference cast fails.
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     void setRelease(Object... args);
 
@@ -731,8 +742,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     boolean compareAndSet(Object... args);
 
@@ -767,8 +778,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object compareAndExchange(Object... args);
 
@@ -803,8 +814,8 @@ public abstract class VarHandle {
      * @see #getAcquire(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object compareAndExchangeAcquire(Object... args);
 
@@ -839,8 +850,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object compareAndExchangeRelease(Object... args);
 
@@ -879,8 +890,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetPlain(Object... args);
 
@@ -917,8 +928,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSet(Object... args);
 
@@ -956,8 +967,8 @@ public abstract class VarHandle {
      * @see #getAcquire(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetAcquire(Object... args);
 
@@ -995,8 +1006,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     boolean weakCompareAndSetRelease(Object... args);
 
@@ -1029,8 +1040,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndSet(Object... args);
 
@@ -1063,8 +1074,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndSetAcquire(Object... args);
 
@@ -1097,8 +1108,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndSetRelease(Object... args);
 
@@ -1134,8 +1145,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndAdd(Object... args);
 
@@ -1168,8 +1179,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndAddAcquire(Object... args);
 
@@ -1202,8 +1213,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndAddRelease(Object... args);
 
@@ -1244,8 +1255,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOr(Object... args);
 
@@ -1282,8 +1293,8 @@ public abstract class VarHandle {
      * @see #getAcquire(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOrAcquire(Object... args);
 
@@ -1320,8 +1331,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseOrRelease(Object... args);
 
@@ -1358,8 +1369,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAnd(Object... args);
 
@@ -1396,8 +1407,8 @@ public abstract class VarHandle {
      * @see #getAcquire(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAndAcquire(Object... args);
 
@@ -1434,8 +1445,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseAndRelease(Object... args);
 
@@ -1472,8 +1483,8 @@ public abstract class VarHandle {
      * @see #getVolatile(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXor(Object... args);
 
@@ -1510,8 +1521,8 @@ public abstract class VarHandle {
      * @see #getAcquire(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXorAcquire(Object... args);
 
@@ -1548,8 +1559,8 @@ public abstract class VarHandle {
      * @see #get(Object...)
      */
     public final native
-    // Android-removed: unsupported annotations.
-    // @MethodHandle.PolymorphicSignature
+    @MethodHandle.PolymorphicSignature
+    // Android-removed: unsupported annotation.
     // @HotSpotIntrinsicCandidate
     Object getAndBitwiseXorRelease(Object... args);
 
@@ -1559,7 +1570,11 @@ public abstract class VarHandle {
         SET(void.class),
         COMPARE_AND_SWAP(boolean.class),
         COMPARE_AND_EXCHANGE(Object.class),
-        GET_AND_UPDATE(Object.class);
+        GET_AND_UPDATE(Object.class),
+        // Android-added: Finer grained access types.
+        // These are used to help categorize the access modes that a VarHandle supports.
+        GET_AND_UPDATE_BITWISE(Object.class),
+        GET_AND_UPDATE_NUMERIC(Object.class);
 
         final Class<?> returnType;
         final boolean isMonomorphicInReturnType;
@@ -1596,6 +1611,8 @@ public abstract class VarHandle {
                     ps[i] = value;
                     return MethodType.methodType(value, ps);
                 case GET_AND_UPDATE:
+                case GET_AND_UPDATE_BITWISE:
+                case GET_AND_UPDATE_NUMERIC:
                     ps = allocateParameters(1, receiver, intermediate);
                     i = fillParameters(ps, receiver, intermediate);
                     ps[i] = value;
@@ -1746,73 +1763,73 @@ public abstract class VarHandle {
          * method
          * {@link VarHandle#getAndAdd VarHandle.getAndAdd}
          */
-        GET_AND_ADD("getAndAdd", AccessType.GET_AND_UPDATE),
+        GET_AND_ADD("getAndAdd", AccessType.GET_AND_UPDATE_NUMERIC),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndAddAcquire VarHandle.getAndAddAcquire}
          */
-        GET_AND_ADD_ACQUIRE("getAndAddAcquire", AccessType.GET_AND_UPDATE),
+        GET_AND_ADD_ACQUIRE("getAndAddAcquire", AccessType.GET_AND_UPDATE_NUMERIC),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndAddRelease VarHandle.getAndAddRelease}
          */
-        GET_AND_ADD_RELEASE("getAndAddRelease", AccessType.GET_AND_UPDATE),
+        GET_AND_ADD_RELEASE("getAndAddRelease", AccessType.GET_AND_UPDATE_NUMERIC),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseOr VarHandle.getAndBitwiseOr}
          */
-        GET_AND_BITWISE_OR("getAndBitwiseOr", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_OR("getAndBitwiseOr", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseOrRelease VarHandle.getAndBitwiseOrRelease}
          */
-        GET_AND_BITWISE_OR_RELEASE("getAndBitwiseOrRelease", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_OR_RELEASE("getAndBitwiseOrRelease", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseOrAcquire VarHandle.getAndBitwiseOrAcquire}
          */
-        GET_AND_BITWISE_OR_ACQUIRE("getAndBitwiseOrAcquire", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_OR_ACQUIRE("getAndBitwiseOrAcquire", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseAnd VarHandle.getAndBitwiseAnd}
          */
-        GET_AND_BITWISE_AND("getAndBitwiseAnd", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_AND("getAndBitwiseAnd", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseAndRelease VarHandle.getAndBitwiseAndRelease}
          */
-        GET_AND_BITWISE_AND_RELEASE("getAndBitwiseAndRelease", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_AND_RELEASE("getAndBitwiseAndRelease", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseAndAcquire VarHandle.getAndBitwiseAndAcquire}
          */
-        GET_AND_BITWISE_AND_ACQUIRE("getAndBitwiseAndAcquire", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_AND_ACQUIRE("getAndBitwiseAndAcquire", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseXor VarHandle.getAndBitwiseXor}
          */
-        GET_AND_BITWISE_XOR("getAndBitwiseXor", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_XOR("getAndBitwiseXor", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseXorRelease VarHandle.getAndBitwiseXorRelease}
          */
-        GET_AND_BITWISE_XOR_RELEASE("getAndBitwiseXorRelease", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_XOR_RELEASE("getAndBitwiseXorRelease", AccessType.GET_AND_UPDATE_BITWISE),
         /**
          * The access mode whose access is specified by the corresponding
          * method
          * {@link VarHandle#getAndBitwiseXorAcquire VarHandle.getAndBitwiseXorAcquire}
          */
-        GET_AND_BITWISE_XOR_ACQUIRE("getAndBitwiseXorAcquire", AccessType.GET_AND_UPDATE),
+        GET_AND_BITWISE_XOR_ACQUIRE("getAndBitwiseXorAcquire", AccessType.GET_AND_UPDATE_BITWISE),
         ;
 
         static final Map<String, AccessMode> methodNameToAccessMode;
@@ -1898,8 +1915,11 @@ public abstract class VarHandle {
      * @return the variable type of variables referenced by this VarHandle
      */
     public final Class<?> varType() {
-        MethodType typeSet = accessModeType(AccessMode.SET);
-        return typeSet.parameterType(typeSet.parameterCount() - 1);
+        // Android-removed: existing implementation.
+        // MethodType typeSet = accessModeType(AccessMode.SET);
+        // return typeSet.parameterType(typeSet.parameterCount() - 1)
+        // Android-added: return instance field.
+        return varType;
     }
 
     /**
@@ -1909,8 +1929,11 @@ public abstract class VarHandle {
      * list is unmodifiable
      */
     public final List<Class<?>> coordinateTypes() {
-        MethodType typeGet = accessModeType(AccessMode.GET);
-        return typeGet.parameterList();
+        // Android-removed: existing implementation.
+        // MethodType typeGet = accessModeType(AccessMode.GET);
+        // return typeGet.parameterList();
+        // Android-added: return instance field.
+        return coordinateTypes;
     }
 
     /**
@@ -1940,9 +1963,18 @@ public abstract class VarHandle {
         */
         // END Android-removed: Relies on internal class that is not part of the
         // Android implementation.
-        // Android-added: Throw an exception until implemented.
-        unsupported();  // TODO(b/65872996)
-        return null;
+        // Android-added: alternative implementation.
+        switch (coordinateTypes.size()) {
+            case 0:
+                return accessMode.at.accessModeType(null, varType);
+            case 1:
+                return accessMode.at.accessModeType(coordinateTypes.get(0), varType);
+            case 2:
+                return accessMode.at.accessModeType(coordinateTypes.get(0), varType,
+                                                    coordinateTypes.get(1));
+            default:
+                throw new InternalError("bad coordinateTypes: " + coordinateTypes);
+        }
     }
 
     // Android-removed: Not part of the Android implementation.
@@ -1964,9 +1996,9 @@ public abstract class VarHandle {
     public final boolean isAccessModeSupported(AccessMode accessMode) {
         // Android-removed: Refers to unused field vform.
         // return AccessMode.getMemberName(accessMode.ordinal(), vform) != null;
-        // Android-added: Throw an exception until implemented.
-        unsupported();  // TODO(b/65872996)
-        return false;
+        // Android-added: use accessModesBitsMask field.
+        final int testBit = 1 << accessMode.ordinal();
+        return (accessModesBitMask & testBit) == testBit;
     }
 
     /**
@@ -2002,9 +2034,10 @@ public abstract class VarHandle {
                     bindTo(this);
         }
         */
-        // Android-added: Throw an exception until implemented.
-        unsupported();  // TODO(b/65872996)
-        return null;
+        // END Android-removed: no vform field in Android implementation.
+
+        // Android-added: basic implementation following description in javadoc for this method.
+        return MethodHandles.varHandleInvoker(accessMode, accessModeType(accessMode)).bindTo(this);
     }
 
     // BEGIN Android-removed: Not used in Android implementation.
@@ -2055,8 +2088,8 @@ public abstract class VarHandle {
     */
     // END Android-removed: Not used in Android implementation.
 
-    /*non-public*/
     // BEGIN Android-removed: No VarForm in Android implementation.
+    /*non-public*/
     /*
     final void updateVarForm(VarForm newVForm) {
         if (vform == newVForm) return;
@@ -2158,4 +2191,197 @@ public abstract class VarHandle {
         // NB The compiler recognizes all the fences here as intrinsics.
         UNSAFE.storeFence();
     }
+
+    // BEGIN Android-added: package private constructors.
+    /**
+     * Constructor for VarHandle with no coordinates.
+     *
+     * @param varType the variable type of variables to be referenced
+     * @param isFinal whether the target variables are final (non-modifiable)
+     * @hide
+     */
+    VarHandle(Class<?> varType, boolean isFinal) {
+        this.varType = varType;
+        this.coordinateTypes = Collections.EMPTY_LIST;
+        this.accessModesBitMask = alignedAccessModesBitMask(varType, isFinal);
+    }
+
+    /**
+     * Constructor for VarHandle with one coordinate.
+     *
+     * @param varType the variable type of variables to be referenced
+     * @param isFinal  whether the target variables are final (non-modifiable)
+     * @param coordinate the coordinate
+     * @hide
+     */
+    VarHandle(Class<?> varType, boolean isFinal, Class<?> coordinate) {
+        this.varType = varType;
+        this.coordinateTypes = Collections.singletonList(coordinate);
+        this.accessModesBitMask = alignedAccessModesBitMask(varType, isFinal);
+    }
+
+    /**
+     * Constructor for VarHandle with two coordinates.
+     *
+     * @param varType the variable type of variables to be referenced
+     * @param backingArrayType the type of the array accesses will be performed on
+     * @param isFinal whether the target variables are final (non-modifiable)
+     * @param coordinate0 the first coordinate
+     * @param coordinate1 the second coordinate
+     * @hide
+     */
+    VarHandle(Class<?> varType, Class<?> backingArrayType,  boolean isFinal,
+              Class<?> coordinate0, Class<?> coordinate1) {
+        this.varType = varType;
+        this.coordinateTypes = Collections.unmodifiableList(
+            Arrays.asList(coordinate0, coordinate1));
+        Class<?> backingArrayComponentType = backingArrayType.getComponentType();
+        if (backingArrayComponentType != varType && backingArrayComponentType != byte.class) {
+            throw new InternalError("Unsupported backingArrayType: " + backingArrayType);
+        }
+
+        if (backingArrayType.getComponentType() == varType) {
+            this.accessModesBitMask = alignedAccessModesBitMask(varType, isFinal);
+        } else {
+            this.accessModesBitMask = unalignedAccessModesBitMask(varType);
+        }
+    }
+    // END Android-changed: package private constructors.
+
+    // BEGIN Android-added: helper state for VarHandle properties.
+
+    /** BitMask of access modes that do not change the memory referenced by a VarHandle.
+     * An example being a read of a variable with volatile ordering effects. */
+    private final static int READ_ACCESS_MODES_BIT_MASK;
+
+    /** BitMask of access modes that write to the memory referenced by
+     * a VarHandle.  This does not include any compare and update
+     * access modes, nor any bitwise or numeric access modes. An
+     * example being a write to variable with release ordering
+     * effects.
+     */
+    private final static int WRITE_ACCESS_MODES_BIT_MASK;
+
+    /** BitMask of access modes that are applicable to types
+     * supporting for atomic updates.  This includes access modes that
+     * both read and write a variable such as compare-and-set.
+     */
+    private final static int ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+
+    /** BitMask of access modes that are applicable to types
+     * supporting numeric atomic update operations. */
+    private final static int NUMERIC_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+
+    /** BitMask of access modes that are applicable to types
+     * supporting bitwise atomic update operations. */
+    private final static int BITWISE_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+
+    /** BitMask of all access modes. */
+    private final static int ALL_MODES_BIT_MASK;
+
+    /** Indicator of machine word size. */
+    private final static boolean RUNNING_ON_64BIT = VMRuntime.getRuntime().is64Bit();
+
+    static {
+        // Check we're not about to overflow the storage of the
+        // bitmasks here and in the accessModesBitMask field.
+        if (AccessMode.values().length > Integer.SIZE) {
+            throw new InternalError("accessModes overflow");
+        }
+
+        // Access modes bit mask declarations and initialization order
+        // follows the presentation order in JEP193.
+        READ_ACCESS_MODES_BIT_MASK = accessTypesToBitMask(EnumSet.of(AccessType.GET));
+
+        WRITE_ACCESS_MODES_BIT_MASK = accessTypesToBitMask(EnumSet.of(AccessType.SET));
+
+        ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK =
+                accessTypesToBitMask(EnumSet.of(AccessType.COMPARE_AND_EXCHANGE,
+                                                AccessType.COMPARE_AND_SWAP,
+                                                AccessType.GET_AND_UPDATE));
+
+        NUMERIC_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK =
+                accessTypesToBitMask(EnumSet.of(AccessType.GET_AND_UPDATE_NUMERIC));
+
+        BITWISE_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK =
+                accessTypesToBitMask(EnumSet.of(AccessType.GET_AND_UPDATE_BITWISE));
+
+        ALL_MODES_BIT_MASK = (READ_ACCESS_MODES_BIT_MASK |
+                              WRITE_ACCESS_MODES_BIT_MASK |
+                              ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK |
+                              NUMERIC_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK |
+                              BITWISE_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK);
+    }
+
+    static int accessTypesToBitMask(final EnumSet<AccessType> accessTypes) {
+        int m = 0;
+        for (AccessMode accessMode : AccessMode.values()) {
+            if (accessTypes.contains(accessMode.at)) {
+                m |= 1 << accessMode.ordinal();
+            }
+        }
+        return m;
+    }
+
+    static int alignedAccessModesBitMask(Class<?> varType, boolean isFinal) {
+        // For aligned accesses, the supported access modes are described in:
+        // @see java.lang.invoke.MethodHandles.Lookup#findVarHandle
+        int bitMask = ALL_MODES_BIT_MASK;
+
+        // If the field is declared final, keep only the read access modes.
+        if (isFinal) {
+            bitMask &= READ_ACCESS_MODES_BIT_MASK;
+        }
+
+        // If the field is anything other than byte, short, char, int,
+        // long, float, double then remove the numeric atomic update
+        // access modes.
+        if (varType != byte.class && varType != short.class && varType != char.class &&
+            varType != int.class && varType != long.class
+            && varType != float.class && varType != double.class) {
+            bitMask &= ~NUMERIC_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+        }
+
+        // If the field is not integral, remove the bitwise atomic update access modes.
+        if (varType != boolean.class && varType != byte.class && varType != short.class &&
+            varType != char.class && varType != int.class && varType != long.class) {
+            bitMask &= ~BITWISE_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+        }
+        return bitMask;
+    }
+
+    static int unalignedAccessModesBitMask(Class<?> varType) {
+        // The VarHandle refers to a view of byte array or a
+        // view of a byte buffer.  The corresponding accesses
+        // maybe unaligned so the access modes are more
+        // restrictive than field or array element accesses.
+        //
+        // The supported access modes are described in:
+        // @see java.lang.invoke.MethodHandles#byteArrayViewVarHandle
+        int bitMask = 0;
+
+        // Read/write access modes supported for all types except for
+        // long and double on 32-bit platforms.
+        if (RUNNING_ON_64BIT || (varType != long.class && varType != double.class)) {
+            bitMask |= READ_ACCESS_MODES_BIT_MASK | WRITE_ACCESS_MODES_BIT_MASK;
+        }
+
+        // int, long, float, double support atomic update modes per documentation.
+        if (varType == int.class || varType == long.class ||
+            varType == float.class || varType == double.class) {
+            bitMask |= ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+        }
+
+        // int and long support numeric updates per documentation.
+        if (varType == int.class || varType == long.class) {
+            bitMask |= NUMERIC_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+        }
+
+        // int and long support bitwise updates per documentation.
+        if (varType == int.class || varType == long.class) {
+            bitMask |= BITWISE_ATOMIC_UPDATE_ACCESS_MODES_BIT_MASK;
+        }
+        return bitMask;
+    }
+    // END Android-added: helper class for VarHandle properties.
 }
