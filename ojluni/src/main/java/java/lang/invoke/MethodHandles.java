@@ -1214,7 +1214,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
         private MethodHandle findAccessor(Field field, Class<?> refc, Class<?> fieldType, int kind,
                                           boolean performAccessChecks)
                 throws IllegalAccessException {
-            if (!performAccessChecks) {
+            if (performAccessChecks) {
                 checkAccess(refc, field.getDeclaringClass(), field.getModifiers(), field.getName());
             }
 
@@ -1226,9 +1226,11 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
                 throw new IllegalAccessException(reason);
             }
 
-            final boolean isSetterKind = kind == MethodHandle.IPUT || kind == MethodHandle.SPUT;
-            if (Modifier.isFinal(modifiers) && isSetterKind) {
-                throw new IllegalAccessException("Field " + field + " is final");
+            if (performAccessChecks) {
+                final boolean isSetterKind = kind == MethodHandle.IPUT || kind == MethodHandle.SPUT;
+                if (isSetterKind && Modifier.isFinal(modifiers)) {
+                    throw new IllegalAccessException("Field " + field + " is final");
+                }
             }
 
             final MethodType methodType;
@@ -1685,7 +1687,7 @@ return mh1;
         public MethodHandle unreflectGetter(Field f) throws IllegalAccessException {
             return findAccessor(f, f.getDeclaringClass(), f.getType(),
                     Modifier.isStatic(f.getModifiers()) ? MethodHandle.SGET : MethodHandle.IGET,
-                    f.isAccessible() /* performAccessChecks */);
+                    !f.isAccessible() /* performAccessChecks */);
         }
 
         /**
@@ -1709,7 +1711,7 @@ return mh1;
         public MethodHandle unreflectSetter(Field f) throws IllegalAccessException {
             return findAccessor(f, f.getDeclaringClass(), f.getType(),
                     Modifier.isStatic(f.getModifiers()) ? MethodHandle.SPUT : MethodHandle.IPUT,
-                    f.isAccessible() /* performAccessChecks */);
+                    !f.isAccessible() /* performAccessChecks */);
         }
 
         // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
