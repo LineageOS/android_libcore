@@ -1201,33 +1201,18 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
 
         private MethodHandle findAccessor(Class<?> refc, String name, Class<?> type, int kind)
             throws NoSuchFieldException, IllegalAccessException {
-            final Field field = refc.getDeclaredField(name);
-            final Class<?> fieldType = field.getType();
-            if (fieldType != type) {
-                throw new NoSuchFieldException(
-                        "Field has wrong type: " + fieldType + " != " + type);
-            }
-
+            final Field field = findFieldOfType(refc, name, type);
             return findAccessor(field, refc, type, kind, true /* performAccessChecks */);
         }
 
-        private MethodHandle findAccessor(Field field, Class<?> refc, Class<?> fieldType, int kind,
+        private MethodHandle findAccessor(Field field, Class<?> refc, Class<?> type, int kind,
                                           boolean performAccessChecks)
                 throws IllegalAccessException {
-            if (performAccessChecks) {
-                checkAccess(refc, field.getDeclaringClass(), field.getModifiers(), field.getName());
-            }
-
+            final boolean isSetterKind = kind == MethodHandle.IPUT || kind == MethodHandle.SPUT;
             final boolean isStaticKind = kind == MethodHandle.SGET || kind == MethodHandle.SPUT;
-            final int modifiers = field.getModifiers();
-            if (Modifier.isStatic(modifiers) != isStaticKind) {
-                String reason = "Field " + field + " is " +
-                        (isStaticKind ? "not " : "") + "static";
-                throw new IllegalAccessException(reason);
-            }
-
+            commonFieldChecks(field, refc, type, isStaticKind, performAccessChecks);
             if (performAccessChecks) {
-                final boolean isSetterKind = kind == MethodHandle.IPUT || kind == MethodHandle.SPUT;
+                final int modifiers = field.getModifiers();
                 if (isSetterKind && Modifier.isFinal(modifiers)) {
                     throw new IllegalAccessException("Field " + field + " is final");
                 }
@@ -1236,16 +1221,16 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             final MethodType methodType;
             switch (kind) {
                 case MethodHandle.SGET:
-                    methodType = MethodType.methodType(fieldType);
+                    methodType = MethodType.methodType(type);
                     break;
                 case MethodHandle.SPUT:
-                    methodType = MethodType.methodType(void.class, fieldType);
+                    methodType = MethodType.methodType(void.class, type);
                     break;
                 case MethodHandle.IGET:
-                    methodType = MethodType.methodType(fieldType, refc);
+                    methodType = MethodType.methodType(type, refc);
                     break;
                 case MethodHandle.IPUT:
-                    methodType = MethodType.methodType(void.class, refc, fieldType);
+                    methodType = MethodType.methodType(void.class, refc, type);
                     break;
                 default:
                     throw new IllegalArgumentException("Invalid kind " + kind);
@@ -1274,7 +1259,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             return findAccessor(refc, name, type, MethodHandle.IPUT);
         }
 
-        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method.
         /**
          * Produces a VarHandle giving access to a non-static field {@code name}
          * of type {@code type} declared in a class of type {@code recv}.
@@ -1345,10 +1330,54 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @hide
          */
         public VarHandle findVarHandle(Class<?> recv, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            unsupported("MethodHandles.Lookup.findVarHandle()");  // TODO(b/65872996)
-            return null;
+            final Field field = findFieldOfType(recv, name, type);
+            final boolean isStatic = false;
+            final boolean performAccessChecks = true;
+            commonFieldChecks(field, recv, type, isStatic, performAccessChecks);
+            return FieldVarHandle.create(field);
         }
-        // END Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // END Android-changed: OpenJDK 9+181 VarHandle API factory method.
+
+        // BEGIN Android-added: Common field resolution and access check methods.
+        private Field findFieldOfType(final Class<?> refc, String name, Class<?> type)
+                throws NoSuchFieldException {
+            Field field = null;
+
+            // Search refc and super classes for the field.
+            for (Class<?> cls = refc; cls != null; cls = cls.getSuperclass()) {
+                try {
+                    field = cls.getDeclaredField(name);
+                    break;
+                } catch (NoSuchFieldException e) {
+                }
+            }
+
+            if (field == null) {
+                // Force failure citing refc.
+                field = refc.getDeclaredField(name);
+            }
+
+            final Class<?> fieldType = field.getType();
+            if (fieldType != type) {
+                throw new NoSuchFieldException(name);
+            }
+            return field;
+        }
+
+        private void commonFieldChecks(Field field, Class<?> refc, Class<?> type,
+                                       boolean isStatic, boolean performAccessChecks)
+                throws IllegalAccessException {
+            final int modifiers = field.getModifiers();
+            if (performAccessChecks) {
+                checkAccess(refc, field.getDeclaringClass(), modifiers, field.getName());
+            }
+            if (Modifier.isStatic(modifiers) != isStatic) {
+                String reason = "Field " + field + " is " +
+                        (isStatic ? "not " : "") + "static";
+                throw new IllegalAccessException(reason);
+            }
+        }
+        // END Android-added: Common field resolution and access check methods.
 
         /**
          * Produces a method handle giving read access to a static field.
@@ -1396,7 +1425,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             return findAccessor(refc, name, type, MethodHandle.SPUT);
         }
 
-        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method.
         /**
          * Produces a VarHandle giving access to a static field {@code name} of
          * type {@code type} declared in a class of type {@code decl}.
@@ -1469,10 +1498,13 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
          * @hide
          */
         public VarHandle findStaticVarHandle(Class<?> decl, String name, Class<?> type) throws NoSuchFieldException, IllegalAccessException {
-            unsupported("MethodHandles.Lookup.findStaticVarHandle()");  // TODO(b/65872996)
-            return null;
+            final Field field = findFieldOfType(decl, name, type);
+            final boolean isStatic = true;
+            final boolean performAccessChecks = true;
+            commonFieldChecks(field, decl, type, isStatic, performAccessChecks);
+            return FieldVarHandle.create(field);
         }
-        // END Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // END Android-changed: OpenJDK 9+181 VarHandle API factory method.
 
         /**
          * Produces an early-bound method handle for a non-static method.
@@ -1714,7 +1746,7 @@ return mh1;
                     !f.isAccessible() /* performAccessChecks */);
         }
 
-        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory method.
         /**
          * Produces a VarHandle giving access to a reflected field {@code f}
          * of type {@code T} declared in a class of type {@code R}.
@@ -1788,10 +1820,12 @@ return mh1;
          * @hide
          */
         public VarHandle unreflectVarHandle(Field f) throws IllegalAccessException {
-            unsupported("MethodHandles.Lookup.unreflectVarHandle()");  // TODO(b/65872996)
-            return null;
+            final boolean isStatic = Modifier.isStatic(f.getModifiers());
+            final boolean performAccessChecks = true;
+            commonFieldChecks(f, f.getDeclaringClass(), f.getType(), isStatic, performAccessChecks);
+            return FieldVarHandle.create(f);
         }
-        // END Android-changed: OpenJDK 9+181 VarHandle API factory method for bring up purposes.
+        // END Android-changed: OpenJDK 9+181 VarHandle API factory method.
 
         /**
          * Cracks a <a href="MethodHandleInfo.html#directmh">direct method handle</a>
@@ -1951,6 +1985,26 @@ return mh1;
         throw new IllegalArgumentException(target + " is not a direct handle");
     }
 
+    // BEGIN Android-added: method to check if a class is an array.
+    private static void checkClassIsArray(Class<?> c) {
+        if (!c.isArray()) {
+            throw new IllegalArgumentException("Not an array type: " + c);
+        }
+    }
+
+    private static void checkTypeIsViewable(Class<?> componentType) {
+        if (componentType == short.class ||
+            componentType == char.class ||
+            componentType == int.class ||
+            componentType == long.class ||
+            componentType == float.class ||
+            componentType == double.class) {
+            return;
+        }
+        throw new UnsupportedOperationException("Component type not supported: " + componentType);
+    }
+    // END Android-added: method to check if a class is an array.
+
     /**
      * Produces a method handle giving read access to elements of an array.
      * The type of the method handle will have a return type of the array's
@@ -1963,11 +2017,8 @@ return mh1;
      */
     public static
     MethodHandle arrayElementGetter(Class<?> arrayClass) throws IllegalArgumentException {
+        checkClassIsArray(arrayClass);
         final Class<?> componentType = arrayClass.getComponentType();
-        if (componentType == null) {
-            throw new IllegalArgumentException("Not an array type: " + arrayClass);
-        }
-
         if (componentType.isPrimitive()) {
             try {
                 return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class,
@@ -2002,11 +2053,8 @@ return mh1;
      */
     public static
     MethodHandle arrayElementSetter(Class<?> arrayClass) throws IllegalArgumentException {
+        checkClassIsArray(arrayClass);
         final Class<?> componentType = arrayClass.getComponentType();
-        if (componentType == null) {
-            throw new IllegalArgumentException("Not an array type: " + arrayClass);
-        }
-
         if (componentType.isPrimitive()) {
             try {
                 return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class,
@@ -2037,7 +2085,7 @@ return mh1;
     /** @hide */
     public static void arrayElementSetter(double[] array, int i, double val) { array[i] = val; }
 
-    // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory methods for bring up purposes.
+    // BEGIN Android-changed: OpenJDK 9+181 VarHandle API factory methods.
     /**
      * Produces a VarHandle giving access to elements of an array of type
      * {@code arrayClass}.  The VarHandle's variable type is the component type
@@ -2093,8 +2141,8 @@ return mh1;
      */
     public static
     VarHandle arrayElementVarHandle(Class<?> arrayClass) throws IllegalArgumentException {
-        unsupported("MethodHandles.arrayElementVarHandle()");  // TODO(b/65872996)
-        return null;
+        checkClassIsArray(arrayClass);
+        return ArrayElementVarHandle.create(arrayClass);
     }
 
     /**
@@ -2177,8 +2225,9 @@ return mh1;
     public static
     VarHandle byteArrayViewVarHandle(Class<?> viewArrayClass,
                                      ByteOrder byteOrder) throws IllegalArgumentException {
-        unsupported("MethodHandles.byteArrayViewVarHandle()");  // TODO(b/65872996)
-        return null;
+        checkClassIsArray(viewArrayClass);
+        checkTypeIsViewable(viewArrayClass.getComponentType());
+        return ByteArrayVarHandle.create(viewArrayClass, byteOrder);
     }
 
     /**
@@ -2265,11 +2314,11 @@ return mh1;
     public static
     VarHandle byteBufferViewVarHandle(Class<?> viewArrayClass,
                                       ByteOrder byteOrder) throws IllegalArgumentException {
-
-        unsupported("MethodHandles.byteBufferViewVarHandle()");  // TODO(b/65872996)
-        return null;
+        checkClassIsArray(viewArrayClass);
+        checkTypeIsViewable(viewArrayClass.getComponentType());
+        return ByteBufferViewVarHandle.create(viewArrayClass, byteOrder);
     }
-    // END Android-changed: OpenJDK 9+181 VarHandle API factory methods for bring up purposes.
+    // END Android-changed: OpenJDK 9+181 VarHandle API factory methods.
 
     /// method handle invocation (reflective style)
 
