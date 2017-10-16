@@ -1561,12 +1561,6 @@ public final class String
         }
     }
 
-    // BEGIN Android-added: Native method to access char storage managed by runtime.
-    // TODO(b/67411061): This seems to be unused, see whether we can remove it.
-    @FastNative
-    private native int fastIndexOf(int c, int start);
-    // END Android-added: Native method to access char storage managed by runtime.
-
     /**
      * Handles (rare) calls of indexOf with a supplementary character.
      */
