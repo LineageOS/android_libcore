@@ -60,6 +60,8 @@ public final class Short extends Number implements Comparable<Short> {
      * {@code short}.
      */
     @SuppressWarnings("unchecked")
+    // Android-changed: Avoid use of removed Class.getPrimitiveClass method.
+    // public static final Class<Short>    TYPE = (Class<Short>) Class.getPrimitiveClass("short");
     public static final Class<Short>    TYPE = (Class<Short>) short[].class.getComponentType();
 
     /**
