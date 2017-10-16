@@ -45,10 +45,30 @@ import javax.crypto.SecretKey;
 import javax.crypto.ShortBufferException;
 import libcore.util.HexEncoding;
 
+import dalvik.system.VMRuntime;
+import sun.security.jca.Providers;
+
 /**
  * Tests for all registered Elliptic Curve Diffie-Hellman {@link KeyAgreement} providers.
  */
 public class ECDHKeyAgreementTest extends TestCase {
+
+    // Allow access to deprecated BC algorithms in this test, so we can ensure they
+    // continue to work
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        Providers.setMaximumAllowableApiLevelForBcDeprecation(
+                VMRuntime.getRuntime().getTargetSdkVersion());
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Providers.setMaximumAllowableApiLevelForBcDeprecation(
+                Providers.DEFAULT_MAXIMUM_ALLOWABLE_TARGET_API_LEVEL_FOR_BC_DEPRECATION);
+        super.tearDown();
+    }
+
     // Two key pairs and the resulting shared secret for the Known Answer Test
     private static final byte[] KAT_PUBLIC_KEY1_X509 = HexEncoding.decode(
             "3059301306072a8648ce3d020106082a8648ce3d030107034200049fc2f71f85446b1371244491d83"
