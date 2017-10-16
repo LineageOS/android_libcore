@@ -135,6 +135,8 @@ public final class Float extends Number implements Comparable<Float> {
      * @since JDK1.1
      */
     @SuppressWarnings("unchecked")
+    // Android-changed: Avoid use of removed Class.getPrimitiveClass method.
+    // public static final Class<Float> TYPE = (Class<Float>) Class.getPrimitiveClass("float");
     public static final Class<Float> TYPE = (Class<Float>) float[].class.getComponentType();
 
     /**
