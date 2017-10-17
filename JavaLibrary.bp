@@ -76,15 +76,26 @@ java_library {
         ":android_icu4j_src_files",
         ":openjdk_lambda_stub_files",
     ],
+    openjdk9: {
+        srcs: ["luni/src/module/java/module-info.java"],
+        javacflags: ["--patch-module=java.base=."],
+    },
     java_resource_dirs: core_resource_dirs,
-    static_libs: ["android_icu4j_res"],
+    java_resources: [":android_icu4j_resources"],
 
     required: [
         "tzdata",
         "tzlookup.xml",
     ],
 
+    system_modules: "none",
+
     installable: false,
+}
+
+java_system_modules {
+    name: "core-all-system-modules",
+    libs: ["core-all"],
 }
 
 java_library {
@@ -95,6 +106,10 @@ java_library {
     srcs: [":openjdk_java_files"],
     java_resource_dirs: core_resource_dirs,
     libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
 
     notice: "ojluni/NOTICE",
 
@@ -115,9 +130,13 @@ java_library {
         ":non_openjdk_java_files",
         ":android_icu4j_src_files",
     ],
-    static_libs: ["android_icu4j_res"],
+    java_resources: [":android_icu4j_resources"],
 
     libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
 
     required: [
         "tzdata",
@@ -137,9 +156,22 @@ java_library {
     ],
 
     libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
 
     notice: "ojluni/NOTICE",
 
     installable: false,
     include_srcs: true,
+}
+
+java_system_modules {
+    name: "core-system-modules",
+    libs: [
+        "core-oj",
+        "core-libart",
+        "core-lambda-stubs",
+    ],
 }
