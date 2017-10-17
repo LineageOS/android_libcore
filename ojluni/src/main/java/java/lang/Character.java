@@ -173,6 +173,8 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @since   1.1
      */
     @SuppressWarnings("unchecked")
+    // Android-changed: Avoid use of removed Class.getPrimitiveClass method.
+    // public static final Class<Character> TYPE = (Class<Character>) Class.getPrimitiveClass("char");
     public static final Class<Character> TYPE = (Class<Character>) char[].class.getComponentType();
 
     /*
