@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # A script to generate TZ data updates.
 #
@@ -16,10 +16,10 @@ rm -rf ${GEN_DIR}
 mkdir -p ${GEN_DIR}
 
 javac \
-    ${TOOLS_DIR}/CreateTzDataBundle.java \
-    ${TOOLS_DIR}/TzDataBundleBuilder.java \
-    ${UPDATE_DIR}/ConfigBundle.java \
-    ${UPDATE_DIR}/FileUtils.java \
-    -d ${GEN_DIR}
+    "${TOOLS_DIR}/CreateTzDataBundle.java" \
+    "${TOOLS_DIR}/TzDataBundleBuilder.java" \
+    "${UPDATE_DIR}/ConfigBundle.java" \
+    "${UPDATE_DIR}/FileUtils.java" \
+    -d "${GEN_DIR}"
 
-java -cp ${GEN_DIR} libcore.tzdata.update.tools.CreateTzDataBundle $@
+java -cp "${GEN_DIR}" libcore.tzdata.update.tools.CreateTzDataBundle "$@"

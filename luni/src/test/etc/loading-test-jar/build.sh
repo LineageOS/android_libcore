@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/sh -e
 #
 # Copyright (C) 2011 The Android Open Source Project
 #
@@ -52,5 +52,5 @@ jar cf loading-test.jar classes.dex -C resources .
 
 rm -rf classes
 rm -rf classes2
-mv classes.dex ${resourceDir}/loading-test.dex
-mv loading-test.jar ${resourceDir}
+mv classes.dex "${resourceDir}/loading-test.dex"
+mv loading-test.jar "${resourceDir}"
