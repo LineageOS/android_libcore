@@ -19,7 +19,7 @@ LOCAL_PATH := $(call my-dir)
 # Subprojects with separate makefiles
 #
 
-subdirs := benchmarks tzdata ojluni tools/upstream
+subdirs := benchmarks tzdata ojluni tools/upstream metrictests
 subdir_makefiles := $(call all-named-subdir-makefiles,$(subdirs))
 
 #
