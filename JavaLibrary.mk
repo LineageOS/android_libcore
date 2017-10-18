@@ -88,9 +88,24 @@ android_icu4j_src_files := $(call all-java-files-under,$(android_icu4j_root)/src
 android_icu4j_resource_dirs := $(android_icu4j_root)/resources
 
 #
+# Build jaif-annotated source files for ojluni target .
+#
+_insert-annotations-to-source := external/annotation-tools/annotation-file-utilities/scripts/insert-annotations-to-source
+_annotations_classes_from_jaif := $(LOCAL_PATH)/annotations/classes_from_jaif.py
+_ojluni_annotate_target := $(intermediates)/annotated
+_ojluni_annotate_jaif := $(LOCAL_PATH)/annotations/ojluni.jaif
+_ojluni_annotate_input := $(patsubst %,$(LOCAL_PATH)/ojluni/src/main/java/%,$(shell $(_annotations_classes_from_jaif) $(_ojluni_annotate_jaif)))
+_ojluni_annotate_output := $(patsubst $(LOCAL_PATH)/ojluni/src/main/java/%, $(_ojluni_annotate_target)/%, $(_ojluni_annotate_input))
+
+$(_ojluni_annotate_target): $(LOCAL_BUILT_MODULE) $(_ojluni_annotate_input) $(_ojluni_annotate_jaif)
+	rm -rf $(_ojluni_annotate_target)
+	mkdir -p $(_ojluni_annotate_target)
+	$(_insert-annotations-to-source) -d $(_ojluni_annotate_target) $(_ojluni_annotate_jaif) $(_ojluni_annotate_input)
+$(_ojluni_annotate_output): $(_ojluni_annotate_target)
+
+#
 # Build for the target (device).
 #
-
 ifeq ($(LIBCORE_SKIP_TESTS),)
 # A guaranteed unstripped version of core-oj and core-libart.
 # The build system may or may not strip the core-oj and core-libart jars,
