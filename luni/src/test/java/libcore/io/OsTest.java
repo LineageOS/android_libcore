@@ -25,7 +25,6 @@ import android.system.StructStat;
 import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.UnixSocketAddress;
-import android.util.MutableLong;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -48,6 +47,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
+import libcore.util.MutableLong;
 
 import static android.system.OsConstants.*;
 
