@@ -416,6 +416,11 @@ public final class Os {
    */
   public static String readlink(String path) throws ErrnoException { return Libcore.os.readlink(path); }
 
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man3/realpath.3.html">realpath(3)</a>.
+     */
+  /** @hide */ public static String realpath(String path) throws ErrnoException { return Libcore.os.realpath(path); }
+
   /**
    * See <a href="http://man7.org/linux/man-pages/man2/readv.2.html">readv(2)</a>.
    */
