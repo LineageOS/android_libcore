@@ -16,10 +16,15 @@
 
 package libcore.icu;
 
+import android.icu.util.TimeZone;
+
 import java.text.BreakIterator;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
@@ -268,5 +273,56 @@ public class ICUTest extends junit.framework.TestCase {
 
     String tzLookupTzVersion = TimeZoneFinder.getInstance().getIanaVersion();
     assertEquals(icu4jTzVersion, tzLookupTzVersion);
+  }
+
+  /**
+   * Confirms that ICU can recognize all the time zone IDs used by the ZoneInfoDB data.
+   * ICU's IDs may be a superset.
+   */
+  public void testTimeZoneIdLookup() {
+    String[] zoneInfoDbAvailableIds = ZoneInfoDB.getInstance().getAvailableIDs();
+
+    // ICU has a known set of IDs. We want ANY because we don't want to filter to ICU's canonical
+    // IDs only.
+    Set<String> icuAvailableIds = android.icu.util.TimeZone.getAvailableIDs(
+            TimeZone.SystemTimeZoneType.ANY, null /* region */, null /* rawOffset */);
+
+    List<String> nonIcuAvailableIds = new ArrayList<>();
+    List<String> creationFailureIds = new ArrayList<>();
+    List<String> noCanonicalLookupIds = new ArrayList<>();
+    List<String> nonSystemIds = new ArrayList<>();
+    for (String zoneInfoDbId : zoneInfoDbAvailableIds) {
+
+      if (zoneInfoDbId.equals("Asia/Hanoi")) {
+        // Known ICU lookup issue: http://b/30277331
+        continue;
+      }
+
+      if (!icuAvailableIds.contains(zoneInfoDbId)) {
+        nonIcuAvailableIds.add(zoneInfoDbId);
+      }
+
+      boolean[] isSystemId = new boolean[1];
+      String canonicalId = android.icu.util.TimeZone.getCanonicalID(zoneInfoDbId, isSystemId);
+      if (canonicalId == null) {
+        noCanonicalLookupIds.add(zoneInfoDbId);
+      }
+      if (!isSystemId[0]) {
+        nonSystemIds.add(zoneInfoDbId);
+      }
+
+      android.icu.util.TimeZone icuTimeZone = android.icu.util.TimeZone.getTimeZone(zoneInfoDbId);
+      if (icuTimeZone.getID().equals(TimeZone.UNKNOWN_ZONE_ID)) {
+        creationFailureIds.add(zoneInfoDbId);
+      }
+    }
+    assertTrue("Non-ICU available IDs: " + nonIcuAvailableIds
+                    + ", creation failed IDs: " + creationFailureIds
+                    + ", non-system IDs: " + nonSystemIds
+                    + ", ids without canonical IDs: " + noCanonicalLookupIds,
+            nonIcuAvailableIds.isEmpty()
+                    && creationFailureIds.isEmpty()
+                    && nonSystemIds.isEmpty()
+                    && noCanonicalLookupIds.isEmpty());
   }
 }
