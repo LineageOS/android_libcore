@@ -98,14 +98,14 @@ public class TimeZoneFinderTest {
     public void createInstanceWithFallback() throws Exception {
         String validXml1 = "<timezones ianaversion=\"2017c\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n";
         String validXml2 = "<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/Paris</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -176,7 +176,7 @@ public class TimeZoneFinderTest {
     public void xmlParsing_unexpectedComments() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <!-- This is a comment -->"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
@@ -188,7 +188,7 @@ public class TimeZoneFinderTest {
         // parser.
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/<!-- Don't freak out! -->London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -202,7 +202,7 @@ public class TimeZoneFinderTest {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  " + unexpectedElement
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -212,7 +212,7 @@ public class TimeZoneFinderTest {
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    " + unexpectedElement
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -221,7 +221,7 @@ public class TimeZoneFinderTest {
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      " + unexpectedElement
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
@@ -231,7 +231,7 @@ public class TimeZoneFinderTest {
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "      " + unexpectedElement
                 + "      <id>Europe/Paris</id>\n"
@@ -243,7 +243,7 @@ public class TimeZoneFinderTest {
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "    " + unexpectedElement
@@ -255,7 +255,7 @@ public class TimeZoneFinderTest {
         // more information.
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -270,7 +270,7 @@ public class TimeZoneFinderTest {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  " + unexpectedText
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -280,7 +280,7 @@ public class TimeZoneFinderTest {
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    " + unexpectedText
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -289,7 +289,7 @@ public class TimeZoneFinderTest {
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      " + unexpectedText
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
@@ -299,7 +299,7 @@ public class TimeZoneFinderTest {
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "      " + unexpectedText
                 + "      <id>Europe/Paris</id>\n"
@@ -319,22 +319,22 @@ public class TimeZoneFinderTest {
 
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n");
+                + "    <country code=\"gb\" default=\"Europe/London\">\n");
 
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n");
 
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n");
 
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n");
@@ -344,7 +344,7 @@ public class TimeZoneFinderTest {
     public void xmlParsing_unexpectedChildInTimeZoneIdThrows() throws Exception {
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id><unexpected-element /></id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -355,7 +355,7 @@ public class TimeZoneFinderTest {
     public void xmlParsing_unknownTimeZoneIdIgnored() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Unknown_Id</id>\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
@@ -388,7 +388,7 @@ public class TimeZoneFinderTest {
     public void lookupTimeZonesByCountry_structuresAreImmutable() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -406,7 +406,7 @@ public class TimeZoneFinderTest {
     public void lookupTimeZoneByCountryAndOffset_unknownCountry() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"xx\">\n"
+                + "    <country code=\"xx\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -430,7 +430,7 @@ public class TimeZoneFinderTest {
     public void lookupTimeZoneByCountryAndOffset_oneCandidate() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"xx\">\n"
+                + "    <country code=\"xx\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
@@ -499,7 +499,7 @@ public class TimeZoneFinderTest {
             throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"xx\">\n"
+                + "    <country code=\"xx\" default=\"Europe/London\">\n"
                 + "      <id>America/New_York</id>\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
@@ -570,7 +570,7 @@ public class TimeZoneFinderTest {
         // offset WHEN_DST, the others do not.
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"xx\">\n"
+                + "    <country code=\"xx\" default=\"Europe/London\">\n"
                 + "      <id>Atlantic/Reykjavik</id>\n"
                 + "      <id>Europe/London</id>\n"
                 + "      <id>Etc/UTC</id>\n"
@@ -682,7 +682,7 @@ public class TimeZoneFinderTest {
         // required for parsing.
         TimeZoneFinder finder = validate("<timezones>\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\">\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
                 + "      <id>Europe/London</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
