@@ -92,60 +92,6 @@ android_icu4j_resource_dirs := $(android_icu4j_root)/resources
 #
 
 ifeq ($(LIBCORE_SKIP_TESTS),)
-# A guaranteed unstripped version of core-oj and core-libart.
-# The build system may or may not strip the core-oj and core-libart jars,
-# but these will not be stripped. See b/24535627.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(openjdk_java_files))
-LOCAL_JAVA_RESOURCE_DIRS := $(core_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_DEX_PREOPT := false
-LOCAL_MODULE := core-oj-testdex
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_NOTICE_FILE := $(LOCAL_PATH)/ojluni/NOTICE
-LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
-LOCAL_CORE_LIBRARY := true
-include $(BUILD_JAVA_LIBRARY)
-
-# Build libcore test rules for target
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(call all-java-files-under, dalvik/test-rules/src/main test-rules/src/main)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_MODULE := core-test-rules
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_STATIC_JAVA_LIBRARIES := junit
-include $(BUILD_STATIC_JAVA_LIBRARY)
-
-# Build libcore test rules for host
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(call all-java-files-under, dalvik/test-rules/src/main test-rules/src/main)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_MODULE := core-test-rules-hostdex
-LOCAL_JAVA_LIBRARIES := core-oj-hostdex core-libart-hostdex
-LOCAL_STATIC_JAVA_LIBRARIES := junit-hostdex
-include $(BUILD_HOST_DALVIK_STATIC_JAVA_LIBRARY)
-
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(patsubst $(LOCAL_PATH)/%,%,$(non_openjdk_java_files) $(android_icu4j_src_files))
-LOCAL_JAVA_RESOURCE_DIRS := $(android_icu4j_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_DX_FLAGS := --core-library
-LOCAL_MODULE_TAGS := optional
-LOCAL_DEX_PREOPT := false
-LOCAL_MODULE := core-libart-testdex
-LOCAL_JAVA_LIBRARIES := core-all
-LOCAL_CORE_LIBRARY := true
-LOCAL_REQUIRED_MODULES := tzdata tzlookup.xml
-include $(BUILD_JAVA_LIBRARY)
-endif
-
-ifeq ($(LIBCORE_SKIP_TESTS),)
 # Build a library just containing files from luni/src/test/filesystems for use in tests.
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(call all-java-files-under, luni/src/test/filesystems/src)
@@ -186,33 +132,6 @@ LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_JACK_FLAGS := $(local_jack_flags)
 LOCAL_ERROR_PRONE_FLAGS := -Xep:TryFailThrowable:ERROR -Xep:ComparisonOutOfRange:ERROR
 LOCAL_MODULE := core-tests
-include $(BUILD_STATIC_JAVA_LIBRARY)
-endif
-
-ifeq ($(LIBCORE_SKIP_TESTS),)
-# Make the core-tests-support library.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(call all-test-java-files-under,support)
-LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart junit bouncycastle
-LOCAL_STATIC_JAVA_LIBRARIES := bouncycastle-bcpkix bouncycastle-ocsp
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_MODULE := core-tests-support
-include $(BUILD_STATIC_JAVA_LIBRARY)
-endif
-
-ifeq ($(LIBCORE_SKIP_TESTS),)
-# Make the jsr166-tests library.
-include $(CLEAR_VARS)
-LOCAL_SRC_FILES :=  $(call all-test-java-files-under, jsr166-tests)
-LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
-LOCAL_NO_STANDARD_LIBRARIES := true
-LOCAL_JAVA_LIBRARIES := core-oj core-libart junit
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_JACK_FLAGS := $(local_jack_flags)
-LOCAL_MODULE := jsr166-tests
 include $(BUILD_STATIC_JAVA_LIBRARY)
 endif
 
@@ -290,26 +209,6 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_JAVACFLAGS := $(local_javac_flags)
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-tests-hostdex
-    include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
-endif
-
-# Make the core-tests-support library.
-ifeq ($(LIBCORE_SKIP_TESTS),)
-    include $(CLEAR_VARS)
-    LOCAL_SRC_FILES := $(call all-test-java-files-under,support)
-    LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
-    LOCAL_NO_STANDARD_LIBRARIES := true
-    LOCAL_JAVA_LIBRARIES := \
-        bouncycastle-hostdex \
-        core-libart-hostdex \
-        core-oj-hostdex \
-        junit-hostdex
-    LOCAL_STATIC_JAVA_LIBRARIES := \
-        bouncycastle-bcpkix-hostdex \
-        bouncycastle-ocsp-hostdex
-    LOCAL_JAVACFLAGS := $(local_javac_flags)
-    LOCAL_MODULE_TAGS := optional
-    LOCAL_MODULE := core-tests-support-hostdex
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 
