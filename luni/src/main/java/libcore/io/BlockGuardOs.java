@@ -22,7 +22,6 @@ import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructStat;
 import android.system.StructStatVfs;
-import android.util.MutableLong;
 import dalvik.system.BlockGuard;
 import dalvik.system.SocketTagger;
 import java.io.FileDescriptor;
@@ -32,6 +31,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import libcore.util.MutableLong;
+
 import static android.system.OsConstants.*;
 
 /**
