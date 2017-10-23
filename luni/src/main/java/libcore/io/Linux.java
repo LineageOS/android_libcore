@@ -33,8 +33,7 @@ import android.system.StructStatVfs;
 import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.StructUtsname;
-import android.util.MutableInt;
-import android.util.MutableLong;
+
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -43,6 +42,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.NioUtils;
+import libcore.util.MutableInt;
+import libcore.util.MutableLong;
 
 public final class Linux implements Os {
     Linux() { }
