@@ -28,6 +28,7 @@ package java.io;
 
 import java.nio.channels.FileChannel;
 import sun.nio.ch.FileChannelImpl;
+import android.system.Os;
 import android.system.ErrnoException;
 import dalvik.system.CloseGuard;
 import libcore.io.IoBridge;
@@ -68,6 +69,12 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
     // BEGIN Android-added: CloseGuard and some helper fields for Android changes in this file.
     private final CloseGuard guard = CloseGuard.get();
     private final byte[] scratch = new byte[8];
+
+    private static final int FLUSH_NONE = 0;
+    private static final int FLUSH_FSYNC = 1;
+    private static final int FLUSH_FDATASYNC = 2;
+    private int flushAfterWrite = FLUSH_NONE;
+
     private int mode;
     // END Android-added: CloseGuard and some helper fields for Android changes in this file.
 
@@ -230,9 +237,17 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
             rw = true;
             if (mode.length() > 2) {
                 if (mode.equals("rws")) {
-                    imode |= O_SYNC;
+                    // Android-changed: For performance reasons, use fsync after each write.
+                    // RandomAccessFile.write may result in multiple write syscalls,
+                    // O_SYNC/O_DSYNC flags will cause a blocking wait on each syscall. Replacing
+                    // them with single fsync/fdatasync call gives better performance with only
+                    // minor decrease in reliability.
+                    // imode |= O_SYNC;
+                    flushAfterWrite = FLUSH_FSYNC;
                 } else if (mode.equals("rwd")) {
-                    imode |= O_DSYNC;
+                    // Android-changed: For performance reasons, use fdatasync after each write.
+                    // imode |= O_DSYNC;
+                    flushAfterWrite = FLUSH_FDATASYNC;
                 } else {
                     imode = -1;
                 }
@@ -267,9 +282,28 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
 
         // BEGIN Android-changed: Use IoBridge.open() instead of open.
         fd = IoBridge.open(name, imode);
+        maybeSync();
         guard.open("close");
         // END Android-changed: Use IoBridge.open() instead of open.
     }
+
+    // BEGIN Android-added: Sync after rws/rwd write
+    private void maybeSync() {
+        if (flushAfterWrite == FLUSH_FSYNC) {
+            try {
+                fd.sync();
+            } catch (IOException e) {
+                // Ignored
+            }
+        } else if (flushAfterWrite == FLUSH_FDATASYNC) {
+            try {
+                Os.fdatasync(fd);
+            } catch (ErrnoException e) {
+                // Ignored
+            }
+        }
+    }
+    // END Android-added: Sync after rws/rwd write
 
     /**
      * Returns the opaque file descriptor object associated with this
@@ -329,7 +363,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      *                          end-of-file has been reached.
      */
     public int read() throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // Android-changed: Implement on top of libcore os API.
         // return read0();
         return (read(scratch, 0, 1) != -1) ? scratch[0] & 0xff : -1;
     }
@@ -342,7 +376,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception IOException If an I/O error has occurred.
      */
     private int readBytes(byte b[], int off, int len) throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // Android-changed: Implement on top of libcore os API.
         ioTracker.trackIo(len, IoTracker.Mode.READ);
         return IoBridge.read(fd, b, off, len);
     }
@@ -485,10 +519,11 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception  IOException  if an I/O error occurs.
      */
     public void write(int b) throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         // write0(b);
         scratch[0] = (byte) (b & 0xff);
         write(scratch, 0, 1);
+        // END Android-changed: Implement on top of libcore os API.
     }
 
     /**
@@ -500,9 +535,11 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception IOException If an I/O error has occurred.
      */
     private void writeBytes(byte b[], int off, int len) throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         ioTracker.trackIo(len, IoTracker.Mode.WRITE);
         IoBridge.write(fd, b, off, len);
+        maybeSync();
+        // END Android-changed: Implement on top of libcore os API.
     }
 
     /**
@@ -539,12 +576,13 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception  IOException  if an I/O error occurs.
      */
     public long getFilePointer() throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         try {
             return Libcore.os.lseek(fd, 0L, SEEK_CUR);
         } catch (ErrnoException errnoException) {
             throw errnoException.rethrowAsIOException();
         }
+        // END Android-changed: Implement on top of libcore os API.
     }
 
     /**
@@ -567,7 +605,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
             // throw new IOException("Negative seek offset");
             throw new IOException("offset < 0: " + pos);
         } else {
-            // Android-changed: Implement on top of low-level API, not directly natively.
+            // BEGIN Android-changed: Implement on top of libcore os API.
             // seek0(pos);
             try {
                 Libcore.os.lseek(fd, pos, SEEK_SET);
@@ -575,6 +613,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
             } catch (ErrnoException errnoException) {
                 throw errnoException.rethrowAsIOException();
             }
+            // END Android-changed: Implement on top of libcore os API.
         }
     }
 
@@ -585,12 +624,13 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @exception  IOException  if an I/O error occurs.
      */
     public long length() throws IOException {
-        // Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         try {
             return Libcore.os.fstat(fd).st_size;
         } catch (ErrnoException errnoException) {
             throw errnoException.rethrowAsIOException();
         }
+        // END Android-changed: Implement on top of libcore os API.
     }
 
     /**
@@ -613,7 +653,7 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
      * @since      1.2
      */
     public void setLength(long newLength) throws IOException {
-        // BEGIN Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         if (newLength < 0) {
             throw new IllegalArgumentException("newLength < 0");
         }
@@ -627,7 +667,8 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
         if (filePointer > newLength) {
             seek(newLength);
         }
-        // END Android-changed: Implement on top of low-level API, not directly natively.
+        maybeSync();
+        // END Android-changed: Implement on top of libcore os API.
     }
 
 
@@ -654,12 +695,12 @@ public class RandomAccessFile implements DataOutput, DataInput, Closeable {
             closed = true;
         }
 
-        // BEGIN Android-changed: Implement on top of low-level API, not directly natively.
+        // BEGIN Android-changed: Implement on top of libcore os API.
         if (channel != null && channel.isOpen()) {
             channel.close();
         }
         IoBridge.closeAndSignalBlockedThreads(fd);
-        // END Android-changed: Implement on top of low-level API, not directly natively.
+        // END Android-changed: Implement on top of libcore os API.
     }
 
     //
