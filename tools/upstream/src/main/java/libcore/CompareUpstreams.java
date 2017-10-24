@@ -54,11 +54,11 @@ import java.util.regex.Pattern;
  *  hg clone http://hg.openjdk.java.net/jdk7u/jdk7u40/ 7u40
  *  (cd !$ ; sh get_source.sh)
  *  hg clone http://hg.openjdk.java.net/jdk8u/jdk8u 8u121-b13
- *  (cd !$ ; hg update -r jdk8u121-b13 && sh get_source.sh)
+ *  (cd !$ ; hg update -r jdk8u121-b13 && sh get_source.sh && sh common/bin/hgforest.sh update -r jdk8u121-b13)
  *  hg clone http://hg.openjdk.java.net/jdk8u/jdk8u60/ 8u60
  *  (cd !$ ; sh get_source.sh)
  *  hg clone http://hg.openjdk.java.net/jdk9/jdk9/ 9+181
- *  (cd !$ ; hg update -r jdk-9+181 && sh get_source.sh)
+ *  (cd !$ ; hg update -r jdk-9+181 && sh get_source.sh && sh common/bin/hgforest.sh update -r jdk-9+181)
  *
  *  To get the 9b113+ upstream, follow the instructions from the commit
  *  message of AOSP libcore commit 29957558cf0db700bfaae360a80c42dc3871d0e5
