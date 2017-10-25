@@ -26,7 +26,6 @@
 package sun.nio.ch;
 
 import dalvik.system.BlockGuard;
-import dalvik.system.SocketTagger;
 
 import java.io.*;
 
@@ -63,6 +62,6 @@ class SocketDispatcher extends NativeDispatcher
     }
 
     void preClose(FileDescriptor fd) throws IOException {
-        FileDispatcherImpl.preCloseImpl(fd);
+        FileDispatcherImpl.preClose0(fd);
     }
 }
