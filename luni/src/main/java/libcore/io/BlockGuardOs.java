@@ -51,14 +51,6 @@ public class BlockGuardOs extends ForwardingOs {
         }
     }
 
-    private void untagSocket(FileDescriptor fd) throws ErrnoException {
-        try {
-            SocketTagger.get().untag(fd);
-        } catch (SocketException e) {
-            throw new ErrnoException("socket", EINVAL, e);
-        }
-    }
-
     @Override public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException {
         BlockGuard.getThreadPolicy().onNetwork();
         final FileDescriptor acceptFd = os.accept(fd, peerAddress);
@@ -94,9 +86,6 @@ public class BlockGuardOs extends ForwardingOs {
                     // We allow non-linger sockets so that apps can close their network
                     // connections in methods like onDestroy which will run on the UI thread.
                     BlockGuard.getThreadPolicy().onNetwork();
-                }
-                if (isInetSocket(fd)) {
-                    untagSocket(fd);
                 }
             }
         } catch (ErrnoException ignored) {
