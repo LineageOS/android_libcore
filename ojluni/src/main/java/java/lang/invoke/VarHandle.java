@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * A VarHandle is a dynamically strongly typed reference to a variable, or to a
@@ -450,8 +451,12 @@ public abstract class VarHandle {
     /** The target type for accesses. */
     private final Class<?> varType;
 
-    /** The coordinate types of a VarHandle instance. */
-    private final List<Class<?>> coordinateTypes;
+    /** This VarHandle's first coordinate, or null if this VarHandle has no coordinates. */
+    private final Class<?> coordinateType0;
+
+    /** This VarHandle's second coordinate, or null if this VarHandle has less than two
+     * coordinates. */
+    private final Class<?> coordinateType1;
 
     /** BitMask of supported access mode indexed by AccessMode.ordinal(). */
     private final int accessModesBitMask;
@@ -1932,8 +1937,14 @@ public abstract class VarHandle {
         // Android-removed: existing implementation.
         // MethodType typeGet = accessModeType(AccessMode.GET);
         // return typeGet.parameterList();
-        // Android-added: return instance field.
-        return coordinateTypes;
+        // Android-added: Android specific implementation.
+        if (coordinateType0 == null) {
+            return Collections.EMPTY_LIST;
+        } else if (coordinateType1 == null) {
+            return Collections.singletonList(coordinateType0);
+        } else {
+            return Collections.unmodifiableList(Arrays.asList(coordinateType0, coordinateType1));
+        }
     }
 
     /**
@@ -1964,16 +1975,12 @@ public abstract class VarHandle {
         // END Android-removed: Relies on internal class that is not part of the
         // Android implementation.
         // Android-added: alternative implementation.
-        switch (coordinateTypes.size()) {
-            case 0:
-                return accessMode.at.accessModeType(null, varType);
-            case 1:
-                return accessMode.at.accessModeType(coordinateTypes.get(0), varType);
-            case 2:
-                return accessMode.at.accessModeType(coordinateTypes.get(0), varType,
-                                                    coordinateTypes.get(1));
-            default:
-                throw new InternalError("bad coordinateTypes: " + coordinateTypes);
+        if (coordinateType1 == null) {
+            // accessModeType() treats the first argument as the
+            // receiver and adapts accordingly if it is null.
+            return accessMode.at.accessModeType(coordinateType0, varType);
+        } else {
+            return accessMode.at.accessModeType(coordinateType0, varType, coordinateType1);
         }
     }
 
@@ -2201,8 +2208,9 @@ public abstract class VarHandle {
      * @hide
      */
     VarHandle(Class<?> varType, boolean isFinal) {
-        this.varType = varType;
-        this.coordinateTypes = Collections.EMPTY_LIST;
+        this.varType = Objects.requireNonNull(varType);
+        this.coordinateType0 = null;
+        this.coordinateType1 = null;
         this.accessModesBitMask = alignedAccessModesBitMask(varType, isFinal);
     }
 
@@ -2211,12 +2219,13 @@ public abstract class VarHandle {
      *
      * @param varType the variable type of variables to be referenced
      * @param isFinal  whether the target variables are final (non-modifiable)
-     * @param coordinate the coordinate
+     * @param coordinateType the coordinate
      * @hide
      */
-    VarHandle(Class<?> varType, boolean isFinal, Class<?> coordinate) {
-        this.varType = varType;
-        this.coordinateTypes = Collections.singletonList(coordinate);
+    VarHandle(Class<?> varType, boolean isFinal, Class<?> coordinateType) {
+        this.varType = Objects.requireNonNull(varType);
+        this.coordinateType0 = Objects.requireNonNull(coordinateType);
+        this.coordinateType1 = null;
         this.accessModesBitMask = alignedAccessModesBitMask(varType, isFinal);
     }
 
@@ -2226,15 +2235,16 @@ public abstract class VarHandle {
      * @param varType the variable type of variables to be referenced
      * @param backingArrayType the type of the array accesses will be performed on
      * @param isFinal whether the target variables are final (non-modifiable)
-     * @param coordinate0 the first coordinate
-     * @param coordinate1 the second coordinate
+     * @param coordinateType0 the first coordinate
+     * @param coordinateType1 the second coordinate
      * @hide
      */
     VarHandle(Class<?> varType, Class<?> backingArrayType,  boolean isFinal,
-              Class<?> coordinate0, Class<?> coordinate1) {
-        this.varType = varType;
-        this.coordinateTypes = Collections.unmodifiableList(
-            Arrays.asList(coordinate0, coordinate1));
+              Class<?> coordinateType0, Class<?> coordinateType1) {
+        this.varType = Objects.requireNonNull(varType);
+        this.coordinateType0 = Objects.requireNonNull(coordinateType0);
+        this.coordinateType1 = Objects.requireNonNull(coordinateType1);
+        Objects.requireNonNull(backingArrayType);
         Class<?> backingArrayComponentType = backingArrayType.getComponentType();
         if (backingArrayComponentType != varType && backingArrayComponentType != byte.class) {
             throw new InternalError("Unsupported backingArrayType: " + backingArrayType);
