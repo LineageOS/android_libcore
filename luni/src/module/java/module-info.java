@@ -114,6 +114,8 @@ module java.base {
     exports javax.xml.parsers;
     exports libcore.io;
     exports libcore.icu;
+    exports libcore.net;
+    exports libcore.net.event;
     exports libcore.net.http;
     exports libcore.reflect;
     exports libcore.util;
