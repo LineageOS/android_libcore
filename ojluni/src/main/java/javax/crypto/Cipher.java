@@ -692,6 +692,7 @@ public class Cipher {
 
     static final Cipher createCipher(String transformation, Provider provider)
         throws NoSuchAlgorithmException, NoSuchPaddingException {
+        Providers.checkBouncyCastleDeprecation(provider, "Cipher", transformation);
         String[] tokenizedTransformation = tokenizeTransformation(transformation);
 
         CipherSpiAndProvider cipherSpiAndProvider = null;
