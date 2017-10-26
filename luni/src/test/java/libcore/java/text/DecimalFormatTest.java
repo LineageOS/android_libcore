@@ -434,7 +434,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         // Confirm ICU and java.text disagree.
         // java.text doesn't localize PerMill and fallback to default char U+2030
         // when PerMill in that locale has more than one visible characters.
-        locale = new Locale("en_US_POSIX");
+        locale = Locale.forLanguageTag("en-US-POSIX");
         {
             android.icu.text.DecimalFormat df = new android.icu.text.DecimalFormat(pattern,
                     new android.icu.text.DecimalFormatSymbols(locale));
