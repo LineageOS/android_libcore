@@ -660,12 +660,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             values[0] = String.valueOf(localeData.decimalSeparator);
             values[1] = String.valueOf(localeData.groupingSeparator);
             values[2] = String.valueOf(localeData.patternSeparator);
-            values[3] = String.valueOf(localeData.percent);
+            values[3] = localeData.percent;
             values[4] = String.valueOf(localeData.zeroDigit);
             values[5] = "#";
             values[6] = localeData.minusSign;
             values[7] = localeData.exponentSeparator;
-            values[8] = String.valueOf(localeData.perMill);
+            values[8] = localeData.perMill;
             values[9] = localeData.infinity;
             values[10] = localeData.NaN;
             data[0] = values;
