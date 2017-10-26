@@ -348,7 +348,8 @@ public class Providers {
     }
 
     // The set of algorithms that are deprecated.  This list is created using
-    // libcore/tools/crypto/src/java/libcore/java/security/ProviderOverlap.java
+    // libcore/tools/crypto/src/java/libcore/java/security/ProviderOverlap.java, with
+    // additional Ciphers added manually (see comment below).
     private static final Set<String> DEPRECATED_ALGORITHMS = new HashSet<String>();
     static {
         DEPRECATED_ALGORITHMS.addAll(Arrays.asList(
@@ -367,16 +368,27 @@ public class Providers {
                 "ALGORITHMPARAMETERS.TDEA",
                 "CERTIFICATEFACTORY.X.509",
                 "CERTIFICATEFACTORY.X509",
-                // TODO(flooey, b/67626877): Implement Cipher support
-                // "CIPHER.1.2.840.113549.3.4",
-                // "CIPHER.2.16.840.1.101.3.4.1.26",
-                // "CIPHER.2.16.840.1.101.3.4.1.46",
-                // "CIPHER.2.16.840.1.101.3.4.1.6",
-                // "CIPHER.AES/GCM/NOPADDING",
-                // "CIPHER.ARC4",
-                // "CIPHER.ARCFOUR",
-                // "CIPHER.OID.1.2.840.113549.3.4",
-                // "CIPHER.RC4",
+                // List of Ciphers produced by ProviderOverlap:
+                "CIPHER.1.2.840.113549.3.4",
+                "CIPHER.2.16.840.1.101.3.4.1.26",
+                "CIPHER.2.16.840.1.101.3.4.1.46",
+                "CIPHER.2.16.840.1.101.3.4.1.6",
+                "CIPHER.AES/GCM/NOPADDING",
+                "CIPHER.ARC4",
+                "CIPHER.ARCFOUR",
+                "CIPHER.OID.1.2.840.113549.3.4",
+                "CIPHER.RC4",
+                // End of Ciphers produced by ProviderOverlap
+                // Additional ciphers transformations that will resolve to the same things as
+                // the automatically-produced overlap due to the Cipher transformation rules.
+                // These have been added manually.
+                "CIPHER.ARC4/ECB/NOPADDING",
+                "CIPHER.ARC4/NONE/NOPADDING",
+                "CIPHER.ARCFOUR/ECB/NOPADDING",
+                "CIPHER.ARCFOUR/NONE/NOPADDING",
+                "CIPHER.RC4/ECB/NOPADDING",
+                "CIPHER.RC4/NONE/NOPADDING",
+                // End of additional Ciphers
                 "KEYAGREEMENT.ECDH",
                 "KEYFACTORY.1.2.840.10045.2.1",
                 "KEYFACTORY.1.2.840.113549.1.1.1",
