@@ -45,6 +45,7 @@ public class TimeZoneFinder {
 
     private static final String TZLOOKUP_FILE_NAME = "tzlookup.xml";
     private static final String TIMEZONES_ELEMENT = "timezones";
+    private static final String IANA_VERSION_ATTRIBUTE = "ianaversion";
     private static final String COUNTRY_ZONES_ELEMENT = "countryzones";
     private static final String COUNTRY_ELEMENT = "country";
     private static final String COUNTRY_CODE_ATTRIBUTE = "code";
@@ -127,6 +128,35 @@ public class TimeZoneFinder {
             processXml(new CountryZonesValidator());
         } catch (XmlPullParserException e) {
             throw new IOException("Parsing error", e);
+        }
+    }
+
+    /**
+     * Returns the IANA rules version associated with the data. If there is no version information
+     * or there is a problem reading the file then {@code null} is returned.
+     */
+    public String getIanaVersion() {
+        try (Reader reader = xmlSource.get()) {
+            XmlPullParserFactory xmlPullParserFactory = XmlPullParserFactory.newInstance();
+            xmlPullParserFactory.setNamespaceAware(false);
+
+            XmlPullParser parser = xmlPullParserFactory.newPullParser();
+            parser.setInput(reader);
+
+            /*
+             * The expected XML structure is:
+             * <timezones ianaversion="xxxxx">
+             *     ....
+             * </timezones>
+             */
+
+            findRequiredStartTag(parser, TIMEZONES_ELEMENT);
+
+            return parser.getAttributeValue(null /* namespace */, IANA_VERSION_ATTRIBUTE);
+        } catch (XmlPullParserException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
         }
     }
 
@@ -245,7 +275,7 @@ public class TimeZoneFinder {
 
             /*
              * The expected XML structure is:
-             * <timezones>
+             * <timezones ianaversion="2017b">
              *   <countryzones>
              *     <country code="us">
              *       <id>America/New_York"</id>
@@ -260,6 +290,9 @@ public class TimeZoneFinder {
              */
 
             findRequiredStartTag(parser, TIMEZONES_ELEMENT);
+
+            // We do not require the ianaversion attribute be present. It is metadata that helps
+            // with versioning but is not required.
 
             // There is only one expected sub-element <countryzones> in the format currently, skip
             // over anything before it.
@@ -311,7 +344,7 @@ public class TimeZoneFinder {
             checkOnEndTag(parser, COUNTRY_ELEMENT);
         }
 
-        return CountryZonesExtractor.CONTINUE;
+        return CountryZonesProcessor.CONTINUE;
     }
 
     private static List<String> parseZoneIds(XmlPullParser parser)
