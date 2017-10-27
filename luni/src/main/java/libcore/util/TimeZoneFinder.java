@@ -250,6 +250,20 @@ public class TimeZoneFinder {
     }
 
     /**
+     * Returns an immutable list of time zone IDs known to be used in the specified country.
+     * If the country code is not recognized or there is an error during lookup this can return
+     * null. The IDs returned will all be valid for use with
+     * {@link java.util.TimeZone#getTimeZone(String)} and
+     * {@link android.icu.util.TimeZone#getTimeZone(String)}. This method can return an empty list
+     * in a case when the underlying data files reference only unknown zone IDs.
+     */
+    public List<String> lookupTimeZoneIdsByCountry(String countryIso) {
+        countryIso = normalizeCountryIso(countryIso);
+        CountryTimeZones countryTimeZones = findCountryTimeZones(countryIso);
+        return countryTimeZones == null ? null : countryTimeZones.getTimeZoneIds();
+    }
+
+    /**
      * Returns a {@link CountryTimeZones} object associated with the specified country code.
      * Caching is handled as needed. If the country code is not recognized or there is an error
      * during lookup this can return null.
