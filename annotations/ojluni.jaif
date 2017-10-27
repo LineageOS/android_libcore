@@ -18,9 +18,6 @@
 // is human-maintained and is based on jdk annotations shipped in Android
 // Studio.
 
-// If this file is changed, please update libcore/annotated_java_files.bp file by running:
-// libcore/annotations/generate_annotated_java_files.py libcore/annotations/ojluni.jaif > libcore/annotated_java_files.bp
-
 package libcore.util:
 annotation @NonNull: @java.lang.annotation.Retention(value=CLASS) @java.lang.annotation.Target(value={TYPE_USE})
 
