@@ -115,32 +115,8 @@ static void TimeZoneNames_fillZoneStrings(JNIEnv* env, jclass, jstring javaLocal
   }
 }
 
-static jstring TimeZoneNames_getExemplarLocation(JNIEnv* env, jclass, jstring javaLocaleName, jstring javaTz) {
-  ScopedIcuLocale icuLocale(env, javaLocaleName);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::TimeZoneNames> names(icu::TimeZoneNames::createInstance(icuLocale.locale(), status));
-  if (maybeThrowIcuException(env, "TimeZoneNames::createInstance", status)) {
-    return NULL;
-  }
-
-  ScopedJavaUnicodeString tz(env, javaTz);
-  if (!tz.valid()) {
-    return NULL;
-  }
-
-  icu::UnicodeString s;
-  const UDate now(icu::Calendar::getNow());
-  names->getDisplayName(tz.unicodeString(), UTZNM_EXEMPLAR_LOCATION, now, s);
-  return jniCreateString(env, s.getBuffer(), s.length());
-}
-
 static JNINativeMethod gMethods[] = {
   NATIVE_METHOD(TimeZoneNames, fillZoneStrings, "(Ljava/lang/String;[[Ljava/lang/String;)V"),
-  NATIVE_METHOD(TimeZoneNames, getExemplarLocation, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
 };
 void register_libcore_icu_TimeZoneNames(JNIEnv* env) {
   jniRegisterNativeMethods(env, "libcore/icu/TimeZoneNames", gMethods, NELEM(gMethods));
