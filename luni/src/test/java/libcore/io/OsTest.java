@@ -836,4 +836,19 @@ public class OsTest extends TestCase {
     } catch(ErrnoException expected) {
     }
   }
+
+  public void test_getgroups() throws Exception {
+    int[] gids = Libcore.os.getgroups();
+    assertNotNull(gids);
+  }
+
+  public void test_setgroups() throws Exception {
+    try {
+      Libcore.os.setgroups(new int[] {-1});
+      fail();
+    } catch (ErrnoException expected) {
+      assertEquals(EPERM, expected.errno);
+    }
+  }
+
 }
