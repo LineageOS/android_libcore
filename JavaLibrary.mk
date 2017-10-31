@@ -88,9 +88,46 @@ android_icu4j_src_files := $(call all-java-files-under,$(android_icu4j_root)/src
 android_icu4j_resource_dirs := $(android_icu4j_root)/resources
 
 #
+# Build jaif-annotated source files for ojluni target .
+#
+ojluni_annotate_dir := $(call intermediates-dir-for,JAVA_LIBRARIES,core-oj,,COMMON)/annotated
+ojluni_annotate_target := $(ojluni_annotate_dir)/timestamp
+ojluni_annotate_jaif := $(LOCAL_PATH)/annotations/ojluni.jaif
+ojluni_annotate_input := $(annotated_ojluni_files)
+ojluni_annotate_output := $(patsubst $(LOCAL_PATH)/ojluni/src/main/java/%, $(ojluni_annotate_dir)/%, $(ojluni_annotate_input))
+
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_TARGET := $(ojluni_annotate_target)
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_DIR := $(ojluni_annotate_dir)
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_JAIF := $(ojluni_annotate_jaif)
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_INPUT := $(ojluni_annotate_input)
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_GENERATE_CMD := $(LOCAL_PATH)/annotations/generate_annotated_java_files.py
+$(ojluni_annotate_target): PRIVATE_ANNOTATE_GENERATE_OUTPUT := $(LOCAL_PATH)/annotated_java_files.bp
+$(ojluni_annotate_target): PRIVATE_INSERT_ANNOTATIONS_TO_SOURCE := external/annotation-tools/annotation-file-utilities/scripts/insert-annotations-to-source
+
+# Diff output of _ojluni_annotate_generate_cmd with what we have, and if generate annotated source.
+$(ojluni_annotate_target):  $(ojluni_annotate_input) $(ojluni_annotate_jaif)
+	rm -rf $(PRIVATE_ANNOTATE_DIR)
+	mkdir -p $(PRIVATE_ANNOTATE_DIR)
+	$(PRIVATE_ANNOTATE_GENERATE_CMD) $(PRIVATE_ANNOTATE_JAIF) > $(PRIVATE_ANNOTATE_DIR)/annotated_java_files.bp.tmp
+	diff -u $(PRIVATE_ANNOTATE_GENERATE_OUTPUT) $(PRIVATE_ANNOTATE_DIR)/annotated_java_files.bp.tmp || \
+	(echo -e "********************" >&2; \
+	 echo -e "annotated_java_files.bp needs regenerating. Please run:" >&2; \
+	 echo -e "libcore/annotations/generate_annotated_java_files.py libcore/annotations/ojluni.jaif > libcore/annotated_java_files.bp" >&2; \
+	 echo -e "********************" >&2; exit 1)
+	rm $(PRIVATE_ANNOTATE_DIR)/annotated_java_files.bp.tmp
+	$(PRIVATE_INSERT_ANNOTATIONS_TO_SOURCE) -d $(PRIVATE_ANNOTATE_DIR) $(PRIVATE_ANNOTATE_JAIF) $(PRIVATE_ANNOTATE_INPUT)
+	touch $@
+$(ojluni_annotate_target): .KATI_IMPLICIT_OUTPUTS := $(ojluni_annotate_output)
+
+ojluni_annotate_dir:=
+ojluni_annotate_target:=
+ojluni_annotate_jaif:=
+ojluni_annotate_input:=
+ojluni_annotate_output:=
+
+#
 # Build for the target (device).
 #
-
 ifeq ($(LIBCORE_SKIP_TESTS),)
 # Build a library just containing files from luni/src/test/filesystems for use in tests.
 include $(CLEAR_VARS)
@@ -259,6 +296,9 @@ include $(LOCAL_PATH)/Docs.mk
 # The libcore_to_document paths are relative to $(TOPDIR). We are in libcore so we must prepend
 # ../ to make LOCAL_SRC_FILES relative to $(LOCAL_PATH).
 LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
+LOCAL_INTERMEDIATE_SOURCES := \
+    $(patsubst $(TARGET_OUT_COMMON_INTERMEDIATES)/%,%,$(libcore_to_document_generated))
+LOCAL_ADDITIONAL_DEPENDENCIES := $(libcore_to_document_generated)
 # rerun doc generation without recompiling the java
 LOCAL_JAVACFLAGS := $(local_javac_flags)
 LOCAL_MODULE_CLASS:=JAVA_LIBRARIES
