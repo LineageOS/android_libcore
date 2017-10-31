@@ -35,6 +35,7 @@
 build = [
     "openjdk_java_files.bp",
     "non_openjdk_java_files.bp",
+    "annotated_java_files.bp",
 ]
 
 // The Java files and their associated resources.
