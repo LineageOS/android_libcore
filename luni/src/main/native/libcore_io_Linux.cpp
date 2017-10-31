@@ -50,6 +50,7 @@
 #include <memory>
 
 #include <android-base/file.h>
+#include <android-base/logging.h>
 #include <android-base/strings.h>
 #include <log/log.h>
 #include <nativehelper/AsynchronousCloseMonitor.h>
@@ -73,6 +74,13 @@
 #define TO_JAVA_STRING(NAME, EXP) \
         jstring NAME = env->NewStringUTF(EXP); \
         if ((NAME) == NULL) return NULL;
+
+namespace {
+
+jfieldID mutableIntValueFid;
+jfieldID mutableLongValueFid;
+
+}  // namespace
 
 struct addrinfo_deleter {
     void operator()(addrinfo* p) const {
@@ -1668,11 +1676,10 @@ static jint Linux_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobje
     // This is complicated because ioctls may return their result by updating their argument
     // or via their return value, so we need to support both.
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
-    static jfieldID valueFid = env->GetFieldID(JniConstants::mutableIntClass, "value", "I");
-    jint arg = env->GetIntField(javaArg, valueFid);
+    jint arg = env->GetIntField(javaArg, mutableIntValueFid);
     int rc = throwIfMinusOne(env, "ioctl", TEMP_FAILURE_RETRY(ioctl(fd, cmd, &arg)));
     if (!env->ExceptionCheck()) {
-        env->SetIntField(javaArg, valueFid, arg);
+        env->SetIntField(javaArg, mutableIntValueFid, arg);
     }
     return rc;
 }
@@ -2076,12 +2083,11 @@ static void Linux_rename(JNIEnv* env, jobject, jstring javaOldPath, jstring java
 static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject javaInFd, jobject javaOffset, jlong byteCount) {
     int outFd = jniGetFDFromFileDescriptor(env, javaOutFd);
     int inFd = jniGetFDFromFileDescriptor(env, javaInFd);
-    static jfieldID valueFid = env->GetFieldID(JniConstants::mutableLongClass, "value", "J");
     off_t offset = 0;
     off_t* offsetPtr = NULL;
     if (javaOffset != NULL) {
         // TODO: fix bionic so we can have a 64-bit off_t!
-        offset = env->GetLongField(javaOffset, valueFid);
+        offset = env->GetLongField(javaOffset, mutableLongValueFid);
         offsetPtr = &offset;
     }
     jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile(outFd, inFd, offsetPtr, byteCount)));
@@ -2089,7 +2095,7 @@ static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject jav
         return -1;
     }
     if (javaOffset != NULL) {
-        env->SetLongField(javaOffset, valueFid, offset);
+        env->SetLongField(javaOffset, mutableLongValueFid, offset);
     }
     return result;
 }
@@ -2390,8 +2396,7 @@ static jint Linux_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, ji
     int status;
     int rc = throwIfMinusOne(env, "waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)));
     if (rc != -1) {
-        static jfieldID valueFid = env->GetFieldID(JniConstants::mutableIntClass, "value", "I");
-        env->SetIntField(javaStatus, valueFid, status);
+        env->SetIntField(javaStatus, mutableIntValueFid, status);
     }
     return rc;
 }
@@ -2547,5 +2552,17 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, writev, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
 };
 void register_libcore_io_Linux(JNIEnv* env) {
+    // Note: it is safe to only cache the fields as boot classpath classes are never
+    //       unloaded.
+    ScopedLocalRef<jclass> mutableIntClass(env, env->FindClass("libcore/util/MutableInt"));
+    CHECK(mutableIntClass != nullptr);
+    mutableIntValueFid = env->GetFieldID(mutableIntClass.get(), "value", "I");
+    CHECK(mutableIntValueFid != nullptr);
+
+    ScopedLocalRef<jclass> mutableLongClass(env, env->FindClass("libcore/util/MutableLong"));
+    CHECK(mutableLongClass != nullptr);
+    mutableLongValueFid = env->GetFieldID(mutableLongClass.get(), "value", "J");
+    CHECK(mutableLongValueFid != nullptr);
+
     jniRegisterNativeMethods(env, "libcore/io/Linux", gMethods, NELEM(gMethods));
 }
