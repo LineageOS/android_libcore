@@ -85,7 +85,7 @@ public class BlockGuardOsTest {
                 "inet_pton(int,java.lang.String)",
                 "ioctlFlags(java.io.FileDescriptor,java.lang.String)",
                 "ioctlInetAddress(java.io.FileDescriptor,int,java.lang.String)",
-                "ioctlInt(java.io.FileDescriptor,int,android.util.MutableInt)",
+                "ioctlInt(java.io.FileDescriptor,int,libcore.util.MutableInt)",
                 "ioctlMTU(java.io.FileDescriptor,java.lang.String)",
                 "isatty(java.io.FileDescriptor)",
                 "kill(int,int)",
@@ -123,7 +123,7 @@ public class BlockGuardOsTest {
                 "umask(int)",
                 "uname()",
                 "unsetenv(java.lang.String)",
-                "waitpid(int,android.util.MutableInt,int)" );
+                "waitpid(int,libcore.util.MutableInt,int)" );
         Set<String> methodsNotRequiredBlockGuardCheckSet = new HashSet<>(
                 methodsNotRequireBlockGuardChecks);
 
