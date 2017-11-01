@@ -17,6 +17,7 @@
 package libcore.io;
 
 import android.system.ErrnoException;
+import android.system.Int32Ref;
 import android.system.StructGroupReq;
 import android.system.StructLinger;
 import android.system.StructPollfd;
@@ -42,7 +43,6 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import libcore.util.MutableInt;
 
 import static android.system.OsConstants.*;
 
@@ -56,7 +56,7 @@ public final class IoBridge {
 
     public static int available(FileDescriptor fd) throws IOException {
         try {
-            MutableInt available = new MutableInt(0);
+            Int32Ref available = new Int32Ref(0);
             Libcore.os.ioctlInt(fd, FIONREAD, available);
             if (available.value < 0) {
                 // If the fd refers to a regular file, the result is the difference between

@@ -18,6 +18,7 @@ package libcore.io;
 
 import android.system.ErrnoException;
 import android.system.GaiException;
+import android.system.Int64Ref;
 import android.system.OsConstants;
 import android.system.StructAddrinfo;
 import android.system.StructLinger;
@@ -33,7 +34,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import libcore.util.MutableLong;
 
 import static android.system.OsConstants.*;
 
@@ -289,7 +289,7 @@ public class BlockGuardOs extends ForwardingOs {
         os.rename(oldPath, newPath);
     }
 
-    @Override public long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException {
+    @Override public long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         return os.sendfile(outFd, inFd, inOffset, byteCount);
     }
