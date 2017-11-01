@@ -52,15 +52,6 @@ java_defaults {
     ],
     dxflags: ["--core-library"],
     no_standard_libs: true,
-
-    // For user / userdebug builds, strip the local variable table and the local variable
-    // type table. This has no bearing on stack traces, but will leave less information
-    // available via JDWP.
-    //
-    // TODO: Should this be conditioned on a PRODUCT_ flag or should we just turn this
-    // on for all builds. Also, name of the flag TBD.
-    // TODO(ccross): PRODUCT_MINIMIZE_JAVA_DEBUG_INFO
-    // local_javac_flags += ["-g:source,lines"]
 }
 
 //
