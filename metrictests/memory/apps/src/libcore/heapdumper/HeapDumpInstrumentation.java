@@ -63,12 +63,6 @@ public class HeapDumpInstrumentation extends Instrumentation {
             recordException(e);
         }
         super.onCreate(icicle);
-        start();
-    }
-
-    @Override
-    public void onStart() {
-        // Everything has been done in onCreate, onStart can just finish immediately.
         finish(Activity.RESULT_OK, new Bundle());
     }
 
