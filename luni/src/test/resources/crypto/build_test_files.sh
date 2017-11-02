@@ -4,6 +4,8 @@
 #
 # NIST vectors can be obtained from
 # http://csrc.nist.gov/groups/STM/cavp/block-ciphers.html#test-vectors
+#
+# BoringSSL vectors can be obtained from their source under crypto/cipher_extra/test
 
 if [ -z "$1" ] || [ ! -d "$1" ]; then
   echo "The directory of files to process must be supplied as an argument."
@@ -21,3 +23,5 @@ cat "$1"/TCFB64*.rsp | ./parse_records.py > desede-cfb64.csv
 cat "$1"/TECB*.rsp | ./parse_records.py > desede-ecb.csv
 cat "$1"/TOFB*.rsp | ./parse_records.py > desede-ofb.csv
 cat "$1"/gcm*.rsp | ./parse_records.py > aes-gcm.csv
+# ChaCha20 vectors come from BoringSSL, so they don't need the NIST header
+cat "$1"/chacha20*.rsp | ./parse_records.py --noheader > chacha20.csv
