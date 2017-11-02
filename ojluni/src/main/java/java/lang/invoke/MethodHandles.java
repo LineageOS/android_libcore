@@ -2227,7 +2227,7 @@ return mh1;
                                      ByteOrder byteOrder) throws IllegalArgumentException {
         checkClassIsArray(viewArrayClass);
         checkTypeIsViewable(viewArrayClass.getComponentType());
-        return ByteArrayVarHandle.create(viewArrayClass, byteOrder);
+        return ByteArrayViewVarHandle.create(viewArrayClass, byteOrder);
     }
 
     /**
