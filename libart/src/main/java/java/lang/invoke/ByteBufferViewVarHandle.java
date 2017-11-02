@@ -24,12 +24,12 @@ import java.nio.ByteOrder;
  * @hide
  */
 final class ByteBufferViewVarHandle extends VarHandle {
-    private ByteOrder byteOrder;
+    private boolean nativeByteOrder;
 
     private ByteBufferViewVarHandle(Class<?> arrayClass, ByteOrder byteOrder) {
         super(arrayClass.getComponentType(), byte[].class, false /* isFinal */,
               ByteBuffer.class, int.class);
-        this.byteOrder = byteOrder;
+        this.nativeByteOrder = byteOrder.equals(ByteOrder.nativeOrder());
     }
 
     static ByteBufferViewVarHandle create(Class<?> arrayClass, ByteOrder byteOrder) {
