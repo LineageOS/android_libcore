@@ -24,7 +24,16 @@ characters.  The data is in one of the following formats:
 key,iv,plaintext,ciphertext
 key,iv,plaintext,ciphertext,tag,aad"""
 
+import argparse
+import binascii
 import sys
+
+
+def dequote(value):
+    if value[0] == '"' and value[-1] == '"':
+        value = binascii.hexlify(value[1:-1])
+    return value
+
 
 def format_records(record):
     # There are a number of different input formats, depending on whether the
@@ -50,11 +59,19 @@ def format_records(record):
           and 'ct' in record and 'tag' in record):
         # An AEAD operation
         return ["{key},{iv},{pt},{ct},{tag},{aad}".format(**record)]
+    elif ('key' in record and 'nonce' in record and 'in' in record and 'ad' in record
+          and 'ct' in record and 'tag' in record):
+        # A BoringSSL AEAD operation
+        return ["{key},{nonce},{in},{ct},{tag},{ad}".format(**record)]
     return []
 
 
 def main():
-    print """# This data was developed by employees of the National Institute
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--noheader", action='store_true')
+    args = parser.parse_args()
+    if not args.noheader:
+        print """# This data was developed by employees of the National Institute
 # of Standards and Technology (NIST), an agency of the Federal
 # Government. Pursuant to title 17 United States Code Section 105, works
 # of NIST employees are not subject to copyright protection in the United
@@ -91,7 +108,8 @@ def main():
 #
 # Permission to use this data is contingent upon your acceptance of
 # the terms of this agreement and upon your providing appropriate
-# acknowledgments of NIST's creation of the data."""
+# acknowledgments of NIST's creation of the data.
+#"""
     record = {}
     output_lines = []
     for line in sys.stdin.readlines():
@@ -101,17 +119,17 @@ def main():
             record = {}
         if ' =' in line:
             record[line[:line.index('=') - 1].lower()] = line[line.index('=') + 2:]
+        if ': ' in line:
+            record[line[:line.index(':')].lower()] = dequote(line[line.index(':') + 2:])
         if line == 'FAIL':
             record['fail'] = True
     output_lines.extend(format_records(record))
     if len(output_lines) > 0:
         if output_lines[0].count(',') == 3:
-            print """#
-# Data is in the format:
+            print """# Data is in the format:
 # key,iv,plaintext,ciphertext"""
         elif output_lines[0].count(',') == 5:
-            print """#
-# Data is in the format:
+            print """# Data is in the format:
 # key,iv,plaintext,ciphertext,tag,aad"""
         for output_line in output_lines:
             print output_line
