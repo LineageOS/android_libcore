@@ -22,16 +22,16 @@ import java.nio.ByteOrder;
  * A VarHandle to access byte array elements as an array of primitive types.
  * @hide
  */
-final class ByteArrayVarHandle extends VarHandle {
-    private ByteOrder byteOrder;
+final class ByteArrayViewVarHandle extends VarHandle {
+    private boolean nativeByteOrder;
 
-    private ByteArrayVarHandle(Class<?> arrayClass, ByteOrder byteOrder) {
+    private ByteArrayViewVarHandle(Class<?> arrayClass, ByteOrder byteOrder) {
         super(arrayClass.getComponentType(), byte[].class, false /* isFinal */,
               byte[].class, int.class);
-        this.byteOrder = byteOrder;
+        this.nativeByteOrder = byteOrder.equals(ByteOrder.nativeOrder());
     }
 
-    static ByteArrayVarHandle create(Class<?> arrayClass, ByteOrder byteOrder) {
-        return new ByteArrayVarHandle(arrayClass, byteOrder);
+    static ByteArrayViewVarHandle create(Class<?> arrayClass, ByteOrder byteOrder) {
+        return new ByteArrayViewVarHandle(arrayClass, byteOrder);
     }
 }
