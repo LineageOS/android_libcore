@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import libcore.util.HexEncoding;
 
@@ -61,9 +62,10 @@ public final class CipherBasicsTest extends TestCase {
         BASIC_CIPHER_TO_TEST_DATA.put("DESEDE/OFB/NoPadding", "/crypto/desede-ofb.csv");
     }
 
-    private static final Map<String, String> GCM_CIPHER_TO_TEST_DATA = new HashMap<>();
+    private static final Map<String, String> AEAD_CIPHER_TO_TEST_DATA = new HashMap<>();
     static {
-        GCM_CIPHER_TO_TEST_DATA.put("AES/GCM/NoPadding", "/crypto/aes-gcm.csv");
+        AEAD_CIPHER_TO_TEST_DATA.put("AES/GCM/NoPadding", "/crypto/aes-gcm.csv");
+        AEAD_CIPHER_TO_TEST_DATA.put("ChaCha20/Poly1305/NoPadding", "/crypto/chacha20.csv");
     }
 
     private static final int KEY_INDEX = 0;
@@ -123,9 +125,9 @@ public final class CipherBasicsTest extends TestCase {
         }
     }
 
-    public void testGcmEncryption() throws Exception {
+    public void testAeadEncryption() throws Exception {
         for (Provider p : Security.getProviders()) {
-            for (Map.Entry<String, String> entry : GCM_CIPHER_TO_TEST_DATA.entrySet()) {
+            for (Map.Entry<String, String> entry : AEAD_CIPHER_TO_TEST_DATA.entrySet()) {
                 String transformation = entry.getKey();
 
                 Cipher cipher;
@@ -146,7 +148,18 @@ public final class CipherBasicsTest extends TestCase {
                     byte[] tag = toBytes(line[TAG_INDEX]);
                     byte[] aad = toBytes(line[AAD_INDEX]);
 
-                    AlgorithmParameterSpec params = new GCMParameterSpec(8 * tag.length, iv);
+                    // Some ChaCha20 tests include truncated tags, which the Java API doesn't
+                    // support.  Skip those tests.
+                    if (transformation.startsWith("ChaCha20") && tag.length < 16) {
+                        continue;
+                    }
+
+                    AlgorithmParameterSpec params;
+                    if (transformation.contains("GCM")) {
+                        params = new GCMParameterSpec(8 * tag.length, iv);
+                    } else {
+                        params = new IvParameterSpec(iv);
+                    }
 
                     try {
                         cipher.init(Cipher.ENCRYPT_MODE, key, params);

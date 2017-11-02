@@ -1817,7 +1817,7 @@ public class SSLSocketTest extends TestCase {
         client.startHandshake();
 
         // Reflection is used so this can compile on the RI
-        String expectedClassName = "com.android.org.conscrypt.ConscryptFileDescriptorSocket";
+        String expectedClassName = "com.android.org.conscrypt.Java8FileDescriptorSocket";
         Class<?> actualClass = client.getClass();
         assertEquals(expectedClassName, actualClass.getName());
         // The concrete class that Conscrypt returns has methods on it that have no
@@ -1826,7 +1826,10 @@ public class SSLSocketTest extends TestCase {
         // on that class.  The concrete class used to be named OpenSSLSocketImpl, so
         // check that OpenSSLSocketImpl is still in the class hierarchy so applications
         // that rely on getting that class back still work.
-        Class<?> superClass = actualClass.getSuperclass();
+        Class<?> superClass = actualClass;
+        do {
+            superClass = superClass.getSuperclass();
+        } while (superClass != Object.class && !superClass.getName().endsWith("OpenSSLSocketImpl"));
         assertEquals("com.android.org.conscrypt.OpenSSLSocketImpl", superClass.getName());
         Method setSoWriteTimeout = actualClass.getMethod("setSoWriteTimeout",
                                                          new Class<?>[] { Integer.TYPE });
@@ -1862,7 +1865,7 @@ public class SSLSocketTest extends TestCase {
         SSLSocket client = (SSLSocket) c.clientContext.getSocketFactory().createSocket();
 
         // Reflection is used so this can compile on the RI
-        String expectedClassName = "com.android.org.conscrypt.ConscryptFileDescriptorSocket";
+        String expectedClassName = "com.android.org.conscrypt.Java8FileDescriptorSocket";
         Class<?> actualClass = client.getClass();
         assertEquals(expectedClassName, actualClass.getName());
         Method setNpnProtocols = actualClass.getMethod("setNpnProtocols", byte[].class);

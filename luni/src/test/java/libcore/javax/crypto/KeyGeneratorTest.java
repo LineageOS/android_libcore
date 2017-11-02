@@ -129,6 +129,7 @@ public class KeyGeneratorTest extends TestCase {
         putKeySize("Blowfish", 32);
         putKeySize("Blowfish", 32+8);
         putKeySize("Blowfish", 448);
+        putKeySize("ChaCha20", 256);
         putKeySize("DES", 56);
         putKeySize("DESede", 112);
         putKeySize("DESede", 168);
