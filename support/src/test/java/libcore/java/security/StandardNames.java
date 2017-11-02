@@ -570,6 +570,9 @@ public final class StandardNames {
             provide("Cipher", "DESEDE/OFB/PKCS7PADDING");
 
             // Provided by our OpenSSL provider
+            provide("AlgorithmParameters", "ChaCha20");
+            provide("Cipher", "ChaCha20");
+            provide("KeyGenerator", "ChaCha20");
             provideCipherPaddings("AES", new String[] { "PKCS7Padding" });
 
             // removed LDAP

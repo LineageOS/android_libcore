@@ -261,7 +261,8 @@ public final class CipherTest extends TestCase {
     }
 
     private static boolean isAEAD(String algorithm) {
-        return "GCM".equals(algorithm) || algorithm.contains("/GCM/");
+        return "GCM".equals(algorithm) || algorithm.contains("/GCM/")
+                || algorithm.equals("CHACHA20");
     }
 
     private static boolean isStreamMode(String algorithm) {
@@ -392,6 +393,7 @@ public final class CipherTest extends TestCase {
 
         setExpectedBlockSize("ARC4", 0);
         setExpectedBlockSize("ARCFOUR", 0);
+        setExpectedBlockSize("CHACHA20", 0);
         setExpectedBlockSize("PBEWITHSHAAND40BITRC4", 0);
         setExpectedBlockSize("PBEWITHSHAAND128BITRC4", 0);
 
@@ -624,6 +626,7 @@ public final class CipherTest extends TestCase {
 
         setExpectedOutputSize("ARC4", 0);
         setExpectedOutputSize("ARCFOUR", 0);
+        setExpectedOutputSize("CHACHA20", 0);
         setExpectedOutputSize("PBEWITHSHAAND40BITRC4", 0);
         setExpectedOutputSize("PBEWITHSHAAND128BITRC4", 0);
 
@@ -913,6 +916,11 @@ public final class CipherTest extends TestCase {
             || algorithm.equals("DESEDE/CTS/NOPADDING")
             || algorithm.equals("DESEDE/OFB/NOPADDING")) {
             final byte[] iv = new byte[8];
+            new SecureRandom().nextBytes(iv);
+            return new IvParameterSpec(iv);
+        }
+        if (algorithm.equals("CHACHA20")) {
+            final byte[] iv = new byte[12];
             new SecureRandom().nextBytes(iv);
             return new IvParameterSpec(iv);
         }
@@ -4841,15 +4849,92 @@ public final class CipherTest extends TestCase {
         assertEquals(Arrays.toString(c1.doFinal()), Arrays.toString(c2.doFinal()));
     }
 
+    /**
+     * Check that initializing with a GCM AlgorithmParameters produces the same result
+     * as initializing with a GCMParameterSpec.
+     */
+    public void test_AESGCMNoPadding_init_algParams() throws Exception {
+        SecretKeySpec key = new SecretKeySpec(new byte[16], "AES");
+        GCMParameterSpec spec = new GCMParameterSpec(96, new byte[12]);
+        AlgorithmParameters params = AlgorithmParameters.getInstance("GCM");
+        params.init(spec);
+        Cipher c1 = Cipher.getInstance("AES/GCM/NoPadding");
+        Cipher c2 = Cipher.getInstance("AES/GCM/NoPadding");
+
+        c1.init(Cipher.ENCRYPT_MODE, key, spec);
+        c2.init(Cipher.ENCRYPT_MODE, key, params);
+        // Cipher can adjust the provider based on the reponses to the init call, make sure
+        // we got the same provider for both
+        assertEquals(c1.getProvider(), c2.getProvider());
+        c1.updateAAD(new byte[] {
+                0x01, 0x02, 0x03, 0x04, 0x05,
+        });
+        c2.updateAAD(new byte[] {
+                0x01, 0x02, 0x03, 0x04, 0x05,
+        });
+
+        assertEquals(Arrays.toString(c1.doFinal()), Arrays.toString(c2.doFinal()));
+    }
+
     /*
      * Check that GCM encryption with old and new instances update correctly.
-     * http://b/26694388
+     * http://b/27324690
      */
     public void test_AESGCMNoPadding_Reuse_Success() throws Exception {
         SecretKeySpec key = new SecretKeySpec(new byte[16], "AES");
         GCMParameterSpec spec = new GCMParameterSpec(128, new byte[12]);
         Cipher c1 = Cipher.getInstance("AES/GCM/NoPadding");
         Cipher c2 = Cipher.getInstance("AES/GCM/NoPadding");
+
+        // Pollute the c1 cipher with AAD
+        c1.init(Cipher.ENCRYPT_MODE, key, spec);
+        c1.updateAAD(new byte[] {
+                0x01, 0x02, 0x03, 0x04, 0x05,
+        });
+
+        // Now init each again and make sure the outputs are the same
+        c1.init(Cipher.ENCRYPT_MODE, key, spec);
+        c2.init(Cipher.ENCRYPT_MODE, key, spec);
+
+        byte[] aad = new byte[] {
+                0x10, 0x20, 0x30, 0x40, 0x50, 0x60,
+        };
+        c1.updateAAD(aad);
+        c2.updateAAD(aad);
+
+        assertEquals(Arrays.toString(c1.doFinal()), Arrays.toString(c2.doFinal()));
+
+        // .doFinal should also not allow reuse without re-initialization
+        byte[] aad2 = new byte[] {
+                0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11,
+        };
+        try {
+            c1.updateAAD(aad2);
+            fail("Should not allow updateAAD without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
+
+        try {
+            c1.update(new byte[8]);
+            fail("Should not allow update without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
+
+        try {
+            c1.doFinal();
+            fail("Should not allow doFinal without re-initialization");
+        } catch (IllegalStateException expected) {
+        }
+    }
+
+    /*
+     * Check that ChaCha20/Poly1305 encryption with old and new instances update correctly
+     */
+    public void test_ChaCha20_Reuse_Success() throws Exception {
+        SecretKeySpec key = new SecretKeySpec(new byte[32], "ChaCha20");
+        IvParameterSpec spec = new IvParameterSpec(new byte[12]);
+        Cipher c1 = Cipher.getInstance("ChaCha20/Poly1305/NoPadding");
+        Cipher c2 = Cipher.getInstance("ChaCha20/Poly1305/NoPadding");
 
         // Pollute the c1 cipher with AAD
         c1.init(Cipher.ENCRYPT_MODE, key, spec);
