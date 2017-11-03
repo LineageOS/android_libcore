@@ -572,6 +572,7 @@ public final class StandardNames {
             // Provided by our OpenSSL provider
             provide("AlgorithmParameters", "ChaCha20");
             provide("Cipher", "ChaCha20");
+            provide("Cipher", "ChaCha20/Poly1305/NoPadding");
             provide("KeyGenerator", "ChaCha20");
             provideCipherPaddings("AES", new String[] { "PKCS7Padding" });
 

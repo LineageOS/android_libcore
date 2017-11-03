@@ -60,12 +60,13 @@ public final class CipherBasicsTest extends TestCase {
         BASIC_CIPHER_TO_TEST_DATA.put("DESEDE/CFB8/NoPadding", "/crypto/desede-cfb8.csv");
         BASIC_CIPHER_TO_TEST_DATA.put("DESEDE/CFB64/NoPadding", "/crypto/desede-cfb64.csv");
         BASIC_CIPHER_TO_TEST_DATA.put("DESEDE/OFB/NoPadding", "/crypto/desede-ofb.csv");
+        BASIC_CIPHER_TO_TEST_DATA.put("ChaCha20", "/crypto/chacha20.csv");
     }
 
     private static final Map<String, String> AEAD_CIPHER_TO_TEST_DATA = new HashMap<>();
     static {
         AEAD_CIPHER_TO_TEST_DATA.put("AES/GCM/NoPadding", "/crypto/aes-gcm.csv");
-        AEAD_CIPHER_TO_TEST_DATA.put("ChaCha20/Poly1305/NoPadding", "/crypto/chacha20.csv");
+        AEAD_CIPHER_TO_TEST_DATA.put("ChaCha20/Poly1305/NoPadding", "/crypto/chacha20-poly1305.csv");
     }
 
     private static final int KEY_INDEX = 0;

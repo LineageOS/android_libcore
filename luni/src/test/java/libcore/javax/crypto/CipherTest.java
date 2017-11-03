@@ -182,6 +182,9 @@ public final class CipherTest extends TestCase {
         if (algorithm.equals("GCM")) {
             return "AES";
         }
+        if (algorithm.startsWith("CHACHA20/")) {
+            return "CHACHA20";
+        }
         if (algorithm.startsWith("DESEDE/")) {
             return "DESEDE";
         }
@@ -262,7 +265,7 @@ public final class CipherTest extends TestCase {
 
     private static boolean isAEAD(String algorithm) {
         return "GCM".equals(algorithm) || algorithm.contains("/GCM/")
-                || algorithm.equals("CHACHA20");
+                || algorithm.equals("CHACHA20/POLY1305/NOPADDING");
     }
 
     private static boolean isStreamMode(String algorithm) {
@@ -394,6 +397,7 @@ public final class CipherTest extends TestCase {
         setExpectedBlockSize("ARC4", 0);
         setExpectedBlockSize("ARCFOUR", 0);
         setExpectedBlockSize("CHACHA20", 0);
+        setExpectedBlockSize("CHACHA20/POLY1305/NOPADDING", 0);
         setExpectedBlockSize("PBEWITHSHAAND40BITRC4", 0);
         setExpectedBlockSize("PBEWITHSHAAND128BITRC4", 0);
 
@@ -627,6 +631,7 @@ public final class CipherTest extends TestCase {
         setExpectedOutputSize("ARC4", 0);
         setExpectedOutputSize("ARCFOUR", 0);
         setExpectedOutputSize("CHACHA20", 0);
+        setExpectedOutputSize("CHACHA20/POLY1305/NOPADDING", 0);
         setExpectedOutputSize("PBEWITHSHAAND40BITRC4", 0);
         setExpectedOutputSize("PBEWITHSHAAND128BITRC4", 0);
 
@@ -919,7 +924,8 @@ public final class CipherTest extends TestCase {
             new SecureRandom().nextBytes(iv);
             return new IvParameterSpec(iv);
         }
-        if (algorithm.equals("CHACHA20")) {
+        if (algorithm.equals("CHACHA20")
+            || algorithm.equals("CHACHA20/POLY1305/NOPADDING")) {
             final byte[] iv = new byte[12];
             new SecureRandom().nextBytes(iv);
             return new IvParameterSpec(iv);
