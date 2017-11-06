@@ -30,6 +30,8 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
@@ -835,6 +837,72 @@ public class OsTest extends TestCase {
         fail();
     } catch(ErrnoException expected) {
     }
+  }
+
+  public void test_sendfile_null() throws Exception {
+    File in = createTempFile("test_sendfile_null", "Hello, world!");
+    try {
+      int len = "Hello".length();
+      assertEquals("Hello", checkSendfile(true, in, null, len, null));
+      assertEquals("Hello", checkSendfile(false, in, null, len, null));
+    } finally {
+      in.delete();
+    }
+  }
+
+  public void test_sendfile_offset() throws Exception {
+    File in = createTempFile("test_sendfile_offset", "Hello, world!");
+    try {
+      // checkSendfile(useSystemOs, in, startOffset, maxBytes, expectedEndOffset)
+
+      assertEquals("Hello", checkSendfile(true, in, 0L, 5, 5L));
+      assertEquals("Hello", checkSendfile(false, in, 0L, 5, 5L));
+
+      assertEquals("ello,", checkSendfile(true, in, 1L, 5, 6L));
+      assertEquals("ello,", checkSendfile(false, in, 1L, 5, 6L));
+
+      // At offset 9, only 4 bytes/chars available, even though we're asking for 5.
+      assertEquals("rld!", checkSendfile(true, in, 9L, 5, 13L));
+      assertEquals("rld!", checkSendfile(false, in, 9L, 5, 13L));
+
+      assertEquals("", checkSendfile(true, in, 1L, 0, 1L));
+      assertEquals("", checkSendfile(false, in, 1L, 0, 1L));
+    } finally {
+      in.delete();
+    }
+  }
+
+  private static String checkSendfile(boolean useSystemOs, File in, Long startOffset,
+          int maxBytes, Long expectedEndOffset) throws IOException, ErrnoException {
+    File out = File.createTempFile(OsTest.class.getSimpleName(), "checkSendfile.out");
+    try (FileInputStream inStream = new FileInputStream(in)) {
+      FileDescriptor inFd = inStream.getFD();
+      try (FileOutputStream outStream = new FileOutputStream(out)) {
+        FileDescriptor outFd = outStream.getFD();
+        if (useSystemOs) {
+          android.util.MutableLong offset = (startOffset == null) ? null :
+                  new android.util.MutableLong(startOffset);
+          android.system.Os.sendfile(outFd, inFd, offset, maxBytes);
+          assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+        } else {
+          libcore.util.MutableLong offset = (startOffset == null) ? null :
+                  new libcore.util.MutableLong(startOffset);
+          libcore.io.Libcore.os.sendfile(outFd, inFd, offset, maxBytes);
+          assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+        }
+      }
+      return IoUtils.readFileAsString(out.getPath());
+    } finally {
+      out.delete();
+    }
+  }
+
+  private static File createTempFile(String namePart, String contents) throws IOException {
+    File f = File.createTempFile(OsTest.class.getSimpleName() + namePart, ".in");
+    try (FileWriter writer = new FileWriter(f)) {
+      writer.write(contents);
+    }
+    return f;
   }
 
   public void test_getgroups() throws Exception {

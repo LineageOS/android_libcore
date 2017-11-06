@@ -462,11 +462,16 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
      */
     public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException {
-        libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(inOffset.value);
-        try {
-            return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
-        } finally {
-            inOffset.value = internalInOffset.value;
+        if (inOffset == null) {
+            return Libcore.os.sendfile(outFd, inFd, null, byteCount);
+        } else {
+            libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(
+                    inOffset.value);
+            try {
+                return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
+            } finally {
+                inOffset.value = internalInOffset.value;
+            }
         }
     }
 
