@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <grp.h>
 #include <ifaddrs.h>
 #include <linux/rtnetlink.h>
 #include <net/if.h>
@@ -1321,6 +1322,24 @@ static jint Linux_getgid(JNIEnv*, jobject) {
     return getgid();
 }
 
+static jintArray Linux_getgroups(JNIEnv* env, jobject) {
+    int ngrps = throwIfMinusOne(env, "getgroups", getgroups(0, nullptr));
+    if (ngrps == -1) {
+        return NULL;
+    }
+    std::vector<gid_t> groups(ngrps, 0);
+    ngrps = throwIfMinusOne(env, "getgroups", getgroups(ngrps, &groups[0]));
+    if (ngrps == -1) {
+        return NULL;
+    }
+    jintArray out = env->NewIntArray(ngrps);
+    if ((out != NULL) && (ngrps > 0)) {
+      env->SetIntArrayRegion(out, 0, ngrps, reinterpret_cast<int*>(&groups[0]));
+    }
+
+    return out;
+}
+
 static jstring Linux_getenv(JNIEnv* env, jobject, jstring javaName) {
     ScopedUtfChars name(env, javaName);
     if (name.c_str() == NULL) {
@@ -2160,6 +2179,13 @@ static void Linux_setgid(JNIEnv* env, jobject, jint gid) {
     throwIfMinusOne(env, "setgid", TEMP_FAILURE_RETRY(setgid(gid)));
 }
 
+static void Linux_setgroups(JNIEnv* env, jobject, jintArray gids) {
+    size_t ngrps = gids == NULL ? 0 : env->GetArrayLength(gids);
+    std::vector<gid_t> groups(ngrps, 0);
+    env->GetIntArrayRegion(gids, 0, ngrps, reinterpret_cast<int*>(&groups[0]));
+    throwIfMinusOne(env, "setgroups", setgroups(ngrps, &groups[0]));
+}
+
 static void Linux_setpgid(JNIEnv* env, jobject, jint pid, int pgid) {
     throwIfMinusOne(env, "setpgid", TEMP_FAILURE_RETRY(setpgid(pid, pgid)));
 }
@@ -2454,6 +2480,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, getegid, "()I"),
     NATIVE_METHOD(Linux, geteuid, "()I"),
     NATIVE_METHOD(Linux, getgid, "()I"),
+    NATIVE_METHOD(Linux, getgroups, "()[I"),
     NATIVE_METHOD(Linux, getenv, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(Linux, getnameinfo, "(Ljava/net/InetAddress;I)Ljava/lang/String;"),
     NATIVE_METHOD(Linux, getpeername, "(Ljava/io/FileDescriptor;)Ljava/net/SocketAddress;"),
@@ -2519,6 +2546,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, setenv, "(Ljava/lang/String;Ljava/lang/String;Z)V"),
     NATIVE_METHOD(Linux, seteuid, "(I)V"),
     NATIVE_METHOD(Linux, setgid, "(I)V"),
+    NATIVE_METHOD(Linux, setgroups, "([I)V"),
     NATIVE_METHOD(Linux, setpgid, "(II)V"),
     NATIVE_METHOD(Linux, setregid, "(II)V"),
     NATIVE_METHOD(Linux, setreuid, "(II)V"),
