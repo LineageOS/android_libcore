@@ -942,6 +942,9 @@ public class TCKZoneRules {
         assertEquals(zdt.plusHours(2).toLocalDateTime(), LocalDateTime.of(2011, 12, 31, 1, 0));
     }
 
+    // Removal of test for CTS that is dependent on IANA rules data version. Fails >= 2017c
+    // http://b/68878031
+    /*
     public void test_Apia_jumpForwardOverInternationalDateLine_P12_to_M12() {
         // transition occurred at 1879-07-04T00:00+12:33:04
         ZoneRules test = pacificApia();
@@ -959,6 +962,7 @@ public class TCKZoneRules {
         ZonedDateTime zdt = ZonedDateTime.of(1879, 7, 4, 23, 0, 0, 0, ZoneId.of("Pacific/Apia"));
         assertEquals(zdt.plusHours(2).toLocalDateTime(), LocalDateTime.of(1879, 7, 4, 1, 0, 0));
     }
+    */
 
     //-------------------------------------------------------------------------
     @Test(expectedExceptions=UnsupportedOperationException.class)
