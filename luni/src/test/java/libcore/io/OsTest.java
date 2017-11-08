@@ -17,6 +17,7 @@
 package libcore.io;
 
 import android.system.ErrnoException;
+import android.system.Int64Ref;
 import android.system.NetlinkSocketAddress;
 import android.system.OsConstants;
 import android.system.PacketSocketAddress;
@@ -52,6 +53,9 @@ import junit.framework.TestCase;
 import libcore.util.MutableLong;
 
 import static android.system.OsConstants.*;
+import static libcore.io.OsTest.SendFileImpl.ANDROID_SYSTEM_OS_INT64_REF;
+import static libcore.io.OsTest.SendFileImpl.ANDROID_SYSTEM_OS_MUTABLE_LONG;
+import static libcore.io.OsTest.SendFileImpl.LIBCORE_OS;
 
 public class OsTest extends TestCase {
   public void testIsSocket() throws Exception {
@@ -843,8 +847,9 @@ public class OsTest extends TestCase {
     File in = createTempFile("test_sendfile_null", "Hello, world!");
     try {
       int len = "Hello".length();
-      assertEquals("Hello", checkSendfile(true, in, null, len, null));
-      assertEquals("Hello", checkSendfile(false, in, null, len, null));
+      assertEquals("Hello", checkSendfile(ANDROID_SYSTEM_OS_MUTABLE_LONG, in, null, len, null));
+      assertEquals("Hello", checkSendfile(ANDROID_SYSTEM_OS_INT64_REF, in, null, len, null));
+      assertEquals("Hello", checkSendfile(LIBCORE_OS, in, null, len, null));
     } finally {
       in.delete();
     }
@@ -853,42 +858,69 @@ public class OsTest extends TestCase {
   public void test_sendfile_offset() throws Exception {
     File in = createTempFile("test_sendfile_offset", "Hello, world!");
     try {
-      // checkSendfile(useSystemOs, in, startOffset, maxBytes, expectedEndOffset)
+      // checkSendfile(sendFileImplToUse, in, startOffset, maxBytes, expectedEndOffset)
 
-      assertEquals("Hello", checkSendfile(true, in, 0L, 5, 5L));
-      assertEquals("Hello", checkSendfile(false, in, 0L, 5, 5L));
+      assertEquals("Hello", checkSendfile(ANDROID_SYSTEM_OS_MUTABLE_LONG, in, 0L, 5, 5L));
+      assertEquals("Hello", checkSendfile(ANDROID_SYSTEM_OS_INT64_REF, in, 0L, 5, 5L));
+      assertEquals("Hello", checkSendfile(LIBCORE_OS, in, 0L, 5, 5L));
 
-      assertEquals("ello,", checkSendfile(true, in, 1L, 5, 6L));
-      assertEquals("ello,", checkSendfile(false, in, 1L, 5, 6L));
+      assertEquals("ello,", checkSendfile(ANDROID_SYSTEM_OS_MUTABLE_LONG, in, 1L, 5, 6L));
+      assertEquals("ello,", checkSendfile(ANDROID_SYSTEM_OS_INT64_REF, in, 1L, 5, 6L));
+      assertEquals("ello,", checkSendfile(LIBCORE_OS, in, 1L, 5, 6L));
 
       // At offset 9, only 4 bytes/chars available, even though we're asking for 5.
-      assertEquals("rld!", checkSendfile(true, in, 9L, 5, 13L));
-      assertEquals("rld!", checkSendfile(false, in, 9L, 5, 13L));
+      assertEquals("rld!", checkSendfile(ANDROID_SYSTEM_OS_MUTABLE_LONG, in, 9L, 5, 13L));
+      assertEquals("rld!", checkSendfile(ANDROID_SYSTEM_OS_INT64_REF, in, 9L, 5, 13L));
+      assertEquals("rld!", checkSendfile(LIBCORE_OS, in, 9L, 5, 13L));
 
-      assertEquals("", checkSendfile(true, in, 1L, 0, 1L));
-      assertEquals("", checkSendfile(false, in, 1L, 0, 1L));
+      assertEquals("", checkSendfile(ANDROID_SYSTEM_OS_MUTABLE_LONG, in, 1L, 0, 1L));
+      assertEquals("", checkSendfile(ANDROID_SYSTEM_OS_INT64_REF, in, 1L, 0, 1L));
+      assertEquals("", checkSendfile(LIBCORE_OS, in, 1L, 0, 1L));
     } finally {
       in.delete();
     }
   }
 
-  private static String checkSendfile(boolean useSystemOs, File in, Long startOffset,
+  /** Which of the {@code sendfile()} implementations to use. */
+  enum SendFileImpl {
+    ANDROID_SYSTEM_OS_MUTABLE_LONG,
+    ANDROID_SYSTEM_OS_INT64_REF,
+    LIBCORE_OS
+  }
+
+  private static String checkSendfile(SendFileImpl sendFileImplToUse, File in, Long startOffset,
           int maxBytes, Long expectedEndOffset) throws IOException, ErrnoException {
-    File out = File.createTempFile(OsTest.class.getSimpleName(), "checkSendfile.out");
+    File out = File.createTempFile(OsTest.class.getSimpleName() + "_checkSendFile_" +
+            sendFileImplToUse, ".out");
     try (FileInputStream inStream = new FileInputStream(in)) {
       FileDescriptor inFd = inStream.getFD();
       try (FileOutputStream outStream = new FileOutputStream(out)) {
         FileDescriptor outFd = outStream.getFD();
-        if (useSystemOs) {
-          android.util.MutableLong offset = (startOffset == null) ? null :
-                  new android.util.MutableLong(startOffset);
-          android.system.Os.sendfile(outFd, inFd, offset, maxBytes);
-          assertEquals(expectedEndOffset, offset == null ? null : offset.value);
-        } else {
-          libcore.util.MutableLong offset = (startOffset == null) ? null :
-                  new libcore.util.MutableLong(startOffset);
-          libcore.io.Libcore.os.sendfile(outFd, inFd, offset, maxBytes);
-          assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+        switch (sendFileImplToUse) {
+          case ANDROID_SYSTEM_OS_MUTABLE_LONG: {
+            android.util.MutableLong offset = (startOffset == null) ? null :
+                    new android.util.MutableLong(startOffset);
+            android.system.Os.sendfile(outFd, inFd, offset, maxBytes);
+            assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+            break;
+          }
+          case ANDROID_SYSTEM_OS_INT64_REF: {
+            Int64Ref offset = (startOffset == null) ? null : new Int64Ref(startOffset);
+            android.system.Os.sendfile(outFd, inFd, offset, maxBytes);
+            assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+            break;
+          }
+          case LIBCORE_OS: {
+            libcore.util.MutableLong offset = (startOffset == null) ? null :
+                    new libcore.util.MutableLong(startOffset);
+            libcore.io.Libcore.os.sendfile(outFd, inFd, offset, maxBytes);
+            assertEquals(expectedEndOffset, offset == null ? null : offset.value);
+            break;
+          }
+          default: {
+            fail();
+            break;
+          }
         }
       }
       return IoUtils.readFileAsString(out.getPath());
