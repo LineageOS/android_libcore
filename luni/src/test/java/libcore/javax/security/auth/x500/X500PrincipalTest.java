@@ -22,7 +22,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import javax.security.auth.x500.X500Principal;
 import junit.framework.TestCase;
-import libcore.util.SerializationTester;
+import libcore.libcore.util.SerializationTester;
 
 import dalvik.system.VMRuntime;
 import sun.security.jca.Providers;
