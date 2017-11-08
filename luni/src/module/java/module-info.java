@@ -119,4 +119,5 @@ module java.base {
     exports libcore.net.http;
     exports libcore.reflect;
     exports libcore.util;
+    exports org.json;
 }
