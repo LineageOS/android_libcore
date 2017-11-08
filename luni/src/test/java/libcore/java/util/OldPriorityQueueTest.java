@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import junit.framework.TestCase;
-import libcore.util.SerializationTester;
+import libcore.libcore.util.SerializationTester;
 
 public class OldPriorityQueueTest extends TestCase {
     public void test_ConstructorI() {
