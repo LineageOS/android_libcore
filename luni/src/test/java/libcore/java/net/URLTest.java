@@ -19,13 +19,11 @@ package libcore.java.net;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URI;
 import java.net.URL;
 
 import dalvik.system.BlockGuard;
 import junit.framework.TestCase;
-import libcore.util.SerializationTester;
+import libcore.libcore.util.SerializationTester;
 
 public final class URLTest extends TestCase {
 
