@@ -947,11 +947,14 @@ public class OsTest extends TestCase {
   }
 
   public void test_setgroups() throws Exception {
+    final long ngroupsMax = Libcore.os.sysconf(_SC_NGROUPS_MAX);
+    final int expectedError = ngroupsMax == 0 ? EINVAL : EPERM;
+
     try {
       Libcore.os.setgroups(new int[] {-1});
       fail();
     } catch (ErrnoException expected) {
-      assertEquals(EPERM, expected.errno);
+      assertEquals(expectedError, expected.errno);
     }
   }
 
