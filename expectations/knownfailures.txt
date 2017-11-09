@@ -1471,7 +1471,7 @@
   bug: 19764047,
   result: EXEC_FAILED,
   names: [
-    "libcore.io.OsTest#test_PacketSocketAddress"
+    "libcore.libcore.io.OsTest#test_PacketSocketAddress"
   ]
 },
 {
@@ -1673,7 +1673,7 @@
 {
   description: "a low-impact bug, also present in Crockford's implementation of org.json",
   result: EXEC_FAILED,
-  name: "org.json.ParsingTest#test64BitHexValues",
+  name: "libcore.org.json.ParsingTest#test64BitHexValues",
   substring: "Large hex longs shouldn't be yield ints or strings expected:<-1> but was:<0xFFFFFFFFFFFFFFFF>"
 },
 {
@@ -1844,6 +1844,12 @@
   result: EXEC_FAILED,
   bug: 64092664,
   name: "org.apache.harmony.tests.java.text.DecimalFormatTest#test_formatDouble_withFieldPosition"
+},
+{
+  description: "Awaiting fix to reflection code",
+  result: EXEC_FAILED,
+  bug: 62408076,
+  name: "libcore.java.lang.reflect.annotations.AnnotatedElementParameterTest#testImplicitConstructorParameters_singleAnnotation"
 },
 {
   description: "Broken after zlib update in 7291b8caf1884",

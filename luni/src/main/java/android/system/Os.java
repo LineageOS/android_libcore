@@ -268,7 +268,9 @@ public final class Os {
     public static InetAddress inet_pton(int family, String address) { return Libcore.os.inet_pton(family, address); }
 
     /** @hide */ public static InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException { return Libcore.os.ioctlInetAddress(fd, cmd, interfaceName); }
-    /** @hide */ public static int ioctlInt(FileDescriptor fd, int cmd, MutableInt arg) throws ErrnoException {
+
+
+    /** @hide */ public static int ioctlInt(FileDescriptor fd, int cmd, Int32Ref arg) throws ErrnoException {
         libcore.util.MutableInt internalArg = new libcore.util.MutableInt(arg.value);
         try {
             return Libcore.os.ioctlInt(fd, cmd, internalArg);
@@ -460,13 +462,39 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
+     *
+     * @deprecated This method will be removed in a future version of Android. Use
+     *        {@link #sendfile(FileDescriptor, FileDescriptor, Int64Ref, long)} instead.
      */
+    @Deprecated
     public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException {
-        libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(inOffset.value);
-        try {
-            return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
-        } finally {
-            inOffset.value = internalInOffset.value;
+        if (inOffset == null) {
+            return Libcore.os.sendfile(outFd, inFd, null, byteCount);
+        } else {
+            libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(
+                    inOffset.value);
+            try {
+                return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
+            } finally {
+                inOffset.value = internalInOffset.value;
+            }
+        }
+    }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
+     */
+    public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
+        if (inOffset == null) {
+            return Libcore.os.sendfile(outFd, inFd, null, byteCount);
+        } else {
+            libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(
+                    inOffset.value);
+            try {
+                return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
+            } finally {
+                inOffset.value = internalInOffset.value;
+            }
         }
     }
 
@@ -625,13 +653,39 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
+     *
+     * @deprecated This method will be removed in a future version of Android. Use
+     *        {@link #waitpid(int, Int32Ref, int)} instead.
      */
+    @Deprecated
     public static int waitpid(int pid, MutableInt status, int options) throws ErrnoException {
-        libcore.util.MutableInt internalStatus = new libcore.util.MutableInt(status.value);
-        try {
-            return Libcore.os.waitpid(pid, internalStatus, options);
-        } finally {
-            status.value = internalStatus.value;
+        if (status == null) {
+            return Libcore.os.waitpid(pid, null, options);
+        } else {
+            libcore.util.MutableInt internalStatus = new libcore.util.MutableInt(status.value);
+            try {
+                return Libcore.os.waitpid(pid, internalStatus, options);
+            } finally {
+                status.value = internalStatus.value;
+            }
+        }
+    }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
+     *
+     * @throws IllegalArgumentException if {@code status != null && status.length != 1}
+     */
+    public static int waitpid(int pid, Int32Ref status, int options) throws ErrnoException {
+        if (status == null) {
+            return Libcore.os.waitpid(pid, null, options);
+        } else {
+            libcore.util.MutableInt internalStatus = new libcore.util.MutableInt(status.value);
+            try {
+                return Libcore.os.waitpid(pid, internalStatus, options);
+            } finally {
+                status.value = internalStatus.value;
+            }
         }
     }
 
