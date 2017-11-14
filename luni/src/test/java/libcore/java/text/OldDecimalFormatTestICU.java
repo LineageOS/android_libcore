@@ -60,6 +60,14 @@ public class OldDecimalFormatTestICU extends TestCase {
         } catch (IllegalArgumentException e) {
             // expected
         }
+
+        try {
+            format.applyPattern("@.###");
+            fail("expected IllegalArgumentException was not thrown for "
+                    + "pattern \"@.###\".");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 
     // AndroidOnly: special feature of icu4c
