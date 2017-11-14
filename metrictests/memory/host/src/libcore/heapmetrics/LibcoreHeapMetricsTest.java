@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import java.util.EnumMap;
 import java.util.Map;
+import libcore.heapmetrics.HeapCategorization.HeapCategory;
 
 /**
  * Tests that gather metrics about zygote+image heap and about the impact of core library calls on
@@ -70,6 +71,12 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
         AhatSnapshot afterDump = result.getAfterDump();
         recordHeapMetrics(beforeDump, "zygoteSize", "zygote");
         recordHeapMetrics(beforeDump, "imageSize", "image");
+        Map<HeapCategory, Size> zygoteAndImageSizesByCategory = HeapCategorization
+                .of(beforeDump, beforeDump.getHeap("zygote"), beforeDump.getHeap("image"))
+                .sizesByCategory();
+        for (Map.Entry<HeapCategory, Size> entry : zygoteAndImageSizesByCategory.entrySet()) {
+            recordSizeMetric(entry.getKey().metricName("zygoteAndImage_"), entry.getValue());
+        }
         recordBeforeAndAfterHeapMetrics(
                 beforeDump, afterDump, "beforeAppSize", "deltaAppSize", "app");
         recordBytesMetric("beforeTotalPss", result.getBeforeTotalPssKb() * 1024L);
