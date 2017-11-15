@@ -565,4 +565,66 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         Locale.setDefault(originalLocale);
         return instances;
     }
+
+    // http://b/68143370
+    public void testWhitespaceTolerated() {
+        // Trailing space is tolerated, but not consumed.
+        assertParsed("0", "1 ", 1, 1);
+        // Digits after trailing space are ignored.
+        assertParsed("0", "1 2", 1, 1);
+        // Space after decimal point is treated as end of input.
+        assertParsed("0", "1. 1", 1, 2);
+        // Space before decimal point is treated as end of input.
+        assertParsed("0", "1 .1", 1, 1);
+        // Space after decimal digit is treated as end of input.
+        assertParsed("0", "1.2 3", 1.2d, 3);
+        // Leading space treated as part of negative prefix
+        assertParsed("0; 0", " 1 ", -1, 2);
+        // Leading space in prefix is accepted.
+        assertParsed(" 0", " 1 ", 1, 2);
+        // Extra space after prefix with space is accepted.
+        assertParsed(" 0", "  1 ", 1, 3);
+    }
+
+    // http://b/68143370
+    public void testWhitespaceError() {
+        // Space before currency symbol is not tolerated.
+        assertParseError("¤0", " $1");
+        // Space after currency symbol is not tolerated.
+        assertParseError("¤0", "$ 1");
+        // Space before positive prefix is not tolerated.
+        assertParseError("+0", " +1");
+        // Space after positive prefix is not tolerated.
+        assertParseError("+0", "+ 1");
+        // Leading space is not tolerated.
+        assertParseError("0", " 1");
+        // Space in prefix is expected to be present.
+        assertParseError(" 0", "1");
+    }
+
+
+    private void assertParseError(String pattern, String input) {
+        ParsePosition pos = new ParsePosition(0);
+        DecimalFormat df = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.US));
+        Number result = df.parse(input, pos);
+        if (result != null) {
+            fail(String.format("Parsed <%s> using <%s>, should have failed: %s",
+                    input, pattern, describeParseResult(result, pos)));
+        }
+    }
+
+    private static void assertParsed(String pattern, String input, Number expected,
+            int expectedIndex) {
+        ParsePosition expectedPos = new ParsePosition(expectedIndex);
+        ParsePosition pos = new ParsePosition(0);
+        DecimalFormat df = new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(Locale.US));
+        Number result = df.parse(input, pos);
+        assertEquals("Parse <" + input + "> using <" + pattern + ">.",
+                describeParseResult(expected, expectedPos), describeParseResult(result, pos));
+    }
+
+    private static String describeParseResult(Number result, ParsePosition pos) {
+        return String.format("%s, index=%d, errorIndex=%d",
+                result, pos.getIndex(), pos.getErrorIndex());
+    }
 }
