@@ -42,6 +42,9 @@ def format_records(record):
     if 'key' in record and 'iv' in record and 'plaintext' in record and 'ciphertext' in record:
         # A normal operation with an IV
         return ["{key},{iv},{plaintext},{ciphertext}".format(**record)]
+    elif 'key' in record and 'nonce' in record and 'plaintext' in record and 'ciphertext' in record:
+        # A normal operation with nonce instead of IV
+        return ["{key},{nonce},{plaintext},{ciphertext}".format(**record)]
     elif 'key' in record and 'plaintext' in record and 'ciphertext' in record:
         # A normal operation without IV
         return ["{key},,{plaintext},{ciphertext}".format(**record)]
