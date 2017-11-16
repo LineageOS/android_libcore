@@ -23,5 +23,7 @@ cat "$1"/TCFB64*.rsp | ./parse_records.py > desede-cfb64.csv
 cat "$1"/TECB*.rsp | ./parse_records.py > desede-ecb.csv
 cat "$1"/TOFB*.rsp | ./parse_records.py > desede-ofb.csv
 cat "$1"/gcm*.rsp | ./parse_records.py > aes-gcm.csv
-# ChaCha20 vectors come from BoringSSL, so they don't need the NIST header
-cat "$1"/chacha20*.rsp | ./parse_records.py --noheader > chacha20.csv
+# ChaCha20 vectors come from RFC drafts, so they don't need the NIST header
+cat "$1"/chacha20-cipher*.rsp | ./parse_records.py --noheader > chacha20.csv
+# ChaCha20-Poly1305 vectors come from BoringSSL, so they don't need the NIST header
+cat "$1"/chacha20-poly1305.rsp | ./parse_records.py --noheader > chacha20-poly1305.csv
