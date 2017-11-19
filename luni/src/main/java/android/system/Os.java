@@ -16,8 +16,6 @@
 
 package android.system;
 
-import android.util.MutableInt;
-import android.util.MutableLong;
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -473,27 +471,6 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
-     *
-     * @deprecated This method will be removed in a future version of Android. Use
-     *        {@link #sendfile(FileDescriptor, FileDescriptor, Int64Ref, long)} instead.
-     */
-    @Deprecated
-    public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException {
-        if (inOffset == null) {
-            return Libcore.os.sendfile(outFd, inFd, null, byteCount);
-        } else {
-            libcore.util.MutableLong internalInOffset = new libcore.util.MutableLong(
-                    inOffset.value);
-            try {
-                return Libcore.os.sendfile(outFd, inFd, internalInOffset, byteCount);
-            } finally {
-                inOffset.value = internalInOffset.value;
-            }
-        }
-    }
-
-    /**
-     * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
      */
     public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
         if (inOffset == null) {
@@ -668,26 +645,6 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man3/unsetenv.3.html">unsetenv(3)</a>.
      */
     public static void unsetenv(String name) throws ErrnoException { Libcore.os.unsetenv(name); }
-
-    /**
-     * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
-     *
-     * @deprecated This method will be removed in a future version of Android. Use
-     *        {@link #waitpid(int, Int32Ref, int)} instead.
-     */
-    @Deprecated
-    public static int waitpid(int pid, MutableInt status, int options) throws ErrnoException {
-        if (status == null) {
-            return Libcore.os.waitpid(pid, null, options);
-        } else {
-            libcore.util.MutableInt internalStatus = new libcore.util.MutableInt(status.value);
-            try {
-                return Libcore.os.waitpid(pid, internalStatus, options);
-            } finally {
-                status.value = internalStatus.value;
-            }
-        }
-    }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
