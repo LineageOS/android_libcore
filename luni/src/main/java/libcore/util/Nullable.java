@@ -24,14 +24,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Denotes that a type use can never be null.
+ * Denotes that a type use can be a null.
  * <p>
  * This is a marker annotation and it has no specific attributes.
  */
 @Documented
 @Retention(SOURCE)
 @Target({TYPE_USE})
-public @interface NonNull {
+public @interface Nullable {
    /**
     * Min Android API level (inclusive) to which this annotation is applied.
     */
