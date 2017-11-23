@@ -23,6 +23,11 @@
 
 package libcore.util:
 annotation @NonNull: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
+    int from
+    int to
+annotation @Nullable: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
+    int from
+    int to
 
 package java.lang:
 class CharSequence:
