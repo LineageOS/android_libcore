@@ -364,18 +364,22 @@ package java.lang.reflect:
 class AccessibleObject:
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return: inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class AnnotatedElement:
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Array:
     // Returns instance or throws
@@ -400,7 +404,8 @@ class Constructor:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Returns instance or throws
     method newInstance([Ljava/lang/Object;)Ljava/lang/Object;:
         return: @libcore.util.NonNull
@@ -414,34 +419,44 @@ class Executable:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericParameterTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameters()[Ljava/lang/reflect/Parameter;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getExceptionTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericExceptionTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method toGenericString()Ljava/lang/String;:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterAnnotations()[[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
+          inner-type 0, 0, 0, 0:  @libcore.util.NonNull
 
 class Field:
     // Always returns an instance
@@ -465,7 +480,8 @@ class GenericArrayType:
 class GenericDeclaration:
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Member:
     method getDeclaringClass()Ljava/lang/Class;:
@@ -480,7 +496,8 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // There's always a return type (such as Void.class)
     method getReturnType()Ljava/lang/Class;:
         return: @libcore.util.NonNull
@@ -489,16 +506,20 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericParameterTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getExceptionTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericExceptionTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method toString()Ljava/lang/String;:
         return: @libcore.util.NonNull
@@ -507,16 +528,20 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterAnnotations()[[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
+          inner-type 0, 0, 0, 0:  @libcore.util.NonNull
 
 
 class ParameterizedType:
     // Empty array in the worst case
     method getActualTypeArguments()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method getRawType()Ljava/lang/reflect/Type;:
         return: @libcore.util.NonNull
@@ -539,10 +564,12 @@ class Parameter:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Proxy:
     // Always returns an instance (or throws)
@@ -563,7 +590,8 @@ class Type:
 class TypeVariable:
     // Empty array in the worst case
     method getBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method getGenericDeclaration()Ljava/lang/reflect/GenericDeclaration;:
         return: @libcore.util.NonNull
@@ -574,7 +602,9 @@ class TypeVariable:
 class WildcardType:
     // Empty array in the worst case
     method getUpperBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getLowerBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
