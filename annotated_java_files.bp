@@ -24,5 +24,6 @@ filegroup {
         "ojluni/src/main/java/java/lang/reflect/Type.java",
         "ojluni/src/main/java/java/lang/reflect/TypeVariable.java",
         "ojluni/src/main/java/java/lang/reflect/WildcardType.java",
+        "ojluni/src/main/java/java/util/List.java",
     ],
 }
