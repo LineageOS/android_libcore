@@ -138,9 +138,25 @@ LOCAL_MODULE := filesystemstest
 LOCAL_JAVA_LIBRARIES := core-oj core-libart
 LOCAL_DEX_PREOPT := false
 include $(BUILD_JAVA_LIBRARY)
-my_filesystemstest_jar := $(intermediates)/filesystemstest.jar
-$(my_filesystemstest_jar): $(LOCAL_BUILT_MODULE)
+
+filesystemstest_jar := $(intermediates)/$(LOCAL_MODULE).jar
+$(filesystemstest_jar): $(LOCAL_BUILT_MODULE)
 	$(call copy-file-to-target)
+
+# Build a library just containing files from luni/src/test/parameter_metadata for use in tests.
+include $(CLEAR_VARS)
+LOCAL_SRC_FILES := $(call all-java-files-under, luni/src/test/parameter_metadata/src)
+LOCAL_NO_STANDARD_LIBRARIES := true
+LOCAL_MODULE := parameter-metadata-test
+LOCAL_JAVA_LIBRARIES := core-oj core-libart
+LOCAL_DEX_PREOPT := false
+LOCAL_JAVACFLAGS := -parameters
+include $(BUILD_JAVA_LIBRARY)
+
+parameter_metadata_test_jar := $(intermediates)/$(LOCAL_MODULE).jar
+$(parameter_metadata_test_jar): $(LOCAL_BUILT_MODULE)
+	$(call copy-file-to-target)
+
 endif
 
 ifeq ($(LIBCORE_SKIP_TESTS),)
@@ -150,7 +166,7 @@ LOCAL_SRC_FILES := $(test_src_files)
 LOCAL_JAVA_RESOURCE_DIRS := $(test_resource_dirs)
 # Include individual dex.jar files (jars containing resources and a classes.dex) so that they
 # be loaded by tests using ClassLoaders but are not in the main classes.dex.
-LOCAL_JAVA_RESOURCE_FILES := $(my_filesystemstest_jar)
+LOCAL_JAVA_RESOURCE_FILES := $(filesystemstest_jar) $(parameter_metadata_test_jar)
 LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_JAVA_LIBRARIES := core-oj core-libart okhttp bouncycastle
 LOCAL_STATIC_JAVA_LIBRARIES := \
