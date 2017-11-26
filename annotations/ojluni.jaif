@@ -20,6 +20,13 @@
 
 // If this file is changed, please update libcore/annotated_java_files.bp file by running:
 // libcore/annotations/generate_annotated_java_files.py libcore/annotations/ojluni.jaif > libcore/annotated_java_files.bp
+//
+// For arrray syntax, please see https://checkerframework.org/jsr308/specification/java-annotation-design.html#array-syntax
+// @Nullable String @NonNull[] <- Non-null array of nullable strings can be expressed as:
+//
+//    type: @libcore.util.NonNull
+//      inner-type 0, 0: @libcore.util.Nullable
+
 
 package libcore.util:
 annotation @NonNull: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
@@ -44,24 +51,108 @@ class Iterable:
     // Always returns an instance
     method iterator()Ljava/util/Iterator;:
         return: @libcore.util.NonNull
-
 class String:
+    method <init>(Ljava/lang/String;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([C)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([CII)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([III)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BIII)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BI)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BIILjava/lang/String;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #3:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BIILjava/nio/charset/Charset;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #3:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BLjava/lang/String;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BLjava/nio/charset/Charset;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([BII)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>([B)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>(Ljava/lang/StringBuffer;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>(Ljava/lang/StringBuilder;)V:
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+    method <init>(II[C)V:
+        parameter #2:
+          type: @libcore.util.NonNull
+        return:
+    method getChars(II[CI)V:
+        parameter #2:
+          type: @libcore.util.NonNull
+        return:
+
     // Always returns a string instance
     method toString()Ljava/lang/String;:
         return: @libcore.util.NonNull
 
+    method getBytes(II[BI)V:
+        parameter #2:
+          type: @libcore.util.NonNull
     // Empty array in worst case
     method getBytes(Ljava/lang/String;)[B:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Empty array in worst case
     method getBytes(Ljava/nio/charset/Charset;)[B:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Empty array in worst case (or throws)
     method getBytes(Ljava/lang/String;)[B:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Empty array in worst case
     method getBytes()[B:
         return: @libcore.util.NonNull
+    method equals(Ljava/lang/Object;)Z:
+        parameter #0:
+          type: @libcore.util.Nullable
     // Empty array in worst case
     method toCharArray()[C:
         return: @libcore.util.NonNull
@@ -70,12 +161,18 @@ class String:
         return: @libcore.util.NonNull
     // Always returns a string instance
     method concat(Ljava/lang/String;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method copyValueOf([CII)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method copyValueOf([C)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method intern()Ljava/lang/String;:
@@ -91,12 +188,16 @@ class String:
         return: @libcore.util.NonNull
     // Always returns a string instance
     method toLowerCase(Ljava/util/Locale;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method toLowerCase()Ljava/lang/String;:
         return: @libcore.util.NonNull
     // Always returns a string instance
     method toUpperCase(Ljava/util/Locale;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method toUpperCase()Ljava/lang/String;:
@@ -124,30 +225,130 @@ class String:
         return: @libcore.util.NonNull
     // Always returns a string instance
     method valueOf(Ljava/lang/Object;)Ljava/lang/String;:
-        return: @libcore.util.NonNull
+        parameter #0:
+          type: @libcore.util.Nullable
+        return:@libcore.util.NonNull
     // Always returns a string instance
     method valueOf([C)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method valueOf([CII)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method split(Ljava/lang/String;I)[Ljava/lang/String;:
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
     // Always returns a string instance
     method split(Ljava/lang/String;)[Ljava/lang/String;:
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
     // Always returns a string instance
     method join(Ljava/lang/CharSequence;[Ljava/lang/CharSequence;)Ljava/lang/String;:
         return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
     // Always returns a string instance
     method join(Ljava/lang/CharSequence;Ljava/lang/Iterable;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+            inner-type 3, 0, 2, 0: @libcore.util.Nullable
         return: @libcore.util.NonNull
     // Always returns a string instance
     method replaceAll(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
         return: @libcore.util.NonNull
     // Always returns a string instance
     method replaceFirst(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
+        return: @libcore.util.NonNull
+   method replace(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
+        return: @libcore.util.NonNull
+    method contentEquals(Ljava/lang/StringBuffer;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method contentEquals(Ljava/lang/CharSequence;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method equalsIgnoreCase(Ljava/lang/String;)Z:
+        parameter #0:
+          type: @libcore.util.Nullable
+    method compareTo(Ljava/lang/String;)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method compareToIgnoreCase(Ljava/lang/String;)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method regionMatches(ILjava/lang/String;II)Z:
+        parameter #1:
+          type: @libcore.util.NonNull
+    method regionMatches(ZILjava/lang/String;II)Z:
+        parameter #2:
+          type: @libcore.util.NonNull
+    method startsWith(Ljava/lang/String;I)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method startsWith(Ljava/lang/String;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method endsWith(Ljava/lang/String;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method indexOf(Ljava/lang/String;)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method indexOf(Ljava/lang/String;I)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method lastIndexOf(Ljava/lang/String;)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method lastIndexOf(Ljava/lang/String;I)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method matches(Ljava/lang/String;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method contains(Ljava/lang/CharSequence;)Z:
+        parameter #0:
+          type: @libcore.util.NonNull
+    method format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+        return: @libcore.util.NonNull
+    method format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;:
+        parameter #0:
+          type: @libcore.util.NonNull
+        parameter #1:
+          type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
         return: @libcore.util.NonNull
 
 class Thread:
@@ -163,18 +364,22 @@ package java.lang.reflect:
 class AccessibleObject:
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class AnnotatedElement:
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Array:
     // Returns instance or throws
@@ -199,7 +404,8 @@ class Constructor:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Returns instance or throws
     method newInstance([Ljava/lang/Object;)Ljava/lang/Object;:
         return: @libcore.util.NonNull
@@ -213,34 +419,44 @@ class Executable:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericParameterTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameters()[Ljava/lang/reflect/Parameter;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getExceptionTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericExceptionTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method toGenericString()Ljava/lang/String;:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterAnnotations()[[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
+          inner-type 0, 0, 0, 0:  @libcore.util.NonNull
 
 class Field:
     // Always returns an instance
@@ -264,7 +480,8 @@ class GenericArrayType:
 class GenericDeclaration:
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Member:
     method getDeclaringClass()Ljava/lang/Class;:
@@ -279,7 +496,8 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // There's always a return type (such as Void.class)
     method getReturnType()Ljava/lang/Class;:
         return: @libcore.util.NonNull
@@ -288,16 +506,20 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericParameterTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getExceptionTypes()[Ljava/lang/Class;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getGenericExceptionTypes()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method toString()Ljava/lang/String;:
         return: @libcore.util.NonNull
@@ -306,16 +528,20 @@ class Method:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getParameterAnnotations()[[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
+          inner-type 0, 0, 0, 0:  @libcore.util.NonNull
 
 
 class ParameterizedType:
     // Empty array in the worst case
     method getActualTypeArguments()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method getRawType()Ljava/lang/reflect/Type;:
         return: @libcore.util.NonNull
@@ -338,10 +564,12 @@ class Parameter:
         return: @libcore.util.NonNull
     // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
 
 class Proxy:
     // Always returns an instance (or throws)
@@ -362,7 +590,8 @@ class Type:
 class TypeVariable:
     // Empty array in the worst case
     method getBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Always returns an instance
     method getGenericDeclaration()Ljava/lang/reflect/GenericDeclaration;:
         return: @libcore.util.NonNull
@@ -373,7 +602,9 @@ class TypeVariable:
 class WildcardType:
     // Empty array in the worst case
     method getUpperBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
     // Empty array in the worst case
     method getLowerBounds()[Ljava/lang/reflect/Type;:
-        return:	inner-type 0, 0:  @libcore.util.NonNull
+        return:  @libcore.util.NonNull
+          inner-type 0, 0:  @libcore.util.NonNull
