@@ -229,8 +229,9 @@ public class DateFormatSymbols implements Serializable, Cloneable {
      * Unlocalized date-time pattern characters. For example: 'y', 'd', etc.
      * All locales use the same these unlocalized pattern characters.
      */
-    // Android-changed: Add 'c' (standalone day of week).
-    static final String  patternChars = "GyMdkHmsSEDFwWahKzZYuXLc";
+    // Android-changed: Add 'c' (standalone day of week), 'b' (day period),
+    //   'B' (flexible day period)
+    static final String  patternChars = "GyMdkHmsSEDFwWahKzZYuXLcbB";
 
     static final int PATTERN_ERA                  =  0; // G
     static final int PATTERN_YEAR                 =  1; // y
@@ -257,6 +258,9 @@ public class DateFormatSymbols implements Serializable, Cloneable {
     static final int PATTERN_MONTH_STANDALONE     = 22; // L
     // Android-added: Constant for standalone day of week.
     static final int PATTERN_STANDALONE_DAY_OF_WEEK = 23; // c
+    // Android-added: Constant for pattern letter 'b', 'B'
+    static final int PATTERN_DAY_PERIOD = 24; // b
+    static final int PATTERN_FLEXIBLE_DAY_PERIOD = 25; // B
 
     /**
      * Localized date-time pattern characters. For example, a locale may
