@@ -24,6 +24,10 @@
             android:name="libcore.heapdumper.HeapDumpInstrumentation"
             android:targetPackage="libcore.heapdumper" />
 
+    <instrumentation
+            android:name="libcore.heapdumper.PssInstrumentation"
+            android:targetPackage="libcore.heapdumper" />
+
     <application
             android:allowBackup="false"
             android:label="@string/libcore_heap_dumper_title">

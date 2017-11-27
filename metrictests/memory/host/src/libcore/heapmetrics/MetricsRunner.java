@@ -34,13 +34,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Helper class that runs the {@link libcore.heapdumper.HeapDumpInstrumentation} instrumentation
- * on a test device.
+ * Helper class that runs the metric instrumentations on a test device.
  */
-class HeapDumpRunner {
-
-    private static final String APK_INSTRUMENTATION_NAME
-            = "libcore.heapdumper/.HeapDumpInstrumentation";
+class MetricsRunner {
 
     private final ITestDevice testDevice;
     private final String deviceParentDirectory;
@@ -51,14 +47,14 @@ class HeapDumpRunner {
      * Creates a helper using the given {@link ITestDevice}, uploading heap dumps to the given
      * {@link TestLogData}.
      */
-    static HeapDumpRunner create(ITestDevice testDevice, TestLogData logs)
+    static MetricsRunner create(ITestDevice testDevice, TestLogData logs)
             throws DeviceNotAvailableException {
         String deviceParentDirectory =
                 testDevice.executeShellCommand("echo -n ${EXTERNAL_STORAGE}");
-        return new HeapDumpRunner(testDevice, deviceParentDirectory, logs);
+        return new MetricsRunner(testDevice, deviceParentDirectory, logs);
     }
 
-    private HeapDumpRunner(
+    private MetricsRunner(
             ITestDevice testDevice, String deviceParentDirectory, TestLogData logs) {
         this.testDevice = testDevice;
         this.deviceParentDirectory = deviceParentDirectory;
@@ -67,31 +63,102 @@ class HeapDumpRunner {
     }
 
     /**
-     * Runs the instrumentation and fetches the heap dumps.
+     * Contains the results of running the instrumentation.
+     */
+    static class Result {
+
+        private final AhatSnapshot afterDump;
+        private final int beforeTotalPssKb;
+        private final int afterTotalPssKb;
+
+        private Result(
+                AhatSnapshot beforeDump, AhatSnapshot afterDump,
+                int beforeTotalPssKb, int afterTotalPssKb) {
+            Diff.snapshots(afterDump, beforeDump);
+            this.beforeTotalPssKb = beforeTotalPssKb;
+            this.afterTotalPssKb = afterTotalPssKb;
+            this.afterDump = afterDump;
+        }
+
+        /**
+         * Returns the parsed form of the heap dump captured when the instrumentation starts.
+         */
+        AhatSnapshot getBeforeDump() {
+            return afterDump.getBaseline();
+        }
+
+        /**
+         * Returns the parsed form of the heap dump captured after the instrumentation action has
+         * been executed. The first heap dump will be set as the baseline for this second one.
+         */
+        AhatSnapshot getAfterDump() {
+            return afterDump;
+        }
+
+        /**
+         * Returns the PSS measured when the instrumentation starts, in kB.
+         */
+        int getBeforeTotalPssKb() {
+            return beforeTotalPssKb;
+        }
+
+        /**
+         * Returns the PSS measured after the instrumentation action has been executed, in kB.
+         */
+        int getAfterTotalPssKb() {
+            return afterTotalPssKb;
+        }
+    }
+
+    /**
+     * Runs all the instrumentation and fetches the metrics.
      *
      * @param action The name of the action to run, to be sent as an argument to the instrumentation
-     * @return The heap dump after the action, with the heap dump before the action as its baseline
+     * @return The combined results of the instrumentations.
      */
-    AhatSnapshot runInstrumentation(String action)
+    Result runAllInstrumentations(String action)
             throws DeviceNotAvailableException, IOException, HprofFormatException {
         String relativeDirectoryName = String.format("%s-%s", timestampedLabel, action);
         String deviceDirectoryName =
                 String.format("%s/%s", deviceParentDirectory, relativeDirectoryName);
         testDevice.executeShellCommand(String.format("mkdir %s", deviceDirectoryName));
         try {
-            testDevice.executeShellCommand(
-                    String.format(
-                            "am instrument -w -e dumpdir %s -e action %s  %s",
-                            relativeDirectoryName, action, APK_INSTRUMENTATION_NAME));
-            checkForErrorFile(deviceDirectoryName);
-            AhatSnapshot beforeDump = fetchHeapDump(deviceDirectoryName, "before.hprof",
-                    action);
+            runInstrumentation(
+                    action, relativeDirectoryName, deviceDirectoryName,
+                    "libcore.heapdumper/.HeapDumpInstrumentation");
+            runInstrumentation(
+                    action, relativeDirectoryName, deviceDirectoryName,
+                    "libcore.heapdumper/.PssInstrumentation");
+            AhatSnapshot beforeDump = fetchHeapDump(deviceDirectoryName, "before.hprof", action);
             AhatSnapshot afterDump = fetchHeapDump(deviceDirectoryName, "after.hprof", action);
-            Diff.snapshots(afterDump, beforeDump);
-            return afterDump;
+            int beforeTotalPssKb = fetchTotalPssKb(deviceDirectoryName, "before.pss.txt");
+            int afterTotalPssKb = fetchTotalPssKb(deviceDirectoryName, "after.pss.txt");
+            return new Result(beforeDump, afterDump, beforeTotalPssKb, afterTotalPssKb);
         } finally {
             testDevice.executeShellCommand(String.format("rm -r %s", deviceDirectoryName));
         }
+    }
+
+    /**
+     * Runs a given instrumentation.
+     *
+     * <p>After the instrumentation has been run, checks for any reported errors and throws a
+     * {@link ApplicationException} if any are found.
+     *
+     * @param action The name of the action to run, to be sent as an argument to the instrumentation
+     * @param relativeDirectoryName The relative directory name for files on the device, to be sent
+     *     as an argument to the instrumentation
+     * @param deviceDirectoryName The absolute directory name for files on the device
+     * @param apk The name of the APK, in the form {@code test_package/runner_class}
+     */
+    private void runInstrumentation(
+            String action, String relativeDirectoryName, String deviceDirectoryName, String apk)
+            throws DeviceNotAvailableException, IOException {
+        String command = String.format(
+                "am instrument -w -e dumpdir %s -e action %s  %s",
+                relativeDirectoryName, action, apk);
+        testDevice.executeShellCommand(command);
+        checkForErrorFile(deviceDirectoryName);
     }
 
     /**
@@ -152,6 +219,18 @@ class HeapDumpRunner {
         } finally {
             file.delete();
         }
+    }
+
+    /**
+     * Returns the total PSS in kB read from a stringified integer in a file on the device at the
+     * given directory and relative filename.
+     */
+    private int fetchTotalPssKb(
+            String deviceDirectoryName, String relativeFilename)
+            throws DeviceNotAvailableException, IOException, HprofFormatException {
+        String shellCommand = String.format("cat %s/%s", deviceDirectoryName, relativeFilename);
+        String totalPssKbStr = testDevice.executeShellCommand(shellCommand);
+        return Integer.parseInt(totalPssKbStr);
     }
 
     /**
