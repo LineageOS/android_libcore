@@ -16,6 +16,8 @@
 
 package libcore.heapmetrics;
 
+import com.android.ahat.heapdump.AhatHeap;
+import com.android.ahat.heapdump.AhatInstance;
 import com.android.ahat.heapdump.AhatSnapshot;
 import com.android.ahat.heapdump.Size;
 import com.android.tradefed.device.DeviceNotAvailableException;
@@ -30,6 +32,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.EnumMap;
+import java.util.Map;
+
 /**
  * Tests that gather metrics about zygote+image heap and about the impact of core library calls on
  * app heap.
@@ -41,7 +46,7 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
     @Rule public TestLogData logs = new TestLogData();
 
     private ITestDevice testDevice;
-    private HeapDumpRunner heapDumpRunner;
+    private MetricsRunner metricsRunner;
 
     @Override
     public void setDevice(ITestDevice device) {
@@ -55,25 +60,50 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
 
     @Before
     public void initializeHeapDumperRunner() throws DeviceNotAvailableException {
-        heapDumpRunner = HeapDumpRunner.create(testDevice, logs);
+        metricsRunner = MetricsRunner.create(testDevice, logs);
     }
 
     @Test
     public void measureNoop() throws Exception {
-        AhatSnapshot afterDump = heapDumpRunner.runInstrumentation("NOOP");
-        AhatSnapshot beforeDump = afterDump.getBaseline();
-        // TODO(peteg): Common up as much of the metric reporting code as makes sense, once we've
-        // got multiple test methods.
-        recordSizeMetric("zygoteSize", beforeDump.getHeap("zygote").getSize());
-        recordSizeMetric("imageSize", beforeDump.getHeap("image").getSize());
-        recordSizeMetric("beforeAppSize", beforeDump.getHeap("app").getSize());
-        recordSizeMetric("afterAppSize", afterDump.getHeap("app").getSize());
-        // TODO(peteg): Analyse the zygote + image heaps and add more metrics.
+        MetricsRunner.Result result = metricsRunner.runAllInstrumentations("NOOP");
+        AhatSnapshot beforeDump = result.getBeforeDump();
+        AhatSnapshot afterDump = result.getAfterDump();
+        recordHeapMetrics(beforeDump, "zygoteSize", "zygote");
+        recordHeapMetrics(beforeDump, "imageSize", "image");
+        recordHeapMetrics(beforeDump, "beforeAppSize", "app");
+        recordHeapMetrics(afterDump, "afterAppSize", "app");
+        recordBytesMetric("beforeTotalPss", result.getBeforeTotalPssKb() * 1024L);
+        recordBytesMetric("afterTotalPss", result.getAfterTotalPssKb() * 1024L);
     }
 
-    // TODO(peteg): Add more tests which do some library calls in their action.
+    private void recordHeapMetrics(AhatSnapshot snapshot, String metricPrefix, String heapName) {
+        AhatHeap heap = snapshot.getHeap(heapName);
+        recordSizeMetric(metricPrefix, heap.getSize());
+        Map<Reachability, Size> sizesByReachability = sizesByReachability(snapshot, heap);
+        for (Reachability reachability : Reachability.values()) {
+            recordSizeMetric(
+                    reachability.metricName(metricPrefix), sizesByReachability.get(reachability));
+        }
+    }
 
     private void recordSizeMetric(String name, Size size) {
-        metrics.addTestMetric(name, Long.toString(size.getSize()));
+        recordBytesMetric(name, size.getSize());
+    }
+
+    private void recordBytesMetric(String name, long bytes) {
+        metrics.addTestMetric(name, Long.toString(bytes));
+    }
+
+    static Map<Reachability, Size> sizesByReachability(AhatSnapshot snapshot, AhatHeap heap) {
+        EnumMap<Reachability, Size> map = new EnumMap<>(Reachability.class);
+        for (Reachability reachability : Reachability.values()) {
+            map.put(reachability, Size.ZERO);
+        }
+        for (AhatInstance instance : snapshot.getRooted()) {
+            Reachability reachability = Reachability.ofInstance(instance);
+            Size size = instance.getRetainedSize(heap);
+            map.put(reachability, map.get(reachability).plus(size));
+        }
+        return map;
     }
 }
