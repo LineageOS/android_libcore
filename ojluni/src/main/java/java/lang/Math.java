@@ -106,6 +106,9 @@ import sun.misc.DoubleConsts;
 
 public final class Math {
 
+    // Android-changed: Numerous methods in this class are re-implemented in native for performance.
+    // Those methods are also annotated @FastNative.
+
     /**
      * Don't let anyone instantiate this class.
      */
@@ -754,6 +757,8 @@ public final class Math {
         return RandomNumberGeneratorHolder.randomNumberGenerator.nextDouble();
     }
 
+    // Android-added: setRandomSeedInternal(long), called after zygote forks.
+    // This allows different processes to have different random seeds.
     /**
      * Set the seed for the pseudo random generator used by {@link #random()}
      * and {@link #randomIntInternal()}.
@@ -764,6 +769,7 @@ public final class Math {
         RandomNumberGeneratorHolder.randomNumberGenerator.setSeed(seed);
     }
 
+    // Android-added: randomIntInternal() method: like random() but for int.
     /**
      * @hide for internal use only.
      */
@@ -771,6 +777,7 @@ public final class Math {
         return RandomNumberGeneratorHolder.randomNumberGenerator.nextInt();
     }
 
+    // Android-added: randomLongInternal() method: like random() but for long.
     /**
      * @hide for internal use only.
      */
@@ -1221,9 +1228,11 @@ public final class Math {
      * @return  the absolute value of the argument.
      */
     public static float abs(float a) {
+        // Android-changed: Implementation modified to exactly match ART intrinsics behavior.
         // Note, as a "quality of implementation", rather than pure "spec compliance",
         // we require that Math.abs() clears the sign bit (but changes nothing else)
         // for all numbers, including NaN (signaling NaN may become quiet though).
+        // http://b/30758343
         return Float.intBitsToFloat(0x7fffffff & Float.floatToRawIntBits(a));
     }
 
@@ -1243,9 +1252,11 @@ public final class Math {
      * @return  the absolute value of the argument.
      */
     public static double abs(double a) {
+        // Android-changed: Implementation modified to exactly match ART intrinsics behavior.
         // Note, as a "quality of implementation", rather than pure "spec compliance",
         // we require that Math.abs() clears the sign bit (but changes nothing else)
         // for all numbers, including NaN (signaling NaN may become quiet though).
+        // http://b/30758343
         return Double.longBitsToDouble(0x7fffffffffffffffL & Double.doubleToRawLongBits(a));
     }
 
