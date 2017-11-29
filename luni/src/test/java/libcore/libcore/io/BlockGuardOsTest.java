@@ -16,11 +16,19 @@
 
 package libcore.libcore.io;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import android.system.OsConstants;
+import android.system.StructAddrinfo;
 
 import java.lang.reflect.Method;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -31,12 +39,74 @@ import java.util.regex.Pattern;
 import libcore.io.BlockGuardOs;
 import libcore.io.Os;
 
+import dalvik.system.BlockGuard;
+
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(JUnit4.class)
 public class BlockGuardOsTest {
 
     final static Pattern pattern = Pattern.compile("[\\w\\$]+\\([^)]*\\)");
+
+    @Mock private Os mockOsDelegate;
+    @Mock private BlockGuard.Policy mockThreadPolicy;
+
+    private BlockGuard.Policy savedThreadPolicy;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        savedThreadPolicy = BlockGuard.getThreadPolicy();
+        BlockGuard.setThreadPolicy(mockThreadPolicy);
+    }
+
+    @After
+    public void tearDown() {
+        BlockGuard.setThreadPolicy(savedThreadPolicy);
+    }
+
+    @Test
+    public void test_android_getaddrinfo_networkPolicy() {
+        InetAddress[] addresses = new InetAddress[] { InetAddress.getLoopbackAddress() };
+        when(mockOsDelegate.android_getaddrinfo(anyString(), any(), anyInt()))
+                .thenReturn(addresses);
+
+        BlockGuardOs blockGuardOs = new BlockGuardOs(mockOsDelegate);
+
+        // Test with a numeric address that will not trigger a network policy check.
+        {
+            final String node = "numeric";
+            final int netId = 1234;
+            final StructAddrinfo numericAddrInfo = new StructAddrinfo();
+            numericAddrInfo.ai_flags = OsConstants.AI_NUMERICHOST;
+            InetAddress[] actual =
+                    blockGuardOs.android_getaddrinfo(node, numericAddrInfo, netId);
+
+            verify(mockThreadPolicy, times(0)).onNetwork();
+            verify(mockOsDelegate, times(1)).android_getaddrinfo(node, numericAddrInfo, netId);
+            assertSame(addresses, actual);
+        }
+
+        // Test with a non-numeric address that will trigger a network policy check.
+        {
+            final String node = "non-numeric";
+            final int netId = 1234;
+            final StructAddrinfo nonNumericAddrInfo = new StructAddrinfo();
+            InetAddress[] actual =
+                    blockGuardOs.android_getaddrinfo(node, nonNumericAddrInfo, netId);
+
+            verify(mockThreadPolicy, times(1)).onNetwork();
+            verify(mockOsDelegate, times(1)).android_getaddrinfo(node, nonNumericAddrInfo, netId);
+            assertSame(addresses, actual);
+        }
+    }
 
     /**
      * Checks that BlockGuardOs is updated when the Os interface changes. BlockGuardOs extends
@@ -49,7 +119,6 @@ public class BlockGuardOsTest {
     @Test
     public void test_checkNewMethodsInPosix() {
         List<String> methodsNotRequireBlockGuardChecks = Arrays.asList(
-                "android_getaddrinfo(java.lang.String,android.system.StructAddrinfo,int)",
                 "bind(java.io.FileDescriptor,java.net.InetAddress,int)",
                 "bind(java.io.FileDescriptor,java.net.SocketAddress)",
                 "capget(android.system.StructCapUserHeader)",
