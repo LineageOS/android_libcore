@@ -917,8 +917,4 @@ public class Proxy implements java.io.Serializable {
     private static native Class<?> generateProxy(String name, Class<?>[] interfaces,
                                                  ClassLoader loader, Method[] methods,
                                                  Class<?>[][] exceptions);
-
-    // Temporary methods.
-    private static void reserved1() {};
-    private static void reserved2() {};
 }
