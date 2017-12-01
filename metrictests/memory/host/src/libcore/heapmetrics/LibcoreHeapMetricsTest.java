@@ -70,19 +70,45 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
         AhatSnapshot afterDump = result.getAfterDump();
         recordHeapMetrics(beforeDump, "zygoteSize", "zygote");
         recordHeapMetrics(beforeDump, "imageSize", "image");
-        recordHeapMetrics(beforeDump, "beforeAppSize", "app");
-        recordHeapMetrics(afterDump, "afterAppSize", "app");
+        recordBeforeAndAfterHeapMetrics(
+                beforeDump, afterDump, "beforeAppSize", "deltaAppSize", "app");
         recordBytesMetric("beforeTotalPss", result.getBeforeTotalPssKb() * 1024L);
-        recordBytesMetric("afterTotalPss", result.getAfterTotalPssKb() * 1024L);
+        recordBytesMetric(
+                "deltaTotalPss",
+                (result.getAfterTotalPssKb() - result.getBeforeTotalPssKb()) * 1024L);
     }
 
-    private void recordHeapMetrics(AhatSnapshot snapshot, String metricPrefix, String heapName) {
-        AhatHeap heap = snapshot.getHeap(heapName);
+    private void recordHeapMetrics(AhatSnapshot dump, String metricPrefix, String heapName) {
+        AhatHeap heap = dump.getHeap(heapName);
         recordSizeMetric(metricPrefix, heap.getSize());
-        Map<Reachability, Size> sizesByReachability = sizesByReachability(snapshot, heap);
+        Map<Reachability, Size> sizesByReachability = sizesByReachability(dump, heap);
         for (Reachability reachability : Reachability.values()) {
             recordSizeMetric(
                     reachability.metricName(metricPrefix), sizesByReachability.get(reachability));
+        }
+    }
+
+    private void recordBeforeAndAfterHeapMetrics(
+            AhatSnapshot beforeDump,
+            AhatSnapshot afterDump,
+            String beforeMetricPrefix,
+            String deltaMetricPrefix,
+            String heapName) {
+        AhatHeap beforeHeap = beforeDump.getHeap(heapName);
+        AhatHeap afterHeap = afterDump.getHeap(heapName);
+        recordSizeMetric(beforeMetricPrefix, beforeHeap.getSize());
+        recordSizeDeltaMetric(deltaMetricPrefix, beforeHeap.getSize(), afterHeap.getSize());
+        Map<Reachability, Size> beforeSizesByReachability =
+                sizesByReachability(beforeDump, beforeHeap);
+        Map<Reachability, Size> afterSizesByReachability = sizesByReachability(afterDump, afterHeap);
+        for (Reachability reachability : Reachability.values()) {
+            recordSizeMetric(
+                    reachability.metricName(beforeMetricPrefix),
+                    beforeSizesByReachability.get(reachability));
+            recordSizeDeltaMetric(
+                    reachability.metricName(deltaMetricPrefix),
+                    beforeSizesByReachability.get(reachability),
+                    afterSizesByReachability.get(reachability));
         }
     }
 
@@ -90,16 +116,20 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
         recordBytesMetric(name, size.getSize());
     }
 
+    private void recordSizeDeltaMetric(String name, Size before, Size after) {
+        recordBytesMetric(name, after.getSize() - before.getSize());
+    }
+
     private void recordBytesMetric(String name, long bytes) {
         metrics.addTestMetric(name, Long.toString(bytes));
     }
 
-    static Map<Reachability, Size> sizesByReachability(AhatSnapshot snapshot, AhatHeap heap) {
+    private static Map<Reachability, Size> sizesByReachability(AhatSnapshot dump, AhatHeap heap) {
         EnumMap<Reachability, Size> map = new EnumMap<>(Reachability.class);
         for (Reachability reachability : Reachability.values()) {
             map.put(reachability, Size.ZERO);
         }
-        for (AhatInstance instance : snapshot.getRooted()) {
+        for (AhatInstance instance : dump.getRooted()) {
             Reachability reachability = Reachability.ofInstance(instance);
             Size size = instance.getRetainedSize(heap);
             map.put(reachability, map.get(reachability).plus(size));
