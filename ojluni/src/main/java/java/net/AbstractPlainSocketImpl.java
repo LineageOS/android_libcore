@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.FileDescriptor;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import dalvik.system.SocketTagger;
@@ -62,6 +63,10 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     protected int fdUseCount = 0;
 
     /* lock when increment/decrementing fdUseCount */
+    // Android-added: @ReachabilitySensitive
+    // Marked mostly because it's used where fd is, and fd isn't declared here.
+    // This adds reachabilityFences where we would if fd were annotated.
+    @ReachabilitySensitive
     protected final Object fdLock = new Object();
 
     /* indicates a close is pending on the file descriptor */
@@ -96,6 +101,7 @@ abstract class AbstractPlainSocketImpl extends SocketImpl
     // END Android-removed: Android doesn't need to load native net library
 
     // Android-added: logs a warning if socket is not closed
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     /**

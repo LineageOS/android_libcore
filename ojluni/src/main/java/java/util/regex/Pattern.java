@@ -26,6 +26,7 @@
 
 package java.util.regex;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import libcore.util.NativeAllocationRegistry;
 
 import java.util.Iterator;
@@ -927,6 +928,7 @@ public final class Pattern implements java.io.Serializable
      */
     private final int flags;
 
+    @ReachabilitySensitive
     transient long address;
 
     private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(

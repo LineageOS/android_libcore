@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.io.IOException;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.CloseGuard;
 
 import static sun.nio.fs.UnixNativeDispatcher.*;
@@ -45,9 +46,13 @@ class UnixSecureDirectoryStream
     implements SecureDirectoryStream<Path>
 {
     private final UnixDirectoryStream ds;
+
+    // Android-added: @ReachabilitySensitive
+    @ReachabilitySensitive
     private final int dfd;
 
     // Android-added: CloseGuard support.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     UnixSecureDirectoryStream(UnixPath dir,

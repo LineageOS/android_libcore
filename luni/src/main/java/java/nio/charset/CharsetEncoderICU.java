@@ -14,6 +14,7 @@
  */
 package java.nio.charset;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import java.util.Map;
 import libcore.icu.ICU;
 import libcore.icu.NativeConverter;
 import libcore.util.EmptyArray;
-import libcore.util.NativeAllocationRegistry;
 
 final class CharsetEncoderICU extends CharsetEncoder {
     private static final Map<String, byte[]> DEFAULT_REPLACEMENTS = new HashMap<String, byte[]>();
@@ -50,6 +50,7 @@ final class CharsetEncoderICU extends CharsetEncoder {
     private int[] data = new int[3];
 
     /* handle to the ICU converter that is opened */
+    @ReachabilitySensitive
     private final long converterHandle;
 
     private char[] input = null;
