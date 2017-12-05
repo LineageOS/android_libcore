@@ -440,7 +440,8 @@ static void NativeConverter_setCallbackEncode(JNIEnv* env, jclass, jlong address
     callbackContext->onUnmappableInput = getFromUCallback(onUnmappableInput);
 
     ScopedByteArrayRO replacementBytes(env, javaReplacement);
-    if (replacementBytes.get() == NULL) {
+    if (replacementBytes.get() == NULL
+            || replacementBytes.size() > sizeof(callbackContext->replacementBytes)) {
         maybeThrowIcuException(env, "replacementBytes", U_ILLEGAL_ARGUMENT_ERROR);
         return;
     }
@@ -533,7 +534,8 @@ static void NativeConverter_setCallbackDecode(JNIEnv* env, jclass, jlong address
     callbackContext->onUnmappableInput = getToUCallback(onUnmappableInput);
 
     ScopedStringChars replacement(env, javaReplacement);
-    if (replacement.get() == NULL) {
+    if (replacement.get() == NULL
+                || replacement.size() > sizeof(callbackContext->replacementChars) / sizeof(UChar)) {
         maybeThrowIcuException(env, "replacement", U_ILLEGAL_ARGUMENT_ERROR);
         return;
     }
