@@ -630,7 +630,10 @@ public final class StandardNames {
             if (Security.getProvider("TimaKeyStore") != null) {
                 provide("KeyStore", "TimaKeyStore");
             }
-
+            // KnoxAndroidKeyStore provider
+            if (Security.getProvider("KnoxAndroidKeyStore") != null) {
+                provide("KeyStore", "KnoxAndroidKeyStore");
+            }
         }
 
         if (IS_RI) {
