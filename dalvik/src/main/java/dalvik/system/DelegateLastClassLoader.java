@@ -30,11 +30,9 @@ import java.util.Enumeration;
  * <ul>
  *     <li>The boot classpath is always searched first</li>
  *     <li>Then, the list of {@code dex} files associated with this classloaders's
- *     {@code dexPath} is searched./li>
+ *     {@code dexPath} is searched.</li>
  *     <li>Finally, this classloader will delegate to the specified {@code parent}.</li>
  * </ul>
- *
- * @hide
  */
 public final class DelegateLastClassLoader extends PathClassLoader {
 
