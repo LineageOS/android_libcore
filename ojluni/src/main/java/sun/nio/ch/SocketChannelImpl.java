@@ -118,7 +118,7 @@ class SocketChannelImpl
 
     // -- End of fields protected by stateLock
 
-    // Android-changed: Add CloseGuard support.
+    // Android-added: CloseGuard support.
     private final CloseGuard guard = CloseGuard.get();
 
     // Constructor for normal connecting sockets
@@ -129,7 +129,7 @@ class SocketChannelImpl
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
 
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         // Net#socket will set |fd| if it succeeds.
         if (fd != null && fd.valid()) {
             guard.open("close");
@@ -146,7 +146,7 @@ class SocketChannelImpl
         this.fdVal = IOUtil.fdVal(fd);
         this.state = ST_UNCONNECTED;
 
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         if (fd != null && fd.valid()) {
             guard.open("close");
         }
@@ -167,7 +167,7 @@ class SocketChannelImpl
         this.state = ST_CONNECTED;
         this.localAddress = Net.localAddress(fd);
         this.remoteAddress = remote;
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         if (fd != null && fd.valid()) {
             guard.open("close");
         }
@@ -878,7 +878,7 @@ class SocketChannelImpl
             // meantime and allocated to an entirely different channel.
             //
             if (state != ST_KILLED) {
-                // Android-changed: Add CloseGuard support.
+                // Android-added: CloseGuard support.
                 guard.close();
                 nd.preClose(fd);
             }
