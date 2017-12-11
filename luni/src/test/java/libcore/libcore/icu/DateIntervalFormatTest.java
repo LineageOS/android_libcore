@@ -134,12 +134,12 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     // The same tests but for es_US.
 
     assertEquals("19–22 de enero de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * DAY, 0));
-    assertEquals("19 – 22 de ene. de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_DATE | FORMAT_ABBREV_ALL));
+    assertEquals("19–22 de ene. de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_DATE | FORMAT_ABBREV_ALL));
     assertEquals("lun., 19 de ene. – jue., 22 de ene. de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_WEEKDAY | FORMAT_ABBREV_ALL));
     assertEquals("lunes, 19 de enero–jueves, 22 de enero de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_WEEKDAY));
 
     assertEquals("19 de enero–22 de abril de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * MONTH, 0));
-    assertEquals("19 de ene. – 22 de abr. de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_SHOW_DATE | FORMAT_ABBREV_ALL));
+    assertEquals("19 de ene. – 22 de abr. 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_SHOW_DATE | FORMAT_ABBREV_ALL));
     assertEquals("lun., 19 de ene. – mié., 22 de abr. de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_SHOW_WEEKDAY | FORMAT_ABBREV_ALL));
     assertEquals("enero–abril de 2009", formatDateRange(es_US, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_NO_MONTH_DAY));
 
@@ -407,7 +407,7 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
 
     // For now, here are the localized Gregorian strings instead...
     assertEquals("یکشنبه ۱۰ فوریهٔ ۱۹۸۰", formatDateRange(new ULocale("fa"), utc, thisYear, thisYear, flags));
-    assertEquals("یکشنبه د ۱۹۸۰ د فبروري ۱۰", formatDateRange(new ULocale("ps"), utc, thisYear, thisYear, flags));
+    assertEquals("يونۍ د ۱۹۸۰ د فبروري ۱۰", formatDateRange(new ULocale("ps"), utc, thisYear, thisYear, flags));
     assertEquals("วันอาทิตย์ที่ 10 กุมภาพันธ์ ค.ศ. 1980", formatDateRange(new ULocale("th"), utc, thisYear, thisYear, flags));
   }
 
