@@ -184,6 +184,7 @@ public abstract class Buffer {
 
     // Invariants: mark <= position <= limit <= capacity
     private int mark = -1;
+    // Android-changed: position field non-private for use by Android's nio implementation classes.
     int position = 0;
     private int limit;
     private int capacity;
@@ -192,6 +193,7 @@ public abstract class Buffer {
     // NOTE: hoisted here for speed in JNI GetDirectBufferAddress
     long address;
 
+    // Android-added: _elementSizeShift field for NIOAccess class and framework native code.
     /**
      * The log base 2 of the element size of this buffer.  Each typed subclass
      * (ByteBuffer, CharBuffer, etc.) is responsible for initializing this
@@ -203,6 +205,7 @@ public abstract class Buffer {
     // Creates a new buffer with the given mark, position, limit, and capacity,
     // after checking invariants.
     //
+    // Android-added: _elementSizeShift field for NIOAccess class and framework native code.
     Buffer(int mark, int pos, int lim, int cap, int elementSizeShift) {       // package-private
         if (cap < 0)
             throw new IllegalArgumentException("Negative capacity: " + cap);
@@ -215,6 +218,7 @@ public abstract class Buffer {
                                                    + mark + " > " + pos + ")");
             this.mark = mark;
         }
+        // Android-added: _elementSizeShift field for NIOAccess class and framework native code.
         _elementSizeShift = elementSizeShift;
     }
 
