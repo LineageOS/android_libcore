@@ -1838,5 +1838,11 @@
   result: EXEC_FAILED,
   bug: 67395816,
   name: "libcore.java.util.zip.DeflateRegressionTest#deterministicOutput"
+},
+{
+  description: "Awaiting fix in fast-path UTF-8 decoder / CharsetDecoder",
+  result: EXEC_FAILED,
+  bug: 69599767,
+  name: "libcore.java.lang.StringTest#test_23831"
 }
 ]

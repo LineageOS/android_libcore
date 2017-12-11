@@ -460,7 +460,7 @@ public class TimeZoneTest extends TestCase {
                 // This is not public API but can effectively be invoked via
                 // java.util.TimeZone.setDefault. Call it directly to reduce the amount of code
                 // involved in this test.
-                android.icu.util.TimeZone.clearCachedDefault();
+                android.icu.util.TimeZone.setICUDefault(null);
             }
         });
         clearer.setName("testSetDefaultRace clearer");

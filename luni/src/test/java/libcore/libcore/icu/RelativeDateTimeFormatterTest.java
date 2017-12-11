@@ -520,10 +520,10 @@ public class RelativeDateTimeFormatterTest extends junit.framework.TestCase {
     assertEquals("5 secondi fa, 20:14",
                  getRelativeDateTimeString(it_IT, tz, base - 5 * SECOND_IN_MILLIS, base, 0,
                                            MINUTE_IN_MILLIS, 0));
-    assertEquals("5 min. fa, 20:10",
+    assertEquals("5 min fa, 20:10",
                  getRelativeDateTimeString(it_IT, tz, base - 5 * MINUTE_IN_MILLIS, base, 0,
                                            HOUR_IN_MILLIS, FORMAT_ABBREV_RELATIVE));
-    assertEquals("0 h. fa, 20:10",
+    assertEquals("0 h fa, 20:10",
                  getRelativeDateTimeString(it_IT, tz, base - 5 * MINUTE_IN_MILLIS, base,
                                            HOUR_IN_MILLIS, DAY_IN_MILLIS, FORMAT_ABBREV_RELATIVE));
     assertEquals("Ieri, 22:15",
