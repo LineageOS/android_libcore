@@ -18,6 +18,8 @@ package dalvik.bytecode;
 
 /**
  * A list of all normal (not implementation-specific) Dalvik opcodes.
+ *
+ * @see <a href="https://source.android.com/devices/tech/dalvik/dalvik-bytecode">Dalvik bytecode</a>
  */
 public interface Opcodes {
     /*
