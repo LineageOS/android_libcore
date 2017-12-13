@@ -218,7 +218,7 @@ public class InMemoryCookieStore implements CookieStore {
      */
     public boolean removeAll() {
         lock.lock();
-        // BEGIN Android-change: Return false if it's empty.
+        // BEGIN Android-changed: Let removeAll() return false when there are no cookies.
         boolean result = false;
 
         try {
@@ -229,7 +229,7 @@ public class InMemoryCookieStore implements CookieStore {
         }
 
         return result;
-        // END Android-change: Return false if it's empty.
+        // END Android-changed: Let removeAll() return false when there are no cookies.
     }
 
 

@@ -1339,7 +1339,7 @@ public class SimpleDateFormat extends DateFormat {
             break;
 
         case PATTERN_ZONE_VALUE: // 'Z' ("-/+hhmm" form)
-        // BEGIN Android-Changed: use shared code in TimeZone for zone offset string.
+        // BEGIN Android-changed: use shared code in TimeZone for zone offset string.
         {
             value = calendar.get(Calendar.ZONE_OFFSET) + calendar.get(Calendar.DST_OFFSET);
             final boolean includeSeparator = (count >= 4);
@@ -1348,7 +1348,7 @@ public class SimpleDateFormat extends DateFormat {
 
             break;
         }
-        // END Android-Changed: use shared code in TimeZone for zone offset string.
+        // END Android-changed: use shared code in TimeZone for zone offset string.
 
         case PATTERN_ISO_ZONE:   // 'X'
             value = calendar.get(Calendar.ZONE_OFFSET)

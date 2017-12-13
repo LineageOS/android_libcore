@@ -183,7 +183,8 @@ public class AccessibleObject implements AnnotatedElement {
     // outside this package.
     boolean override;
 
-    /* Android-removed: reflectionFactory: it is not used on Android.
+    // Android-removed: reflectionFactory: it is not used on Android.
+    /*
     // Reflection factory used by subclasses for creating field,
     // method, and constructor accessors. Note that this is called
     // very early in the bootstrapping process.
