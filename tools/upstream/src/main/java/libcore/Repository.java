@@ -86,7 +86,8 @@ abstract class Repository {
                 "jdk/src/java.prefs/unix/classes",
                 "jdk/src/jdk.unsupported/share/classes",
                 "jdk/src/jdk.net/share/classes",
-                "jdk/src/java.base/linux/classes"
+                "jdk/src/java.base/linux/classes",
+                "build/linux-x86_64-normal-server-release/support/gensrc/java.base"
         );
         return new OpenJdkRepository(upstreamRoot, upstreamName, sourceDirs);
     }
@@ -96,7 +97,12 @@ abstract class Repository {
      * subdirectory {@code upstreamName} under the directory {@code upstreamRoot}.
      */
     public static Repository openJdkLegacy(Path upstreamRoot, String upstreamName) {
-        List<String> sourceDirs = Arrays.asList("jdk/src/share/classes", "jdk/src/solaris/classes");
+        List<String> sourceDirs = Arrays.asList(
+                "jdk/src/share/classes",
+                "jdk/src/solaris/classes",
+                "build/linux-x86_64-normal-server-release/jdk/gensrc"
+                );
+
         return new OpenJdkRepository(upstreamRoot, upstreamName, sourceDirs);
     }
 
@@ -106,10 +112,9 @@ abstract class Repository {
      * directory {@code upstreamRoot}.
      */
     public static List<Repository> openJdkLegacy(Path upstreamRoot, List<String> upstreamNames) {
-        List<String> sourceDirs = Arrays.asList("jdk/src/share/classes", "jdk/src/solaris/classes");
         List<Repository> result = new ArrayList<>();
         for (String upstreamName : upstreamNames) {
-            result.add(new OpenJdkRepository(upstreamRoot, upstreamName, sourceDirs));
+            result.add(openJdkLegacy(upstreamRoot, upstreamName));
         }
         return Collections.unmodifiableList(result);
     }
@@ -138,11 +143,11 @@ abstract class Repository {
          */
         public List<Path> loadRelPathsFromMakefile() throws IOException {
             List<Path> result = new ArrayList<>();
-            Path makefile = rootPath.resolve("openjdk_java_files.mk");
-            Pattern pattern = Pattern.compile("\\s+ojluni/src/main/java/(.+\\.java)\\s*\\\\\\s*");
+            Path makefile = rootPath.resolve("openjdk_java_files.bp");
+            Pattern pattern = Pattern.compile("\"ojluni/src/main/java/(.+\\.java)\"");
             for (String line : Util.readLines(makefile)) {
                 Matcher matcher = pattern.matcher(line);
-                if (matcher.matches()) {
+                while (matcher.find()) {
                     Path path = new File(matcher.group(1)).toPath();
                     result.add(path);
                 }
