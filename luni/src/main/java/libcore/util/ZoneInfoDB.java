@@ -370,7 +370,6 @@ public final class ZoneInfoDB {
         ids = null;
         byteOffsets = null;
         rawUtcOffsetsCache = null;
-        mappedFile = null;
         cache.evictAll();
 
         // Remove the mapped file (if needed).
@@ -379,6 +378,7 @@ public final class ZoneInfoDB {
             mappedFile.close();
           } catch (ErrnoException ignored) {
           }
+          mappedFile = null;
         }
       }
     }
