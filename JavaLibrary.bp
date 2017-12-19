@@ -102,6 +102,11 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+    jacoco: {
+        include_filter: [
+            "java.sql.*",
+        ],
+    },
 
     notice: "ojluni/NOTICE",
 
