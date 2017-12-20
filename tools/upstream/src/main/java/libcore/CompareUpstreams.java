@@ -230,11 +230,7 @@ public class CompareUpstreams {
             if (!comparisons.get(0).equals("identical")) {
                 Path expectedUpstreamPath = expectedUpstream.pathFromRepository(relPath);
                 if (expectedUpstreamPath != null) {
-                    diffCommand = String.format(Locale.US, "meld \"%s\" \"%s\"",
-                            "${ANDROID_BUILD_TOP}/libcore/"
-                                    + standardRepositories.ojluni().pathFromRepository(relPath),
-                            "${OJLUNI_UPSTREAMS}/" + expectedUpstream.name() + "/" + relPath);
-                            //"${OPENJDK_HOME}/" + expectedUpstreamPath;
+                    diffCommand = "${ANDROID_BUILD_TOP}/libcore/tools/upstream/upstream-diff " + relPath;
                 } else {
                     diffCommand = "FILE MISSING";
                 }
