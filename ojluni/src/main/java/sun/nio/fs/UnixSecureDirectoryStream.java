@@ -47,7 +47,7 @@ class UnixSecureDirectoryStream
     private final UnixDirectoryStream ds;
     private final int dfd;
 
-    // Android-changed: Add CloseGuard support.
+    // Android-added: CloseGuard support.
     private final CloseGuard guard = CloseGuard.get();
 
     UnixSecureDirectoryStream(UnixPath dir,
@@ -57,7 +57,7 @@ class UnixSecureDirectoryStream
     {
         this.ds = new UnixDirectoryStream(dir, dp, filter);
         this.dfd = dfd;
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         if (dfd != -1) {
             guard.open("close");
         }
@@ -75,7 +75,7 @@ class UnixSecureDirectoryStream
         } finally {
             ds.writeLock().unlock();
         }
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         guard.close();
     }
 
@@ -569,7 +569,7 @@ class UnixSecureDirectoryStream
     /**
      * Cleans up if the user forgets to close it.
      */
-    // Android-changed: Add CloseGuard support.
+    // Android-added: CloseGuard support.
     protected void finalize() throws IOException {
         if (guard != null) {
             guard.warnIfOpen();

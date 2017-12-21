@@ -85,7 +85,7 @@ public class FileChannelImpl
     // Lock for operations involving position and size
     private final Object positionLock = new Object();
 
-    // Android-changed: Add CloseGuard support.
+    // Android-added: CloseGuard support.
     private final CloseGuard guard = CloseGuard.get();
 
     private FileChannelImpl(FileDescriptor fd, String path, boolean readable,
@@ -98,7 +98,7 @@ public class FileChannelImpl
         this.parent = parent;
         this.path = path;
         this.nd = new FileDispatcherImpl(append);
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         if (fd != null && fd.valid()) {
             guard.open("close");
         }
@@ -129,7 +129,7 @@ public class FileChannelImpl
     // -- Standard channel operations --
 
     protected void implCloseChannel() throws IOException {
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         guard.close();
         // Release and invalidate any locks that we still hold
         if (fileLockTable != null) {
