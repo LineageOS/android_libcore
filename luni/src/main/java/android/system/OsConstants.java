@@ -368,6 +368,7 @@ public final class OsConstants {
     public static final int O_APPEND = placeholder();
     public static final int O_CLOEXEC = placeholder();
     public static final int O_CREAT = placeholder();
+    /** @hide */ public static final int O_DIRECT = placeholder();
     public static final int O_EXCL = placeholder();
     public static final int O_NOCTTY = placeholder();
     public static final int O_NOFOLLOW = placeholder();
