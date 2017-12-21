@@ -194,7 +194,7 @@ class LinuxWatchService
         // address of read buffer
         private final long address;
 
-        // Android-changed: Add CloseGuard support.
+        // Android-added: CloseGuard support.
         private final CloseGuard guard = CloseGuard.get();
 
         Poller(UnixFileSystem fs, LinuxWatchService watcher, int ifd, int[] sp) {
@@ -204,7 +204,7 @@ class LinuxWatchService
             this.socketpair = sp;
             this.wdToKey = new HashMap<Integer,LinuxWatchKey>();
             this.address = unsafe.allocateMemory(BUFFER_SIZE);
-            // Android-changed: Add CloseGuard support.
+            // Android-added: CloseGuard support.
             guard.open("close");
         }
 
@@ -302,7 +302,7 @@ class LinuxWatchService
         // close watch service
         @Override
         void implCloseAll() {
-            // Android-changed: Add CloseGuard support.
+            // Android-added: CloseGuard support.
             guard.close();
             // invalidate all keys
             for (Map.Entry<Integer,LinuxWatchKey> entry: wdToKey.entrySet()) {
@@ -317,6 +317,7 @@ class LinuxWatchService
             UnixNativeDispatcher.close(ifd);
         }
 
+        // Android-added: CloseGuard support.
         protected void finalize() throws Throwable {
             try {
                 if (guard != null) {
@@ -488,4 +489,15 @@ class LinuxWatchService
     private static native void socketpair(int[] sv) throws UnixException;
 
     private static native int poll(int fd1, int fd2) throws UnixException;
+
+    // Android-removed: Code to load native libraries, doesn't make sense on Android.
+    /*
+    static {
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            public Void run() {
+                System.loadLibrary("nio");
+                return null;
+        }});
+    }
+    */
 }
