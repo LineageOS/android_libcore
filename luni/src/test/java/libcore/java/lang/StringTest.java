@@ -18,6 +18,8 @@ package libcore.java.lang;
 
 import android.icu.lang.UCharacter;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -303,12 +305,15 @@ public class StringTest extends TestCase {
         assertEquals("project_Id", "projectId".replaceAll("(?!^)(\\p{Upper})(?!$)", "_$1"));
     }
 
+    // Test that CharsetDecoder and fast-path decoder are consistent when handling ill-formed
+    // sequence. http://b/69599767
+    // This test was originally created for the bug
     // https://code.google.com/p/android/issues/detail?id=23831
-    public void test_23831() throws Exception {
+    public void test_69599767() throws Exception {
         byte[] bytes = { (byte) 0xf5, (byte) 0xa9, (byte) 0xea, (byte) 0x21 };
-        String expected = "\ufffd\ufffd\u0021";
+        String expected = "\ufffd\ufffd\ufffd\u0021";
 
-        // Since we use icu4c for CharsetDecoder...
+        // Since we use ICU4C for CharsetDecoder...
         CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
         decoder.onMalformedInput(CodingErrorAction.REPLACE);
         assertEquals(expected, decoder.decode(ByteBuffer.wrap(bytes)).toString());
@@ -320,14 +325,14 @@ public class StringTest extends TestCase {
     public void testFastPathString_wellFormedUtf8Sequence() throws Exception {
         // U+0000 null
         assertFastPathUtf8DecodedEquals("\u0000", "00");
-        // U+0031 ascii char '1'
+        // U+0031 ASCII char '1'
         assertFastPathUtf8DecodedEquals("1", "31");
         // U+007f
         assertFastPathUtf8DecodedEquals("\u007f", "7f");
-        // 2-byte utf-8 sequence
+        // 2-byte UTF-8 sequence
         assertFastPathUtf8DecodedEquals("\u0080", "c2 80");
         assertFastPathUtf8DecodedEquals("\u07ff", "df bf");
-        // 3-byte utf-8 sequence
+        // 3-byte UTF-8 sequence
         assertFastPathUtf8DecodedEquals("\u0800", "e0 a0 80");
         assertFastPathUtf8DecodedEquals("\ud7ff", "ed 9f bf"); // last code point before surrogate
         assertFastPathUtf8DecodedEquals("\ue000", "ee 80 80"); // first code point after surrogate
@@ -360,58 +365,83 @@ public class StringTest extends TestCase {
     }
 
     public void testFastPathString_illFormedUtf8Sequence() throws Exception {
-        // Overlong Sequence of ascii char '1'
-        assertFastPathUtf8DecodedEquals("1", "c0 b1");
-        assertFastPathUtf8DecodedEquals("1", "e0 80 b1");
-        assertFastPathUtf8DecodedEquals("1", "f0 80 80 b1");
-        assertFastPathUtf8DecodedEquals("1", "f8 80 80 80 b1");
-        assertFastPathUtf8DecodedEquals("1", "fc 80 80 80 80 b1");
+        // Overlong Sequence of ASCII char '1'
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd", "c0 b1");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd", "e0 80 b1");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd\ufffd", "f0 80 80 b1");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd\ufffd\ufffd", "f8 80 80 80 b1");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd", "fc 80 80 80 80 b1");
 
         // Overlong null \u0000
-        // Assert the "c0 80" is a valid Modified UTF-8 sequence representing \u0000
+        // "c0 80" is a Modified UTF-8 sequence representing \u0000, but illegal in UTF-8.
         assertEquals("\u0000", decodeModifiedUTF8("c0 80"));
-        assertFastPathUtf8DecodedEquals("\u0000", "c0 80");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd", "c0 80");
 
-        // Overlong BMP char U+0080
-        assertFastPathUtf8DecodedEquals("\u0080", "e0 82 80");
+        // Overlong BMP char U+0080. The correct UTF-8 encoded form of U+0080 is 2-byte "c2 80".
+        // The overlong form can be obtained by filling 0x80 into 1110xxxx 10xxxxxx 10xxxxxx
+        // == 1110000 10000010 10000000. (hex form e0 82 80)
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd", "e0 82 80");
 
-        // Overlong Supplementary Characters U+10000
-        assertFastPathUtf8DecodedEquals("\ud800\udc00", "f8 80 90 80 80");
+        // Overlong Supplementary Characters U+10000.
+        // The correct UTF-8 encoded form of U+10000 is 4-byte "f0 90 80 80".
+        // The overlong form can be obtained by filling 0x10000 into
+        // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
+        // == 1110000 10000000 10010000 10000000 10000000. (hex form f8 80 90 80 80)
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd\ufffd\ufffd", "f8 80 90 80 80");
 
         // Single surrogate in CESU-8 encoding
-        // Assert the bytes are valid CESU-8 sequence before decoding using UTF-8
+        // A CESU-8 sequence, but illegal in UTF-8.
         assertEquals("\ud800", decodeCESU8("ed a0 80"));
-        assertFastPathUtf8DecodedEquals("\ud800", "ed a0 80");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd", "ed a0 80");
 
         // Surrogate pair in CESU-8 encoding. The value is bytes U+10000
         // Assert the bytes are valid CESU-8 sequence before decoding using UTF-8
         String surrogatePair = decodeCESU8("ed a0 80 ed b0 80");
         assertEquals("\ud800\udc00", surrogatePair);
         assertEquals(0x10000, Character.codePointAt(surrogatePair.toCharArray(), 0));
-        assertFastPathUtf8DecodedEquals("\ud800\udc00", "ed a0 80 ed b0 80");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd",
+                "ed a0 80 ed b0 80");
 
         // Illegal first-byte
         assertFastPathUtf8DecodedEquals("\ufffd", "c0");
         assertFastPathUtf8DecodedEquals("\ufffd", "80");
 
-        // Maximal valid subpart. byte 0x31 should be decoded into ascii char '1', not part of
+        // Maximal valid subpart. byte 0x31 should be decoded into ASCII char '1', not part of
         // ill-formed byte sequence
-        assertFastPathUtf8DecodedEquals("\ufffd1", "ed 31");
-        assertFastPathUtf8DecodedEquals("\ufffd1", "e0 80 31");
-        assertFastPathUtf8DecodedEquals("\ufffd\u0080", "e0 80 c2 80");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "c2 31");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "e1 31");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "e1 80 31");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "f1 31");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "f1 80 31");
+        assertFastPathUtf8DecodedEquals("\ufffd1", "f1 80 80 31");;
 
         // Ill-formed sequence in the end of stream
-        assertFastPathUtf8DecodedEquals("1\ufffd2", "31 e0 32");
-        assertFastPathUtf8DecodedEquals("1\ud8002", "31 ed a0 80 32");
-        assertFastPathUtf8DecodedEquals("1\ud800\u0080", "31 ed a0 80 c2 80");
-        assertFastPathUtf8DecodedEquals("1\ud800\udc002",
-                "31 ed a0 80 ed b0 80 32");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 c2");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 e1");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 e1 80");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 f1");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 f1 80");
+        assertFastPathUtf8DecodedEquals("1\ufffd", "31 f1 80 80");
 
-        // Ill-formed sequence at the end of stream
-        assertFastPathUtf8DecodedEquals("\ufffd\ufffd", "e0 80");
-        assertFastPathUtf8DecodedEquals("\u0080\ufffd\ufffd", "c2 80 e0 80");
-        assertFastPathUtf8DecodedEquals("\u0800\ufffd\ufffd", "e0 a0 80 e0 80");
-        assertFastPathUtf8DecodedEquals("\ud800\udc00\ufffd\ufffd", "f0 90 80 80 e0 80");
+        // Test lower and upper bound of first trail byte when leading byte is e0/ed/f0/f4
+        // Valid range of trail byte is A0..BF.
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 e0 9f");
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 e0 c0");
+        // Valid range of trail byte is 80..9F.
+        assertFastPathUtf8DecodedEquals("1\ufffd\u007f", "31 ed 7f");
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 ed a0");
+        // Valid range of trail byte is 90..BF.
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 f0 8f");
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 f0 c0");
+        // Valid range of trail byte is 80..8F.
+        assertFastPathUtf8DecodedEquals("1\ufffd\u007f", "31 f4 7f");
+        assertFastPathUtf8DecodedEquals("1\ufffd\ufffd", "31 f4 90");
+
+        // More ill-formed sequences
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd1", "f1 80 80 e1 80 31");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd1", "f1 80 80 c0 b1 31");
+        assertFastPathUtf8DecodedEquals("\ufffd\ufffd\ufffd1", "f1 80 80 ed a0 31");
+        assertFastPathUtf8DecodedEquals("A\ufffd\ufffdA\ufffdA", "41 C0 AF 41 F4 80 80 41");
     }
 
     private void assertFastPathUtf8DecodedEquals(String expected, String hexString)
@@ -420,6 +450,13 @@ public class StringTest extends TestCase {
         assertEquals("Fast-path UTF-8 decoder decodes sequence [" + hexString
                         + "] into unexpected String",
                 expected, actual);
+        // Since we use ICU4C for CharsetDecoder,
+        // check UTF-8 CharsetDecoder has the same result as the fast-path decoder
+        CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPLACE);
+        assertEquals("Fast-path UTF-8 decoder and UTF-8 CharsetDecoder has a different conversion"
+                        + " result for sequence [" + hexString + "]",
+                decoder.decode(ByteBuffer.wrap(hexStringtoBytes(hexString))).toString(), actual);
     }
 
     private static String decodeCESU8(String hexString) throws IOException {
@@ -429,8 +466,16 @@ public class StringTest extends TestCase {
 
     private static String decodeModifiedUTF8(String hexString) throws IOException {
         byte[] bytes = hexStringtoBytes(hexString);
-        char[] buffer = new char[bytes.length];
-        return ModifiedUtf8.decode(bytes, buffer, 0, bytes.length);
+        // DataInputStream stores length as 2-byte short. Check the length before decoding
+        if (bytes.length > 0xffff) {
+            throw new IllegalArgumentException("Modified UTF-8 bytes are too long.");
+        }
+        byte[] buf = new byte[bytes.length + 2];
+        buf[0] = (byte)(bytes.length >>> 8);
+        buf[1] = (byte) bytes.length;
+        System.arraycopy(bytes, 0, buf, 2, bytes.length);
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(buf));
+        return dis.readUTF();
     }
 
     private static byte[] hexStringtoBytes(String input) {
