@@ -445,10 +445,6 @@ class Executable:
     method toGenericString()Ljava/lang/String;:
         return: @libcore.util.NonNull
     // Empty array in the worst case
-    method getAnnotations()[Ljava/lang/annotation/Annotation;:
-        return:  @libcore.util.NonNull
-          inner-type 0, 0:  @libcore.util.NonNull
-    // Empty array in the worst case
     method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
         return:  @libcore.util.NonNull
           inner-type 0, 0:  @libcore.util.NonNull

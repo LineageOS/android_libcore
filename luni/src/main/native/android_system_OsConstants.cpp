@@ -394,6 +394,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "O_APPEND", O_APPEND);
     initConstant(env, c, "O_CLOEXEC", O_CLOEXEC);
     initConstant(env, c, "O_CREAT", O_CREAT);
+    initConstant(env, c, "O_DIRECT", O_DIRECT);
     initConstant(env, c, "O_EXCL", O_EXCL);
     initConstant(env, c, "O_NOCTTY", O_NOCTTY);
     initConstant(env, c, "O_NOFOLLOW", O_NOFOLLOW);
