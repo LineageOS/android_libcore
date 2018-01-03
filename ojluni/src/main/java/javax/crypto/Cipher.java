@@ -174,16 +174,27 @@ import sun.security.jca.*;
  *       <td>26+</td>
  *     </tr>
  *     <tr>
- *       <td>ARC4</td>
+ *       <td rowspan="2">ARC4</td>
  *       <td>ECB</td>
  *       <td>NoPadding</td>
  *       <td>10+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>NONE</td>
+ *       <td>NoPadding</td>
+ *       <td>28+</td>
  *     </tr>
  *     <tr>
  *       <td>BLOWFISH</td>
  *       <td>CBC<br>CFB<br>CTR<br>CTS<br>ECB<br>OFB</td>
  *       <td>ISO10126Padding<br>NoPadding<br>PKCS5Padding</td>
  *       <td>10+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>ChaCha20</td>
+ *       <td>NONE<br>Poly1305</td>
+ *       <td>NoPadding</td>
+ *       <td>28+</td>
  *     </tr>
  *     <tr>
  *       <td>DES</td>
