@@ -18,6 +18,8 @@ package libcore.io;
 
 import android.system.ErrnoException;
 import android.system.GaiException;
+import android.system.Int32Ref;
+import android.system.Int64Ref;
 import android.system.StructAddrinfo;
 import android.system.StructCapUserData;
 import android.system.StructCapUserHeader;
@@ -42,8 +44,6 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.NioUtils;
-import libcore.util.MutableInt;
-import libcore.util.MutableLong;
 
 public final class Linux implements Os {
     Linux() { }
@@ -108,7 +108,7 @@ public final class Linux implements Os {
     public native InetAddress inet_pton(int family, String address);
     public native int ioctlFlags(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public native InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException;
-    public native int ioctlInt(FileDescriptor fd, int cmd, MutableInt arg) throws ErrnoException;
+    public native int ioctlInt(FileDescriptor fd, int cmd, Int32Ref arg) throws ErrnoException;
     public native int ioctlMTU(FileDescriptor fd, String interfaceName) throws ErrnoException;
     public native boolean isatty(FileDescriptor fd);
     public native void kill(int pid, int signal) throws ErrnoException;
@@ -209,7 +209,7 @@ public final class Linux implements Os {
     public native void remove(String path) throws ErrnoException;
     public native void removexattr(String path, String name) throws ErrnoException;
     public native void rename(String oldPath, String newPath) throws ErrnoException;
-    public native long sendfile(FileDescriptor outFd, FileDescriptor inFd, MutableLong inOffset, long byteCount) throws ErrnoException;
+    public native long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException;
     public int sendto(FileDescriptor fd, ByteBuffer buffer, int flags, InetAddress inetAddress, int port) throws ErrnoException, SocketException {
         final int bytesSent;
         final int position = buffer.position();
@@ -271,7 +271,7 @@ public final class Linux implements Os {
     public native StructUtsname uname();
     public native void unlink(String pathname) throws ErrnoException;
     public native void unsetenv(String name) throws ErrnoException;
-    public native int waitpid(int pid, MutableInt status, int options) throws ErrnoException;
+    public native int waitpid(int pid, Int32Ref status, int options) throws ErrnoException;
     public int write(FileDescriptor fd, ByteBuffer buffer) throws ErrnoException, InterruptedIOException {
         final int bytesWritten;
         final int position = buffer.position();
