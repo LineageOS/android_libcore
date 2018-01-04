@@ -71,7 +71,7 @@ public class TransliteratorTest extends junit.framework.TestCase {
 
     // Use alternative transliteration variants.
     t = Transliterator.getInstance("Greek-Latin/BGN");
-    assertEquals("Kalēméra kósme!", t.transliterate(greek));
+    assertEquals("Kaliméra kósme!", t.transliterate(greek));
     t = Transliterator.getInstance("Greek-Latin/UNGEGN");
     assertEquals("Kali̱méra kósme!",t.transliterate(greek));
   }
