@@ -66,6 +66,10 @@ import sun.security.jca.Providers;
  *       <td>10+</td>
  *     </tr>
  *     <tr>
+ *       <td>ChaCha20</td>
+ *       <td>28+</td>
+ *     </tr>
+ *     <tr>
  *       <td>DES</td>
  *       <td>1+</td>
  *     </tr>
