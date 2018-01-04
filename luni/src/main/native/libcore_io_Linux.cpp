@@ -78,8 +78,8 @@
 
 namespace {
 
-jfieldID mutableIntValueFid;
-jfieldID mutableLongValueFid;
+jfieldID int32RefValueFid;
+jfieldID int64RefValueFid;
 
 }  // namespace
 
@@ -1695,10 +1695,10 @@ static jint Linux_ioctlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobje
     // This is complicated because ioctls may return their result by updating their argument
     // or via their return value, so we need to support both.
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
-    jint arg = env->GetIntField(javaArg, mutableIntValueFid);
+    jint arg = env->GetIntField(javaArg, int32RefValueFid);
     int rc = throwIfMinusOne(env, "ioctl", TEMP_FAILURE_RETRY(ioctl(fd, cmd, &arg)));
     if (!env->ExceptionCheck()) {
-        env->SetIntField(javaArg, mutableIntValueFid, arg);
+        env->SetIntField(javaArg, int32RefValueFid, arg);
     }
     return rc;
 }
@@ -2106,7 +2106,7 @@ static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject jav
     off_t* offsetPtr = NULL;
     if (javaOffset != NULL) {
         // TODO: fix bionic so we can have a 64-bit off_t!
-        offset = env->GetLongField(javaOffset, mutableLongValueFid);
+        offset = env->GetLongField(javaOffset, int64RefValueFid);
         offsetPtr = &offset;
     }
     jlong result = throwIfMinusOne(env, "sendfile", TEMP_FAILURE_RETRY(sendfile(outFd, inFd, offsetPtr, byteCount)));
@@ -2114,7 +2114,7 @@ static jlong Linux_sendfile(JNIEnv* env, jobject, jobject javaOutFd, jobject jav
         return -1;
     }
     if (javaOffset != NULL) {
-        env->SetLongField(javaOffset, mutableLongValueFid, offset);
+        env->SetLongField(javaOffset, int64RefValueFid, offset);
     }
     return result;
 }
@@ -2422,7 +2422,7 @@ static jint Linux_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, ji
     int status;
     int rc = throwIfMinusOne(env, "waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)));
     if (rc != -1) {
-        env->SetIntField(javaStatus, mutableIntValueFid, status);
+        env->SetIntField(javaStatus, int32RefValueFid, status);
     }
     return rc;
 }
@@ -2506,7 +2506,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, inet_pton, "(ILjava/lang/String;)Ljava/net/InetAddress;"),
     NATIVE_METHOD(Linux, ioctlFlags, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
     NATIVE_METHOD(Linux, ioctlInetAddress, "(Ljava/io/FileDescriptor;ILjava/lang/String;)Ljava/net/InetAddress;"),
-    NATIVE_METHOD(Linux, ioctlInt, "(Ljava/io/FileDescriptor;ILlibcore/util/MutableInt;)I"),
+    NATIVE_METHOD(Linux, ioctlInt, "(Ljava/io/FileDescriptor;ILandroid/system/Int32Ref;)I"),
     NATIVE_METHOD(Linux, ioctlMTU, "(Ljava/io/FileDescriptor;Ljava/lang/String;)I"),
     NATIVE_METHOD(Linux, isatty, "(Ljava/io/FileDescriptor;)Z"),
     NATIVE_METHOD(Linux, kill, "(II)V"),
@@ -2539,7 +2539,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, remove, "(Ljava/lang/String;)V"),
     NATIVE_METHOD(Linux, removexattr, "(Ljava/lang/String;Ljava/lang/String;)V"),
     NATIVE_METHOD(Linux, rename, "(Ljava/lang/String;Ljava/lang/String;)V"),
-    NATIVE_METHOD(Linux, sendfile, "(Ljava/io/FileDescriptor;Ljava/io/FileDescriptor;Llibcore/util/MutableLong;J)J"),
+    NATIVE_METHOD(Linux, sendfile, "(Ljava/io/FileDescriptor;Ljava/io/FileDescriptor;Landroid/system/Int64Ref;J)J"),
     NATIVE_METHOD(Linux, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/InetAddress;I)I"),
     NATIVE_METHOD_OVERLOAD(Linux, sendtoBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;IIILjava/net/SocketAddress;)I", SocketAddress),
     NATIVE_METHOD(Linux, setegid, "(I)V"),
@@ -2575,22 +2575,22 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, uname, "()Landroid/system/StructUtsname;"),
     NATIVE_METHOD(Linux, unlink, "(Ljava/lang/String;)V"),
     NATIVE_METHOD(Linux, unsetenv, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(Linux, waitpid, "(ILlibcore/util/MutableInt;I)I"),
+    NATIVE_METHOD(Linux, waitpid, "(ILandroid/system/Int32Ref;I)I"),
     NATIVE_METHOD(Linux, writeBytes, "(Ljava/io/FileDescriptor;Ljava/lang/Object;II)I"),
     NATIVE_METHOD(Linux, writev, "(Ljava/io/FileDescriptor;[Ljava/lang/Object;[I[I)I"),
 };
 void register_libcore_io_Linux(JNIEnv* env) {
     // Note: it is safe to only cache the fields as boot classpath classes are never
     //       unloaded.
-    ScopedLocalRef<jclass> mutableIntClass(env, env->FindClass("libcore/util/MutableInt"));
-    CHECK(mutableIntClass != nullptr);
-    mutableIntValueFid = env->GetFieldID(mutableIntClass.get(), "value", "I");
-    CHECK(mutableIntValueFid != nullptr);
+    ScopedLocalRef<jclass> int32RefClass(env, env->FindClass("android/system/Int32Ref"));
+    CHECK(int32RefClass != nullptr);
+    int32RefValueFid = env->GetFieldID(int32RefClass.get(), "value", "I");
+    CHECK(int32RefValueFid != nullptr);
 
-    ScopedLocalRef<jclass> mutableLongClass(env, env->FindClass("libcore/util/MutableLong"));
-    CHECK(mutableLongClass != nullptr);
-    mutableLongValueFid = env->GetFieldID(mutableLongClass.get(), "value", "J");
-    CHECK(mutableLongValueFid != nullptr);
+    ScopedLocalRef<jclass> int64RefClass(env, env->FindClass("android/system/Int64Ref"));
+    CHECK(int64RefClass != nullptr);
+    int64RefValueFid = env->GetFieldID(int64RefClass.get(), "value", "J");
+    CHECK(int64RefValueFid != nullptr);
 
     jniRegisterNativeMethods(env, "libcore/io/Linux", gMethods, NELEM(gMethods));
 }
