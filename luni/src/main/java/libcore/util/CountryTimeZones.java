@@ -179,6 +179,18 @@ public class CountryTimeZones {
     }
 
     /**
+     * Returns true if the country has at least one zone that is the same as UTC at the given time.
+     */
+    public boolean hasUtcZone(long whenMillis) {
+        for (TimeZone zone : getIcuTimeZones()) {
+            if (zone.getOffset(whenMillis) == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Returns {@code true} if the default time zone for the country is either the only zone used or
      * if it has the same offsets as all other zones used by the country <em>at the specified time
      * </em> making the default equivalent to all other zones used by the country <em>at that time

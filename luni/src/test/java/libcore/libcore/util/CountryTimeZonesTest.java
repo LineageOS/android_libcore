@@ -35,6 +35,8 @@ public class CountryTimeZonesTest {
 
     private static final int HOUR_MILLIS = 60 * 60 * 1000;
 
+    private static final String INVALID_TZ_ID = "Moon/Tranquility_Base";
+
     // Zones used in the tests. NEW_YORK_TZ and LONDON_TZ chosen because they never overlap but both
     // have DST.
     private static final TimeZone NEW_YORK_TZ = TimeZone.getTimeZone("America/New_York");
@@ -78,10 +80,8 @@ public class CountryTimeZonesTest {
     @Test
     public void createValidated_invalidDefault() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Moon/Tranquility_Base", list("Europe/London", "Moon/Tranquility_Base"),
+                "gb", INVALID_TZ_ID, list("Europe/London", INVALID_TZ_ID),
                 "test");
-
-        // "Moon/Tranquility_Base" is not a valid time zone ID so should not be used.
         assertNull(countryTimeZones.getDefaultTimeZoneId());
         assertEquals(list("Europe/London"), countryTimeZones.getTimeZoneIds());
         assertZonesEqual(zones("Europe/London"), countryTimeZones.getIcuTimeZones());
@@ -330,6 +330,45 @@ public class CountryTimeZonesTest {
         // zone for the country of "xx".
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_DST));
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_NO_DST));
+    }
+
+    @Test
+    public void hasUtcZone_singleZone() {
+        // The country has a single zone. Europe/London uses UTC in Winter.
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "xx", "Europe/London", list("Europe/London"), "test");
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
+        assertTrue(countryTimeZones.hasUtcZone(WHEN_NO_DST));
+    }
+
+    @Test
+    public void hasUtcZone_multipleZonesWithUtc() {
+        // The country has multiple zones. Europe/London uses UTC in Winter.
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "xx", "America/Los_Angeles",
+                list("America/Los_Angeles", "America/New_York", "Europe/London"), "test");
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
+        assertTrue(countryTimeZones.hasUtcZone(WHEN_NO_DST));
+    }
+
+    @Test
+    public void hasUtcZone_multipleZonesWithoutUtc() {
+        // The country has multiple zones, none of which use UTC.
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "xx", "Europe/Paris",
+                list("America/Los_Angeles", "America/New_York", "Europe/Paris"), "test");
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_NO_DST));
+    }
+
+    @Test
+    public void hasUtcZone_emptyZones() {
+        // The country has no valid zones.
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "xx", INVALID_TZ_ID, list(INVALID_TZ_ID), "test");
+        assertTrue(countryTimeZones.getTimeZoneIds().isEmpty());
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_NO_DST));
     }
 
     private void assertImmutableTimeZone(TimeZone timeZone) {
