@@ -209,7 +209,7 @@ public final class Linux implements Os {
     public native void remove(String path) throws ErrnoException;
     public native void removexattr(String path, String name) throws ErrnoException;
     public native void rename(String oldPath, String newPath) throws ErrnoException;
-    public native long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException;
+    public native long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref offset, long byteCount) throws ErrnoException;
     public int sendto(FileDescriptor fd, ByteBuffer buffer, int flags, InetAddress inetAddress, int port) throws ErrnoException, SocketException {
         final int bytesSent;
         final int position = buffer.position();
