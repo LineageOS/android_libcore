@@ -467,8 +467,8 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendfile.2.html">sendfile(2)</a>.
      */
-    public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
-        return Libcore.os.sendfile(outFd, inFd, inOffset, byteCount);
+    public static long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref offset, long byteCount) throws ErrnoException {
+        return Libcore.os.sendfile(outFd, inFd, offset, byteCount);
     }
 
     /**
