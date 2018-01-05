@@ -289,9 +289,9 @@ public class BlockGuardOs extends ForwardingOs {
         os.rename(oldPath, newPath);
     }
 
-    @Override public long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref inOffset, long byteCount) throws ErrnoException {
+    @Override public long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref offset, long byteCount) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
-        return os.sendfile(outFd, inFd, inOffset, byteCount);
+        return os.sendfile(outFd, inFd, offset, byteCount);
     }
 
     @Override public int sendto(FileDescriptor fd, ByteBuffer buffer, int flags, InetAddress inetAddress, int port) throws ErrnoException, SocketException {
