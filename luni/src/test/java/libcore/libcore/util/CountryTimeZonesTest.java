@@ -68,7 +68,7 @@ public class CountryTimeZonesTest {
     @Test
     public void createValidated() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
         assertEquals("gb", countryTimeZones.getCountryIso());
         assertEquals("Europe/London", countryTimeZones.getDefaultTimeZoneId());
         assertZoneEquals(zone("Europe/London"), countryTimeZones.getDefaultTimeZone());
@@ -79,14 +79,14 @@ public class CountryTimeZonesTest {
     @Test
     public void createValidated_nullDefault() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", null, list("Europe/London"), "test");
+                "gb", null, true /* everUsesUtc */, list("Europe/London"), "test");
         assertNull(countryTimeZones.getDefaultTimeZoneId());
     }
 
     @Test
     public void createValidated_invalidDefault() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", INVALID_TZ_ID, list("Europe/London", INVALID_TZ_ID),
+                "gb", INVALID_TZ_ID, true /* everUsesUtc */, list("Europe/London", INVALID_TZ_ID),
                 "test");
         assertNull(countryTimeZones.getDefaultTimeZoneId());
         assertEquals(list("Europe/London"), countryTimeZones.getTimeZoneIds());
@@ -96,7 +96,8 @@ public class CountryTimeZonesTest {
     @Test
     public void createValidated_unknownTimeZoneIdIgnored() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", list("Unknown_Id", "Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, list("Unknown_Id", "Europe/London"),
+                "test");
         assertEquals(list("Europe/London"), countryTimeZones.getTimeZoneIds());
         assertZonesEqual(zones("Europe/London"), countryTimeZones.getIcuTimeZones());
     }
@@ -104,7 +105,7 @@ public class CountryTimeZonesTest {
     @Test
     public void structuresAreImmutable() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
 
         assertImmutableTimeZone(countryTimeZones.getDefaultTimeZone());
 
@@ -121,7 +122,7 @@ public class CountryTimeZonesTest {
     @Test
     public void lookupByOffsetWithBiasDeprecated_oneCandidate() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
 
         OffsetResult expectedResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
 
@@ -187,7 +188,8 @@ public class CountryTimeZonesTest {
     public void lookupByOffsetWithBiasDeprecated_multipleNonOverlappingCandidates()
             throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("America/New_York", "Europe/London"), "test");
+                "xx", "Europe/London", true /* everUsesUtc */,
+                list("America/New_York", "Europe/London"), "test");
 
         OffsetResult expectedLondonResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
         OffsetResult expectedNewYorkResult = new OffsetResult(NEW_YORK_TZ, true /* oneMatch */);
@@ -252,8 +254,8 @@ public class CountryTimeZonesTest {
         // Three zones that have the same offset for some of the year. Europe/London changes
         // offset WHEN_DST, the others do not.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Atlantic/Reykjavik", "Europe/London", "Etc/UTC"),
-                "test");
+                "xx", "Europe/London", true /* everUsesUtc */,
+                list("Atlantic/Reykjavik", "Europe/London", "Etc/UTC"), "test");
 
         // This is the no-DST offset for LONDON_TZ, REYKJAVIK_TZ. UTC_TZ.
         final int noDstOffset = LONDON_NO_DST_OFFSET_MILLIS;
@@ -329,7 +331,7 @@ public class CountryTimeZonesTest {
     @Test
     public void lookupByOffsetWithBias_oneCandidate() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", list("Europe/London"), "test");
+                "gb", "Europe/London", true /* uses UTC */, list("Europe/London"), "test");
 
         OffsetResult expectedResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
 
@@ -404,7 +406,8 @@ public class CountryTimeZonesTest {
     public void lookupByOffsetWithBias_multipleNonOverlappingCandidates()
             throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("America/New_York", "Europe/London"), "test");
+                "xx", "Europe/London", true /* uses UTC */,
+                list("America/New_York", "Europe/London"), "test");
 
         OffsetResult expectedLondonResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
         OffsetResult expectedNewYorkResult = new OffsetResult(NEW_YORK_TZ, true /* oneMatch */);
@@ -478,8 +481,8 @@ public class CountryTimeZonesTest {
         // Three zones that have the same offset for some of the year. Europe/London changes
         // offset WHEN_DST, the others do not.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Atlantic/Reykjavik", "Europe/London", "Etc/UTC"),
-                "test");
+                "xx", "Europe/London", true /* uses UTC */,
+                list("Atlantic/Reykjavik", "Europe/London", "Etc/UTC"), "test");
 
         // This is the no-DST offset for LONDON_TZ, REYKJAVIK_TZ. UTC_TZ.
         final int noDstOffset = LONDON_NO_DST_OFFSET_MILLIS;
@@ -577,7 +580,7 @@ public class CountryTimeZonesTest {
     @Test
     public void isDefaultOkForCountryTimeZoneDetection_noZones() {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list(), "test");
+                "xx", "Europe/London", true /* everUsesUtc */, list(), "test");
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_DST));
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_NO_DST));
     }
@@ -585,7 +588,7 @@ public class CountryTimeZonesTest {
     @Test
     public void isDefaultOkForCountryTimeZoneDetection_oneZone() {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Europe/London"), "test");
+                "xx", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
         assertTrue(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_DST));
         assertTrue(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_NO_DST));
     }
@@ -593,7 +596,8 @@ public class CountryTimeZonesTest {
     @Test
     public void isDefaultOkForCountryTimeZoneDetection_twoZones_overlap() {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Europe/London", "Etc/UTC"), "test");
+                "xx", "Europe/London", true /* everUsesUtc */, list("Europe/London", "Etc/UTC"),
+                "test");
         // Europe/London is the same as UTC in the Winter, so all the zones have the same offset
         // in Winter, but not in Summer.
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_DST));
@@ -603,7 +607,8 @@ public class CountryTimeZonesTest {
     @Test
     public void isDefaultOkForCountryTimeZoneDetection_twoZones_noOverlap() {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Europe/London", "America/New_York"), "test");
+                "xx", "Europe/London", true /* everUsesUtc */,
+                list("Europe/London", "America/New_York"), "test");
         // The zones have different offsets all year, so it would never be ok to use the default
         // zone for the country of "xx".
         assertFalse(countryTimeZones.isDefaultOkForCountryTimeZoneDetection(WHEN_DST));
@@ -611,10 +616,19 @@ public class CountryTimeZonesTest {
     }
 
     @Test
+    public void hasUtcZone_everUseUtcHintOverridesZoneInformation() {
+        // The country has a single zone. Europe/London uses UTC in Winter.
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "xx", "Etc/UTC", false /* everUsesUtc */, list("Etc/UTC"), "test");
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
+        assertFalse(countryTimeZones.hasUtcZone(WHEN_NO_DST));
+    }
+
+    @Test
     public void hasUtcZone_singleZone() {
         // The country has a single zone. Europe/London uses UTC in Winter.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/London", list("Europe/London"), "test");
+                "xx", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
         assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
         assertTrue(countryTimeZones.hasUtcZone(WHEN_NO_DST));
     }
@@ -623,7 +637,7 @@ public class CountryTimeZonesTest {
     public void hasUtcZone_multipleZonesWithUtc() {
         // The country has multiple zones. Europe/London uses UTC in Winter.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "America/Los_Angeles",
+                "xx", "America/Los_Angeles", true /* everUsesUtc */,
                 list("America/Los_Angeles", "America/New_York", "Europe/London"), "test");
         assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
         assertTrue(countryTimeZones.hasUtcZone(WHEN_NO_DST));
@@ -633,7 +647,7 @@ public class CountryTimeZonesTest {
     public void hasUtcZone_multipleZonesWithoutUtc() {
         // The country has multiple zones, none of which use UTC.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", "Europe/Paris",
+                "xx", "Europe/Paris", false /* everUsesUtc */,
                 list("America/Los_Angeles", "America/New_York", "Europe/Paris"), "test");
         assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
         assertFalse(countryTimeZones.hasUtcZone(WHEN_NO_DST));
@@ -643,7 +657,7 @@ public class CountryTimeZonesTest {
     public void hasUtcZone_emptyZones() {
         // The country has no valid zones.
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                "xx", INVALID_TZ_ID, list(INVALID_TZ_ID), "test");
+                "xx", INVALID_TZ_ID, false /* everUsesUtc */, list(INVALID_TZ_ID), "test");
         assertTrue(countryTimeZones.getTimeZoneIds().isEmpty());
         assertFalse(countryTimeZones.hasUtcZone(WHEN_DST));
         assertFalse(countryTimeZones.hasUtcZone(WHEN_NO_DST));
