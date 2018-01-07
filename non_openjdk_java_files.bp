@@ -27,8 +27,6 @@ filegroup {
         "luni/src/main/java/android/system/StructTimespec.java",
         "luni/src/main/java/android/system/StructUcred.java",
         "luni/src/main/java/android/system/StructUtsname.java",
-        "luni/src/main/java/libcore/util/MutableInt.java",
-        "luni/src/main/java/libcore/util/MutableLong.java",
         "dalvik/src/main/java/dalvik/annotation/AnnotationDefault.java",
         "dalvik/src/main/java/dalvik/annotation/EnclosingClass.java",
         "dalvik/src/main/java/dalvik/annotation/EnclosingMethod.java",
