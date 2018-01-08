@@ -31,20 +31,18 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
+import libcore.util.CountryTimeZones;
 import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TimeZoneFinderTest {
@@ -109,13 +107,18 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n";
+        CountryTimeZones expectedCountryTimeZones1 = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London"), "test");
+
         String validXml2 = "<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
-                + "    <country code=\"gb\" default=\"Europe/London\">\n"
+                + "    <country code=\"gb\" default=\"Europe/Paris\">\n"
                 + "      <id>Europe/Paris</id>\n"
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n";
+        CountryTimeZones expectedCountryTimeZones2 = CountryTimeZones.createValidated(
+                "gb", "Europe/Paris", list("Europe/Paris"), "test");
 
         String invalidXml = "<foo></foo>\n";
         checkValidateThrowsParserException(invalidXml);
@@ -128,36 +131,30 @@ public class TimeZoneFinderTest {
         TimeZoneFinder file1ThenFile2 =
                 TimeZoneFinder.createInstanceWithFallback(validFile1, validFile2);
         assertEquals("2017c", file1ThenFile2.getIanaVersion());
-        assertEquals(list("Europe/London"), file1ThenFile2.lookupTimeZoneIdsByCountry("gb"));
-        assertZonesEqual(zones("Europe/London"), file1ThenFile2.lookupTimeZonesByCountry("gb"));
+        assertEquals(expectedCountryTimeZones1, file1ThenFile2.lookupCountryTimeZones("gb"));
 
         TimeZoneFinder missingFileThenFile1 =
                 TimeZoneFinder.createInstanceWithFallback(missingFile, validFile1);
         assertEquals("2017c", missingFileThenFile1.getIanaVersion());
-        assertEquals(list("Europe/London"), missingFileThenFile1.lookupTimeZoneIdsByCountry("gb"));
-        assertZonesEqual(zones("Europe/London"),
-                missingFileThenFile1.lookupTimeZonesByCountry("gb"));
+        assertEquals(expectedCountryTimeZones1, missingFileThenFile1.lookupCountryTimeZones("gb"));
 
         TimeZoneFinder file2ThenFile1 =
                 TimeZoneFinder.createInstanceWithFallback(validFile2, validFile1);
         assertEquals("2017b", file2ThenFile1.getIanaVersion());
-        assertEquals(list("Europe/Paris"), file2ThenFile1.lookupTimeZoneIdsByCountry("gb"));
-        assertZonesEqual(zones("Europe/Paris"), file2ThenFile1.lookupTimeZonesByCountry("gb"));
+        assertEquals(expectedCountryTimeZones2, file2ThenFile1.lookupCountryTimeZones("gb"));
 
         // We assume the file has been validated so an invalid file is not checked ahead of time.
         // We will find out when we look something up.
         TimeZoneFinder invalidThenValid =
                 TimeZoneFinder.createInstanceWithFallback(invalidFile, validFile1);
         assertNull(invalidThenValid.getIanaVersion());
-        assertNull(invalidThenValid.lookupTimeZoneIdsByCountry("gb"));
-        assertNull(invalidThenValid.lookupTimeZonesByCountry("gb"));
+        assertNull(invalidThenValid.lookupCountryTimeZones("gb"));
 
         // This is not a normal case: It would imply a define shipped without a file in /system!
         TimeZoneFinder missingFiles =
                 TimeZoneFinder.createInstanceWithFallback(missingFile, missingFile);
         assertNull(missingFiles.getIanaVersion());
-        assertNull(missingFiles.lookupTimeZoneIdsByCountry("gb"));
-        assertNull(missingFiles.lookupTimeZonesByCountry("gb"));
+        assertNull(missingFiles.lookupCountryTimeZones("gb"));
     }
 
     @Test
@@ -185,6 +182,9 @@ public class TimeZoneFinderTest {
 
     @Test
     public void xmlParsing_unexpectedComments() throws Exception {
+        CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London"), "test");
+
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\">\n"
@@ -193,7 +193,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         // This is a crazy comment, but also helps prove that TEXT nodes are coalesced by the
         // parser.
@@ -204,11 +204,14 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
     }
 
     @Test
     public void xmlParsing_unexpectedElementsIgnored() throws Exception {
+        CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London"), "test");
+
         String unexpectedElement = "<unexpected-element>\n<a /></unexpected-element>\n";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  " + unexpectedElement
@@ -218,8 +221,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -229,8 +231,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -240,21 +241,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
-
-        finder = validate("<timezones ianaversion=\"2017b\">\n"
-                + "  <countryzones>\n"
-                + "    <country code=\"gb\" default=\"Europe/London\">\n"
-                + "      <id>Europe/London</id>\n"
-                + "      " + unexpectedElement
-                + "      <id>Europe/Paris</id>\n"
-                + "    </country>\n"
-                + "  </countryzones>\n"
-                + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London", "Europe/Paris"),
-                finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -264,8 +251,7 @@ public class TimeZoneFinderTest {
                 + "    " + unexpectedElement
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         // This test is important because it ensures we can extend the format in future with
         // more information.
@@ -277,12 +263,27 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "  " + unexpectedElement
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
+
+        expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London", "Europe/Paris"), "test");
+        finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "      " + unexpectedElement
+                + "      <id>Europe/Paris</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
     }
 
     @Test
     public void xmlParsing_unexpectedTextIgnored() throws Exception {
+        CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London"), "test");
+
         String unexpectedText = "unexpected-text";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  " + unexpectedText
@@ -292,8 +293,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -303,8 +303,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -314,9 +313,10 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
+        expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London", "Europe/Paris"), "test");
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\">\n"
@@ -326,9 +326,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals("Europe/London", finder.lookupDefaultTimeZoneIdByCountry("gb"));
-        assertEquals(list("Europe/London", "Europe/Paris"),
-                finder.lookupTimeZoneIdsByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
     }
 
     @Test
@@ -374,6 +372,8 @@ public class TimeZoneFinderTest {
 
     @Test
     public void xmlParsing_unknownTimeZoneIdIgnored() throws Exception {
+        CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", list("Europe/London"), "test");
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\">\n"
@@ -382,8 +382,7 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        assertEquals(list("Europe/London"), finder.lookupTimeZoneIdsByCountry("gb"));
-        assertZonesEqual(zones("Europe/London"), finder.lookupTimeZonesByCountry("gb"));
+        assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
     }
 
     @Test
@@ -820,53 +819,6 @@ public class TimeZoneFinderTest {
         assertEquals(expectedIanaVersion, finder.getIanaVersion());
     }
 
-    @Test
-    public void createValidatedCountryTimeZones_filtersBadIds() throws Exception {
-        String countryIso = "iso";
-        String knownTimeZoneId1 = "Europe/London";
-        String knownTimeZoneId2 = "America/Los_Angeles";
-        String knownTimeZoneId3 = "America/New_York";
-        String unknownTimeZoneId = "Moon/Tranquility_Base";
-
-        List<String> countryZoneIds = list(
-                knownTimeZoneId1, knownTimeZoneId2, unknownTimeZoneId, knownTimeZoneId3);
-        TimeZoneFinder.CountryTimeZones countryTimeZones =
-                TimeZoneFinder.createValidatedCountryTimeZones(countryIso, knownTimeZoneId1,
-                        countryZoneIds, "debugInfoIgnored");
-
-        assertEquals(countryIso, countryTimeZones.getCountryIso());
-
-        assertEquals(knownTimeZoneId1, countryTimeZones.getDefaultTimeZoneId());
-        assertEquals(knownTimeZoneId1, countryTimeZones.getDefaultTimeZoneId());
-
-        // Validation should have filtered the unknown ID.
-        String[] expectedTimeZoneIds = { knownTimeZoneId1, knownTimeZoneId2, knownTimeZoneId3 };
-        assertEquals(list(expectedTimeZoneIds), countryTimeZones.getTimeZoneIds());
-        List<TimeZone> timeZones = countryTimeZones.getTimeZones();
-        for (int i = 0; i < timeZones.size(); i++) {
-            TimeZone timeZone = timeZones.get(i);
-            assertEquals(expectedTimeZoneIds[i], timeZone.getID());
-            assertTrue(timeZone.isFrozen());
-        }
-    }
-
-    @Test
-    public void createValidatedCountryTimeZones_filtersBadDefaultId() throws Exception {
-        String countryIso = "iso";
-        String unknownTimeZoneId = "Moon/Tranquility_Base";
-
-        List<String> countryZoneIds = list(unknownTimeZoneId);
-        TimeZoneFinder.CountryTimeZones countryTimeZones =
-                TimeZoneFinder.createValidatedCountryTimeZones(countryIso, unknownTimeZoneId,
-                        countryZoneIds, "debugInfoIgnored");
-
-        assertEquals(countryIso, countryTimeZones.getCountryIso());
-
-        assertNull(countryTimeZones.getDefaultTimeZoneId());
-        assertEquals(Collections.emptyList(), countryTimeZones.getTimeZoneIds());
-        assertEquals(Collections.emptyList(), countryTimeZones.getTimeZones());
-    }
-
     private void assertImmutableTimeZone(TimeZone timeZone) {
         try {
             timeZone.setRawOffset(1000);
@@ -884,11 +836,6 @@ public class TimeZoneFinderTest {
     }
 
     private static void assertZoneEquals(TimeZone expected, TimeZone actual) {
-        // TimeZone.equals() only checks the ID, but that's ok for these tests.
-        assertEquals(expected, actual);
-    }
-
-    private static void assertZonesEqual(List<TimeZone> expected, List<TimeZone> actual) {
         // TimeZone.equals() only checks the ID, but that's ok for these tests.
         assertEquals(expected, actual);
     }
@@ -914,10 +861,6 @@ public class TimeZoneFinderTest {
     private static <X> List<X> sort(Collection<X> value) {
         return value.stream().sorted()
                 .collect(Collectors.toList());
-    }
-
-    private static List<TimeZone> zones(String... ids) {
-        return Arrays.stream(ids).map(TimeZone::getTimeZone).collect(Collectors.toList());
     }
 
     private String createFile(String fileContent) throws IOException {
