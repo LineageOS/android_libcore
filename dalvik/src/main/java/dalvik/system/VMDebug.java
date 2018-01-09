@@ -512,5 +512,20 @@ public final class VMDebug {
      *
      * @param agent The path to the agent .so file plus optional agent arguments.
      */
-    public static native void attachAgent(String agent) throws IOException;
+    public static void attachAgent(String agent) throws IOException {
+        attachAgent(agent, null);
+    }
+
+    /**
+     * Attaches an agent to the VM.
+     *
+     * @param agent The path to the agent .so file plus optional agent arguments.
+     * @param classLoader The classloader to use as a loading context.
+     */
+    public static void attachAgent(String agent, ClassLoader classLoader) throws IOException {
+        nativeAttachAgent(agent, classLoader);
+    }
+
+    private static native void nativeAttachAgent(String agent, ClassLoader classLoader)
+            throws IOException;
 }
