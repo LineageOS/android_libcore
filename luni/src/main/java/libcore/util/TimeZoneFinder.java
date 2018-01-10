@@ -172,53 +172,11 @@ public class TimeZoneFinder {
     public TimeZone lookupTimeZoneByCountryAndOffset(
             String countryIso, int offsetSeconds, boolean isDst, long whenMillis, TimeZone bias) {
 
-        countryIso = normalizeCountryIso(countryIso);
-        List<TimeZone> candidates = lookupTimeZonesByCountry(countryIso);
-        if (candidates == null || candidates.isEmpty()) {
+        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
+        if (countryTimeZones == null) {
             return null;
         }
-
-        TimeZone firstMatch = null;
-        for (TimeZone match : candidates) {
-            if (!offsetMatchesAtTime(match, offsetSeconds, isDst, whenMillis)) {
-                continue;
-            }
-
-            if (firstMatch == null) {
-                if (bias == null) {
-                    // No bias, so we can stop at the first match.
-                    return match;
-                }
-                // We have to carry on checking in case the bias matches. We want to return the
-                // first if it doesn't, though.
-                firstMatch = match;
-            }
-
-            // Check if match is also the bias. There must be a bias otherwise we'd have terminated
-            // already.
-            if (match.getID().equals(bias.getID())) {
-                return match;
-            }
-        }
-        // Return firstMatch, which can be null if there was no match.
-        return firstMatch;
-    }
-
-    /**
-     * Returns {@code true} if the specified offset, DST state and time would be valid in the
-     * timeZone.
-     */
-    private static boolean offsetMatchesAtTime(TimeZone timeZone, int offsetMillis, boolean isDst,
-            long whenMillis) {
-        int[] offsets = new int[2];
-        timeZone.getOffset(whenMillis, false /* local */, offsets);
-
-        // offsets[1] == 0 when the zone is not in DST.
-        boolean zoneIsDst = offsets[1] != 0;
-        if (isDst != zoneIsDst) {
-            return false;
-        }
-        return offsetMillis == (offsets[0] + offsets[1]);
+        return countryTimeZones.lookupByOffsetWithBias(offsetSeconds, isDst, whenMillis, bias);
     }
 
     /**
@@ -231,8 +189,7 @@ public class TimeZoneFinder {
      * null.
      */
     public String lookupDefaultTimeZoneIdByCountry(String countryIso) {
-        countryIso = normalizeCountryIso(countryIso);
-        CountryTimeZones countryTimeZones = findCountryTimeZones(countryIso);
+        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         return countryTimeZones == null ? null : countryTimeZones.getDefaultTimeZoneId();
     }
 
@@ -244,9 +201,8 @@ public class TimeZoneFinder {
      * zone IDs.
      */
     public List<TimeZone> lookupTimeZonesByCountry(String countryIso) {
-        countryIso = normalizeCountryIso(countryIso);
-        CountryTimeZones countryTimeZones = findCountryTimeZones(countryIso);
-        return countryTimeZones == null ? null : countryTimeZones.getTimeZones();
+        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
+        return countryTimeZones == null ? null : countryTimeZones.getIcuTimeZones();
     }
 
     /**
@@ -258,17 +214,17 @@ public class TimeZoneFinder {
      * in a case when the underlying data files reference only unknown zone IDs.
      */
     public List<String> lookupTimeZoneIdsByCountry(String countryIso) {
-        countryIso = normalizeCountryIso(countryIso);
-        CountryTimeZones countryTimeZones = findCountryTimeZones(countryIso);
+        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         return countryTimeZones == null ? null : countryTimeZones.getTimeZoneIds();
     }
 
     /**
      * Returns a {@link CountryTimeZones} object associated with the specified country code.
      * Caching is handled as needed. If the country code is not recognized or there is an error
-     * during lookup this can return null.
+     * during lookup this method can return null.
      */
-    private CountryTimeZones findCountryTimeZones(String countryIso) {
+    public CountryTimeZones lookupCountryTimeZones(String countryIso) {
+        countryIso = normalizeCountryIso(countryIso);
         synchronized (this) {
             if (lastCountryTimeZones != null
                     && lastCountryTimeZones.getCountryIso().equals(countryIso)) {
@@ -623,7 +579,7 @@ public class TimeZoneFinder {
             if (!countryCodeToMatch.equals(countryIso)) {
                 return CONTINUE;
             }
-            validatedCountryTimeZones = createValidatedCountryTimeZones(countryIso,
+            validatedCountryTimeZones = CountryTimeZones.createValidated(countryIso,
                     defaultTimeZoneId, countryTimeZoneIds, debugInfo);
 
             return HALT;
@@ -632,7 +588,7 @@ public class TimeZoneFinder {
         /**
          * Returns the CountryTimeZones that matched, or {@code null} if there were no matches.
          */
-        CountryTimeZones getValidatedCountryTimeZones() {
+        private CountryTimeZones getValidatedCountryTimeZones() {
             return validatedCountryTimeZones;
         }
     }
@@ -660,113 +616,9 @@ public class TimeZoneFinder {
         }
     }
 
-    /**
-     * Information about a country's time zones.
-     */
-    // VisibleForTesting
-    public static class CountryTimeZones {
-        private final String countryIso;
-        private final String defaultTimeZoneId;
-        private final List<String> timeZoneIds;
-
-        // Memoized frozen ICU TimeZone objects for the timeZoneIds.
-        private List<TimeZone> timeZones;
-
-        public CountryTimeZones(String countryIso, String defaultTimeZoneId,
-                List<String> timeZoneIds) {
-            this.countryIso = countryIso;
-            this.defaultTimeZoneId = defaultTimeZoneId;
-            // Create a defensive copy of the IDs list.
-            this.timeZoneIds = Collections.unmodifiableList(new ArrayList<>(timeZoneIds));
-        }
-
-        public String getCountryIso() {
-            return countryIso;
-        }
-
-        /**
-         * Returns the default time zone ID for a country. Can return null in extreme cases when
-         * invalid data is found.
-         */
-        public String getDefaultTimeZoneId() {
-            return defaultTimeZoneId;
-        }
-
-        /**
-         * Returns an ordered list of time zone IDs for a country in an undefined but "priority"
-         * order for a country. The list can be empty if there were no zones configured or the
-         * configured zone IDs were not recognized.
-         */
-        public List<String> getTimeZoneIds() {
-            return timeZoneIds;
-        }
-
-        /**
-         * Returns an ordered list of time zones for a country in an undefined but "priority"
-         * order for a country. The list can be empty if there were no zones configured or the
-         * configured zone IDs were not recognized.
-         */
-        public synchronized List<TimeZone> getTimeZones() {
-            if (timeZones == null) {
-                ArrayList<TimeZone> mutableList = new ArrayList<>(timeZoneIds.size());
-                for (String timeZoneId : timeZoneIds) {
-                    TimeZone timeZone = getValidFrozenTimeZoneOrNull(timeZoneId);
-                    // This shouldn't happen given the validation that takes place in
-                    // createValidatedCountryTimeZones().
-                    if (timeZone == null) {
-                        System.logW("Skipping invalid zone: " + timeZoneId);
-                        continue;
-                    }
-                    mutableList.add(timeZone);
-                }
-                timeZones = Collections.unmodifiableList(mutableList);
-            }
-            return timeZones;
-        }
-
-        private static TimeZone getValidFrozenTimeZoneOrNull(String timeZoneId) {
-            TimeZone timeZone = TimeZone.getFrozenTimeZone(timeZoneId);
-            if (timeZone.getID().equals(TimeZone.UNKNOWN_ZONE_ID)) {
-                return null;
-            }
-            return timeZone;
-        }
-    }
-
     private static String normalizeCountryIso(String countryIso) {
         // Lowercase ASCII is normalized for the purposes of the input files and the code in this
         // class.
         return countryIso.toLowerCase(Locale.US);
-    }
-
-    // VisibleForTesting
-    public static CountryTimeZones createValidatedCountryTimeZones(String countryIso,
-            String defaultTimeZoneId, List<String> countryTimeZoneIds, String debugInfo) {
-
-        // We rely on ZoneInfoDB to tell us what the known valid time zone IDs are. ICU may
-        // recognize more but we want to be sure that zone IDs can be used with java.util as well as
-        // android.icu and ICU is expected to have a superset.
-        String[] validTimeZoneIdsArray = ZoneInfoDB.getInstance().getAvailableIDs();
-        HashSet<String> validTimeZoneIdsSet = new HashSet<>(Arrays.asList(validTimeZoneIdsArray));
-        List<String> validCountryTimeZoneIds = new ArrayList<>();
-        for (String countryTimeZoneId : countryTimeZoneIds) {
-            if (!validTimeZoneIdsSet.contains(countryTimeZoneId)) {
-                System.logW("Skipping invalid zone: " + countryTimeZoneId + " at " + debugInfo);
-            } else {
-                validCountryTimeZoneIds.add(countryTimeZoneId);
-            }
-        }
-
-        // We don't get too strict at runtime about whether the defaultTimeZoneId must be
-        // one of the country's time zones because this is the data we have to use (we also
-        // assume the data was validated by earlier steps). The default time zone ID must just
-        // be a recognized zone ID: if it's not valid we leave it null.
-        if (!validTimeZoneIdsSet.contains(defaultTimeZoneId)) {
-            System.logW("Invalid default time zone ID: " + defaultTimeZoneId
-                    + " at " + debugInfo);
-            defaultTimeZoneId = null;
-        }
-
-        return new CountryTimeZones(countryIso, defaultTimeZoneId, validCountryTimeZoneIds);
     }
 }
