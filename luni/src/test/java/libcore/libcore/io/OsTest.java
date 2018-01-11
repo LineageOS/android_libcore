@@ -942,4 +942,20 @@ public class OsTest extends TestCase {
     }
   }
 
+  public void test_odirect() throws Exception {
+    File testFile = createTempFile("test_odirect", "");
+    try {
+      FileDescriptor fd =
+            Libcore.os.open(testFile.toString(), O_WRONLY | O_DIRECT, S_IRUSR | S_IWUSR);
+      assertNotNull(fd);
+      assertTrue(fd.valid());
+      int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
+      assertTrue("Expected file flags to include " + O_DIRECT + ", actual value: " + flags,
+            0 != (flags & O_DIRECT));
+      Libcore.os.close(fd);
+    } finally {
+      testFile.delete();
+    }
+  }
+
 }
