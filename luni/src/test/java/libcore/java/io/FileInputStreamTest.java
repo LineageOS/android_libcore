@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.system.ErrnoException;
+import android.system.Os;
 import android.system.OsConstants;
+import android.system.StructStatVfs;
 import junit.framework.TestCase;
 
 import libcore.io.IoUtils;
@@ -226,23 +228,36 @@ public final class FileInputStreamTest extends TestCase {
     // http://b/28192631
     public void testSkipOnLargeFiles() throws Exception {
         File largeFile = File.createTempFile("FileInputStreamTest_testSkipOnLargeFiles", "");
-        FileOutputStream fos = new FileOutputStream(largeFile);
-        try {
-            byte[] buffer = new byte[1024 * 1024]; // 1 MB
-            for (int i = 0; i < 3 * 1024; i++) { // 3 GB
-                fos.write(buffer);
-            }
-        } finally {
-            fos.close();
+
+        // Required space is 3.1 GB: 3GB for file plus 100M headroom.
+        final long requiredFreeSpaceBytes = 3172L * 1024 * 1024;
+
+        // If system doesn't have enough space free for this test, skip it.
+        final StructStatVfs statVfs = Os.statvfs(largeFile.getPath());
+        final long freeSpaceAvailableBytes = statVfs.f_bsize * statVfs.f_bavail;
+        if (freeSpaceAvailableBytes < requiredFreeSpaceBytes) {
+            return;
         }
 
-        FileInputStream fis = new FileInputStream(largeFile);
-        long lastByte = 3 * 1024 * 1024 * 1024L - 1;
-        assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
-        assertEquals(lastByte, fis.skip(lastByte));
+        try {
+            FileOutputStream fos = new FileOutputStream(largeFile);
+            try {
+                byte[] buffer = new byte[1024 * 1024]; // 1 MB
+                for (int i = 0; i < 3 * 1024; i++) { // 3 GB
+                    fos.write(buffer);
+                }
+            } finally {
+                fos.close();
+            }
 
-        // Proactively cleanup - it's a pretty large file.
-        assertTrue(largeFile.delete());
+            FileInputStream fis = new FileInputStream(largeFile);
+            long lastByte = 3 * 1024 * 1024 * 1024L - 1;
+            assertEquals(0, Libcore.os.lseek(fis.getFD(), 0, OsConstants.SEEK_CUR));
+            assertEquals(lastByte, fis.skip(lastByte));
+        } finally {
+            // Proactively cleanup - it's a pretty large file.
+            assertTrue(largeFile.delete());
+        }
     }
 
     private static List<Integer> getOpenFdsForPrefix(String path) throws Exception {
