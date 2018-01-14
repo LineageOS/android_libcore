@@ -103,8 +103,14 @@ java_library {
         javacflags: ["--patch-module=java.base=."],
     },
     jacoco: {
-        include_filter: [
-            "java.sql.*",
+        exclude_filter: [
+            "java.io.*",
+            "java.lang.*",
+            "java.net.*",
+            "java.nio.*",
+            "java.security.*",
+            "java.util.*",
+            "sun.*",
         ],
     },
 
