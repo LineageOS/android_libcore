@@ -170,13 +170,13 @@ public class TimeZoneFinder {
      * Otherwise the first match found is returned.
      */
     public TimeZone lookupTimeZoneByCountryAndOffset(
-            String countryIso, int offsetSeconds, boolean isDst, long whenMillis, TimeZone bias) {
+            String countryIso, int offsetMillis, boolean isDst, long whenMillis, TimeZone bias) {
 
         CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         if (countryTimeZones == null) {
             return null;
         }
-        return countryTimeZones.lookupByOffsetWithBias(offsetSeconds, isDst, whenMillis, bias);
+        return countryTimeZones.lookupByOffsetWithBias(offsetMillis, isDst, whenMillis, bias);
     }
 
     /**
