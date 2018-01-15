@@ -42,6 +42,7 @@ filegroup {
         "dalvik/src/main/java/dalvik/annotation/optimization/FastNative.java",
         "dalvik/src/main/java/dalvik/bytecode/OpcodeInfo.java",
         "dalvik/src/main/java/dalvik/bytecode/Opcodes.java",
+        "libart/src/main/java/dalvik/system/AnnotatedStackTraceElement.java",
         "dalvik/src/main/java/dalvik/system/AllocationLimitError.java",
         "dalvik/src/main/java/dalvik/system/BaseDexClassLoader.java",
         "dalvik/src/main/java/dalvik/system/BlockGuard.java",
