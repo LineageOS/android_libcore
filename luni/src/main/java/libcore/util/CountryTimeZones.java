@@ -197,11 +197,10 @@ public class CountryTimeZones {
      * </em>.
      */
     public boolean isDefaultOkForCountryTimeZoneDetection(long whenMillis) {
-        List<TimeZone> candidates = getIcuTimeZones();
-        if (candidates.isEmpty()) {
+        if (timeZoneIds.isEmpty()) {
             // Should never happen unless there's been an error loading the data.
             return false;
-        } else if (candidates.size() == 1) {
+        } else if (timeZoneIds.size() == 1) {
             // The default is the only zone so it's a good candidate.
             return true;
         } else {
@@ -211,6 +210,7 @@ public class CountryTimeZones {
             }
 
             int countryDefaultOffset = countryDefault.getOffset(whenMillis);
+            List<TimeZone> candidates = getIcuTimeZones();
             for (TimeZone candidate : candidates) {
                 if (candidate == countryDefault) {
                     continue;
@@ -231,12 +231,12 @@ public class CountryTimeZones {
      * there are multiple matches and the {@code bias} is one of them then it is returned, otherwise
      * an arbitrary match is returned based on the {@link #getTimeZoneIds()} ordering.
      *
-     * @param offsetSeconds the offset from UTC at {@code whenMillis}
+     * @param offsetMillis the offset from UTC at {@code whenMillis}
      * @param isDst whether the zone is in DST
      * @param whenMillis the UTC time to match against
      * @param bias the time zone to prefer, can be null
      */
-    public TimeZone lookupByOffsetWithBias(int offsetSeconds, boolean isDst, long whenMillis,
+    public TimeZone lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
         if (timeZoneIds == null || timeZoneIds.isEmpty()) {
             return null;
@@ -245,7 +245,7 @@ public class CountryTimeZones {
         List<TimeZone> candidates = getIcuTimeZones();
         TimeZone firstMatch = null;
         for (TimeZone match : candidates) {
-            if (!offsetMatchesAtTime(match, offsetSeconds, isDst, whenMillis)) {
+            if (!offsetMatchesAtTime(match, offsetMillis, isDst, whenMillis)) {
                 continue;
             }
 
