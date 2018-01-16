@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import libcore.util.CountryTimeZones;
+import libcore.util.CountryTimeZones.OffsetResult;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -117,47 +118,49 @@ public class CountryTimeZonesTest {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
                 "gb", "Europe/London", list("Europe/London"), "test");
 
+        OffsetResult expectedResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
+
         // The three parameters match the configured zone: offset, isDst and when.
-        assertZoneEquals(LONDON_TZ,
+        assertOffsetResultEquals(expectedResult,
                 countryTimeZones.lookupByOffsetWithBias(LONDON_DST_OFFSET_MILLIS,
                         true /* isDst */, WHEN_DST, null /* bias */));
-        assertZoneEquals(LONDON_TZ,
+        assertOffsetResultEquals(expectedResult,
                 countryTimeZones.lookupByOffsetWithBias(LONDON_NO_DST_OFFSET_MILLIS,
                         false /* isDst */, WHEN_NO_DST, null /* bias */));
 
         // Some lookup failure cases where the offset, isDst and when do not match the configured
         // zone.
-        TimeZone noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch1);
 
-        TimeZone noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, false /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch2);
 
-        TimeZone noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch3);
 
-        TimeZone noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch4);
 
-        TimeZone noDstMatch5 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch5 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, false /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch5);
 
-        TimeZone noDstMatch6 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch6 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, false /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch6);
 
         // Some bias cases below.
 
         // The bias is irrelevant here: it matches what would be returned anyway.
-        assertZoneEquals(LONDON_TZ,
+        assertOffsetResultEquals(expectedResult,
                 countryTimeZones.lookupByOffsetWithBias(LONDON_DST_OFFSET_MILLIS,
                         true /* isDst */, WHEN_DST, LONDON_TZ /* bias */));
-        assertZoneEquals(LONDON_TZ,
+        assertOffsetResultEquals(expectedResult,
                 countryTimeZones.lookupByOffsetWithBias(LONDON_NO_DST_OFFSET_MILLIS,
                         false /* isDst */, WHEN_NO_DST, LONDON_TZ /* bias */));
         // A sample of a non-matching case with bias.
@@ -165,7 +168,7 @@ public class CountryTimeZonesTest {
                 true /* isDst */, WHEN_NO_DST, LONDON_TZ /* bias */));
 
         // The bias should be ignored: it doesn't match any of the country's zones.
-        assertZoneEquals(LONDON_TZ,
+        assertOffsetResultEquals(expectedResult,
                 countryTimeZones.lookupByOffsetWithBias(LONDON_DST_OFFSET_MILLIS,
                         true /* isDst */, WHEN_DST, NEW_YORK_TZ /* bias */));
 
@@ -181,48 +184,51 @@ public class CountryTimeZonesTest {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
                 "xx", "Europe/London", list("America/New_York", "Europe/London"), "test");
 
+        OffsetResult expectedLondonResult = new OffsetResult(LONDON_TZ, true /* oneMatch */);
+        OffsetResult expectedNewYorkResult = new OffsetResult(NEW_YORK_TZ, true /* oneMatch */);
+
         // The three parameters match the configured zone: offset, isDst and when.
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedLondonResult, countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, null /* bias */));
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedLondonResult, countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, false /* isDst */, WHEN_NO_DST, null /* bias */));
-        assertZoneEquals(NEW_YORK_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedNewYorkResult, countryTimeZones.lookupByOffsetWithBias(
                 NEW_YORK_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, null /* bias */));
-        assertZoneEquals(NEW_YORK_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedNewYorkResult, countryTimeZones.lookupByOffsetWithBias(
                 NEW_YORK_NO_DST_OFFSET_MILLIS, false /* isDst */, WHEN_NO_DST, null /* bias */));
 
         // Some lookup failure cases where the offset, isDst and when do not match the configured
         // zone. This is a sample, not complete.
-        TimeZone noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch1);
 
-        TimeZone noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, false /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch2);
 
-        TimeZone noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(
                 NEW_YORK_NO_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch3);
 
-        TimeZone noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(
                 NEW_YORK_NO_DST_OFFSET_MILLIS, true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch4);
 
-        TimeZone noDstMatch5 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch5 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, false /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch5);
 
-        TimeZone noDstMatch6 = countryTimeZones.lookupByOffsetWithBias(
+        OffsetResult noDstMatch6 = countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, false /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch6);
 
         // Some bias cases below.
 
         // The bias is irrelevant here: it matches what would be returned anyway.
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedLondonResult, countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, LONDON_TZ /* bias */));
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedLondonResult, countryTimeZones.lookupByOffsetWithBias(
                 LONDON_NO_DST_OFFSET_MILLIS, false /* isDst */, WHEN_NO_DST, LONDON_TZ /* bias */));
         // A sample of a non-matching case with bias.
         assertNull(countryTimeZones.lookupByOffsetWithBias(
@@ -230,7 +236,7 @@ public class CountryTimeZonesTest {
 
         // The bias should be ignored: it matches a configured zone, but the offset is wrong so
         // should not be considered a match.
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
+        assertOffsetResultEquals(expectedLondonResult, countryTimeZones.lookupByOffsetWithBias(
                 LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, NEW_YORK_TZ /* bias */));
     }
 
@@ -249,51 +255,70 @@ public class CountryTimeZonesTest {
         // This is the DST offset for LONDON_TZ.
         final int dstOffset = LONDON_DST_OFFSET_MILLIS;
 
+        OffsetResult expectedLondonOnlyMatch = new OffsetResult(LONDON_TZ, true /* oneMatch */);
+        OffsetResult expectedReykjavikBestMatch =
+                new OffsetResult(REYKJAVIK_TZ, false /* oneMatch */);
+
         // The three parameters match the configured zone: offset, isDst and when.
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(dstOffset,
-                true /* isDst */, WHEN_DST, null /* bias */));
-        assertZoneEquals(REYKJAVIK_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_NO_DST, null /* bias */));
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(dstOffset,
-                true /* isDst */, WHEN_DST, null /* bias */));
-        assertZoneEquals(REYKJAVIK_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_NO_DST, null /* bias */));
-        assertZoneEquals(REYKJAVIK_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_DST, null /* bias */));
+        assertOffsetResultEquals(expectedLondonOnlyMatch,
+                countryTimeZones.lookupByOffsetWithBias(dstOffset, true /* isDst */, WHEN_DST,
+                        null /* bias */));
+        assertOffsetResultEquals(expectedReykjavikBestMatch,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_NO_DST,
+                        null /* bias */));
+        assertOffsetResultEquals(expectedLondonOnlyMatch,
+                countryTimeZones.lookupByOffsetWithBias(dstOffset, true /* isDst */, WHEN_DST,
+                        null /* bias */));
+        assertOffsetResultEquals(expectedReykjavikBestMatch,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_NO_DST,
+                        null /* bias */));
+        assertOffsetResultEquals(expectedReykjavikBestMatch,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_DST,
+                        null /* bias */));
 
         // Some lookup failure cases where the offset, isDst and when do not match the configured
         // zones.
-        TimeZone noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(dstOffset,
+        OffsetResult noDstMatch1 = countryTimeZones.lookupByOffsetWithBias(dstOffset,
                 true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch1);
 
-        TimeZone noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(noDstOffset,
+        OffsetResult noDstMatch2 = countryTimeZones.lookupByOffsetWithBias(noDstOffset,
                 true /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch2);
 
-        TimeZone noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(noDstOffset,
+        OffsetResult noDstMatch3 = countryTimeZones.lookupByOffsetWithBias(noDstOffset,
                 true /* isDst */, WHEN_NO_DST, null /* bias */);
         assertNull(noDstMatch3);
 
-        TimeZone noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(dstOffset,
+        OffsetResult noDstMatch4 = countryTimeZones.lookupByOffsetWithBias(dstOffset,
                 false /* isDst */, WHEN_DST, null /* bias */);
         assertNull(noDstMatch4);
 
 
         // Some bias cases below.
 
-        // The bias is relevant here: it overrides what would be returned naturally.
-        assertZoneEquals(REYKJAVIK_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_NO_DST, null /* bias */));
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_NO_DST, LONDON_TZ /* bias */));
-        assertZoneEquals(UTC_TZ, countryTimeZones.lookupByOffsetWithBias(noDstOffset,
-                false /* isDst */, WHEN_NO_DST, UTC_TZ /* bias */));
+        // Multiple zones match but Reykjavik is the bias.
+        assertOffsetResultEquals(expectedReykjavikBestMatch,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_NO_DST,
+                        REYKJAVIK_TZ /* bias */));
+
+        // Multiple zones match but London is the bias.
+        OffsetResult expectedLondonBestMatch = new OffsetResult(LONDON_TZ, false /* oneMatch */);
+        assertOffsetResultEquals(expectedLondonBestMatch,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_NO_DST,
+                        LONDON_TZ /* bias */));
+
+        // Multiple zones match but UTC is the bias.
+        OffsetResult expectedUtcResult = new OffsetResult(UTC_TZ, false /* oneMatch */);
+        assertOffsetResultEquals(expectedUtcResult,
+                countryTimeZones.lookupByOffsetWithBias(noDstOffset, false /* isDst */, WHEN_NO_DST,
+                        UTC_TZ /* bias */));
 
         // The bias should be ignored: it matches a configured zone, but the offset is wrong so
         // should not be considered a match.
-        assertZoneEquals(LONDON_TZ, countryTimeZones.lookupByOffsetWithBias(
-                LONDON_DST_OFFSET_MILLIS, true /* isDst */, WHEN_DST, REYKJAVIK_TZ /* bias */));
+        assertOffsetResultEquals(expectedLondonOnlyMatch,
+                countryTimeZones.lookupByOffsetWithBias(LONDON_DST_OFFSET_MILLIS, true /* isDst */,
+                        WHEN_DST, REYKJAVIK_TZ /* bias */));
     }
 
     @Test
@@ -390,6 +415,11 @@ public class CountryTimeZonesTest {
     private static void assertZoneEquals(TimeZone expected, TimeZone actual) {
         // TimeZone.equals() only checks the ID, but that's ok for these tests.
         assertEquals(expected, actual);
+    }
+
+    private static void assertOffsetResultEquals(OffsetResult expected, OffsetResult actual) {
+        assertEquals(expected.mTimeZone.getID(), actual.mTimeZone.getID());
+        assertEquals(expected.mOneMatch, actual.mOneMatch);
     }
 
     private static void assertZonesEqual(List<TimeZone> expected, List<TimeZone> actual) {
