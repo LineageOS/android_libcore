@@ -176,7 +176,9 @@ public class TimeZoneFinder {
         if (countryTimeZones == null) {
             return null;
         }
-        return countryTimeZones.lookupByOffsetWithBias(offsetMillis, isDst, whenMillis, bias);
+        CountryTimeZones.OffsetResult offsetResult =
+                countryTimeZones.lookupByOffsetWithBias(offsetMillis, isDst, whenMillis, bias);
+        return offsetResult != null ? offsetResult.mTimeZone : null;
     }
 
     /**

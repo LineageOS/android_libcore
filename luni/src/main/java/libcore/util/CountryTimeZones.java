@@ -28,6 +28,32 @@ import java.util.List;
  * Information about a country's time zones.
  */
 public class CountryTimeZones {
+
+    /**
+     * The result of lookup up a time zone using offset information (and possibly more).
+     */
+    public final static class OffsetResult {
+
+        /** A zone that matches the supplied criteria. See also {@link #mOneMatch}. */
+        public final TimeZone mTimeZone;
+
+        /** True if there is one match for the supplied criteria */
+        public final boolean mOneMatch;
+
+        public OffsetResult(TimeZone timeZone, boolean oneMatch) {
+            mTimeZone = timeZone;
+            mOneMatch = oneMatch;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "mTimeZone='" + mTimeZone + '\'' +
+                    ", mOneMatch=" + mOneMatch +
+                    '}';
+        }
+    }
+
     private final String countryIso;
     private final String defaultTimeZoneId;
     private final List<String> timeZoneIds;
@@ -236,37 +262,40 @@ public class CountryTimeZones {
      * @param whenMillis the UTC time to match against
      * @param bias the time zone to prefer, can be null
      */
-    public TimeZone lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
+    public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
         if (timeZoneIds == null || timeZoneIds.isEmpty()) {
             return null;
         }
 
         List<TimeZone> candidates = getIcuTimeZones();
+
         TimeZone firstMatch = null;
+        boolean biasMatched = false;
+        boolean oneMatch = true;
         for (TimeZone match : candidates) {
             if (!offsetMatchesAtTime(match, offsetMillis, isDst, whenMillis)) {
                 continue;
             }
 
             if (firstMatch == null) {
-                if (bias == null) {
-                    // No bias, so we can stop at the first match.
-                    return match;
-                }
-                // We have to carry on checking in case the bias matches. We want to return the
-                // first if it doesn't, though.
                 firstMatch = match;
+            } else {
+                oneMatch = false;
             }
-
-            // Check if match is also the bias. There must be a bias otherwise we'd have terminated
-            // already.
-            if (match.getID().equals(bias.getID())) {
-                return match;
+            if (bias != null && match.getID().equals(bias.getID())) {
+                biasMatched = true;
+            }
+            if (firstMatch != null && !oneMatch && (bias == null || biasMatched)) {
+                break;
             }
         }
-        // Return firstMatch, which can be null if there was no match.
-        return firstMatch;
+        if (firstMatch == null) {
+            return null;
+        }
+
+        TimeZone toReturn = biasMatched ? bias : firstMatch;
+        return new OffsetResult(toReturn, oneMatch);
     }
 
     /**
