@@ -261,7 +261,9 @@ public class CountryTimeZones {
      * @param isDst whether the zone is in DST
      * @param whenMillis the UTC time to match against
      * @param bias the time zone to prefer, can be null
+     * @deprecated Use {@link #lookupByOffsetWithBias(int, Integer, long, TimeZone)} instead
      */
+    @Deprecated
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
         if (timeZoneIds == null || timeZoneIds.isEmpty()) {
@@ -311,6 +313,70 @@ public class CountryTimeZones {
         boolean zoneIsDst = offsets[1] != 0;
         if (isDst != zoneIsDst) {
             return false;
+        }
+        return offsetMillis == (offsets[0] + offsets[1]);
+    }
+
+    /**
+     * Returns a time zone for the country, if there is one, that has the desired properties. If
+     * there are multiple matches and the {@code bias} is one of them then it is returned, otherwise
+     * an arbitrary match is returned based on the {@link #getTimeZoneIds()} ordering.
+     *
+     * @param offsetMillis the offset from UTC at {@code whenMillis}
+     * @param dstOffsetMillis the part of {@code offsetMillis} contributed by DST, {@code null}
+     *                        means unknown
+     * @param whenMillis the UTC time to match against
+     * @param bias the time zone to prefer, can be null
+     */
+    public OffsetResult lookupByOffsetWithBias(int offsetMillis, Integer dstOffsetMillis,
+            long whenMillis, TimeZone bias) {
+        if (timeZoneIds == null || timeZoneIds.isEmpty()) {
+            return null;
+        }
+
+        List<TimeZone> candidates = getIcuTimeZones();
+
+        TimeZone firstMatch = null;
+        boolean biasMatched = false;
+        boolean oneMatch = true;
+        for (TimeZone match : candidates) {
+            if (!offsetMatchesAtTime(match, offsetMillis, dstOffsetMillis, whenMillis)) {
+                continue;
+            }
+
+            if (firstMatch == null) {
+                firstMatch = match;
+            } else {
+                oneMatch = false;
+            }
+            if (bias != null && match.getID().equals(bias.getID())) {
+                biasMatched = true;
+            }
+            if (firstMatch != null && !oneMatch && (bias == null || biasMatched)) {
+                break;
+            }
+        }
+        if (firstMatch == null) {
+            return null;
+        }
+
+        TimeZone toReturn = biasMatched ? bias : firstMatch;
+        return new OffsetResult(toReturn, oneMatch);
+    }
+
+    /**
+     * Returns {@code true} if the specified offset, DST and time would be valid in the
+     * timeZone.
+     */
+    private static boolean offsetMatchesAtTime(TimeZone timeZone, int offsetMillis,
+            Integer dstOffsetMillis, long whenMillis) {
+        int[] offsets = new int[2];
+        timeZone.getOffset(whenMillis, false /* local */, offsets);
+
+        if (dstOffsetMillis != null) {
+            if (dstOffsetMillis.intValue() != offsets[1]) {
+                return false;
+            }
         }
         return offsetMillis == (offsets[0] + offsets[1]);
     }
