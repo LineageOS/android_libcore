@@ -486,6 +486,9 @@ public final class OsConstants {
     public static final int SO_SNDLOWAT = placeholder();
     public static final int SO_SNDTIMEO = placeholder();
     public static final int SO_TYPE = placeholder();
+    /** @hide */ public static final int SPLICE_F_MOVE = placeholder();
+    /** @hide */ public static final int SPLICE_F_NONBLOCK = placeholder();
+    /** @hide */ public static final int SPLICE_F_MORE = placeholder();
     public static final int STDERR_FILENO = placeholder();
     public static final int STDIN_FILENO = placeholder();
     public static final int STDOUT_FILENO = placeholder();
