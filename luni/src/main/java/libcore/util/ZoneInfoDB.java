@@ -44,7 +44,7 @@ public final class ZoneInfoDB {
   private static final TzData DATA =
           TzData.loadTzDataWithFallback(TimeZoneDataFiles.getTimeZoneFilePaths(TZDATA_FILE));
 
-  public static class TzData {
+  public static class TzData implements AutoCloseable {
 
     // The database reserves 40 bytes for each id.
     private static final int SIZEOF_TZNAME = 40;
