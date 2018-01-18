@@ -227,10 +227,8 @@ public class TimeZoneFinder {
      * during lookup this method can return null.
      */
     public CountryTimeZones lookupCountryTimeZones(String countryIso) {
-        countryIso = normalizeCountryIso(countryIso);
         synchronized (this) {
-            if (lastCountryTimeZones != null
-                    && lastCountryTimeZones.getCountryIso().equals(countryIso)) {
+            if (lastCountryTimeZones != null && lastCountryTimeZones.isForCountryCode(countryIso)) {
                 return lastCountryTimeZones;
             }
         }
@@ -581,7 +579,7 @@ public class TimeZoneFinder {
         private CountryTimeZones validatedCountryTimeZones;
 
         private SelectiveCountryTimeZonesExtractor(String countryCodeToMatch) {
-            this.countryCodeToMatch = countryCodeToMatch;
+            this.countryCodeToMatch = normalizeCountryIso(countryCodeToMatch);
         }
 
         @Override

@@ -103,6 +103,15 @@ public class CountryTimeZonesTest {
     }
 
     @Test
+    public void isForCountryCode() throws Exception {
+        CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
+                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+        assertTrue(countryTimeZones.isForCountryCode("GB"));
+        assertTrue(countryTimeZones.isForCountryCode("Gb"));
+        assertTrue(countryTimeZones.isForCountryCode("gB"));
+    }
+
+    @Test
     public void structuresAreImmutable() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
                 "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");

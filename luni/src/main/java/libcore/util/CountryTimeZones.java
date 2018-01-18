@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Information about a country's time zones.
@@ -41,7 +42,7 @@ public class CountryTimeZones {
         public final boolean mOneMatch;
 
         public OffsetResult(TimeZone timeZone, boolean oneMatch) {
-            mTimeZone = timeZone;
+            mTimeZone = java.util.Objects.requireNonNull(timeZone);
             mOneMatch = oneMatch;
         }
 
@@ -66,7 +67,7 @@ public class CountryTimeZones {
 
     private CountryTimeZones(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
             List<String> timeZoneIds) {
-        this.countryIso = countryIso;
+        this.countryIso = java.util.Objects.requireNonNull(countryIso);
         this.defaultTimeZoneId = defaultTimeZoneId;
         this.everUsesUtc = everUsesUtc;
         // Create a defensive copy of the IDs list.
@@ -103,8 +104,9 @@ public class CountryTimeZones {
             defaultTimeZoneId = null;
         }
 
+        String normalizedCountryIso = normalizeCountryIso(countryIso);
         return new CountryTimeZones(
-                countryIso, defaultTimeZoneId, everUsesUtc, validCountryTimeZoneIds);
+                normalizedCountryIso, defaultTimeZoneId, everUsesUtc, validCountryTimeZoneIds);
     }
 
     /**
@@ -112,6 +114,13 @@ public class CountryTimeZones {
      */
     public String getCountryIso() {
         return countryIso;
+    }
+
+    /**
+     * Returns true if the ISO code for the country is a match for the one specified.
+     */
+    public boolean isForCountryCode(String countryIso) {
+        return this.countryIso.equals(normalizeCountryIso(countryIso));
     }
 
     /**
@@ -399,5 +408,10 @@ public class CountryTimeZones {
             return null;
         }
         return timeZone;
+    }
+
+    private static String normalizeCountryIso(String countryIso) {
+        // Lowercase ASCII is normalized for the purposes of the code in this class.
+        return countryIso.toLowerCase(Locale.US);
     }
 }
