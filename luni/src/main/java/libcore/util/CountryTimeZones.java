@@ -57,16 +57,18 @@ public class CountryTimeZones {
     private final String countryIso;
     private final String defaultTimeZoneId;
     private final List<String> timeZoneIds;
+    private final boolean everUsesUtc;
 
     // Memoized frozen ICU TimeZone object for the default.
     private TimeZone icuDefaultTimeZone;
     // Memoized frozen ICU TimeZone objects for the timeZoneIds.
     private List<TimeZone> icuTimeZones;
 
-    private CountryTimeZones(String countryIso, String defaultTimeZoneId,
+    private CountryTimeZones(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
             List<String> timeZoneIds) {
         this.countryIso = countryIso;
         this.defaultTimeZoneId = defaultTimeZoneId;
+        this.everUsesUtc = everUsesUtc;
         // Create a defensive copy of the IDs list.
         this.timeZoneIds = Collections.unmodifiableList(new ArrayList<>(timeZoneIds));
     }
@@ -75,7 +77,7 @@ public class CountryTimeZones {
      * Creates a {@link CountryTimeZones} object containing only known time zone IDs.
      */
     public static CountryTimeZones createValidated(String countryIso, String defaultTimeZoneId,
-            List<String> countryTimeZoneIds, String debugInfo) {
+            boolean everUsesUtc, List<String> countryTimeZoneIds, String debugInfo) {
 
         // We rely on ZoneInfoDB to tell us what the known valid time zone IDs are. ICU may
         // recognize more but we want to be sure that zone IDs can be used with java.util as well as
@@ -101,7 +103,8 @@ public class CountryTimeZones {
             defaultTimeZoneId = null;
         }
 
-        return new CountryTimeZones(countryIso, defaultTimeZoneId, validCountryTimeZoneIds);
+        return new CountryTimeZones(
+                countryIso, defaultTimeZoneId, everUsesUtc, validCountryTimeZoneIds);
     }
 
     /**
@@ -114,7 +117,7 @@ public class CountryTimeZones {
     /**
      * Returns the default time zone ID for the country. Can return null in cases when no data is
      * available or the time zone ID provided to
-     * {@link #createValidated(String, String, List, String)} was not recognized.
+     * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
      */
     public synchronized TimeZone getDefaultTimeZone() {
         if (icuDefaultTimeZone == null) {
@@ -132,7 +135,7 @@ public class CountryTimeZones {
     /**
      * Returns the default time zone ID for the country. Can return null in cases when no data is
      * available or the time zone ID provided to
-     * {@link #createValidated(String, String, List, String)} was not recognized.
+     * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
      */
     public String getDefaultTimeZoneId() {
         return defaultTimeZoneId;
@@ -158,6 +161,9 @@ public class CountryTimeZones {
 
         CountryTimeZones that = (CountryTimeZones) o;
 
+        if (everUsesUtc != that.everUsesUtc) {
+            return false;
+        }
         if (!countryIso.equals(that.countryIso)) {
             return false;
         }
@@ -173,6 +179,7 @@ public class CountryTimeZones {
         int result = countryIso.hashCode();
         result = 31 * result + (defaultTimeZoneId != null ? defaultTimeZoneId.hashCode() : 0);
         result = 31 * result + timeZoneIds.hashCode();
+        result = 31 * result + (everUsesUtc ? 1 : 0);
         return result;
     }
 
@@ -208,6 +215,11 @@ public class CountryTimeZones {
      * Returns true if the country has at least one zone that is the same as UTC at the given time.
      */
     public boolean hasUtcZone(long whenMillis) {
+        // If the data tells us the country never uses UTC we don't have to check anything.
+        if (!everUsesUtc) {
+            return false;
+        }
+
         for (TimeZone zone : getIcuTimeZones()) {
             if (zone.getOffset(whenMillis) == 0) {
                 return true;

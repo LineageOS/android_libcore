@@ -51,6 +51,7 @@ public class TimeZoneFinder {
     private static final String COUNTRY_ELEMENT = "country";
     private static final String COUNTRY_CODE_ATTRIBUTE = "code";
     private static final String DEFAULT_TIME_ZONE_ID_ATTRIBUTE = "default";
+    private static final String EVER_USES_UTC_ATTRIBUTE = "everutc";
     private static final String ID_ELEMENT = "id";
 
     private static TimeZoneFinder instance;
@@ -261,7 +262,7 @@ public class TimeZoneFinder {
     /**
      * Processes the XML, applying the {@link CountryZonesProcessor} to the &lt;countryzones&gt;
      * element. Processing can terminate early if the
-     * {@link CountryZonesProcessor#process(String, String, List, String)} returns
+     * {@link CountryZonesProcessor#process(String, String, boolean, List, String)} returns
      * {@link CountryZonesProcessor#HALT} or it throws an exception.
      */
     private void processXml(CountryZonesProcessor processor)
@@ -337,10 +338,18 @@ public class TimeZoneFinder {
                     throw new XmlPullParserException("Unable to find default time zone ID: "
                             + parser.getPositionDescription());
                 }
+                String everUsesUtcString = parser.getAttributeValue(
+                        null /* namespace */, EVER_USES_UTC_ATTRIBUTE);
+                if (!("y".equals(everUsesUtcString) || "n".equals(everUsesUtcString))) {
+                    throw new XmlPullParserException(
+                            "Unable to find UTC hint attribute (" + EVER_USES_UTC_ATTRIBUTE + "): "
+                            + parser.getPositionDescription());
+                }
+                boolean everUsesUtc = everUsesUtcString.equals("y");
 
                 String debugInfo = parser.getPositionDescription();
                 List<String> timeZoneIds = parseZoneIds(parser);
-                if (processor.process(code, defaultTimeZoneId, timeZoneIds, debugInfo)
+                if (processor.process(code, defaultTimeZoneId, everUsesUtc, timeZoneIds, debugInfo)
                         == CountryZonesProcessor.HALT) {
                     return CountryZonesProcessor.HALT;
                 }
@@ -518,8 +527,8 @@ public class TimeZoneFinder {
          * should stop (but without considering this an error). Problems with parser are reported as
          * an exception.
          */
-        boolean process(String countryIso, String defaultTimeZoneId, List<String> timeZoneIds,
-                String debugInfo) throws XmlPullParserException;
+        boolean process(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
+                List<String> timeZoneIds, String debugInfo) throws XmlPullParserException;
     }
 
     /**
@@ -536,7 +545,8 @@ public class TimeZoneFinder {
 
         @Override
         public boolean process(String countryIso, String defaultTimeZoneId,
-                List<String> timeZoneIds, String debugInfo) throws XmlPullParserException {
+                boolean everUsesUtc, List<String> timeZoneIds, String debugInfo)
+                throws XmlPullParserException {
             if (!normalizeCountryIso(countryIso).equals(countryIso)) {
                 throw new XmlPullParserException("Country code: " + countryIso
                         + " is not normalized at " + debugInfo);
@@ -576,13 +586,13 @@ public class TimeZoneFinder {
 
         @Override
         public boolean process(String countryIso, String defaultTimeZoneId,
-                List<String> countryTimeZoneIds, String debugInfo) {
+                boolean everUsesUtc, List<String> countryTimeZoneIds, String debugInfo) {
             countryIso = normalizeCountryIso(countryIso);
             if (!countryCodeToMatch.equals(countryIso)) {
                 return CONTINUE;
             }
             validatedCountryTimeZones = CountryTimeZones.createValidated(countryIso,
-                    defaultTimeZoneId, countryTimeZoneIds, debugInfo);
+                    defaultTimeZoneId, everUsesUtc, countryTimeZoneIds, debugInfo);
 
             return HALT;
         }
