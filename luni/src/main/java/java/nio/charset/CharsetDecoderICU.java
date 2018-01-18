@@ -51,24 +51,26 @@ final class CharsetDecoderICU extends CharsetDecoder {
         // This complexity is necessary to ensure that even if the constructor, superclass
         // constructor, or call to updateCallback throw, we still free the native peer.
         long address = 0;
+        CharsetDecoderICU result;
         try {
             address = NativeConverter.openConverter(icuCanonicalName);
             float averageCharsPerByte = NativeConverter.getAveCharsPerByte(address);
-            CharsetDecoderICU result = new CharsetDecoderICU(cs, averageCharsPerByte, address);
-            address = 0; // CharsetDecoderICU has taken ownership; its finalizer will do the free.
-            result.updateCallback();
-            return result;
-        } finally {
+            result = new CharsetDecoderICU(cs, averageCharsPerByte, address);
+        } catch (Throwable t) {
             if (address != 0) {
                 NativeConverter.closeConverter(address);
             }
+            throw t;
         }
+        // An exception in registerConverter() will deallocate address:
+        NativeConverter.registerConverter(result, address);
+        result.updateCallback();
+        return result;
     }
 
     private CharsetDecoderICU(Charset cs, float averageCharsPerByte, long address) {
         super(cs, averageCharsPerByte, MAX_CHARS_PER_BYTE);
         this.converterHandle = address;
-        NativeConverter.registerConverter(this, converterHandle);
     }
 
     @Override protected void implReplaceWith(String newReplacement) {
