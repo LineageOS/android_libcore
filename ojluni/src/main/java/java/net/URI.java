@@ -194,7 +194,7 @@ import java.lang.NullPointerException;  // for javadoc
  * Resolving the relative URI
  *
  * <blockquote>
- * {@code ../../../demo/jfc/SwingSet2/src/SwingSet2.java&nbsp;&nbsp;&nbsp;&nbsp;}(2)
+ * {@code ../../../demo/jfc/SwingSet2/src/SwingSet2.java}&nbsp;&nbsp;&nbsp;&nbsp;(2)
  * </blockquote>
  *
  * against this result yields, in turn,
@@ -308,7 +308,7 @@ import java.lang.NullPointerException;  // for javadoc
  *
  *   <li><p><a name="encode"></a> A character is <i>encoded</i> by replacing it
  *   with the sequence of escaped octets that represent that character in the
- *   UTF-8 character set.  The Euro currency symbol ({@code '&#92;u20AC'}),
+ *   UTF-8 character set.  The Euro currency symbol ({@code '\u005Cu20AC'}),
  *   for example, is encoded as {@code "%E2%82%AC"}.  <i>(<b>Deviation from
  *   RFC&nbsp;2396</b>, which does not specify any particular character
  *   set.)</i> </p></li>
@@ -327,7 +327,7 @@ import java.lang.NullPointerException;  // for javadoc
  *   decoding any encoded non-US-ASCII characters.  If a <a
  *   href="../nio/charset/CharsetDecoder.html#ce">decoding error</a> occurs
  *   when decoding the escaped octets then the erroneous octets are replaced by
- *   {@code '&#92;uFFFD'}, the Unicode replacement character.  </p></li>
+ *   {@code '\u005CuFFFD'}, the Unicode replacement character.  </p></li>
  *
  * </ul>
  *
@@ -1065,7 +1065,7 @@ public final class URI
      * Constructs a URL from this URI.
      *
      * <p> This convenience method works as if invoking it were equivalent to
-     * evaluating the expression {@code new&nbsp;URL(this.toString())} after
+     * evaluating the expression {@code new URL(this.toString())} after
      * first checking that this URI is absolute. </p>
      *
      * @return  A URL constructed from this URI
@@ -1483,7 +1483,7 @@ public final class URI
      *
      * <p> The ordering of URIs is defined as follows: </p>
      *
-     * <ul type=disc>
+     * <ul>
      *
      *   <li><p> Two URIs with different schemes are ordered according the
      *   ordering of their schemes, without regard to case. </p></li>
@@ -1501,7 +1501,7 @@ public final class URI
      *   <li><p> Two hierarchical URIs with identical schemes are ordered
      *   according to the ordering of their authority components: </p>
      *
-     *   <ul type=disc>
+     *   <ul>
      *
      *     <li><p> If both authority components are server-based then the URIs
      *     are ordered according to their user-information components; if these

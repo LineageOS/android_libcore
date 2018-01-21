@@ -67,20 +67,23 @@ final class CharsetEncoderICU extends CharsetEncoder {
         // This complexity is necessary to ensure that even if the constructor, superclass
         // constructor, or call to updateCallback throw, we still free the native peer.
         long address = 0;
+        CharsetEncoderICU result;
         try {
             address = NativeConverter.openConverter(icuCanonicalName);
             float averageBytesPerChar = NativeConverter.getAveBytesPerChar(address);
             float maxBytesPerChar = NativeConverter.getMaxBytesPerChar(address);
             byte[] replacement = makeReplacement(icuCanonicalName, address);
-            CharsetEncoderICU result = new CharsetEncoderICU(cs, averageBytesPerChar, maxBytesPerChar, replacement, address);
-            address = 0; // CharsetEncoderICU has taken ownership; its finalizer will do the free.
-            result.updateCallback();
-            return result;
-        } finally {
+            result = new CharsetEncoderICU(cs, averageBytesPerChar, maxBytesPerChar, replacement, address);
+        } catch (Throwable t) {
             if (address != 0) {
                 NativeConverter.closeConverter(address);
             }
+            throw t;
         }
+        // An exception in registerConverter() will deallocate address:
+        NativeConverter.registerConverter(result, address);
+        result.updateCallback();
+        return result;
     }
 
     private static byte[] makeReplacement(String icuCanonicalName, long address) {
@@ -97,7 +100,6 @@ final class CharsetEncoderICU extends CharsetEncoder {
         super(cs, averageBytesPerChar, maxBytesPerChar, replacement, true);
         // Our native peer needs to know what just happened...
         this.converterHandle = address;
-        NativeConverter.registerConverter(this, converterHandle);
     }
 
     @Override protected void implReplaceWith(byte[] newReplacement) {
