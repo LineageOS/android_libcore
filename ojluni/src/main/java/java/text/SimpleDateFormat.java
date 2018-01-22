@@ -574,8 +574,41 @@ public class SimpleDateFormat extends DateFormat {
      * class.
      */
     public SimpleDateFormat() {
+        // Android-changed: Android has no LocaleProviderAdapter. Use ICU locale data.
+        // this("", Locale.getDefault(Locale.Category.FORMAT));
+        // applyPatternImpl(LocaleProviderAdapter.getResourceBundleBased().getLocaleResources(locale)
+        //                  .getDateTimePattern(SHORT, SHORT, calendar));
         this(SHORT, SHORT, Locale.getDefault(Locale.Category.FORMAT));
     }
+
+    // BEGIN Android-added: Ctor used by DateFormat to remove use of LocaleProviderAdapter.
+    /**
+     * Constructs a <code>SimpleDateFormat</code> using the given date and time formatting styles.
+     * @param timeStyle the given date formatting style.
+     * @param dateStyle the given time formatting style.
+     * @param locale the locale whose pattern and date format symbols should be used
+     */
+    SimpleDateFormat(int timeStyle, int dateStyle, Locale locale) {
+        this(getDateTimeFormat(timeStyle, dateStyle, locale), locale);
+    }
+
+    private static String getDateTimeFormat(int timeStyle, int dateStyle, Locale locale) {
+        LocaleData localeData = LocaleData.get(locale);
+        if ((timeStyle >= 0) && (dateStyle >= 0)) {
+            Object[] dateTimeArgs = {
+                localeData.getDateFormat(dateStyle),
+                localeData.getTimeFormat(timeStyle),
+            };
+            return MessageFormat.format("{0} {1}", dateTimeArgs);
+        } else if (timeStyle >= 0) {
+            return localeData.getTimeFormat(timeStyle);
+        } else if (dateStyle >= 0) {
+            return localeData.getDateFormat(dateStyle);
+        } else {
+            throw new IllegalArgumentException("No date or time style specified");
+        }
+    }
+    // END Android-added: Ctor used by DateFormat to remove use of LocaleProviderAdapter.
 
     /**
      * Constructs a <code>SimpleDateFormat</code> using the given pattern and
@@ -645,40 +678,6 @@ public class SimpleDateFormat extends DateFormat {
         initializeCalendar(this.locale);
         initialize(this.locale);
         useDateFormatSymbols = true;
-    }
-
-    /* Package-private, called by DateFormat factory methods */
-    SimpleDateFormat(int timeStyle, int dateStyle, Locale loc) {
-        if (loc == null) {
-            throw new NullPointerException();
-        }
-
-        this.locale = loc;
-        // initialize calendar and related fields
-        initializeCalendar(loc);
-
-        // BEGIN Android-changed: Use ICU for locale data.
-        formatData = DateFormatSymbols.getInstanceRef(loc);
-        LocaleData localeData = LocaleData.get(loc);
-        if ((timeStyle >= 0) && (dateStyle >= 0)) {
-            Object[] dateTimeArgs = {
-                localeData.getDateFormat(dateStyle),
-                localeData.getTimeFormat(timeStyle),
-            };
-            pattern = MessageFormat.format("{0} {1}", dateTimeArgs);
-        }
-        else if (timeStyle >= 0) {
-            pattern = localeData.getTimeFormat(timeStyle);
-        }
-        else if (dateStyle >= 0) {
-            pattern = localeData.getDateFormat(dateStyle);
-        }
-        else {
-            throw new IllegalArgumentException("No date or time style specified");
-        }
-        // END Android-changed: Use ICU for locale data.
-
-        initialize(loc);
     }
 
     /* Initialize compiledPattern and numberFormat fields */
