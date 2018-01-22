@@ -572,6 +572,12 @@ public final class Os {
     public static void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException { Libcore.os.socketpair(domain, type, protocol, fd1, fd2); }
 
     /**
+     * See <a href="http://man7.org/linux/man-pages/man2/splice.2.html">splice(2)</a>.
+     * @hide
+     */
+    public static long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException { return Libcore.os.splice(fdIn, offIn, fdOut, offOut, len, flags); }
+
+    /**
      * See <a href="http://man7.org/linux/man-pages/man2/stat.2.html">stat(2)</a>.
      */
     public static StructStat stat(String path) throws ErrnoException { return Libcore.os.stat(path); }

@@ -169,6 +169,7 @@ public interface Os {
     public void shutdown(FileDescriptor fd, int how) throws ErrnoException;
     public FileDescriptor socket(int domain, int type, int protocol) throws ErrnoException;
     public void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException;
+    public long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException;
     public StructStat stat(String path) throws ErrnoException;
     public StructStatVfs statvfs(String path) throws ErrnoException;
     public String strerror(int errno);
