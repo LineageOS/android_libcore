@@ -44,6 +44,7 @@ import java.net.ServerSocket;
 import java.net.SocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -958,4 +959,72 @@ public class OsTest extends TestCase {
     }
   }
 
+  public void test_splice() throws Exception {
+    FileDescriptor[] pipe = Libcore.os.pipe2(0);
+    File in = createTempFile("splice1", "foobar");
+    File out = createTempFile("splice2", "");
+
+    Int64Ref offIn = new Int64Ref(1);
+    Int64Ref offOut = new Int64Ref(0);
+
+    // Splice into pipe
+    try (FileInputStream streamIn = new FileInputStream(in)) {
+      FileDescriptor fdIn = streamIn.getFD();
+      long result = Libcore.os.splice(fdIn, offIn, pipe[1], null /* offOut */ , 10 /* len */, 0 /* flags */);
+      assertEquals(5, result);
+      assertEquals(6, offIn.value);
+    }
+
+    // Splice from pipe
+    try (FileOutputStream streamOut = new FileOutputStream(out)) {
+      FileDescriptor fdOut = streamOut.getFD();
+      long result = Libcore.os.splice(pipe[0], null /* offIn */, fdOut, offOut, 10 /* len */, 0 /* flags */);
+      assertEquals(5, result);
+      assertEquals(5, offOut.value);
+    }
+
+    assertEquals("oobar", IoUtils.readFileAsString(out.getPath()));
+
+    Libcore.os.close(pipe[0]);
+    Libcore.os.close(pipe[1]);
+  }
+
+  public void test_splice_errors() throws Exception {
+    File in = createTempFile("splice3", "");
+    File out = createTempFile("splice4", "");
+    FileDescriptor[] pipe = Libcore.os.pipe2(0);
+
+    //.fdIn == null
+    try {
+      Libcore.os.splice(null /* fdIn */, null /* offIn */, pipe[1],
+          null /*offOut*/, 10 /* len */, 0 /* flags */);
+      fail();
+    } catch(ErrnoException expected) {
+      assertEquals(EBADF, expected.errno);
+    }
+
+    //.fdOut == null
+    try {
+      Libcore.os.splice(pipe[0] /* fdIn */, null /* offIn */, null  /* fdOut */,
+          null /*offOut*/, 10 /* len */, 0 /* flags */);
+      fail();
+    } catch(ErrnoException expected) {
+      assertEquals(EBADF, expected.errno);
+    }
+
+    // No pipe fd
+    try (FileOutputStream streamOut = new FileOutputStream(out)) {
+      try (FileInputStream streamIn = new FileInputStream(in)) {
+        FileDescriptor fdIn = streamIn.getFD();
+        FileDescriptor fdOut = streamOut.getFD();
+        Libcore.os.splice(fdIn, null  /* offIn */, fdOut, null /* offOut */, 10 /* len */, 0 /* flags */);
+        fail();
+      } catch(ErrnoException expected) {
+        assertEquals(EINVAL, expected.errno);
+      }
+    }
+
+    Libcore.os.close(pipe[0]);
+    Libcore.os.close(pipe[1]);
+  }
 }
