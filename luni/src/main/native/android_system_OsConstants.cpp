@@ -544,6 +544,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "SO_SNDLOWAT", SO_SNDLOWAT);
     initConstant(env, c, "SO_SNDTIMEO", SO_SNDTIMEO);
     initConstant(env, c, "SO_TYPE", SO_TYPE);
+    initConstant(env, c, "SPLICE_F_MOVE", SPLICE_F_MOVE);
+    initConstant(env, c, "SPLICE_F_NONBLOCK", SPLICE_F_NONBLOCK);
+    initConstant(env, c, "SPLICE_F_MORE", SPLICE_F_MORE);
     initConstant(env, c, "STDERR_FILENO", STDERR_FILENO);
     initConstant(env, c, "STDIN_FILENO", STDIN_FILENO);
     initConstant(env, c, "STDOUT_FILENO", STDOUT_FILENO);
