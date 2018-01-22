@@ -397,4 +397,12 @@ public class BlockGuardOs extends ForwardingOs {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         os.unlink(pathname);
     }
+
+    @Override public long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException {
+        // It's infeasible to figure out if splice will result in read or write (would require fstat to figure out which fd is pipe).
+        // So, signal both read and write.
+        BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getThreadPolicy().onReadFromDisk();
+        return os.splice(fdIn, offIn, fdOut, offOut, len, flags);
+    }
 }
