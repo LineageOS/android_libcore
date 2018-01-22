@@ -49,6 +49,13 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         super.tearDown();
     }
 
+    public void testDefaultConstructor_localeUS() {
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.setTimeZone(UTC);
+        assertEquals("M/d/yy h:mm a", sdf.toPattern());
+        assertEquals("1/1/70 12:00 AM", sdf.format(new Date(0)));
+    }
+
     // The RI fails this test.
     public void test2DigitYearStartIsCloned() throws Exception {
         // Test that get2DigitYearStart returns a clone.
