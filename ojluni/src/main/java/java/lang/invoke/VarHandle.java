@@ -2289,9 +2289,6 @@ public abstract class VarHandle {
     /** BitMask of all access modes. */
     private final static int ALL_MODES_BIT_MASK;
 
-    /** Indicator of machine word size. */
-    private final static boolean RUNNING_ON_64BIT = VMRuntime.getRuntime().is64Bit();
-
     static {
         // Check we're not about to overflow the storage of the
         // bitmasks here and in the accessModesBitMask field.
@@ -2368,13 +2365,11 @@ public abstract class VarHandle {
         //
         // The supported access modes are described in:
         // @see java.lang.invoke.MethodHandles#byteArrayViewVarHandle
-        int bitMask = 0;
 
-        // Read/write access modes supported for all types except for
-        // long and double on 32-bit platforms.
-        if (RUNNING_ON_64BIT || (varType != long.class && varType != double.class)) {
-            bitMask |= READ_ACCESS_MODES_BIT_MASK | WRITE_ACCESS_MODES_BIT_MASK;
-        }
+        // Read/write access modes supported for all types including
+        // long and double on 32-bit platforms (though these accesses
+        // may not be atomic).
+        int bitMask = READ_ACCESS_MODES_BIT_MASK | WRITE_ACCESS_MODES_BIT_MASK;
 
         // int, long, float, double support atomic update modes per documentation.
         if (varType == int.class || varType == long.class ||
