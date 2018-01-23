@@ -91,9 +91,8 @@ public class CloseGuardTest {
         owner.open();
         CloseGuard.setEnabled(false);
 
-        // Although the resource was not released it should not report it because CloseGuard was
-        // not enabled when the CloseGuard was finalized.
-        assertUnreleasedResources(owner, 0);
+        // We report if CloseGuard was enabled on open.
+        assertUnreleasedResources(owner, 1);
     }
 
     @Test
@@ -127,9 +126,8 @@ public class CloseGuardTest {
         CloseGuard.setEnabled(true);
         owner.open();
 
-        // Although the resource was not released it should not report it because CloseGuard was
-        // not enabled when the CloseGuard was created.
-        assertUnreleasedResources(owner, 0);
+        // The enabled state only matters during the open call.
+        assertUnreleasedResources(owner, 1);
     }
 
     private void assertUnreleasedResources(ResourceOwner owner, int expectedCount)
