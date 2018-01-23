@@ -253,6 +253,7 @@ public final class Linux implements Os {
     public native void shutdown(FileDescriptor fd, int how) throws ErrnoException;
     public native FileDescriptor socket(int domain, int type, int protocol) throws ErrnoException;
     public native void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException;
+    public native long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException;
     public native StructStat stat(String path) throws ErrnoException;
     public native StructStatVfs statvfs(String path) throws ErrnoException;
     public native String strerror(int errno);

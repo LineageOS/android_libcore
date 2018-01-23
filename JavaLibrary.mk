@@ -208,8 +208,12 @@ endif
 # Make the core-ojtests-public library. Excludes any private API tests.
 ifeq ($(LIBCORE_SKIP_TESTS),)
     include $(CLEAR_VARS)
-    # Filter out SerializedLambdaTest because it depends on stub classes and won't actually run.
-    LOCAL_SRC_FILES := $(filter-out %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files)) # Do not include anything from the boot* directories. Those directories need a custom bootclasspath to run.
+    # Filter out the following:
+    # 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
+    #     and won't actually run, and
+    # 2.) util/stream/boot*. Those directories contain classes in the package java.util.stream;
+    #     excluding them means we don't need LOCAL_PATCH_MODULE := java.base
+    LOCAL_SRC_FILES := $(filter-out %/DeserializeMethodTest.java %/SerializedLambdaTest.java ojluni/src/test/java/util/stream/boot%,$(ojtest_src_files))
     # Include source code as part of JAR
     LOCAL_JAVA_RESOURCE_DIRS := ojluni/src/test/dist $(ojtest_resource_dirs)
     LOCAL_NO_STANDARD_LIBRARIES := true
@@ -280,6 +284,21 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_DX_FLAGS := --core-library
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-ojtests-hostdex
+    # ojluni/src/test/java/util/stream/{bootlib,boottest}
+    # contains tests that are in packages from java.base;
+    # By default, OpenJDK 9's javac will only compile such
+    # code if it's declared to also be in java.base at
+    # compile time.
+    #
+    # For now, we use --patch-module to put all sources
+    # and dependencies from this make target into java.base;
+    # other source directories in this make target are in
+    # packages not from java.base; if this becomes a proble
+    # in future, this could be addressed eg. by splitting
+    # boot{lib,test} out into a separate make target,
+    # deleting those tests or moving them to a different
+    # package.
+    LOCAL_PATCH_MODULE := java.base
     include $(BUILD_HOST_DALVIK_JAVA_LIBRARY)
 endif
 

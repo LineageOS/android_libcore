@@ -2330,6 +2330,50 @@ static void Linux_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint 
     }
 }
 
+static jlong Linux_splice(JNIEnv* env, jobject, jobject javaFdIn, jobject javaOffIn, jobject javaFdOut, jobject javaOffOut, jlong len, jint flags) {
+    int fdIn = jniGetFDFromFileDescriptor(env, javaFdIn);
+    int fdOut = jniGetFDFromFileDescriptor(env, javaFdOut);
+    int spliceErrno;
+
+    jlong offIn = (javaOffIn == NULL ? 0 : env->GetLongField(javaOffIn, int64RefValueFid));
+    jlong offOut = (javaOffOut == NULL ? 0 : env->GetLongField(javaOffOut, int64RefValueFid));
+    jlong ret = -1;
+    do {
+        bool wasSignaled = false;
+        {
+            AsynchronousCloseMonitor monitorIn(fdIn);
+            AsynchronousCloseMonitor monitorOut(fdOut);
+            ret = splice(fdIn, (javaOffIn == NULL ? NULL : &offIn),
+                   fdOut, (javaOffOut == NULL ? NULL : &offOut),
+                   len, flags);
+            spliceErrno = errno;
+            wasSignaled = monitorIn.wasSignaled() || monitorOut.wasSignaled();
+        }
+        if (wasSignaled) {
+            jniThrowException(env, "java/io/InterruptedIOException", "splice interrupted");
+            ret = -1;
+            break;
+        }
+        if (ret == -1 && spliceErrno != EINTR) {
+            throwErrnoException(env, "splice");
+            break;
+        }
+    } while (ret == -1);
+    if (ret == -1) {
+        /* If the syscall failed, re-set errno: throwing an exception might have modified it. */
+        errno = spliceErrno;
+    } else {
+        if (javaOffIn != NULL) {
+            env->SetLongField(javaOffIn, int64RefValueFid, offIn);
+        }
+        if (javaOffOut != NULL) {
+            env->SetLongField(javaOffOut, int64RefValueFid, offOut);
+        }
+    }
+    return ret;
+}
+
+
 static jobject Linux_stat(JNIEnv* env, jobject, jstring javaPath) {
     return doStat(env, javaPath, false);
 }
@@ -2563,6 +2607,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, shutdown, "(Ljava/io/FileDescriptor;I)V"),
     NATIVE_METHOD(Linux, socket, "(III)Ljava/io/FileDescriptor;"),
     NATIVE_METHOD(Linux, socketpair, "(IIILjava/io/FileDescriptor;Ljava/io/FileDescriptor;)V"),
+    NATIVE_METHOD(Linux, splice, "(Ljava/io/FileDescriptor;Landroid/system/Int64Ref;Ljava/io/FileDescriptor;Landroid/system/Int64Ref;JI)J"),
     NATIVE_METHOD(Linux, stat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
     NATIVE_METHOD(Linux, statvfs, "(Ljava/lang/String;)Landroid/system/StructStatVfs;"),
     NATIVE_METHOD(Linux, strerror, "(I)Ljava/lang/String;"),
