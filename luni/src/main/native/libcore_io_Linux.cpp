@@ -2465,7 +2465,7 @@ static void Linux_unsetenv(JNIEnv* env, jobject, jstring javaName) {
 static jint Linux_waitpid(JNIEnv* env, jobject, jint pid, jobject javaStatus, jint options) {
     int status;
     int rc = throwIfMinusOne(env, "waitpid", TEMP_FAILURE_RETRY(waitpid(pid, &status, options)));
-    if (rc != -1) {
+    if (javaStatus != NULL && rc != -1) {
         env->SetIntField(javaStatus, int32RefValueFid, status);
     }
     return rc;
