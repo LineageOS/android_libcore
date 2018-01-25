@@ -17,6 +17,7 @@
 package android.system;
 
 /**
+ * @hide
  * A signed 32bit integer reference suitable for passing to lower-level system calls.
  */
 public class Int32Ref {
