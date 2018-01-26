@@ -166,6 +166,7 @@ public class OldStringTest extends junit.framework.TestCase {
         assertEquals("Returned incorrect string.", hw1, hw1.replace("!", "."));
     }
 
+    @SuppressWarnings("InvalidPatternSyntax")
     public void test_replaceAll() {
         String str = "!'123123.123HelloWorld!123123helloworld#";
         String [] patterns = {"[hw\\p{Upper}]", "(o|l){2,}", "([\'\"]?)(\\d+)",
@@ -188,6 +189,7 @@ public class OldStringTest extends junit.framework.TestCase {
         }
     }
 
+    @SuppressWarnings("InvalidPatternSyntax")
     public void test_replaceFirst() {
         String str = "!'123123.123HelloWorld!123123helloworld#";
         String [] patterns = {"[hw\\p{Upper}]", "(o|l){2,}", "([\'\"]?)(\\d+)",
@@ -210,6 +212,7 @@ public class OldStringTest extends junit.framework.TestCase {
         }
     }
 
+    @SuppressWarnings("InvalidPatternSyntax")
     public void test_splitLString() {
         String str = "!'123123.123HelloWorld!123123helloworld#";
         String [] patterns = {"[!.1]", "(\\d+).*e(l+)o.*orld"};
@@ -230,6 +233,7 @@ public class OldStringTest extends junit.framework.TestCase {
         }
     }
 
+    @SuppressWarnings("InvalidPatternSyntax")
     public void test_splitLStringLint() {
         String str = "!'123123.123HelloWorld!123123helloworld#";
         String pattern = "[!.1]";
