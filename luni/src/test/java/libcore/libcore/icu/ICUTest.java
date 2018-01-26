@@ -293,12 +293,6 @@ public class ICUTest extends junit.framework.TestCase {
     List<String> noCanonicalLookupIds = new ArrayList<>();
     List<String> nonSystemIds = new ArrayList<>();
     for (String zoneInfoDbId : zoneInfoDbAvailableIds) {
-
-      if (zoneInfoDbId.equals("Asia/Hanoi")) {
-        // Known ICU lookup issue: http://b/30277331
-        continue;
-      }
-
       if (!icuAvailableIds.contains(zoneInfoDbId)) {
         nonIcuAvailableIds.add(zoneInfoDbId);
       }
