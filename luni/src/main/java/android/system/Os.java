@@ -638,7 +638,7 @@ public final class Os {
     public static void unsetenv(String name) throws ErrnoException { Libcore.os.unsetenv(name); }
 
     /**
-     * See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
+     * @hide See <a href="http://man7.org/linux/man-pages/man2/waitpid.2.html">waitpid(2)</a>.
      *
      * @throws IllegalArgumentException if {@code status != null && status.length != 1}
      */

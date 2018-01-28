@@ -259,6 +259,12 @@ public final class VMRuntime {
     public native void disableJitCompilation();
 
     /**
+     * Returns true if the app has accessed a hidden API. This does not include
+     * attempts which have been blocked.
+     */
+    public native boolean hasUsedHiddenApi();
+
+    /**
      * Returns an array allocated in an area of the Java heap where it will never be moved.
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
