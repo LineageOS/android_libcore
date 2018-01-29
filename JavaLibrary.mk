@@ -351,3 +351,48 @@ LOCAL_DROIDDOC_OPTIONS := \
 LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=external/doclava/res/assets/templates-sdk
 
 include $(BUILD_DROIDDOC)
+
+# For unbundled build we'll use the prebuilt jar from prebuilts/sdk.
+ifeq (,$(TARGET_BUILD_APPS)$(filter true,$(TARGET_BUILD_PDK)))
+
+# Generate the stub source files for core.current.stubs
+# =====================================================
+include $(CLEAR_VARS)
+
+LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
+LOCAL_GENERATED_SOURCES := $(libcore_to_document_generated)
+
+LOCAL_MODULE_CLASS := JAVA_LIBRARIES
+
+LOCAL_DROIDDOC_OPTIONS:= \
+    -stubs $(TARGET_OUT_COMMON_INTERMEDIATES)/JAVA_LIBRARIES/core.current.stubs_intermediates/src \
+    -nodocs \
+
+LOCAL_UNINSTALLABLE_MODULE := true
+LOCAL_MODULE := core-current-stubs-gen
+
+include $(BUILD_DROIDDOC)
+
+# Remember the target that will trigger the code generation.
+core_current_gen_stamp := $(full_target)
+
+# Build the core.current.stubs library
+# ====================================
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := core.current.stubs
+
+LOCAL_SOURCE_FILES_ALL_GENERATED := true
+
+# Make sure to run droiddoc first to generate the stub source files.
+LOCAL_ADDITIONAL_DEPENDENCIES := $(core_current_gen_stamp)
+core_current_gen_stamp :=
+
+LOCAL_NO_STANDARD_LIBRARIES := true
+
+include $(BUILD_STATIC_JAVA_LIBRARY)
+
+# Archive a copy of the classes.jar in SDK build.
+$(call dist-for-goals,sdk win_sdk,$(full_classes_jar):core.current.stubs.jar)
+
+endif  # not TARGET_BUILD_APPS not TARGET_BUILD_PDK=true
