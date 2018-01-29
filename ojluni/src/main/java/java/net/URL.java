@@ -218,10 +218,9 @@ public final class URL implements java.io.Serializable {
     /* Our hash code.
      * @serial
      */
-    // BEGIN Android-changed
+    // Android-changed: App compat. The cache of hash code should not be serialized.
     //private int hashCode = -1;
     private transient int hashCode = -1;
-    // END Android-changed
 
     /**
      * Creates a {@code URL} object from the specified
@@ -400,6 +399,8 @@ public final class URL implements java.io.Serializable {
             authority = (port == -1) ? host : host + ":" + port;
         }
 
+        // Android-changed: App compat. Prepend '/' if host is null / empty
+        // Parts parts = new Parts(file);
         Parts parts = new Parts(file, host);
         path = parts.getPath();
         query = parts.getQuery();
@@ -709,6 +710,8 @@ public final class URL implements java.io.Serializable {
             this.protocol = protocol;
             this.host = host;
             this.port = port;
+            // Android-changed: App compat. Only include query part if it's nonempty.
+            // this.file = query == null ? path : path + "?" + query;
             this.file = (query == null || query.isEmpty()) ? path : path + "?" + query;
             this.userInfo = userInfo;
             this.path = path;
@@ -834,6 +837,7 @@ public final class URL implements java.io.Serializable {
         return ref;
     }
 
+    // Android-changed: Don't let URL.equals() attempt to resolve host names.
     /**
      * Compares this URL for equality with another object.<p>
      *
@@ -1158,25 +1162,44 @@ public final class URL implements java.io.Serializable {
 
             // Try java protocol handler
             if (handler == null) {
+                // Android-changed: Android doesn't need AccessController.
+                // Remove unnecessary use of reflection for sun classes
+                /*
+                packagePrefixList
+                    = java.security.AccessController.doPrivileged(
+                    new sun.security.action.GetPropertyAction(
+                        protocolPathProp,""));
+                if (packagePrefixList != "") {
+                    packagePrefixList += "|";
+                }
+
+                // REMIND: decide whether to allow the "null" class prefix
+                // or not.
+                packagePrefixList += "sun.net.www.protocol";
+                 */
                 final String packagePrefixList = System.getProperty(protocolPathProp,"");
                 StringTokenizer packagePrefixIter = new StringTokenizer(packagePrefixList, "|");
 
                 while (handler == null &&
                        packagePrefixIter.hasMoreTokens()) {
 
-                    String packagePrefix = packagePrefixIter.nextToken().trim();
+                    String packagePrefix =
+                      packagePrefixIter.nextToken().trim();
                     try {
                         String clsName = packagePrefix + "." + protocol +
                           ".Handler";
                         Class<?> cls = null;
                         try {
                             ClassLoader cl = ClassLoader.getSystemClassLoader();
+                            // BEGIN Android-changed: Fall back to thread's contextClassLoader.
+                            // http://b/25897689
                             cls = Class.forName(clsName, true, cl);
                         } catch (ClassNotFoundException e) {
                             ClassLoader contextLoader = Thread.currentThread().getContextClassLoader();
                             if (contextLoader != null) {
                                 cls = Class.forName(clsName, true, contextLoader);
                             }
+                            // END Android-changed: Fall back to thread's contextClassLoader.
                         }
                         if (cls != null) {
                             handler  =
@@ -1187,11 +1210,10 @@ public final class URL implements java.io.Serializable {
                 }
             }
 
+            // BEGIN Android-added: Makes okhttp the default http/https handler.
             // Fallback to built-in stream handler.
-            // Makes okhttp the default http/https handler
             if (handler == null) {
                 try {
-                    // BEGIN Android-changed
                     // Use of okhttp for http and https
                     // Removed unnecessary use of reflection for sun classes
                     if (protocol.equals("file")) {
@@ -1212,6 +1234,7 @@ public final class URL implements java.io.Serializable {
                     throw new AssertionError(e);
                 }
             }
+            // END Android-added: Makes okhttp the default http/https handler.
 
             synchronized (streamHandlerLock) {
 
@@ -1318,6 +1341,8 @@ public final class URL implements java.io.Serializable {
 class Parts {
     String path, query, ref;
 
+    // Android-changed: App compat. Prepend '/' if host is null / empty.
+    // Parts(String file)
     Parts(String file, String host) {
         int ind = file.indexOf('#');
         ref = ind < 0 ? null: file.substring(ind + 1);
@@ -1329,10 +1354,12 @@ class Parts {
         } else {
             path = file;
         }
+        // BEGIN Android-changed: App compat. Prepend '/' if host is null / empty.
         if (path != null && path.length() > 0 && path.charAt(0) != '/' &&
             host != null && !host.isEmpty()) {
             path = '/' + path;
         }
+        // END Android-changed: App compat. Prepend '/' if host is null / empty.
     }
 
     String getPath() {
