@@ -33,6 +33,14 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
     private static final TimeZone AUSTRALIA_LORD_HOWE = TimeZone.getTimeZone("Australia/Lord_Howe");
     private static final TimeZone UTC = TimeZone.getTimeZone("Etc/UTC");
 
+    /**
+     * The list of time zone ids formatted as "UTC".
+     */
+    private static final String[] UTC_ZONE_IDS = new String[] {
+            "Etc/UCT", "Etc/UTC", "Etc/Universal", "Etc/Zulu", "UCT", "UTC", "Universal", "Zulu"
+    };
+
+
     private Locale defaultLocale;
 
     @Override
@@ -558,11 +566,109 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertEquals(Calendar.MONDAY, parseDateUtc(en, "uu", "1").get(Calendar.DAY_OF_WEEK));
     }
 
-    // http://b/20879084
-    public void testFormatUtc() {
-        DateFormat dateFormat = new SimpleDateFormat("z", Locale.ENGLISH);
-        dateFormat.setTimeZone(UTC);
-        assertEquals("UTC", dateFormat.format(new Date(0)));
+    // Tests that Android's SimpleDateFormat provides localized short strings for UTC
+    // (http://b/36337342) i.e. it does not fall back to "GMT" or "GMT+00:00".
+    public void testFormatUtcShort() {
+        String timeZonePattern = "z";
+        int timeZoneStyle = TimeZone.SHORT;
+
+        doTestFormat(Locale.ENGLISH, timeZoneStyle, timeZonePattern, "UTC");
+        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern, "UTC");
+        doTestFormat(Locale.SIMPLIFIED_CHINESE, timeZoneStyle, timeZonePattern, "UTC");
+    }
+
+    // Tests that Android's SimpleDateFormat provides localized long strings for UTC
+    // (http://b/36337342)
+    public void testFormatUtcLong() {
+        String timeZonePattern = "zzzz";
+        int timeZoneStyle = TimeZone.LONG;
+        doTestFormat(Locale.ENGLISH, timeZoneStyle, timeZonePattern, "Coordinated Universal Time");
+        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern, "Temps universel coordonné");
+        doTestFormat(Locale.SIMPLIFIED_CHINESE, timeZoneStyle, timeZonePattern, "协调世界时");
+    }
+
+    private static void doTestFormat(Locale locale, int timeZoneStyle, String timeZonePattern,
+            String expectedString) {
+        DateFormat dateFormat = new SimpleDateFormat(timeZonePattern, locale);
+        for (String timeZoneId : UTC_ZONE_IDS) {
+            TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
+
+            // Confirm the time zone ID was recognized and we didn't just get "GMT".
+            assertEquals(timeZoneId, timeZone.getID());
+
+            dateFormat.setTimeZone(timeZone);
+            String timeZoneString = dateFormat.format(new Date(0));
+            assertEquals(timeZone.getDisplayName(
+                    false /* daylight */, timeZoneStyle, locale), timeZoneString);
+
+            assertEquals(expectedString, timeZoneString);
+        }
+    }
+
+    // Tests that Android's SimpleDateFormat can parse localized short strings for UTC
+    // (http://b/36337342)
+    public void testParseUtcShort() throws Exception {
+        String timeZonePattern = "z";
+        int timeZoneStyle = TimeZone.SHORT;
+        doUtcParsingTest(Locale.ENGLISH, timeZonePattern, timeZoneStyle, "UTC");
+        doUtcParsingTest(Locale.FRENCH, timeZonePattern, timeZoneStyle, "UTC");
+        doUtcParsingTest(Locale.SIMPLIFIED_CHINESE, timeZonePattern, timeZoneStyle, "UTC");
+    }
+
+    // Tests that Android's SimpleDateFormat can parse localized long strings for UTC
+    // (http://b/36337342)
+    public void testParseUtcLong() throws Exception {
+        String timeZonePattern = "zzzz";
+        int timeZoneStyle = TimeZone.LONG;
+        doUtcParsingTest(Locale.ENGLISH, timeZonePattern, timeZoneStyle,
+                "Coordinated Universal Time");
+        doUtcParsingTest(Locale.FRENCH, timeZonePattern, timeZoneStyle,
+                "Temps universel coordonné");
+        doUtcParsingTest(Locale.SIMPLIFIED_CHINESE, timeZonePattern, timeZoneStyle,
+                "协调世界时");
+    }
+
+    private static void doUtcParsingTest(Locale locale, String timeZonePattern, int timeZoneStyle,
+            String timeZoneString) throws Exception {
+        String basePattern = "yyyyMMdd HH:mm:ss.SSS";
+        String fullPattern = basePattern + " " + timeZonePattern;
+
+        TimeZone nonUtcZone = TimeZone.getTimeZone("America/Los_Angeles");
+
+        DateFormat formatter = new SimpleDateFormat(basePattern, locale);
+        DateFormat parser = new SimpleDateFormat(fullPattern, locale);
+
+        for (String timeZoneId : UTC_ZONE_IDS) {
+            TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
+
+            // Confirm the time zone ID was recognized and we didn't just get "GMT".
+            assertEquals(timeZoneId, timeZone.getID());
+
+            assertEquals(timeZoneString,
+                    timeZone.getDisplayName(false /* daylight */, timeZoneStyle, locale));
+
+            // Format an arbitrary instant in the chosen time zone. We should get something like
+            // "20180126 13:23:34.456".
+            Date dateToFormat = new Date();
+
+            formatter.setTimeZone(timeZone);
+            String dateTimeString = formatter.format(dateToFormat);
+
+            // Append the time zone. e.g. "20180126 13:23:34.456 Coordinated Universal Time".
+            String dateTimeStringWithTimeZone = dateTimeString + " " + timeZoneString;
+
+            // Androidism: The formatter always resets the time zone of the formatter after parsing
+            // but we set it here to make it very clear the parser must be using a non-UTC time
+            // zone by default even though the string provides all the time zone information.
+            parser.setTimeZone(nonUtcZone);
+
+            // Parse the date with time zone back, which should be interpreted as being in UTC.
+            Date parsedDate = parser.parse(dateTimeStringWithTimeZone);
+
+            // The original instant should be returned, which means the formatter / parser were able
+            // to understand the time zone in the string.
+            assertEquals(dateToFormat, parsedDate);
+        }
     }
 
     // http://b/35134326
