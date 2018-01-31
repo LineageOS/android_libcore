@@ -53,6 +53,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.net.ExtendedOptionsImpl;
@@ -72,6 +73,8 @@ class DatagramChannelImpl
 
     // Our file descriptor
     // Android-changed: Make the fd package visible so that we can expose it through DatagramSocketAdaptor.
+    // Android-added: @ReachabilitySensitive.
+    @ReachabilitySensitive
     final FileDescriptor fd;
 
     // fd value needed for dev/poll. This value will remain valid
@@ -128,6 +131,7 @@ class DatagramChannelImpl
     // -- End of fields protected by stateLock
 
     // Android-added: CloseGuard support.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     public DatagramChannelImpl(SelectorProvider sp)
