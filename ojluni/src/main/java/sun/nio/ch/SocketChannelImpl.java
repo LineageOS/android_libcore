@@ -51,6 +51,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.net.ExtendedOptionsImpl;
@@ -119,6 +120,7 @@ class SocketChannelImpl
     // -- End of fields protected by stateLock
 
     // Android-added: CloseGuard support.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     // Constructor for normal connecting sockets

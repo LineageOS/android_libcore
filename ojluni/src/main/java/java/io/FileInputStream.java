@@ -28,6 +28,7 @@ package java.io;
 
 import java.nio.channels.FileChannel;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.nio.ch.FileChannelImpl;
@@ -55,6 +56,8 @@ public
 class FileInputStream extends InputStream
 {
     /* File Descriptor - handle to the open file */
+    // Android-added: @ReachabilitySensitive
+    @ReachabilitySensitive
     private final FileDescriptor fd;
 
     /**
@@ -72,6 +75,7 @@ class FileInputStream extends InputStream
     private final boolean isFdOwner;
 
     // Android-added: CloseGuard support.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     // Android-added: Tracking of unbuffered I/O.

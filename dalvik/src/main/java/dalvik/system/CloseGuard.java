@@ -24,6 +24,7 @@ package dalvik.system;
  * A simple example: <pre>   {@code
  *   class Foo {
  *
+ *       {@literal @}ReachabilitySensitive
  *       private final CloseGuard guard = CloseGuard.get();
  *
  *       ...
@@ -52,11 +53,12 @@ package dalvik.system;
  *   }
  * }</pre>
  *
- * In usage where the resource to be explicitly cleaned up are
+ * In usage where the resource to be explicitly cleaned up is
  * allocated after object construction, CloseGuard protection can
  * be deferred. For example: <pre>   {@code
  *   class Bar {
  *
+ *       {@literal @}ReachabilitySensitive
  *       private final CloseGuard guard = CloseGuard.get();
  *
  *       ...
@@ -89,12 +91,20 @@ package dalvik.system;
  *   }
  * }</pre>
  *
- * When used in a constructor calls to {@code open} should occur at
+ * When used in a constructor, calls to {@code open} should occur at
  * the end of the constructor since an exception that would cause
  * abrupt termination of the constructor will mean that the user will
  * not have a reference to the object to cleanup explicitly. When used
  * in a method, the call to {@code open} should occur just after
  * resource acquisition.
+ *
+ * The @ReachabilitySensitive annotation ensures that finalize() cannot be
+ * called during the explicit call to cleanup(), prior to the guard.close call.
+ * There is an extremely small chance that, for code that neglects to call
+ * cleanup(), finalize() and thus cleanup() will be called while a method on
+ * the object is still active, but the "this" reference is no longer required.
+ * If missing cleanup() calls are expected, additional @ReachabilitySensitive
+ * annotations or reachabilityFence() calls may be required.
  *
  * @hide
  */

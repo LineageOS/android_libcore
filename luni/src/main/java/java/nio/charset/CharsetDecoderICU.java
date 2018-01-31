@@ -14,6 +14,7 @@
   */
 package java.nio.charset;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import libcore.icu.ICU;
@@ -33,7 +34,8 @@ final class CharsetDecoderICU extends CharsetDecoder {
      */
     private final int[] data = new int[3];
 
-    /* handle to the ICU converter that is opened */
+    /* Handle to the ICU converter that is opened, cleaned up via NativeAllocationRegistry. */
+    @ReachabilitySensitive
     private long converterHandle = 0;
 
     private byte[] input = null;
@@ -75,7 +77,7 @@ final class CharsetDecoderICU extends CharsetDecoder {
 
     @Override protected void implReplaceWith(String newReplacement) {
         updateCallback();
-     }
+    }
 
     @Override protected final void implOnMalformedInput(CodingErrorAction newAction) {
         updateCallback();
