@@ -5,6 +5,7 @@ filegroup {
     srcs: [
         "ojluni/src/main/java/java/lang/CharSequence.java",
         "ojluni/src/main/java/java/lang/Enum.java",
+        "ojluni/src/main/java/java/lang/Integer.java",
         "ojluni/src/main/java/java/lang/Iterable.java",
         "ojluni/src/main/java/java/lang/String.java",
         "ojluni/src/main/java/java/lang/Thread.java",
