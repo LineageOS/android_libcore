@@ -7,6 +7,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/Enum.java",
         "ojluni/src/main/java/java/lang/Integer.java",
         "ojluni/src/main/java/java/lang/Iterable.java",
+        "ojluni/src/main/java/java/lang/Long.java",
         "ojluni/src/main/java/java/lang/String.java",
         "ojluni/src/main/java/java/lang/Thread.java",
         "ojluni/src/main/java/java/lang/reflect/AccessibleObject.java",
