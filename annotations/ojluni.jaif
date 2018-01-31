@@ -175,6 +175,94 @@ class Integer:
         parameter #0:
           type: @libcore.util.NonNull
 
+class Float:
+    method toString(F)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toHexString(F)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Float;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(F)Ljava/lang/Float;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method parseFloat(Ljava/lang/String;)F:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Float;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+class Double:
+    method toString(D)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toHexString(D)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Double;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(D)Ljava/lang/Double;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method parseDouble(Ljava/lang/String;)D:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Double;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
 class Long:
     method toString(JI)Ljava/lang/String;:
         // Always returns an instance
@@ -241,7 +329,6 @@ class Long:
     method valueOf(J)Ljava/lang/Long;:
         // Always returns an instance
         return: @libcore.util.NonNull
-        return:
 
     method decode(Ljava/lang/String;)Ljava/lang/Long;:
         // Throws NPE on null
