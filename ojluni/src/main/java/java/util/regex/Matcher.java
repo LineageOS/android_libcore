@@ -26,6 +26,7 @@
 
 package java.util.regex;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import libcore.util.NativeAllocationRegistry;
 
 /**
@@ -107,12 +108,17 @@ public final class Matcher implements MatchResult {
     /**
      * The Pattern object that created this Matcher.
      */
+    // Patterns also contain cleanup code and a ReachabilitySensitive field.
+    // This ensures that "this" and pattern remain reachable while we're using pattern.address
+    // directly.
+    @ReachabilitySensitive
     private Pattern pattern;
 
     /**
      * The address of the native peer.
      * Uses of this must be manually synchronized to avoid native crashes.
      */
+    @ReachabilitySensitive
     private long address;
 
     /**

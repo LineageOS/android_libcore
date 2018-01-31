@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.CloseGuard;
 import sun.misc.Unsafe;
 
@@ -195,6 +196,7 @@ class LinuxWatchService
         private final long address;
 
         // Android-added: CloseGuard support.
+        @ReachabilitySensitive
         private final CloseGuard guard = CloseGuard.get();
 
         Poller(UnixFileSystem fs, LinuxWatchService watcher, int ifd, int[] sp) {

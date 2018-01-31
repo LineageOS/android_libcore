@@ -28,6 +28,7 @@ package java.io;
 
 import java.nio.channels.FileChannel;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.BlockGuard;
 import dalvik.system.CloseGuard;
 import sun.nio.ch.FileChannelImpl;
@@ -60,6 +61,8 @@ class FileOutputStream extends OutputStream
     /**
      * The system dependent file descriptor.
      */
+    // Android-added: @ReachabilitySensitive
+    @ReachabilitySensitive
     private final FileDescriptor fd;
 
     /**
@@ -82,6 +85,7 @@ class FileOutputStream extends OutputStream
     private volatile boolean closed = false;
 
     // Android-added: CloseGuard support: Log if the stream is not closed.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
     // Android-added: Field for tracking whether the stream owns the underlying FileDescriptor.
@@ -422,6 +426,8 @@ class FileOutputStream extends OutputStream
      * @exception  IOException  if an I/O error occurs.
      * @see        java.io.FileDescriptor
      */
+     // Android-added: @ReachabilitySensitive
+     @ReachabilitySensitive
      public final FileDescriptor getFD()  throws IOException {
         if (fd != null) {
             return fd;
