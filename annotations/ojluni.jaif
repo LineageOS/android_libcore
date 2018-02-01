@@ -56,6 +56,244 @@ class Iterable:
     // Always returns an instance
     method iterator()Ljava/util/Iterator;:
         return: @libcore.util.NonNull
+
+class Integer:
+    method toString(II)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toUnsignedString(II)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toHexString(I)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toOctalString(I)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toBinaryString(I)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toString(I)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toUnsignedString(I)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+   method parseInt(Ljava/lang/String;I)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseInt(Ljava/lang/String;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseUnsignedInt(Ljava/lang/String;I)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseUnsignedInt(Ljava/lang/String;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;I)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(I)Ljava/lang/Integer;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getInteger(Ljava/lang/String;)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method getInteger(Ljava/lang/String;I)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method getInteger(Ljava/lang/String;Ljava/lang/Integer;)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Can be null
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method decode(Ljava/lang/String;)Ljava/lang/Integer;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method compareTo(Ljava/lang/Integer;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+class Long:
+    method toString(JI)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toUnsignedString(JI)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toHexString(J)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toOctalString(J)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toBinaryString(J)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toString(J)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toUnsignedString(J)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method parseLong(Ljava/lang/String;I)J:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseLong(Ljava/lang/String;)J:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseUnsignedLong(Ljava/lang/String;I)J:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseUnsignedLong(Ljava/lang/String;)J:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;I)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(J)Ljava/lang/Long;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+        return:
+
+    method decode(Ljava/lang/String;)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getLong(Ljava/lang/String;)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method getLong(Ljava/lang/String;J)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method getLong(Ljava/lang/String;Ljava/lang/Long;)Ljava/lang/Long;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Can be null
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Long;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
 class String:
     method <init>(Ljava/lang/String;)V:
         parameter #0:

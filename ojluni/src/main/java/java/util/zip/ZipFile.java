@@ -68,6 +68,9 @@ class ZipFile implements ZipConstants, Closeable {
     private final boolean locsig;  // if zip file starts with LOCSIG (usually true)
     private volatile boolean closeRequested = false;
 
+    // Android-added: CloseGuard support
+    // Not declared @ReachabilitySensitive, since all relevant methods, including finalize()
+    // synchronize on this, preventing premature finalization.
     private final CloseGuard guard = CloseGuard.get();
 
     // Android-changed, needed for alternative OPEN_DELETE implementation
@@ -241,13 +244,14 @@ class ZipFile implements ZipConstants, Closeable {
         this.locsig = startsWithLOC(jzfile);
         Enumeration<? extends ZipEntry> entries = entries();
 
+        guard.open("close");
+
         // Android-changed: Error out early if the zipfile has no entries.
         if (size() == 0 || !entries.hasMoreElements()) {
             close();
             throw new ZipException("No entries");
         }
 
-        guard.open("close");
     }
 
     /**
@@ -694,11 +698,14 @@ class ZipFile implements ZipConstants, Closeable {
      * @see    java.util.zip.ZipFile#close()
      */
     protected void finalize() throws IOException {
+        // Android-note: finalize() won't be invoked while important instance methods are running.
+        // Both those methods and this method synchronize on "this", ensuring reachability
+        // until the monitor is released.
         if (guard != null) {
             guard.warnIfOpen();
         }
 
-        close();
+        close();  // Synchronizes on "this".
     }
 
     private static native void close(long jzfile);

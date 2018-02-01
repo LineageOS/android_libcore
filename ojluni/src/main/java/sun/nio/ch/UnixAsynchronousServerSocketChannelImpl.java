@@ -35,6 +35,7 @@ import java.security.AccessControlContext;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import dalvik.system.CloseGuard;
 
 /**
@@ -70,6 +71,7 @@ class UnixAsynchronousServerSocketChannelImpl
     private AccessControlContext acceptAcc;
 
     // Android-added: CloseGuard support.
+    @ReachabilitySensitive
     private final CloseGuard guard = CloseGuard.get();
 
 

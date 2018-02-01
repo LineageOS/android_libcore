@@ -18,6 +18,7 @@ package dalvik.system;
 
 import android.system.ErrnoException;
 import android.system.StructStat;
+import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -44,7 +45,9 @@ public final class DexFile {
    * If close is called, mCookie becomes null but the internal cookie is preserved if the close
    * failed so that we can free resources in the finalizer.
    */
+    @ReachabilitySensitive
     private Object mCookie;
+
     private Object mInternalCookie;
     private final String mFileName;
 
