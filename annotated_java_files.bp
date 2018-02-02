@@ -4,7 +4,9 @@ filegroup {
     export_to_make_var: "annotated_ojluni_files",
     srcs: [
         "ojluni/src/main/java/java/lang/CharSequence.java",
+        "ojluni/src/main/java/java/lang/Double.java",
         "ojluni/src/main/java/java/lang/Enum.java",
+        "ojluni/src/main/java/java/lang/Float.java",
         "ojluni/src/main/java/java/lang/Integer.java",
         "ojluni/src/main/java/java/lang/Iterable.java",
         "ojluni/src/main/java/java/lang/Long.java",
