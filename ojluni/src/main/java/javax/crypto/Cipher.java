@@ -137,90 +137,106 @@ import sun.security.jca.*;
  *       <th>Modes</th>
  *       <th>Paddings</th>
  *       <th>Supported API Levels</th>
+ *       <th>Notes</th>
  *     </tr>
  *   </thead>
  *   <tbody>
  *     <tr>
- *       <td rowspan="2">AES</td>
- *       <td>CBC<br>CFB<br>CTR<br>CTS<br>ECB<br>OFB</td>
- *       <td>ISO10126Padding<br>NoPadding<br>PKCS5Padding</td>
- *       <td>1+</td>
+ *       <td rowspan="2"><span style="white-space: nowrap">AES</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">CFB</span><br><span style="white-space: nowrap">CTR</span><br><span style="white-space: nowrap">CTS</span><br><span style="white-space: nowrap">ECB</span><br><span style="white-space: nowrap">OFB</span></td>
+ *       <td><span style="white-space: nowrap">ISO10126Padding</span><br><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">1+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>GCM</td>
- *       <td>NOPADDING</td>
- *       <td>10+</td>
+ *       <td><span style="white-space: nowrap">GCM</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">10+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td rowspan="2">AES_128</td>
- *       <td>CBC<br>ECB</td>
- *       <td>NoPadding<br>PKCS5Padding</td>
- *       <td>26+</td>
+ *       <td rowspan="2"><span style="white-space: nowrap">AES_128</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">ECB</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">26+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>GCM</td>
- *       <td>NoPadding</td>
- *       <td>26+</td>
+ *       <td><span style="white-space: nowrap">GCM</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">26+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td rowspan="2">AES_256</td>
- *       <td>CBC<br>ECB</td>
- *       <td>NoPadding<br>PKCS5Padding</td>
- *       <td>26+</td>
+ *       <td rowspan="2"><span style="white-space: nowrap">AES_256</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">ECB</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">26+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>GCM</td>
- *       <td>NoPadding</td>
- *       <td>26+</td>
+ *       <td><span style="white-space: nowrap">GCM</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">26+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td rowspan="2">ARC4</td>
- *       <td>ECB</td>
- *       <td>NoPadding</td>
- *       <td>10+</td>
+ *       <td rowspan="2"><span style="white-space: nowrap">ARC4</span></td>
+ *       <td><span style="white-space: nowrap">ECB</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">10+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>NONE</td>
- *       <td>NoPadding</td>
- *       <td>28+</td>
+ *       <td><span style="white-space: nowrap">NONE</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">28+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>BLOWFISH</td>
- *       <td>CBC<br>CFB<br>CTR<br>CTS<br>ECB<br>OFB</td>
- *       <td>ISO10126Padding<br>NoPadding<br>PKCS5Padding</td>
- *       <td>10+</td>
+ *       <td><span style="white-space: nowrap">BLOWFISH</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">CFB</span><br><span style="white-space: nowrap">CTR</span><br><span style="white-space: nowrap">CTS</span><br><span style="white-space: nowrap">ECB</span><br><span style="white-space: nowrap">OFB</span></td>
+ *       <td><span style="white-space: nowrap">ISO10126Padding</span><br><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">10+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>ChaCha20</td>
- *       <td>NONE<br>Poly1305</td>
- *       <td>NoPadding</td>
- *       <td>28+</td>
+ *       <td><span style="white-space: nowrap">ChaCha20</span></td>
+ *       <td><span style="white-space: nowrap">NONE</span><br><span style="white-space: nowrap">Poly1305</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span></td>
+ *       <td><span style="white-space: nowrap">28+</span></td>
+ *       <td>ChaCha with 20 rounds, 96-bit nonce, and 32-bit counter as described in RFC 7539.</td>
  *     </tr>
  *     <tr>
- *       <td>DES</td>
- *       <td>CBC<br>CFB<br>CTR<br>CTS<br>ECB<br>OFB</td>
- *       <td>ISO10126Padding<br>NoPadding<br>PKCS5Padding</td>
- *       <td>1+</td>
+ *       <td><span style="white-space: nowrap">DES</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">CFB</span><br><span style="white-space: nowrap">CTR</span><br><span style="white-space: nowrap">CTS</span><br><span style="white-space: nowrap">ECB</span><br><span style="white-space: nowrap">OFB</span></td>
+ *       <td><span style="white-space: nowrap">ISO10126Padding</span><br><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">1+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>DESede</td>
- *       <td>CBC<br>CFB<br>CTR<br>CTS<br>ECB<br>OFB</td>
- *       <td>ISO10126Padding<br>NoPadding<br>PKCS5Padding</td>
- *       <td>1+</td>
+ *       <td><span style="white-space: nowrap">DESede</span></td>
+ *       <td><span style="white-space: nowrap">CBC</span><br><span style="white-space: nowrap">CFB</span><br><span style="white-space: nowrap">CTR</span><br><span style="white-space: nowrap">CTS</span><br><span style="white-space: nowrap">ECB</span><br><span style="white-space: nowrap">OFB</span></td>
+ *       <td><span style="white-space: nowrap">ISO10126Padding</span><br><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">PKCS5Padding</span></td>
+ *       <td><span style="white-space: nowrap">1+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td rowspan="3">RSA</td>
- *       <td rowspan="3">ECB<br>NONE</td>
- *       <td>NoPadding<br>OAEPPadding<br>PKCS1Padding</td>
- *       <td>1+</td>
+ *       <td rowspan="3"><span style="white-space: nowrap">RSA</span></td>
+ *       <td rowspan="3"><span style="white-space: nowrap">ECB</span><br><span style="white-space: nowrap">NONE</span></td>
+ *       <td><span style="white-space: nowrap">NoPadding</span><br><span style="white-space: nowrap">OAEPPadding</span><br><span style="white-space: nowrap">PKCS1Padding</span></td>
+ *       <td><span style="white-space: nowrap">1+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>OAEPwithSHA-1andMGF1Padding<br>OAEPwithSHA-256andMGF1Padding</td>
- *       <td>10+</td>
+ *       <td><span style="white-space: nowrap">OAEPwithSHA-1andMGF1Padding</span><br><span style="white-space: nowrap">OAEPwithSHA-256andMGF1Padding</span></td>
+ *       <td><span style="white-space: nowrap">10+</span></td>
+ *       <td></td>
  *     </tr>
  *     <tr>
- *       <td>OAEPwithSHA-224andMGF1Padding<br>OAEPwithSHA-384andMGF1Padding<br>OAEPwithSHA-512andMGF1Padding</td>
- *       <td>23+</td>
+ *       <td><span style="white-space: nowrap">OAEPwithSHA-224andMGF1Padding</span><br><span style="white-space: nowrap">OAEPwithSHA-384andMGF1Padding</span><br><span style="white-space: nowrap">OAEPwithSHA-512andMGF1Padding</span></td>
+ *       <td><span style="white-space: nowrap">23+</span></td>
+ *       <td></td>
  *     </tr>
  *   </tbody>
  * </table>
