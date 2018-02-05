@@ -104,9 +104,17 @@ java_library {
     },
     jacoco: {
         exclude_filter: [
-            "java.lang.**",
+            "java.lang.Class",
+            "java.lang.Long",
+            "java.lang.Number",
+            "java.lang.Object",
+            "java.lang.String",
+            "java.lang.invoke.MethodHandle",
+            "java.lang.ref.Reference",
+            "java.lang.reflect.Proxy",
             "java.util.AbstractMap",
-            "java.util.HashMap*", // use * to include all nested classes
+            "java.util.HashMap",
+            "java.util.HashMap$Node",
             "java.util.Map",
         ],
     },
