@@ -227,7 +227,7 @@
           "supported_api_levels": "1+"
         },
         {
-          "name": "AES/GCM/NOPADDING",
+          "name": "AES/GCM/NoPadding",
           "supported_api_levels": "10+"
         },
         {
@@ -364,10 +364,12 @@
         },
         {
           "name": "ChaCha20/NONE/NoPadding",
+          "note": "ChaCha with 20 rounds, 96-bit nonce, and 32-bit counter as described in RFC 7539.",
           "supported_api_levels": "28+"
         },
         {
           "name": "ChaCha20/Poly1305/NoPadding",
+          "note": "ChaCha with 20 rounds, 96-bit nonce, and 32-bit counter as described in RFC 7539.",
           "supported_api_levels": "28+"
         },
         {
@@ -2741,5 +2743,5 @@
       "name": "TrustManagerFactory"
     }
   ],
-  "last_updated": "2018-01-03 14:21:23 UTC"
+  "last_updated": "2018-02-02 13:58:08 UTC"
 }
