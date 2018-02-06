@@ -15,7 +15,7 @@ BP_TEMPLATE = '''filegroup {
     ],
 }'''
 
-srcs_list = []
+srcs_list = set()
 current_package = None
 with open(os.sys.argv[1], 'r') as jaif_file:
   for line in jaif_file:
@@ -23,7 +23,13 @@ with open(os.sys.argv[1], 'r') as jaif_file:
       current_package = line[len(PACKAGE_STRING): line.find(':')]
     if line.startswith(CLASS_STRING) and current_package is not None:
       current_class = line[len(CLASS_STRING): line.find(':')]
-      srcs_list.append(SRC_PREFIX + current_package.replace('.', '/') + '/' + current_class + '.java')
+
+      # In case of nested classes, discard substring after nested class name separator
+      nested_class_separator_index = current_class.find('$')
+      if nested_class_separator_index != -1:
+        current_class = current_class[:nested_class_separator_index]
+
+      srcs_list.add(SRC_PREFIX + current_package.replace('.', '/') + '/' + current_class + '.java')
 
 print '// Do not edit; generated using libcore/annotations/generate_annotated_java_files.py'
 print BP_TEMPLATE % ('\n'.join(['        "' + src_entry + '",' for src_entry in sorted(srcs_list)]),)
