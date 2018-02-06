@@ -1353,7 +1353,9 @@ public final class CipherTest extends TestCase {
                     continue;
                 }
 
-                String algorithm = service.getAlgorithm();
+                // Algorithm names are case-insensitive, so normalize them for
+                // comparison purposes
+                String algorithm = service.getAlgorithm().toUpperCase(Locale.US);
 
                 /*
                  * Any specific modes and paddings aren't tested directly here,
