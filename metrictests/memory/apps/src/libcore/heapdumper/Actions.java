@@ -16,6 +16,10 @@
 
 package libcore.heapdumper;
 
+import java.text.Collator;
+import java.util.Arrays;
+import java.util.Locale;
+
 /**
  * An enumeration of actions for which we'd like to measure the effect on the post-GC heap.
  */
@@ -29,5 +33,43 @@ enum Actions implements Runnable {
         public void run() {
             // noop!
         }
-    };
+    },
+
+    /**
+     * Uses a collator for the root locale to trivially sort some strings.
+     */
+    COLLATOR_ROOT_LOCALE {
+        @Override
+        public void run() {
+            useCollatorForLocale(Locale.ROOT);
+        }
+    },
+
+    /**
+     * Uses a collator for the US English locale to trivially sort some strings.
+     */
+    COLLATOR_EN_US_LOCALE {
+        @Override
+        public void run() {
+            useCollatorForLocale(Locale.US);
+        }
+    },
+
+    /**
+     * Uses a collator for the Korean locale to trivially sort some strings.
+     */
+    COLLATOR_KOREAN_LOCALE {
+        @Override
+        public void run() {
+            useCollatorForLocale(Locale.KOREAN);
+        }
+    },
+
+    ;
+
+    private static void useCollatorForLocale(Locale locale) {
+        String[] strings = { "caff", "café", "cafe", "안녕", "잘 가" };
+        Collator collator = Collator.getInstance(locale);
+        Arrays.sort(strings, collator);
+    }
 }

@@ -77,12 +77,30 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
         for (Map.Entry<HeapCategory, Size> entry : zygoteAndImageSizesByCategory.entrySet()) {
             recordSizeMetric(entry.getKey().metricName("zygoteAndImage_"), entry.getValue());
         }
-        recordBeforeAndAfterHeapMetrics(
-                beforeDump, afterDump, "beforeAppSize", "deltaAppSize", "app");
+        recordBeforeAndAfterAppHeapMetrics(beforeDump, afterDump);
         recordBytesMetric("beforeTotalPss", result.getBeforeTotalPssKb() * 1024L);
         recordBytesMetric(
                 "deltaTotalPss",
                 (result.getAfterTotalPssKb() - result.getBeforeTotalPssKb()) * 1024L);
+    }
+
+    @Test
+    public void measureCollatorRootLocale() throws Exception {
+        MetricsRunner.Result result = metricsRunner.runAllInstrumentations("COLLATOR_ROOT_LOCALE");
+        recordBeforeAndAfterAppHeapMetrics(result.getBeforeDump(), result.getAfterDump());
+    }
+
+    @Test
+    public void measureCollatorEnUsLocale() throws Exception {
+        MetricsRunner.Result result = metricsRunner.runAllInstrumentations("COLLATOR_EN_US_LOCALE");
+        recordBeforeAndAfterAppHeapMetrics(result.getBeforeDump(), result.getAfterDump());
+    }
+
+    @Test
+    public void measureCollatorKoreanLocale() throws Exception {
+        MetricsRunner.Result result =
+                metricsRunner.runAllInstrumentations("COLLATOR_KOREAN_LOCALE");
+        recordBeforeAndAfterAppHeapMetrics(result.getBeforeDump(), result.getAfterDump());
     }
 
     private void recordHeapMetrics(AhatSnapshot dump, String metricPrefix, String heapName) {
@@ -95,25 +113,22 @@ public class LibcoreHeapMetricsTest implements IDeviceTest {
         }
     }
 
-    private void recordBeforeAndAfterHeapMetrics(
+    private void recordBeforeAndAfterAppHeapMetrics(
             AhatSnapshot beforeDump,
-            AhatSnapshot afterDump,
-            String beforeMetricPrefix,
-            String deltaMetricPrefix,
-            String heapName) {
-        AhatHeap beforeHeap = beforeDump.getHeap(heapName);
-        AhatHeap afterHeap = afterDump.getHeap(heapName);
-        recordSizeMetric(beforeMetricPrefix, beforeHeap.getSize());
-        recordSizeDeltaMetric(deltaMetricPrefix, beforeHeap.getSize(), afterHeap.getSize());
+            AhatSnapshot afterDump) {
+        AhatHeap beforeHeap = beforeDump.getHeap("app");
+        AhatHeap afterHeap = afterDump.getHeap("app");
+        recordSizeMetric("beforeAppSize", beforeHeap.getSize());
+        recordSizeDeltaMetric("deltaAppSize", beforeHeap.getSize(), afterHeap.getSize());
         Map<Reachability, Size> beforeSizesByReachability =
                 sizesByReachability(beforeDump, beforeHeap);
         Map<Reachability, Size> afterSizesByReachability = sizesByReachability(afterDump, afterHeap);
         for (Reachability reachability : Reachability.values()) {
             recordSizeMetric(
-                    reachability.metricName(beforeMetricPrefix),
+                    reachability.metricName("beforeAppSize"),
                     beforeSizesByReachability.get(reachability));
             recordSizeDeltaMetric(
-                    reachability.metricName(deltaMetricPrefix),
+                    reachability.metricName("deltaAppSize"),
                     beforeSizesByReachability.get(reachability),
                     afterSizesByReachability.get(reachability));
         }
