@@ -388,6 +388,9 @@ LOCAL_SOURCE_FILES_ALL_GENERATED := true
 LOCAL_ADDITIONAL_DEPENDENCIES := $(core_current_gen_stamp)
 core_current_gen_stamp :=
 
+# Because javac refuses to compile these stubs with --system=none, ( http://b/72206056#comment31 ),
+# just patch them into java.base at compile time.
+LOCAL_PATCH_MODULE := java.base
 LOCAL_NO_STANDARD_LIBRARIES := true
 
 include $(BUILD_STATIC_JAVA_LIBRARY)
