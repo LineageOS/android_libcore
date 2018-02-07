@@ -27,17 +27,14 @@
 //    type: @libcore.util.NonNull
 //      inner-type 0, 0: @libcore.util.Nullable
 
-// There are some comment shortcuts used below for brevity:
-//
-// CLASS_TYPE_PARAMETER(X)
-//   - used when nullability is deliberately left floating; the nullability is the same as the
-//     type parameter X of the class.
-
 package libcore.util:
 annotation @NonNull: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
     int from
     int to
 annotation @Nullable: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
+    int from
+    int to
+annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @java.lang.annotation.Target(value={TYPE_USE})
     int from
     int to
 
@@ -943,96 +940,123 @@ class List:
         parameter #0:
           type: @libcore.util.Nullable
         return:
+
     method iterator()Ljava/util/Iterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
     method toArray()[Ljava/lang/Object;:
         // Never returns null
         return: @libcore.util.NonNull
+
     method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
         // Javadoc mention NPE for param #0
         parameter #0:
           type: @libcore.util.NonNull
         // Never returns null
         return: @libcore.util.NonNull
-    // boolean add(E e); CLASS_TYPE_PARAMETER(E)
+
     method add(Ljava/lang/Object;)Z:
-        return:
+        // Nullness depends on type parameter nullness
+        parameter #0:
+          type: @libcore.util.NullFromTypeParam
+
     method remove(Ljava/lang/Object;)Z:
         // param #0 has to allow nulls
         parameter #0:
           type: @libcore.util.Nullable
-        return:
+
     method containsAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
           inner-type 3, 0: @libcore.util.Nullable
-        return:
+
     method addAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
-          // boolean addAll(Collection<? extends E> c); CLASS_TYPE_PARAMETER(E)
-          inner-type 3, 0:
-        return:
+          // boolean addAll(Collection<? extends E> c);
+          // Nullness depends on type parameter nullness
+          inner-type 3, 0: @libcore.util.NullFromTypeParam
+
     method addAll(ILjava/util/Collection;)Z:
         // Javadoc mention NPE for null param #1
         parameter #1:
           type: @libcore.util.NonNull
-          // boolean addAll(Collection<? extends E> c); CLASS_TYPE_PARAMETER(E)
-          inner-type 3, 0:
-        return:
+          // boolean addAll(int, Collection<? extends E> c);
+          inner-type 3, 0: @libcore.util.NullFromTypeParam
+
     method removeAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
+
     method retainAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
+
     method replaceAll(Ljava/util/function/UnaryOperator;)V:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
+
     method sort(Ljava/util/Comparator;)V:
         // Javadoc mention null as valid param #0
         parameter #0:
           type: @libcore.util.Nullable
+
     method equals(Ljava/lang/Object;)Z:
         // Null is valid argument #0
         parameter #0:
           type: @libcore.util.Nullable
+
     method get(I)Ljava/lang/Object;:
-        // E get(int index); CLASS_TYPE_PARAMETER(E)
-        return:
-    // E set(int index, E element); CLASS_TYPE_PARAMETER(E)
+        // Nullness depends on type parameter nullness
+        // E get(int index);
+        return: @libcore.util.NullFromTypeParam
+
     method set(ILjava/lang/Object;)Ljava/lang/Object;:
-        return:
+        // Nullness depends on type parameter nullness
+        // E set(int index, E element);
+        parameter #0:
+          type: @libcore.util.NullFromTypeParam
+        return: @libcore.util.NullFromTypeParam
+
     method add(ILjava/lang/Object;)V:
-        // void add(int index, E element); CLASS_TYPE_PARAMETER(E)
+        // Nullness depends on type parameter nullness
+        // void add(int index, E element);
         parameter #1:
-        return:
+          type: @libcore.util.NullFromTypeParam
+
     method remove(I)Ljava/lang/Object;:
-        // E remove(int index); CLASS_TYPE_PARAMETER(E)
-        return:
+        // Nullness depends on type parameter nullness
+        // E remove(int index);
+        return: @libcore.util.NullFromTypeParam
+
     method indexOf(Ljava/lang/Object;)I:
         // Null is valid argument
         parameter #0:
           type: @libcore.util.Nullable
+
     method lastIndexOf(Ljava/lang/Object;)I:
         // Null is valid argument
         parameter #0:
           type: @libcore.util.Nullable
+
     method listIterator()Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
     method listIterator(I)Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
     method subList(II)Ljava/util/List;:
          // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
     method spliterator()Ljava/util/Spliterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull

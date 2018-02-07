@@ -306,6 +306,7 @@ filegroup {
         "luni/src/main/java/libcore/util/NativeAllocationRegistry.java",
         "luni/src/main/java/libcore/util/NonNull.java",
         "luni/src/main/java/libcore/util/Nullable.java",
+        "luni/src/main/java/libcore/util/NullFromTypeParam.java",
         "luni/src/main/java/libcore/util/Objects.java",
         "luni/src/main/java/libcore/util/RecoverySystem.java",
         "luni/src/main/java/libcore/util/SneakyThrow.java",
