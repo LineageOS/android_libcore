@@ -161,6 +161,23 @@ public class TimeZoneFinder {
     }
 
     /**
+     * Returns an immutable list of country ISO codes with time zones. The codes can be passed to
+     * {@link #lookupCountryTimeZones(String)} and similar methods. This method can return
+     * {@code null} in the event of an error while reading the underlying data files.
+     */
+    public List<String> getCountryIsoCodes() {
+        CountryIsoCodesExtractor extractor = new CountryIsoCodesExtractor();
+        try {
+            processXml(extractor);
+
+            return Collections.unmodifiableList(extractor.getCountryIsoCodes());
+        } catch (XmlPullParserException | IOException e) {
+            System.logW("Error reading country zones ", e);
+            return null;
+        }
+    }
+
+    /**
      * Returns a frozen ICU time zone that has / would have had the specified offset and DST value
      * at the specified moment in the specified country.
      *
@@ -565,6 +582,26 @@ public class TimeZoneFinder {
             knownCountryCodes.add(countryIso);
 
             return CONTINUE;
+        }
+    }
+
+    /**
+     * Reads the time zone information and records the country ISO codes. The codes are then
+     * available via {@link #getCountryIsoCodes()}
+     */
+    private static class CountryIsoCodesExtractor implements CountryZonesProcessor {
+
+        private final List<String> countryIsoCodes = new ArrayList<>(200 /* reasonable default */);
+
+        @Override
+        public boolean process(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
+                List<String> timeZoneIds, String debugInfo) throws XmlPullParserException {
+            countryIsoCodes.add(countryIso);
+            return CONTINUE;
+        }
+
+        public List<String> getCountryIsoCodes() {
+            return countryIsoCodes;
         }
     }
 
