@@ -832,7 +832,36 @@ public class TimeZoneFinderTest {
         assertEquals(expectedIanaVersion, finder.getIanaVersion());
     }
 
-    private void assertImmutableTimeZone(TimeZone timeZone) {
+    @Test
+    public void getCountryIsoCodes() throws Exception {
+        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "    <country code=\"fr\" default=\"Europe/Paris\" everutc=\"y\">\n"
+                + "      <id>Europe/Paris</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+
+        List<String> isoList = finder.getCountryIsoCodes();
+        assertEquals(list("gb", "fr"), isoList);
+        assertImmutableList(isoList);
+    }
+
+    @Test
+    public void getCountryIsoCodes_empty() throws Exception {
+        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        List<String> isoList = finder.getCountryIsoCodes();
+        assertEquals(list(), isoList);
+        assertImmutableList(isoList);
+    }
+
+    private static void assertImmutableTimeZone(TimeZone timeZone) {
         try {
             timeZone.setRawOffset(1000);
             fail();
