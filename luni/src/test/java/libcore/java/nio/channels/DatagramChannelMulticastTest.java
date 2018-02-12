@@ -18,10 +18,6 @@ package libcore.java.nio.channels;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
-
-import android.system.ErrnoException;
-
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -41,13 +37,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import libcore.io.IoBridge;
-import libcore.io.IoUtils;
-import libcore.io.Libcore;
 
-import static android.system.OsConstants.AF_INET;
-import static android.system.OsConstants.IFF_RUNNING;
 import static android.system.OsConstants.POLLIN;
-import static android.system.OsConstants.SOCK_DGRAM;
 
 /**
  * Tests associated with multicast behavior of DatagramChannel.
@@ -1232,30 +1223,10 @@ public class DatagramChannelMulticastTest extends TestCase {
 
     private static boolean willWorkForMulticast(NetworkInterface iface) throws IOException {
         return iface.isUp()
-                // On Oreo+ NetworkInterface.isUp() doesn't check the IFF_RUNNING flag so we do
-                // so here. http://b/71977275
-                && ((getOsFlags(iface) & IFF_RUNNING) != 0)
-                // Typically loopback interfaces do not support multicast, but we rule them out
-                // explicitly anyway.
-                && !iface.isLoopback()
-                // Point-to-point interfaces are known to cause problems. http://b/23279677
-                && !iface.isPointToPoint()
-                && iface.supportsMulticast()
+                // Typically loopback interfaces do not support multicast, but they are ruled out
+                // explicitly here anyway.
+                && !iface.isLoopback() && iface.supportsMulticast()
                 && iface.getInetAddresses().hasMoreElements();
-    }
-
-    private static int getOsFlags(NetworkInterface iface) throws IOException {
-        FileDescriptor fd = null;
-        try {
-            fd = Libcore.rawOs.socket(AF_INET, SOCK_DGRAM, 0);
-            return Libcore.rawOs.ioctlFlags(fd, iface.getName());
-        } catch (ErrnoException e) {
-            throw e.rethrowAsSocketException();
-        } catch (Exception ex) {
-            throw new SocketException(ex);
-        } finally {
-            IoUtils.closeQuietly(fd);
-        }
     }
 
     private static void createChannelAndSendMulticastMessage(

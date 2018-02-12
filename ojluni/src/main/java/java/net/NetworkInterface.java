@@ -477,7 +477,8 @@ public final class NetworkInterface {
 
     public boolean isUp() throws SocketException {
         // Android-changed: Rewrote NetworkInterface on top of Libcore.io.
-        return (getFlags() & IFF_UP) != 0;
+        final int mask = IFF_UP | IFF_RUNNING;
+        return (getFlags() & mask) == mask;
     }
 
     /**
