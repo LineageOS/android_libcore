@@ -17,7 +17,6 @@
 
 package org.apache.harmony.tests.java.net;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.net.BindException;
 import java.net.DatagramPacket;
@@ -33,18 +32,10 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
-import libcore.io.IoUtils;
-import libcore.io.Libcore;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
-
-import android.system.ErrnoException;
-
-import static android.system.OsConstants.AF_INET;
-import static android.system.OsConstants.IFF_RUNNING;
-import static android.system.OsConstants.SOCK_DGRAM;
 
 public class MulticastSocketTest extends TestCaseWithRules {
     @Rule
@@ -936,9 +927,6 @@ public class MulticastSocketTest extends TestCaseWithRules {
 
     private static boolean willWorkForMulticast(NetworkInterface iface) throws IOException {
         return iface.isUp()
-                // On Oreo+ NetworkInterface.isUp() doesn't check the IFF_RUNNING flag so we do
-                // so here. http://b/71977275
-                && ((getOsFlags(iface) & IFF_RUNNING) != 0)
                 // Typically loopback interfaces do not support multicast, but we rule them out
                 // explicitly anyway.
                 && !iface.isLoopback()
@@ -946,20 +934,6 @@ public class MulticastSocketTest extends TestCaseWithRules {
                 && !iface.isPointToPoint()
                 && iface.supportsMulticast()
                 && iface.getInetAddresses().hasMoreElements();
-    }
-
-    private static int getOsFlags(NetworkInterface iface) throws IOException {
-        FileDescriptor fd = null;
-        try {
-            fd = Libcore.rawOs.socket(AF_INET, SOCK_DGRAM, 0);
-            return Libcore.rawOs.ioctlFlags(fd, iface.getName());
-        } catch (ErrnoException e) {
-            throw e.rethrowAsSocketException();
-        } catch (Exception ex) {
-            throw new SocketException(ex);
-        } finally {
-            IoUtils.closeQuietly(fd);
-        }
     }
 
     private static MulticastSocket createReceivingSocket(int aPort) throws IOException {
