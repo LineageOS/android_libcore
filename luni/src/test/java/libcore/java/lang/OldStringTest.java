@@ -407,7 +407,7 @@ public class OldStringTest extends junit.framework.TestCase {
                  "null", String.valueOf((Object) null));
     }
 
-    @SuppressWarnings("boxing")
+    @SuppressWarnings({ "boxing", "FormatString" })
     public void test_format() {
         assertEquals("3 2 1 4 3 2 1", String.format(
                 "%3$d %2$d %1$d %4$d %3$d %2$d %1$d", 1, 2, 3, 4));
@@ -434,7 +434,7 @@ public class OldStringTest extends junit.framework.TestCase {
 
     }
 
-    @SuppressWarnings("boxing")
+    @SuppressWarnings({ "boxing", "FormatString" })
     public void test_format_Locale() {
         Locale l = new Locale("UK");
         assertEquals("13% of sum is 0x11",
