@@ -519,6 +519,21 @@ public final class DexFile {
         throws FileNotFoundException;
 
     /**
+     * Returns the optimization status of the dex file {@code fileName}. The returned
+     * array will have 2 elements which specify:
+     *   - index 0: the level of optimizations
+     *   - index 1: the optimization reason. The reason might be "unknown" if the
+     *              the compiler artifacts were not annotated during optimizations.
+     *
+     * The output is only meant for debugging and is not guaranteed to be stable across
+     * releases and/or devices.
+     *
+     * @hide
+     */
+    public static native String[] getDexFileOptimizationStatus(
+            String fileName, String instructionSet) throws FileNotFoundException;
+
+    /**
      * Returns the paths of the optimized files generated for {@code fileName}.
      * If no optimized code exists the method returns null.
      * @hide
