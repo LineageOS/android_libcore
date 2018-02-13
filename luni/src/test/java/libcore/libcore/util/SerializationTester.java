@@ -81,7 +81,7 @@ public class SerializationTester<T> {
         }
     }
 
-    private static byte[] serialize(Object object) throws IOException {
+    public static byte[] serialize(Object object) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         new ObjectOutputStream(out).writeObject(object);
         return out.toByteArray();
