@@ -28,7 +28,7 @@ import java.util.Locale;
 /**
  * Information about a country's time zones.
  */
-public class CountryTimeZones {
+public final class CountryTimeZones {
 
     /**
      * The result of lookup up a time zone using offset information (and possibly more).
