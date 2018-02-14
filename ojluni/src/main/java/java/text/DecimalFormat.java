@@ -409,19 +409,21 @@ public class DecimalFormat extends NumberFormat {
     public DecimalFormat() {
         // Get the pattern for the default locale.
         Locale def = Locale.getDefault(Locale.Category.FORMAT);
-        // BEGIN Android-changed: Use ICU LocaleData.
-        // try to get the pattern from the cache
-        String pattern = cachedLocaleData.get(def);
-        if (pattern == null) {  /* cache miss */
-            // Get the pattern for the default locale.
-            pattern = LocaleData.get(def).numberPattern;
-            /* update cache */
-            cachedLocaleData.putIfAbsent(def, pattern);
+        // BEGIN Android-changed: Use ICU LocaleData. Remove SPI LocaleProviderAdapter.
+        /*
+        LocaleProviderAdapter adapter = LocaleProviderAdapter.getAdapter(NumberFormatProvider.class, def);
+        if (!(adapter instanceof ResourceBundleBasedAdapter)) {
+            adapter = LocaleProviderAdapter.getResourceBundleBased();
         }
-        // END Android-changed: Use ICU LocaleData.
+        String[] all = adapter.getLocaleResources(def).getNumberPatterns();
+        */
+        String pattern = LocaleData.get(def).numberPattern;
+        // END Android-changed: Use ICU LocaleData. Remove SPI LocaleProviderAdapter.
+
         // Always applyPattern after the symbols are set
         this.symbols = DecimalFormatSymbols.getInstance(def);
         // Android-changed: use initPattern() instead of removed applyPattern(String, boolean).
+        // applyPattern(all[0], false);
         initPattern(pattern);
     }
 
@@ -1904,11 +1906,4 @@ public class DecimalFormat extends NumberFormat {
 
     // Proclaim JDK 1.1 serial compatibility.
     static final long serialVersionUID = 864413376551465018L;
-
-    // Android-added: cachedLocaleData for caching default number format pattern per locale.
-    /**
-     * Cache to hold the NumberPattern of a Locale.
-     */
-    private static final ConcurrentMap<Locale, String> cachedLocaleData
-        = new ConcurrentHashMap<>(3);
 }
