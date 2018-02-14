@@ -69,7 +69,7 @@ public class CountryTimeZonesTest {
     public void createValidated() throws Exception {
         CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
                 "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
-        assertEquals("gb", countryTimeZones.getCountryIso());
+        assertTrue(countryTimeZones.isForCountryCode("gb"));
         assertEquals("Europe/London", countryTimeZones.getDefaultTimeZoneId());
         assertZoneEquals(zone("Europe/London"), countryTimeZones.getDefaultTimeZone());
         assertEquals(list("Europe/London"), countryTimeZones.getTimeZoneIds());

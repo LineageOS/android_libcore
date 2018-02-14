@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import libcore.util.CountryTimeZones;
+import libcore.util.CountryZonesFinder;
 import libcore.util.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
@@ -428,6 +429,58 @@ public class TimeZoneFinderTest {
                 + "</timezones>\n");
         assertNull(finder.lookupTimeZoneIdsByCountry("gb"));
         assertNull(finder.lookupTimeZonesByCountry("gb"));
+    }
+
+    @Test
+    public void getCountryZonesFinder() throws Exception {
+        TimeZoneFinder timeZoneFinder = TimeZoneFinder.createInstanceForTests(
+                "<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "    <country code=\"fr\" default=\"Europe/Paris\" everutc=\"y\">\n"
+                + "      <id>Europe/Paris</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        CountryTimeZones expectedGb = CountryTimeZones.createValidated("gb", "Europe/London", true,
+                list("Europe/London"), "test");
+        CountryTimeZones expectedFr = CountryTimeZones.createValidated("fr", "Europe/Paris", true,
+                list("Europe/Paris"), "test");
+        CountryZonesFinder countryZonesFinder = timeZoneFinder.getCountryZonesFinder();
+        assertEquals(list("gb", "fr"), countryZonesFinder.lookupAllCountryIsoCodes());
+        assertEquals(expectedGb, countryZonesFinder.lookupCountryTimeZones("gb"));
+        assertEquals(expectedFr, countryZonesFinder.lookupCountryTimeZones("fr"));
+        assertNull(countryZonesFinder.lookupCountryTimeZones("DOES_NOT_EXIST"));
+    }
+
+    @Test
+    public void getCountryZonesFinder_empty() throws Exception {
+        TimeZoneFinder timeZoneFinder = TimeZoneFinder.createInstanceForTests(
+                "<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        CountryZonesFinder countryZonesFinder = timeZoneFinder.getCountryZonesFinder();
+        assertEquals(list(), countryZonesFinder.lookupAllCountryIsoCodes());
+    }
+
+    @Test
+    public void getCountryZonesFinder_invalid() throws Exception {
+        TimeZoneFinder timeZoneFinder = TimeZoneFinder.createInstanceForTests(
+                "<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "    <!-- Missing required attributes! -->\n"
+                + "    <country code=\"fr\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        assertNull(timeZoneFinder.getCountryZonesFinder());
     }
 
     @Test
@@ -830,35 +883,6 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         assertEquals(expectedIanaVersion, finder.getIanaVersion());
-    }
-
-    @Test
-    public void getCountryIsoCodes() throws Exception {
-        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
-                + "  <countryzones>\n"
-                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
-                + "      <id>Europe/London</id>\n"
-                + "    </country>\n"
-                + "    <country code=\"fr\" default=\"Europe/Paris\" everutc=\"y\">\n"
-                + "      <id>Europe/Paris</id>\n"
-                + "    </country>\n"
-                + "  </countryzones>\n"
-                + "</timezones>\n");
-
-        List<String> isoList = finder.getCountryIsoCodes();
-        assertEquals(list("gb", "fr"), isoList);
-        assertImmutableList(isoList);
-    }
-
-    @Test
-    public void getCountryIsoCodes_empty() throws Exception {
-        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
-                + "  <countryzones>\n"
-                + "  </countryzones>\n"
-                + "</timezones>\n");
-        List<String> isoList = finder.getCountryIsoCodes();
-        assertEquals(list(), isoList);
-        assertImmutableList(isoList);
     }
 
     private static void assertImmutableTimeZone(TimeZone timeZone) {
