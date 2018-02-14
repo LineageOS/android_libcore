@@ -369,6 +369,7 @@ LOCAL_DROIDDOC_OPTIONS:= \
     -nodocs \
 
 LOCAL_UNINSTALLABLE_MODULE := true
+LOCAL_NO_STANDARD_LIBRARIES := true
 LOCAL_MODULE := core-current-stubs-gen
 
 include $(BUILD_DROIDDOC)
