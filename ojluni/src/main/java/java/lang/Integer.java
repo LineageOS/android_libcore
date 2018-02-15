@@ -70,9 +70,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @since   JDK1.1
      */
     @SuppressWarnings("unchecked")
-    // Android-changed: Avoid use of removed Class.getPrimitiveClass method.
-    // public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
-    public static final Class<Integer>  TYPE = (Class<Integer>) int[].class.getComponentType();
+    public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
 
     /**
      * All possible chars for representing a number as a String
