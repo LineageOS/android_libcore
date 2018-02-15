@@ -353,9 +353,11 @@ public class LambdaImplementationTest extends TestCase {
         int classModifiers = lambdaClass.getModifiers();
         assertTrue(Modifier.isFinal(classModifiers));
 
+        // We have seen optimizations that make lambdas public so we do not make any assertions
+        // about class visibility: they can be package-private or public. http://b/73255857
+
         // Unexpected modifiers
         assertFalse(Modifier.isPrivate(classModifiers));
-        assertFalse(Modifier.isPublic(classModifiers));
         assertFalse(Modifier.isProtected(classModifiers));
         assertFalse(Modifier.isStatic(classModifiers));
         assertFalse(Modifier.isSynchronized(classModifiers));
