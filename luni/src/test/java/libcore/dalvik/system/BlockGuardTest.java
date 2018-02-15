@@ -266,7 +266,13 @@ public class BlockGuardTest extends TestCase {
         Os.close(fd);
     }
 
-    public static class RecordingPolicy implements BlockGuard.Policy {
+    public void testSystemGc() throws Exception {
+        recorder.clear();
+        Runtime.getRuntime().gc();
+        recorder.expectAndClear("onExplicitGc");
+    }
+
+    private static class RecordingPolicy implements BlockGuard.Policy {
         private final List<String> violations = new ArrayList<>();
         private Set<Check> checksList;
 
@@ -275,6 +281,7 @@ public class BlockGuardTest extends TestCase {
             READ_FROM_DISK,
             NETWORK,
             UNBUFFERED_IO,
+            EXPLICIT_GC,
         }
 
         public void setChecks(EnumSet<Check> checksList) {
@@ -306,6 +313,13 @@ public class BlockGuardTest extends TestCase {
         public void onUnbufferedIO() {
             if (checksList != null && checksList.contains(Check.UNBUFFERED_IO)) {
                 addViolation("onUnbufferedIO");
+            }
+        }
+
+        @Override
+        public void onExplicitGc() {
+            if (checksList != null && checksList.contains(Check.EXPLICIT_GC)) {
+                addViolation("onExplicitGc");
             }
         }
 
