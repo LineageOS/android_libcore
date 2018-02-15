@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
  * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -70,9 +69,6 @@ public class PrintStream extends FilterOutputStream
     private BufferedWriter textOut;
     private OutputStreamWriter charOut;
 
-    // Android-added: Lazy initialization of charOut and textOut.
-    private Charset charset;
-
     /**
      * requireNonNull is explicitly declared here so as not to create an extra
      * dependency on java.util.Objects.requireNonNull. PrintStream is loaded
@@ -105,18 +101,15 @@ public class PrintStream extends FilterOutputStream
     private PrintStream(boolean autoFlush, OutputStream out) {
         super(out);
         this.autoFlush = autoFlush;
-        // Android-changed: Lazy initialization of charOut and textOut.
-        // this.charOut = new OutputStreamWriter(this);
-        // this.textOut = new BufferedWriter(charOut);
+        this.charOut = new OutputStreamWriter(this);
+        this.textOut = new BufferedWriter(charOut);
     }
 
     private PrintStream(boolean autoFlush, OutputStream out, Charset charset) {
         super(out);
         this.autoFlush = autoFlush;
-        // Android-changed: Lazy initialization of charOut and textOut.
-        // this.charOut = new OutputStreamWriter(this, charset);
-        // this.textOut = new BufferedWriter(charOut);
-        this.charset = charset;
+        this.charOut = new OutputStreamWriter(this, charset);
+        this.textOut = new BufferedWriter(charOut);
     }
 
     /* Variant of the private constructor so that the given charset name
@@ -352,17 +345,6 @@ public class PrintStream extends FilterOutputStream
 
     private boolean closing = false; /* To avoid recursive closing */
 
-    // BEGIN Android-added: Lazy initialization of charOut and textOut.
-    private BufferedWriter getTextOut() {
-        if (textOut == null) {
-            charOut = charset != null ? new OutputStreamWriter(this, charset) :
-                    new OutputStreamWriter(this);
-            textOut = new BufferedWriter(charOut);
-        }
-        return textOut;
-    }
-    // END Android-added: Lazy initialization of charOut and textOut.
-
     /**
      * Closes the stream.  This is done by flushing the stream and then closing
      * the underlying output stream.
@@ -374,12 +356,7 @@ public class PrintStream extends FilterOutputStream
             if (! closing) {
                 closing = true;
                 try {
-                    // BEGIN Android-changed: Lazy initialization of charOut and textOut.
-                    // textOut.close();
-                    if (textOut != null) {
-                        textOut.close();
-                    }
-                    // END Android-changed: Lazy initialization of charOut and textOut.
+                    textOut.close();
                     out.close();
                 }
                 catch (IOException x) {
@@ -523,8 +500,6 @@ public class PrintStream extends FilterOutputStream
         try {
             synchronized (this) {
                 ensureOpen();
-                // Android-added: Lazy initialization of charOut and textOut.
-                BufferedWriter textOut = getTextOut();
                 textOut.write(buf);
                 textOut.flushBuffer();
                 charOut.flushBuffer();
@@ -547,8 +522,6 @@ public class PrintStream extends FilterOutputStream
         try {
             synchronized (this) {
                 ensureOpen();
-                // Android-added: Lazy initialization of charOut and textOut.
-                BufferedWriter textOut = getTextOut();
                 textOut.write(s);
                 textOut.flushBuffer();
                 charOut.flushBuffer();
@@ -568,8 +541,6 @@ public class PrintStream extends FilterOutputStream
         try {
             synchronized (this) {
                 ensureOpen();
-                // Android-added: Lazy initialization of charOut and textOut.
-                BufferedWriter textOut = getTextOut();
                 textOut.newLine();
                 textOut.flushBuffer();
                 charOut.flushBuffer();
