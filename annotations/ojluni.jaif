@@ -39,6 +39,202 @@ annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @ja
     int to
 
 package java.lang:
+class Byte:
+    method toString(B)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(B)Ljava/lang/Byte;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method parseByte(Ljava/lang/String;I)B:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseByte(Ljava/lang/String;)B:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;I)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method decode(Ljava/lang/String;)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Byte;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toHexString(BZ)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character:
+    method valueOf(C)Ljava/lang/Character;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toString(C)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method codePointAt(Ljava/lang/CharSequence;I)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointAt([CI)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointAt([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore(Ljava/lang/CharSequence;I)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore([CI)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toChars(I[CI)I:
+        // throws NPE
+        parameter #1:
+          type: @libcore.util.NonNull
+
+    method toChars(I)[C:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method codePointCount(Ljava/lang/CharSequence;II)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointCount([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method offsetByCodePoints(Ljava/lang/CharSequence;II)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method offsetByCodePoints([CIIII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method compareTo(Ljava/lang/Character;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method getName(I)Ljava/lang/String;:
+        // Null is a valid return value
+        return: @libcore.util.Nullable
+
+class Character$Subset:
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method hashCode()I:
+        return:
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character$UnicodeBlock:
+    method of(C)Ljava/lang/Character$UnicodeBlock;:
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method of(I)Ljava/lang/Character$UnicodeBlock;:
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method forName(Ljava/lang/String;)Ljava/lang/Character$UnicodeBlock;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character$UnicodeScript:
+    method of(I)Ljava/lang/Character$UnicodeScript;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;)Ljava/lang/Character$UnicodeScript;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
 class CharSequence:
     // Always returns a string instance
     method toString()Ljava/lang/String;:
