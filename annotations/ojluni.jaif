@@ -882,6 +882,34 @@ class Thread:
     method currentThread()Ljava/lang/Thread;:
         return: @libcore.util.NonNull
 
+// It would be nice to use @NullFromTypeParam in ThreadLocal
+// everywhere its <T> is used, buy sadly the code below makes it impossible:
+//
+// ThreadLocal<@NonNull Object> foo = new ThreadLocal<>();
+// assertNull(foo.get())
+//
+// Hence @Nullable T is used heavily
+class ThreadLocal:
+    method withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;:
+        // NPE on null supplier
+        parameter #0:
+          type: @libcore.util.NonNull
+	// Always returns instance
+        return: @libcore.util.NonNull
+
+    method initialValue()Ljava/lang/Object;:
+        // Returns null by default
+        return: @libcore.util.Nullable
+
+    method get()Ljava/lang/Object;:
+        // May return null
+        return: @libcore.util.Nullable
+
+    method set(Ljava/lang/Object;)V:
+        // Depends on type param
+        parameter #0:
+          type: @libcore.util.NullFromTypeParam
+
 package java.lang.reflect:
 
 class AccessibleObject:
