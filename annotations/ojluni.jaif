@@ -39,6 +39,54 @@ annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @ja
     int to
 
 package java.lang:
+
+class Boolean:
+    method <init>(Ljava/lang/String;)V:
+        // In contrast to other type classes, doesn't NPE on null, but sets value to false
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method parseBoolean(Ljava/lang/String;)Z:
+        // In contrast to other type classes, doesn't NPE on null, but sets value to false
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method valueOf(Z)Ljava/lang/Boolean;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Boolean;:
+        // Null == false
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method toString(Z)Ljava/lang/String;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getBoolean(Ljava/lang/String;)Z:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Boolean;)I:
+        // NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
 class Byte:
     method toString(B)Ljava/lang/String;:
         // Always returns an instance
