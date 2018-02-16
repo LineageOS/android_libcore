@@ -16,6 +16,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/String.java",
         "ojluni/src/main/java/java/lang/System.java",
         "ojluni/src/main/java/java/lang/Thread.java",
+        "ojluni/src/main/java/java/lang/ThreadLocal.java",
         "ojluni/src/main/java/java/lang/reflect/AccessibleObject.java",
         "ojluni/src/main/java/java/lang/reflect/AnnotatedElement.java",
         "ojluni/src/main/java/java/lang/reflect/Array.java",
