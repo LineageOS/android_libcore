@@ -826,33 +826,36 @@ public abstract class NumberFormat extends Format  {
 
     private static NumberFormat getInstance(Locale desiredLocale,
                                            int choice) {
-        // Android-changed: Removed use of NumberFormatProvider. Switched to use ICU.
-        /* try the cache first */
-        String[] numberPatterns = (String[])cachedLocaleData.get(desiredLocale);
-        if (numberPatterns == null) { /* cache miss */
-            LocaleData data = LocaleData.get(desiredLocale);
-            numberPatterns = new String[4];
-            numberPatterns[NUMBERSTYLE] = data.numberPattern;
-            numberPatterns[CURRENCYSTYLE] = data.currencyPattern;
-            numberPatterns[PERCENTSTYLE] = data.percentPattern;
-            numberPatterns[INTEGERSTYLE] = data.integerPattern;
-            /* update cache */
-            cachedLocaleData.put(desiredLocale, numberPatterns);
-        }
+        // BEGIN Android-changed: Removed use of NumberFormatProvider. Switched to use ICU.
+        /*
+        LocaleProviderAdapter adapter;
+        adapter = LocaleProviderAdapter.getAdapter(NumberFormatProvider.class,
+                                                   desiredLocale);
+        NumberFormat numberFormat = getInstance(adapter, desiredLocale, choice);
+        if (numberFormat == null) {
+            numberFormat = getInstance(LocaleProviderAdapter.forJRE(),
+                                       desiredLocale, choice);
+        */
+        String[] numberPatterns = new String[3];
+        LocaleData data = LocaleData.get(desiredLocale);
+        numberPatterns[NUMBERSTYLE] = data.numberPattern;
+        numberPatterns[CURRENCYSTYLE] = data.currencyPattern;
+        numberPatterns[PERCENTSTYLE] = data.percentPattern;
 
+        // Note: the following lines are from NumberFormatProviderImpl upstream.
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(desiredLocale);
         int entry = (choice == INTEGERSTYLE) ? NUMBERSTYLE : choice;
-        DecimalFormat format = new DecimalFormat(numberPatterns[entry], symbols);
+        DecimalFormat numberFormat = new DecimalFormat(numberPatterns[entry], symbols);
 
         if (choice == INTEGERSTYLE) {
-            format.setMaximumFractionDigits(0);
-            format.setDecimalSeparatorAlwaysShown(false);
-            format.setParseIntegerOnly(true);
+            numberFormat.setMaximumFractionDigits(0);
+            numberFormat.setDecimalSeparatorAlwaysShown(false);
+            numberFormat.setParseIntegerOnly(true);
         } else if (choice == CURRENCYSTYLE) {
-            format.adjustForCurrencyDefaultFractionDigits();
+            numberFormat.adjustForCurrencyDefaultFractionDigits();
         }
-
-        return format;
+        // END Android-changed: Removed use of NumberFormatProvider. Switched to use ICU.
+        return numberFormat;
     }
 
     /**
@@ -916,12 +919,6 @@ public abstract class NumberFormat extends Format  {
                             Byte.MAX_VALUE : (byte)minimumFractionDigits;
         stream.defaultWriteObject();
     }
-
-    // Android-added: cachedLocaleData.
-    /**
-     * Cache to hold the NumberPatterns of a Locale.
-     */
-    private static final Hashtable cachedLocaleData = new Hashtable(3);
 
     // Constants used by factory methods to specify a style of format.
     private static final int NUMBERSTYLE = 0;

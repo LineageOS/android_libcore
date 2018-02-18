@@ -648,29 +648,36 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     private void initialize( Locale locale ) {
         this.locale = locale;
 
-        // Android-changed: Removed use of DecimalFormatSymbolsProvider. Switched to ICU.
-        // get resource bundle data - try the cache first
-        boolean needCacheUpdate = false;
-        Object[] data = cachedLocaleData.get(locale);
-        if (data == null) {  /* cache miss */
-            locale = LocaleData.mapInvalidAndNullLocales(locale);
-            LocaleData localeData = LocaleData.get(locale);
-            data = new Object[3];
-            String[] values = new String[11];
-            values[0] = String.valueOf(localeData.decimalSeparator);
-            values[1] = String.valueOf(localeData.groupingSeparator);
-            values[2] = String.valueOf(localeData.patternSeparator);
-            values[3] = localeData.percent;
-            values[4] = String.valueOf(localeData.zeroDigit);
-            values[5] = "#";
-            values[6] = localeData.minusSign;
-            values[7] = localeData.exponentSeparator;
-            values[8] = localeData.perMill;
-            values[9] = localeData.infinity;
-            values[10] = localeData.NaN;
-            data[0] = values;
-            needCacheUpdate = true;
+        // BEGIN Android-changed: Removed use of DecimalFormatSymbolsProvider. Switched to ICU.
+        /*
+        // get resource bundle data
+        LocaleProviderAdapter adapter = LocaleProviderAdapter.getAdapter(DecimalFormatSymbolsProvider.class, locale);
+        // Avoid potential recursions
+        if (!(adapter instanceof ResourceBundleBasedAdapter)) {
+            adapter = LocaleProviderAdapter.getResourceBundleBased();
         }
+        Object[] data = adapter.getLocaleResources(locale).getDecimalFormatSymbolsData();
+        */
+        if (locale == null) {
+            throw new NullPointerException("locale");
+        }
+        locale = LocaleData.mapInvalidAndNullLocales(locale);
+        LocaleData localeData = LocaleData.get(locale);
+        Object[] data = new Object[3];
+        String[] values = new String[11];
+        values[0] = String.valueOf(localeData.decimalSeparator);
+        values[1] = String.valueOf(localeData.groupingSeparator);
+        values[2] = String.valueOf(localeData.patternSeparator);
+        values[3] = localeData.percent;
+        values[4] = String.valueOf(localeData.zeroDigit);
+        values[5] = "#";
+        values[6] = localeData.minusSign;
+        values[7] = localeData.exponentSeparator;
+        values[8] = localeData.perMill;
+        values[9] = localeData.infinity;
+        values[10] = localeData.NaN;
+        data[0] = values;
+        // END Android-changed: Removed use of DecimalFormatSymbolsProvider. Switched to ICU.
 
         String[] numberElements = (String[]) data[0];
 
@@ -707,8 +714,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
                 currencySymbol = currency.getSymbol(locale);
                 data[1] = intlCurrencySymbol;
                 data[2] = currencySymbol;
-                // Android-added: update cache when necessary.
-                needCacheUpdate = true;
             }
         } else {
             // default values
@@ -723,11 +728,6 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         // standard decimal separator for all locales that we support.
         // If that changes, add a new entry to NumberElements.
         monetarySeparator = decimalSeparator;
-
-        // Android-added: update cache when necessary.
-        if (needCacheUpdate) {
-            cachedLocaleData.putIfAbsent(locale, data);
-        }
     }
 
     // Android-changed: maybeStripMarkers added in b/26207216, fixed in b/32465689.
@@ -1139,18 +1139,12 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
      */
     private int serialVersionOnStream = currentSerialVersion;
 
-    // BEGIN Android-added: cache for locale data and cachedIcuDFS.
-    /**
-     * cache to hold the NumberElements and the Currency
-     * of a Locale.
-     */
-    private static final ConcurrentHashMap<Locale, Object[]> cachedLocaleData = new ConcurrentHashMap<>(3);
-
+    // BEGIN Android-added: cache for cachedIcuDFS.
     /**
      * Lazily created cached instance of an ICU DecimalFormatSymbols that's equivalent to this one.
      * This field is reset to null whenever any of the relevant fields of this class are modified
      * and will be re-created by {@link #getIcuDecimalFormatSymbols()} as necessary.
      */
     private transient android.icu.text.DecimalFormatSymbols cachedIcuDFS = null;
-    // END Android-added: cache for locale data and cachedIcuDFS.
+    // END Android-added: cache for cachedIcuDFS.
 }

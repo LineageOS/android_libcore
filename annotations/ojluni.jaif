@@ -39,6 +39,250 @@ annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @ja
     int to
 
 package java.lang:
+
+class Boolean:
+    method <init>(Ljava/lang/String;)V:
+        // In contrast to other type classes, doesn't NPE on null, but sets value to false
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method parseBoolean(Ljava/lang/String;)Z:
+        // In contrast to other type classes, doesn't NPE on null, but sets value to false
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method valueOf(Z)Ljava/lang/Boolean;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Boolean;:
+        // Null == false
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method toString(Z)Ljava/lang/String;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always return value
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getBoolean(Ljava/lang/String;)Z:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns null in case of failure
+        return: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Boolean;)I:
+        // NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+class Byte:
+    method toString(B)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(B)Ljava/lang/Byte;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method parseByte(Ljava/lang/String;I)B:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method parseByte(Ljava/lang/String;)B:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;I)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method valueOf(Ljava/lang/String;)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method decode(Ljava/lang/String;)Ljava/lang/Byte;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        return:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method compareTo(Ljava/lang/Byte;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toHexString(BZ)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character:
+    method valueOf(C)Ljava/lang/Character;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method toString(C)Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method codePointAt(Ljava/lang/CharSequence;I)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointAt([CI)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointAt([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore(Ljava/lang/CharSequence;I)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore([CI)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointBefore([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method toChars(I[CI)I:
+        // throws NPE
+        parameter #1:
+          type: @libcore.util.NonNull
+
+    method toChars(I)[C:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method codePointCount(Ljava/lang/CharSequence;II)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method codePointCount([CII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method offsetByCodePoints(Ljava/lang/CharSequence;II)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method offsetByCodePoints([CIIII)I:
+        // throws NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method compareTo(Ljava/lang/Character;)I:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method getName(I)Ljava/lang/String;:
+        // Null is a valid return value
+        return: @libcore.util.Nullable
+
+class Character$Subset:
+    method <init>(Ljava/lang/String;)V:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        // Can be null
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method hashCode()I:
+        return:
+
+    method toString()Ljava/lang/String;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character$UnicodeBlock:
+    method of(C)Ljava/lang/Character$UnicodeBlock;:
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method of(I)Ljava/lang/Character$UnicodeBlock;:
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method forName(Ljava/lang/String;)Ljava/lang/Character$UnicodeBlock;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+class Character$UnicodeScript:
+    method of(I)Ljava/lang/Character$UnicodeScript;:
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;)Ljava/lang/Character$UnicodeScript;:
+        // Throws NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Always returns an instance
+        return: @libcore.util.NonNull
+
 class CharSequence:
     // Always returns a string instance
     method toString()Ljava/lang/String;:
@@ -678,6 +922,140 @@ class String:
                 inner-type 0, 0: @libcore.util.Nullable
         return: @libcore.util.NonNull
 
+class System:
+    // Ideally, in should be made NonNull - but it IS possible to make this final field
+    // a null using setIn(null). It makes sense to leave this field as a platform
+    // type for convenience reasons - no one sane should expect this to be null,
+    // but it's nice to have kotlin check it.
+    field in:
+
+    // Same as in "in" field
+    field out:
+
+    // Same as in "in" field
+    field err:
+
+
+    method setIn(Ljava/io/InputStream;)V:
+        // While it makes little sense, it's possible to set System.in to null.
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method setOut(Ljava/io/PrintStream;)V:
+        // While it makes little sense, it's possible to set System.out to null.
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method setErr(Ljava/io/PrintStream;)V:
+        // While it makes little sense, it's possible to set System.err to null.
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method console()Ljava/io/Console;:
+        // Always returns an instance
+        return: @libcore.util.Nullable
+
+    method inheritedChannel()Ljava/nio/channels/Channel;:
+        // Null if there's no inherited channel
+        return: @libcore.util.Nullable
+
+    method setSecurityManager(Ljava/lang/SecurityManager;)V:
+        // Null is a valid argument.
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getSecurityManager()Ljava/lang/SecurityManager;:
+        // Null is valid return value.
+        return: @libcore.util.Nullable
+
+    method arraycopy(Ljava/lang/Object;ILjava/lang/Object;II)V:
+        // NPE on null src
+        parameter #0:
+          type: @libcore.util.NonNull
+        // NPE on null dst
+        parameter #1:
+          type: @libcore.util.NonNull
+
+    method identityHashCode(Ljava/lang/Object;)I:
+        // Null is a valid argument.
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getProperties()Ljava/util/Properties;:
+        // There's always a properties object
+        return: @libcore.util.NonNull
+
+    method lineSeparator()Ljava/lang/String;:
+        // There's always a line separator string (empty in worst case)
+        return: @libcore.util.NonNull
+
+    method setProperties(Ljava/util/Properties;)V:
+        // Null is a valid argument (will reset to defaults)
+        parameter #0:
+          type: @libcore.util.Nullable
+
+    method getProperty(Ljava/lang/String;)Ljava/lang/String;:
+        // Property key can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method getProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;:
+        // Property key can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Property value can be null
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;:
+        // Property key can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Property value can be null
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method clearProperty(Ljava/lang/String;)Ljava/lang/String;:
+        // Property key can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method getenv(Ljava/lang/String;)Ljava/lang/String;:
+        // Name can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Null is valid return value
+        return: @libcore.util.Nullable
+
+    method getenv()Ljava/util/Map;:
+        // Never null
+        return: @libcore.util.NonNull
+
+    method load(Ljava/lang/String;)V:
+        // Filename can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method loadLibrary(Ljava/lang/String;)V:
+        // Libname can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method mapLibraryName(Ljava/lang/String;)Ljava/lang/String;:
+        // Libname can't be null
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Never null
+        return: @libcore.util.NonNull
+
 class Thread:
     // Always returns a string instance
     method toString()Ljava/lang/String;:
@@ -685,6 +1063,34 @@ class Thread:
     // Always return an instance
     method currentThread()Ljava/lang/Thread;:
         return: @libcore.util.NonNull
+
+// It would be nice to use @NullFromTypeParam in ThreadLocal
+// everywhere its <T> is used, buy sadly the code below makes it impossible:
+//
+// ThreadLocal<@NonNull Object> foo = new ThreadLocal<>();
+// assertNull(foo.get())
+//
+// Hence @Nullable T is used heavily
+class ThreadLocal:
+    method withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;:
+        // NPE on null supplier
+        parameter #0:
+          type: @libcore.util.NonNull
+	// Always returns instance
+        return: @libcore.util.NonNull
+
+    method initialValue()Ljava/lang/Object;:
+        // Returns null by default
+        return: @libcore.util.Nullable
+
+    method get()Ljava/lang/Object;:
+        // May return null
+        return: @libcore.util.Nullable
+
+    method set(Ljava/lang/Object;)V:
+        // Depends on type param
+        parameter #0:
+          type: @libcore.util.NullFromTypeParam
 
 package java.lang.reflect:
 
