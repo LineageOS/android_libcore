@@ -1056,6 +1056,226 @@ class System:
         // Never null
         return: @libcore.util.NonNull
 
+class StringBuffer:
+    method <init>(Ljava/lang/String;)V:
+        // NPE on null argument
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/CharSequence;)V:
+        // NPE on null argument
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method getChars(II[CI)V:
+        // NPE on null argument
+        parameter #2:
+          type: @libcore.util.NonNull
+
+    method append(Ljava/lang/Object;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // returns self
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/String;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // returns self
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/StringBuffer;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/AbstractStringBuilder;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;II)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #0:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append([C)Ljava/lang/StringBuffer;:
+        // Null for char[] methods result in NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append([CII)Ljava/lang/StringBuffer;:
+        // Null for char[] methods result in NPE
+        parameter #0:
+          type: @libcore.util.NonNull
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(Z)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(C)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(I)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method appendCodePoint(I)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(J)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(F)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method append(D)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method delete(II)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method deleteCharAt(I)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method replace(IILjava/lang/String;)Ljava/lang/StringBuffer;:
+        // NPE from null
+        parameter #2:
+          type: @libcore.util.NonNull
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method substring(I)Ljava/lang/String;:
+        // Never null
+        return: @libcore.util.NonNull
+
+    method subSequence(II)Ljava/lang/CharSequence;:
+        // Never null
+        return: @libcore.util.NonNull
+
+    method substring(II)Ljava/lang/String;:
+        // Never null
+        return: @libcore.util.NonNull
+
+    method insert(I[CII)Ljava/lang/StringBuffer;:
+        // Null for char[] methods result in NPE
+        parameter #1:
+          type: @libcore.util.NonNull
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(ILjava/lang/Object;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(ILjava/lang/String;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(I[C)Ljava/lang/StringBuffer;:
+        // Null for char[] methods result in NPE
+        parameter #1:
+          type: @libcore.util.NonNull
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(ILjava/lang/CharSequence;)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(ILjava/lang/CharSequence;II)Ljava/lang/StringBuffer;:
+        // null -> "null"
+        parameter #1:
+          type: @libcore.util.Nullable
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(IZ)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(IC)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(II)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(IJ)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(IF)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method insert(ID)Ljava/lang/StringBuffer;:
+        // Returns self
+        return: @libcore.util.NonNull
+
+    method indexOf(Ljava/lang/String;)I:
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method indexOf(Ljava/lang/String;I)I:
+        // NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method lastIndexOf(Ljava/lang/String;)I:
+        // NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method lastIndexOf(Ljava/lang/String;I)I:
+        // NPE on null
+        parameter #0:
+          type: @libcore.util.NonNull
+
+    method reverse()Ljava/lang/StringBuffer;:
+        // Never null
+        return: @libcore.util.NonNull
+
+    method toString()Ljava/lang/String;:
+        // Never null
+        return: @libcore.util.NonNull
+
 class Thread:
     // Always returns a string instance
     method toString()Ljava/lang/String;:
