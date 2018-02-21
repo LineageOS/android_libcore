@@ -52,6 +52,11 @@ java_defaults {
     ],
     dxflags: ["--core-library"],
     no_standard_libs: true,
+    errorprone: {
+        javacflags: [
+            "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
+        ],
+    },
 }
 
 //
