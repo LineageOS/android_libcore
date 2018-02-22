@@ -53,13 +53,6 @@ public class MethodHandles {
 
     private MethodHandles() { }  // do not instantiate
 
-    // BEGIN Android-added: unsupported() helper function.
-    // TODO(b/65872996): Remove when complete.
-    private static void unsupported(String msg) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(msg);
-    }
-    // END Android-added: unsupported() helper function.
-
     // Android-changed: We do not use MemberName / MethodHandleImpl.
     //
     // private static final MemberName.Factory IMPL_NAMES = MemberName.getFactory();
@@ -805,6 +798,16 @@ assertEquals("[x, y]", MH_asList.invoke("x", "y").toString());
             return null;
         }
 
+        private MethodHandle findVirtualForVH(String name, MethodType type) {
+            VarHandle.AccessMode accessMode;
+            try {
+                accessMode = VarHandle.AccessMode.valueFromMethodName(name);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+            return varHandleInvoker(accessMode, type);
+        }
+
         private static MethodHandle createMethodHandle(Method method, int handleKind,
                                                        MethodType methodType) {
             MethodHandle mh = new MethodHandleImpl(method.getArtMethod(), handleKind, methodType);
@@ -894,14 +897,13 @@ assertEquals("", (String) MH_newString.invokeExact());
                 if (mh != null) {
                     return mh;
                 }
+            } else if (refc == VarHandle.class) {
+                // Returns an non-exact invoker.
+                MethodHandle mh = findVirtualForVH(name, type);
+                if (mh != null) {
+                    return mh;
+                }
             }
-            // BEGIN Android-changed: Added VarHandle case here.
-            // Implementation to follow. TODO(b/65872996)
-            if (refc == VarHandle.class) {
-                unsupported("MethodHandles.findVirtual with refc == VarHandle.class");
-                return null;
-            }
-            // END Android-changed: Added VarHandle handling here.
 
             Method method = refc.getInstanceMethod(name, type.ptypes());
             if (method == null) {
@@ -2458,6 +2460,24 @@ return invoker;
         return new Transformers.Invoker(type, false /* isExactInvoker */);
     }
 
+    // BEGIN Android-added: resolver for VarHandle accessor methods.
+    static private MethodHandle methodHandleForVarHandleAccessor(VarHandle.AccessMode accessMode,
+                                                                 MethodType type,
+                                                                 boolean isExactInvoker) {
+        Class<?> refc = VarHandle.class;
+        Method method;
+        try {
+            method = refc.getDeclaredMethod(accessMode.methodName(), Object[].class);
+        } catch (NoSuchMethodException e) {
+            throw new InternalError("No method for AccessMode " + accessMode, e);
+        }
+        MethodType methodType = type.insertParameterTypes(0, VarHandle.class);
+        int kind = isExactInvoker ? MethodHandle.INVOKE_VAR_HANDLE_EXACT
+                                  : MethodHandle.INVOKE_VAR_HANDLE;
+        return new MethodHandleImpl(method.getArtMethod(), kind, methodType);
+    }
+    // END Android-added: resolver for VarHandle accessor methods.
+
     /**
      * Produces a special <em>invoker method handle</em> which can be used to
      * invoke a signature-polymorphic access mode method on any VarHandle whose
@@ -2475,8 +2495,7 @@ return invoker;
      */
     static public
     MethodHandle varHandleExactInvoker(VarHandle.AccessMode accessMode, MethodType type) {
-        unsupported("MethodHandles.varHandleExactInvoker()");  // TODO(b/65872996)
-        return null;
+        return methodHandleForVarHandleAccessor(accessMode, type, true /* isExactInvoker */);
     }
 
     /**
@@ -2506,8 +2525,7 @@ return invoker;
      */
     static public
     MethodHandle varHandleInvoker(VarHandle.AccessMode accessMode, MethodType type) {
-        unsupported("MethodHandles.varHandleInvoker()");  // TODO(b/65872996)
-        return null;
+        return methodHandleForVarHandleAccessor(accessMode, type, false /* isExactInvoker */);
     }
 
     // Android-changed: Basic invokers are not supported.
