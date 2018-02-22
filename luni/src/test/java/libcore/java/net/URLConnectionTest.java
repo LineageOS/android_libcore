@@ -2069,6 +2069,14 @@ public final class URLConnectionTest extends TestCase {
         }
     }
 
+    public void testSetDefaultSSLSocketFactory_null() {
+        try {
+            HttpsURLConnection.setDefaultSSLSocketFactory(null);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
     /**
      * Test that the timeout period is honored. The connect timeout is applied to each socket
      * connection attempt. If a hostname resolves to multiple IPs HttpURLConnection will wait the
