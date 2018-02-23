@@ -309,6 +309,7 @@ public class ProcessBuilderTest extends TestCase {
      * it's hard to imagine this ever breaking, but it's good to have a test
      * since it's called out in the documentation.
      */
+    @SuppressWarnings("CollectionIncompatibleType")
     public void testEnvironmentMapForbidsNonStringKeysAndValues() {
         ProcessBuilder pb = new ProcessBuilder("echo", "Hello, world!");
         Map<String, String> environment = pb.environment();
