@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Representation of the break-down of a heap dump into categories.
@@ -61,7 +62,45 @@ class HeapCategorization
         INTERNED_STRING_CODE_ISH("internedStringCodeIsh"),
 
         /** Objects in a {@code android.icu} package, or strongly reachable from such an object. */
-        PACKAGE_ANDROID_ICU("packageAndroidIcu");
+        PACKAGE_ANDROID_ICU("packageAndroidIcu"),
+
+        /** Objects in a {@code android.util} package, or strongly reachable from such an object. */
+        PACKAGE_ANDROID_UTIL("packageAndroidUtil"),
+
+        /**
+         * Objects in a {@code android} package other than {@code android.icu} or
+         * {@code android.util}, or a {@code com.android.internal} package other than
+         * {@code com.android.internal.util}, or strongly reachable from such an object. Includes
+         * {@code app}, {@code widget}, {@code graphics}, {@code os}, and many more.
+         */
+        ANDROID_FRAMEWORK("androidFramework"),
+
+        /**
+         * Objects in a {@code java.security}, {@code sun.security},
+         * {@code com.android.org.conscrypt}, or {@code com.android.org.bouncycastle} package, or
+         * strongly reachable from such an object.
+         */
+        SECURITY("security"),
+
+        /**
+         * Objects in a {@code java}, {@code javax}, {@code sun}, {@code com.sun}, or
+         * {@code libcore} package, and strongly reachable only from such objects (i.e. the entire
+         * reference graph is libcore). Excludes interned strings (which are in {@code java.lang}
+         * and have no references).
+         */
+        PURE_LIBCORE("pureLibcore"),
+
+        /**
+         * The subset of {@link #PURE_LIBCORE} which is static, rather than instance, state.
+         */
+        PURE_LIBCORE_STATIC("pureLibcoreStatic"),
+
+        /**
+         * Objects which don't fall into any of the above categories. (N.B. This ensures that every
+         * object is in at least one category, but objects may be in more than one of the above.)
+         */
+        NONE_OF_THE_ABOVE("noneOfTheAbove"),
+        ;
 
         private final String metricSuffix;
 
@@ -111,12 +150,41 @@ class HeapCategorization
     }
 
     private void initializeFromRooted(AhatInstance rooted) {
+        int categories = 0;
         if (isInternedString(rooted)) {
             HeapCategory category = categorizeInternedString(rooted.asString());
             incrementSize(rooted, category);
+            categories++;
         }
-        if (isAndroidIcuPackage(rooted)) {
+
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.icu."))) {
             incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_ICU);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.util."))) {
+            incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_UTIL);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, this::isAndroidFrameworkClass)) {
+            incrementSize(rooted, HeapCategory.ANDROID_FRAMEWORK);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, this::isSecurityClass)) {
+            incrementSize(rooted, HeapCategory.SECURITY);
+            categories++;
+        }
+
+        if (!isInternedString(rooted) && !isOwnedByClassMatching(rooted, c -> !isLibcoreClass(c))) {
+            incrementSize(rooted, HeapCategory.PURE_LIBCORE);
+            categories++;
+        }
+        if (rooted.isClassObj() && isLibcoreClass(rooted.asClassObj().getName())) {
+            incrementSize(rooted, HeapCategory.PURE_LIBCORE_STATIC);
+            categories++;
+        }
+
+        if (categories == 0) {
+            incrementSize(rooted, HeapCategory.NONE_OF_THE_ABOVE);
         }
     }
 
@@ -168,7 +236,23 @@ class HeapCategorization
         }
     }
 
-    private boolean isAndroidIcuPackage(AhatInstance rooted) {
+    private boolean isAndroidFrameworkClass(String className) {
+        return (className.startsWith("android.")
+                        && !className.startsWith("android.icu.")
+                        && !className.startsWith("android.util."))
+                ||
+                (className.startsWith("com.android.internal.")
+                        && !className.startsWith("com.android.internal.util."));
+    }
+
+    private boolean isSecurityClass(String className) {
+        return className.startsWith("java.security.")
+                || className.startsWith("sun.security.")
+                || className.startsWith("com.android.org.bouncycastle.")
+                || className.startsWith("com.android.org.conscrypt.");
+    }
+
+    private boolean isOwnedByClassMatching(AhatInstance rooted, Predicate<String> predicate) {
         // Do a BFS of the strong reference graph looking for matching classes.
         Set<AhatInstance> visited = new HashSet<>();
         Queue<AhatInstance> queue = new ArrayDeque<>();
@@ -180,7 +264,7 @@ class HeapCategorization
                 // This is the heap allocation for the static state of a class. Check the class.
                 // Don't continue up the reference tree, as every instance of this class has a
                 // reference to it.
-                return isAndroidIcuPackageClass(instance.asClassObj());
+                return predicate.test(instance.asClassObj().getName());
             } else if (instance.isPlaceHolder()) {
                 // Placeholders have no retained size and so can be ignored.
                 return false;
@@ -188,7 +272,7 @@ class HeapCategorization
                 // This is the heap allocation for the instance state of an object. Check its class.
                 // If it's not a match, continue searching up the strong reference graph.
                 AhatClassObj classObj = instance.getClassObj();
-                if (isAndroidIcuPackageClass(classObj)) {
+                if (predicate.test(classObj.getName())) {
                     return true;
                 } else {
                     for (AhatInstance reference : instance.getHardReverseReferences()) {
@@ -203,8 +287,12 @@ class HeapCategorization
         return false;
     }
 
-    private boolean isAndroidIcuPackageClass(AhatClassObj classObj) {
-        return classObj.getName().startsWith("android.icu.");
+    private boolean isLibcoreClass(String name) {
+        return name.startsWith("java.")
+                || name.startsWith("javax.")
+                || name.startsWith("sun.")
+                || name.startsWith("com.sun.")
+                || name.startsWith("libcore.");
     }
 
     /**
