@@ -83,6 +83,24 @@ class HeapCategorization
         SECURITY("security"),
 
         /**
+         * Objects in a {@code com.android.org.conscrypt} package, or strongly reachable from such
+         * an object.
+         */
+        SECURITY_CONSCRYPT("securityConscrypt"),
+
+        /**
+         * Objects in a {@code com.android.org.bouncycastle} package, or strongly reachable from
+         * such an object.
+         */
+        SECURITY_BOUNCYCASTLE("securityBouncycastle"),
+
+        /**
+         * Objects in a {@code java.security.keystore} package, or strongly reachable from such an
+         * object.
+         */
+        SECURITY_KEYSTORE("securityKeystore"),
+
+        /**
          * Objects in a {@code java}, {@code javax}, {@code sun}, {@code com.sun}, or
          * {@code libcore} package, and strongly reachable only from such objects (i.e. the entire
          * reference graph is libcore). Excludes interned strings (which are in {@code java.lang}
@@ -171,6 +189,18 @@ class HeapCategorization
         }
         if (isOwnedByClassMatching(rooted, this::isSecurityClass)) {
             incrementSize(rooted, HeapCategory.SECURITY);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("com.android.org.conscrypt."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_CONSCRYPT);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("com.android.org.bouncycastle."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_BOUNCYCASTLE);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.security.keystore."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_KEYSTORE);
             categories++;
         }
 
