@@ -31,16 +31,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import libcore.util.CountryTimeZones;
+import libcore.util.CountryTimeZones.TimeZoneMapping;
 import libcore.util.CountryZonesFinder;
 import libcore.util.TimeZoneFinder;
-import libcore.util.ZoneInfoDB;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -109,7 +105,8 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n";
         CountryTimeZones expectedCountryTimeZones1 = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
+                "test");
 
         String validXml2 = "<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -119,7 +116,8 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n";
         CountryTimeZones expectedCountryTimeZones2 = CountryTimeZones.createValidated(
-                "gb", "Europe/Paris", false /* everUsesUtc */, list("Europe/Paris"), "test");
+                "gb", "Europe/Paris", false /* everUsesUtc */, timeZoneMappings("Europe/Paris"),
+                "test");
 
         String invalidXml = "<foo></foo>\n";
         checkValidateThrowsParserException(invalidXml);
@@ -184,7 +182,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedComments() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
+                "test");
 
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -211,7 +210,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedElementsIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
+                "test");
 
         String unexpectedElement = "<unexpected-element>\n<a /></unexpected-element>\n";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
@@ -268,7 +268,7 @@ public class TimeZoneFinderTest {
 
         expectedCountryTimeZones = CountryTimeZones.createValidated(
                 "gb", "Europe/London", true /* everUsesUtc */,
-                list("Europe/London", "Europe/Paris"), "test");
+                timeZoneMappings("Europe/London", "Europe/Paris"), "test");
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
@@ -284,7 +284,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedTextIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
+                "test");
 
         String unexpectedText = "unexpected-text";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
@@ -319,7 +320,7 @@ public class TimeZoneFinderTest {
 
         expectedCountryTimeZones = CountryTimeZones.createValidated(
                 "gb", "Europe/London", true /* everUsesUtc */,
-                list("Europe/London", "Europe/Paris"), "test");
+                timeZoneMappings("Europe/London", "Europe/Paris"), "test");
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
@@ -376,7 +377,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unknownTimeZoneIdIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, list("Europe/London"), "test");
+                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
+                "test");
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
@@ -400,7 +402,7 @@ public class TimeZoneFinderTest {
     }
 
     @Test
-    public void xmlParsing_missingEverUtc() throws Exception {
+    public void xmlParsing_missingCountryEverUtc() throws Exception {
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\">\n"
@@ -411,7 +413,18 @@ public class TimeZoneFinderTest {
     }
 
     @Test
-    public void xmlParsing_missingDefault() throws Exception {
+    public void xmlParsing_badCountryEverUtc() throws Exception {
+        checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"occasionally\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_missingCountryDefault() throws Exception {
         checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" everutc=\"y\">\n"
@@ -419,6 +432,42 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_badTimeZoneMappingPicker() throws Exception {
+        checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
+                + "      <id picker=\"sometimes\">Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_timeZoneMappingPicker() throws Exception {
+        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"us\" default=\"America/New_York\" everutc=\"n\">\n"
+                + "      <!-- Explicit picker=\"y\" -->\n"
+                + "      <id picker=\"y\">America/New_York</id>\n"
+                + "      <!-- Implicit picker=\"y\" -->\n"
+                + "      <id>America/Los_Angeles</id>\n"
+                + "      <!-- Explicit picker=\"n\" -->\n"
+                + "      <id picker=\"n\">America/Indiana/Vincennes</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        CountryTimeZones usTimeZones = finder.lookupCountryTimeZones("us");
+        List<TimeZoneMapping> actualTimeZoneMappings = usTimeZones.getTimeZoneMappings();
+        List<TimeZoneMapping> expectedTimeZoneMappings = list(
+                TimeZoneMapping.createForTests("America/New_York", true /* shownInPicker */),
+                TimeZoneMapping.createForTests("America/Los_Angeles", true /* shownInPicker */),
+                TimeZoneMapping.createForTests(
+                        "America/Indiana/Vincennes", false /* shownInPicker */)
+        );
+        assertEquals(expectedTimeZoneMappings, actualTimeZoneMappings);
     }
 
     @Test
@@ -445,9 +494,9 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         CountryTimeZones expectedGb = CountryTimeZones.createValidated("gb", "Europe/London", true,
-                list("Europe/London"), "test");
+                timeZoneMappings("Europe/London"), "test");
         CountryTimeZones expectedFr = CountryTimeZones.createValidated("fr", "Europe/Paris", true,
-                list("Europe/Paris"), "test");
+                timeZoneMappings("Europe/Paris"), "test");
         CountryZonesFinder countryZonesFinder = timeZoneFinder.getCountryZonesFinder();
         assertEquals(list("gb", "fr"), countryZonesFinder.lookupAllCountryIsoCodes());
         assertEquals(expectedGb, countryZonesFinder.lookupCountryTimeZones("gb"));
@@ -812,53 +861,6 @@ public class TimeZoneFinderTest {
     }
 
     @Test
-    public void consistencyTest() throws Exception {
-        // Confirm that no new zones have been added to zones.tab without also adding them to the
-        // configuration used to drive TimeZoneFinder.
-
-        // zone.tab is a tab separated ASCII file provided by IANA and included in Android's tzdata
-        // file. Each line contains a mapping from country code -> zone ID. The ordering used by
-        // TimeZoneFinder is Android-specific, but we can use zone.tab to make sure we know about
-        // all country zones. Any update to tzdata that adds, renames, or removes zones should be
-        // reflected in the file used by TimeZoneFinder.
-        Map<String, Set<String>> zoneTabMappings = new HashMap<>();
-        for (String line : ZoneInfoDB.getInstance().getZoneTab().split("\n")) {
-            int countryCodeEnd = line.indexOf('\t', 1);
-            int olsonIdStart = line.indexOf('\t', 4) + 1;
-            int olsonIdEnd = line.indexOf('\t', olsonIdStart);
-            if (olsonIdEnd == -1) {
-                olsonIdEnd = line.length(); // Not all zone.tab lines have a comment.
-            }
-            String countryCode = line.substring(0, countryCodeEnd);
-            String olsonId = line.substring(olsonIdStart, olsonIdEnd);
-            Set<String> zoneIds = zoneTabMappings.get(countryCode);
-            if (zoneIds == null) {
-                zoneIds = new HashSet<>();
-                zoneTabMappings.put(countryCode, zoneIds);
-            }
-            zoneIds.add(olsonId);
-        }
-
-        TimeZoneFinder timeZoneFinder = TimeZoneFinder.getInstance();
-        for (Map.Entry<String, Set<String>> countryEntry : zoneTabMappings.entrySet()) {
-            String countryCode = countryEntry.getKey();
-            // Android uses lower case, IANA uses upper.
-            countryCode = countryCode.toLowerCase();
-
-            List<String> androidZoneIds = timeZoneFinder.lookupTimeZoneIdsByCountry(countryCode);
-            List<TimeZone> androidZones = timeZoneFinder.lookupTimeZonesByCountry(countryCode);
-            List<String> androidIdsFromZones =
-                    androidZones.stream().map(TimeZone::getID).collect(Collectors.toList());
-            assertEquals("lookupTimeZonesByCountry and lookupTimeZoneIdsByCountry differ for "
-                            + countryCode, androidZoneIds, androidIdsFromZones);
-
-            Collection<String> ianaZoneIds = countryEntry.getValue();
-            assertEquals("Android zones for " + countryCode + " do not match IANA data",
-                    sort(ianaZoneIds), sort(androidZoneIds));
-        }
-    }
-
-    @Test
     public void xmlParsing_missingIanaVersionAttribute() throws Exception {
         // The <timezones> element will typically have an ianaversion attribute, but it's not
         // required for parsing.
@@ -918,6 +920,15 @@ public class TimeZoneFinderTest {
         TimeZoneFinder timeZoneFinder = TimeZoneFinder.createInstanceForTests(xml);
         timeZoneFinder.validate();
         return timeZoneFinder;
+    }
+
+    /**
+     * Creates a list of default {@link TimeZoneMapping} objects with the specified time zone IDs.
+     */
+    private static List<TimeZoneMapping> timeZoneMappings(String... timeZoneIds) {
+        return Arrays.stream(timeZoneIds)
+                .map(x -> TimeZoneMapping.createForTests(x, true))
+                .collect(Collectors.toList());
     }
 
     private static <X> List<X> list(X... values) {
