@@ -20,7 +20,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import libcore.util.CountryTimeZones;
+import libcore.util.CountryTimeZones.TimeZoneMapping;
 import libcore.util.CountryZonesFinder;
 
 import static org.junit.Assert.assertEquals;
@@ -31,17 +33,17 @@ import static org.junit.Assert.fail;
 public class CountryZonesFinderTest {
 
     private static final CountryTimeZones GB_ZONES = CountryTimeZones.createValidated(
-            "gb", "Europe/London", true, list("Europe/London"), "test");
+            "gb", "Europe/London", true, timeZoneMappings("Europe/London"), "test");
 
     private static final CountryTimeZones IM_ZONES = CountryTimeZones.createValidated(
-            "im", "Europe/London", true, list("Europe/London"), "test");
+            "im", "Europe/London", true, timeZoneMappings("Europe/London"), "test");
 
     private static final CountryTimeZones FR_ZONES = CountryTimeZones.createValidated(
-            "fr", "Europe/Paris", true, list("Europe/Paris"), "test");
+            "fr", "Europe/Paris", true, timeZoneMappings("Europe/Paris"), "test");
 
     private static final CountryTimeZones US_ZONES = CountryTimeZones.createValidated(
-            "us", "America/New_York", true, list("America/New_York", "America/Los_Angeles"),
-            "test");
+            "us", "America/New_York", true,
+            timeZoneMappings("America/New_York", "America/Los_Angeles"), "test");
 
     @Test
     public void lookupAllCountryIsoCodes() throws Exception {
@@ -98,5 +100,14 @@ public class CountryZonesFinderTest {
 
     private static <X> List<X> list(X... values) {
         return Arrays.asList(values);
+    }
+
+    /**
+     * Creates a list of default {@link TimeZoneMapping} objects with the specified time zone IDs.
+     */
+    private static List<TimeZoneMapping> timeZoneMappings(String... timeZoneIds) {
+        return Arrays.stream(timeZoneIds)
+                .map(x -> TimeZoneMapping.createForTests(x, true))
+                .collect(Collectors.toList());
     }
 }
