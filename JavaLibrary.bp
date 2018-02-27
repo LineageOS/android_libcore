@@ -297,3 +297,10 @@ droiddoc {
     todo_file: "core-docs-todo.html",
     args: "-offlinemode -title \"libcore\"",
 }
+
+filegroup {
+    name: "known-oj-tags",
+    srcs: [
+        "known_oj_tags.txt",
+    ],
+}
