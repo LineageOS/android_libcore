@@ -431,4 +431,42 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     assertEquals("11:00 PM – 12:00 AM", formatDateRange(locale, timeZone,
             1430434800000L, 1430438400000L, FORMAT_SHOW_TIME));
   }
+
+  // http://b/68847519
+  public void testEndAtMidnight() {
+    ULocale locale = new ULocale("en");
+    TimeZone timeZone = TimeZone.getTimeZone("UTC");
+    int dateTimeFlags = FORMAT_SHOW_DATE | FORMAT_SHOW_TIME | FORMAT_24HOUR;
+    // If we're showing times and the end-point is midnight the following day, we want the
+    // behaviour of suppressing the date for the end...
+    assertEquals("February 27, 04:00 – 00:00",
+        formatDateRange(locale, timeZone, 1519704000000L, 1519776000000L, dateTimeFlags));
+    // ...unless the start-point is also midnight, in which case we need dates to disambiguate.
+    assertEquals("February 27, 00:00 – February 28, 00:00",
+        formatDateRange(locale, timeZone, 1519689600000L, 1519776000000L, dateTimeFlags));
+    // We want to show the date if the end-point is a millisecond after midnight the following
+    // day, or if it is exactly midnight the day after that.
+    assertEquals("February 27, 04:00 – February 28, 00:00",
+        formatDateRange(locale, timeZone, 1519704000000L, 1519776000001L, dateTimeFlags));
+    assertEquals("February 27, 04:00 – March 1, 00:00",
+        formatDateRange(locale, timeZone, 1519704000000L, 1519862400000L, dateTimeFlags));
+    // We want to show the date if the start-point is anything less than a minute after midnight,
+    // since that gets displayed as midnight...
+    assertEquals("February 27, 00:00 – February 28, 00:00",
+        formatDateRange(locale, timeZone, 1519689659999L, 1519776000000L, dateTimeFlags));
+    // ...but not if it is exactly one minute after midnight.
+    assertEquals("February 27, 00:01 – 00:00",
+        formatDateRange(locale, timeZone, 1519689660000L, 1519776000000L, dateTimeFlags));
+    int dateOnlyFlags = FORMAT_SHOW_DATE;
+    // If we're only showing dates and the end-point is midnight of any day, we want the
+    // behaviour of showing an end date one earlier. So if the end-point is March 2, 00:00, show
+    // March 1 instead (whether the start-point is midnight or not).
+    assertEquals("February 27 – March 1",
+        formatDateRange(locale, timeZone, 1519689600000L, 1519948800000L, dateOnlyFlags));
+    assertEquals("February 27 – March 1",
+        formatDateRange(locale, timeZone, 1519704000000L, 1519948800000L, dateOnlyFlags));
+    // We want to show the true date if the end-point is a millisecond after midnight.
+    assertEquals("February 27 – March 2",
+        formatDateRange(locale, timeZone, 1519689600000L, 1519948800001L, dateOnlyFlags));
+  }
 }
