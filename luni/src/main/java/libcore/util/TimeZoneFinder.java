@@ -38,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import libcore.util.CountryTimeZones.TimeZoneMapping;
 
 /**
  * A class that can find matching time zones by loading data from the tzlookup.xml file.
@@ -45,14 +46,27 @@ import java.util.Set;
 public final class TimeZoneFinder {
 
     private static final String TZLOOKUP_FILE_NAME = "tzlookup.xml";
+
+    // Root element. e.g. <timezones ianaversion="2017b">
     private static final String TIMEZONES_ELEMENT = "timezones";
     private static final String IANA_VERSION_ATTRIBUTE = "ianaversion";
+
+    // Country zones section. e.g. <countryzones>
     private static final String COUNTRY_ZONES_ELEMENT = "countryzones";
+
+    // Country data. e.g. <country code="gb" default="Europe/London" everutc="y">
     private static final String COUNTRY_ELEMENT = "country";
     private static final String COUNTRY_CODE_ATTRIBUTE = "code";
     private static final String DEFAULT_TIME_ZONE_ID_ATTRIBUTE = "default";
     private static final String EVER_USES_UTC_ATTRIBUTE = "everutc";
-    private static final String ID_ELEMENT = "id";
+
+    // Country -> Time zone mapping. e.g. <id picker="n">
+    // The default for the picker attribute when unspecified is "y".
+    private static final String ZONE_ID_ELEMENT = "id";
+    private static final String ZONE_SHOW_IN_PICKER_ATTRIBUTE = "picker";
+
+    private static final String TRUE_ATTRIBUTE_VALUE = "y";
+    private static final String FALSE_ATTRIBUTE_VALUE = "n";
 
     private static TimeZoneFinder instance;
 
@@ -221,7 +235,8 @@ public final class TimeZoneFinder {
      */
     public List<String> lookupTimeZoneIdsByCountry(String countryIso) {
         CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
-        return countryTimeZones == null ? null : countryTimeZones.getTimeZoneIds();
+        return countryTimeZones == null
+                ? null : extractTimeZoneIds(countryTimeZones.getTimeZoneMappings());
     }
 
     /**
@@ -281,6 +296,8 @@ public final class TimeZoneFinder {
              *   <countryzones>
              *     <country code="us" default="America/New_York">
              *       <id>America/New_York"</id>
+             *       ...
+             *       <id picker="n">America/Indiana/Vincennes</id>
              *       ...
              *       <id>America/Los_Angeles</id>
              *     </country>
@@ -344,19 +361,19 @@ public final class TimeZoneFinder {
                     throw new XmlPullParserException("Unable to find default time zone ID: "
                             + parser.getPositionDescription());
                 }
-                String everUsesUtcString = parser.getAttributeValue(
-                        null /* namespace */, EVER_USES_UTC_ATTRIBUTE);
-                if (!("y".equals(everUsesUtcString) || "n".equals(everUsesUtcString))) {
+                Boolean everUsesUtc = parseBooleanAttribute(
+                        parser, EVER_USES_UTC_ATTRIBUTE, null /* defaultValue */);
+                if (everUsesUtc == null) {
+                    // There is no valid default: we require this to be specified.
                     throw new XmlPullParserException(
                             "Unable to find UTC hint attribute (" + EVER_USES_UTC_ATTRIBUTE + "): "
                             + parser.getPositionDescription());
                 }
-                boolean everUsesUtc = everUsesUtcString.equals("y");
 
                 String debugInfo = parser.getPositionDescription();
-                List<String> timeZoneIds = parseZoneIds(parser);
+                List<TimeZoneMapping> timeZoneMappings = parseTimeZoneMappings(parser);
                 boolean result = processor.processCountryZones(code, defaultTimeZoneId, everUsesUtc,
-                        timeZoneIds, debugInfo);
+                        timeZoneMappings, debugInfo);
                 if (result == TimeZonesProcessor.HALT) {
                     return TimeZonesProcessor.HALT;
                 }
@@ -369,23 +386,51 @@ public final class TimeZoneFinder {
         return TimeZonesProcessor.CONTINUE;
     }
 
-    private static List<String> parseZoneIds(XmlPullParser parser)
+    private static List<TimeZoneMapping> parseTimeZoneMappings(XmlPullParser parser)
             throws IOException, XmlPullParserException {
-        List<String> timeZones = new ArrayList<>();
+        List<TimeZoneMapping> timeZoneMappings = new ArrayList<>();
 
         // Skip over any unexpected elements and process <id> elements.
-        while (findOptionalStartTag(parser, ID_ELEMENT)) {
+        while (findOptionalStartTag(parser, ZONE_ID_ELEMENT)) {
+            // The picker attribute is optional and defaulted to true.
+            boolean showInPicker = parseBooleanAttribute(
+                    parser, ZONE_SHOW_IN_PICKER_ATTRIBUTE, true /* defaultValue */);
             String zoneIdString = consumeText(parser);
 
             // Make sure we are on the </id> element.
-            checkOnEndTag(parser, ID_ELEMENT);
+            checkOnEndTag(parser, ZONE_ID_ELEMENT);
 
-            // Process the zone ID.
-            timeZones.add(zoneIdString);
+            // Process the TimeZoneMapping.
+            if (zoneIdString == null || zoneIdString.length() == 0) {
+                throw new XmlPullParserException("Missing text for " + ZONE_ID_ELEMENT + "): "
+                        + parser.getPositionDescription());
+            }
+
+            TimeZoneMapping timeZoneMapping = new TimeZoneMapping(zoneIdString, showInPicker);
+            timeZoneMappings.add(timeZoneMapping);
         }
 
         // The list is made unmodifiable to avoid callers changing it.
-        return Collections.unmodifiableList(timeZones);
+        return Collections.unmodifiableList(timeZoneMappings);
+    }
+
+    /**
+     * Parses an attribute value, which must be either {@code null}, {@code "y"} or {@code "n"}.
+     * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
+     * attribute is present but not "y" or "n" then an XmlPullParserException is thrown.
+     */
+    private static Boolean parseBooleanAttribute(XmlPullParser parser,
+            String attributeName, Boolean defaultValue) throws XmlPullParserException {
+        String attributeValueString = parser.getAttributeValue(null /* namespace */, attributeName);
+        if (attributeValueString == null) {
+            return defaultValue;
+        }
+        boolean isTrue = TRUE_ATTRIBUTE_VALUE.equals(attributeValueString);
+        if (!(isTrue || FALSE_ATTRIBUTE_VALUE.equals(attributeValueString))) {
+            throw new XmlPullParserException("Attribute \"" + attributeName
+                    + "\" is not \"y\" or \"n\": " + parser.getPositionDescription());
+        }
+        return isTrue;
     }
 
     private static void findRequiredStartTag(XmlPullParser parser, String elementName)
@@ -548,7 +593,7 @@ public final class TimeZoneFinder {
          * <p>The default implementation returns {@link #CONTINUE}.
          */
         default boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<String> timeZoneIds, String debugInfo)
+                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
             return CONTINUE;
         }
@@ -568,7 +613,7 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<String> timeZoneIds, String debugInfo)
+                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
             if (!normalizeCountryIso(countryIso).equals(countryIso)) {
                 throw new XmlPullParserException("Country code: " + countryIso
@@ -578,13 +623,13 @@ public final class TimeZoneFinder {
                 throw new XmlPullParserException("Second entry for country code: " + countryIso
                         + " at " + debugInfo);
             }
-            if (timeZoneIds.isEmpty()) {
+            if (timeZoneMappings.isEmpty()) {
                 throw new XmlPullParserException("No time zone IDs for country code: " + countryIso
                         + " at " + debugInfo);
             }
-            if (!timeZoneIds.contains(defaultTimeZoneId)) {
+            if (!TimeZoneMapping.containsTimeZoneId(timeZoneMappings, defaultTimeZoneId)) {
                 throw new XmlPullParserException("defaultTimeZoneId for country code: "
-                        + countryIso + " is not one of the zones " + timeZoneIds + " at "
+                        + countryIso + " is not one of the zones " + timeZoneMappings + " at "
                         + debugInfo);
             }
             knownCountryCodes.add(countryIso);
@@ -621,11 +666,11 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<String> timeZoneIds, String debugInfo)
+                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
 
             CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                    countryIso, defaultTimeZoneId, everUsesUtc, timeZoneIds, debugInfo);
+                    countryIso, defaultTimeZoneId, everUsesUtc, timeZoneMappings, debugInfo);
             countryTimeZonesList.add(countryTimeZones);
             return CONTINUE;
         }
@@ -651,13 +696,13 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<String> countryTimeZoneIds, String debugInfo) {
+                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo) {
             countryIso = normalizeCountryIso(countryIso);
             if (!countryCodeToMatch.equals(countryIso)) {
                 return CONTINUE;
             }
             validatedCountryTimeZones = CountryTimeZones.createValidated(countryIso,
-                    defaultTimeZoneId, everUsesUtc, countryTimeZoneIds, debugInfo);
+                    defaultTimeZoneId, everUsesUtc, timeZoneMappings, debugInfo);
 
             return HALT;
         }
@@ -691,6 +736,14 @@ public final class TimeZoneFinder {
         static ReaderSupplier forString(String xml) {
             return () -> new StringReader(xml);
         }
+    }
+
+    private static List<String> extractTimeZoneIds(List<TimeZoneMapping> timeZoneMappings) {
+        List<String> zoneIds = new ArrayList<>(timeZoneMappings.size());
+        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
+            zoneIds.add(timeZoneMapping.timeZoneId);
+        }
+        return Collections.unmodifiableList(zoneIds);
     }
 
     static String normalizeCountryIso(String countryIso) {
