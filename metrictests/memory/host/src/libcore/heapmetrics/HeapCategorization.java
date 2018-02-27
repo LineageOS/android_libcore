@@ -64,7 +64,8 @@ class HeapCategorization
         /** Objects in a {@code android.icu} package, or strongly reachable from such an object. */
         PACKAGE_ANDROID_ICU("packageAndroidIcu"),
 
-        /** Objects in a {@code android.util} package, or strongly reachable from such an object. */
+        /** Objects in a {@code android.util} or {@code com.internal.android.util} package, or
+         * strongly reachable from such an object. */
         PACKAGE_ANDROID_UTIL("packageAndroidUtil"),
 
         /**
@@ -179,7 +180,7 @@ class HeapCategorization
             incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_ICU);
             categories++;
         }
-        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.util."))) {
+        if (isOwnedByClassMatching(rooted, this::isAndroidUtilClass)) {
             incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_UTIL);
             categories++;
         }
@@ -264,6 +265,11 @@ class HeapCategorization
             // regex.
             return HeapCategory.INTERNED_STRING_CODE_ISH;
         }
+    }
+
+    private boolean isAndroidUtilClass(String className) {
+        return className.startsWith("android.util.")
+                || className.startsWith("com.android.internal.util.");
     }
 
     private boolean isAndroidFrameworkClass(String className) {
