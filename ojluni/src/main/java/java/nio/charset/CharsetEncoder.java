@@ -319,7 +319,6 @@ public abstract class CharsetEncoder {
             throw new IllegalArgumentException("Illegal replacement");
         this.replacement = Arrays.copyOf(newReplacement, newReplacement.length);
 
-        this.replacement = newReplacement;
         implReplaceWith(this.replacement);
         return this;
     }
