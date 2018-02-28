@@ -262,13 +262,13 @@ genrule {
         ":annotated_ojluni_files",
     ],
     cmd: "($(location gen-annotated-java-files-bp) $(location annotations/ojluni.jaif) > $(genDir)/annotated_java_files.bp.tmp) && " +
-         "(diff -u `pwd`/libcore/annotated_java_files.bp $(genDir)/annotated_java_files.bp.tmp) || " +
+         "(diff -u `pwd`/libcore/annotated_java_files.bp $(genDir)/annotated_java_files.bp.tmp || " +
          "(echo -e \"********************\" >&2; " +
          " echo -e \"annotated_java_files.bp needs regenerating. Please run:\" >&2; " +
          " echo -e \"libcore/annotations/generate_annotated_java_files.py libcore/annotations/ojluni.jaif > libcore/annotated_java_files.bp\" >&2; " +
-         " echo -e \"********************\" >&2; exit 1) && " +
+         " echo -e \"********************\" >&2; exit 1) ) && " +
          "(rm $(genDir)/annotated_java_files.bp.tmp) && " +
-         "(external/annotation-tools/annotation-file-utilities/scripts/insert-annotations-to-source -d $(genDir) $(in)) && " +
+         "(external/annotation-tools/annotation-file-utilities/scripts/insert-annotations-to-source -d $(genDir) $(location annotations/ojluni.jaif) $(in)) && " +
          "($(location soong_zip) -o $(out) -C $(genDir) -D $(genDir))",
     out: [
         "ojluni_jaif_annotated_srcs.srcjar",
