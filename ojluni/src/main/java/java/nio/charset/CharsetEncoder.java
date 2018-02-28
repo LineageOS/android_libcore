@@ -87,9 +87,9 @@ import java.util.Arrays;
  * <a name="cae"></a>
  *
  * <p> How an encoding error is handled depends upon the action requested for
- * that type of error, which is described by an instance of the {@linkplain
+ * that type of error, which is described by an instance of the {@link
  * CodingErrorAction} class.  The possible error actions are to {@linkplain
- * CodingErrorAction#IGNORE ignore} the erroneous input, {@link
+ * CodingErrorAction#IGNORE ignore} the erroneous input, {@linkplain
  * CodingErrorAction#REPORT report} the error to the invoker via
  * the returned {@link CoderResult} object, or {@linkplain CodingErrorAction#REPLACE
  * replace} the erroneous input with the current value of the
@@ -269,7 +269,12 @@ public abstract class CharsetEncoder {
      *          which is never <tt>null</tt> and is never empty
      */
     public final byte[] replacement() {
+
+
+
+
         return Arrays.copyOf(replacement, replacement.length);
+
     }
 
     /**
