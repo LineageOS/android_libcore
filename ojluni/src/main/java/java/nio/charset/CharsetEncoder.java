@@ -188,18 +188,20 @@ public abstract class CharsetEncoder {
                    float averageBytesPerChar,
                    float maxBytesPerChar,
                    byte[] replacement)
-    // BEGIN Android-changed
     {
-      this(cs, averageBytesPerChar, maxBytesPerChar, replacement, false);
+        // BEGIN Android-added: A hidden constructor for the CharsetEncoderICU subclass.
+        this(cs, averageBytesPerChar, maxBytesPerChar, replacement, false);
     }
 
-    CharsetEncoder(Charset cs,
-                   float averageBytesPerChar,
-                   float maxBytesPerChar,
-                   byte[] replacement,
-                   boolean trusted)
-                   // END Android-changed
+    /**
+     * This constructor is for subclasses to specify whether {@code replacement} can be used as it
+     * is ("trusted"). If it is trusted, {@link #replaceWith(byte[])} and
+     * {@link #implReplaceWith(byte[])} will not be called.
+     */
+    CharsetEncoder(Charset cs, float averageBytesPerChar, float maxBytesPerChar, byte[] replacement,
+            boolean trusted)
     {
+        // END Android-added: A hidden constructor for the CharsetEncoderICU subclass.
         this.charset = cs;
         if (averageBytesPerChar <= 0.0f)
             throw new IllegalArgumentException("Non-positive "
@@ -216,13 +218,12 @@ public abstract class CharsetEncoder {
         this.replacement = replacement;
         this.averageBytesPerChar = averageBytesPerChar;
         this.maxBytesPerChar = maxBytesPerChar;
-        // BEGIN Android-changed
+        // BEGIN Android-changed: Avoid calling replaceWith() for trusted subclasses.
+        // replaceWith(replacement);
         if (!trusted) {
-        // END Android-changed
-        replaceWith(replacement);
-        // BEGIN Android-changed
+            replaceWith(replacement);
         }
-        // END Android-changed
+        // END Android-changed: Avoid calling replaceWith() for trusted subclasses.
     }
 
     /**
@@ -318,7 +319,6 @@ public abstract class CharsetEncoder {
             throw new IllegalArgumentException("Illegal replacement");
         this.replacement = Arrays.copyOf(newReplacement, newReplacement.length);
 
-        this.replacement = newReplacement;
         implReplaceWith(this.replacement);
         return this;
     }
@@ -917,10 +917,12 @@ public abstract class CharsetEncoder {
 
 
     private boolean canEncode(CharBuffer cb) {
-        // Empty buffers or char-sequences are always encodable by definition.
+        // BEGIN Android-added: Fast path handling for empty buffers.
+        // Empty buffers can always be "encoded".
         if (!cb.hasRemaining()) {
             return true;
         }
+        // END Android-added: Fast path handling for empty buffers.
 
         if (state == ST_FLUSHED)
             reset();
@@ -1008,6 +1010,8 @@ public abstract class CharsetEncoder {
         if (cs instanceof CharBuffer)
             cb = ((CharBuffer)cs).duplicate();
         else
+            // Android-removed: An unnecessary call to toString().
+            // cb = CharBuffer.wrap(cs.toString());
             cb = CharBuffer.wrap(cs);
         return canEncode(cb);
     }
