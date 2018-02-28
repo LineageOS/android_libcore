@@ -64,7 +64,8 @@ class HeapCategorization
         /** Objects in a {@code android.icu} package, or strongly reachable from such an object. */
         PACKAGE_ANDROID_ICU("packageAndroidIcu"),
 
-        /** Objects in a {@code android.util} package, or strongly reachable from such an object. */
+        /** Objects in a {@code android.util} or {@code com.internal.android.util} package, or
+         * strongly reachable from such an object. */
         PACKAGE_ANDROID_UTIL("packageAndroidUtil"),
 
         /**
@@ -81,6 +82,24 @@ class HeapCategorization
          * strongly reachable from such an object.
          */
         SECURITY("security"),
+
+        /**
+         * Objects in a {@code com.android.org.conscrypt} package, or strongly reachable from such
+         * an object.
+         */
+        SECURITY_CONSCRYPT("securityConscrypt"),
+
+        /**
+         * Objects in a {@code com.android.org.bouncycastle} package, or strongly reachable from
+         * such an object.
+         */
+        SECURITY_BOUNCYCASTLE("securityBouncycastle"),
+
+        /**
+         * Objects in a {@code java.security.keystore} package, or strongly reachable from such an
+         * object.
+         */
+        SECURITY_KEYSTORE("securityKeystore"),
 
         /**
          * Objects in a {@code java}, {@code javax}, {@code sun}, {@code com.sun}, or
@@ -161,7 +180,7 @@ class HeapCategorization
             incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_ICU);
             categories++;
         }
-        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.util."))) {
+        if (isOwnedByClassMatching(rooted, this::isAndroidUtilClass)) {
             incrementSize(rooted, HeapCategory.PACKAGE_ANDROID_UTIL);
             categories++;
         }
@@ -171,6 +190,18 @@ class HeapCategorization
         }
         if (isOwnedByClassMatching(rooted, this::isSecurityClass)) {
             incrementSize(rooted, HeapCategory.SECURITY);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("com.android.org.conscrypt."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_CONSCRYPT);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("com.android.org.bouncycastle."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_BOUNCYCASTLE);
+            categories++;
+        }
+        if (isOwnedByClassMatching(rooted, str -> str.startsWith("android.security.keystore."))) {
+            incrementSize(rooted, HeapCategory.SECURITY_KEYSTORE);
             categories++;
         }
 
@@ -234,6 +265,11 @@ class HeapCategorization
             // regex.
             return HeapCategory.INTERNED_STRING_CODE_ISH;
         }
+    }
+
+    private boolean isAndroidUtilClass(String className) {
+        return className.startsWith("android.util.")
+                || className.startsWith("com.android.internal.util.");
     }
 
     private boolean isAndroidFrameworkClass(String className) {
