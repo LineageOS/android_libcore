@@ -66,14 +66,14 @@ public class CountryZonesFinderTest {
         CountryZonesFinder countryZonesFinder =
                 CountryZonesFinder.createForTests(list(GB_ZONES, IM_ZONES, FR_ZONES, US_ZONES));
 
-        assertEqualsAndImmutable(list(GB_ZONES.getCountryIso(), IM_ZONES.getCountryIso()),
-                countryZonesFinder.lookupCountryCodesForZoneId("Europe/London"));
-        assertEqualsAndImmutable(list(US_ZONES.getCountryIso()),
-                countryZonesFinder.lookupCountryCodesForZoneId("America/New_York"));
-        assertEqualsAndImmutable(list(US_ZONES.getCountryIso()),
-                countryZonesFinder.lookupCountryCodesForZoneId("America/Los_Angeles"));
+        assertEqualsAndImmutable(list(GB_ZONES, IM_ZONES),
+                countryZonesFinder.lookupCountryTimeZonesForZoneId("Europe/London"));
+        assertEqualsAndImmutable(list(US_ZONES),
+                countryZonesFinder.lookupCountryTimeZonesForZoneId("America/New_York"));
+        assertEqualsAndImmutable(list(US_ZONES),
+                countryZonesFinder.lookupCountryTimeZonesForZoneId("America/Los_Angeles"));
         assertEqualsAndImmutable(list(),
-                countryZonesFinder.lookupCountryCodesForZoneId("DOES_NOT_EXIST"));
+                countryZonesFinder.lookupCountryTimeZonesForZoneId("DOES_NOT_EXIST"));
     }
 
     @Test
