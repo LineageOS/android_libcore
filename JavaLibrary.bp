@@ -286,7 +286,7 @@ droiddoc {
     exclude_srcs: [
         ":annotated_ojluni_files",
     ],
-    custom_template_dir: "external/doclava/res/assets/templates-sdk",
+    custom_template: "droiddoc-templates-sdk",
     hdf: [
         "android.whichdoc offline",
     ],
