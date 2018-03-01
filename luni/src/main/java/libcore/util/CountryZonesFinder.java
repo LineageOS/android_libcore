@@ -50,20 +50,20 @@ public final class CountryZonesFinder {
     }
 
     /**
-     * Returns an immutable list of country ISO codes for countries that use the specified time
-     * zone. An exact, case-sensitive match is performed on the zone ID. This method never returns
-     * null.
+     * Returns an immutable list of {@link CountryTimeZones} for countries that use the specified
+     * time zone. An exact, case-sensitive match is performed on the zone ID. This method never
+     * returns null.
      */
-    public List<String> lookupCountryCodesForZoneId(String zoneId) {
-        List<String> isoCodes = new ArrayList<>(2);
+    public List<CountryTimeZones> lookupCountryTimeZonesForZoneId(String zoneId) {
+        List<CountryTimeZones> matches = new ArrayList<>(2);
         for (CountryTimeZones countryTimeZones : countryTimeZonesList) {
             boolean match = TimeZoneMapping.containsTimeZoneId(
                     countryTimeZones.getTimeZoneMappings(), zoneId);
             if (match) {
-                isoCodes.add(countryTimeZones.getCountryIso());
+                matches.add(countryTimeZones);
             }
         }
-        return Collections.unmodifiableList(isoCodes);
+        return Collections.unmodifiableList(matches);
     }
 
     /**
