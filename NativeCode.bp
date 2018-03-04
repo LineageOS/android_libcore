@@ -27,7 +27,7 @@ cc_defaults {
         "-Wextra",
         "-Werror",
     ],
-    cppflags = ["-DU_USING_ICU_NAMESPACE=0"],
+    cppflags: ["-DU_USING_ICU_NAMESPACE=0"],
 
     target: {
         darwin: {
@@ -57,7 +57,7 @@ cc_library_shared {
     ],
     srcs: [
         ":luni_native_srcs",
-        "dalvik/src/main/native/org_apache_harmony_dalvik_NativeTestTarget.cpp"
+        "dalvik/src/main/native/org_apache_harmony_dalvik_NativeTestTarget.cpp",
     ],
 
     shared_libs: [
@@ -147,7 +147,7 @@ cc_library_shared {
 cc_library_shared {
     name: "libjavacoretests",
     defaults: ["core_native_default_flags"],
-    host_supported:true,
+    host_supported: true,
 
     srcs: [
         "luni/src/test/native/libcore_dalvik_system_JniTest.cpp",

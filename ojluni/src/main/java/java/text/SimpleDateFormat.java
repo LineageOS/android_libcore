@@ -68,6 +68,7 @@ import sun.util.calendar.CalendarUtils;
 import static java.text.DateFormatSymbols.*;
 
 // Android-changed: Added supported API level, removed unnecessary <br>
+// Android-changed: Clarified info about X symbol time zone parsing
 /**
  * <code>SimpleDateFormat</code> is a concrete class for formatting and
  * parsing dates in a locale-sensitive manner. It allows for formatting
@@ -363,10 +364,10 @@ import static java.text.DateFormatSymbols.*;
  *     is ignored. For example, if the pattern is {@code "X"} and the time zone is
  *     {@code "GMT+05:30"}, {@code "+05"} is produced.
  *
- *     <p>For parsing, {@code "Z"} is parsed as the UTC time zone designator.
+ *     <p>For parsing, the letter {@code "Z"} is parsed as the UTC time zone designator (therefore
+ *     {@code "09:30Z"} is parsed as {@code "09:30 UTC"}.
  *     <a href="#timezone">General time zones</a> are <em>not</em> accepted.
- *
- *     <p>If the number of pattern letters is 4 or more, {@link
+ *     <p>If the number of {@code "X"} pattern letters is 4 or more (e.g. {@code XXXX}), {@link
  *     IllegalArgumentException} is thrown when constructing a {@code
  *     SimpleDateFormat} or {@linkplain #applyPattern(String) applying a
  *     pattern}.
