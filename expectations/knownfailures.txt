@@ -1526,15 +1526,6 @@
     "com.google.security.wycheproof.RsaEncryptionTest#testGetExceptionsOAEP"
   ]
 },
-/* TODO(flooey): Remove when referenced BoringSSL change is merged */
-{
-  description: "Test crashes due to BoringSSL bug fixed in 61dedd68",
-  bug: 36636626,
-  result: EXEC_FAILED,
-  names: [
-    "com.google.security.wycheproof.EcdhTest#testModifiedPublicSpec"
-  ]
-},
 {
   description: "Bullhead kernel does not block send when buffer is supposed to have saturated",
   bug: 36691333,
