@@ -71,6 +71,11 @@ public final class BlockGuard {
         void onUnbufferedIO();
 
         /**
+         * Called on explicit GC request, i.e. Runtime.gc().
+         */
+        void onExplicitGc();
+
+        /**
          * Returns the policy bitmask, for shipping over Binder calls
          * to remote threads/processes and reinstantiating the policy
          * there.  The bits in the mask are from the DISALLOW_* and
@@ -124,6 +129,7 @@ public final class BlockGuard {
             public void onReadFromDisk() {}
             public void onNetwork() {}
             public void onUnbufferedIO() {}
+            public void onExplicitGc() {}
             public int getPolicyMask() {
                 return 0;
             }
