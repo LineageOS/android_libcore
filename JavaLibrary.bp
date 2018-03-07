@@ -127,6 +127,7 @@ java_library {
 
     java_resource_dirs: core_resource_dirs,
     java_resources: [":android_icu4j_resources"],
+    java_version: "1.9",
 
     required: [
         "tzdata",
@@ -192,6 +193,7 @@ java_library {
 
     srcs: [":core_libart_java_files"],
     java_resources: [":android_icu4j_resources"],
+    java_version: "1.9",
 
     no_standard_libs: true,
     libs: ["core-all"],
@@ -245,6 +247,7 @@ java_library {
     dex_preopt: {
         enabled: false,
     },
+    java_version: "1.9",
     notice: "ojluni/NOTICE",
     required: [
         "tzdata",
@@ -497,6 +500,7 @@ filegroup {
 droidstubs {
     name: "core-current-stubs-gen",
     srcs: [":core_api_files"],
+    java_version: "1.9",
     installable: false,
     no_framework_libs: true,
     args: " --exclude-annotations",

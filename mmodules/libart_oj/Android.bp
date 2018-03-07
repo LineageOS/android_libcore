@@ -38,6 +38,7 @@ java_library {
     no_standard_libs: true,
     libs: ["core.intra.stubs"],
     system_modules: "core-intra-stubs-system-modules",
+    java_version: "1.9",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
