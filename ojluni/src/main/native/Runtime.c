@@ -62,7 +62,7 @@ Runtime_maxMemory(JNIEnv *env, jobject this)
 }
 
 JNIEXPORT void JNICALL
-Runtime_gc(JNIEnv *env, jobject this)
+Runtime_nativeGc(JNIEnv *env, jobject this)
 {
     JVM_GC();
 }
@@ -84,7 +84,7 @@ static JNINativeMethod gMethods[] = {
   FAST_NATIVE_METHOD(Runtime, freeMemory, "()J"),
   FAST_NATIVE_METHOD(Runtime, totalMemory, "()J"),
   FAST_NATIVE_METHOD(Runtime, maxMemory, "()J"),
-  NATIVE_METHOD(Runtime, gc, "()V"),
+  NATIVE_METHOD(Runtime, nativeGc, "()V"),
   NATIVE_METHOD(Runtime, nativeExit, "(I)V"),
   NATIVE_METHOD(Runtime, nativeLoad,
                 "(Ljava/lang/String;Ljava/lang/ClassLoader;)"
