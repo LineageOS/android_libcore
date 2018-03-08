@@ -913,6 +913,11 @@ public final class URLTest extends TestCase {
             }
 
             @Override
+            public void onExplicitGc() {
+                fail("Blockguard.Policy.onExplicitGc");
+            }
+
+            @Override
             public int getPolicyMask() {
                 return 0;
             }
