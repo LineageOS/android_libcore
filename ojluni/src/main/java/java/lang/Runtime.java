@@ -29,6 +29,8 @@ package java.lang;
 import dalvik.annotation.optimization.FastNative;
 import java.io.*;
 import java.util.StringTokenizer;
+
+import dalvik.system.BlockGuard;
 import sun.reflect.CallerSensitive;
 import java.lang.ref.FinalizerReference;
 import java.util.ArrayList;
@@ -765,7 +767,14 @@ public class Runtime {
      * The method {@link System#gc()} is the conventional and convenient
      * means of invoking this method.
      */
-    public native void gc();
+    // Android-changed: Added BlockGuard check to gc()
+    // public native void gc();
+    public void gc() {
+        BlockGuard.getThreadPolicy().onExplicitGc();
+        nativeGc();
+    }
+
+    private native void nativeGc();
 
     /* Wormhole for calling java.lang.ref.Finalizer.runFinalization */
     private static native void runFinalization0();
