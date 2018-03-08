@@ -917,6 +917,11 @@ public abstract class CharsetEncoder {
 
 
     private boolean canEncode(CharBuffer cb) {
+        if (state == ST_FLUSHED)
+            reset();
+        else if (state != ST_RESET)
+            throwIllegalStateException(state, ST_CODING);
+
         // BEGIN Android-added: Fast path handling for empty buffers.
         // Empty buffers can always be "encoded".
         if (!cb.hasRemaining()) {
@@ -924,27 +929,20 @@ public abstract class CharsetEncoder {
         }
         // END Android-added: Fast path handling for empty buffers.
 
-        if (state == ST_FLUSHED)
-            reset();
-        else if (state != ST_RESET)
-            throwIllegalStateException(state, ST_CODING);
         CodingErrorAction ma = malformedInputAction();
         CodingErrorAction ua = unmappableCharacterAction();
         try {
             onMalformedInput(CodingErrorAction.REPORT);
             onUnmappableCharacter(CodingErrorAction.REPORT);
-            // Android-changed: Account for ignorable codepoints. ICU doesn't report
-            // an error, but will return an empty buffer.
-            ByteBuffer buf = encode(cb);
-            return buf.hasRemaining();
+            encode(cb);
         } catch (CharacterCodingException x) {
-            // fall through to return false.
+            return false;
         } finally {
             onMalformedInput(ma);
             onUnmappableCharacter(ua);
             reset();
         }
-        return false;
+        return true;
     }
 
     /**
