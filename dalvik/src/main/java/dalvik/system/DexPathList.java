@@ -25,9 +25,12 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import libcore.io.ClassPathURLStreamHandler;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -62,7 +65,8 @@ import static android.system.OsConstants.S_ISDIR;
     private Element[] dexElements;
 
     /** List of native library path elements. */
-    private final NativeLibraryElement[] nativeLibraryPathElements;
+    // Some applications rely on this field being an array or we'd use a final list here
+    /* package visible for testing */ NativeLibraryElement[] nativeLibraryPathElements;
 
     /** List of application native library directories. */
     private final List<File> nativeLibraryDirectories;
@@ -553,6 +557,33 @@ import static android.system.OsConstants.S_ISDIR;
     }
 
     /**
+     * Adds a collection of library paths from which to load native libraries. Paths can be absolute
+     * native library directories (i.e. /data/app/foo/lib/arm64) or apk references (i.e.
+     * /data/app/foo/base.apk!/lib/arm64).
+     *
+     * Note: This method will attempt to dedupe elements.
+     * Note: This method replaces the value of {@link #nativeLibraryPathElements}
+     */
+    public void addNativePath(Collection<String> libPaths) {
+        if (libPaths.isEmpty()) {
+            return;
+        }
+        List<File> libFiles = new ArrayList<>(libPaths.size());
+        for (String path : libPaths) {
+            libFiles.add(new File(path));
+        }
+        ArrayList<NativeLibraryElement> newPaths =
+                new ArrayList<>(nativeLibraryPathElements.length + libPaths.size());
+        newPaths.addAll(Arrays.asList(nativeLibraryPathElements));
+        for (NativeLibraryElement element : makePathElements(libFiles)) {
+            if (!newPaths.contains(element)) {
+                newPaths.add(element);
+            }
+        }
+        nativeLibraryPathElements = newPaths.toArray(new NativeLibraryElement[newPaths.size()]);
+    }
+
+    /**
      * Element of the dex/resource path. Note: should be called DexElement, but apps reflect on
      * this.
      */
@@ -797,6 +828,20 @@ import static android.system.OsConstants.S_ISDIR;
             }
 
             return null;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof NativeLibraryElement)) return false;
+            NativeLibraryElement that = (NativeLibraryElement) o;
+            return Objects.equals(path, that.path) &&
+                    Objects.equals(zipDir, that.zipDir);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(path, zipDir);
         }
     }
 }
