@@ -557,13 +557,16 @@ public class Providers {
                 System.logE(" * the BC provider is deprecated in this version of Android.");
                 System.logE(" * It will be removed in a future version of Android and your");
                 System.logE(" * application will no longer be able to request it.  Please see");
-                System.logE(" * ((TODO(flooey, b/67626877): Blog Post Link)) for more details.");
+                System.logE(" * https://android-developers.googleblog.com/2018/03/cryptography-changes-in-android-p.html");
+                System.logE(" * for more details.");
             } else {
                 throw new NoSuchAlgorithmException("The BC provider no longer provides an"
                         + " implementation for " + key + ".  Please see"
-                        + " ((TODO(flooey, b/67626877): Blog Post Link)) for more details.");
+                        + " https://android-developers.googleblog.com/2018/03/cryptography-changes-in-android-p.html"
+                        + " for more details.");
             }
         }
     }
+    // END Android-added: Check for requests of deprecated Bouncy Castle algorithms.
 
 }
