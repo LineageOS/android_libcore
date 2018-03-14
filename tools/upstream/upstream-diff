@@ -51,6 +51,7 @@ or to investigate which version of upstream introduced a change:
 
 import argparse
 import os
+import os.path
 import subprocess
 import sys
 
@@ -73,9 +74,17 @@ def run_diff(diff, repositories, rel_paths):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Compare files between libcore/ojluni and ${OJLUNI_UPSTREAMS}.')
+        description='Compare files between libcore/ojluni and ${OJLUNI_UPSTREAMS}.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter, # include default values in help
+    )
+    upstreams = os.environ['OJLUNI_UPSTREAMS']
+    # natsort.natsorted() would be a nicer sort order, but I'd rather avoid the dependency
+    repositories = ['ojluni'] + sorted(
+        [d for d in os.listdir(upstreams) if os.path.isdir(os.path.join(upstreams, d))]
+    )
     parser.add_argument('-r', '--repositories', default='ojluni,expected',
-                    help='Comma-separated list of >= 2 repositories to compare.')
+                    help='Comma-separated list of 2-3 repositories, to compare, in order; '
+                          'available repositories: ' + ' '.join(repositories) + '.')
     parser.add_argument('-d', '--diff', default='meld',
                         help='Application to use for diffing.')
     parser.add_argument('rel_path', nargs="+",
