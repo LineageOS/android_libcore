@@ -60,10 +60,15 @@ public final class TimeZoneFinder {
     private static final String DEFAULT_TIME_ZONE_ID_ATTRIBUTE = "default";
     private static final String EVER_USES_UTC_ATTRIBUTE = "everutc";
 
-    // Country -> Time zone mapping. e.g. <id picker="n">
+    // Country -> Time zone mapping. e.g. <id>ZoneId</id>, <id picker="n">ZoneId</id>,
+    // <id notafter={timestamp}>ZoneId</id>
     // The default for the picker attribute when unspecified is "y".
+    // The notafter attribute is optional. It specifies a timestamp (time in milliseconds from Unix
+    // epoch start) after which the zone is not (effectively) in use. If unspecified the zone is in
+    // use forever.
     private static final String ZONE_ID_ELEMENT = "id";
     private static final String ZONE_SHOW_IN_PICKER_ATTRIBUTE = "picker";
+    private static final String ZONE_NOT_USED_AFTER_ATTRIBUTE = "notafter";
 
     private static final String TRUE_ATTRIBUTE_VALUE = "y";
     private static final String FALSE_ATTRIBUTE_VALUE = "n";
@@ -395,6 +400,8 @@ public final class TimeZoneFinder {
             // The picker attribute is optional and defaulted to true.
             boolean showInPicker = parseBooleanAttribute(
                     parser, ZONE_SHOW_IN_PICKER_ATTRIBUTE, true /* defaultValue */);
+            Long notUsedAfter = parseLongAttribute(
+                    parser, ZONE_NOT_USED_AFTER_ATTRIBUTE, null /* defaultValue */);
             String zoneIdString = consumeText(parser);
 
             // Make sure we are on the </id> element.
@@ -406,12 +413,32 @@ public final class TimeZoneFinder {
                         + parser.getPositionDescription());
             }
 
-            TimeZoneMapping timeZoneMapping = new TimeZoneMapping(zoneIdString, showInPicker);
+            TimeZoneMapping timeZoneMapping =
+                    new TimeZoneMapping(zoneIdString, showInPicker, notUsedAfter);
             timeZoneMappings.add(timeZoneMapping);
         }
 
         // The list is made unmodifiable to avoid callers changing it.
         return Collections.unmodifiableList(timeZoneMappings);
+    }
+
+    /**
+     * Parses an attribute value, which must be either {@code null} or a valid signed long value.
+     * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
+     * attribute is present but not a valid long value then an XmlPullParserException is thrown.
+     */
+    private static Long parseLongAttribute(XmlPullParser parser, String attributeName,
+            Long defaultValue) throws XmlPullParserException {
+        String attributeValueString = parser.getAttributeValue(null /* namespace */, attributeName);
+        if (attributeValueString == null) {
+            return defaultValue;
+        }
+        try {
+            return Long.parseLong(attributeValueString);
+        } catch (NumberFormatException e) {
+            throw new XmlPullParserException("Attribute \"" + attributeName
+                    + "\" is not a long value: " + parser.getPositionDescription());
+        }
     }
 
     /**
