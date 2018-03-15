@@ -614,6 +614,15 @@ public class StringTest extends TestCase {
         assertEquals("", splits[7]);
     }
 
+    // http://b/63745717
+    // A buffer overflow bug was found in ICU4C. A native crash occurs only when ASAN is enabled.
+    public void testSplit_lookBehind() {
+        String string = "a";
+        String[] words = string.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])| |_|-");
+        assertEquals(1, words.length);
+        assertEquals(string, words[0]);
+    }
+
     // http://b/26126818
     public void testCodePointCount() {
         String hello = "Hello, fools";
