@@ -462,10 +462,48 @@ public class TimeZoneFinderTest {
         CountryTimeZones usTimeZones = finder.lookupCountryTimeZones("us");
         List<TimeZoneMapping> actualTimeZoneMappings = usTimeZones.getTimeZoneMappings();
         List<TimeZoneMapping> expectedTimeZoneMappings = list(
-                TimeZoneMapping.createForTests("America/New_York", true /* shownInPicker */),
-                TimeZoneMapping.createForTests("America/Los_Angeles", true /* shownInPicker */),
                 TimeZoneMapping.createForTests(
-                        "America/Indiana/Vincennes", false /* shownInPicker */)
+                        "America/New_York", true /* shownInPicker */, null /* notUsedAfter */),
+                TimeZoneMapping.createForTests(
+                        "America/Los_Angeles", true /* shownInPicker */, null /* notUsedAfter */),
+                TimeZoneMapping.createForTests(
+                        "America/Indiana/Vincennes", false /* shownInPicker */,
+                        null /* notUsedAfter */)
+        );
+        assertEquals(expectedTimeZoneMappings, actualTimeZoneMappings);
+    }
+
+    @Test
+    public void xmlParsing_badTimeZoneMappingNotAfter() throws Exception {
+        checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
+                + "      <id notafter=\"sometimes\">Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_timeZoneMappingNotAfter() throws Exception {
+        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"us\" default=\"America/New_York\" everutc=\"n\">\n"
+                + "      <!-- Explicit notafter -->\n"
+                + "      <id notafter=\"1234\">America/New_York</id>\n"
+                + "      <!-- Missing notafter -->\n"
+                + "      <id>America/Indiana/Vincennes</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        CountryTimeZones usTimeZones = finder.lookupCountryTimeZones("us");
+        List<TimeZoneMapping> actualTimeZoneMappings = usTimeZones.getTimeZoneMappings();
+        List<TimeZoneMapping> expectedTimeZoneMappings = list(
+                TimeZoneMapping.createForTests(
+                        "America/New_York", true /* shownInPicker */, 1234L /* notUsedAfter */),
+                TimeZoneMapping.createForTests(
+                        "America/Indiana/Vincennes", true /* shownInPicker */,
+                        null /* notUsedAfter */)
         );
         assertEquals(expectedTimeZoneMappings, actualTimeZoneMappings);
     }
@@ -908,7 +946,7 @@ public class TimeZoneFinderTest {
         assertEquals(expected, actual);
     }
 
-    private static void checkValidateThrowsParserException(String xml) throws Exception {
+    private static void checkValidateThrowsParserException(String xml) {
         try {
             validate(xml);
             fail();
@@ -927,7 +965,8 @@ public class TimeZoneFinderTest {
      */
     private static List<TimeZoneMapping> timeZoneMappings(String... timeZoneIds) {
         return Arrays.stream(timeZoneIds)
-                .map(x -> TimeZoneMapping.createForTests(x, true))
+                .map(x -> TimeZoneMapping.createForTests(
+                        x, true /* showInPicker */, null /* notUsedAfter */))
                 .collect(Collectors.toList());
     }
 
