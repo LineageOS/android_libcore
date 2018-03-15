@@ -34,12 +34,14 @@ public class StandardRepositories {
     private final List<Repository> historicUpstreams;
     private final Repository defaultUpstream;
     private final Repository jsr166Upstream;
+    private final Repository javaSqlUpstream;
     private final OjluniRepository ojluni;
 
     private StandardRepositories(Path buildTop, Path upstreamRoot) {
         this.historicUpstreams = openJdkLegacy(upstreamRoot, Arrays.asList("8u60", "7u40"));
         this.defaultUpstream = openJdkLegacy(upstreamRoot, "8u121-b13");
         this.jsr166Upstream = openJdk9(upstreamRoot, "9b113+");
+        this.javaSqlUpstream = openJdkLegacy(upstreamRoot, "7u40");
         this.ojluni = new OjluniRepository(buildTop);
     }
 
@@ -90,7 +92,7 @@ public class StandardRepositories {
             )));
 
     public Repository currentUpstream(Path relPath) {
-        boolean isJsr166 = relPath.toString().startsWith("java/util/concurrent");
+        boolean isJsr166 = relPath.startsWith("java/util/concurrent/");
         String ju = "java/util/";
         String suffix = ".java";
         if (!isJsr166 && relPath.startsWith(ju)) {
@@ -100,7 +102,13 @@ public class StandardRepositories {
                 isJsr166 = juFilesFromJsr166.contains(name);
             }
         }
-        return isJsr166 ? jsr166Upstream : defaultUpstream;
+        if (isJsr166) {
+            return jsr166Upstream;
+        } else if (relPath.startsWith("java/sql/") || relPath.startsWith("javax/sql/")) {
+            return javaSqlUpstream;
+        } else {
+            return defaultUpstream;
+        }
     }
 
 }
