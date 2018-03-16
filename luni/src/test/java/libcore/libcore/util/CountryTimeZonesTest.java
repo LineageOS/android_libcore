@@ -722,7 +722,8 @@ public class CountryTimeZonesTest {
      */
     private static List<TimeZoneMapping> timeZoneMappings(String... timeZoneIds) {
         return Arrays.stream(timeZoneIds)
-                .map(x -> TimeZoneMapping.createForTests(x, true))
+                .map(x -> TimeZoneMapping.createForTests(
+                        x, true /* picker */, null /* notUsedAfter */))
                 .collect(Collectors.toList());
     }
 
