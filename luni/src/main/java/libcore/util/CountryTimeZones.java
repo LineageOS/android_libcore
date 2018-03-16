@@ -62,16 +62,18 @@ public final class CountryTimeZones {
     public final static class TimeZoneMapping {
         public final String timeZoneId;
         public final boolean showInPicker;
+        public final Long notUsedAfter;
 
-        TimeZoneMapping(String timeZoneId, boolean showInPicker) {
+        TimeZoneMapping(String timeZoneId, boolean showInPicker, Long notUsedAfter) {
             this.timeZoneId = timeZoneId;
             this.showInPicker = showInPicker;
+            this.notUsedAfter = notUsedAfter;
         }
 
         // VisibleForTesting
-        public static TimeZoneMapping createForTests(String timeZoneId,
-                boolean showInPicker) {
-            return new TimeZoneMapping(timeZoneId, showInPicker);
+        public static TimeZoneMapping createForTests(
+                String timeZoneId, boolean showInPicker, Long notUsedAfter) {
+            return new TimeZoneMapping(timeZoneId, showInPicker, notUsedAfter);
         }
 
         @Override
@@ -84,12 +86,13 @@ public final class CountryTimeZones {
             }
             TimeZoneMapping that = (TimeZoneMapping) o;
             return showInPicker == that.showInPicker &&
-                    Objects.equals(timeZoneId, that.timeZoneId);
+                    Objects.equals(timeZoneId, that.timeZoneId) &&
+                    Objects.equals(notUsedAfter, that.notUsedAfter);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(timeZoneId, showInPicker);
+            return Objects.hash(timeZoneId, showInPicker, notUsedAfter);
         }
 
         @Override
@@ -97,6 +100,7 @@ public final class CountryTimeZones {
             return "TimeZoneMapping{"
                     + "timeZoneId='" + timeZoneId + '\''
                     + ", showInPicker=" + showInPicker
+                    + ", notUsedAfter=" + notUsedAfter
                     + '}';
         }
 
