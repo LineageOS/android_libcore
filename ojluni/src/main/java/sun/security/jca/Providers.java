@@ -291,7 +291,7 @@ public class Providers {
      *
      * @hide
      */
-    public static final int DEFAULT_MAXIMUM_ALLOWABLE_TARGET_API_LEVEL_FOR_BC_DEPRECATION = 26;
+    public static final int DEFAULT_MAXIMUM_ALLOWABLE_TARGET_API_LEVEL_FOR_BC_DEPRECATION = 27;
 
     private static int maximumAllowableApiLevelForBcDeprecation =
             DEFAULT_MAXIMUM_ALLOWABLE_TARGET_API_LEVEL_FOR_BC_DEPRECATION;
