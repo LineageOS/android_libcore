@@ -391,9 +391,9 @@ public abstract class AtomicIntegerFieldUpdater<T> {
                         }
                     });
                 modifiers = field.getModifiers();
+                sun.reflect.misc.ReflectUtil.ensureMemberAccess(
+                    caller, tclass, null, modifiers);
                 // BEGIN Android-removed
-                // sun.reflect.misc.ReflectUtil.ensureMemberAccess(
-                //     caller, tclass, null, modifiers);
                 // ClassLoader cl = tclass.getClassLoader();
                 // ClassLoader ccl = caller.getClassLoader();
                 // if ((ccl != null) && (ccl != cl) &&
