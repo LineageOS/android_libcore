@@ -313,54 +313,6 @@ endif
 
 endif # HOST_OS == linux
 
-#
-# Local droiddoc for faster libcore testing
-#
-#
-# Run with:
-#     mm -j32 libcore-docs
-#
-# Main output:
-#     ../out/target/common/docs/libcore/reference/packages.html
-#
-# All text for proofreading (or running tools over):
-#     ../out/target/common/docs/libcore-proofread.txt
-#
-# TODO list of missing javadoc, etc:
-#     ../out/target/common/docs/libcore-docs-todo.html
-#
-# Rerun:
-#     rm -rf ../out/target/common/docs/libcore-timestamp && mm -j32 libcore-docs
-#
-include $(CLEAR_VARS)
-
-# for shared defintion of libcore_to_document
-include $(LOCAL_PATH)/Docs.mk
-
-# The libcore_to_document paths are relative to $(TOPDIR). We are in libcore so we must prepend
-# ../ to make LOCAL_SRC_FILES relative to $(LOCAL_PATH).
-LOCAL_SRC_FILES := $(addprefix ../, $(libcore_to_document))
-LOCAL_INTERMEDIATE_SOURCES := \
-    $(patsubst $(TARGET_OUT_COMMON_INTERMEDIATES)/%,%,$(libcore_to_document_generated))
-LOCAL_ADDITIONAL_DEPENDENCIES := $(libcore_to_document_generated)
-# rerun doc generation without recompiling the java
-LOCAL_JAVACFLAGS := $(local_javac_flags)
-LOCAL_MODULE_CLASS:=JAVA_LIBRARIES
-
-LOCAL_MODULE := libcore
-
-LOCAL_DROIDDOC_OPTIONS := \
- -offlinemode \
- -title "libcore" \
- -proofread $(OUT_DOCS)/$(LOCAL_MODULE)-proofread.txt \
- -todo ../$(LOCAL_MODULE)-docs-todo.html \
- -knowntags ./libcore/known_oj_tags.txt \
- -hdf android.whichdoc offline
-
-LOCAL_DROIDDOC_CUSTOM_TEMPLATE_DIR:=external/doclava/res/assets/templates-sdk
-
-include $(BUILD_DROIDDOC)
-
 # For unbundled build we'll use the prebuilt jar from prebuilts/sdk.
 ifeq (,$(TARGET_BUILD_APPS)$(filter true,$(TARGET_BUILD_PDK)))
 
