@@ -65,7 +65,7 @@ final class DistinctOps {
             }
 
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public <P_IN> Node<T> opEvaluateParallel(PipelineHelper<T> helper,
                                               Spliterator<P_IN> spliterator,
                                               IntFunction<T[]> generator) {
@@ -101,7 +101,7 @@ final class DistinctOps {
             }
 
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public <P_IN> Spliterator<T> opEvaluateParallelLazy(PipelineHelper<T> helper, Spliterator<P_IN> spliterator) {
                 if (StreamOpFlag.DISTINCT.isKnown(helper.getStreamAndOpFlags())) {
                     // No-op
@@ -118,7 +118,7 @@ final class DistinctOps {
             }
 
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<T> opWrapSink(int flags, Sink<T> sink) {
                 Objects.requireNonNull(sink);
 

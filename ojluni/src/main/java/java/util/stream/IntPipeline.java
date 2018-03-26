@@ -132,13 +132,13 @@ public abstract class IntPipeline<E_IN>
     // Shape-specific methods
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final StreamShape getOutputShape() {
         return StreamShape.INT_VALUE;
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Node<Integer> evaluateToNode(PipelineHelper<Integer> helper,
                                                      Spliterator<P_IN> spliterator,
                                                      boolean flattenTree,
@@ -147,7 +147,7 @@ public abstract class IntPipeline<E_IN>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Spliterator<Integer> wrap(PipelineHelper<Integer> ph,
                                                   Supplier<Spliterator<P_IN>> supplier,
                                                   boolean isParallel) {
@@ -156,13 +156,13 @@ public abstract class IntPipeline<E_IN>
 
     @Override
     @SuppressWarnings("unchecked")
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Spliterator.OfInt lazySpliterator(Supplier<? extends Spliterator<Integer>> supplier) {
         return new StreamSpliterators.DelegatingSpliterator.OfInt((Supplier<Spliterator.OfInt>) supplier);
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final void forEachWithCancel(Spliterator<Integer> spliterator, Sink<Integer> sink) {
         Spliterator.OfInt spl = adapt(spliterator);
         IntConsumer adaptedSink = adapt(sink);
@@ -170,7 +170,7 @@ public abstract class IntPipeline<E_IN>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Node.Builder<Integer> makeNodeBuilder(long exactSizeIfKnown,
                                                        IntFunction<Integer[]> generator) {
         return Nodes.intBuilder(exactSizeIfKnown);
@@ -212,7 +212,7 @@ public abstract class IntPipeline<E_IN>
         return new DoublePipeline.StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                                        StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedInt<Double>(sink) {
                     @Override
@@ -235,7 +235,7 @@ public abstract class IntPipeline<E_IN>
         return new StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                         StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedInt<Integer>(sink) {
                     @Override
@@ -253,7 +253,7 @@ public abstract class IntPipeline<E_IN>
         return new ReferencePipeline.StatelessOp<Integer, U>(this, StreamShape.INT_VALUE,
                                                              StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<U> sink) {
                 return new Sink.ChainedInt<U>(sink) {
                     @Override
@@ -271,7 +271,7 @@ public abstract class IntPipeline<E_IN>
         return new LongPipeline.StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                                      StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedInt<Long>(sink) {
                     @Override
@@ -289,7 +289,7 @@ public abstract class IntPipeline<E_IN>
         return new DoublePipeline.StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                                        StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedInt<Double>(sink) {
                     @Override
@@ -306,7 +306,7 @@ public abstract class IntPipeline<E_IN>
         return new StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                         StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedInt<Integer>(sink) {
                     @Override
@@ -333,7 +333,7 @@ public abstract class IntPipeline<E_IN>
             return this;
         return new StatelessOp<Integer>(this, StreamShape.INT_VALUE, StreamOpFlag.NOT_ORDERED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 return sink;
             }
@@ -346,7 +346,7 @@ public abstract class IntPipeline<E_IN>
         return new StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                         StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedInt<Integer>(sink) {
                     @Override
@@ -370,7 +370,7 @@ public abstract class IntPipeline<E_IN>
         return new StatelessOp<Integer>(this, StreamShape.INT_VALUE,
                                         0) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Integer> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedInt<Integer>(sink) {
                     @Override
@@ -561,13 +561,13 @@ public abstract class IntPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final Sink<E_IN> opWrapSink(int flags, Sink<Integer> sink) {
             throw new UnsupportedOperationException();
         }
@@ -620,7 +620,7 @@ public abstract class IntPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return false;
         }
@@ -651,13 +651,13 @@ public abstract class IntPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return true;
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public abstract <P_IN> Node<Integer> opEvaluateParallel(PipelineHelper<Integer> helper,
                                                          Spliterator<P_IN> spliterator,
                                                          IntFunction<Integer[]> generator);
