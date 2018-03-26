@@ -130,13 +130,13 @@ public abstract class LongPipeline<E_IN>
     // Shape-specific methods
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final StreamShape getOutputShape() {
         return StreamShape.LONG_VALUE;
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Node<Long> evaluateToNode(PipelineHelper<Long> helper,
                                            Spliterator<P_IN> spliterator,
                                            boolean flattenTree,
@@ -145,7 +145,7 @@ public abstract class LongPipeline<E_IN>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Spliterator<Long> wrap(PipelineHelper<Long> ph,
                                         Supplier<Spliterator<P_IN>> supplier,
                                         boolean isParallel) {
@@ -154,13 +154,13 @@ public abstract class LongPipeline<E_IN>
 
     @Override
     @SuppressWarnings("unchecked")
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Spliterator.OfLong lazySpliterator(Supplier<? extends Spliterator<Long>> supplier) {
         return new StreamSpliterators.DelegatingSpliterator.OfLong((Supplier<Spliterator.OfLong>) supplier);
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final void forEachWithCancel(Spliterator<Long> spliterator, Sink<Long> sink) {
         Spliterator.OfLong spl = adapt(spliterator);
         LongConsumer adaptedSink =  adapt(sink);
@@ -168,7 +168,7 @@ public abstract class LongPipeline<E_IN>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Node.Builder<Long> makeNodeBuilder(long exactSizeIfKnown, IntFunction<Long[]> generator) {
         return Nodes.longBuilder(exactSizeIfKnown);
     }
@@ -193,7 +193,7 @@ public abstract class LongPipeline<E_IN>
         return new DoublePipeline.StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                                     StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedLong<Double>(sink) {
                     @Override
@@ -216,7 +216,7 @@ public abstract class LongPipeline<E_IN>
         return new StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                      StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedLong<Long>(sink) {
                     @Override
@@ -234,7 +234,7 @@ public abstract class LongPipeline<E_IN>
         return new ReferencePipeline.StatelessOp<Long, U>(this, StreamShape.LONG_VALUE,
                                                           StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<U> sink) {
                 return new Sink.ChainedLong<U>(sink) {
                     @Override
@@ -252,7 +252,7 @@ public abstract class LongPipeline<E_IN>
         return new IntPipeline.StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                                  StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedLong<Integer>(sink) {
                     @Override
@@ -270,7 +270,7 @@ public abstract class LongPipeline<E_IN>
         return new DoublePipeline.StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                                     StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedLong<Double>(sink) {
                     @Override
@@ -287,7 +287,7 @@ public abstract class LongPipeline<E_IN>
         return new StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                      StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedLong<Long>(sink) {
                     @Override
@@ -314,7 +314,7 @@ public abstract class LongPipeline<E_IN>
             return this;
         return new StatelessOp<Long>(this, StreamShape.LONG_VALUE, StreamOpFlag.NOT_ORDERED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 return sink;
             }
@@ -327,7 +327,7 @@ public abstract class LongPipeline<E_IN>
         return new StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                      StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedLong<Long>(sink) {
                     @Override
@@ -351,7 +351,7 @@ public abstract class LongPipeline<E_IN>
         return new StatelessOp<Long>(this, StreamShape.LONG_VALUE,
                                      0) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<Long> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedLong<Long>(sink) {
                     @Override
@@ -544,13 +544,13 @@ public abstract class LongPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final Sink<E_IN> opWrapSink(int flags, Sink<Long> sink) {
             throw new UnsupportedOperationException();
         }
@@ -600,7 +600,7 @@ public abstract class LongPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return false;
         }
@@ -632,13 +632,13 @@ public abstract class LongPipeline<E_IN>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return true;
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public abstract <P_IN> Node<Long> opEvaluateParallel(PipelineHelper<Long> helper,
                                                       Spliterator<P_IN> spliterator,
                                                       IntFunction<Long[]> generator);
