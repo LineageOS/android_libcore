@@ -25,9 +25,7 @@
 package java.util.stream;
 
 import java.math.BigInteger;
-import java.nio.charset.Charset;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LongSummaryStatistics;
 import java.util.Objects;
 import java.util.OptionalDouble;
@@ -35,7 +33,6 @@ import java.util.OptionalLong;
 import java.util.PrimitiveIterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.LongBinaryOperator;
@@ -791,11 +788,7 @@ public interface LongStream extends BaseStream<Long, LongStream> {
             // Split the range in two and concatenate
             // Note: if the range is [Long.MIN_VALUE, Long.MAX_VALUE) then
             // the lower range, [Long.MIN_VALUE, 0) will be further split in two
-            // Android-changed: no divideUnsigned support yet, use BigInteger instead.
-            long m = startInclusive +
-                BigInteger.valueOf(endExclusive).subtract(BigInteger.valueOf(startInclusive))
-                     .divide(BigInteger.valueOf(2)).longValue() + 1;
-
+            long m = startInclusive + Long.divideUnsigned(endExclusive - startInclusive, 2) + 1;
             return concat(range(startInclusive, m), range(m, endExclusive));
         } else {
             return StreamSupport.longStream(
@@ -829,11 +822,7 @@ public interface LongStream extends BaseStream<Long, LongStream> {
             // Note: if the range is [Long.MIN_VALUE, Long.MAX_VALUE] then
             // the lower range, [Long.MIN_VALUE, 0), and upper range,
             // [0, Long.MAX_VALUE], will both be further split in two
-            // Android-changed: no divideUnsigned support yet, use BigInteger instead.
-            long m = startInclusive +
-                BigInteger.valueOf(endInclusive).subtract(BigInteger.valueOf(startInclusive))
-                     .divide(BigInteger.valueOf(2)).longValue() + 1;
-
+            long m = startInclusive + Long.divideUnsigned(endInclusive - startInclusive, 2) + 1;
             return concat(range(startInclusive, m), rangeClosed(m, endInclusive));
         } else {
             return StreamSupport.longStream(
