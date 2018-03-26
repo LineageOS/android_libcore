@@ -99,13 +99,13 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
     // Shape-specific methods
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final StreamShape getOutputShape() {
         return StreamShape.REFERENCE;
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Node<P_OUT> evaluateToNode(PipelineHelper<P_OUT> helper,
                                         Spliterator<P_IN> spliterator,
                                         boolean flattenTree,
@@ -114,7 +114,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final <P_IN> Spliterator<P_OUT> wrap(PipelineHelper<P_OUT> ph,
                                      Supplier<Spliterator<P_IN>> supplier,
                                      boolean isParallel) {
@@ -122,19 +122,19 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Spliterator<P_OUT> lazySpliterator(Supplier<? extends Spliterator<P_OUT>> supplier) {
         return new StreamSpliterators.DelegatingSpliterator<>(supplier);
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final void forEachWithCancel(Spliterator<P_OUT> spliterator, Sink<P_OUT> sink) {
         do { } while (!sink.cancellationRequested() && spliterator.tryAdvance(sink));
     }
 
     @Override
-    // Android-changed: Changed from package-private to public, to match the method it's overriding.
+    // Android-changed: Make public, to match the method it's overriding.
     public final Node.Builder<P_OUT> makeNodeBuilder(long exactSizeIfKnown, IntFunction<P_OUT[]> generator) {
         return Nodes.builder(exactSizeIfKnown, generator);
     }
@@ -158,7 +158,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
             return this;
         return new StatelessOp<P_OUT, P_OUT>(this, StreamShape.REFERENCE, StreamOpFlag.NOT_ORDERED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<P_OUT> sink) {
                 return sink;
             }
@@ -171,7 +171,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new StatelessOp<P_OUT, P_OUT>(this, StreamShape.REFERENCE,
                                      StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<P_OUT> sink) {
                 return new Sink.ChainedReference<P_OUT, P_OUT>(sink) {
                     @Override
@@ -213,7 +213,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new IntPipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                               StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedReference<P_OUT, Integer>(sink) {
                     @Override
@@ -231,7 +231,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new LongPipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                       StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedReference<P_OUT, Long>(sink) {
                     @Override
@@ -249,7 +249,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new DoublePipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                         StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedReference<P_OUT, Double>(sink) {
                     @Override
@@ -295,7 +295,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new IntPipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                               StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Integer> sink) {
                 return new Sink.ChainedReference<P_OUT, Integer>(sink) {
                     IntConsumer downstreamAsInt = downstream::accept;
@@ -324,7 +324,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new DoublePipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                                      StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Double> sink) {
                 return new Sink.ChainedReference<P_OUT, Double>(sink) {
                     DoubleConsumer downstreamAsDouble = downstream::accept;
@@ -353,7 +353,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new LongPipeline.StatelessOp<P_OUT>(this, StreamShape.REFERENCE,
                                                    StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT | StreamOpFlag.NOT_SIZED) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<Long> sink) {
                 return new Sink.ChainedReference<P_OUT, Long>(sink) {
                     LongConsumer downstreamAsLong = downstream::accept;
@@ -381,7 +381,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return new StatelessOp<P_OUT, P_OUT>(this, StreamShape.REFERENCE,
                                      0) {
             @Override
-            // Android-changed: Changed from package-private to public, to match the method it's overriding.
+            // Android-changed: Make public, to match the method it's overriding.
             public Sink<P_OUT> opWrapSink(int flags, Sink<P_OUT> sink) {
                 return new Sink.ChainedReference<P_OUT, P_OUT>(sink) {
                     @Override
@@ -585,13 +585,13 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final Sink<E_IN> opWrapSink(int flags, Sink<E_OUT> sink) {
             throw new UnsupportedOperationException();
         }
@@ -647,7 +647,7 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return false;
         }
@@ -680,13 +680,13 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public final boolean opIsStateful() {
             return true;
         }
 
         @Override
-        // Android-changed: Changed from package-private to public, to match the method it's overriding.
+        // Android-changed: Make public, to match the method it's overriding.
         public abstract <P_IN> Node<E_OUT> opEvaluateParallel(PipelineHelper<E_OUT> helper,
                                                        Spliterator<P_IN> spliterator,
                                                        IntFunction<E_OUT[]> generator);
