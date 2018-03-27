@@ -265,6 +265,15 @@ public final class VMRuntime {
     public native boolean hasUsedHiddenApi();
 
     /**
+     * Sets the list of exemptions from hidden API access enforcement.
+     *
+     * @param signaturePrefixes
+     *         A list of signature prefixes. Each item in the list is a prefix match on the type
+     *         signature of a blacklisted API. Access is permitted to any matching API.
+     */
+    public native void setHiddenApiExemptions(String[] signaturePrefixes);
+
+    /**
      * Returns an array allocated in an area of the Java heap where it will never be moved.
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
