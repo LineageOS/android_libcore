@@ -441,7 +441,7 @@ public class Logger {
                     return System.getProperty(key);
                 }
             });
-            return Boolean.parseBoolean(s);
+            return Boolean.valueOf(s);
         }
     }
 
@@ -502,6 +502,7 @@ public class Logger {
         // the existing "resourceBundleForFoo" with null.
         //
         // Android-changed: Use VMStack.getStackClass1.
+        // return demandLogger(name, null, Reflection.getCallerClass());
         return demandLogger(name, null, VMStack.getStackClass1());
     }
 
@@ -553,6 +554,7 @@ public class Logger {
     @CallerSensitive
     public static Logger getLogger(String name, String resourceBundleName) {
         // Android-changed: Use VMStack.getStackClass1.
+        // Class<?> callerClass = Reflection.getCallerClass();
         Class<?> callerClass = VMStack.getStackClass1();
         Logger result = demandLogger(name, resourceBundleName, callerClass);
 
@@ -642,6 +644,8 @@ public class Logger {
         // cleanup some Loggers that have been GC'ed
         manager.drainLoggerRefQueueBounded();
         // Android-changed: Use VMStack.getStackClass1.
+        // Logger result = new Logger(null, resourceBundleName,
+        //                            Reflection.getCallerClass(), manager, false);
         Logger result = new Logger(null, resourceBundleName,
                                    VMStack.getStackClass1(), manager, false);
         result.anonymous = true;
@@ -1894,6 +1898,7 @@ public class Logger {
         if (useCallersClassLoader) {
             // Try with the caller's ClassLoader
             ClassLoader callersClassLoader = getCallersClassLoader();
+
             if (callersClassLoader == null || callersClassLoader == cl) {
                 return null;
             }
