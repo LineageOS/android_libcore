@@ -341,3 +341,34 @@ filegroup {
         "known_oj_tags.txt",
     ],
 }
+
+droiddoc {
+    name: "core-current-stubs-gen-docs",
+    srcs: [
+        ":openjdk_javadoc_files",
+        ":non_openjdk_javadoc_files",
+        ":android_icu4j_src_files_for_docs",
+        ":gen-ojluni-jaif-annotated-srcs",
+    ],
+    exclude_srcs: [
+        ":annotated_ojluni_files",
+    ],
+    custom_template: "droiddoc-templates-sdk",
+    installable: false,
+    no_framework_libs: true,
+    args: "-nodocs",
+}
+
+java_library_static {
+    name: "core.current.stubs",
+    srcs: [
+        ":core-current-stubs-gen-docs",
+    ],
+    errorprone: {
+        javacflags: [
+            "-Xep:MissingOverride:OFF",
+        ],
+    },
+    no_standard_libs: true,
+    system_modules: "none",
+}
