@@ -20,6 +20,7 @@ import dalvik.annotation.optimization.FastNative;
 import java.lang.ref.FinalizerReference;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Provides an interface to VM-global, Dalvik-specific features.
@@ -58,6 +59,8 @@ public final class VMRuntime {
      * @hide
      */
     public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000;
+
+    private static Consumer<String> nonSdkApiUsageConsumer = null;
 
     private int targetSdkVersion = SDK_VERSION_CUR_DEVELOPMENT;
 
@@ -265,6 +268,15 @@ public final class VMRuntime {
     public native boolean hasUsedHiddenApi();
 
     /**
+     * Sets the list of exemptions from hidden API access enforcement.
+     *
+     * @param signaturePrefixes
+     *         A list of signature prefixes. Each item in the list is a prefix match on the type
+     *         signature of a blacklisted API. Access is permitted to any matching API.
+     */
+    public native void setHiddenApiExemptions(String[] signaturePrefixes);
+
+    /**
      * Returns an array allocated in an area of the Java heap where it will never be moved.
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
@@ -432,4 +444,11 @@ public final class VMRuntime {
      * Sets up the priority of the system daemon thread (caller).
      */
     public static native void setSystemDaemonThreadPriority();
+
+    /**
+     * Sets a callback that the runtime can call whenever a usage of a non SDK API is detected.
+     */
+    public static void setNonSdkApiUsageConsumer(Consumer<String> consumer) {
+        nonSdkApiUsageConsumer = consumer;
+    }
 }
