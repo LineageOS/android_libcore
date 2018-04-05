@@ -282,16 +282,26 @@ public abstract class Reference<T> {
 
     // Android-changed: reachabilityFence implementation differs from OpenJDK9.
     public static void reachabilityFence(Object ref) {
+        // This code is usually replaced by much faster intrinsic implementations.
+        // It will be executed for tests run with the access checks interpreter in
+        // ART, e.g. with --verify-soft-fail.  Since this is a volatile store, it
+        // cannot easily be moved up past prior accesses, even if this method is
+        // inlined.
         SinkHolder.sink = ref;
-        // TODO: This is a horrible implementation. Fix it. Remove SinkHolder.
-        // b/72698200 .
+        // Leaving SinkHolder set to ref is unpleasant, since it keeps ref live
+        // until the next reachabilityFence call. This causes e.g. 036-finalizer
+        // to fail. Clear it again in a way that's unlikely to be optimizable.
+        // The fact that finalize_count is volatile makes it hard to move the test up.
+        if (SinkHolder.finalize_count == 0) {
+            SinkHolder.sink = null;
+        }
     }
 
     private static class SinkHolder {
         static volatile Object sink;
 
         // Ensure that sink looks live to even a reasonably clever compiler.
-        private static int finalize_count = 0;
+        private static volatile int finalize_count = 0;
 
         private static Object sinkUser = new Object() {
             protected void finalize() {
