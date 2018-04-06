@@ -272,7 +272,8 @@ public final class VMRuntime {
      *
      * @param signaturePrefixes
      *         A list of signature prefixes. Each item in the list is a prefix match on the type
-     *         signature of a blacklisted API. Access is permitted to any matching API.
+     *         signature of a blacklisted API. All matching APIs are treated as if they were on
+     *         the whitelist: access permitted, and no logging..
      */
     public native void setHiddenApiExemptions(String[] signaturePrefixes);
 
