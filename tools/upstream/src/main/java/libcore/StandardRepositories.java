@@ -91,17 +91,22 @@ public class StandardRepositories {
                     "SplittableRandom"
             )));
 
-    public Repository currentUpstream(Path relPath) {
-        boolean isJsr166 = relPath.startsWith("java/util/concurrent/");
+    public boolean isJsr166(Path relPath) {
+        boolean result = relPath.startsWith("java/util/concurrent/");
         String ju = "java/util/";
         String suffix = ".java";
-        if (!isJsr166 && relPath.startsWith(ju)) {
+        if (!result && relPath.startsWith(ju)) {
             String name = relPath.toString().substring(ju.length());
             if (name.endsWith(suffix)) {
                 name = name.substring(0, name.length() - suffix.length());
-                isJsr166 = juFilesFromJsr166.contains(name);
+                result = juFilesFromJsr166.contains(name);
             }
         }
+        return result;
+    }
+
+    public Repository currentUpstream(Path relPath) {
+        boolean isJsr166 = isJsr166(relPath);
         if (isJsr166) {
             return jsr166Upstream;
         } else if (relPath.startsWith("java/sql/") || relPath.startsWith("javax/sql/")) {
