@@ -2065,7 +2065,8 @@ public final class Class<T> implements java.io.Serializable,
         // Fail if we didn't find the method or it was expected to be public.
         if (result == null ||
             (recursivePublicMethods && !Modifier.isPublic(result.getAccessFlags()))) {
-            throw new NoSuchMethodException(name + " " + Arrays.toString(parameterTypes));
+            throw new NoSuchMethodException(getName() + "." + name + " "
+                    + Arrays.toString(parameterTypes));
         }
         return result;
     }
@@ -2324,7 +2325,8 @@ public final class Class<T> implements java.io.Serializable,
         }
         Constructor<T> result = getDeclaredConstructorInternal(parameterTypes);
         if (result == null || which == Member.PUBLIC && !Modifier.isPublic(result.getAccessFlags())) {
-            throw new NoSuchMethodException("<init> " + Arrays.toString(parameterTypes));
+            throw new NoSuchMethodException(getName() + ".<init> "
+                    + Arrays.toString(parameterTypes));
         }
         return result;
     }
