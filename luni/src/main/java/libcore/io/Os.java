@@ -76,10 +76,6 @@ public interface Os {
     public int getegid();
     public int geteuid();
     public int getgid();
-    /* Should the number of groups change during the execution of this call, the call may
-       return an arbitrary subset. This may be worth reconsidering should this be exposed
-       as public API. */
-    public int[] getgroups() throws ErrnoException;
     public String getenv(String name);
     /* TODO: break into getnameinfoHost and getnameinfoService? */
     public String getnameinfo(InetAddress address, int flags) throws GaiException;
@@ -152,7 +148,6 @@ public interface Os {
     public void setenv(String name, String value, boolean overwrite) throws ErrnoException;
     public void seteuid(int euid) throws ErrnoException;
     public void setgid(int gid) throws ErrnoException;
-    public void setgroups(int[] gids) throws ErrnoException;
     public void setpgid(int pid, int pgid) throws ErrnoException;
     public void setregid(int rgid, int egid) throws ErrnoException;
     public void setreuid(int ruid, int euid) throws ErrnoException;
