@@ -91,7 +91,6 @@ public class ForwardingOs implements Os {
     public int getegid() { return os.getegid(); }
     public int geteuid() { return os.geteuid(); }
     public int getgid() { return os.getgid(); }
-    public int[] getgroups() throws ErrnoException { return os.getgroups(); }
     public String getenv(String name) { return os.getenv(name); }
     public String getnameinfo(InetAddress address, int flags) throws GaiException { return os.getnameinfo(address, flags); }
     public SocketAddress getpeername(FileDescriptor fd) throws ErrnoException { return os.getpeername(fd); }
@@ -162,7 +161,6 @@ public class ForwardingOs implements Os {
     public void setenv(String name, String value, boolean overwrite) throws ErrnoException { os.setenv(name, value, overwrite); }
     public void seteuid(int euid) throws ErrnoException { os.seteuid(euid); }
     public void setgid(int gid) throws ErrnoException { os.setgid(gid); }
-    public void setgroups(int[] gids) throws ErrnoException { os.setgroups(gids); }
     public void setpgid(int pid, int pgid) throws ErrnoException { os.setpgid(pid, pgid); }
     public void setregid(int rgid, int egid) throws ErrnoException { os.setregid(rgid, egid); }
     public void setreuid(int ruid, int euid) throws ErrnoException { os.setreuid(ruid, euid); }
