@@ -186,17 +186,6 @@ public final class Os {
     public static int getgid() { return Libcore.os.getgid(); }
 
     /**
-     * See <a href="http://man7.org/linux/man-pages/man2/getgroups.2.html">getgroups(2)</a>.
-     *
-     * <p>Should the number of groups change during the execution of this call, the call may
-     *    return an arbitrary subset. This may be worth reconsidering should this be exposed
-     *    as public API.
-     *
-     * @hide
-     */
-    public static int[] getgroups() throws ErrnoException { return Libcore.os.getgroups(); }
-
-    /**
      * See <a href="http://man7.org/linux/man-pages/man3/getenv.3.html">getenv(3)</a>.
      */
     public static String getenv(String name) { return Libcore.os.getenv(name); }
@@ -505,13 +494,6 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/setgid.2.html">setgid(2)</a>.
      */
     public static void setgid(int gid) throws ErrnoException { Libcore.os.setgid(gid); }
-
-    /**
-     * See <a href="http://man7.org/linux/man-pages/man2/setgroups.2.html">setgroups(2)</a>.
-     *
-     * @hide
-     */
-    public static void setgroups(int[] gids) throws ErrnoException { Libcore.os.setgroups(gids); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setpgid.2.html">setpgid(2)</a>.
