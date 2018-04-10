@@ -290,9 +290,11 @@ class Inet6AddressImpl implements InetAddressImpl {
         } catch (IOException e) {
             // Silently ignore and fall back.
         } finally {
-            try {
-                Libcore.os.close(fd);
-            } catch (ErrnoException e) { }
+            if (fd != null) {
+                try {
+                    Libcore.os.close(fd);
+                } catch (ErrnoException e) { }
+            }
         }
 
         return false;
