@@ -82,7 +82,6 @@ public final class Linux implements Os {
     public native int getegid();
     public native int geteuid();
     public native int getgid();
-    public native int[] getgroups() throws ErrnoException;
     public native String getenv(String name);
     public native String getnameinfo(InetAddress address, int flags) throws GaiException;
     public native SocketAddress getpeername(FileDescriptor fd) throws ErrnoException;
@@ -236,7 +235,6 @@ public final class Linux implements Os {
     public native void setenv(String name, String value, boolean overwrite) throws ErrnoException;
     public native void seteuid(int euid) throws ErrnoException;
     public native void setgid(int gid) throws ErrnoException;
-    public native void setgroups(int[] gids) throws ErrnoException;
     public native void setpgid(int pid, int pgid) throws ErrnoException;
     public native void setregid(int rgid, int egid) throws ErrnoException;
     public native void setreuid(int ruid, int euid) throws ErrnoException;
