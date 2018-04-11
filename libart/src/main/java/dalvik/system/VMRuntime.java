@@ -278,6 +278,14 @@ public final class VMRuntime {
     public native void setHiddenApiExemptions(String[] signaturePrefixes);
 
     /**
+     * Sets the log sampling rate of hidden API accesses written to the event log.
+     *
+     * @param rate Proportion of hidden API accesses that will be logged; an integer between
+     *                0 and 0x10000 inclusive.
+     */
+    public native void setHiddenApiAccessLogSamplingRate(int rate);
+
+    /**
      * Returns an array allocated in an area of the Java heap where it will never be moved.
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
