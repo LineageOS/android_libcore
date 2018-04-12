@@ -40,6 +40,7 @@ import java.util.stream.StreamSupport;
 
 import libcore.util.EmptyArray;
 
+// Android-changed: Add min API level of 26 for the named capaturing in javadoc
 /**
  * A compiled representation of a regular expression.
  *
@@ -314,7 +315,7 @@ import libcore.util.EmptyArray;
  *
  * <tr><td valign="bottom" headers="construct backref"><tt>\</tt><i>k</i>&lt;<i>name</i>&gt;</td>
  *     <td valign="bottom" headers="matches">Whatever the
- *     <a href="#groupname">named-capturing group</a> "name" matched</td></tr>
+ *     <a href="#groupname">named-capturing group</a> "name" matched. Only available for API 26 or above</td></tr>
  *
  * <tr><th>&nbsp;</th></tr>
  * <tr align="left"><th colspan="2" id="quot">Quotation</th></tr>
@@ -331,7 +332,7 @@ import libcore.util.EmptyArray;
  * <tr align="left"><th colspan="2" id="special">Special constructs (named-capturing and non-capturing)</th></tr>
  *
  * <tr><td valign="top" headers="construct special"><tt>(?&lt;<a href="#groupname">name</a>&gt;</tt><i>X</i><tt>)</tt></td>
- *     <td headers="matches"><i>X</i>, as a named-capturing group</td></tr>
+ *     <td headers="matches"><i>X</i>, as a named-capturing group. Only available for API 26 or above.</td></tr>
  * <tr><td valign="top" headers="construct special"><tt>(?:</tt><i>X</i><tt>)</tt></td>
  *     <td headers="matches"><i>X</i>, as a non-capturing group</td></tr>
  * <tr><td valign="top" headers="construct special"><tt>(?idmsuxU-idmsuxU)&nbsp;</tt></td>
@@ -493,7 +494,8 @@ import libcore.util.EmptyArray;
  *
  * <a name="groupname">
  * <h5> Group name </h5>
- * <p>A capturing group can also be assigned a "name", a <tt>named-capturing group</tt>,
+ * <p>The constructs and APIs are available since API level 26. A capturing group
+ * can also be assigned a "name", a <tt>named-capturing group</tt>,
  * and then be back-referenced later by the "name". Group names are composed of
  * the following characters. The first character must be a <tt>letter</tt>.
  *
