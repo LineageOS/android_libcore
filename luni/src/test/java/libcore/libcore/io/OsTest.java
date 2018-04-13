@@ -926,23 +926,6 @@ public class OsTest extends TestCase {
     return f;
   }
 
-  public void test_getgroups() throws Exception {
-    int[] gids = Libcore.os.getgroups();
-    assertNotNull(gids);
-  }
-
-  public void test_setgroups() throws Exception {
-    final long ngroupsMax = Libcore.os.sysconf(_SC_NGROUPS_MAX);
-    final int expectedError = ngroupsMax == 0 ? EINVAL : EPERM;
-
-    try {
-      Libcore.os.setgroups(new int[] {-1});
-      fail();
-    } catch (ErrnoException expected) {
-      assertEquals(expectedError, expected.errno);
-    }
-  }
-
   public void test_odirect() throws Exception {
     File testFile = createTempFile("test_odirect", "");
     try {
