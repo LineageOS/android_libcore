@@ -1703,16 +1703,6 @@ class InetAddress implements java.io.Serializable {
         return impl.lookupAllHostAddr(host, netId).clone();
     }
     // END Android-added: Add methods required by frameworks/base.
-
-    // Only called by java.net.SocketPermission.
-    static InetAddress[] getAllByName0(String authHost, boolean check) throws UnknownHostException {
-        throw new UnsupportedOperationException();
-    }
-
-    // Only called by java.net.SocketPermission.
-    String getHostName(boolean check) {
-        throw new UnsupportedOperationException();
-    }
 }
 // BEGIN Android-removed: Android doesn't load user-provided implementation.
 /*
