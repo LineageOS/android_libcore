@@ -176,6 +176,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := \
 	core-test-rules \
 	core-tests-support \
 	junit-params \
+	libcore-kotlin-tests \
 	mockftpserver \
 	mockito-target \
 	mockwebserver \
