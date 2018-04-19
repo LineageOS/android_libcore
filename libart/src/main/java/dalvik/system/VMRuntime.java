@@ -460,4 +460,11 @@ public final class VMRuntime {
     public static void setNonSdkApiUsageConsumer(Consumer<String> consumer) {
         nonSdkApiUsageConsumer = consumer;
     }
+
+    /**
+     * Sets whether or not the runtime should dedupe detection and warnings for hidden API usage.
+     * If deduping is enabled, only the first usage of each API will be detected. The default
+     * behaviour is to dedupe.
+     */
+    public static native void setDedupeHiddenApiWarnings(boolean dedupe);
 }
