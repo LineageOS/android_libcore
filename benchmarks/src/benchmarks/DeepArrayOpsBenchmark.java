@@ -30,9 +30,9 @@ public class DeepArrayOpsBenchmark {
     private Object[] array2;
 
     @BeforeExperiment public void setUp() throws Exception {
-        array = new Object[arrayLength * 13];
-        array2 = new Object[arrayLength * 13];
-        for (int i = 0; i < arrayLength; i += 13) {
+        array = new Object[arrayLength * 14];
+        array2 = new Object[arrayLength * 14];
+        for (int i = 0; i < arrayLength; i += 14) {
             array[i] = new IntWrapper(i);
             array2[i] = new IntWrapper(i);
 
@@ -73,6 +73,9 @@ public class DeepArrayOpsBenchmark {
             // Subarray types is an interface.
             array[i + 12] = new16ElementArray(CharSequence.class, String.class);
             array2[i + 12] = new16ElementArray(CharSequence.class, String.class);
+
+            array[i + 13] = null;
+            array2[i + 13] = null;
         }
     }
 
@@ -142,4 +145,3 @@ public class DeepArrayOpsBenchmark {
         }
     }
 }
-
