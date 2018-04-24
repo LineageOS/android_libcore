@@ -78,7 +78,7 @@ public class Arrays {
      * tasks that makes parallel speedups unlikely.
      * @hide
      */
-    // Android-changed: make public (used by harmony ArraysTest)
+    // Android-changed: Make MIN_ARRAY_SORT_GRAN public and @hide (used by harmony ArraysTest)
     public static final int MIN_ARRAY_SORT_GRAN = 1 << 13;
 
     // Suppresses default constructor, ensuring non-instantiability.
@@ -1201,6 +1201,8 @@ public class Arrays {
      * Sorting of complex type arrays.
      */
 
+    // Android-removed: LegacyMergeSort class (unused on Android).
+
     /**
      * Sorts the specified array of objects into ascending order, according
      * to the {@linkplain Comparable natural ordering} of its elements.
@@ -1244,12 +1246,14 @@ public class Arrays {
      *         {@link Comparable} contract
      */
     public static void sort(Object[] a) {
-        // Android-changed: LegacyMergeSort is no longer supported
+        // Android-removed: LegacyMergeSort support
         // if (LegacyMergeSort.userRequested)
         //     legacyMergeSort(a);
         // else
             ComparableTimSort.sort(a, 0, a.length, null, 0, 0);
     }
+
+    // Android-removed: legacyMergeSort() (unused on Android)
 
     /**
      * Sorts the specified range of the specified array of objects into
@@ -1305,12 +1309,14 @@ public class Arrays {
      */
     public static void sort(Object[] a, int fromIndex, int toIndex) {
         rangeCheck(a.length, fromIndex, toIndex);
-        // Android-changed: LegacyMergeSort is no longer supported
+        // Android-removed: LegacyMergeSort support
         // if (LegacyMergeSort.userRequested)
         //     legacyMergeSort(a, fromIndex, toIndex);
         // else
             ComparableTimSort.sort(a, fromIndex, toIndex, null, 0, 0);
     }
+
+    // Android-removed: legacyMergeSort() (unused on Android)
 
     /**
      * Tuning parameter: list size at or below which insertion sort will be
@@ -1425,13 +1431,15 @@ public class Arrays {
         if (c == null) {
             sort(a);
         } else {
-            // Android-changed: LegacyMergeSort is no longer supported
+        // Android-removed: LegacyMergeSort support
             // if (LegacyMergeSort.userRequested)
             //     legacyMergeSort(a, c);
             // else
                 TimSort.sort(a, 0, a.length, c, null, 0, 0);
         }
     }
+
+    // Android-removed: legacyMergeSort() (unused on Android)
 
     /**
      * Sorts the specified range of the specified array of objects according
@@ -1491,13 +1499,16 @@ public class Arrays {
             sort(a, fromIndex, toIndex);
         } else {
             rangeCheck(a.length, fromIndex, toIndex);
-            // Android-changed: LegacyMergeSort is no longer supported
+            // Android-removed: LegacyMergeSort support
             // if (LegacyMergeSort.userRequested)
             //     legacyMergeSort(a, fromIndex, toIndex, c);
             // else
                 TimSort.sort(a, fromIndex, toIndex, c, null, 0, 0);
         }
     }
+
+    // Android-removed: legacyMergeSort() (unused on Android)
+    // Android-removed: mergeSort() (unused on Android)
 
     // Parallel prefix
 
@@ -4113,7 +4124,7 @@ public class Arrays {
 
         for (Object element : a) {
             int elementHash = 0;
-            // BEGIN Android-changed: getComponentType() is faster than instanceof()
+            // BEGIN Android-changed: getComponentType() is faster than instanceof
             if (element != null) {
                 Class<?> cl = element.getClass().getComponentType();
                 if (cl == null)
@@ -4197,6 +4208,7 @@ public class Arrays {
             if (e1 == e2)
                 continue;
             // Android-changed: Return early if e2 == null
+            // if (e1 == null)
             if (e1 == null || e2 == null)
                 return false;
 
