@@ -251,10 +251,8 @@ public abstract class ByteBuffer
      *          If the <tt>capacity</tt> is a negative integer
      */
     public static ByteBuffer allocateDirect(int capacity) {
-        if (capacity < 0) {
-            throw new IllegalArgumentException("capacity < 0: " + capacity);
-        }
-
+        // Android-changed: Android's DirectByteBuffers carry a MemoryRef.
+        // return new DirectByteBuffer(capacity);
         DirectByteBuffer.MemoryRef memoryRef = new DirectByteBuffer.MemoryRef(capacity);
         return new DirectByteBuffer(capacity, memoryRef);
     }
@@ -602,25 +600,24 @@ public abstract class ByteBuffer
      *          If this buffer is read-only
      */
     public ByteBuffer put(ByteBuffer src) {
-        if (!isAccessible()) {
-            throw new IllegalStateException("buffer is inaccessible");
-        }
-        if (src == this) {
+        if (src == this)
             throw new IllegalArgumentException();
-        }
-        if (isReadOnly) {
+        if (isReadOnly())
             throw new ReadOnlyBufferException();
-        }
         int n = src.remaining();
-        if (n > remaining()) {
+        if (n > remaining())
             throw new BufferOverflowException();
-        }
 
+        // Android-changed: improve ByteBuffer.put(ByteBuffer) performance through bulk copy.
+        /*
+        for (int i = 0; i < n; i++)
+            put(src.get());
+        */
         // Note that we use offset instead of arrayOffset because arrayOffset is specified to
         // throw for read only buffers. Our use of arrayOffset here is provably safe, we only
         // use it to read *from* readOnly buffers.
         if (this.hb != null && src.hb != null) {
-            // System.arraycopy is intrinsified by art and therefore tiny bit faster than memmove
+            // System.arraycopy is intrinsified by ART and therefore tiny bit faster than memmove
             System.arraycopy(src.hb, src.position() + src.offset, hb, position() + offset, n);
         } else {
             // Use the buffer object (and the raw memory address) if it's a direct buffer. Note that
