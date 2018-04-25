@@ -221,7 +221,8 @@ public abstract class ByteBuffer
     ByteBuffer(int mark, int pos, int lim, int cap,   // package-private
                  byte[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 0);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 0 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
