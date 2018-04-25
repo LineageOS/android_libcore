@@ -465,6 +465,8 @@ public abstract class ShortBuffer
     public ShortBuffer put(ShortBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();
