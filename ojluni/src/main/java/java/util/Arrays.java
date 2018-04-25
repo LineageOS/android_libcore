@@ -4207,9 +4207,7 @@ public class Arrays {
 
             if (e1 == e2)
                 continue;
-            // Android-changed: Return early if e2 == null
-            // if (e1 == null)
-            if (e1 == null || e2 == null)
+            if (e1 == null)
                 return false;
 
             // Figure out whether the two elements are equal
