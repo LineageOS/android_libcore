@@ -108,7 +108,8 @@ public abstract class DoubleBuffer
     DoubleBuffer(int mark, int pos, int lim, int cap,   // package-private
                  double[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 3);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 3 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }

@@ -108,7 +108,8 @@ public abstract class LongBuffer
     LongBuffer(int mark, int pos, int lim, int cap,   // package-private
                  long[] hb, int offset)
     {
-        super(mark, pos, lim, cap, 3);
+        // Android-added: elementSizeShift parameter (log2 of element size).
+        super(mark, pos, lim, cap, 3 /* elementSizeShift */);
         this.hb = hb;
         this.offset = offset;
     }
