@@ -1084,13 +1084,10 @@ public abstract class ByteBuffer
      */
     public abstract char getChar(int index);
 
-    char getCharUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, char[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract char getCharUnchecked(int index);
+    abstract void getUnchecked(int pos, char[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing a char
@@ -1117,13 +1114,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putChar(int index, char value);
 
-    void putCharUnchecked(int index, char value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, char[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putCharUnchecked(int index, char value);
+    abstract void putUnchecked(int pos, char[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as a char buffer.
@@ -1199,13 +1193,10 @@ public abstract class ByteBuffer
      */
     public abstract short getShort(int index);
 
-    short getShortUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, short[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract short getShortUnchecked(int index);
+    abstract void getUnchecked(int pos, short[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing a short
@@ -1232,13 +1223,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putShort(int index, short value);
 
-    void putShortUnchecked(int index, short value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, short[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putShortUnchecked(int index, short value);
+    abstract void putUnchecked(int pos, short[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as a short buffer.
@@ -1314,13 +1302,10 @@ public abstract class ByteBuffer
      */
     public abstract int getInt(int index);
 
-    int getIntUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, int[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract int getIntUnchecked(int index);
+    abstract void getUnchecked(int pos, int[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing an int
@@ -1347,13 +1332,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putInt(int index, int value);
 
-    void putIntUnchecked(int index, int value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, int[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putIntUnchecked(int index, int value);
+    abstract void putUnchecked(int pos, int[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as an int buffer.
@@ -1429,13 +1411,10 @@ public abstract class ByteBuffer
      */
     public abstract long getLong(int index);
 
-    long getLongUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, long[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract long getLongUnchecked(int index);
+    abstract void getUnchecked(int pos, long[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing a long
@@ -1462,13 +1441,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putLong(int index, long value);
 
-    void putLongUnchecked(int index, long value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, long[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putLongUnchecked(int index, long value);
+    abstract void putUnchecked(int pos, long[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as a long buffer.
@@ -1544,13 +1520,10 @@ public abstract class ByteBuffer
      */
     public abstract float getFloat(int index);
 
-    float getFloatUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, float[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract float getFloatUnchecked(int index);
+    abstract void getUnchecked(int pos, float[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing a float
@@ -1577,13 +1550,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putFloat(int index, float value);
 
-    void putFloatUnchecked(int index, float value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, float[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putFloatUnchecked(int index, float value);
+    abstract void putUnchecked(int pos, float[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as a float buffer.
@@ -1659,13 +1629,10 @@ public abstract class ByteBuffer
      */
     public abstract double getDouble(int index);
 
-    double getDoubleUnchecked(int index) {
-        throw new UnsupportedOperationException();
-    }
-
-    void getUnchecked(int pos, double[] dst, int dstOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract double getDoubleUnchecked(int index);
+    abstract void getUnchecked(int pos, double[] dst, int dstOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Absolute <i>put</i> method for writing a double
@@ -1692,13 +1659,10 @@ public abstract class ByteBuffer
      */
     public abstract ByteBuffer putDouble(int index, double value);
 
-    void putDoubleUnchecked(int index, double value) {
-        throw new UnsupportedOperationException();
-    }
-
-    void putUnchecked(int pos, double[] dst, int srcOffset, int length) {
-        throw new UnsupportedOperationException();
-    }
+    // BEGIN Android-added: {get,put}*Unchecked() accessors.
+    abstract void putDoubleUnchecked(int index, double value);
+    abstract void putUnchecked(int pos, double[] dst, int srcOffset, int length);
+    // END Android-added: {get,put}*Unchecked() accessors.
 
     /**
      * Creates a view of this byte buffer as a double buffer.
@@ -1718,6 +1682,7 @@ public abstract class ByteBuffer
      */
     public abstract DoubleBuffer asDoubleBuffer();
 
+    // BEGIN Android-added: isAccessible(), setAccessible(), for use by frameworks (MediaCodec).
     /**
      * @hide
      */
@@ -1731,4 +1696,5 @@ public abstract class ByteBuffer
     public void setAccessible(boolean value) {
         throw new UnsupportedOperationException();
     }
+    // END Android-added: isAccessible(), setAccessible(), for use by frameworks (MediaCodec).
 }
