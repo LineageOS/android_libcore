@@ -533,9 +533,14 @@ public abstract class CharBuffer
      * <pre>
      *     src.get(a, 0, a.length) </pre>
      *
-     * @return This buffer
-     * @throws BufferUnderflowException If there are fewer than <tt>length</tt> chars
-     *                                  remaining in this buffer
+     * @param   dst
+     *          The destination array
+     *
+     * @return  This buffer
+     *
+     * @throws  BufferUnderflowException
+     *          If there are fewer than <tt>length</tt> chars
+     *          remaining in this buffer
      */
     public CharBuffer get(char[] dst) {
         return get(dst, 0, dst.length);
@@ -588,6 +593,8 @@ public abstract class CharBuffer
     public CharBuffer put(CharBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();
@@ -740,22 +747,17 @@ public abstract class CharBuffer
     public CharBuffer put(String src, int start, int end) {
         checkBounds(start, end - start, src.length());
 
-        // Android-changed: Don't bother making changes to the buffer if there's nothing
-        // to write. This is questionable behaviour but code expects it.
+        // BEGIN Android-added: Don't check readonly/overflow if there's nothing to write.
+        // This is questionable behaviour but code expects it.
         if (start == end) {
             return this;
         }
+        // END Android-added: Don't check readonly/overflow if there's nothing to write.
 
-        // Android-changed: Throw ReadOnlyBufferException as soon as possible.
-        if (isReadOnly()) {
+        if (isReadOnly())
             throw new ReadOnlyBufferException();
-        }
-
-        // Android-changed: Throw as early as we can if there isn't enough space.
-        if ((end - start) > remaining()) {
+        if (end - start > remaining())
             throw new BufferOverflowException();
-        }
-
         for (int i = start; i < end; i++)
             this.put(src.charAt(i));
         return this;
@@ -1220,8 +1222,7 @@ public abstract class CharBuffer
 
     @Override
     public IntStream chars() {
-        CharBuffer self = this;
-        return StreamSupport.intStream(() -> new CharBufferSpliterator(self),
+        return StreamSupport.intStream(() -> new CharBufferSpliterator(this),
             Buffer.SPLITERATOR_CHARACTERISTICS, false);
     }
 }
