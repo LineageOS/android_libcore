@@ -465,6 +465,8 @@ public abstract class FloatBuffer
     public FloatBuffer put(FloatBuffer src) {
         if (src == this)
             throw new IllegalArgumentException();
+        if (isReadOnly())
+            throw new ReadOnlyBufferException();
         int n = src.remaining();
         if (n > remaining())
             throw new BufferOverflowException();
