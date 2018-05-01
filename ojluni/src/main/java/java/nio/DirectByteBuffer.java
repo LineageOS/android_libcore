@@ -250,6 +250,14 @@ public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
     }
 
     @Override
+    public ByteBuffer put(ByteBuffer src) {
+        if (!memoryRef.isAccessible) {
+            throw new IllegalStateException("buffer is inaccessible");
+        }
+        return super.put(src);
+    }
+
+    @Override
     public final ByteBuffer put(byte x) {
         if (!memoryRef.isAccessible) {
             throw new IllegalStateException("buffer is inaccessible");
