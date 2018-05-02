@@ -297,6 +297,7 @@ filegroup {
         "luni/src/main/java/libcore/reflect/TypeVariableImpl.java",
         "luni/src/main/java/libcore/reflect/Types.java",
         "luni/src/main/java/libcore/reflect/WildcardTypeImpl.java",
+        "luni/src/main/java/libcore/util/ArrayUtils.java",
         "luni/src/main/java/libcore/util/CharsetUtils.java",
         "luni/src/main/java/libcore/util/EmptyArray.java",
         "luni/src/main/java/libcore/util/BasicLruCache.java",
