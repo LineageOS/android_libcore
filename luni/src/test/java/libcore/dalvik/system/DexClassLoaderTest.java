@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import libcore.io.Streams;
@@ -36,12 +38,14 @@ public class DexClassLoaderTest extends TestCase {
     private File dex2;
     private File jar1;
     private File jar2;
+    private File nativeLib1;
 
     private Map<String, File> resourcesMap;
 
     protected void setUp() throws Exception {
         resourcesMap = ClassLoaderTestSupport.setupAndCopyResources(Arrays.asList(
-                "loading-test.dex", "loading-test2.dex", "loading-test.jar", "loading-test2.jar"));
+                "loading-test.dex", "loading-test2.dex", "loading-test.jar", "loading-test2.jar",
+                "libfake.so"));
 
         dex1 = resourcesMap.get("loading-test.dex");
         assertNotNull(dex1);
@@ -51,6 +55,8 @@ public class DexClassLoaderTest extends TestCase {
         assertNotNull(jar1);
         jar2 = resourcesMap.get("loading-test2.jar");
         assertNotNull(jar2);
+        nativeLib1 = resourcesMap.get("libfake.so");
+        assertNotNull(nativeLib1);
     }
 
     protected void tearDown() {
@@ -336,5 +342,27 @@ public class DexClassLoaderTest extends TestCase {
      */
     public void test_twoJar_diff_getResourceAsStream() throws Exception {
         createLoaderAndCallMethod("test.TestMethods", "test_diff_getResourceAsStream", jar1, jar2);
+    }
+
+    /*
+     * Tests native modification behaviors
+     */
+
+    /**
+     * Checks that a adding a native library to an existing class loader makes it visible for
+     * subsequent calls.
+     * @throws Exception
+     */
+    public void test_oneDex_addNative_findsLibrary() throws Exception {
+        String path = nativeLib1.getParentFile().getAbsolutePath();
+        DexClassLoader classLoader = (DexClassLoader) createLoader(dex1);
+
+        assertNull("findLibrary should not find un-added path",
+                classLoader.findLibrary("fake"));
+
+        classLoader.addNativePath(Collections.singletonList(path));
+
+        assertNotNull("findLibrary should find newly added path",
+                classLoader.findLibrary("fake"));
     }
 }
