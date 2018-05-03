@@ -20,6 +20,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -137,6 +138,15 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public void addDexPath(String dexPath) {
         pathList.addDexPath(dexPath, null /*optimizedDirectory*/);
+    }
+
+    /**
+     * Adds additional native paths for consideration in subsequent calls to
+     * {@link #findLibrary(String)}
+     * @hide
+     */
+    public void addNativePath(Collection<String> libPaths) {
+        pathList.addNativePath(libPaths);
     }
 
     @Override
