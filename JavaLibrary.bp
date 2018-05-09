@@ -248,16 +248,6 @@ java_library_static {
     ],
 }
 
-// Make any Kotlin test classes.
-// N.B. This is only split out from the core-tests target because that is in JavaLibrary.mk and the
-// old make-based build system does not know how to build Kotlin. If core-tests were in
-// JavaLibrary.bp, we'd just include the Kotlin in its srcs.
-java_test {
-    name: "libcore-kotlin-tests",
-    srcs: ["luni/src/test/**/*.kt"],
-    no_framework_libs: true,
-}
-
 genrule {
     name: "gen-ojluni-jaif-annotated-srcs",
     tools: [
