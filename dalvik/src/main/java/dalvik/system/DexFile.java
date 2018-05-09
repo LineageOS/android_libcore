@@ -381,6 +381,13 @@ public final class DexFile {
     }
 
     /*
+     * Set the dex file as trusted: it can access hidden APIs of the platform.
+     */
+    /*package*/ void setTrusted() {
+        setTrusted(mCookie);
+    }
+
+    /*
      * Returns true if we managed to close the dex file.
      */
     private static native boolean closeDexFile(Object cookie);
@@ -389,6 +396,7 @@ public final class DexFile {
             throws ClassNotFoundException, NoClassDefFoundError;
     private static native String[] getClassNameList(Object cookie);
     private static native boolean isBackedByOatFile(Object cookie);
+    private static native void setTrusted(Object cookie);
     /*
      * Open a DEX file.  The value returned is a magic VM cookie.  On
      * failure, an IOException is thrown.
