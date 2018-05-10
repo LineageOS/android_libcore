@@ -62,8 +62,16 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent) {
+        this(dexPath, optimizedDirectory, librarySearchPath, parent, false);
+    }
+
+    /**
+     * @hide
+     */
+    public BaseDexClassLoader(String dexPath, File optimizedDirectory,
+            String librarySearchPath, ClassLoader parent, boolean isTrusted) {
         super(parent);
-        this.pathList = new DexPathList(this, dexPath, librarySearchPath, null);
+        this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
 
         if (reporter != null) {
             reportClassLoaderChain();
@@ -137,7 +145,14 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     public void addDexPath(String dexPath) {
-        pathList.addDexPath(dexPath, null /*optimizedDirectory*/);
+        addDexPath(dexPath, false /*isTrusted*/);
+    }
+
+    /**
+     * @hide
+     */
+    public void addDexPath(String dexPath, boolean isTrusted) {
+        pathList.addDexPath(dexPath, null /*optimizedDirectory*/, isTrusted);
     }
 
     /**
