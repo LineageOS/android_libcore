@@ -48,7 +48,7 @@ public class CalendarTest extends junit.framework.TestCase {
         // get(Calendar.ZONE_OFFSET) returns the zone offset of the time zone passed to setTimeZone.
         Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"), Locale.US);
         assertEquals(0, cal.get(Calendar.ZONE_OFFSET));
-        TimeZone tz = java.util.TimeZone.getTimeZone("GMT+7");
+        TimeZone tz = TimeZone.getTimeZone("GMT+7");
         cal.setTimeZone(tz);
         assertEquals(25200000, cal.get(Calendar.ZONE_OFFSET));
     }
