@@ -18,13 +18,17 @@ package libcore.libcore.icu;
 
 import org.junit.Test;
 
+import android.icu.text.TimeZoneNames;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import libcore.icu.ICU;
 import libcore.util.TimeZoneFinder;
@@ -251,5 +255,117 @@ public class TimeZoneIntegrationTest {
         assertEquals(latinName, utz.getDisplayName(false, style, latinLocale));
         assertEquals(cyrillicName, utz.getDisplayName(false, style, cyrillicLocale));
         assertEquals(cyrillicName, utz.getDisplayName(false, style, noScriptLocale));
+    }
+
+    /**
+     * This test is to catch issues with the rules update process that could let the
+     * "negative DST" scheme enter the Android data set for either java.util.TimeZone or
+     * android.icu.util.TimeZone.
+     */
+    @Test
+    public void testDstMeansSummer() {
+        // Ireland was the original example that caused the default IANA upstream tzdata to contain
+        // a zone where DST is in the Winter (since tzdata 2018e, though it was tried in 2018a
+        // first). This change was made to historical and future transitions.
+        //
+        // The upstream reasoning went like this: "Irish *Standard* Time" is summer, so the other
+        // time must be the DST. So, DST is considered to be in the winter and the associated DST
+        // adjustment is negative from the standard time. In the old scheme "Irish Standard Time" /
+        // summer was just modeled as the DST in common with all other global time zones.
+        //
+        // Unfortunately, various users of formatting APIs assume standard and DST times are
+        // consistent and (effectively) that "DST" means "summer". We likely cannot adopt the
+        // concept of a winter DST without risking app compat issues.
+        //
+        // For example, getDisplayName(boolean daylight) has always returned the winter time for
+        // false, and the summer time for true. If we change this then it should be changed on a
+        // major release boundary, with improved APIs (e.g. a version of getDisplayName() that takes
+        // a millis), existing API behavior made dependent on target API version, and after fixing
+        // any platform code that makes incorrect assumptions about DST meaning "1 hour forward".
+
+        final String timeZoneId = "Europe/Dublin";
+        final Locale locale = Locale.UK;
+        // 26 Oct 2015 01:00:00 GMT - one day after the start of "Greenwich Mean Time" in
+        // Europe/Dublin in 2015. An arbitrary historical example of winter in Ireland.
+        final long winterTimeMillis = 1445821200000L;
+        final String winterTimeName = "Greenwich Mean Time";
+        final int winterOffsetRawMillis = 0;
+        final int winterOffsetDstMillis = 0;
+
+        // 30 Mar 2015 01:00:00 GMT - one day after the start of "Irish Standard Time" in
+        // Europe/Dublin in 2015. An arbitrary historical example of summer in Ireland.
+        final long summerTimeMillis = 1427677200000L;
+        final String summerTimeName = "Irish Standard Time";
+        final int summerOffsetRawMillis = 0;
+        final int summerOffsetDstMillis = (int) TimeUnit.HOURS.toMillis(1);
+
+        // There is no common interface between java.util.TimeZone and android.icu.util.TimeZone
+        // so the tests are for each are effectively duplicated.
+
+        // java.util.TimeZone
+        {
+            java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone(timeZoneId);
+            assertTrue(timeZone.useDaylightTime());
+
+            assertFalse(timeZone.inDaylightTime(new Date(winterTimeMillis)));
+            assertTrue(timeZone.inDaylightTime(new Date(summerTimeMillis)));
+
+            assertEquals(winterOffsetRawMillis + winterOffsetDstMillis,
+                    timeZone.getOffset(winterTimeMillis));
+            assertEquals(summerOffsetRawMillis + summerOffsetDstMillis,
+                    timeZone.getOffset(summerTimeMillis));
+            assertEquals(winterTimeName,
+                    timeZone.getDisplayName(false /* daylight */, java.util.TimeZone.LONG,
+                            locale));
+            assertEquals(summerTimeName,
+                    timeZone.getDisplayName(true /* daylight */, java.util.TimeZone.LONG,
+                            locale));
+        }
+
+        // android.icu.util.TimeZone
+        {
+            android.icu.util.TimeZone timeZone = android.icu.util.TimeZone.getTimeZone(timeZoneId);
+            assertTrue(timeZone.useDaylightTime());
+
+            assertFalse(timeZone.inDaylightTime(new Date(winterTimeMillis)));
+            assertTrue(timeZone.inDaylightTime(new Date(summerTimeMillis)));
+
+            assertEquals(winterOffsetRawMillis + winterOffsetDstMillis,
+                    timeZone.getOffset(winterTimeMillis));
+            assertEquals(summerOffsetRawMillis + summerOffsetDstMillis,
+                    timeZone.getOffset(summerTimeMillis));
+
+            // These methods show the trouble we'd have if callers were to take the output from
+            // inDaylightTime() and pass it to getDisplayName().
+            assertEquals(winterTimeName,
+                    timeZone.getDisplayName(false /* daylight */, android.icu.util.TimeZone.LONG,
+                            locale));
+            assertEquals(summerTimeName,
+                    timeZone.getDisplayName(true /* daylight */, android.icu.util.TimeZone.LONG,
+                            locale));
+
+            // APIs not identical to java.util.TimeZone tested below.
+            int[] offsets = new int[2];
+            timeZone.getOffset(winterTimeMillis, false /* local */, offsets);
+            assertEquals(winterOffsetRawMillis, offsets[0]);
+            assertEquals(winterOffsetDstMillis, offsets[1]);
+
+            timeZone.getOffset(summerTimeMillis, false /* local */, offsets);
+            assertEquals(summerOffsetRawMillis, offsets[0]);
+            assertEquals(summerOffsetDstMillis, offsets[1]);
+        }
+
+        // icu TimeZoneNames
+        TimeZoneNames timeZoneNames = TimeZoneNames.getInstance(locale);
+        // getDisplayName: date = winterTimeMillis
+        assertEquals(winterTimeName, timeZoneNames.getDisplayName(
+                timeZoneId, TimeZoneNames.NameType.LONG_STANDARD, winterTimeMillis));
+        assertEquals(summerTimeName, timeZoneNames.getDisplayName(
+                timeZoneId, TimeZoneNames.NameType.LONG_DAYLIGHT, winterTimeMillis));
+        // getDisplayName: date = summerTimeMillis
+        assertEquals(winterTimeName, timeZoneNames.getDisplayName(
+                timeZoneId, TimeZoneNames.NameType.LONG_STANDARD, summerTimeMillis));
+        assertEquals(summerTimeName, timeZoneNames.getDisplayName(
+                timeZoneId, TimeZoneNames.NameType.LONG_DAYLIGHT, summerTimeMillis));
     }
 }
