@@ -129,7 +129,11 @@ import static android.system.OsConstants.S_ISDIR;
      */
     public DexPathList(ClassLoader definingContext, String dexPath,
             String librarySearchPath, File optimizedDirectory) {
+        this(definingContext, dexPath, librarySearchPath, optimizedDirectory, false);
+    }
 
+    DexPathList(ClassLoader definingContext, String dexPath,
+            String librarySearchPath, File optimizedDirectory, boolean isTrusted) {
         if (definingContext == null) {
             throw new NullPointerException("definingContext == null");
         }
@@ -158,7 +162,7 @@ import static android.system.OsConstants.S_ISDIR;
         ArrayList<IOException> suppressedExceptions = new ArrayList<IOException>();
         // save dexPath for BaseDexClassLoader
         this.dexElements = makeDexElements(splitDexPath(dexPath), optimizedDirectory,
-                                           suppressedExceptions, definingContext);
+                                           suppressedExceptions, definingContext, isTrusted);
 
         // Native libraries may exist in both the system and
         // application library paths, and we use this search order:
@@ -214,9 +218,13 @@ import static android.system.OsConstants.S_ISDIR;
      * system directory for same
      */
     public void addDexPath(String dexPath, File optimizedDirectory) {
+      addDexPath(dexPath, optimizedDirectory, false);
+    }
+
+    public void addDexPath(String dexPath, File optimizedDirectory, boolean isTrusted) {
         final List<IOException> suppressedExceptionList = new ArrayList<IOException>();
         final Element[] newElements = makeDexElements(splitDexPath(dexPath), optimizedDirectory,
-                suppressedExceptionList, definingContext);
+                suppressedExceptionList, definingContext, isTrusted);
 
         if (newElements != null && newElements.length > 0) {
             final Element[] oldElements = dexElements;
@@ -310,6 +318,12 @@ import static android.system.OsConstants.S_ISDIR;
      */
     private static Element[] makeDexElements(List<File> files, File optimizedDirectory,
             List<IOException> suppressedExceptions, ClassLoader loader) {
+        return makeDexElements(files, optimizedDirectory, suppressedExceptions, loader, false);
+    }
+
+
+    private static Element[] makeDexElements(List<File> files, File optimizedDirectory,
+            List<IOException> suppressedExceptions, ClassLoader loader, boolean isTrusted) {
       Element[] elements = new Element[files.size()];
       int elementsPos = 0;
       /*
@@ -323,10 +337,11 @@ import static android.system.OsConstants.S_ISDIR;
           } else if (file.isFile()) {
               String name = file.getName();
 
+              DexFile dex = null;
               if (name.endsWith(DEX_SUFFIX)) {
                   // Raw dex file (not inside a zip/jar).
                   try {
-                      DexFile dex = loadDexFile(file, optimizedDirectory, loader, elements);
+                      dex = loadDexFile(file, optimizedDirectory, loader, elements);
                       if (dex != null) {
                           elements[elementsPos++] = new Element(dex, null);
                       }
@@ -335,7 +350,6 @@ import static android.system.OsConstants.S_ISDIR;
                       suppressedExceptions.add(suppressed);
                   }
               } else {
-                  DexFile dex = null;
                   try {
                       dex = loadDexFile(file, optimizedDirectory, loader, elements);
                   } catch (IOException suppressed) {
@@ -354,6 +368,9 @@ import static android.system.OsConstants.S_ISDIR;
                   } else {
                       elements[elementsPos++] = new Element(dex, file);
                   }
+              }
+              if (dex != null && isTrusted) {
+                dex.setTrusted();
               }
           } else {
               System.logW("ClassLoader referenced unknown path: " + file);
