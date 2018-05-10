@@ -28,10 +28,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import libcore.io.ClassPathURLStreamHandler;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -54,7 +52,6 @@ import static android.system.OsConstants.S_ISDIR;
 /*package*/ final class DexPathList {
     private static final String DEX_SUFFIX = ".dex";
     private static final String zipSeparator = "!/";
-    private static final Element[] EMPTY_ELEMENTS = new Element[0];
 
     /** class definition context */
     private final ClassLoader definingContext;
@@ -218,8 +215,7 @@ import static android.system.OsConstants.S_ISDIR;
      */
     public void addDexPath(String dexPath, File optimizedDirectory) {
         final List<IOException> suppressedExceptionList = new ArrayList<IOException>();
-        final Element[] newElements = makeDexElements(
-                dexElements, splitDexPath(dexPath), optimizedDirectory,
+        final Element[] newElements = makeDexElements(splitDexPath(dexPath), optimizedDirectory,
                 suppressedExceptionList, definingContext);
 
         if (newElements != null && newElements.length > 0) {
@@ -313,19 +309,7 @@ import static android.system.OsConstants.S_ISDIR;
      * the given array.
      */
     private static Element[] makeDexElements(List<File> files, File optimizedDirectory,
-      List<IOException> suppressedExceptions, ClassLoader loader) {
-      return makeDexElements(
-              EMPTY_ELEMENTS, files, optimizedDirectory, suppressedExceptions, loader);
-    }
-
-    /**
-     * Makes an array of dex/resource path elements, one per element of
-     * the given array.
-     */
-    private static Element[] makeDexElements(
-            Element[] existingElements, List<File> files, File optimizedDirectory,
             List<IOException> suppressedExceptions, ClassLoader loader) {
-
       Element[] elements = new Element[files.size()];
       int elementsPos = 0;
       /*
@@ -378,58 +362,8 @@ import static android.system.OsConstants.S_ISDIR;
       if (elementsPos != elements.length) {
           elements = Arrays.copyOf(elements, elementsPos);
       }
-      try {
-          // Check for http://b/77342775
-          checkForDuplicates(existingElements, elements);
-      } catch (Throwable e) {
-          System.logE("Unexpected throwable during checkForDuplicates() for http://b/77342775", e);
-          // ignore
-      }
       return elements;
     }
-
-    // BEGIN Logging for http://b/77342775
-    /**
-     * Logs a warning if newElements contains duplicate paths, or contains paths already
-     * present in oldElements. Duplicate paths in oldElements that do not occur in newElements
-     * are tolerated without logging.
-     */
-    private static void checkForDuplicates(Element[] oldElements, Element[] newElements) {
-        Set<String> elementPaths = new HashSet<>(oldElements.length + newElements.length);
-        List<String> oldPaths = getElementPaths(oldElements);  // may contain nulls
-        elementPaths.addAll(oldPaths);  // may contain null
-        for (Element element : newElements) {
-            String path = getElementPath(element);
-            boolean isDuplicate = !elementPaths.add(path);
-            if (isDuplicate && (path != null)) {
-                List<String> newPaths = getElementPaths(newElements);  // may contain nulls
-                String s = "DexPathList: " + oldPaths + " + " + newPaths + " contains duplicates.";
-                System.logE(s, new RuntimeException("bug 77342775"));
-                return;
-            }
-        }
-    }
-
-    private static List<String> getElementPaths(Element[] elements) {
-        List<String> result = new ArrayList<>(elements.length);
-        for (Element element : elements) {
-            result.add(getElementPath(element));
-        }
-        return result;
-    }
-
-    private static String getElementPath(Element element) {
-        File file = element.path;
-        if (file != null) {
-            return file.getPath();
-        }
-        DexFile dexFile = element.dexFile;
-        if (dexFile != null) {
-            return dexFile.getName();
-        }
-        return null;
-    }
-    // END Logging for http://b/77342775
 
     /**
      * Constructs a {@code DexFile} instance, as appropriate depending on whether
