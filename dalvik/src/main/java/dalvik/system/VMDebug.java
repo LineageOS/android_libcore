@@ -528,4 +528,16 @@ public final class VMDebug {
 
     private static native void nativeAttachAgent(String agent, ClassLoader classLoader)
             throws IOException;
+
+    /**
+     * Exempts a class from any future non-SDK API access checks.
+     * Methods declared in the class will be allowed to perform
+     * reflection/JNI against the framework completely unrestricted.
+     * Note that this does not affect uses of non-SDK APIs that the class links against.
+     * Note that this does not affect methods declared outside this class, e.g.
+     * inherited from a superclass or an implemented interface.
+     *
+     * @param klass The class whose methods should be exempted.
+     */
+    public static native void allowHiddenApiReflectionFrom(Class<?> klass);
 }
