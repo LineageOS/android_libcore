@@ -632,14 +632,16 @@ public class OsTest extends TestCase {
     }
 
     // ENOTSUP, Extended attributes are not supported by the filesystem, or are disabled.
-    final boolean root = (Libcore.os.getuid() == 0);
+    // Since kernel version 4.9 (or some other version after 4.4), *xattr() methods
+    // may set errno to EACCESS instead. This behavior change is likely related to
+    // https://patchwork.kernel.org/patch/9294421/ which reimplemented getxattr, setxattr,
+    // and removexattr on top of generic handlers.
     final String path = "/proc/self/stat";
     try {
       Libcore.os.setxattr(path, NAME_TEST, VALUE_CAKE, OsConstants.XATTR_CREATE);
       fail();
     } catch (ErrnoException e) {
-      // setxattr(2) requires root permission for writing to this file, will get EACCES otherwise.
-      assertEquals(root ? ENOTSUP : EACCES, e.errno);
+      assertTrue("Unexpected errno: " + e.errno, e.errno == ENOTSUP || e.errno == EACCES);
     }
     try {
       Libcore.os.getxattr(path, NAME_TEST);
@@ -657,7 +659,7 @@ public class OsTest extends TestCase {
       Libcore.os.removexattr(path, NAME_TEST);
       fail();
     } catch (ErrnoException e) {
-      assertEquals(ENOTSUP, e.errno);
+      assertTrue("Unexpected errno: " + e.errno, e.errno == ENOTSUP || e.errno == EACCES);
     }
   }
 
