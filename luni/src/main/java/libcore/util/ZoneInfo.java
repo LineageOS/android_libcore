@@ -290,6 +290,8 @@ public final class ZoneInfo extends TimeZone {
 
         // Use the latest non-daylight offset (if any) as the raw offset.
         if (mTransitions.length == 0) {
+            // This case is no longer expected to occur in the data used on Android after changes
+            // made in zic version 2014c. It is kept as a fallback.
             // If there are no transitions then use the first GMT offset.
             mRawOffset = gmtOffsets[0];
         } else {
