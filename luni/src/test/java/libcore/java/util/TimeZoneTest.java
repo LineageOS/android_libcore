@@ -59,6 +59,14 @@ public class TimeZoneTest extends TestCase {
 
     // http://code.google.com/p/android/issues/detail?id=14395
     public void testPreHistoricInDaylightTime() throws Exception {
+        // Originally this test was intended to assert what happens when the first transition for a
+        // time zone was a "to DST" transition. i.e. that the (implicit) offset / DST state before
+        // the first was treated as a non-DST state. Since zic version 2014c all zones have an
+        // explicit non-DST transition at time -2^31 seconds so it is no longer possible to test.
+        // This regression test has been kept in case that changes again in future and to prove the
+        // behavior has remained consistent. The comment below in this test that assume the old
+        // transitions is now incorrect.
+
         Locale.setDefault(Locale.US);
         TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
         TimeZone.setDefault(tz);
@@ -82,33 +90,38 @@ public class TimeZoneTest extends TestCase {
     }
 
     public void testPreHistoricOffsets() throws Exception {
-        // "Africa/Bissau" has just a few transitions and hasn't changed in a long time.
-        // 1912-01-01 00:02:19-0100 ... 1912-01-01 00:02:20-0100
-        // 1974-12-31 23:59:59-0100 ... 1975-01-01 01:00:00+0000
+        // "Africa/Bissau" has just a few transitions and hasn't changed in a long time:
+        // Transition time         : Offset    : DST / non-DST : Comment
+        // 1901-12-13 20:45:52 GMT : -01:02:20 : non-DST       : This entry included by zic > 2014b
+        // 1912-01-01 01:00:00 GMT : -01:00:00 : non-DST       :
+        // 1975-01-01 01:00:00 GMT :  00:00:00 : non-DST       :
         TimeZone tz = TimeZone.getTimeZone("Africa/Bissau");
 
         // Times before our first transition should assume we're still following that transition.
-        assertNonDaylightOffset(-3600, parseIsoTime("1911-01-01T00:00:00.0+0000"), tz);
+        assertNonDaylightOffset(-3740, parseIsoTime("1901-12-13T00:00:00.0+0000"), tz);
 
-        assertNonDaylightOffset(-3600, parseIsoTime("1912-01-01T12:00:00.0-0100"), tz);
+        // Times just after our first transition work as you would expect.
+        assertNonDaylightOffset(-3740, parseIsoTime("1902-12-13T20:45:53.0+0000"), tz);
 
         // Times after our last transition should assume we're still following that transition.
         assertNonDaylightOffset(0, parseIsoTime("1980-01-01T00:00:00.0+0000"), tz);
     }
 
-    private static void assertNonDaylightOffset(int expectedOffsetSeconds, long epochSeconds, TimeZone tz) {
-        assertEquals(expectedOffsetSeconds, tz.getOffset(epochSeconds * 1000) / 1000);
-        assertFalse(tz.inDaylightTime(new Date(epochSeconds * 1000)));
+    private static void assertNonDaylightOffset(
+            int expectedOffsetSeconds, long epochMillis, TimeZone tz) {
+        assertEquals(expectedOffsetSeconds, tz.getOffset(epochMillis) / 1000);
+        assertFalse(tz.inDaylightTime(new Date(epochMillis)));
     }
 
     private static long parseIsoTime(String isoTime) throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Date date = sdf.parse(isoTime);
-        return date.getTime() / 1000;
+        return date.getTime();
     }
 
-    public void testZeroTransitionZones() throws Exception {
-        // Zones with no transitions historical or future seem ideal for testing.
+    public void testMinimalTransitionZones() throws Exception {
+        // Zones with minimal transitions, historical or future, seem ideal for testing.
+        // UTC is also included, although it may be implemented differently from the others.
         String[] ids = new String[] { "Africa/Bujumbura", "Indian/Cocos", "Pacific/Wake", "UTC" };
         for (String id : ids) {
             TimeZone tz = TimeZone.getTimeZone(id);
@@ -311,16 +324,19 @@ public class TimeZoneTest extends TestCase {
 
     // http://b/18839557
     public void testOverflowing32BitUnixDates() {
+        // This timezone didn't have any daylight savings prior to 1917.
         final TimeZone tz = TimeZone.getTimeZone("America/New_York");
 
-        // This timezone didn't have any daylight savings prior to 1917 and this
-        // date is sometime in 1901.
-        assertFalse(tz.inDaylightTime(new Date(-2206292400000L)));
-        assertEquals(-18000000, tz.getOffset(-2206292400000L));
+        // This value is outside of the 32-bit range.
+        long upperTime = 2206292400000L; // Wed, 30 Nov 2039 19:00:00 GMT
+        long lowerTime = -upperTime; // Thu, 01 Feb 1900 05:00:00 GMT
 
-        // Nov 30th 2039, no daylight savings as per current rules.
-        assertFalse(tz.inDaylightTime(new Date(2206292400000L)));
-        assertEquals(-18000000, tz.getOffset(2206292400000L));
+        assertFalse(tz.inDaylightTime(new Date(lowerTime)));
+        assertEquals(-18000000, tz.getOffset(lowerTime));
+
+        // No daylight savings according to the rules at the time of writing.
+        assertFalse(tz.inDaylightTime(new Date(upperTime)));
+        assertEquals(-18000000, tz.getOffset(upperTime));
     }
 
     public void testTimeZoneIDLocalization() {
