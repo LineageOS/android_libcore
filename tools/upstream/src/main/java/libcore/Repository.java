@@ -118,7 +118,11 @@ abstract class Repository {
 
             // Native (.c) files
             "jdk/src/java.base/unix/native/libjava",
-            "jdk/src/java.base/share/native/libjava"
+            "jdk/src/java.base/share/native/libjava",
+            "jdk/src/java.base/unix/native/libnio",
+            "jdk/src/java.base/unix/native/libnio/ch",
+            "jdk/src/java.base/unix/native/libnio/fs",
+            "jdk/src/java.base/unix/native/libnet"
         );
         return new OpenJdkRepository(upstreamRoot, upstreamName, sourceDirs);
     }
