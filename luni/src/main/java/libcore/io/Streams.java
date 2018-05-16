@@ -16,6 +16,8 @@
 
 package libcore.io;
 
+import libcore.util.ArrayUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -23,7 +25,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 public final class Streams {
@@ -76,7 +77,7 @@ public final class Streams {
         if (dst == null) {
             throw new NullPointerException("dst == null");
         }
-        Arrays.checkOffsetAndCount(dst.length, offset, byteCount);
+        ArrayUtils.throwsIfOutOfBounds(dst.length, offset, byteCount);
         while (byteCount > 0) {
             int bytesRead = in.read(dst, offset, byteCount);
             if (bytesRead < 0) {
