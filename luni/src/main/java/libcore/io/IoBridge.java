@@ -22,6 +22,9 @@ import android.system.StructGroupReq;
 import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructTimeval;
+
+import libcore.util.ArrayUtils;
+
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,7 +44,6 @@ import java.net.SocketOptions;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static android.system.OsConstants.*;
@@ -493,7 +495,7 @@ public final class IoBridge {
      * Unix practice where you'd read until you got 0 bytes (and any future read would return -1).
      */
     public static int read(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws IOException {
-        Arrays.checkOffsetAndCount(bytes.length, byteOffset, byteCount);
+        ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {
             return 0;
         }
@@ -517,7 +519,7 @@ public final class IoBridge {
      * Unix it never just writes as many bytes as happens to be convenient.)
      */
     public static void write(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws IOException {
-        Arrays.checkOffsetAndCount(bytes.length, byteOffset, byteCount);
+        ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {
             return;
         }
