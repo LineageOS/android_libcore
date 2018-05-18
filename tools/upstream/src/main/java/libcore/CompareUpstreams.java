@@ -152,7 +152,8 @@ public class CompareUpstreams {
         headers.add("diff");
         printTsv(out, headers);
         for (Path relPath : relPaths) {
-            Repository expectedUpstream = standardRepositories.currentUpstream(relPath);
+            Repository expectedUpstream = standardRepositories.referenceUpstreamAsOfAndroidP(
+                relPath);
             out.print(relPath + "\t");
             Path ojluniFile = standardRepositories.ojluni().absolutePath(relPath);
             List<String> linesB = Util.readLines(ojluniFile);
