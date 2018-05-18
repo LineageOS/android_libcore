@@ -410,9 +410,7 @@ public final class StringBuilder
         }
         // END Android-added: Return a constant "" for an empty buffer to keep historic behavior.
         // Create a copy, don't share the array
-        // Android-changed: Use StringFactory, not String constructor. http://b/79902155
-        // return new String(value, 0, count);
-        return StringFactory.newStringFromChars(0, count, value);
+        return new String(value, 0, count);
     }
 
     /**
