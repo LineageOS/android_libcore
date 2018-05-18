@@ -2907,9 +2907,7 @@ public final class String
      *          character array.
      */
     public static String valueOf(char data[]) {
-        // Android-changed: Replace constructor call with call to new StringFactory class.
-        // return new String(data);
-        return StringFactory.newStringFromChars(data);
+        return new String(data);
     }
 
     /**
@@ -2933,9 +2931,7 @@ public final class String
      *          {@code data.length}.
      */
     public static String valueOf(char data[], int offset, int count) {
-        // Android-changed: Replace constructor call with call to new StringFactory class.
-        // return new String(data, offset, count);
-        return StringFactory.newStringFromChars(data, offset, count);
+        return new String(data, offset, count);
     }
 
     /**
@@ -2952,10 +2948,7 @@ public final class String
      *          {@code data.length}.
      */
     public static String copyValueOf(char data[], int offset, int count) {
-        // Android-changed: Replace constructor call with call to new StringFactory class.
-        // All public String constructors now copy the data.
-        // return new String(data, offset, count);
-        return StringFactory.newStringFromChars(data, offset, count);
+        return new String(data, offset, count);
     }
 
     /**
@@ -2966,9 +2959,7 @@ public final class String
      *          character array.
      */
     public static String copyValueOf(char data[]) {
-        // Android-changed: Replace constructor call with call to new StringFactory class.
-        // return new String(data);
-        return StringFactory.newStringFromChars(data);
+        return new String(data);
     }
 
     /**
@@ -2992,7 +2983,8 @@ public final class String
      *          as its single character the argument {@code c}.
      */
     public static String valueOf(char c) {
-        // Android-changed: Replace constructor call with call to new StringFactory class.
+        // Android-changed: Replace constructor call with call to StringFactory class.
+        // There is currently no String(char[], boolean) on Android to call. http://b/79902155
         // char data[] = {c};
         // return new String(data, true);
         return StringFactory.newStringFromChars(0, 1, new char[] { c });
