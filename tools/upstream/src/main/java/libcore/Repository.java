@@ -84,6 +84,16 @@ abstract class Repository {
         return rootPath;
     }
 
+    @Override
+    public int hashCode() {
+      return rootPath.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      return (obj instanceof Repository) && rootPath.equals(((Repository) obj).rootPath);
+    }
+
     /**
      * @return A human readable name to identify this repository, suitable for use as a
      *         directory name.
