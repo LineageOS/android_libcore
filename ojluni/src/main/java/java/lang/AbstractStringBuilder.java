@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2014 The Android Open Source Project
  * Copyright (c) 2003, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -1346,8 +1345,7 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
      *          specified substring, starting at the specified index.
      */
     public int indexOf(String str, int fromIndex) {
-        return String.indexOf(value, 0, count,
-                              str.toCharArray(), 0, str.length(), fromIndex);
+        return String.indexOf(value, 0, count, str, fromIndex);
     }
 
     /**
@@ -1386,8 +1384,7 @@ abstract class AbstractStringBuilder implements Appendable, CharSequence {
      *          specified substring.
      */
     public int lastIndexOf(String str, int fromIndex) {
-        return String.lastIndexOf(value, 0, count,
-                                  str.toCharArray(), 0, str.length(), fromIndex);
+        return String.lastIndexOf(value, 0, count, str, fromIndex);
     }
 
     /**
