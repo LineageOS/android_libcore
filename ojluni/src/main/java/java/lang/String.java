@@ -1707,24 +1707,20 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str, int fromIndex) {
-        // Android-changed: Change parameters to static indexOf to match new signature below.
+        // Android-changed: Delegate to the static indexOf method below.
         return indexOf(this, str, fromIndex);
     }
 
+    // BEGIN Android-added: Private static indexOf method that takes String parameters.
+    // The use of length(), charAt(), etc. makes it more efficient for compressed strings.
     /**
-     * Code shared by String and AbstractStringBuilder to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
+     * The source is the string being searched, and the target is the string being searched for.
      *
      * @param   source       the characters being searched.
      * @param   target       the characters being searched for.
      * @param   fromIndex    the index to begin searching from.
      */
-    // BEGIN Android-changed: Change signature to take String object rather than char arrays.
-    // The implementation using a java char array is replaced with one using length() & charAt().
-    static int indexOf(String source,
-                       String target,
-                       int fromIndex) {
+    private static int indexOf(String source, String target, int fromIndex) {
         final int sourceLength = source.length();
         final int targetLength = target.length();
         if (fromIndex >= sourceLength) {
@@ -1761,7 +1757,25 @@ public final class String
         }
         return -1;
     }
-    // END Android-changed: Change signature to take String object rather than char arrays.
+    // END Android-added: Private static indexOf method that takes String parameters.
+
+    /**
+     * Code shared by String and AbstractStringBuilder to do searches. The
+     * source is the character array being searched, and the target
+     * is the string being searched for.
+     *
+     * @param   source       the characters being searched.
+     * @param   sourceOffset offset of the source string.
+     * @param   sourceCount  count of the source string.
+     * @param   target       the characters being searched for.
+     * @param   fromIndex    the index to begin searching from.
+     */
+    static int indexOf(char[] source, int sourceOffset, int sourceCount,
+            String target, int fromIndex) {
+        return indexOf(source, sourceOffset, sourceCount,
+                       target.toCharArray(), 0, target.length(),
+                       fromIndex);
+    }
 
     /**
      * Code shared by String and StringBuffer to do searches. The
@@ -1854,20 +1868,16 @@ public final class String
         return lastIndexOf(this, str, fromIndex);
     }
 
+    // BEGIN Android-added: Private static lastIndexOf method that takes String parameters.
+    // The use of length(), charAt(), etc. makes it more efficient for compressed strings.
     /**
-     * Code shared by String and AbstractStringBuilder to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
+     * The source is the string being searched, and the target is the string being searched for.
      *
      * @param   source       the characters being searched.
      * @param   target       the characters being searched for.
      * @param   fromIndex    the index to begin searching from.
      */
-    // BEGIN Android-changed: Change signature to take String object rather than char arrays.
-    // The implementation using a java char array is replaced with one using length() & charAt().
-    static int lastIndexOf(String source,
-                           String target,
-                           int fromIndex) {
+    private static int lastIndexOf(String source, String target, int fromIndex) {
         /*
          * Check arguments; return immediately where possible. For
          * consistency, don't check for null str.
@@ -1912,7 +1922,25 @@ public final class String
             return start + 1;
         }
     }
-    // END Android-changed: Change signature to take String object rather than char arrays.
+    // END Android-added: Private static lastIndexOf method that takes String parameters.
+
+    /**
+     * Code shared by String and AbstractStringBuilder to do searches. The
+     * source is the character array being searched, and the target
+     * is the string being searched for.
+     *
+     * @param   source       the characters being searched.
+     * @param   sourceOffset offset of the source string.
+     * @param   sourceCount  count of the source string.
+     * @param   target       the characters being searched for.
+     * @param   fromIndex    the index to begin searching from.
+     */
+    static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
+            String target, int fromIndex) {
+        return lastIndexOf(source, sourceOffset, sourceCount,
+                       target.toCharArray(), 0, target.length(),
+                       fromIndex);
+    }
 
     /**
      * Code shared by String and StringBuffer to do searches. The
