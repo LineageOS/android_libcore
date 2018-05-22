@@ -152,7 +152,8 @@ public class CompareUpstreams {
         headers.add("diff");
         printTsv(out, headers);
         for (Path relPath : relPaths) {
-            Repository expectedUpstream = standardRepositories.currentUpstream(relPath);
+            Repository expectedUpstream = standardRepositories.referenceUpstreamAsOfAndroidP(
+                relPath);
             out.print(relPath + "\t");
             Path ojluniFile = standardRepositories.ojluni().absolutePath(relPath);
             List<String> linesB = Util.readLines(ojluniFile);
@@ -192,7 +193,8 @@ public class CompareUpstreams {
             if (!comparisons.get(0).equals("identical")) {
                 Path expectedUpstreamPath = expectedUpstream.pathFromRepository(relPath);
                 if (expectedUpstreamPath != null) {
-                    diffCommand = "${ANDROID_BUILD_TOP}/libcore/tools/upstream/upstream-diff " + relPath;
+                    diffCommand = "${ANDROID_BUILD_TOP}/libcore/tools/upstream/upstream-diff "
+                            + "-r ojluni," + expectedUpstream.name() + " " + relPath;
                 } else {
                     diffCommand = "FILE MISSING";
                 }
