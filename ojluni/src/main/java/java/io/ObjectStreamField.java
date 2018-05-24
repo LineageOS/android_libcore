@@ -165,7 +165,7 @@ public class ObjectStreamField
         // BEGIN Android-removed: Security manager is always null on Android.
         /*
         if (System.getSecurityManager() != null) {
-             Class<?> caller = Reflection.getCallerClass();
+            Class<?> caller = Reflection.getCallerClass();
             if (ReflectUtil.needsPackageAccessCheck(caller.getClassLoader(), type.getClassLoader())) {
                 ReflectUtil.checkPackageAccess(type);
             }
