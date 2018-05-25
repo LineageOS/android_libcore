@@ -1774,6 +1774,143 @@ class WildcardType:
 
 package java.util:
 
+class ArrayList:
+
+    method <init>(Ljava/util/Collection;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method contains(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method indexOf(Ljava/lang/Object;)I:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method lastIndexOf(Ljava/lang/Object;)I:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method clone()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
+    method toArray()[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method get(I)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method set(ILjava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method add(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method add(ILjava/lang/Object;)V:
+        return:
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(I)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method addAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method addAll(ILjava/util/Collection;)Z:
+        return:
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method removeAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method retainAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method listIterator(I)Ljava/util/ListIterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method listIterator()Ljava/util/ListIterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method iterator()Ljava/util/Iterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method subList(II)Ljava/util/List;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method forEach(Ljava/util/function/Consumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method spliterator()Ljava/util/Spliterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method removeIf(Ljava/util/function/Predicate;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/UnaryOperator;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method sort(Ljava/util/Comparator;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+class Iterator:
+
+    method next()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method forEachRemaining(Ljava/util/function/Consumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
 class List:
     method contains(Ljava/lang/Object;)Z:
         // May be null
