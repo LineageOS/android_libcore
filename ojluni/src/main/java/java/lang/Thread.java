@@ -1489,11 +1489,7 @@ class Thread implements Runnable {
      *         the specified object.
      * @since 1.4
      */
-    public static boolean holdsLock(Object obj) {
-        return currentThread().nativeHoldsLock(obj);
-    }
-
-    private native boolean nativeHoldsLock(Object object);
+    public static native boolean holdsLock(Object obj);
 
     private static final StackTraceElement[] EMPTY_STACK_TRACE
         = new StackTraceElement[0];
