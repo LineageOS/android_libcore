@@ -350,7 +350,7 @@ public final class Matcher implements MatchResult {
     }
 
     /**
-     * Returns the offset after the last character matched.  </p>
+     * Returns the offset after the last character matched.
      *
      * @return  The offset after the last character matched
      *
@@ -388,7 +388,7 @@ public final class Matcher implements MatchResult {
      */
     public int end(int group) {
         ensureMatch();
-        return groups[(group * 2) + 1];
+        return groups[group * 2 + 1];
     }
 
     /**
@@ -476,13 +476,9 @@ public final class Matcher implements MatchResult {
      */
     public String group(int group) {
         ensureMatch();
-        int from = groups[group * 2];
-        int to = groups[(group * 2) + 1];
-        if (from == -1 || to == -1) {
+        if ((groups[group*2] == -1) || (groups[group*2+1] == -1))
             return null;
-        } else {
-            return text.substring(from, to);
-        }
+        return getSubSequence(groups[group * 2], groups[group * 2 + 1]).toString();
     }
 
     /**
@@ -514,13 +510,9 @@ public final class Matcher implements MatchResult {
      */
     public String group(String name) {
         int group = getMatchedGroupIndex(name);
-        int from = groups[group * 2];
-        int to = groups[(group * 2) + 1];
-        if (from == -1 || to == -1) {
+        if ((groups[group*2] == -1) || (groups[group*2+1] == -1))
             return null;
-        } else {
-            return text.substring(from, to);
-        }
+        return getSubSequence(groups[group * 2], groups[group * 2 + 1]).toString();
     }
 
     /**
@@ -600,9 +592,9 @@ public final class Matcher implements MatchResult {
      */
     public boolean find(int start) {
         reset();
-        if (start < 0 || start > text.length()) {
-            throw new IndexOutOfBoundsException("start=" + start + "; length=" + text.length());
-        }
+        int limit = getTextLength();
+        if ((start < 0) || (start > limit))
+            throw new IndexOutOfBoundsException("Illegal start index");
 
         synchronized (this) {
             matchFound = findImpl(address, start, groups);
@@ -684,8 +676,10 @@ public final class Matcher implements MatchResult {
      *
      * <p> The replacement string may contain references to subsequences
      * captured during the previous match: Each occurrence of
-     * <tt>$</tt><i>g</i> will be replaced by the result of evaluating the corresponding
-     * {@link #group(int) group(g)</tt>} respectively. For  <tt>$</tt><i>g</i><tt></tt>,
+     * <tt>$</tt><i>g</i>
+     * will be replaced by the result of evaluating the corresponding
+     * {@link #group(int) group(g)</tt>}
+     * respectively. For  <tt>$</tt><i>g</i>,
      * the first number after the <tt>$</tt> is always treated as part of
      * the group reference. Subsequent numbers are incorporated into g if
      * they would form a legal group reference. Only the numerals '0'
@@ -1120,6 +1114,26 @@ public final class Matcher implements MatchResult {
         synchronized (this) {
             return requireEndImpl(address);
         }
+    }
+
+    /**
+     * Returns the end index of the text.
+     *
+     * @return the index after the last character in the text
+     */
+    int getTextLength() {
+        return text.length();
+    }
+
+    /**
+     * Generates a String from this Matcher's input in the specified range.
+     *
+     * @param  beginIndex   the beginning index, inclusive
+     * @param  endIndex     the ending index, exclusive
+     * @return A String generated from this Matcher's input
+     */
+    CharSequence getSubSequence(int beginIndex, int endIndex) {
+        return text.subSequence(beginIndex, endIndex);
     }
 
     /**
