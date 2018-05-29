@@ -131,7 +131,7 @@ public final class Matcher implements MatchResult {
             Matcher.class.getClassLoader(), getNativeFinalizer(), nativeSize());
 
     /**
-     * Holds the original CharSequence for use in {@link #reset}. {@link #input} is used during
+     * Holds the original CharSequence for use in {@link #reset}. {@link #text} is used during
      * matching. Note that CharSequence is mutable while String is not, so reset can cause the input
      * to match to change.
      */
@@ -140,19 +140,19 @@ public final class Matcher implements MatchResult {
     /**
      * Holds the input text.
      */
-    private String input;
+    private String text;
 
     /**
      * Holds the start of the region, or 0 if the matching should start at the
      * beginning of the text.
      */
-    private int regionStart;
+    private int from;
 
     /**
-     * Holds the end of the region, or input.length() if the matching should
+     * Holds the end of the region, or text.length() if the matching should
      * go until the end of the input.
      */
-    private int regionEnd;
+    private int to;
 
     /**
      * Holds the position where the next append operation will take place.
@@ -168,7 +168,7 @@ public final class Matcher implements MatchResult {
     /**
      * Holds the offsets for the most recent match.
      */
-    private int[] matchOffsets;
+    private int[] groups;
 
     /**
      * Reflects whether the bounds of the region are anchoring.
@@ -207,7 +207,7 @@ public final class Matcher implements MatchResult {
      */
     public MatchResult toMatchResult() {
         ensureMatch();
-        return new OffsetBasedMatchResult(input, matchOffsets);
+        return new OffsetBasedMatchResult(text, groups);
     }
 
     /**
@@ -241,11 +241,11 @@ public final class Matcher implements MatchResult {
             nativeFinalizer = registry.registerNativeAllocation(this, address);
         }
 
-        if (input != null) {
+        if (text != null) {
             resetForInput();
         }
 
-        matchOffsets = new int[(groupCount() + 1) * 2];
+        groups = new int[(groupCount() + 1) * 2];
         matchFound = false;
         return this;
     }
@@ -321,7 +321,7 @@ public final class Matcher implements MatchResult {
      */
     public int start(int group) {
         ensureMatch();
-        return matchOffsets[group * 2];
+        return groups[group * 2];
     }
 
     /**
@@ -346,8 +346,7 @@ public final class Matcher implements MatchResult {
      * @since 1.8
      */
     public int start(String name) {
-        ensureMatch();
-        return matchOffsets[getMatchedGroupIndex(parentPattern.address, name) * 2];
+        return groups[getMatchedGroupIndex(name) * 2];
     }
 
     /**
@@ -389,7 +388,7 @@ public final class Matcher implements MatchResult {
      */
     public int end(int group) {
         ensureMatch();
-        return matchOffsets[(group * 2) + 1];
+        return groups[(group * 2) + 1];
     }
 
     /**
@@ -414,8 +413,7 @@ public final class Matcher implements MatchResult {
      * @since 1.8
      */
     public int end(String name) {
-        ensureMatch();
-        return matchOffsets[getMatchedGroupIndex(parentPattern.address, name) * 2 + 1];
+        return groups[getMatchedGroupIndex(name) * 2 + 1];
     }
 
     /**
@@ -478,12 +476,12 @@ public final class Matcher implements MatchResult {
      */
     public String group(int group) {
         ensureMatch();
-        int from = matchOffsets[group * 2];
-        int to = matchOffsets[(group * 2) + 1];
+        int from = groups[group * 2];
+        int to = groups[(group * 2) + 1];
         if (from == -1 || to == -1) {
             return null;
         } else {
-            return input.substring(from, to);
+            return text.substring(from, to);
         }
     }
 
@@ -515,14 +513,13 @@ public final class Matcher implements MatchResult {
      * @since 1.7
      */
     public String group(String name) {
-        ensureMatch();
-        int group = getMatchedGroupIndex(parentPattern.address, name);
-        int from = matchOffsets[group * 2];
-        int to = matchOffsets[(group * 2) + 1];
+        int group = getMatchedGroupIndex(name);
+        int from = groups[group * 2];
+        int to = groups[(group * 2) + 1];
         if (from == -1 || to == -1) {
             return null;
         } else {
-            return input.substring(from, to);
+            return text.substring(from, to);
         }
     }
 
@@ -555,7 +552,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean matches() {
         synchronized (this) {
-            matchFound = matchesImpl(address, matchOffsets);
+            matchFound = matchesImpl(address, groups);
         }
         return matchFound;
     }
@@ -577,7 +574,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean find() {
         synchronized (this) {
-            matchFound = findNextImpl(address, matchOffsets);
+            matchFound = findNextImpl(address, groups);
         }
         return matchFound;
     }
@@ -603,12 +600,12 @@ public final class Matcher implements MatchResult {
      */
     public boolean find(int start) {
         reset();
-        if (start < 0 || start > input.length()) {
-            throw new IndexOutOfBoundsException("start=" + start + "; length=" + input.length());
+        if (start < 0 || start > text.length()) {
+            throw new IndexOutOfBoundsException("start=" + start + "; length=" + text.length());
         }
 
         synchronized (this) {
-            matchFound = findImpl(address, start, matchOffsets);
+            matchFound = findImpl(address, start, groups);
         }
         return matchFound;
     }
@@ -629,7 +626,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean lookingAt() {
         synchronized (this) {
-            matchFound = lookingAtImpl(address, matchOffsets);
+            matchFound = lookingAtImpl(address, groups);
         }
         return matchFound;
     }
@@ -743,7 +740,7 @@ public final class Matcher implements MatchResult {
      */
     public Matcher appendReplacement(StringBuffer sb, String replacement) {
 
-        sb.append(input.substring(appendPos, start()));
+        sb.append(text.substring(appendPos, start()));
         appendEvaluated(sb, replacement);
         appendPos = end();
 
@@ -816,8 +813,8 @@ public final class Matcher implements MatchResult {
      * @return  The target string buffer
      */
     public StringBuffer appendTail(StringBuffer sb) {
-        if (appendPos < regionEnd) {
-            sb.append(input.substring(appendPos, regionEnd));
+        if (appendPos < to) {
+            sb.append(text.substring(appendPos, to));
         }
         return sb;
     }
@@ -858,7 +855,7 @@ public final class Matcher implements MatchResult {
      */
     public String replaceAll(String replacement) {
         reset();
-        StringBuffer buffer = new StringBuffer(input.length());
+        StringBuffer buffer = new StringBuffer(text.length());
         while (find()) {
             appendReplacement(buffer, replacement);
         }
@@ -900,7 +897,7 @@ public final class Matcher implements MatchResult {
      */
     public String replaceFirst(String replacement) {
         reset();
-        StringBuffer buffer = new StringBuffer(input.length());
+        StringBuffer buffer = new StringBuffer(text.length());
         if (find()) {
             appendReplacement(buffer, replacement);
         }
@@ -946,7 +943,7 @@ public final class Matcher implements MatchResult {
      * @since 1.5
      */
     public int regionStart() {
-        return regionStart;
+        return from;
     }
 
     /**
@@ -959,7 +956,7 @@ public final class Matcher implements MatchResult {
      * @since 1.5
      */
     public int regionEnd() {
-        return regionEnd;
+        return to;
     }
 
     /**
@@ -1151,9 +1148,9 @@ public final class Matcher implements MatchResult {
         }
 
         this.originalInput = input;
-        this.input = input.toString();
-        this.regionStart = start;
-        this.regionEnd = end;
+        this.text = input.toString();
+        this.from = start;
+        this.to = end;
         resetForInput();
 
         matchFound = false;
@@ -1164,7 +1161,7 @@ public final class Matcher implements MatchResult {
 
     private void resetForInput() {
         synchronized (this) {
-            setInputImpl(address, input, regionStart, regionEnd);
+            setInputImpl(address, text, from, to);
             useAnchoringBoundsImpl(address, anchoringBounds);
             useTransparentBoundsImpl(address, transparentBounds);
         }
@@ -1183,8 +1180,9 @@ public final class Matcher implements MatchResult {
         }
     }
 
-    private static int getMatchedGroupIndex(long patternAddr, String name) {
-        int result = getMatchedGroupIndex0(patternAddr, name);
+    private int getMatchedGroupIndex(String name) {
+        ensureMatch();
+        int result = getMatchedGroupIndex0(parentPattern.address, name);
         if (result < 0) {
             throw new IllegalArgumentException("No capturing group in the pattern " +
                                                "with the name " + name);
