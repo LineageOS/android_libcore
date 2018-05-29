@@ -116,6 +116,28 @@ public final class Matcher implements MatchResult {
     private Pattern parentPattern;
 
     /**
+     * Holds the offsets for the most recent match.
+     */
+    int[] groups;
+
+    /**
+     * The range within the sequence that is to be matched (between  0
+     * and text.length()).
+     */
+    int from, to;
+
+    /**
+     * Holds the input text.
+     */
+    String text;
+
+    /**
+     * Reflects whether a match has been found during the most recent find
+     * operation.
+     */
+    private boolean matchFound;
+
+    /**
      * The address of the native peer.
      * Uses of this must be manually synchronized to avoid native crashes.
      */
@@ -131,6 +153,11 @@ public final class Matcher implements MatchResult {
             Matcher.class.getClassLoader(), getNativeFinalizer(), nativeSize());
 
     /**
+     * The index of the last position appended in a substitution.
+     */
+    int appendPos = 0;
+
+    /**
      * Holds the original CharSequence for use in {@link #reset}. {@link #text} is used during
      * matching. Note that CharSequence is mutable while String is not, so reset can cause the input
      * to match to change.
@@ -138,47 +165,17 @@ public final class Matcher implements MatchResult {
     private CharSequence originalInput;
 
     /**
-     * Holds the input text.
+     * If transparentBounds is true then the boundaries of this
+     * matcher's region are transparent to lookahead, lookbehind,
+     * and boundary matching constructs that try to see beyond them.
      */
-    private String text;
+    boolean transparentBounds = false;
 
     /**
-     * Holds the start of the region, or 0 if the matching should start at the
-     * beginning of the text.
+     * If anchoringBounds is true then the boundaries of this
+     * matcher's region match anchors such as ^ and $.
      */
-    private int from;
-
-    /**
-     * Holds the end of the region, or text.length() if the matching should
-     * go until the end of the input.
-     */
-    private int to;
-
-    /**
-     * Holds the position where the next append operation will take place.
-     */
-    private int appendPos;
-
-    /**
-     * Reflects whether a match has been found during the most recent find
-     * operation.
-     */
-    private boolean matchFound;
-
-    /**
-     * Holds the offsets for the most recent match.
-     */
-    private int[] groups;
-
-    /**
-     * Reflects whether the bounds of the region are anchoring.
-     */
-    private boolean anchoringBounds = true;
-
-    /**
-     * Reflects whether the bounds of the region are transparent.
-     */
-    private boolean transparentBounds;
+    boolean anchoringBounds = true;
 
     /**
      * All matchers have the state used by Pattern during a match.
