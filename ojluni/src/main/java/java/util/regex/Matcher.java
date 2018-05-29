@@ -318,6 +318,8 @@ public final class Matcher implements MatchResult {
      */
     public int start(int group) {
         ensureMatch();
+        if (group < 0 || group > groupCount())
+            throw new IndexOutOfBoundsException("No group " + group);
         return groups[group * 2];
     }
 
@@ -385,6 +387,8 @@ public final class Matcher implements MatchResult {
      */
     public int end(int group) {
         ensureMatch();
+        if (group < 0 || group > groupCount())
+            throw new IndexOutOfBoundsException("No group " + group);
         return groups[group * 2 + 1];
     }
 
@@ -780,12 +784,16 @@ public final class Matcher implements MatchResult {
             }
         }
 
-        if (escapeNamedGroup) {
-            throw new IllegalArgumentException("Missing ending brace '}' from replacement string");
+        if (escape) {
+            throw new IllegalArgumentException("character to be escaped is missing");
         }
 
-        if (escape) {
-            throw new ArrayIndexOutOfBoundsException(s.length());
+        if (dollar) {
+            throw new IllegalArgumentException("Illegal group reference: group index is missing");
+        }
+
+        if (escapeNamedGroup) {
+            throw new IllegalArgumentException("Missing ending brace '}' from replacement string");
         }
     }
 
@@ -887,6 +895,8 @@ public final class Matcher implements MatchResult {
      *          subsequences as needed
      */
     public String replaceFirst(String replacement) {
+        if (replacement == null)
+            throw new NullPointerException("replacement");
         reset();
         StringBuffer buffer = new StringBuffer(text.length());
         if (find()) {
