@@ -177,6 +177,20 @@ public class OldMatcherTest extends TestCase {
         }
     }
 
+    public void test_startI_groupIndexOutOfBounds() {
+        Matcher matcher = Pattern.compile("(Hello)").matcher("Hello, world!");
+        assertTrue(matcher.find());
+        try {
+            matcher.start(-1 /* out of bounds */);
+        } catch (IndexOutOfBoundsException expected) {
+        }
+
+        try {
+            matcher.start(2 /* out of bounds */);
+        } catch (IndexOutOfBoundsException expected) {
+        }
+    }
+
     public void test_endI() {
         String testPattern = "(((abb)a)(bb))";
         String testString = "cccabbabbabbabbabb";
@@ -199,6 +213,19 @@ public class OldMatcherTest extends TestCase {
         }
     }
 
+    public void test_endI_groupIndexOutOfBounds() {
+        Matcher matcher = Pattern.compile("(Hello)").matcher("Hello, world!");
+        assertTrue(matcher.find());
+        try {
+            matcher.end(-1 /* out of bounds */);
+        } catch (IndexOutOfBoundsException expected) {
+        }
+
+        try {
+            matcher.end(2 /* out of bounds */);
+        } catch (IndexOutOfBoundsException expected) {
+        }
+    }
 
     public void test_lookingAt() {
         String testPattern = "(((abb)a)(bb))";
