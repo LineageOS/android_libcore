@@ -1606,7 +1606,7 @@ class InetAddress implements java.io.Serializable {
     static final int NETID_UNSET = 0;
 
     // BEGIN Android-added: Add methods required by frameworks/base.
-    // Particularly those required to deal with net-ids and scope ids.
+    // Particularly those required to deal with scope ids.
     /**
      * Returns true if the string is a valid numeric IPv4 or IPv6 address (such as "192.168.0.1").
      * This copes with all forms of address that Java supports, detailed in the {@link InetAddress}
@@ -1673,7 +1673,8 @@ class InetAddress implements java.io.Serializable {
     public static void clearDnsCache() {
         impl.clearAddressCache();
     }
-
+    // END Android-added: Add methods required by frameworks/base.
+    // BEGIN Android-added: Support for network (netId)-specific DNS resolution.
     /**
      * Operates identically to {@code getByName} except host resolution is
      * performed on the network designated by {@code netId}.
@@ -1702,7 +1703,7 @@ class InetAddress implements java.io.Serializable {
     public static InetAddress[] getAllByNameOnNet(String host, int netId) throws UnknownHostException {
         return impl.lookupAllHostAddr(host, netId).clone();
     }
-    // END Android-added: Add methods required by frameworks/base.
+    // END Android-added: Support for network (netId)-specific DNS resolution.
 }
 // BEGIN Android-removed: Android doesn't load user-provided implementation.
 /*
