@@ -216,9 +216,6 @@ public class Matcher2Test extends TestCase {
         }
     }
 
-    /*
-     * Regression test for HARMONY-997
-     */
     public void testReplacementBackSlash() {
         String str = "replace me";
         String replacedString = "me";
@@ -227,8 +224,29 @@ public class Matcher2Test extends TestCase {
         Matcher mat = pat.matcher(str);
         try {
             mat.replaceAll(substitutionString);
-            fail("IndexOutOfBoundsException should be thrown");
-        } catch (IndexOutOfBoundsException e) {
+            fail("IllegalArgumentException should be thrown");
+        } catch (IllegalArgumentException e) {
         }
     }
+
+    public void testAppendReplacement_replacementEndsWithBackslash() {
+        Matcher matcher = Pattern.compile("Hello").matcher("Hello, world!");
+        matcher.find();
+        try {
+            matcher.appendReplacement(new StringBuffer(), "replacement\\");
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testAppendReplacement_replacementEndsWithDollar() {
+        Matcher matcher = Pattern.compile("Hello").matcher("Hello, world!");
+        matcher.find();
+        try {
+            matcher.appendReplacement(new StringBuffer(), "replacement$");
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
 }
