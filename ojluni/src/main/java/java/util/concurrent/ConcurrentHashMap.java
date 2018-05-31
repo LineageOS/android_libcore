@@ -1242,6 +1242,7 @@ public class ConcurrentHashMap<K,V> extends AbstractMap<K,V>
      * @return the set view
      */
     // Android-changed: Return type for backwards compat. Was KeySetView<K,V>. http://b/28099367
+    @dalvik.annotation.codegen.CovariantReturnType(returnType = KeySetView.class, presentAfter = 28)
     public Set<K> keySet() {
         KeySetView<K,V> ks;
         return (ks = keySet) != null ? ks : (keySet = new KeySetView<K,V>(this, null));
