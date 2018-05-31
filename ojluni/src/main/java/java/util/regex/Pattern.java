@@ -1063,6 +1063,11 @@ public final class Pattern implements java.io.Serializable
      * the resulting array has just one element, namely the input sequence in
      * string form.
      *
+     * <p> When there is a positive-width match at the beginning of the input
+     * sequence then an empty leading substring is included at the beginning
+     * of the resulting array. A zero-width match at the beginning however
+     * never produces such empty leading substring.
+     *
      * <p> The <tt>limit</tt> parameter controls the number of times the
      * pattern is applied and therefore affects the length of the resulting
      * array.  If the limit <i>n</i> is greater than zero then the pattern
@@ -1125,6 +1130,11 @@ public final class Pattern implements java.io.Serializable
         // Add segments before each match found
         while(m.find()) {
             if (!matchLimited || matchList.size() < limit - 1) {
+                if (index == 0 && index == m.start() && m.start() == m.end()) {
+                    // no empty leading substring included for zero-width match
+                    // at the beginning of the input char sequence.
+                    continue;
+                }
                 String match = input.subSequence(index, m.start()).toString();
                 matchList.add(match);
                 index = m.end();
