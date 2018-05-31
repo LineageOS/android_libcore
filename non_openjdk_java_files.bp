@@ -38,6 +38,7 @@ filegroup {
         "dalvik/src/main/java/dalvik/annotation/TestTarget.java",
         "dalvik/src/main/java/dalvik/annotation/TestTargetClass.java",
         "dalvik/src/main/java/dalvik/annotation/Throws.java",
+        "dalvik/src/main/java/dalvik/annotation/codegen/CovariantReturnType.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/CriticalNative.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/FastNative.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/ReachabilitySensitive.java",
