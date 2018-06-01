@@ -61,6 +61,7 @@ import sun.misc.FpUtils;
 import sun.misc.DoubleConsts;
 import sun.misc.FormattedFloatingDecimal;
 
+// Android-changed: Use localized exponent separator for %e.
 /**
  * An interpreter for printf-style format strings.  This class provides support
  * for layout justification and alignment, common formats for numeric, string,
