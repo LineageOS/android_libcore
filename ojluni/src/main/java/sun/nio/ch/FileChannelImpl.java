@@ -948,34 +948,13 @@ public class FileChannelImpl
                 return null;
 
             if (filesize < position + size) { // Extend file size
-                // BEGIN Android-changed: Unexplained, needs investigation. http://b/77513071
-                /*
                 if (!writable) {
                     throw new IOException("Channel not open for writing " +
                         "- cannot extend file to required size");
                 }
-                */
-                // END Android-changed: Unexplained, needs investigation. http://b/77513071
                 int rv;
                 do {
-                    // BEGIN Android-changed: Ignore failed truncation for non-regular files.
-                    // For character devices such as /dev/zero, it's expected that truncation
-                    // will fail. For all non-regular files, we thus ignore the failed truncation
-                    // and continue on.
-                    // rv = nd.truncate(fd, position + size);
-                    try {
-                        rv = nd.truncate(fd, position + size);
-                    } catch (IOException r) {
-                        try {
-                            if (android.system.OsConstants.S_ISREG(Libcore.os.fstat(fd).st_mode)) {
-                                throw r;
-                            }
-                        } catch (ErrnoException e) {
-                            e.rethrowAsIOException();
-                        }
-                        break;
-                    }
-                    // END Android-changed: Ignore failed truncation for non-regular files.
+                    rv = nd.truncate(fd, position + size);
                 } while ((rv == IOStatus.INTERRUPTED) && isOpen());
                 if (!isOpen())
                     return null;
