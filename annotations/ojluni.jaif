@@ -1925,6 +1925,7 @@ class List:
     method toArray()[Ljava/lang/Object;:
         // Never returns null
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
 
     method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
         // Javadoc mention NPE for param #0
@@ -1932,6 +1933,7 @@ class List:
           type: @libcore.util.NonNull
         // Never returns null
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
 
     method add(Ljava/lang/Object;)Z:
         // Nullness depends on type parameter nullness
@@ -1947,7 +1949,6 @@ class List:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
-          inner-type 3, 0: @libcore.util.Nullable
 
     method addAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
@@ -1955,14 +1956,14 @@ class List:
           type: @libcore.util.NonNull
           // boolean addAll(Collection<? extends E> c);
           // Nullness depends on type parameter nullness
-          inner-type 3, 0: @libcore.util.NullFromTypeParam
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method addAll(ILjava/util/Collection;)Z:
         // Javadoc mention NPE for null param #1
         parameter #1:
           type: @libcore.util.NonNull
           // boolean addAll(int, Collection<? extends E> c);
-          inner-type 3, 0: @libcore.util.NullFromTypeParam
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method removeAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
@@ -1983,6 +1984,7 @@ class List:
         // Javadoc mention null as valid param #0
         parameter #0:
           type: @libcore.util.Nullable
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method equals(Ljava/lang/Object;)Z:
         // Null is valid argument #0
