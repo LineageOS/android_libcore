@@ -1900,6 +1900,159 @@ class ArrayList:
             type: @libcore.util.Nullable
                 inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
 
+class HashMap:
+
+    method <init>(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method get(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsKey(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method putAll(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsValue(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method keySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method values()Ljava/util/Collection;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method entrySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+
+    method getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.Nullable
+        parameter #2:
+            type: @libcore.util.NullFromTypeParam
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+
+    method computeIfPresent(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method compute(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method merge(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NonNull
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method forEach(Ljava/util/function/BiConsumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/BiFunction;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 2,2, 0: @libcore.util.NullFromTypeParam
+
+    method clone()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
 class Iterator:
 
     method next()Ljava/lang/Object;:
@@ -2039,3 +2192,199 @@ class List:
     method spliterator()Ljava/util/Spliterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
+class Map:
+
+    method containsKey(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsValue(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method get(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method putAll(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method keySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method values()Ljava/util/Collection;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method entrySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method forEach(Ljava/util/function/BiConsumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/BiFunction;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 2,2, 0: @libcore.util.NullFromTypeParam
+
+    method putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.Nullable
+        parameter #2:
+            type: @libcore.util.NullFromTypeParam
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+
+    method computeIfPresent(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method compute(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method merge(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NonNull
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+class Map$Entry:
+
+    method getKey()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method getValue()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method setValue(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method comparingByKey()Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 1: @libcore.util.Nullable
+
+    method comparingByValue()Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.Nullable
+            inner-type 3, 0,3, 1: @libcore.util.NonNull
+
+    method comparingByKey(Ljava/util/Comparator;)Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method comparingByValue(Ljava/util/Comparator;)Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.Nullable
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
