@@ -136,6 +136,17 @@ public class SharedSecrets {
     }
 
     public static JavaIOFileDescriptorAccess getJavaIOFileDescriptorAccess() {
+        // Android-changed: ensureClassInitialized isn't supported in Android. Use Class.forName.
+        // if (javaIOFileDescriptorAccess == null)
+        //     unsafe.ensureClassInitialized(FileDescriptor.class);
+        if (javaIOFileDescriptorAccess == null) {
+            try {
+                Class.forName("java.io.FileDescriptor");
+            } catch (ClassNotFoundException e) {
+                // Throw if FileDescriptor class is not found. Something wrong in runtime / libcore.
+                throw new RuntimeException(e);
+            }
+        }
         return javaIOFileDescriptorAccess;
     }
 
