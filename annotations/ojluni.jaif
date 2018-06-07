@@ -1818,6 +1818,9 @@ class ArrayList:
             inner-type 0, 0: @libcore.util.Nullable
 
     method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
         return: @libcore.util.NonNull
             inner-type 0, 0: @libcore.util.Nullable
 
@@ -2087,6 +2090,7 @@ class List:
     method iterator()Ljava/util/Iterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method toArray()[Ljava/lang/Object;:
         // Never returns null
@@ -2097,6 +2101,7 @@ class List:
         // Javadoc mention NPE for param #0
         parameter #0:
           type: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
         // Never returns null
         return: @libcore.util.NonNull
             inner-type 0, 0: @libcore.util.Nullable
@@ -2145,6 +2150,7 @@ class List:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method sort(Ljava/util/Comparator;)V:
         // Javadoc mention null as valid param #0
@@ -2165,7 +2171,7 @@ class List:
     method set(ILjava/lang/Object;)Ljava/lang/Object;:
         // Nullness depends on type parameter nullness
         // E set(int index, E element);
-        parameter #0:
+        parameter #1:
           type: @libcore.util.NullFromTypeParam
         return: @libcore.util.NullFromTypeParam
 
@@ -2193,14 +2199,17 @@ class List:
     method listIterator()Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method listIterator(I)Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method subList(II)Ljava/util/List;:
          // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method spliterator()Ljava/util/Spliterator;:
         // Javadoc doesn't mention possiblity of a null result
