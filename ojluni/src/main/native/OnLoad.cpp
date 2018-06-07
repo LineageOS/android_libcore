@@ -79,6 +79,11 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
   result = env->PushLocalFrame(256);
   CHECK_EQ(result, 0);
 
+  // Register native methods for java.lang.System first as some other
+  // initialization functions (notably for Inet*Address) depend on that.
+  register_java_lang_System(env);
+
+  // Initialize the rest in the order in which they appear in Android.bp .
   register_java_util_zip_ZipFile(env);
   register_java_util_zip_Inflater(env);
   register_java_util_zip_Deflater(env);
@@ -110,6 +115,7 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
 
   register_sun_nio_ch_Net(env);
   register_java_nio_MappedByteBuffer(env);
+  register_java_net_Inet6Address(env);
   register_java_net_Inet4Address(env);
   register_sun_nio_ch_ServerSocketChannelImpl(env);
   register_java_net_SocketInputStream(env);
@@ -119,16 +125,10 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
   register_java_lang_StrictMath(env);
   register_java_lang_Math(env);
   register_java_lang_ProcessEnvironment(env);
-  register_java_lang_System(env);
   register_java_lang_Runtime(env);
   register_java_lang_UNIXProcess(env);
   register_java_nio_Bits(env);
   register_java_lang_Character(env);
-
-  // While the above are initialized in the order in which they appear
-  // in the Android.bp file, the Inet6Address initialization depends
-  // on the java.lang.System being already initialized.
-  register_java_net_Inet6Address(env);
 
   env->PopLocalFrame(/* result */ nullptr);  // Pop the local frame.
   return version;
