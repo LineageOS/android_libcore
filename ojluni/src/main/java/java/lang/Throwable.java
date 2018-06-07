@@ -155,6 +155,14 @@ public class Throwable implements Serializable {
             new StackTraceElement[] {STACK_TRACE_ELEMENT_SENTINEL};
     }
 
+    /**
+     * A shared value for an empty stack.
+     */
+    // Android-changed: Made UNASSIGNED_STACK package-private.
+    // This is for use by java.lang.Daemons
+    // private static final StackTraceElement[] UNASSIGNED_STACK = new StackTraceElement[0];
+    static final StackTraceElement[] UNASSIGNED_STACK = new StackTraceElement[0];
+
     /*
      * To allow Throwable objects to be made immutable and safely
      * reused by the JVM, such as OutOfMemoryErrors, fields of
@@ -204,8 +212,7 @@ public class Throwable implements Serializable {
      * @serial
      * @since 1.4
      */
-    // Android-changed.
-    private StackTraceElement[] stackTrace = libcore.util.EmptyArray.STACK_TRACE_ELEMENT;
+    private StackTraceElement[] stackTrace = UNASSIGNED_STACK;
 
     /**
      * The list of suppressed exceptions, as returned by {@link
@@ -773,7 +780,7 @@ public class Throwable implements Serializable {
         if (stackTrace != null ||
             backtrace != null /* Out of protocol state */ ) {
             backtrace = nativeFillInStackTrace();
-            stackTrace = libcore.util.EmptyArray.STACK_TRACE_ELEMENT;
+            stackTrace = UNASSIGNED_STACK;
         }
         return this;
     }
@@ -812,21 +819,22 @@ public class Throwable implements Serializable {
     private synchronized StackTraceElement[] getOurStackTrace() {
         // Initialize stack trace field with information from
         // backtrace if this is the first call to this method
-        //
-        // Android-changed: test explicitly for equality with
-        // STACK_TRACE_ELEMENT
-        if (stackTrace == libcore.util.EmptyArray.STACK_TRACE_ELEMENT ||
+        if (stackTrace == UNASSIGNED_STACK ||
             (stackTrace == null && backtrace != null) /* Out of protocol state */) {
+            // BEGIN Android-changed: Get stack trace elements with one native call.
+            // int depth = getStackTraceDepth();
+            // stackTrace = new StackTraceElement[depth];
+            // for (int i=0; i < depth; i++)
+            //     stackTrace[i] = getStackTraceElement(i);
             stackTrace = nativeGetStackTrace(backtrace);
             backtrace = null;
+            if (stackTrace == null) {
+                return UNASSIGNED_STACK;
+            }
+            // END Android-changed: Get stack trace elements with one native call.
+        } else if (stackTrace == null) {
+            return UNASSIGNED_STACK;
         }
-
-        // Android-changed: Return an empty element both when the stack trace
-        // isn't writeable and also when nativeGetStackTrace returns null.
-        if (stackTrace == null) {
-            return libcore.util.EmptyArray.STACK_TRACE_ELEMENT;
-        }
-
         return stackTrace;
     }
 
@@ -936,6 +944,7 @@ public class Throwable implements Serializable {
          */
         if (stackTrace != null) {
             if (stackTrace.length == 0) {
+                stackTrace = UNASSIGNED_STACK.clone();
             }  else if (stackTrace.length == 1 &&
                         // Check for the marker of an immutable stack trace
                         SentinelHolder.STACK_TRACE_ELEMENT_SENTINEL.equals(stackTrace[0])) {
@@ -951,7 +960,7 @@ public class Throwable implements Serializable {
             // from an exception serialized without that field in
             // older JDK releases; treat such exceptions as having
             // empty stack traces.
-            stackTrace = new StackTraceElement[0];
+            stackTrace = UNASSIGNED_STACK.clone();
         }
     }
 
