@@ -154,7 +154,7 @@ public final class Daemons {
          * if the thread is not currently running.
          */
         public synchronized StackTraceElement[] getStackTrace() {
-            return thread != null ? thread.getStackTrace() : EmptyArray.STACK_TRACE_ELEMENT;
+            return thread != null ? thread.getStackTrace() : Throwable.UNASSIGNED_STACK;
         }
     }
 
