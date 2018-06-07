@@ -41,7 +41,6 @@ import java.util.concurrent.locks.LockSupport;
 import sun.nio.ch.Interruptible;
 import sun.reflect.CallerSensitive;
 import dalvik.system.VMStack;
-import libcore.util.EmptyArray;
 
 
 /**
@@ -1532,7 +1531,7 @@ class Thread implements Runnable {
      */
     public StackTraceElement[] getStackTrace() {
         StackTraceElement ste[] = VMStack.getThreadStackTrace(this);
-        return ste != null ? ste : EmptyArray.STACK_TRACE_ELEMENT;
+        return ste != null ? ste : EMPTY_STACK_TRACE;
     }
 
     /**
