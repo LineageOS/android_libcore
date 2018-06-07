@@ -2410,3 +2410,65 @@ class Map$Entry:
         parameter #0:
             type: @libcore.util.NonNull
                 inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+class Set:
+
+    method contains(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method iterator()Ljava/util/Iterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method toArray()[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method add(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method addAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method retainAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method removeAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method spliterator()Ljava/util/Spliterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
