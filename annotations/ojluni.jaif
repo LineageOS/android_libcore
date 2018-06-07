@@ -38,6 +38,176 @@ annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @ja
     int from
     int to
 
+package java.io:
+class PrintWriter:
+
+    method <init>(Ljava/io/Writer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/Writer;Z)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/OutputStream;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/OutputStream;Z)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/nio/charset/Charset;Ljava/io/File;)V:
+        return:
+
+    method <init>(Ljava/lang/String;Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/File;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/File;Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+
+    method write([CII)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write([C)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write(Ljava/lang/String;II)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method print([C)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method print(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method print(Ljava/lang/Object;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method println(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method println(Ljava/lang/Object;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method printf(Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method printf(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;II)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(C)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+
+    method append(C)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;II)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(C)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;II)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
 package java.lang:
 class Appendable:
     method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
