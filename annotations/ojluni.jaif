@@ -1539,6 +1539,224 @@ class Object:
     method toString()Ljava/lang/String;:
         return: @libcore.util.NonNull
 
+class Class:
+
+    method toString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method toGenericString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;)Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.Nullable
+
+    method newInstance()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
+    method isInstance(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method isAssignableFrom(Ljava/lang/Class;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getClassLoader()Ljava/lang/ClassLoader;:
+        return: @libcore.util.Nullable
+
+    method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0,3, 0: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getSuperclass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getGenericSuperclass()Ljava/lang/reflect/Type;:
+        return: @libcore.util.Nullable
+
+    method getPackage()Ljava/lang/Package;:
+        return: @libcore.util.Nullable
+
+    method getInterfaces()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getGenericInterfaces()[Ljava/lang/reflect/Type;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getComponentType()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getSigners()[Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getEnclosingMethod()Ljava/lang/reflect/Method;:
+        return: @libcore.util.Nullable
+
+    method getEnclosingConstructor()Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.Nullable
+
+    method getDeclaringClass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getEnclosingClass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getSimpleName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getTypeName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getCanonicalName()Ljava/lang/String;:
+        return: @libcore.util.Nullable
+
+    method getClasses()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getFields()[Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getMethods()[Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getConstructors()[Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getField(Ljava/lang/String;)Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredClasses()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredFields()[Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredMethods()[Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredConstructors()[Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getResource(Ljava/lang/String;)Ljava/net/URL;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getProtectionDomain()Ljava/security/ProtectionDomain;:
+        return: @libcore.util.Nullable
+
+    method getEnumConstants()[Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method cast(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method asSubclass(Ljava/lang/Class;)Ljava/lang/Class;:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method isAnnotationPresent(Ljava/lang/Class;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotationsByType(Ljava/lang/Class;)[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotations()[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method isDeclaredAnnotationPresent(Ljava/lang/Class;)Z:
+        return:
+
 package java.lang.reflect:
 
 class AccessibleObject:
