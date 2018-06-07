@@ -8,6 +8,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/Byte.java",
         "ojluni/src/main/java/java/lang/CharSequence.java",
         "ojluni/src/main/java/java/lang/Character.java",
+        "ojluni/src/main/java/java/lang/Class.java",
         "ojluni/src/main/java/java/lang/Double.java",
         "ojluni/src/main/java/java/lang/Enum.java",
         "ojluni/src/main/java/java/lang/Float.java",
