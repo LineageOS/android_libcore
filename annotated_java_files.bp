@@ -42,5 +42,6 @@ filegroup {
         "ojluni/src/main/java/java/util/Iterator.java",
         "ojluni/src/main/java/java/util/List.java",
         "ojluni/src/main/java/java/util/Map.java",
+        "ojluni/src/main/java/java/util/Set.java",
     ],
 }
