@@ -1526,6 +1526,19 @@ class ThreadLocal:
         parameter #0:
           type: @libcore.util.NullFromTypeParam
 
+class Object:
+
+    method getClass()Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method toString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
 package java.lang.reflect:
 
 class AccessibleObject:
