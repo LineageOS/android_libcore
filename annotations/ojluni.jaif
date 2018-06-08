@@ -38,6 +38,176 @@ annotation @NullFromTypeParam: @java.lang.annotation.Retention(value=SOURCE) @ja
     int from
     int to
 
+package java.io:
+class PrintWriter:
+
+    method <init>(Ljava/io/Writer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/Writer;Z)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/OutputStream;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/OutputStream;Z)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/nio/charset/Charset;Ljava/io/File;)V:
+        return:
+
+    method <init>(Ljava/lang/String;Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/File;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method <init>(Ljava/io/File;Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+
+    method write([CII)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write([C)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write(Ljava/lang/String;II)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method write(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method print([C)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method print(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method print(Ljava/lang/Object;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method println(Ljava/lang/String;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method println(Ljava/lang/Object;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method printf(Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method printf(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method format(Ljava/util/Locale;Ljava/lang/String;[Ljava/lang/Object;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;II)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(C)Ljava/io/PrintWriter;:
+        return: @libcore.util.NonNull
+
+    method append(C)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;II)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/io/Writer;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(C)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+
+    method append(Ljava/lang/CharSequence;II)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+
 package java.lang:
 class Appendable:
     method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
@@ -1526,6 +1696,237 @@ class ThreadLocal:
         parameter #0:
           type: @libcore.util.NullFromTypeParam
 
+class Object:
+
+    method getClass()Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method toString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+class Class:
+
+    method toString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method toGenericString()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;)Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method forName(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.Nullable
+
+    method newInstance()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
+    method isInstance(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method isAssignableFrom(Ljava/lang/Class;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getClassLoader()Ljava/lang/ClassLoader;:
+        return: @libcore.util.Nullable
+
+    method getTypeParameters()[Ljava/lang/reflect/TypeVariable;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0,3, 0: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getSuperclass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getGenericSuperclass()Ljava/lang/reflect/Type;:
+        return: @libcore.util.Nullable
+
+    method getPackage()Ljava/lang/Package;:
+        return: @libcore.util.Nullable
+
+    method getInterfaces()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getGenericInterfaces()[Ljava/lang/reflect/Type;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getComponentType()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getSigners()[Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getEnclosingMethod()Ljava/lang/reflect/Method;:
+        return: @libcore.util.Nullable
+
+    method getEnclosingConstructor()Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.Nullable
+
+    method getDeclaringClass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getEnclosingClass()Ljava/lang/Class;:
+        return: @libcore.util.Nullable
+
+    method getSimpleName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getTypeName()Ljava/lang/String;:
+        return: @libcore.util.NonNull
+
+    method getCanonicalName()Ljava/lang/String;:
+        return: @libcore.util.Nullable
+
+    method getClasses()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getFields()[Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getMethods()[Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getConstructors()[Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getField(Ljava/lang/String;)Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredClasses()[Ljava/lang/Class;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredFields()[Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredMethods()[Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredConstructors()[Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredField(Ljava/lang/String;)Ljava/lang/reflect/Field;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+        parameter #1:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredConstructor([Ljava/lang/Class;)Ljava/lang/reflect/Constructor;:
+        return: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 0, 0: @libcore.util.NonNull
+
+    method getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getResource(Ljava/lang/String;)Ljava/net/URL;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getProtectionDomain()Ljava/security/ProtectionDomain;:
+        return: @libcore.util.Nullable
+
+    method getEnumConstants()[Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method cast(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method asSubclass(Ljava/lang/Class;)Ljava/lang/Class;:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method isAnnotationPresent(Ljava/lang/Class;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotationsByType(Ljava/lang/Class;)[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getAnnotations()[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method getDeclaredAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method getDeclaredAnnotations()[Ljava/lang/annotation/Annotation;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.NonNull
+
+    method isDeclaredAnnotationPresent(Ljava/lang/Class;)Z:
+        return:
+
 package java.lang.reflect:
 
 class AccessibleObject:
@@ -1774,6 +2175,299 @@ class WildcardType:
 
 package java.util:
 
+class ArrayList:
+
+    method <init>(Ljava/util/Collection;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method contains(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method indexOf(Ljava/lang/Object;)I:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method lastIndexOf(Ljava/lang/Object;)I:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method clone()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
+    method toArray()[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method get(I)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method set(ILjava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method add(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method add(ILjava/lang/Object;)V:
+        return:
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(I)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method addAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method addAll(ILjava/util/Collection;)Z:
+        return:
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method removeAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method retainAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method listIterator(I)Ljava/util/ListIterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method listIterator()Ljava/util/ListIterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method iterator()Ljava/util/Iterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method subList(II)Ljava/util/List;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method forEach(Ljava/util/function/Consumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method spliterator()Ljava/util/Spliterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method removeIf(Ljava/util/function/Predicate;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/UnaryOperator;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method sort(Ljava/util/Comparator;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+class HashMap:
+
+    method <init>(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method get(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsKey(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method putAll(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsValue(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method keySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method values()Ljava/util/Collection;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method entrySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+
+    method getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.Nullable
+        parameter #2:
+            type: @libcore.util.NullFromTypeParam
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+
+    method computeIfPresent(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method compute(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method merge(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NonNull
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method forEach(Ljava/util/function/BiConsumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/BiFunction;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 2,2, 0: @libcore.util.NullFromTypeParam
+
+    method clone()Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+
+class Iterator:
+
+    method next()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method forEachRemaining(Ljava/util/function/Consumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
 class List:
     method contains(Ljava/lang/Object;)Z:
         // May be null
@@ -1784,17 +2478,21 @@ class List:
     method iterator()Ljava/util/Iterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method toArray()[Ljava/lang/Object;:
         // Never returns null
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
 
     method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
         // Javadoc mention NPE for param #0
         parameter #0:
           type: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
         // Never returns null
         return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
 
     method add(Ljava/lang/Object;)Z:
         // Nullness depends on type parameter nullness
@@ -1810,7 +2508,6 @@ class List:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
-          inner-type 3, 0: @libcore.util.Nullable
 
     method addAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
@@ -1818,14 +2515,14 @@ class List:
           type: @libcore.util.NonNull
           // boolean addAll(Collection<? extends E> c);
           // Nullness depends on type parameter nullness
-          inner-type 3, 0: @libcore.util.NullFromTypeParam
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method addAll(ILjava/util/Collection;)Z:
         // Javadoc mention NPE for null param #1
         parameter #1:
           type: @libcore.util.NonNull
           // boolean addAll(int, Collection<? extends E> c);
-          inner-type 3, 0: @libcore.util.NullFromTypeParam
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method removeAll(Ljava/util/Collection;)Z:
         // Javadoc mention NPE for null param #0
@@ -1841,11 +2538,13 @@ class List:
         // Javadoc mention NPE for null param #0
         parameter #0:
           type: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method sort(Ljava/util/Comparator;)V:
         // Javadoc mention null as valid param #0
         parameter #0:
           type: @libcore.util.Nullable
+          inner-type 3, 0, 2, 0: @libcore.util.NullFromTypeParam
 
     method equals(Ljava/lang/Object;)Z:
         // Null is valid argument #0
@@ -1860,7 +2559,7 @@ class List:
     method set(ILjava/lang/Object;)Ljava/lang/Object;:
         // Nullness depends on type parameter nullness
         // E set(int index, E element);
-        parameter #0:
+        parameter #1:
           type: @libcore.util.NullFromTypeParam
         return: @libcore.util.NullFromTypeParam
 
@@ -1888,15 +2587,276 @@ class List:
     method listIterator()Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method listIterator(I)Ljava/util/ListIterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method subList(II)Ljava/util/List;:
          // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
 
     method spliterator()Ljava/util/Spliterator;:
         // Javadoc doesn't mention possiblity of a null result
         return: @libcore.util.NonNull
+
+class Map:
+
+    method containsKey(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsValue(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method get(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method putAll(Ljava/util/Map;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method keySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method values()Ljava/util/Collection;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method entrySet()Ljava/util/Set;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method forEach(Ljava/util/function/BiConsumer;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+
+    method replaceAll(Ljava/util/function/BiFunction;)V:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 2,2, 0: @libcore.util.NullFromTypeParam
+
+    method putIfAbsent(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+        parameter #1:
+            type: @libcore.util.Nullable
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.Nullable
+        parameter #2:
+            type: @libcore.util.NullFromTypeParam
+
+    method replace(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NullFromTypeParam
+
+    method computeIfAbsent(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+
+    method computeIfPresent(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method compute(Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+                inner-type 3, 1,2, 0: @libcore.util.Nullable
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+    method merge(Ljava/lang/Object;Ljava/lang/Object;Ljava/util/function/BiFunction;)Ljava/lang/Object;:
+        return: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+        parameter #1:
+            type: @libcore.util.NonNull
+        parameter #2:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NonNull
+                inner-type 3, 1,2, 0: @libcore.util.NonNull
+                inner-type 3, 2,2, 0: @libcore.util.Nullable
+
+class Map$Entry:
+
+    method getKey()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method getValue()Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+
+    method setValue(Ljava/lang/Object;)Ljava/lang/Object;:
+        return: @libcore.util.NullFromTypeParam
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method comparingByKey()Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 1: @libcore.util.Nullable
+
+    method comparingByValue()Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.Nullable
+            inner-type 3, 0,3, 1: @libcore.util.NonNull
+
+    method comparingByKey(Ljava/util/Comparator;)Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.NullFromTypeParam
+            inner-type 3, 0,3, 1: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method comparingByValue(Ljava/util/Comparator;)Ljava/util/Comparator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NonNull
+            inner-type 3, 0,3, 0: @libcore.util.Nullable
+            inner-type 3, 0,3, 1: @libcore.util.NullFromTypeParam
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+class Set:
+
+    method contains(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method iterator()Ljava/util/Iterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam
+
+    method toArray()[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+
+    method toArray([Ljava/lang/Object;)[Ljava/lang/Object;:
+        return: @libcore.util.NonNull
+            inner-type 0, 0: @libcore.util.Nullable
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 0, 0: @libcore.util.Nullable
+
+    method add(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NullFromTypeParam
+
+    method remove(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method containsAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method addAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
+
+    method retainAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method removeAll(Ljava/util/Collection;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.NonNull
+
+    method equals(Ljava/lang/Object;)Z:
+        return:
+        parameter #0:
+            type: @libcore.util.Nullable
+
+    method spliterator()Ljava/util/Spliterator;:
+        return: @libcore.util.NonNull
+            inner-type 3, 0: @libcore.util.NullFromTypeParam

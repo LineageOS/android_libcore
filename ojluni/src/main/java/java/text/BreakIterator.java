@@ -44,6 +44,7 @@ package java.text;
 import java.util.Locale;
 
 
+// Android-changed: Discourage modification on CharacterIterator after setText. http://b/80456574
 /**
  * The <code>BreakIterator</code> class implements methods for finding
  * the location of boundaries in text. Instances of <code>BreakIterator</code>
@@ -53,6 +54,10 @@ import java.util.Locale;
  * <code>CharacterIterator</code>, and is thus able to scan text held
  * by any object implementing that protocol. A <code>StringCharacterIterator</code>
  * is used to scan <code>String</code> objects passed to <code>setText</code>.
+ * The <code>CharacterIterator</code> object must not be modified after having been
+ * passed to <code>setText</code>. If the text in the <code>CharacterIterator</code> object
+ * is changed, the caller must reset <code>BreakIterator</code> by calling
+ * <code>setText</code>.
  *
  * <p>
  * You use the factory methods provided by this class to create
