@@ -477,6 +477,8 @@ public final class Matcher implements MatchResult {
      */
     public String group(int group) {
         ensureMatch();
+        if (group < 0 || group > groupCount())
+            throw new IndexOutOfBoundsException("No group " + group);
         if ((groups[group*2] == -1) || (groups[group*2+1] == -1))
             return null;
         return getSubSequence(groups[group * 2], groups[group * 2 + 1]).toString();
@@ -592,11 +594,10 @@ public final class Matcher implements MatchResult {
      *          pattern
      */
     public boolean find(int start) {
-        reset();
         int limit = getTextLength();
         if ((start < 0) || (start > limit))
             throw new IndexOutOfBoundsException("Illegal start index");
-
+        reset();
         synchronized (this) {
             matchFound = findImpl(address, start, groups);
         }
@@ -677,9 +678,9 @@ public final class Matcher implements MatchResult {
      *
      * <p> The replacement string may contain references to subsequences
      * captured during the previous match: Each occurrence of
-     * <tt>$</tt><i>g</i>
+     * <tt>${</tt><i>name</i><tt>}</tt> or <tt>$</tt><i>g</i>
      * will be replaced by the result of evaluating the corresponding
-     * {@link #group(int) group(g)</tt>}
+     * {@link #group(String) group(name)} or {@link #group(int) group(g)}
      * respectively. For  <tt>$</tt><i>g</i>,
      * the first number after the <tt>$</tt> is always treated as part of
      * the group reference. Subsequent numbers are incorporated into g if
@@ -854,11 +855,17 @@ public final class Matcher implements MatchResult {
      */
     public String replaceAll(String replacement) {
         reset();
-        StringBuffer buffer = new StringBuffer(text.length());
-        while (find()) {
-            appendReplacement(buffer, replacement);
+        boolean result = find();
+        if (result) {
+            StringBuffer sb = new StringBuffer();
+            do {
+                appendReplacement(sb, replacement);
+                result = find();
+            } while (result);
+            appendTail(sb);
+            return sb.toString();
         }
-        return appendTail(buffer).toString();
+        return text.toString();
     }
 
     /**
@@ -898,11 +905,12 @@ public final class Matcher implements MatchResult {
         if (replacement == null)
             throw new NullPointerException("replacement");
         reset();
-        StringBuffer buffer = new StringBuffer(text.length());
-        if (find()) {
-            appendReplacement(buffer, replacement);
-        }
-        return appendTail(buffer).toString();
+        if (!find())
+            return text.toString();
+        StringBuffer sb = new StringBuffer();
+        appendReplacement(sb, replacement);
+        appendTail(sb);
+        return sb.toString();
     }
 
     /**
