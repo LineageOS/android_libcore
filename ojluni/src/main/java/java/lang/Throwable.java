@@ -120,7 +120,7 @@ public class Throwable implements Serializable {
     /**
      * Native code saves some indication of the stack backtrace in this slot.
      */
-    private transient Object backtrace;
+    private transient volatile Object backtrace;
 
     /**
      * Specific details about the Throwable.  For example, for
@@ -670,7 +670,6 @@ public class Throwable implements Serializable {
                                          String caption,
                                          String prefix,
                                          Set<Throwable> dejaVu) {
-        assert Thread.holdsLock(s.lock());
         if (dejaVu.contains(this)) {
             s.println("\t[CIRCULAR REFERENCE:" + this + "]");
         } else {
