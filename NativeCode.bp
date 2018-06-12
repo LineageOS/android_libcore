@@ -39,11 +39,11 @@ cc_defaults {
 cc_defaults {
     name: "core_native_default_libs",
     static_libs: [
-        "libbase",
         "libfdlibm",
     ],
 
     shared_libs: [
+        "libbase",
         "liblog",
         "libnativehelper",
     ],
@@ -61,6 +61,7 @@ cc_library_shared {
     ],
 
     shared_libs: [
+        "libbase",
         "libcrypto",
         "libexpat",
         "libicuuc",
@@ -70,7 +71,6 @@ cc_library_shared {
     ],
     static_libs: [
         "libziparchive",
-        "libbase",
     ],
     target: {
         android: {
