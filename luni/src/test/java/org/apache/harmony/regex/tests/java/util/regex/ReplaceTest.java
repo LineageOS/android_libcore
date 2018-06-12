@@ -16,12 +16,15 @@
 
 package org.apache.harmony.regex.tests.java.util.regex;
 
-import junit.framework.TestCase;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import junit.framework.TestCase;
+
+@SuppressWarnings("nls")
 public class ReplaceTest extends TestCase {
+
     public void testSimpleReplace() throws PatternSyntaxException {
         String target, pattern, repl;
 
@@ -59,12 +62,14 @@ public class ReplaceTest extends TestCase {
         m = p.matcher(target);
         s = m.replaceFirst(repl);
         // System.out.println(s);
-        assertEquals("[63]zoo(42)bar{31}foo;[12]abc(34)def{56}ghi;{99}xyz[88]xyz(77)xyz;", s
-                );
+        assertEquals(
+                "[63]zoo(42)bar{31}foo;[12]abc(34)def{56}ghi;{99}xyz[88]xyz(77)xyz;",
+                s);
         s = m.replaceAll(repl);
         // System.out.println(s);
-        assertEquals("[63]zoo(42)bar{31}foo;[56]ghi(34)def{12}abc;{99}xyz[88]xyz(77)xyz;", s
-                );
+        assertEquals(
+                "[63]zoo(42)bar{31}foo;[56]ghi(34)def{12}abc;{99}xyz[88]xyz(77)xyz;",
+                s);
     }
 
     public void testEscapeReplace() {

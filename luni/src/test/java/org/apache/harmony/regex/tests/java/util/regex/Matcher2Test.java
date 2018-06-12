@@ -16,15 +16,17 @@
 
 package org.apache.harmony.regex.tests.java.util.regex;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import junit.framework.TestCase;
-import java.util.regex.*;
 
 /**
  * Tests Matcher methods
- *
  */
+@SuppressWarnings("nls")
 public class Matcher2Test extends TestCase {
-
     public void test_toString() {
         Pattern p = Pattern.compile("foo");
         Matcher m = p.matcher("bar");
@@ -73,12 +75,12 @@ public class Matcher2Test extends TestCase {
         } catch (IllegalStateException e) {
         }
 
-               // regression test for HARMONY-2418
+        // regression test for HARMONY-2418
         try {
             m.usePattern(null);
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
-                 // PASSED
+            // PASSED
         }
     }
 
@@ -214,9 +216,6 @@ public class Matcher2Test extends TestCase {
         }
     }
 
-    /*
-     * Regression test for HARMONY-997
-     */
     public void testReplacementBackSlash() {
         String str = "replace me";
         String replacedString = "me";
@@ -224,10 +223,30 @@ public class Matcher2Test extends TestCase {
         Pattern pat = Pattern.compile(replacedString);
         Matcher mat = pat.matcher(str);
         try {
-            String res = mat.replaceAll(substitutionString);
-            fail("IndexOutOfBoundsException should be thrown - " + res);
-        } catch (Exception e) {
+            mat.replaceAll(substitutionString);
+            fail("IllegalArgumentException should be thrown");
+        } catch (IllegalArgumentException e) {
         }
     }
-}
 
+    public void testAppendReplacement_replacementEndsWithBackslash() {
+        Matcher matcher = Pattern.compile("Hello").matcher("Hello, world!");
+        matcher.find();
+        try {
+            matcher.appendReplacement(new StringBuffer(), "replacement\\");
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+    public void testAppendReplacement_replacementEndsWithDollar() {
+        Matcher matcher = Pattern.compile("Hello").matcher("Hello, world!");
+        matcher.find();
+        try {
+            matcher.appendReplacement(new StringBuffer(), "replacement$");
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
+}

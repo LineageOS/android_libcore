@@ -1,13 +1,16 @@
 package org.apache.harmony.regex.tests.java.util.regex;
 
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import junit.framework.TestCase;
-import java.util.regex.*;
 
 /**
  * TODO Type description
- *
  */
+@SuppressWarnings("nls")
 public class SplitTest extends TestCase {
+
     public void testSimple() {
         Pattern p = Pattern.compile("/");
         String[] results = p.split("have/you/done/it/right");

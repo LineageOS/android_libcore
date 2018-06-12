@@ -16,15 +16,16 @@
 
 package org.apache.harmony.regex.tests.java.util.regex;
 
-import junit.framework.TestCase;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import junit.framework.TestCase;
 
 /**
  * Tests Pattern compilation modes and modes triggered in pattern strings
- *
  */
+@SuppressWarnings("nls")
 public class ModeTest extends TestCase {
 
     public void testCase() throws PatternSyntaxException {
@@ -55,6 +56,7 @@ public class ModeTest extends TestCase {
         assertEquals("doG", m.group(1));
         assertFalse(m.find());
     }
+
     public void testMultiline() throws PatternSyntaxException {
         Pattern p;
         Matcher m;
