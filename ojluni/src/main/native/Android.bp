@@ -59,7 +59,7 @@ filegroup {
         "UNIXProcess_md.c",
         "Bits.c",
         "Character.cpp",
-        "Register.cpp",
         "socket_tagger_util.cpp",
+        "OnLoad.cpp",
     ],
 }
