@@ -55,6 +55,7 @@ java_defaults {
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
+            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
         ],
     },
 }
