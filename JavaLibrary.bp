@@ -347,6 +347,9 @@ java_library_static {
             "-Xep:MissingOverride:OFF",
         ],
     },
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
     no_standard_libs: true,
     system_modules: "none",
 }
