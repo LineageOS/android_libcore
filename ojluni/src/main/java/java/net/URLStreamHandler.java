@@ -528,6 +528,8 @@ public abstract class URLStreamHandler {
         return result.toString();
     }
 
+    // Android-changed: Removed @see tag (target is package-private):
+    // @see     java.net.URL#set(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)
     /**
      * Sets the fields of the {@code URL} argument to the indicated values.
      * Only classes derived from URLStreamHandler are able
@@ -544,7 +546,6 @@ public abstract class URLStreamHandler {
      * @param   ref       the reference.
      * @exception       SecurityException       if the protocol handler of the URL is
      *                                  different from this one
-     * @see     java.net.URL#set(java.lang.String, java.lang.String, int, java.lang.String, java.lang.String)
      * @since 1.3
      */
        protected void setURL(URL u, String protocol, String host, int port,
