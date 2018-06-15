@@ -6000,6 +6000,8 @@ class Character implements java.io.Serializable, Comparable<Character> {
     @FastNative
     static native boolean isIdeographicImpl(int codePoint);
 
+    // Android-changed: Removed @see tag (target does not exist on Android):
+    // @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
     /**
      * Determines if the specified character is
      * permissible as the first character in a Java identifier.
@@ -6024,13 +6026,14 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @see     Character#isJavaIdentifierPart(char)
      * @see     Character#isLetter(char)
      * @see     Character#isUnicodeIdentifierStart(char)
-     * @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
      * @since   1.1
      */
     public static boolean isJavaIdentifierStart(char ch) {
         return isJavaIdentifierStart((int)ch);
     }
 
+    // Android-changed: Removed @see tag (target does not exist on Android):
+    // @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
     /**
      * Determines if the character (Unicode code point) is
      * permissible as the first character in a Java identifier.
@@ -6053,7 +6056,6 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @see     Character#isJavaIdentifierPart(int)
      * @see     Character#isLetter(int)
      * @see     Character#isUnicodeIdentifierStart(int)
-     * @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
      * @since   1.5
      */
     public static boolean isJavaIdentifierStart(int codePoint) {
@@ -6074,6 +6076,8 @@ class Character implements java.io.Serializable, Comparable<Character> {
                    | (1  << LETTER_NUMBER))) != 0;
     }
 
+    // Android-changed: Removed @see tag (target does not exist on Android):
+    // @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
     /**
      * Determines if the specified character may be part of a Java
      * identifier as other than the first character.
@@ -6104,13 +6108,14 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @see     Character#isJavaIdentifierStart(char)
      * @see     Character#isLetterOrDigit(char)
      * @see     Character#isUnicodeIdentifierPart(char)
-     * @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
      * @since   1.1
      */
     public static boolean isJavaIdentifierPart(char ch) {
         return isJavaIdentifierPart((int)ch);
     }
 
+    // Android-changed: Removed @see tag (target does not exist on Android):
+    // @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
     /**
      * Determines if the character (Unicode code point) may be part of a Java
      * identifier as other than the first character.
@@ -6137,7 +6142,6 @@ class Character implements java.io.Serializable, Comparable<Character> {
      * @see     Character#isJavaIdentifierStart(int)
      * @see     Character#isLetterOrDigit(int)
      * @see     Character#isUnicodeIdentifierPart(int)
-     * @see     javax.lang.model.SourceVersion#isIdentifier(CharSequence)
      * @since   1.5
      */
     public static boolean isJavaIdentifierPart(int codePoint) {
