@@ -233,6 +233,8 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
     LOCAL_MODULE_TAGS := optional
     LOCAL_MODULE := core-ojtests-public
     LOCAL_ERROR_PRONE_FLAGS := -Xep:MissingOverride:OFF
+    # Some tests have known overflow. To not have to add annotations, turn off the overflow check.
+    LOCAL_ERROR_PRONE_FLAGS += -Xep:ConstantOverflow:OFF
     include $(BUILD_JAVA_LIBRARY)
 endif
 
