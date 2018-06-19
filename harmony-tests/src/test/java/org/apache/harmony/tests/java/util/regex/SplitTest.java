@@ -17,16 +17,13 @@
 
 package org.apache.harmony.tests.java.util.regex;
 
-import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import junit.framework.TestCase;
-import java.util.regex.*;
 
 /**
  * TODO Type description
- *
  */
 @SuppressWarnings("nls")
 public class SplitTest extends TestCase {
@@ -177,23 +174,45 @@ public class SplitTest extends TestCase {
 
     public void testSplit2() {
         Pattern p = Pattern.compile("");
-        assertEquals(Arrays.asList("a", ""), Arrays.asList(p.split("a", -1)));
-        assertEquals(Arrays.asList(""), Arrays.asList(p.split("", -1)));
-        assertEquals(Arrays.asList("a", "b", "c", "d", ""), Arrays.asList(p.split("abcd", -1)));
+        String s[];
+        s = p.split("a", -1);
+        assertEquals(3, s.length);
+        assertEquals("", s[0]);
+        assertEquals("a", s[1]);
+        assertEquals("", s[2]);
+
+        s = p.split("", -1);
+        assertEquals(1, s.length);
+        assertEquals("", s[0]);
+
+        s = p.split("abcd", -1);
+        assertEquals(6, s.length);
+        assertEquals("", s[0]);
+        assertEquals("a", s[1]);
+        assertEquals("b", s[2]);
+        assertEquals("c", s[3]);
+        assertEquals("d", s[4]);
+        assertEquals("", s[5]);
 
         // Regression test for Android
-        assertEquals("GOOG,23,500".split("|").length, 11);
+        assertEquals("GOOG,23,500".split("|").length, 12);
     }
 
 
     public void testSplitSupplementaryWithEmptyString() {
+
         /*
          * See http://www.unicode.org/reports/tr18/#Supplementary_Characters
          * We have to treat text as code points not code units.
          */
         Pattern p = Pattern.compile("");
-        String[] s = p.split("a\ud869\uded6b", -1);
-        assertEquals(Arrays.asList("a", "\ud869\uded6", "b", ""), Arrays.asList(s));
+        String s[];
+        s = p.split("a\ud869\uded6b", -1);
+        assertEquals(5, s.length);
+        assertEquals("", s[0]);
+        assertEquals("a", s[1]);
+        assertEquals("\ud869\uded6", s[2]);
+        assertEquals("b", s[3]);
+        assertEquals("", s[4]);
     }
-
 }
