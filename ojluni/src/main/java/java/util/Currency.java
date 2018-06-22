@@ -125,11 +125,15 @@ public final class Currency implements Serializable {
      * is not a supported ISO 3166 country code.
      */
     public static Currency getInstance(Locale locale) {
+        String country = locale.getCountry();
+        if (country == null) {
+            throw new NullPointerException();
+        }
+
         // BEGIN Android-changed: use ICU
         android.icu.util.Currency icuInstance =
                 android.icu.util.Currency.getInstance(locale);
         String variant = locale.getVariant();
-        String country = locale.getCountry();
         if (!variant.isEmpty() && (variant.equals("EURO") || variant.equals("HK") ||
                 variant.equals("PREEURO"))) {
             country = country + "_" + variant;
