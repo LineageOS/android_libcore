@@ -32,7 +32,8 @@ public final class ArrayUtils {
         }
 
         if ((offset | count) < 0 || offset > len - count) {
-            throw new ArrayIndexOutOfBoundsException(len, offset, count);
+            throw new ArrayIndexOutOfBoundsException(
+                "length=" + len + "; regionStart=" + offset + "; regionLength=" + count);
         }
     }
 }
