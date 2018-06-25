@@ -220,6 +220,25 @@ public class LocaleTest extends junit.framework.TestCase {
         assertEquals(1, count);
     }
 
+    /**
+     * Check that the straightforward ways to try to construct/obtain a Locale
+     * with null country don't work.
+     */
+    public void test_nullCountry_fails() {
+        try {
+            new Locale(/* language */ "en", /* country */ null);
+        } catch (NullPointerException expected) {
+        }
+        try {
+            new Locale(/* language */ "en", /* country */ null, /* variant */ "EN");
+        } catch (NullPointerException expected) {
+        }
+        assertNotNull(Locale.getDefault().getCountry());
+        for (Locale locale : Locale.getAvailableLocales()) {
+            assertNotNull(locale.getCountry());
+        }
+    }
+
     public void test_getISO3Country() {
         // Empty country code.
         assertEquals("", new Locale("en", "").getISO3Country());
