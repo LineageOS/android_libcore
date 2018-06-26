@@ -358,10 +358,6 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
         if (finished) {
             return;
         }
-        // Android-changed: Fix for ZipOutputStreamTest#testCreateEmpty
-        if (xentries.isEmpty()) {
-            throw new ZipException("No entries");
-        }
         if (current != null) {
             closeEntry();
         }
