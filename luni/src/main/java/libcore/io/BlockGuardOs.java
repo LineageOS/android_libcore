@@ -65,16 +65,19 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public boolean access(String path, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         return os.access(path, mode);
     }
 
     @Override public void chmod(String path, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.chmod(path, mode);
     }
 
     @Override public void chown(String path, int uid, int gid) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.chown(path, uid, gid);
     }
 
@@ -174,11 +177,14 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public void lchown(String path, int uid, int gid) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.lchown(path, uid, gid);
     }
 
     @Override public void link(String oldPath, String newPath) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(oldPath);
+        BlockGuard.getVmPolicy().onPathAccess(newPath);
         os.link(oldPath, newPath);
     }
 
@@ -189,21 +195,25 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public StructStat lstat(String path) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         return os.lstat(path);
     }
 
     @Override public void mkdir(String path, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.mkdir(path, mode);
     }
 
     @Override public void mkfifo(String path, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.mkfifo(path, mode);
     }
 
     @Override public FileDescriptor open(String path, int flags, int mode) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         if ((flags & O_ACCMODE) != O_RDONLY) {
             BlockGuard.getThreadPolicy().onWriteToDisk();
         }
@@ -256,11 +266,13 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public String readlink(String path) throws ErrnoException {
       BlockGuard.getThreadPolicy().onReadFromDisk();
+      BlockGuard.getVmPolicy().onPathAccess(path);
       return os.readlink(path);
     }
 
     @Override public String realpath(String path) throws ErrnoException {
       BlockGuard.getThreadPolicy().onReadFromDisk();
+      BlockGuard.getVmPolicy().onPathAccess(path);
       return os.realpath(path);
     }
 
@@ -281,11 +293,14 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public void remove(String path) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.remove(path);
     }
 
     @Override public void rename(String oldPath, String newPath) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(oldPath);
+        BlockGuard.getVmPolicy().onPathAccess(newPath);
         os.rename(oldPath, newPath);
     }
 
@@ -325,16 +340,20 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public StructStat stat(String path) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         return os.stat(path);
     }
 
     @Override public StructStatVfs statvfs(String path) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         return os.statvfs(path);
     }
 
     @Override public void symlink(String oldPath, String newPath) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(oldPath);
+        BlockGuard.getVmPolicy().onPathAccess(newPath);
         os.symlink(oldPath, newPath);
     }
 
@@ -355,17 +374,20 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public void execv(String filename, String[] argv) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(filename);
         os.execv(filename, argv);
     }
 
     @Override public void execve(String filename, String[] argv, String[] envp)
             throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(filename);
         os.execve(filename, argv, envp);
     }
 
     @Override public byte[] getxattr(String path, String name) throws ErrnoException {
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         return os.getxattr(path, name);
     }
 
@@ -378,12 +400,14 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public void removexattr(String path, String name) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.removexattr(path, name);
     }
 
     @Override public void setxattr(String path, String name, byte[] value, int flags)
             throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
         os.setxattr(path, name, value, flags);
     }
 
@@ -395,6 +419,7 @@ public class BlockGuardOs extends ForwardingOs {
 
     @Override public void unlink(String pathname) throws ErrnoException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
+        BlockGuard.getVmPolicy().onPathAccess(pathname);
         os.unlink(pathname);
     }
 
