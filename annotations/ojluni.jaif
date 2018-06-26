@@ -182,32 +182,6 @@ class PrintWriter:
     method append(C)Ljava/io/PrintWriter;:
         return: @libcore.util.NonNull
 
-    method append(C)Ljava/io/Writer;:
-        return: @libcore.util.NonNull
-
-    method append(Ljava/lang/CharSequence;II)Ljava/io/Writer;:
-        return: @libcore.util.NonNull
-        parameter #0:
-            type: @libcore.util.Nullable
-
-    method append(Ljava/lang/CharSequence;)Ljava/io/Writer;:
-        return: @libcore.util.NonNull
-        parameter #0:
-            type: @libcore.util.Nullable
-
-    method append(C)Ljava/lang/Appendable;:
-        return: @libcore.util.NonNull
-
-    method append(Ljava/lang/CharSequence;II)Ljava/lang/Appendable;:
-        return: @libcore.util.NonNull
-        parameter #0:
-            type: @libcore.util.Nullable
-
-    method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
-        return: @libcore.util.NonNull
-        parameter #0:
-            type: @libcore.util.Nullable
-
 package java.lang:
 class Appendable:
     method append(Ljava/lang/CharSequence;)Ljava/lang/Appendable;:
