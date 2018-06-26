@@ -73,14 +73,4 @@ class ArrayIndexOutOfBoundsException extends IndexOutOfBoundsException {
     public ArrayIndexOutOfBoundsException(int sourceLength, int index) {
         super("length=" + sourceLength + "; index=" + index);
     }
-
-    // Android-added: Additional constructor for internal use.
-    /**
-     * @hide
-     */
-    public ArrayIndexOutOfBoundsException(int sourceLength, int offset,
-            int count) {
-        super("length=" + sourceLength + "; regionStart=" + offset
-                + "; regionLength=" + count);
-    }
 }
