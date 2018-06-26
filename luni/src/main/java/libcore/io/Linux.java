@@ -60,7 +60,10 @@ public final class Linux implements Os {
             throws ErrnoException;
     public native void chmod(String path, int mode) throws ErrnoException;
     public native void chown(String path, int uid, int gid) throws ErrnoException;
+
     public native void close(FileDescriptor fd) throws ErrnoException;
+    public native void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId);
+
     public native void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public native void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
     public native FileDescriptor dup(FileDescriptor oldFd) throws ErrnoException;
