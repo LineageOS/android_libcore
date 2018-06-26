@@ -53,7 +53,7 @@ class ZipOutputStream extends DeflaterOutputStream implements ZipConstants {
      * total entry count fields, such as the ones in jdk6, and even
      * some in jdk7.
      */
-    // Android-changed: Force to false.
+    // Android-changed: Always allow use of Zip64.
     private static final boolean inhibitZip64 = false;
     //  Boolean.parseBoolean(
     //      java.security.AccessController.doPrivileged(
