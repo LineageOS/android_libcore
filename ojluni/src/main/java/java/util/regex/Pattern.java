@@ -42,7 +42,9 @@ import java.util.stream.StreamSupport;
 
 import libcore.util.EmptyArray;
 
-// Android-changed: Add min API level of 26 for the named capaturing in javadoc
+// Android-changed: Document that named capturing is only available from API 26.
+// Android-changed: Android always uses unicode character classes.
+// UNICODE_CHARACTER_CLASS has no effect on Android.
 /**
  * A compiled representation of a regular expression.
  *
@@ -613,6 +615,7 @@ import libcore.util.EmptyArray;
  *   <li> White_Space
  *   <li> Digit
  *   <li> Hex_Digit
+ *   <li> Join_Control
  *   <li> Noncharacter_Code_Point
  *   <li> Assigned
  * </ul>
@@ -663,7 +666,7 @@ import libcore.util.EmptyArray;
  * <tr><td><tt>\S</tt></td>
  *     <td>A non-whitespace character: <tt>[^\s]</tt></td></tr>
  * <tr><td><tt>\w</tt></td>
- *     <td>A word character: <tt>[\p{Alpha}\p{gc=Mn}\p{gc=Me}\p{gc=Mc}\p{Digit}\p{gc=Pc}]</tt></td></tr>
+ *     <td>A word character: <tt>[\p{Alpha}\p{gc=Mn}\p{gc=Me}\p{gc=Mc}\p{Digit}\p{gc=Pc}\p{IsJoin_Control}]</tt></td></tr>
  * <tr><td><tt>\W</tt></td>
  *     <td>A non-word character: <tt>[^\w]</tt></td></tr>
  * </table>
@@ -769,7 +772,8 @@ import libcore.util.EmptyArray;
  * @spec        JSR-51
  */
 
-public final class Pattern implements java.io.Serializable
+public final class Pattern
+    implements java.io.Serializable
 {
 
     /**
@@ -897,9 +901,10 @@ public final class Pattern implements java.io.Serializable
      */
     public static final int CANON_EQ = 0x80;
 
+    // Android-changed: Android always uses unicode character classes.
     /**
      * Enables the Unicode version of <i>Predefined character classes</i> and
-     * <i>POSIX character classes</i> as eefined by <a href="http://www.unicode.org/reports/tr18/"><i>Unicode Technical
+     * <i>POSIX character classes</i> as defined by <a href="http://www.unicode.org/reports/tr18/"><i>Unicode Technical
      * Standard #18: Unicode Regular Expression</i></a>
      * <i>Annex C: Compatibility Properties</i>.
      * <p>
@@ -924,6 +929,8 @@ public final class Pattern implements java.io.Serializable
      *
      * @serial
      */
+    // Android-changed: reimplement matching logic natively via ICU.
+    // private String pattern;
     private final String pattern;
 
     /**
@@ -931,14 +938,19 @@ public final class Pattern implements java.io.Serializable
      *
      * @serial
      */
+    // Android-changed: reimplement matching logic natively via ICU.
+    // private int flags;
     private final int flags;
 
+    // BEGIN Android-changed: reimplement matching logic natively via ICU.
+    // We only need some tie-ins to native memory, instead of a large number
+    // of fields on the .java side.
     @ReachabilitySensitive
     transient long address;
 
     private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(
             Pattern.class.getClassLoader(), getNativeFinalizer(), nativeSize());
-
+    // END Android-changed: reimplement matching logic natively via ICU.
 
     /**
      * Compiles the given regular expression into a pattern.
@@ -975,7 +987,7 @@ public final class Pattern implements java.io.Serializable
      * @throws  PatternSyntaxException
      *          If the expression's syntax is invalid
      */
-    public static Pattern compile(String regex, int flags) throws PatternSyntaxException {
+    public static Pattern compile(String regex, int flags) {
         return new Pattern(regex, flags);
     }
 
@@ -1009,6 +1021,15 @@ public final class Pattern implements java.io.Serializable
      * @return  A new matcher for this pattern
      */
     public Matcher matcher(CharSequence input) {
+        // Android-removed: Pattern is eagerly compiled() upon construction.
+        /*
+        if (!compiled) {
+            synchronized(this) {
+                if (!compiled)
+                    compile();
+            }
+        }
+        */
         Matcher m = new Matcher(this, input);
         return m;
     }
@@ -1122,11 +1143,12 @@ public final class Pattern implements java.io.Serializable
      *          around matches of this pattern
      */
     public String[] split(CharSequence input, int limit) {
+        // BEGIN Android-added: fastSplit() to speed up simple cases.
         String[] fast = fastSplit(pattern, input.toString(), limit);
         if (fast != null) {
             return fast;
         }
-
+        // END Android-added: fastSplit() to speed up simple cases.
         int index = 0;
         boolean matchLimited = limit > 0;
         ArrayList<String> matchList = new ArrayList<>();
@@ -1174,6 +1196,7 @@ public final class Pattern implements java.io.Serializable
         return matchList.subList(0, resultSize).toArray(result);
     }
 
+    // BEGIN Android-added: fastSplit() to speed up simple cases.
     private static final String FASTSPLIT_METACHARACTERS = "\\?*+[](){}^$.|";
 
     /**
@@ -1252,6 +1275,7 @@ public final class Pattern implements java.io.Serializable
         result[separatorCount] = input.substring(begin, lastPartEnd);
         return result;
     }
+    // END Android-added: fastSplit() to speed up simple cases.
 
     /**
      * Splits the given input sequence around matches of this pattern.
@@ -1327,15 +1351,47 @@ public final class Pattern implements java.io.Serializable
 
         // Read in all fields
         s.defaultReadObject();
+
+        // Android-removed: reimplement matching logic natively via ICU.
+        // // Initialize counts
+        // capturingGroupCount = 1;
+        // localCount = 0;
+
+        // Android-changed: Pattern is eagerly compiled() upon construction.
+        /*
+        // if length > 0, the Pattern is lazily compiled
+        compiled = false;
+        if (pattern.length() == 0) {
+            root = new Start(lastAccept);
+            matchRoot = lastAccept;
+            compiled = true;
+        }
+        */
         compile();
     }
 
+    // Android-changed: reimplement matching logic natively via ICU.
+    // Dropped documentation reference to Start and LastNode implementation
+    // details which do not apply on Android.
     /**
      * This private constructor is used to create all Patterns. The pattern
      * string and match flags are all that is needed to completely describe
      * a Pattern.
      */
     private Pattern(String p, int f) {
+        pattern = p;
+        flags = f;
+
+        // BEGIN Android-changed: Only specific flags are supported.
+        /*
+        // to use UNICODE_CASE if UNICODE_CHARACTER_CLASS present
+        if ((flags & UNICODE_CHARACTER_CLASS) != 0)
+            flags |= UNICODE_CASE;
+
+        // Reset group index count
+        capturingGroupCount = 1;
+        localCount = 0;
+        */
         if ((f & CANON_EQ) != 0) {
             throw new UnsupportedOperationException("CANON_EQ flag not supported");
         }
@@ -1343,11 +1399,23 @@ public final class Pattern implements java.io.Serializable
         if ((f & ~supportedFlags) != 0) {
             throw new IllegalArgumentException("Unsupported flags: " + (f & ~supportedFlags));
         }
-        this.pattern = p;
-        this.flags = f;
-        compile();
+        // END Android-changed: Only specific flags are supported supported.
+
+        // BEGIN Android-removed: Pattern is eagerly compiled() upon construction.
+        // if (pattern.length() > 0) {
+        // END Android-removed: Pattern is eagerly compiled() upon construction.
+            compile();
+        // Android-removed: reimplement matching logic natively via ICU.
+        /*
+        } else {
+            root = new Start(lastAccept);
+            matchRoot = lastAccept;
+        }
+        */
     }
 
+    // BEGIN Android-changed: reimplement matching logic natively via ICU.
+    // Use native implementation instead of > 3000 lines of helper methods.
     private void compile() throws PatternSyntaxException {
         if (pattern == null) {
             throw new NullPointerException("pattern == null");
@@ -1368,6 +1436,7 @@ public final class Pattern implements java.io.Serializable
     private static native long compileImpl(String regex, int flags);
     private static native long getNativeFinalizer();
     private static native int nativeSize();
+    // END Android-changed: reimplement matching logic natively via ICU.
 
     /**
      * Creates a predicate which can be used to match a string.
