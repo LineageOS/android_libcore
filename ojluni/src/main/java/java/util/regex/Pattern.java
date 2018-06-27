@@ -27,6 +27,8 @@
 package java.util.regex;
 
 import dalvik.annotation.optimization.ReachabilitySensitive;
+import dalvik.system.VMRuntime;
+
 import libcore.util.NativeAllocationRegistry;
 
 import java.util.Iterator;
@@ -1052,6 +1054,8 @@ public final class Pattern implements java.io.Serializable
         return m.matches();
     }
 
+    // Android-change: Adopt split() behavior change only for apps targeting API > 28.
+    // http://b/109659282#comment7
     /**
      * Splits the given input sequence around matches of this pattern.
      *
@@ -1062,6 +1066,12 @@ public final class Pattern implements java.io.Serializable
      * input. If this pattern does not match any subsequence of the input then
      * the resulting array has just one element, namely the input sequence in
      * string form.
+     *
+     * <p> When there is a positive-width match at the beginning of the input
+     * sequence then an empty leading substring is included at the beginning
+     * of the resulting array. A zero-width match at the beginning however
+     * can only produce such an empty leading substring for apps running on or
+     * targeting API versions <= 28.
      *
      * <p> The <tt>limit</tt> parameter controls the number of times the
      * pattern is applied and therefore affects the length of the resulting
@@ -1125,6 +1135,17 @@ public final class Pattern implements java.io.Serializable
         // Add segments before each match found
         while(m.find()) {
             if (!matchLimited || matchList.size() < limit - 1) {
+                if (index == 0 && index == m.start() && m.start() == m.end()) {
+                    // no empty leading substring included for zero-width match
+                    // at the beginning of the input char sequence.
+                    // BEGIN Android-changed: split() compat behavior for apps targeting <= 28.
+                    // continue;
+                    int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+                    if (targetSdkVersion > 28) {
+                        continue;
+                    }
+                    // END Android-changed: split() compat behavior for apps targeting <= 28.
+                }
                 String match = input.subSequence(index, m.start()).toString();
                 matchList.add(match);
                 index = m.end();
