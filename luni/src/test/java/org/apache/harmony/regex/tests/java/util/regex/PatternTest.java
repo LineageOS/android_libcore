@@ -18,6 +18,7 @@
 package org.apache.harmony.regex.tests.java.util.regex;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -26,6 +27,10 @@ import junit.framework.TestCase;
 
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
+
+import dalvik.system.VMRuntime;
+
+import static java.util.Arrays.asList;
 
 public class PatternTest extends TestCase {
     String[] testPatterns = {
@@ -107,7 +112,7 @@ public class PatternTest extends TestCase {
         s = pat.split("", -1);
         assertEquals(s.length, 1);
         s = pat.split("abccbadfe", -1);
-        assertEquals(s.length, 11);
+        assertEquals(s.length, 10);
         // zero limit
         pat = Pattern.compile("b");
         s = pat.split("abccbadfebb", 0);
@@ -118,7 +123,7 @@ public class PatternTest extends TestCase {
         s = pat.split("", 0);
         assertEquals(s.length, 1);
         s = pat.split("abccbadfe", 0);
-        assertEquals(s.length, 10);
+        assertEquals(s.length, 9);
         // positive limit
         pat = Pattern.compile("b");
         s = pat.split("abccbadfebb", 12);
@@ -129,7 +134,7 @@ public class PatternTest extends TestCase {
         s = pat.split("", 11);
         assertEquals(s.length, 1);
         s = pat.split("abccbadfe", 15);
-        assertEquals(s.length, 11);
+        assertEquals(s.length, 10);
 
         pat = Pattern.compile("b");
         s = pat.split("abccbadfebb", 5);
@@ -139,8 +144,8 @@ public class PatternTest extends TestCase {
         pat = Pattern.compile("");
         s = pat.split("", 1);
         assertEquals(s.length, 1);
-        s = pat.split("abccbadfe", 11);
-        assertEquals(s.length, 11);
+        s = pat.split("abccbadfe", 10);
+        assertEquals(s.length, 10);
 
         pat = Pattern.compile("b");
         s = pat.split("abccbadfebb", 3);
@@ -148,6 +153,65 @@ public class PatternTest extends TestCase {
         pat = Pattern.compile("");
         s = pat.split("abccbadfe", 5);
         assertEquals(s.length, 5);
+    }
+
+    public void testSplitOnEmptyPattern_apiCurrent() {
+        assertEquals(asList("t", "e", "s", "t"), asList("test".split("")));
+        assertEquals(asList(""), asList("".split("")));
+        assertEquals(asList(""), asList(Pattern.compile("").split("")));
+        assertEquals(asList(""), asList("".split("", -1)));
+    }
+
+    public void testSplitOnEmptyPattern_api28() {
+        runWithTargetSdkVersion(28, () -> {
+            assertEquals(asList("", "t", "e", "s", "t"), asList("test".split("")));
+            assertEquals(asList(""), asList("".split("")));
+            assertEquals(asList(""), asList(Pattern.compile("").split("")));
+            assertEquals(asList(""), asList("".split("", -1)));
+        });
+    }
+
+    /**
+     * Tests that a match at the beginning of the input string only produces
+     * a "" if the match is positive-width.
+     */
+    public void testMatchBeginningOfInputSequence_apiCurrent() {
+        // Positive-width match at the beginning of the input.
+        assertEquals(asList("", "", "rdv", "rk"), asList("aardvark".split("a")));
+        assertEquals(asList("", "anana"), asList("banana".split("b")));
+        // Zero-width match at the beginning of the input
+        assertEquals(asList("a", "ardv", "ark"), asList("aardvark".split("(?=a)")));
+        assertEquals(asList("banana"), asList("banana".split("(?=b)")));
+
+        // For comparison, matches in the middle of the input never yield an empty substring:
+        assertEquals(asList("aar", "vark"), asList("aardvark".split("d")));
+        assertEquals(asList("aar", "dvark"), asList("aardvark".split("(?=d)")));
+    }
+
+    public void testMatchBeginningOfInputSequence_api28() {
+        runWithTargetSdkVersion(28, () -> {
+            // Positive-width match at the beginning of the input.
+            assertEquals(asList("", "", "rdv", "rk"), asList("aardvark".split("a")));
+            assertEquals(asList("", "anana"), asList("banana".split("b")));
+            // Zero-width match at the beginning of the input
+            assertEquals(asList("", "a", "ardv", "ark"), asList("aardvark".split("(?=a)")));
+            assertEquals(asList("banana"), asList("banana".split("(?=b)")));
+
+            // For comparison, matches in the middle of the input never yield an empty substring:
+            assertEquals(asList("aar", "vark"), asList("aardvark".split("d")));
+            assertEquals(asList("aar", "dvark"), asList("aardvark".split("(?=d)")));
+        });
+    }
+
+    private static void runWithTargetSdkVersion(int targetSdkVersion, Runnable runnable) {
+        VMRuntime vmRuntime = VMRuntime.getRuntime();
+        int oldVersion = vmRuntime.getTargetSdkVersion();
+        vmRuntime.setTargetSdkVersion(targetSdkVersion);
+        try {
+            runnable.run();
+        } finally {
+            vmRuntime.setTargetSdkVersion(oldVersion);
+        }
     }
 
     public void testSplitCharSequence() {
@@ -161,7 +225,7 @@ public class PatternTest extends TestCase {
         s = pat.split("");
         assertEquals(s.length, 1);
         s = pat.split("abccbadfe");
-        assertEquals(s.length, 10);
+        assertEquals(s.length, 9);
         // bug6544
         String s1 = "";
         String[] arr = s1.split(":");
