@@ -159,8 +159,10 @@ class FileInputStream extends InputStream
 
         path = name;
 
-        // Android-added: BlockGuard support.
+        // BEGIN Android-added: BlockGuard support.
         BlockGuard.getThreadPolicy().onReadFromDisk();
+        BlockGuard.getVmPolicy().onPathAccess(path);
+        // END Android-added: BlockGuard support.
 
         open(name);
 
