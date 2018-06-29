@@ -242,16 +242,8 @@ class ZipFile implements ZipConstants, Closeable {
         this.name = name;
         this.total = getTotal(jzfile);
         this.locsig = startsWithLOC(jzfile);
-        Enumeration<? extends ZipEntry> entries = entries();
 
         guard.open("close");
-
-        // Android-changed: Error out early if the zipfile has no entries.
-        if (size() == 0 || !entries.hasMoreElements()) {
-            close();
-            throw new ZipException("No entries");
-        }
-
     }
 
     /**
