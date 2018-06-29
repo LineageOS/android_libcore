@@ -251,7 +251,7 @@ class UnixFileSystem extends FileSystem {
         return rv | (hidden ? BA_HIDDEN : 0);
     }
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean checkAccess(File f, int access) {
         BlockGuard.getThreadPolicy().onReadFromDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -259,7 +259,7 @@ class UnixFileSystem extends FileSystem {
     }
     private native boolean checkAccess0(File f, int access);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public long getLastModifiedTime(File f) {
         BlockGuard.getThreadPolicy().onReadFromDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -267,7 +267,7 @@ class UnixFileSystem extends FileSystem {
     }
     private native long getLastModifiedTime0(File f);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public long getLength(File f) {
         BlockGuard.getThreadPolicy().onReadFromDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -275,7 +275,7 @@ class UnixFileSystem extends FileSystem {
     }
     private native long getLength0(File f);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean setPermission(File f, int access, boolean enable, boolean owneronly) {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -284,7 +284,7 @@ class UnixFileSystem extends FileSystem {
     private native boolean setPermission0(File f, int access, boolean enable, boolean owneronly);
 
     /* -- File operations -- */
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean createFileExclusively(String path) throws IOException {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         BlockGuard.getVmPolicy().onPathAccess(path);
@@ -309,7 +309,7 @@ class UnixFileSystem extends FileSystem {
 
     private native boolean delete0(File f);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public String[] list(File f) {
         BlockGuard.getThreadPolicy().onReadFromDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -317,7 +317,7 @@ class UnixFileSystem extends FileSystem {
     }
     private native String[] list0(File f);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean createDirectory(File f) {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -343,7 +343,7 @@ class UnixFileSystem extends FileSystem {
 
     private native boolean rename0(File f1, File f2);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean setLastModifiedTime(File f, long time) {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -351,7 +351,7 @@ class UnixFileSystem extends FileSystem {
     }
     private native boolean setLastModifiedTime0(File f, long time);
 
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public boolean setReadOnly(File f) {
         BlockGuard.getThreadPolicy().onWriteToDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
@@ -375,7 +375,7 @@ class UnixFileSystem extends FileSystem {
     }
 
     /* -- Disk usage -- */
-    // Android-changed: BlockGuard support.
+    // Android-changed: Add method to intercept native method call; BlockGuard support.
     public long getSpace(File f, int t) {
         BlockGuard.getThreadPolicy().onReadFromDisk();
         BlockGuard.getVmPolicy().onPathAccess(f.getPath());
