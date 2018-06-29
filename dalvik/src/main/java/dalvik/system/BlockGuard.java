@@ -147,6 +147,7 @@ public final class BlockGuard {
      * The default, permissive per-thread policy.
      */
     public static final Policy LAX_POLICY = new Policy() {
+        @Override public String toString() { return "LAX_POLICY"; }
         @Override public void onWriteToDisk() {}
         @Override public void onReadFromDisk() {}
         @Override public void onNetwork() {}
@@ -163,6 +164,7 @@ public final class BlockGuard {
      * The default, permissive per-process policy.
      */
     public static final VmPolicy LAX_VM_POLICY = new VmPolicy() {
+        @Override public String toString() { return "LAX_VM_POLICY"; }
         @Override public void onPathAccess(String path) {}
     };
 
