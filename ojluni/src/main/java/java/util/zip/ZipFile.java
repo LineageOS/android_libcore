@@ -62,7 +62,7 @@ import static java.util.zip.ZipConstants64.*;
  */
 public
 class ZipFile implements ZipConstants, Closeable {
-    private long jzfile;           // address of jzfile data
+    private long jzfile;  // address of jzfile data
     private final String name;     // zip file name
     private final int total;       // total number of entries
     private final boolean locsig;  // if zip file starts with LOCSIG (usually true)
@@ -207,6 +207,17 @@ class ZipFile implements ZipConstants, Closeable {
             throw new IllegalArgumentException("Illegal mode: 0x"+
                                                Integer.toHexString(mode));
         }
+        String name = file.getPath();
+        // Android-removed: SecurityManager is always null
+        /*
+        SecurityManager sm = System.getSecurityManager();
+        if (sm != null) {
+            sm.checkRead(name);
+            if ((mode & OPEN_DELETE) != 0) {
+                sm.checkDelete(name);
+            }
+        }
+        */
 
         // Android-changed: Error out early if the file is too short or non-existent.
         long length = file.length();
@@ -221,15 +232,6 @@ class ZipFile implements ZipConstants, Closeable {
         // Android-changed, handle OPEN_DELETE case in #close().
         fileToRemoveOnClose = ((mode & OPEN_DELETE) != 0) ? file : null;
 
-        String name = file.getPath();
-        // Android-changed: SecurityManager is always null
-        // SecurityManager sm = System.getSecurityManager();
-        // if (sm != null) {
-        //     sm.checkRead(name);
-        //     if ((mode & OPEN_DELETE) != 0) {
-        //         sm.checkDelete(name);
-        //     }
-        // }
         if (charset == null)
             throw new NullPointerException("charset is null");
         this.zc = ZipCoder.get(charset);
