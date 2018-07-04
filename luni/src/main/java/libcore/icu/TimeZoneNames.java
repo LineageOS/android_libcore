@@ -16,7 +16,6 @@
 
 package libcore.icu;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -153,30 +152,6 @@ public final class TimeZoneNames {
             locale = Locale.getDefault();
         }
         return cachedZoneStrings.get(locale);
-    }
-
-    /**
-     * Returns an array containing the time zone ids in use in the country corresponding to
-     * the given locale. This is not necessary for Java API, but is used by telephony as a
-     * fallback. We retrieve these strings from zone.tab rather than icu4c because the latter
-     * supplies them in alphabetical order where zone.tab has them in a kind of "importance"
-     * order (as defined in the zone.tab header).
-     */
-    @UnsupportedAppUsage
-    public static String[] forLocale(Locale locale) {
-        String countryCode = locale.getCountry();
-        ArrayList<String> ids = new ArrayList<String>();
-        for (String line : ZoneInfoDB.getInstance().getZoneTab().split("\n")) {
-            if (line.startsWith(countryCode)) {
-                int olsonIdStart = line.indexOf('\t', 4) + 1;
-                int olsonIdEnd = line.indexOf('\t', olsonIdStart);
-                if (olsonIdEnd == -1) {
-                    olsonIdEnd = line.length(); // Not all zone.tab lines have a comment.
-                }
-                ids.add(line.substring(olsonIdStart, olsonIdEnd));
-            }
-        }
-        return ids.toArray(new String[ids.size()]);
     }
 
     private static native void fillZoneStrings(String locale, String[][] result);
