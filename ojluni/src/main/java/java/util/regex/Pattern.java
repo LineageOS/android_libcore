@@ -1075,7 +1075,7 @@ public final class Pattern
         return m.matches();
     }
 
-    // Android-change: Adopt split() behavior change only for apps targeting API > 28.
+    // Android-changed: Adopt split() behavior change only for apps targeting API > 28.
     // http://b/109659282#comment7
     /**
      * Splits the given input sequence around matches of this pattern.
