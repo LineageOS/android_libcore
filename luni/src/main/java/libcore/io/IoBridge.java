@@ -275,7 +275,9 @@ public final class IoBridge {
         }
         String detail = createMessageForException(fd, inetAddress, port, timeoutMs, cause);
         if (cause.errno == ETIMEDOUT) {
-            throw new SocketTimeoutException(detail, cause);
+            SocketTimeoutException e = new SocketTimeoutException(detail);
+            e.initCause(cause);
+            throw e;
         }
         throw new ConnectException(detail, cause);
     }
@@ -629,7 +631,9 @@ public final class IoBridge {
             if (isConnected && errnoException.errno == ECONNREFUSED) {
                 throw new PortUnreachableException("ICMP Port Unreachable", errnoException);
             } else if (errnoException.errno == EAGAIN) {
-                throw new SocketTimeoutException(errnoException);
+                SocketTimeoutException e = new SocketTimeoutException();
+                e.initCause(errnoException);
+                throw e;
             } else {
                 throw errnoException.rethrowAsSocketException();
             }
