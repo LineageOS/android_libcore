@@ -34,8 +34,8 @@ import libcore.io.SizeOf;
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 
-/** @hide */
 // Not final because it is extended in tests.
+/** @hide */
 public class DirectByteBuffer extends MappedByteBuffer implements DirectBuffer {
 
     /**
