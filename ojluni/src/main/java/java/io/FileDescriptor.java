@@ -140,22 +140,22 @@ public final class FileDescriptor {
     /* This routine initializes JNI field offsets for the class */
     //private static native void initIDs();
 
+    // Android-added: Needed for framework to access descriptor value
     /**
      * Returns the int descriptor. It's highly unlikely you should be calling this. Please discuss
      * your needs with a libcore maintainer before using this method.
      * @hide internal use only
      */
-    // Android-added: Needed for framework to access descriptor value
     public final int getInt$() {
         return descriptor;
     }
 
+    // Android-added: Needed for framework to access descriptor value
     /**
      * Sets the int descriptor. It's highly unlikely you should be calling this. Please discuss
      * your needs with a libcore maintainer before using this method.
      * @hide internal use only
      */
-    // Android-added: Needed for framework to access descriptor value
     public final void setInt$(int fd) {
         this.descriptor = fd;
     }

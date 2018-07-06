@@ -51,14 +51,16 @@ public final class Os {
      */
     public static boolean access(String path, int mode) throws ErrnoException { return Libcore.os.access(path, mode); }
 
-    /** @hide */ public static InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException { return Libcore.os.android_getaddrinfo(node, hints, netId); }
+    /** @hide */
+    public static InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException { return Libcore.os.android_getaddrinfo(node, hints, netId); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/bind.2.html">bind(2)</a>.
      */
     public static void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.bind(fd, address, port); }
 
-    /** @hide */ public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
+    /** @hide */
+    public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
@@ -99,7 +101,8 @@ public final class Os {
      */
     public static void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.connect(fd, address, port); }
 
-    /** @hide */ public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
+    /** @hide */
+    public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/dup.2.html">dup(2)</a>.
@@ -136,9 +139,14 @@ public final class Os {
      */
     public static void fchown(FileDescriptor fd, int uid, int gid) throws ErrnoException { Libcore.os.fchown(fd, uid, gid); }
 
-    /** @hide */ public static int fcntlFlock(FileDescriptor fd, int cmd, StructFlock arg) throws ErrnoException, InterruptedIOException { return Libcore.os.fcntlFlock(fd, cmd, arg); }
-    /** @hide */ public static int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
-    /** @hide */ public static int fcntlVoid(FileDescriptor fd, int cmd) throws ErrnoException { return Libcore.os.fcntlVoid(fd, cmd); }
+    /** @hide */
+    public static int fcntlFlock(FileDescriptor fd, int cmd, StructFlock arg) throws ErrnoException, InterruptedIOException { return Libcore.os.fcntlFlock(fd, cmd, arg); }
+
+    /** @hide */
+    public static int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
+
+    /** @hide */
+    public static int fcntlVoid(FileDescriptor fd, int cmd) throws ErrnoException { return Libcore.os.fcntlVoid(fd, cmd); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/fdatasync.2.html">fdatasync(2)</a>.
@@ -192,10 +200,12 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man3/getifaddrs.3.html">getifaddrs(3)</a>.
+     * @hide
      */
-    /** @hide */ public static StructIfaddrs[] getifaddrs() throws ErrnoException { return Libcore.os.getifaddrs(); }
+    public static StructIfaddrs[] getifaddrs() throws ErrnoException { return Libcore.os.getifaddrs(); }
 
-    /** @hide */ public static String getnameinfo(InetAddress address, int flags) throws GaiException { return Libcore.os.getnameinfo(address, flags); }
+    /** @hide */
+    public static String getnameinfo(InetAddress address, int flags) throws GaiException { return Libcore.os.getnameinfo(address, flags); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/getpeername.2.html">getpeername(2)</a>.
@@ -204,8 +214,9 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/getpgid.2.html">getpgid(2)</a>.
+     * @hide
      */
-    /** @hide */ public static int getpgid(int pid) throws ErrnoException { return Libcore.os.getpgid(pid); }
+    public static int getpgid(int pid) throws ErrnoException { return Libcore.os.getpgid(pid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/getpid.2.html">getpid(2)</a>.
@@ -217,23 +228,37 @@ public final class Os {
      */
     public static int getppid() { return Libcore.os.getppid(); }
 
-    /** @hide */ public static StructPasswd getpwnam(String name) throws ErrnoException { return Libcore.os.getpwnam(name); }
+    /** @hide */
+    public static StructPasswd getpwnam(String name) throws ErrnoException { return Libcore.os.getpwnam(name); }
 
-    /** @hide */ public static StructPasswd getpwuid(int uid) throws ErrnoException { return Libcore.os.getpwuid(uid); }
+    /** @hide */
+    public static StructPasswd getpwuid(int uid) throws ErrnoException { return Libcore.os.getpwuid(uid); }
 
-    /** @hide */ public static StructRlimit getrlimit(int resource) throws ErrnoException { return Libcore.os.getrlimit(resource); }
+    /** @hide */
+    public static StructRlimit getrlimit(int resource) throws ErrnoException { return Libcore.os.getrlimit(resource); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/getsockname.2.html">getsockname(2)</a>.
      */
     public static SocketAddress getsockname(FileDescriptor fd) throws ErrnoException { return Libcore.os.getsockname(fd); }
 
-    /** @hide */ public static int getsockoptByte(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptByte(fd, level, option); }
-    /** @hide */ public static InetAddress getsockoptInAddr(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInAddr(fd, level, option); }
-    /** @hide */ public static int getsockoptInt(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInt(fd, level, option); }
-    /** @hide */ public static StructLinger getsockoptLinger(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
-    /** @hide */ public static StructTimeval getsockoptTimeval(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
-    /** @hide */ public static StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptUcred(fd, level, option); }
+    /** @hide */
+    public static int getsockoptByte(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptByte(fd, level, option); }
+
+    /** @hide */
+    public static InetAddress getsockoptInAddr(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInAddr(fd, level, option); }
+
+    /** @hide */
+    public static int getsockoptInt(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInt(fd, level, option); }
+
+    /** @hide */
+    public static StructLinger getsockoptLinger(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
+
+    /** @hide */
+    public static StructTimeval getsockoptTimeval(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
+
+    /** @hide */
+    public static StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptUcred(fd, level, option); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/gettid.2.html">gettid(2)</a>.
@@ -265,10 +290,12 @@ public final class Os {
      */
     public static InetAddress inet_pton(int family, String address) { return Libcore.os.inet_pton(family, address); }
 
-    /** @hide */ public static InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException { return Libcore.os.ioctlInetAddress(fd, cmd, interfaceName); }
+    /** @hide */
+    public static InetAddress ioctlInetAddress(FileDescriptor fd, int cmd, String interfaceName) throws ErrnoException { return Libcore.os.ioctlInetAddress(fd, cmd, interfaceName); }
 
 
-    /** @hide */ public static int ioctlInt(FileDescriptor fd, int cmd, Int32Ref arg) throws ErrnoException {
+    /** @hide */
+    public static int ioctlInt(FileDescriptor fd, int cmd, Int32Ref arg) throws ErrnoException {
         return Libcore.os.ioctlInt(fd, cmd, arg);
     }
 
@@ -362,7 +389,8 @@ public final class Os {
      */
     public static FileDescriptor[] pipe() throws ErrnoException { return Libcore.os.pipe2(0); }
 
-    /** @hide */ public static FileDescriptor[] pipe2(int flags) throws ErrnoException { return Libcore.os.pipe2(flags); }
+    /** @hide */
+    public static FileDescriptor[] pipe2(int flags) throws ErrnoException { return Libcore.os.pipe2(flags); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/poll.2.html">poll(2)</a>.
@@ -420,8 +448,9 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man3/realpath.3.html">realpath(3)</a>.
+     * @hide
      */
-    /** @hide */ public static String realpath(String path) throws ErrnoException { return Libcore.os.realpath(path); }
+    public static String realpath(String path) throws ErrnoException { return Libcore.os.realpath(path); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/readv.2.html">readv(2)</a>.
@@ -472,8 +501,9 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendto.2.html">sendto(2)</a>.
+     * @hide
      */
-    /** @hide */ public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
+    public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setegid.2.html">setegid(2)</a>.
@@ -497,36 +527,49 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setpgid.2.html">setpgid(2)</a>.
+     * @hide
      */
-    /** @hide */ public static void setpgid(int pid, int pgid) throws ErrnoException { Libcore.os.setpgid(pid, pgid); }
+    public static void setpgid(int pid, int pgid) throws ErrnoException { Libcore.os.setpgid(pid, pgid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setregid.2.html">setregid(2)</a>.
+     * @hide
      */
-    /** @hide */ public static void setregid(int rgid, int egid) throws ErrnoException { Libcore.os.setregid(rgid, egid); }
+    public static void setregid(int rgid, int egid) throws ErrnoException { Libcore.os.setregid(rgid, egid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setreuid.2.html">setreuid(2)</a>.
+     * @hide
      */
-    /** @hide */ public static void setreuid(int ruid, int euid) throws ErrnoException { Libcore.os.setreuid(ruid, euid); }
+    public static void setreuid(int ruid, int euid) throws ErrnoException { Libcore.os.setreuid(ruid, euid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setsid.2.html">setsid(2)</a>.
      */
     public static int setsid() throws ErrnoException { return Libcore.os.setsid(); }
 
-    /** @hide */ public static void setsockoptByte(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptByte(fd, level, option, value); }
-    /** @hide */ public static void setsockoptIfreq(FileDescriptor fd, int level, int option, String value) throws ErrnoException { Libcore.os.setsockoptIfreq(fd, level, option, value); }
+    /** @hide */
+    public static void setsockoptByte(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptByte(fd, level, option, value); }
+
+    /** @hide */
+    public static void setsockoptIfreq(FileDescriptor fd, int level, int option, String value) throws ErrnoException { Libcore.os.setsockoptIfreq(fd, level, option, value); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">setsockopt(2)</a>.
      */
     public static void setsockoptInt(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptInt(fd, level, option, value); }
 
-    /** @hide */ public static void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptIpMreqn(fd, level, option, value); }
-    /** @hide */ public static void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException { Libcore.os.setsockoptGroupReq(fd, level, option, value); }
-    /** @hide */ public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
-    /** @hide */ public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
+    /** @hide */
+    public static void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptIpMreqn(fd, level, option, value); }
+
+    /** @hide */
+    public static void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException { Libcore.os.setsockoptGroupReq(fd, level, option, value); }
+
+    /** @hide */
+    public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
+
+    /** @hide */
+    public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setuid.2.html">setuid(2)</a>.

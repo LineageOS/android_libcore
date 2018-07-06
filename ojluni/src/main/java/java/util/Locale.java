@@ -2745,8 +2745,8 @@ public final class Locale implements Cloneable, Serializable {
     }
     */
 
-    /** @hide for internal use only. */
     // BEGIN Android-added: adjustLanguageCode(), for internal use only.
+    /** @hide for internal use only. */
     public static String adjustLanguageCode(String languageCode) {
         String adjusted = languageCode.toLowerCase(Locale.US);
         // Map new language codes to the obsolete language
