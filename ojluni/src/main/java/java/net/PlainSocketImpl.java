@@ -200,7 +200,9 @@ class PlainSocketImpl extends AbstractPlainSocketImpl
             s.port = peerAddress.getPort();
         } catch (ErrnoException errnoException) {
             if (errnoException.errno == EAGAIN) {
-                throw new SocketTimeoutException(errnoException);
+                SocketTimeoutException e = new SocketTimeoutException();
+                e.initCause(errnoException);
+                throw e;
             } else if (errnoException.errno == EINVAL || errnoException.errno == EBADF) {
                 throw new SocketException("Socket closed");
             }
