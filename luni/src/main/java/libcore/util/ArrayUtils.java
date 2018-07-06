@@ -19,7 +19,7 @@ public final class ArrayUtils {
     private ArrayUtils() {}
 
     /**
-     * Throws {@class ArrayIndexOutOfBoundsException} if the range is out of bounds.
+     * Throws {@link ArrayIndexOutOfBoundsException} if the range is out of bounds.
      * @param len length of the array. Must be non-negative
      * @param offset start index of the range. Must be non-negative
      * @param count length of the range. Must be non-negative
