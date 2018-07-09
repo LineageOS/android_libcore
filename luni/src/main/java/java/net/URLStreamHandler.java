@@ -101,7 +101,7 @@ public abstract class URLStreamHandler {
         if (spec.regionMatches(start, "//", 0, 2)) {
             // Parse the authority from the spec.
             int authorityStart = start + 2;
-            fileStart = UrlUtils.findFirstOf(spec, "/?#", authorityStart, end);
+            fileStart = UrlUtils.findFirstOf(spec, "/?#\\", authorityStart, end);
             authority = spec.substring(authorityStart, fileStart);
             int userInfoEnd = UrlUtils.findFirstOf(spec, "@", authorityStart, fileStart);
             int hostStart;
