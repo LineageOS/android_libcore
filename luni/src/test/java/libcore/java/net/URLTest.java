@@ -409,6 +409,26 @@ public final class URLTest extends TestCase {
         assertEquals("http://host/a/c", url.toString()); // RI doesn't canonicalize
     }
 
+    public void testPathContainsBackslash() throws Exception {
+        URL url = new URL("http://host\\path@foo");
+        assertEquals("\\path@foo", url.getPath());
+        assertEquals("host", url.getHost());
+    }
+
+    public void testQueryContainsForwardSlash() throws Exception {
+        URL url = new URL("http://host?query/foo");
+        assertEquals("", url.getPath());
+        assertEquals("host", url.getHost());
+        assertEquals("query/foo", url.getQuery());
+    }
+
+    public void testFragmentContainsForwardSlash() throws Exception {
+        URL url = new URL("http://host#fragment/foo");
+        assertEquals("", url.getPath());
+        assertEquals("host", url.getHost());
+        assertEquals("fragment/foo", url.getRef());
+    }
+
     public void testRelativePathAndFragment() throws Exception {
         URL base = new URL("http://host/file");
         assertEquals("http://host/another#fragment", new URL(base, "another#fragment").toString());
