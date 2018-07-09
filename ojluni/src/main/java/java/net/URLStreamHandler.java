@@ -168,12 +168,25 @@ public abstract class URLStreamHandler {
         if (!isUNCName && (start <= limit - 2) && (spec.charAt(start) == '/') &&
             (spec.charAt(start + 1) == '/')) {
             start += 2;
+            // BEGIN Android-changed: Check for all hostname termination chars. http://b/110955991
+            /*
             i = spec.indexOf('/', start);
             if (i < 0 || i > limit) {
                 i = spec.indexOf('?', start);
                 if (i < 0 || i > limit)
                     i = limit;
             }
+            */
+            LOOP: for (i = start; i < limit; i++) {
+                switch (spec.charAt(i)) {
+                    case '/':  // Start of path
+                    case '\\': // Start of path - see https://url.spec.whatwg.org/#host-state
+                    case '?':  // Start of query
+                    case '#':  // Start of fragment
+                        break LOOP;
+                }
+            }
+            // END Android-changed: Check for all hostname termination chars. http://b/110955991
 
             host = authority = spec.substring(start, i);
 
@@ -267,7 +280,9 @@ public abstract class URLStreamHandler {
 
         // Parse the file path if any
         if (start < limit) {
-            if (spec.charAt(start) == '/') {
+            // Android-changed: Check for all hostname termination chars. http://b/110955991
+            // if (spec.charAt(start) == '/') {
+            if (spec.charAt(start) == '/' || spec.charAt(start) == '\\') {
                 path = spec.substring(start, limit);
             } else if (path != null && path.length() > 0) {
                 isRelPath = true;
