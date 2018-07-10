@@ -355,8 +355,8 @@ filegroup {
         "luni/src/main/java/org/apache/harmony/xml/parsers/SAXParserImpl.java",
         "libart/src/main/java/java/lang/CaseMapper.java",
         "libart/src/main/java/java/lang/StringFactory.java",
-        "xml/src/main/java/org/kxml2/io/KXmlParser.java",
-        "xml/src/main/java/org/kxml2/io/KXmlSerializer.java",
+        "xml/src/main/java/com/android/org/kxml2/io/KXmlParser.java",
+        "xml/src/main/java/com/android/org/kxml2/io/KXmlSerializer.java",
         ":non_openjdk_javadoc_files",
     ],
 }
