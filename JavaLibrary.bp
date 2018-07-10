@@ -99,6 +99,7 @@ java_system_modules {
 java_library {
     name: "core-oj",
     defaults: ["libcore_java_defaults"],
+    installable: true,
     hostdex: true,
 
     srcs: [":openjdk_java_files"],
@@ -138,6 +139,7 @@ java_library {
 java_library {
     name: "core-libart",
     defaults: ["libcore_java_defaults"],
+    installable: true,
     hostdex: true,
 
     srcs: [
@@ -169,6 +171,7 @@ java_library {
 // but these will not be stripped. See b/24535627.
 java_library {
     name: "core-oj-testdex",
+    installable: true,
     static_libs: ["core-oj"],
     no_standard_libs: true,
     libs: ["core-all"],
@@ -186,6 +189,7 @@ java_library {
 
 java_library {
     name: "core-libart-testdex",
+    installable: true,
     static_libs: ["core-libart"],
     no_standard_libs: true,
     libs: ["core-all"],
