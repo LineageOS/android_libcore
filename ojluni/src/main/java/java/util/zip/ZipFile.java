@@ -254,21 +254,6 @@ class ZipFile implements ZipConstants, Closeable {
         }
         */
 
-        // BEGIN Android-added: Error out early if the file is too short or non-existent.
-        // The length check was added during initial OpenJDK integration in order to maintain
-        // backwards compatibility with the existing tests. The additional file exists check was
-        // added as part of http://b/31077136 to fix a regression caused by the addition of the
-        // length check.
-        long length = file.length();
-        if (length < ZipConstants.ENDHDR) {
-            if (length == 0 && !file.exists()) {
-                throw new FileNotFoundException("File doesn't exist: " + file);
-            } else {
-                throw new ZipException("File too short to be a zip file: " + file.length());
-            }
-        }
-        // END Android-added: Error out early if the file is too short or non-existent.
-
         // Android-added: Do not use unlink() to implement OPEN_DELETE.
         fileToRemoveOnClose = ((mode & OPEN_DELETE) != 0) ? file : null;
 
