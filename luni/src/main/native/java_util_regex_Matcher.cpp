@@ -161,7 +161,11 @@ static jlong Matcher_getNativeFinalizer(JNIEnv*, jclass) {
 // Return a guess of the amount of native memory to be deallocated by a typical call to
 // Matcher_free().
 static jint Matcher_nativeSize(JNIEnv*, jclass) {
-    return 200;  // Very rough guess based on a quick look at the implementation.
+    // This value can be tuned. 200 was found to cause performance issues (b/111141123) so 10000
+    // is being used instead. If the value is too small, there's no pressure to collect matchers,
+    // too large and we'll run GC too often.
+    // Also see b/111141123.
+    return 10000;
 }
 
 static jint Matcher_findImpl(JNIEnv* env, jclass, jlong addr, jint startIndex, jintArray offsets) {
