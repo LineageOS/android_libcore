@@ -312,7 +312,6 @@ filegroup {
         "luni/src/main/java/libcore/util/Nullable.java",
         "luni/src/main/java/libcore/util/NullFromTypeParam.java",
         "luni/src/main/java/libcore/util/Objects.java",
-        "luni/src/main/java/libcore/util/RecoverySystem.java",
         "luni/src/main/java/libcore/util/SneakyThrow.java",
         "luni/src/main/java/libcore/util/TimeZoneDataFiles.java",
         "luni/src/main/java/libcore/util/TimeZoneFinder.java",
