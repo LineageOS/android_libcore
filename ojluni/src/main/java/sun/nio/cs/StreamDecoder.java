@@ -274,8 +274,9 @@ public class StreamDecoder extends Reader
         if (ch != null) {
             // Read from the channel
             // Android-changed: Use ChannelInputStream.read to make sure we throw
-            // the right exception for non-blocking channels.
-            int n = sun.nio.ch.ChannelInputStream.read(ch, bb);
+            // IllegalBlockingModeException for non-blocking channels.
+            // int n = ch.read(bb);
+            int n = sun.nio.ch.ChannelInputStream.read(ch, bb, true);
             if (n < 0)
                 return n;
         } else {
