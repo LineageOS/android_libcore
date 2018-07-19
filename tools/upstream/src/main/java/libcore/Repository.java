@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,9 +39,37 @@ abstract class Repository {
      * Maps from a file's (current) relPath to the corresponding OpenJDK relPath from
      * which it has been, and still remains, renamed.
      */
-    static final Map<Path, Path> OPENJDK_REL_PATH = Collections.singletonMap(
+    static final Map<Path, Path> OPENJDK_REL_PATH = historicRenames();
+
+    static Map<Path, Path> historicRenames() {
+        Map<Path, Path> result = new HashMap<>();
         // renamed in libcore commit 583eb0e4738456f0547014a4857a14456be267ee
-        Paths.get("native/linux_close.cpp"), Paths.get("native/linux_close.c"));
+        result.put(Paths.get("native/linux_close.cpp"), Paths.get("native/linux_close.c"));
+        // Map ByteBufferAs*Buffer.java to an upstream file, even though there is
+        // not a 1:1 correspondence. This isn't perfect, but allows some rough
+        // comparison. See http://b/111583940
+        //
+        // More detail:
+        // The RI has four different generated files ...Buffer{B,L,RB,RL}.java
+        // for each of these six files specializing on big endian, little endian,
+        // read-only big endian, and read-only little endian, respectively. Those
+        // 6 x 4 files are generated from a single template:
+        //     java/nio/ByteBufferAs-X-Buffer.java.template
+        //
+        // On Android, the four variants {B,L,RB,RL} for each of the six types
+        // are folded into a single class with behavior configured via additional
+        // constructor arguments.
+        //
+        // For now, we map to upstream's "B" variant; "B" is more similar to
+        // Android's files than "RB" or "RL"; the choice of "B" vs. "L" is arbitrary.
+        for (String s : Arrays.asList("Char", "Double", "Float", "Int", "Long", "Short")) {
+            Path ojluniPath = Paths.get("java/nio/ByteBufferAs" + s + "Buffer.java");
+            Path upstreamPath =
+                    Paths.get("java/nio/ByteBufferAs" + s + "BufferB.java");
+            result.put(ojluniPath, upstreamPath);
+        }
+        return Collections.unmodifiableMap(result);
+    }
 
     protected final Path rootPath;
     protected final String name;
