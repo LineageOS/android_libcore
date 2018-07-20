@@ -56,7 +56,11 @@ class InflaterInputStream extends FilterInputStream {
      */
     protected int len;
 
-    // Android-changed: closed is now protected.
+    // Android-changed: Make closed accessible to subclasses.
+    // This was made protected because it needed to be accessed by
+    // StrictJarFile.ZipInflaterInputStream. Unfortunately, it was not marked as @hide and so it
+    // inadvertently became part of the public API. See http://b/111592689 for more information.
+    // private boolean closed = false;
     protected boolean closed = false;
 
     // this flag is set to true after EOF has reached
@@ -102,6 +106,7 @@ class InflaterInputStream extends FilterInputStream {
     }
 
     // Android-changed: Unconditionally close external inflaters (b/26462400)
+    // See http://b/111630946 for more details.
     // boolean usesDefaultInflater = false;
 
     /**
@@ -163,12 +168,6 @@ class InflaterInputStream extends FilterInputStream {
                     fill();
                 }
             }
-
-            // Android-changed: Eagerly set reachEOF.
-            if (inf.finished()) {
-                reachEOF = true;
-            }
-
             return n;
         } catch (DataFormatException e) {
             String s = e.getMessage();
@@ -190,6 +189,14 @@ class InflaterInputStream extends FilterInputStream {
         ensureOpen();
         if (reachEOF) {
             return 0;
+        // BEGIN Android-added: Return more accurate value from available().
+        // Integrates change http://hg.openjdk.java.net/jdk9/jdk9/jdk/rev/dbcf47bfb044 made as part
+        // of https://bugs.openjdk.java.net/browse/JDK-7031075.
+        } else if (inf.finished()) {
+            // the end of the compressed data stream has been reached
+            reachEOF = true;
+            return 0;
+        // END Android-added: Return more accurate value from available().
         } else {
             return 1;
         }
