@@ -54,7 +54,10 @@ public interface Os {
     public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException;
     public void chmod(String path, int mode) throws ErrnoException;
     public void chown(String path, int uid, int gid) throws ErrnoException;
+
     public void close(FileDescriptor fd) throws ErrnoException;
+    public void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId);
+
     public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
     public FileDescriptor dup(FileDescriptor oldFd) throws ErrnoException;
