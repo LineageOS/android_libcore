@@ -34,6 +34,7 @@ import dalvik.system.CloseGuard;
 import sun.nio.ch.FileChannelImpl;
 import libcore.io.IoBridge;
 import libcore.io.IoTracker;
+import libcore.io.IoUtils;
 
 /**
  * A file output stream is an output stream for writing data to a
@@ -236,6 +237,9 @@ class FileOutputStream extends OutputStream
         BlockGuard.getThreadPolicy().onWriteToDisk();
 
         open(name, append);
+
+        // Android-added: File descriptor ownership tracking.
+        IoUtils.setFdOwner(this.fd, this);
 
         // Android-added: CloseGuard support.
         guard.open("close");

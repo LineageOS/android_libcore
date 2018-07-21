@@ -26,7 +26,9 @@ import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.Random;
+import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
 public final class IoUtils {
@@ -34,17 +36,74 @@ public final class IoUtils {
     }
 
     /**
+     * Acquires ownership of an integer file descriptor from a FileDescriptor.
+     *
+     * This method invalidates the FileDescriptor passed in.
+     *
+     * The important part of this function is that you are taking ownership of a resource that you
+     * must either clean up yourself, or hand off to some other object that does that for you.
+     *
+     * See bionic/include/android/fdsan.h for more details.
+     *
+     * @param fd FileDescriptor to take ownership from, must be non-null.
+     * @throws NullPointerException if fd is null
+     */
+    public static int acquireRawFd(@NonNull FileDescriptor fd) {
+        Objects.requireNonNull(fd);
+
+        FileDescriptor copy = fd.release$();
+        // Get the numeric Unix file descriptor. -1 means it is invalid; for example if
+        // {@link FileDescriptor#release$()} has already been called on the FileDescriptor.
+        int rawFd = copy.getInt$();
+        long previousOwnerId = copy.getOwnerId$();
+        if (rawFd != -1 && previousOwnerId != FileDescriptor.NO_OWNER) {
+          // Clear the file descriptor's owner ID, aborting if the previous value isn't as expected.
+          Libcore.os.android_fdsan_exchange_owner_tag(copy, previousOwnerId,
+                                                      FileDescriptor.NO_OWNER);
+        }
+        return rawFd;
+    }
+
+    /**
+     * Assigns ownership of an unowned FileDescriptor.
+     *
+     * Associates the supplied FileDescriptor and the underlying Unix file descriptor with an owner
+     * ID derived from the supplied {@code owner} object. If the FileDescriptor already has an
+     * associated owner an {@link IllegalStateException} will be thrown. If the underlying Unix
+     * file descriptor already has an associated owner, the process will abort.
+     *
+     * See bionic/include/android/fdsan.h for more details.
+     *
+     * @param fd FileDescriptor to take ownership from, must be non-null.
+     * @throws NullPointerException if fd or owner are null
+     * @throws IllegalStateException if fd is already owned
+     */
+    public static void setFdOwner(@NonNull FileDescriptor fd, @NonNull Object owner) {
+        Objects.requireNonNull(fd);
+        Objects.requireNonNull(owner);
+
+        long previousOwnerId = fd.getOwnerId$();
+        if (previousOwnerId != FileDescriptor.NO_OWNER) {
+            throw new IllegalStateException("Attempted to take ownership of already-owned " +
+                                            "FileDescriptor");
+        }
+
+        // ownerId is not required to be unique but should be stable and should attempt to avoid
+        // collision with identifiers generated both here and in native code (which are simply the
+        // address of the owning object). identityHashCode(Object) meets these requirements.
+        int ownerId = System.identityHashCode(owner);
+        fd.setOwnerId$(ownerId);
+
+        // Set the file descriptor's owner ID, aborting if the previous value isn't as expected.
+        Libcore.os.android_fdsan_exchange_owner_tag(fd, previousOwnerId, ownerId);
+    }
+
+    /**
      * Calls close(2) on 'fd'. Also resets the internal int to -1. Does nothing if 'fd' is null
      * or invalid.
      */
     public static void close(FileDescriptor fd) throws IOException {
-        try {
-            if (fd != null && fd.valid()) {
-                Libcore.os.close(fd);
-            }
-        } catch (ErrnoException errnoException) {
-            throw errnoException.rethrowAsIOException();
-        }
+        IoBridge.closeAndSignalBlockedThreads(fd);
     }
 
     /**
