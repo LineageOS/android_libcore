@@ -528,7 +528,7 @@ public class Attributes implements Map<Object,Object>, Cloneable {
          * <code>Name</code> object for <code>Manifest-Version</code>
          * manifest attribute. This attribute indicates the version number
          * of the manifest standard to which a JAR file's manifest conforms.
-         * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/jar/jar.html#JAR Manifest">
+         * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/jar/jar.html#JAR_Manifest">
          *      Manifest and Signature Specification</a>
          */
         public static final Name MANIFEST_VERSION = new Name("Manifest-Version");
@@ -536,7 +536,7 @@ public class Attributes implements Map<Object,Object>, Cloneable {
         /**
          * <code>Name</code> object for <code>Signature-Version</code>
          * manifest attribute used when signing JAR files.
-         * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/jar/jar.html#JAR Manifest">
+         * @see <a href="{@docRoot}openjdk-redirect.html?v=8&path=/technotes/guides/jar/jar.html#JAR_Manifest">
          *      Manifest and Signature Specification</a>
          */
         public static final Name SIGNATURE_VERSION = new Name("Signature-Version");
@@ -669,10 +669,5 @@ public class Attributes implements Map<Object,Object>, Cloneable {
          *      Java Product Versioning Specification</a>
          */
         public static final Name SPECIFICATION_VENDOR = new Name("Specification-Vendor");
-
-        /**
-         * @hide
-         */
-        public static final Name NAME = new Name("Name");
     }
 }
