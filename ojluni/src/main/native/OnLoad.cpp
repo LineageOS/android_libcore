@@ -61,7 +61,6 @@ extern "C" void register_java_lang_ProcessEnvironment(JNIEnv* env);
 extern "C" void register_java_lang_System(JNIEnv* env);
 extern "C" void register_java_lang_Runtime(JNIEnv* env);
 extern "C" void register_java_lang_UNIXProcess(JNIEnv* env);
-extern "C" void register_java_nio_Bits(JNIEnv* env);
 void register_java_lang_Character(JNIEnv* env);
 
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
@@ -133,7 +132,6 @@ extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void*) {
   register_java_lang_ProcessEnvironment(env);
   register_java_lang_Runtime(env);
   register_java_lang_UNIXProcess(env);
-  register_java_nio_Bits(env);
   register_java_lang_Character(env);
 
   env->PopLocalFrame(/* result */ nullptr);  // Pop the local frame.

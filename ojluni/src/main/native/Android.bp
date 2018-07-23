@@ -57,7 +57,6 @@ filegroup {
         "System.c",
         "Runtime.c",
         "UNIXProcess_md.c",
-        "Bits.c",
         "Character.cpp",
         "socket_tagger_util.cpp",
         "OnLoad.cpp",
