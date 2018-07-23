@@ -119,6 +119,7 @@ public class BlockGuardOsTest {
     @Test
     public void test_checkNewMethodsInPosix() {
         List<String> methodsNotRequireBlockGuardChecks = Arrays.asList(
+                "android_fdsan_exchange_owner_tag(java.io.FileDescriptor,long,long)",
                 "bind(java.io.FileDescriptor,java.net.InetAddress,int)",
                 "bind(java.io.FileDescriptor,java.net.SocketAddress)",
                 "capget(android.system.StructCapUserHeader)",
