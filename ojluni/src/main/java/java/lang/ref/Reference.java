@@ -38,7 +38,7 @@ import dalvik.annotation.optimization.FastNative;
  * @author   Mark Reinhold
  * @since    1.2
  */
-// BEGIN Android-changed: Reimplemented to accomodate a different GC and compiler.
+// BEGIN Android-changed: Reimplemented to accommodate a different GC and compiler.
 // ClassLinker knows about the fields of this class.
 
 public abstract class Reference<T> {
@@ -166,9 +166,9 @@ public abstract class Reference<T> {
         this.referent = referent;
         this.queue = queue;
     }
-    // END Android-changed: Reimplemented to accomodate a different GC and compiler.
+    // END Android-changed: Reimplemented to accommodate a different GC and compiler.
 
-    // BEGIN Android-added: Add reachabilityFence() from upstream OpenJDK9+181.
+    // BEGIN Android-added: reachabilityFence() from upstream OpenJDK9+181.
     // The actual implementation differs from OpenJDK9.
     /**
      * Ensures that the object referenced by the given reference remains
