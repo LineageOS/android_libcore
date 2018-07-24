@@ -59,8 +59,17 @@ class InflaterInputStream extends FilterInputStream {
     // Android-changed: Make closed accessible to subclasses.
     // This was made protected because it needed to be accessed by
     // StrictJarFile.ZipInflaterInputStream. Unfortunately, it was not marked as @hide and so it
-    // inadvertently became part of the public API. See http://b/111592689 for more information.
+    // inadvertently became part of the public API. It will be marked as @removed to remove it from
+    // the public API in a future release of Android. See http://b/111592689 for more information.
     // private boolean closed = false;
+    /**
+     * Indicates whether the {@link #close()} method has been called, internal use only.
+     *
+     * @deprecated This field will be removed from a future version of Android and should not be
+     * used. Subclasses that access this field need to be modified to keep track of their own
+     * closed state by overriding close().
+     */
+    @Deprecated
     protected boolean closed = false;
 
     // this flag is set to true after EOF has reached
