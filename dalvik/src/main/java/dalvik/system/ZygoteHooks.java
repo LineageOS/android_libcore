@@ -16,6 +16,10 @@
 
 package dalvik.system;
 
+import android.icu.impl.CacheValue;
+import android.icu.text.DecimalFormatSymbols;
+import android.icu.util.ULocale;
+
 import java.io.File;
 
 /**
@@ -34,6 +38,46 @@ public final class ZygoteHooks {
     public static native void startZygoteNoThreadCreation();
 
     /**
+     * Called when the zygote begins preloading classes and data.
+     */
+    public static void onBeginPreload() {
+        // Pin ICU data in memory from this point that would normally be held by soft references.
+        // Without this, any references created immediately below or during class preloading
+        // would be collected when the Zygote GC runs in gcAndFinalize().
+        CacheValue.setStrength(CacheValue.Strength.STRONG);
+
+        // Explicitly exercise code to cache data apps are likely to need.
+        ULocale[] localesToPin = { ULocale.ROOT, ULocale.US, ULocale.getDefault() };
+        for (ULocale uLocale : localesToPin) {
+            new DecimalFormatSymbols(uLocale);
+        }
+    }
+
+    /**
+     * Called when the zygote has completed preloading classes and data.
+     */
+    public static void onEndPreload() {
+        // All cache references created by ICU from this point will be soft.
+        CacheValue.setStrength(CacheValue.Strength.SOFT);
+    }
+
+    /**
+     * Runs several special GCs to try to clean up a few generations of
+     * softly- and final-reachable objects, along with any other garbage.
+     * This is only useful just before a fork().
+     */
+    public static void gcAndFinalize() {
+        final VMRuntime runtime = VMRuntime.getRuntime();
+
+        /* runFinalizationSync() lets finalizers be called in Zygote,
+         * which doesn't have a HeapWorker thread.
+         */
+        System.gc();
+        runtime.runFinalizationSync();
+        System.gc();
+    }
+
+    /**
      * Called by the zygote when startup is finished. It marks the point when it is
      * conceivable that threads would be started again, e.g., restarting daemons.
      */
@@ -41,8 +85,8 @@ public final class ZygoteHooks {
 
     /**
      * Called by the zygote prior to every fork. Each call to {@code preFork}
-     * is followed by a matching call to {@link #postForkChild(int, String)} on the child
-     * process and {@link #postForkCommon()} on both the parent and the child
+     * is followed by a matching call to {@link #postForkChild(int, boolean, boolean, String)} on
+     * the child process and {@link #postForkCommon()} on both the parent and the child
      * process. {@code postForkCommon} is called after {@code postForkChild} in
      * the child process.
      */
