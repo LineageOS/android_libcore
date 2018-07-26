@@ -30,10 +30,34 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import dalvik.system.VMStack;
+
 /** Common utility routines used by both java.lang and
     java.lang.reflect */
 
 public class Reflection {
+
+    // Android-removed: Dead code: Misc unused fields and methods.
+
+    // BEGIN Android-changed: getCallerClass() reimplementation.
+    // As of 2018-07 this implementation does not ignore frames
+    // associated with java.lang.reflect.Method.invoke() but this
+    // may change in future, see http://b/111800372 .
+    // Only code that expects or can handle the RI behavior (eg.
+    // code inherited from the RI) should call this method.
+    /*
+    /** Returns the class of the caller of the method calling this method,
+        ignoring frames associated with java.lang.reflect.Method.invoke()
+        and its implementation. *
+    @CallerSensitive
+    public static native Class<?> getCallerClass();
+    */
+    public static Class<?> getCallerClass() {
+        // This method (getCallerClass()) constitutes another stack frame,
+        // so we need to call getStackClass2() rather than getStackClass1().
+        return VMStack.getStackClass2();
+    }
+    // END Android-changed: getCallerClass() reimplementation.
 
     // Android-removed: Dead code: Misc unused fields and methods.
 

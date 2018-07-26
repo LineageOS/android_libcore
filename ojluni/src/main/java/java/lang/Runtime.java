@@ -37,8 +37,9 @@ import java.util.ArrayList;
 import java.util.List;
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.VMDebug;
-import dalvik.system.VMStack;
 import dalvik.system.VMRuntime;
+import sun.reflect.Reflection;
+
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.util.EmptyArray;
@@ -897,7 +898,7 @@ public class Runtime {
      */
     @CallerSensitive
     public void load(String filename) {
-        load0(VMStack.getStackClass1(), filename);
+        load0(Reflection.getCallerClass(), filename);
     }
 
     /** Check target sdk, if it's higher than N, we throw an UnsupportedOperationException */
@@ -984,7 +985,26 @@ public class Runtime {
      */
     @CallerSensitive
     public void loadLibrary(String libname) {
-        loadLibrary0(VMStack.getCallingClassLoader(), libname);
+        loadLibrary0(Reflection.getCallerClass(), libname);
+    }
+
+    // BEGIN Android-changed: Different implementation of loadLibrary0(Class, String).
+    /*
+    synchronized void loadLibrary0(Class<?> fromClass, String libname) {
+        SecurityManager security = System.getSecurityManager();
+        if (security != null) {
+            security.checkLink(libname);
+        }
+        if (libname.indexOf((int)File.separatorChar) != -1) {
+            throw new UnsatisfiedLinkError(
+    "Directory separator should not appear in library name: " + libname);
+        }
+        ClassLoader.loadLibrary(fromClass, libname, false);
+    }
+    */
+    void loadLibrary0(Class<?> fromClass, String libname) {
+        ClassLoader classLoader = ClassLoader.getClassLoader(fromClass);
+        loadLibrary0(classLoader, libname);
     }
 
     /**
@@ -1081,6 +1101,7 @@ public class Runtime {
     }
 
     private static native String nativeLoad(String filename, ClassLoader loader);
+    // END Android-changed: Different implementation of loadLibrary0(Class, String).
 
     /**
      * Creates a localized version of an input stream. This method takes
