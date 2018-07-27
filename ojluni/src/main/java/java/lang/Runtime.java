@@ -1010,7 +1010,10 @@ public class Runtime {
     "Directory separator should not appear in library name: " + libname);
         }
         String libraryName = libname;
-        if (loader != null) {
+        // Android-note: BootClassLoader doesn't implement findLibrary(). http://b/111850480
+        // Android's class.getClassLoader() can return BootClassLoader where the RI would
+        // have returned null; therefore we treat BootClassLoader the same as null here.
+        if (loader != null && !(loader instanceof BootClassLoader)) {
             String filename = loader.findLibrary(libraryName);
             if (filename == null) {
                 // It's not necessarily true that the ClassLoader used
