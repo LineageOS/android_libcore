@@ -1145,7 +1145,7 @@ class Properties extends Hashtable<Object,Object> {
         '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
     };
 
-    // Android-changed: Keep OpenJDK7u40's XmlUtils.
+    // Android-removed: Keep OpenJDK7u40's XmlUtils.
     // XmlSupport's system property based XmlPropertiesProvider
     // selection does not make sense on Android and has too many
     // dependencies on classes that are not available on Android.
