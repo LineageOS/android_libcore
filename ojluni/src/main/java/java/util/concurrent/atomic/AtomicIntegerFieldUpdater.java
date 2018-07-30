@@ -35,7 +35,6 @@
 
 package java.util.concurrent.atomic;
 
-import dalvik.system.VMStack;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
@@ -85,9 +84,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
     public static <U> AtomicIntegerFieldUpdater<U> newUpdater(Class<U> tclass,
                                                               String fieldName) {
         return new AtomicIntegerFieldUpdaterImpl<U>
-            // Android-changed: Use VMStack.getStackClass1.
-            // (tclass, fieldName, Reflection.getCallerClass());
-            (tclass, fieldName, VMStack.getStackClass1());
+            (tclass, fieldName, Reflection.getCallerClass());
     }
 
     /**

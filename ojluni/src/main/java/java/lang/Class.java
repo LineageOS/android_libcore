@@ -57,8 +57,8 @@ import libcore.util.CollectionUtils;
 import libcore.util.EmptyArray;
 
 import dalvik.system.ClassExt;
-import dalvik.system.VMStack;
 import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 
 /**
  * Instances of the class {@code Class} represent classes and
@@ -375,7 +375,8 @@ public final class Class<T> implements java.io.Serializable,
     @CallerSensitive
     public static Class<?> forName(String className)
                 throws ClassNotFoundException {
-        return forName(className, true, VMStack.getCallingClassLoader());
+        Class<?> caller = Reflection.getCallerClass();
+        return forName(className, true, ClassLoader.getClassLoader(caller));
     }
 
 
