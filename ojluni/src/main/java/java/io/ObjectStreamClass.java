@@ -53,7 +53,7 @@ import sun.reflect.CallerSensitive;
 import sun.reflect.Reflection;
 import sun.reflect.misc.ReflectUtil;
 import dalvik.system.VMRuntime;
-import dalvik.system.VMStack;
+
 /**
  * Serialization's descriptor for classes.  It contains the name and
  * serialVersionUID of the class.  The ObjectStreamClass for a specific class
@@ -279,9 +279,8 @@ public class ObjectStreamClass implements Serializable {
         }
         requireInitialized();
         if (System.getSecurityManager() != null) {
-            // Android-changed: Class loader obtained from VMStack
-            if (ReflectUtil.needsPackageAccessCheck(VMStack.getCallingClassLoader(),
-                  cl.getClassLoader())) {
+            Class<?> caller = Reflection.getCallerClass();
+            if (ReflectUtil.needsPackageAccessCheck(caller.getClassLoader(), cl.getClassLoader())) {
                 ReflectUtil.checkPackageAccess(cl);
             }
         }
