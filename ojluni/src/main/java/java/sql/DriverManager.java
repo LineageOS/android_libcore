@@ -26,8 +26,6 @@
 
 package java.sql;
 
-import dalvik.system.VMStack;
-
 import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.security.AccessController;
@@ -35,6 +33,7 @@ import java.security.PrivilegedAction;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 
 // Android-changed line 2 of the javadoc to "{@code DataSource}".
 /**
@@ -188,8 +187,7 @@ public class DriverManager {
     @CallerSensitive
     public static Connection getConnection(String url,
         java.util.Properties info) throws SQLException {
-        // Android-changed: Used VMStack to get the caller's ClassLoader rather than Class.
-        return (getConnection(url, info, VMStack.getCallingClassLoader()));
+        return (getConnection(url, info, Reflection.getCallerClass()));
     }
 
     /**
@@ -217,8 +215,7 @@ public class DriverManager {
             info.put("password", password);
         }
 
-        // Android-changed: Used VMStack to get the caller's ClassLoader rather than Class.
-        return (getConnection(url, info, VMStack.getCallingClassLoader()));
+        return (getConnection(url, info, Reflection.getCallerClass()));
     }
 
     /**
@@ -236,8 +233,7 @@ public class DriverManager {
         throws SQLException {
 
         java.util.Properties info = new java.util.Properties();
-        // Android-changed: Used VMStack to get the caller's ClassLoader rather than Class.
-        return (getConnection(url, info, VMStack.getCallingClassLoader()));
+        return (getConnection(url, info, Reflection.getCallerClass()));
     }
 
     /**
@@ -257,16 +253,14 @@ public class DriverManager {
 
         println("DriverManager.getDriver(\"" + url + "\")");
 
-        // Android-changed: Used VMStack to get the caller's ClassLoader rather than Class.
-        ClassLoader callerClassLoader = VMStack.getCallingClassLoader();
+        Class<?> callerClass = Reflection.getCallerClass();
 
         // Walk through the loaded registeredDrivers attempting to locate someone
         // who understands the given URL.
         for (DriverInfo aDriver : registeredDrivers) {
             // If the caller does not have permission to load the driver then
             // skip it.
-            // Android-changed: Pass caller's ClassLoader rather than Class.
-            if(isDriverAllowed(aDriver.driver, callerClassLoader)) {
+            if(isDriverAllowed(aDriver.driver, callerClass)) {
                 try {
                     if(aDriver.driver.acceptsURL(url)) {
                         // Success!
@@ -331,8 +325,7 @@ public class DriverManager {
 
         DriverInfo aDriver = new DriverInfo(driver);
         if(registeredDrivers.contains(aDriver)) {
-            // Android-changed: Pass caller's ClassLoader rather than Class.
-            if (isDriverAllowed(driver, VMStack.getCallingClassLoader())) {
+            if (isDriverAllowed(driver, Reflection.getCallerClass())) {
                  registeredDrivers.remove(aDriver);
             } else {
                 // If the caller does not have permission to load the driver then
@@ -357,15 +350,13 @@ public class DriverManager {
     public static java.util.Enumeration<Driver> getDrivers() {
         java.util.Vector<Driver> result = new java.util.Vector<Driver>();
 
-        // Android-changed: Used VMStack to get the caller's ClassLoader rather than Class.
-        ClassLoader callerClassLoader = VMStack.getCallingClassLoader();
+        Class<?> callerClass = Reflection.getCallerClass();
 
         // Walk through the loaded registeredDrivers.
         for(DriverInfo aDriver : registeredDrivers) {
             // If the caller does not have permission to load the driver then
             // skip it.
-            // Android-changed: Pass caller's ClassLoader rather than Class.
-            if(isDriverAllowed(aDriver.driver, callerClassLoader)) {
+            if(isDriverAllowed(aDriver.driver, callerClass)) {
                 result.addElement(aDriver.driver);
             } else {
                 println("    skipping: " + aDriver.getClass().getName());
@@ -466,16 +457,12 @@ public class DriverManager {
 
     //------------------------------------------------------------------------
 
-    // BEGIN Android-removed: Unused method
-/*
     // Indicates whether the class object that would be created if the code calling
     // DriverManager is accessible.
     private static boolean isDriverAllowed(Driver driver, Class<?> caller) {
         ClassLoader callerCL = caller != null ? caller.getClassLoader() : null;
         return isDriverAllowed(driver, callerCL);
     }
-*/
-    // END Android-removed: Unused method
 
     private static boolean isDriverAllowed(Driver driver, ClassLoader classLoader) {
         boolean result = false;
@@ -558,17 +545,15 @@ public class DriverManager {
 
 
     //  Worker method called by the public getConnection() methods.
-    // Android-changed: Use ClassLoader instead of Class.
     private static Connection getConnection(
-        String url, java.util.Properties info, ClassLoader callerCL) throws SQLException {
+        String url, java.util.Properties info, Class<?> caller) throws SQLException {
         /*
          * When callerCl is null, we should check the application's
          * (which is invoking this class indirectly)
          * classloader, so that the JDBC driver class outside rt.jar
          * can be loaded from here.
          */
-        // Android-removed: ClassLoader already provided by the caller.
-        // ClassLoader callerCL = caller != null ? caller.getClassLoader() : null;
+        ClassLoader callerCL = caller != null ? caller.getClassLoader() : null;
         synchronized (DriverManager.class) {
             // synchronize loading of the correct classloader.
             if (callerCL == null) {

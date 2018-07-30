@@ -26,7 +26,8 @@
 package sun.misc;
 
 import dalvik.annotation.optimization.FastNative;
-import dalvik.system.VMStack;
+import sun.reflect.Reflection;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -55,11 +56,12 @@ public final class Unsafe {
      * very limited situations.
      */
     public static Unsafe getUnsafe() {
+        Class<?> caller = Reflection.getCallerClass();
         /*
          * Only code on the bootclasspath is allowed to get at the
          * Unsafe instance.
          */
-        ClassLoader calling = VMStack.getCallingClassLoader();
+        ClassLoader calling = (caller == null) ? null : caller.getClassLoader();
         if ((calling != null) && (calling != Unsafe.class.getClassLoader())) {
             throw new SecurityException("Unsafe access denied");
         }

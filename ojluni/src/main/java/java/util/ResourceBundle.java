@@ -59,8 +59,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.jar.JarEntry;
 
-import dalvik.system.VMStack;
 import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 import sun.util.locale.BaseLocale;
 import sun.util.locale.LocaleObjectCache;
 
@@ -467,14 +467,8 @@ public abstract class ResourceBundle {
      * Automatic determination of the ClassLoader to be used to load
      * resources on behalf of the client.
      */
-    // BEGIN Android-changed: Use VMStack.getCallingClassLoader().
-    // The RI uses getLoader(Reflection.getCallerClass()).
-    // On Android, we use getLoader(VMStack.getCallingClassLoader()).
-    // This patch might be reverted in future: http://b/111800372
-    // private static ClassLoader getLoader(Class<?> caller) {
-    //     ClassLoader cl = caller == null ? null : caller.getClassLoader();
-    private static ClassLoader getLoader(ClassLoader cl) {
-    // END Android-changed: Use VMStack.getCallingClassLoader().
+    private static ClassLoader getLoader(Class<?> caller) {
+        ClassLoader cl = caller == null ? null : caller.getClassLoader();
         if (cl == null) {
             // When the caller's loader is the boot class loader, cl is null
             // here. In that case, ClassLoader.getSystemClassLoader() may
@@ -775,9 +769,7 @@ public abstract class ResourceBundle {
     public static final ResourceBundle getBundle(String baseName)
     {
         return getBundleImpl(baseName, Locale.getDefault(),
-                             // Android-changed: Use VMStack.getCallingClassLoader().
-                             // getLoader(Reflection.getCallerClass()),
-                             getLoader(VMStack.getCallingClassLoader()),
+                             getLoader(Reflection.getCallerClass()),
                              getDefaultControl(baseName));
     }
 
@@ -819,9 +811,7 @@ public abstract class ResourceBundle {
     public static final ResourceBundle getBundle(String baseName,
                                                  Control control) {
         return getBundleImpl(baseName, Locale.getDefault(),
-                             // Android-changed: Use VMStack.getCallingClassLoader().
-                             // getLoader(Reflection.getCallerClass()),
-                             getLoader(VMStack.getCallingClassLoader()),
+                             getLoader(Reflection.getCallerClass()),
                              control);
     }
 
@@ -851,9 +841,7 @@ public abstract class ResourceBundle {
                                                  Locale locale)
     {
         return getBundleImpl(baseName, locale,
-                             // Android-changed: Use VMStack.getCallingClassLoader().
-                             // getLoader(Reflection.getCallerClass()),
-                             getLoader(VMStack.getCallingClassLoader()),
+                             getLoader(Reflection.getCallerClass()),
                              getDefaultControl(baseName));
     }
 
@@ -898,9 +886,7 @@ public abstract class ResourceBundle {
     public static final ResourceBundle getBundle(String baseName, Locale targetLocale,
                                                  Control control) {
         return getBundleImpl(baseName, targetLocale,
-                             // Android-changed: Use VMStack.getCallingClassLoader().
-                             // getLoader(Reflection.getCallerClass()),
-                             getLoader(VMStack.getCallingClassLoader()),
+                             getLoader(Reflection.getCallerClass()),
                              control);
     }
 
@@ -1754,9 +1740,7 @@ public abstract class ResourceBundle {
      */
     @CallerSensitive
     public static final void clearCache() {
-        // Android-changed: Use VMStack.getCallingClassLoader().
-        // clearCache(getLoader(Reflection.getCallerClass()));
-        clearCache(getLoader(VMStack.getCallingClassLoader()));
+        clearCache(getLoader(Reflection.getCallerClass()));
     }
 
     /**
