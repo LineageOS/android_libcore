@@ -35,7 +35,6 @@
 
 package java.util.concurrent.atomic;
 
-import dalvik.system.VMStack;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.security.AccessController;
@@ -84,9 +83,7 @@ public abstract class AtomicLongFieldUpdater<T> {
     @CallerSensitive
     public static <U> AtomicLongFieldUpdater<U> newUpdater(Class<U> tclass,
                                                            String fieldName) {
-        // Android-changed: Use VMStack.getStackClass1.
-        // Class<?> caller = Reflection.getCallerClass();
-        Class<?> caller = VMStack.getStackClass1();
+        Class<?> caller = Reflection.getCallerClass();
         if (AtomicLong.VM_SUPPORTS_LONG_CAS)
             return new CASUpdater<U>(tclass, fieldName, caller);
         else

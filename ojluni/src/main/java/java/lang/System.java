@@ -30,7 +30,6 @@ import android.system.ErrnoException;
 import android.system.StructPasswd;
 import android.system.StructUtsname;
 import dalvik.system.VMRuntime;
-import dalvik.system.VMStack;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.nio.channels.Channel;
@@ -44,6 +43,7 @@ import libcore.io.Libcore;
 import libcore.util.TimeZoneDataFiles;
 
 import sun.reflect.CallerSensitive;
+import sun.reflect.Reflection;
 import sun.security.util.SecurityConstants;
 /**
  * The <code>System</code> class contains several useful class fields
@@ -1630,7 +1630,7 @@ public final class System {
      */
     @CallerSensitive
     public static void load(String filename) {
-        Runtime.getRuntime().load0(VMStack.getStackClass1(), filename);
+        Runtime.getRuntime().load0(Reflection.getCallerClass(), filename);
     }
 
     /**
@@ -1666,7 +1666,7 @@ public final class System {
      */
     @CallerSensitive
     public static void loadLibrary(String libname) {
-        Runtime.getRuntime().loadLibrary0(VMStack.getCallingClassLoader(), libname);
+        Runtime.getRuntime().loadLibrary0(Reflection.getCallerClass(), libname);
     }
 
     /**
