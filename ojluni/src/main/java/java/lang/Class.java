@@ -779,6 +779,8 @@ public final class Class<T> implements java.io.Serializable,
         if (isPrimitive()) {
             return null;
         }
+        // Android-note: The RI returns null in the case where Android returns BootClassLoader.
+        // Noted in http://b/111850480#comment3
         return (classLoader == null) ? BootClassLoader.getInstance() : classLoader;
     }
 
