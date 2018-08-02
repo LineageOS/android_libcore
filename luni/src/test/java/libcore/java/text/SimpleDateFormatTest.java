@@ -57,11 +57,16 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         super.tearDown();
     }
 
+    /**
+     * Tests that the default constructor uses the data in the default locale
+     */
     public void testDefaultConstructor_localeUS() {
         SimpleDateFormat sdf = new SimpleDateFormat();
-        sdf.setTimeZone(UTC);
-        assertEquals("M/d/yy h:mm a", sdf.toPattern());
-        assertEquals("1/1/70 12:00 AM", sdf.format(new Date(0)));
+        DateFormat referencedDateFormat = DateFormat.getDateTimeInstance(
+                DateFormat.SHORT, DateFormat.SHORT, Locale.US);
+        Date date = new Date(0);
+
+        assertEquals(referencedDateFormat.format(date), sdf.format(date));
     }
 
     // The RI fails this test.
