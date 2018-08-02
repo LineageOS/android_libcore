@@ -602,6 +602,33 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         assertParseError(" 0", "1");
     }
 
+    // Test that getMaximumIntegerDigits should return value >= 309 by default, even though a
+    // leading optional digit # is provided in the input pattern. 309 is chosen because
+    // it is the upper limit of integer digits when formatting numbers other than BigInteger
+    // and BigDecimal.
+    public void testDefaultGetMaximumIntegerDigits() {
+        Locale originalLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.US);
+            DecimalFormat df = new DecimalFormat();
+            int maxIntegerDigits = df.getMaximumIntegerDigits();
+            assertTrue("getMaximumIntegerDigits should be >= 309, but returns " + maxIntegerDigits,
+                    maxIntegerDigits >= 309);
+
+            String[] patterns = new String[] { "0", "#0", "#.", "#", ".#", "#.#", "#,##0.00",
+                    "#,##0.00%", "#,##0.00%", "¤#,##0.00%", "#00.00", "#,#00.00"
+            };
+            for (String pattern : patterns) {
+                df = new DecimalFormat(pattern);
+                maxIntegerDigits = df.getMaximumIntegerDigits();
+                assertTrue("getMaximumIntegerDigits should be >= 309, but returns "
+                                + maxIntegerDigits, maxIntegerDigits >= 309);
+            }
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
+    }
+
 
     private void assertParseError(String pattern, String input) {
         ParsePosition pos = new ParsePosition(0);
