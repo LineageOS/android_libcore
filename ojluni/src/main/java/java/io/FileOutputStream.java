@@ -26,6 +26,11 @@
 
 package java.io;
 
+import static android.system.OsConstants.O_APPEND;
+import static android.system.OsConstants.O_CREAT;
+import static android.system.OsConstants.O_TRUNC;
+import static android.system.OsConstants.O_WRONLY;
+
 import java.nio.channels.FileChannel;
 
 import dalvik.annotation.optimization.ReachabilitySensitive;
@@ -224,7 +229,11 @@ class FileOutputStream extends OutputStream
         if (file.isInvalid()) {
             throw new FileNotFoundException("Invalid file path");
         }
-        this.fd = new FileDescriptor();
+        // BEGIN Android-changed: Open files through common bridge code.
+        // this.fd = new FileDescriptor();
+        int flags = O_WRONLY | O_CREAT | (append ? O_APPEND : O_TRUNC);
+        this.fd = IoBridge.open(name, flags);
+        // END Android-changed: Open files through common bridge code.
 
         // Android-changed: Tracking mechanism for FileDescriptor sharing.
         // fd.attach(this);
@@ -233,10 +242,8 @@ class FileOutputStream extends OutputStream
         this.append = append;
         this.path = name;
 
-        // Android-added: BlockGuard support.
-        BlockGuard.getThreadPolicy().onWriteToDisk();
-
-        open(name, append);
+        // Android-removed: Open files through common bridge code.
+        // open(name, append);
 
         // Android-added: File descriptor ownership tracking.
         IoUtils.setFdOwner(this.fd, this);

@@ -117,8 +117,11 @@ public class BlockGuardTest extends TestCase {
         try {
             recorder.clear();
 
+            // Opening a file for read triggers:
+            // 1. Read violation from open()
+            // 2. Read violation from EISDIR check
             FileInputStream fis = new FileInputStream(tmpFile);
-            recorder.expectAndClear("onReadFromDisk");
+            recorder.expectAndClear("onReadFromDisk", "onReadFromDisk");
 
             fis.read(new byte[4], 0, 4);
             recorder.expectAndClear("onReadFromDisk");
@@ -139,8 +142,12 @@ public class BlockGuardTest extends TestCase {
         File f = File.createTempFile("foo", "bar");
         recorder.clear();
 
+        // Opening a file for write triggers:
+        // 1. Read violation from open()
+        // 2. Write violation from open()
+        // 3. Read violation from EISDIR check
         FileOutputStream fos = new FileOutputStream(f);
-        recorder.expectAndClear("onWriteToDisk");
+        recorder.expectAndClear("onReadFromDisk", "onWriteToDisk", "onReadFromDisk");
 
         fos.write(new byte[3]);
         recorder.expectAndClear("onWriteToDisk");
@@ -153,6 +160,32 @@ public class BlockGuardTest extends TestCase {
 
         fos.close();
         recorder.expectNoViolations();
+    }
+
+    public void testRandomAccessFile() throws Exception {
+        File f = File.createTempFile("foo", "bar");
+        recorder.clear();
+
+        // Opening a file for write triggers:
+        // 1. Read violation from open()
+        // 2. Write violation from open()
+        // 3. Read violation from EISDIR check
+        RandomAccessFile raf = new RandomAccessFile(f, "rw");
+        recorder.expectAndClear("onReadFromDisk", "onWriteToDisk", "onReadFromDisk");
+
+        raf.seek(0);
+        recorder.expectAndClear("onReadFromDisk");
+
+        raf.length();
+        recorder.expectAndClear("onReadFromDisk");
+
+        raf.read();
+        recorder.expectAndClear("onReadFromDisk");
+
+        raf.write(42);
+        recorder.expectAndClear("onWriteToDisk");
+
+        raf.close();
     }
 
     public void testUnbufferedIO() throws Exception {
