@@ -49,8 +49,6 @@ import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import libcore.icu.LocaleData;

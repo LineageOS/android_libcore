@@ -30,15 +30,21 @@ public final class VMStack {
      *
      * @return the requested class loader, or {@code null} if this is the
      *         bootstrap class loader.
+     * @deprecated Use {@code ClassLoader.getClassLoader(sun.reflect.Reflection.getCallerClass())}.
+     *         Note that that can return {@link BootClassLoader} on Android where the RI
+     *         would have returned null.
      */
     @FastNative
+    @Deprecated
     native public static ClassLoader getCallingClassLoader();
 
     /**
      * Returns the class of the caller's caller.
      *
      * @return the requested class, or {@code null}.
+     * @deprecated Use {@link sun.reflect.Reflection#getCallerClass()}.
      */
+    @Deprecated
     public static Class<?> getStackClass1() {
         return getStackClass2();
     }
