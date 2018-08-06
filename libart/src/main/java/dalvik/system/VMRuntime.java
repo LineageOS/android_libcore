@@ -472,4 +472,9 @@ public final class VMRuntime {
      * behaviour is to dedupe.
      */
     public static native void setDedupeHiddenApiWarnings(boolean dedupe);
+
+    /**
+     * Sets the package name of the app running in this process.
+     */
+    public static native void setProcessPackageName(String packageName);
 }

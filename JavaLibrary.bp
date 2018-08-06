@@ -109,6 +109,22 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+    jacoco: {
+        exclude_filter: [
+            "java.lang.Class",
+            "java.lang.Long",
+            "java.lang.Number",
+            "java.lang.Object",
+            "java.lang.String",
+            "java.lang.invoke.MethodHandle",
+            "java.lang.ref.Reference",
+            "java.lang.reflect.Proxy",
+            "java.util.AbstractMap",
+            "java.util.HashMap",
+            "java.util.HashMap$Node",
+            "java.util.Map",
+        ],
+    },
 
     notice: "ojluni/NOTICE",
 
@@ -136,6 +152,12 @@ java_library {
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
+    },
+    jacoco: {
+        exclude_filter: [
+            "java.lang.DexCache",
+            "dalvik.system.ClassExt",
+        ],
     },
 
     required: [
