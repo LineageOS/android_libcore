@@ -17,13 +17,11 @@
 package dalvik.system;
 
 import android.system.ErrnoException;
-import android.system.StructStat;
 import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -527,6 +525,46 @@ public final class DexFile {
         throws FileNotFoundException;
 
     /**
+     * Encapsulates information about the optimizations performed on a dex file.
+     *
+     * Note that the info is only meant for debugging and is not guaranteed to be
+     * stable across releases and/or devices.
+     *
+     * @hide
+     */
+    public static final class OptimizationInfo {
+        // The optimization status.
+        private final String status;
+        // The optimization reason. The reason might be "unknown" if the
+        // the compiler artifacts were not annotated during optimizations.
+        private final String reason;
+
+        private OptimizationInfo(String status, String reason) {
+            this.status = status;
+            this.reason = reason;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+    }
+
+    /**
+     * Retrieves the optimization info for a dex file.
+     *
+     * @hide
+     */
+    public static OptimizationInfo getDexFileOptimizationInfo(
+            String fileName, String instructionSet) throws FileNotFoundException {
+        String[] status = getDexFileOptimizationStatus(fileName, instructionSet);
+        return new OptimizationInfo(status[0], status[1]);
+    }
+
+    /**
      * Returns the optimization status of the dex file {@code fileName}. The returned
      * array will have 2 elements which specify:
      *   - index 0: the level of optimizations
@@ -538,7 +576,7 @@ public final class DexFile {
      *
      * @hide
      */
-    public static native String[] getDexFileOptimizationStatus(
+    private static native String[] getDexFileOptimizationStatus(
             String fileName, String instructionSet) throws FileNotFoundException;
 
     /**
