@@ -302,6 +302,12 @@ genrule {
     ],
 }
 
+// Make the annotated stubs in ojluni/annotations available to metalava:
+droiddoc_exported_dir {
+    name: "ojluni-annotated-stubs",
+    path: "ojluni/annotations",
+}
+
 //
 // Local droiddoc for faster libcore testing
 //

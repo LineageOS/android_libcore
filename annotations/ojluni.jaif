@@ -453,11 +453,6 @@ class Enum:
     method valueOf(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;:
         return: @libcore.util.NonNull
 
-class Iterable:
-    // Always returns an instance
-    method iterator()Ljava/util/Iterator;:
-        return: @libcore.util.NonNull
-
 class Integer:
     method toString(II)Ljava/lang/String;:
         // Always returns an instance
@@ -2431,17 +2426,6 @@ class HashMap:
 
     method clone()Ljava/lang/Object;:
         return: @libcore.util.NonNull
-
-class Iterator:
-
-    method next()Ljava/lang/Object;:
-        return: @libcore.util.NullFromTypeParam
-
-    method forEachRemaining(Ljava/util/function/Consumer;)V:
-        return:
-        parameter #0:
-            type: @libcore.util.NonNull
-                inner-type 3, 0,2, 0: @libcore.util.NullFromTypeParam
 
 class List:
     method contains(Ljava/lang/Object;)Z:
