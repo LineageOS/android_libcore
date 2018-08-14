@@ -263,7 +263,7 @@ ifeq ($(LIBCORE_SKIP_TESTS),)
         core-test-rules-hostdex \
         junit-params-hostdex \
         mockftpserver-hostdex \
-        mockwebserver-host \
+        mockwebserver-hostdex \
         nist-pkix-tests-host \
         slf4j-jdk14-hostdex \
         sqlite-jdbc-host \
