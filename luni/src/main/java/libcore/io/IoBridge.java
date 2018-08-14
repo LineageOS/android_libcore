@@ -229,10 +229,11 @@ public final class IoBridge {
     }
 
     /**
-     * Closes the Unix file descriptor associated with the supplied file descriptor and sends a
-     * signal to any threads are currently blocking. In order for the signal to be sent the blocked
-     * threads must have registered with the AsynchronousCloseMonitor before they entered the
-     * blocking operation. {@code fd} will be invalid after this call.
+     * Closes the Unix file descriptor associated with the supplied file descriptor, resets the
+     * internal int to -1, and sends a signal to any threads are currently blocking. In order for
+     * the signal to be sent the blocked threads must have registered with the
+     * AsynchronousCloseMonitor before they entered the blocking operation. {@code fd} will be
+     * invalid after this call.
      *
      * <p>This method is a no-op if passed a {@code null} or already-closed file descriptor.
      */
@@ -481,7 +482,7 @@ public final class IoBridge {
         } catch (ErrnoException errnoException) {
             try {
                 if (fd != null) {
-                    IoUtils.close(fd);
+                    closeAndSignalBlockedThreads(fd);
                 }
             } catch (IOException ignored) {
             }
