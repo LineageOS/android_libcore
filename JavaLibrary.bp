@@ -302,6 +302,12 @@ genrule {
     ],
 }
 
+// Make the annotated stubs in ojluni/annotations available to metalava:
+droiddoc_exported_dir {
+    name: "ojluni-annotated-stubs",
+    path: "ojluni/annotations",
+}
+
 //
 // Local droiddoc for faster libcore testing
 //
@@ -309,13 +315,13 @@ genrule {
 //     mm -j32 core-docs
 //
 // Main output:
-//     ../out/soong/.intermediates/libcore/core-docs/android_common/docs/out/reference/packages.html
+//     ../out/soong/.intermediates/libcore/core-docs/android_common/out/reference/packages.html
 //
 // All text for proofreading (or running tools over):
 //     ../out/soong/.intermediates/libcore/core-docs/android_common/core-docs-proofread.txt
 //
 // TODO list of missing javadoc, etc:
-//     ../out/soong/.intermediates/libcore/core-docs/android_common/docs/out/core-docs-todo.html
+//     ../out/soong/.intermediates/libcore/core-docs/android_common/out/core-docs-todo.html
 //
 droiddoc {
     name: "core-docs",
