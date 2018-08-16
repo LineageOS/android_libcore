@@ -51,7 +51,6 @@ java_defaults {
         //"-Xlint:-serial,-deprecation,-unchecked",
     ],
     dxflags: ["--core-library"],
-    no_standard_libs: true,
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
@@ -74,10 +73,14 @@ java_library {
         ":android_icu4j_src_files",
         ":openjdk_lambda_stub_files",
     ],
+
+    no_standard_libs: true,
+    system_modules: "none",
     openjdk9: {
         srcs: ["luni/src/module/java/module-info.java"],
         javacflags: ["--patch-module=java.base=."],
     },
+
     java_resource_dirs: core_resource_dirs,
     java_resources: [":android_icu4j_resources"],
 
@@ -85,8 +88,6 @@ java_library {
         "tzdata",
         "tzlookup.xml",
     ],
-
-    system_modules: "none",
 
     installable: false,
 }
@@ -104,11 +105,14 @@ java_library {
 
     srcs: [":openjdk_java_files"],
     java_resource_dirs: core_resource_dirs,
+
+    no_standard_libs: true,
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+
     jacoco: {
         exclude_filter: [
             "java.lang.Class",
@@ -148,11 +152,13 @@ java_library {
     ],
     java_resources: [":android_icu4j_resources"],
 
+    no_standard_libs: true,
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+
     jacoco: {
         exclude_filter: [
             "java.lang.DexCache",
@@ -216,6 +222,7 @@ java_library {
         ":openjdk_lambda_duplicate_stub_files",
     ],
 
+    no_standard_libs: true,
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -266,12 +273,161 @@ java_library_static {
 }
 
 // Make the jsr166-tests library.
-java_library_static {
+java_test {
     name: "jsr166-tests",
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
     no_framework_libs: true,
     libs: [
         "junit",
+    ],
+}
+
+// Build a library just containing files from luni/src/test/filesystems for use in tests.
+java_library {
+    name: "filesystemstest",
+    compile_dex: true,
+    srcs: ["luni/src/test/filesystems/src/**/*.java"],
+    java_resource_dirs: ["luni/src/test/filesystems/resources"],
+    no_framework_libs: true,
+    errorprone: {
+        javacflags: ["-Xep:MissingOverride:OFF"],
+    },
+}
+
+// Build a library just containing files from luni/src/test/parameter_metadata for use in tests.
+java_library {
+    name: "parameter-metadata-test",
+    compile_dex: true,
+    srcs: ["luni/src/test/parameter_metadata/src/**/*.java"],
+    no_framework_libs: true,
+    javacflags: ["-parameters"],
+    errorprone: {
+        javacflags: ["-Xep:MissingOverride:OFF"],
+    },
+}
+
+// Make the core-tests library.
+java_test {
+    name: "core-tests",
+    defaults: ["libcore_java_defaults"],
+    hostdex: true,
+    srcs: [
+        "dalvik/src/test/java/**/*.java",
+        "dalvik/test-rules/src/test/java/**/*.java",
+        "dom/src/test/java/**/*.java",
+        "harmony-tests/src/test/java/**/*.java",
+        "json/src/test/java/**/*.java",
+        "luni/src/test/java/**/*.java",
+        "xml/src/test/java/**/*.java",
+    ],
+    exclude_srcs: [
+        "luni/src/test/java/libcore/java/util/zip/Zip64Test.java",
+        "luni/src/test/java/libcore/java/util/zip/Zip64FileTest.java",
+    ],
+
+    java_resource_dirs: [
+        "*/src/test/java",
+        "*/src/test/resources",
+    ],
+    exclude_java_resource_dirs: [
+        "ojluni/src/test/java",
+        "ojluni/src/test/resources",
+    ],
+
+    java_resources: [
+        ":filesystemstest",
+        ":parameter-metadata-test",
+    ],
+
+    libs: [
+        "okhttp",
+        "bouncycastle",
+    ],
+    static_libs: [
+        "archive-patcher",
+        "core-test-rules",
+        "core-tests-support",
+        "junit-params",
+        "mockftpserver",
+        "mockito-target",
+        "mockwebserver",
+        "nist-pkix-tests",
+        "slf4j-jdk14",
+        "sqlite-jdbc",
+        "tzdata-testing",
+    ],
+
+    errorprone: {
+        javacflags: [
+            "-Xep:TryFailThrowable:ERROR",
+            "-Xep:ComparisonOutOfRange:ERROR",
+        ],
+    },
+}
+
+// Make the core-ojtests library.
+java_test {
+    name: "core-ojtests",
+    defaults: ["libcore_java_defaults"],
+    hostdex: true,
+
+    srcs: [
+        "ojluni/src/test/java/**/*.java",
+    ],
+    java_resource_dirs: [
+        "ojluni/src/test/java",
+        "ojluni/src/test/resources",
+    ],
+    libs: [
+        "okhttp",
+        "bouncycastle",
+    ],
+    static_libs: ["testng"],
+
+    // ojluni/src/test/java/util/stream/{bootlib,boottest}
+    // contains tests that are in packages from java.base;
+    // By default, OpenJDK 9's javac will only compile such
+    // code if it's declared to also be in java.base at
+    // compile time.
+    //
+    // For now, we use --patch-module to put all sources
+    // and dependencies from this make target into java.base;
+    // other source directories in this make target are in
+    // packages not from java.base; if this becomes a problem
+    // in future, this could be addressed eg. by splitting
+    // boot{lib,test} out into a separate make target,
+    // deleting those tests or moving them to a different
+    // package.
+    patch_module: "java.base",
+}
+
+// Make the core-ojtests-public library. Excludes any private API tests.
+java_test {
+    name: "core-ojtests-public",
+    defaults: ["libcore_java_defaults"],
+    srcs: [
+        "ojluni/src/test/java/**/*.java",
+    ],
+    // Filter out the following:
+    // 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
+    //     and won't actually run, and
+    // 2.) util/stream/boot*. Those directories contain classes in the package java.util.stream;
+    //     excluding them means we don't need patch_module: "java.base"
+    exclude_srcs: [
+        "**/DeserializeMethodTest.java",
+        "**/SerializedLambdaTest.java",
+        "ojluni/src/test/java/util/stream/boot*/**/*",
+    ],
+    java_resource_dirs: [
+        "ojluni/src/test/java",
+        "ojluni/src/test/resources",
+        // Include source code as part of JAR
+        "ojluni/src/test/dist",
+    ],
+    libs: [
+        "bouncycastle",
+        "okhttp",
+        "testng",
     ],
 }
 
