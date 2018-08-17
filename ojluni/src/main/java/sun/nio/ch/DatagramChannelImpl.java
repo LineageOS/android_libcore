@@ -351,16 +351,13 @@ class DatagramChannelImpl
             throw new IllegalArgumentException("Read-only buffer");
         if (dst == null)
             throw new NullPointerException();
-        // Android-added: Do not implicitly to bind to 0 (or 0.0.0.0).
-        // If there hasn't been an explicit call to bind() yet then fail fast and return null.
-        if (localAddress == null)
-            return null;
         synchronized (readLock) {
             ensureOpen();
             // Socket was not bound before attempting receive
-            // Android-removed: Do not implicitly to bind to 0 (or 0.0.0.0).
-            // if (localAddress() == null)
+            // Android-Changed: Do not implicitly to bind to 0 (or 0.0.0.0), return null instead.
+            if (localAddress() == null)
             //     bind(null);
+                return null;
             int n = 0;
             ByteBuffer bb = null;
             try {
