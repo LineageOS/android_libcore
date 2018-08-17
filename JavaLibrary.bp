@@ -311,6 +311,7 @@ java_test {
     name: "core-tests",
     defaults: ["libcore_java_defaults"],
     hostdex: true,
+    no_framework_libs: true,
     srcs: [
         "dalvik/src/test/java/**/*.java",
         "dalvik/test-rules/src/test/java/**/*.java",
@@ -370,6 +371,7 @@ java_test {
     name: "core-ojtests",
     defaults: ["libcore_java_defaults"],
     hostdex: true,
+    no_framework_libs: true,
 
     srcs: [
         "ojluni/src/test/java/**/*.java",
@@ -405,6 +407,7 @@ java_test {
 java_test {
     name: "core-ojtests-public",
     defaults: ["libcore_java_defaults"],
+    no_framework_libs: true,
     srcs: [
         "ojluni/src/test/java/**/*.java",
     ],
