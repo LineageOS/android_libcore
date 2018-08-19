@@ -1035,16 +1035,12 @@ class Thread implements Runnable {
         synchronized (blockerLock) {
             Interruptible b = blocker;
             if (b != null) {
-                // Android-changed: Rename interupt0() native method.
-                // interrupt0();           // Just to set the interrupt flag
-                nativeInterrupt();
+                interrupt0();           // Just to set the interrupt flag
                 b.interrupt(this);
                 return;
             }
         }
-        // Android-changed: Rename interupt0() native method.
-        // interrupt0();
-        nativeInterrupt();
+        interrupt0();
     }
 
     /**
@@ -1229,7 +1225,7 @@ class Thread implements Runnable {
             synchronized(this) {
                 this.priority = newPriority;
                 if (isAlive()) {
-                    nativeSetPriority(newPriority);
+                    setPriority0(newPriority);
                 }
             }
         }
@@ -1269,10 +1265,8 @@ class Thread implements Runnable {
         // Android-changed: Use isAlive() not threadStatus to check whether Thread has started.
         // The threadStatus field is not used in Android.
         // if (threadStatus != 0) {
-        //     setNativeName(name);
-        // }
         if (isAlive()) {
-            nativeSetName(name);
+            setNativeName(name);
         }
     }
 
@@ -2260,26 +2254,23 @@ class Thread implements Runnable {
     int threadLocalRandomSecondarySeed;
     // END Android-changed: @sun.misc.Contended is not supported on Android.
 
-    // BEGIN Android-changed: Android specific native methods.
-    /*
-    /* Some private helper methods *
+    /* Some private helper methods */
     private native void setPriority0(int newPriority);
+
+    // BEGIN Android-removed: Native methods that are unused on Android.
+    /*
     private native void stop0(Object o);
     private native void suspend0();
     private native void resume0();
-    private native void interrupt0();
-    private native void setNativeName(String name);
     */
-
-    private native void nativeSetName(String newName);
-
-    private native void nativeSetPriority(int newPriority);
-
-    private native int nativeGetStatus(boolean hasBeenStarted);
+    // END Android-removed: Native methods that are unused on Android.
 
     @FastNative
-    private native void nativeInterrupt();
-    // END Android-changed: Android specific native methods.
+    private native void interrupt0();
+    private native void setNativeName(String name);
+
+    // Android-added: Android specific nativeGetStatus() method.
+    private native int nativeGetStatus(boolean hasBeenStarted);
 
     // BEGIN Android-added: Support for parking threads, used by Unsafe.park()/unpark().
     /** Park states */
