@@ -18,17 +18,6 @@ _icu_files := \
    )
 _icu_files := $(addprefix external/icu/, $(_icu_files))
 
-
-# Get list of targets annotated with annotations from jaif file
-# Remove un-annotated original source file and replace them with annotated targets
-#
-ojluni_annotate_src := $(patsubst libcore/ojluni/src/main/java/%,%, $(annotated_ojluni_files))
-ojluni_annotate_output := $(patsubst %,$(call intermediates-dir-for,JAVA_LIBRARIES,core-oj,,COMMON)/annotated/%, $(ojluni_annotate_src))
-_libcore_files := $(filter-out $(patsubst %, libcore/ojluni/src/main/java/%, $(ojluni_annotate_src)), $(_libcore_files))
-_libcore_generated_files := $(ojluni_annotate_output)
-ojluni_annotate_src:=
-ojluni_annotate_output:=
-
 # List of libcore-related javadoc source files
 #
 # NOTE: Because libcore-related source spans modules (not just libcore!), files names here are
