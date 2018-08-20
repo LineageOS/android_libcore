@@ -1091,6 +1091,10 @@ static void Linux_chown(JNIEnv* env, jobject, jstring javaPath, jint uid, jint g
 static void Linux_close(JNIEnv* env, jobject, jobject javaFd) {
     // Get the FileDescriptor's 'fd' field and clear it.
     // We need to do this before we can throw an IOException (http://b/3222087).
+    if (javaFd == nullptr) {
+        jniThrowNullPointerException(env, "null fd");
+        return;
+    }
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     jniSetFileDescriptorOfFD(env, javaFd, -1);
 
@@ -2321,10 +2325,18 @@ static jobject Linux_socket(JNIEnv* env, jobject, jint domain, jint type, jint p
 
 static void Linux_socketpair(JNIEnv* env, jobject, jint domain, jint type, jint protocol, jobject javaFd1, jobject javaFd2) {
     int fds[2];
-    int rc = throwIfMinusOne(env, "socketpair", TEMP_FAILURE_RETRY(socketpair(domain, type, protocol, fds)));
-    if (rc != -1) {
-        jniSetFileDescriptorOfFD(env, javaFd1, fds[0]);
-        jniSetFileDescriptorOfFD(env, javaFd2, fds[1]);
+    // Fail fast to avoid leaking file descriptors if either FileDescriptor is null.
+    if (javaFd1 == nullptr) {
+        jniThrowNullPointerException(env, "null fd1");
+    } else if (javaFd2 == nullptr) {
+        jniThrowNullPointerException(env, "null fd2");
+    } else {
+        int rc = throwIfMinusOne(env, "socketpair",
+                TEMP_FAILURE_RETRY(socketpair(domain, type, protocol, fds)));
+        if (rc != -1) {
+            jniSetFileDescriptorOfFD(env, javaFd1, fds[0]);
+            jniSetFileDescriptorOfFD(env, javaFd2, fds[1]);
+        }
     }
 }
 
