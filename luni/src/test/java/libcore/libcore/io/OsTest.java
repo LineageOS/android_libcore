@@ -1014,7 +1014,7 @@ public class OsTest extends TestCase {
   public void testCloseNullFileDescriptor() throws Exception {
     try {
       Libcore.rawOs.close(null);
-      fail("NullPointerException expected");
+      fail();
     } catch (NullPointerException expected) {
     }
   }
@@ -1022,7 +1022,7 @@ public class OsTest extends TestCase {
   public void testSocketpairNullFileDescriptor1() throws Exception {
     try {
       Libcore.rawOs.socketpair(AF_UNIX, SOCK_STREAM, 0, null, new FileDescriptor());
-      fail("NullPointerException expected");
+      fail();
     } catch (NullPointerException expected) {
     }
   }
@@ -1030,7 +1030,7 @@ public class OsTest extends TestCase {
   public void testSocketpairNullFileDescriptor2() throws Exception {
     try {
       Libcore.rawOs.socketpair(AF_UNIX, SOCK_STREAM, 0, new FileDescriptor(), null);
-      fail("NullPointerException expected");
+      fail();
     } catch (NullPointerException expected) {
     }
   }
@@ -1038,7 +1038,7 @@ public class OsTest extends TestCase {
   public void testSocketpairNullFileDescriptorBoth() throws Exception {
     try {
       Libcore.rawOs.socketpair(AF_UNIX, SOCK_STREAM, 0, null, null);
-      fail("NullPointerException expected");
+      fail();
     } catch (NullPointerException expected) {
     }
   }
