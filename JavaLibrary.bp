@@ -502,8 +502,7 @@ droiddoc {
     ],
     proofread_file: "core-docs-proofread.txt",
     todo_file: "core-docs-todo.html",
-    metalava_enabled: true,
-    args: " --exclude-annotations --generate-documentation -offlinemode -title \"libcore\"",
+    args: "-offlinemode -title \"libcore\"",
 }
 
 droiddoc {
@@ -540,10 +539,10 @@ droiddoc {
     exclude_srcs: [
         ":annotated_ojluni_files",
     ],
+    custom_template: "droiddoc-templates-sdk",
     installable: false,
     no_framework_libs: true,
-    metalava_enabled: true,
-    args: " --exclude-annotations",
+    args: "-nodocs",
 }
 
 java_library_static {
