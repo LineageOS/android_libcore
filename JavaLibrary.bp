@@ -470,7 +470,8 @@ droiddoc {
     ],
     proofread_file: "core-docs-proofread.txt",
     todo_file: "core-docs-todo.html",
-    args: "-offlinemode -title \"libcore\"",
+    metalava_enabled: true,
+    args: " --exclude-annotations --generate-documentation -offlinemode -title \"libcore\"",
 }
 
 droiddoc {
@@ -499,10 +500,10 @@ droiddoc {
         ":non_openjdk_javadoc_files",
         ":android_icu4j_src_files_for_docs",
     ],
-    custom_template: "droiddoc-templates-sdk",
     installable: false,
     no_framework_libs: true,
-    args: "-nodocs",
+    metalava_enabled: true,
+    args: " --exclude-annotations",
 }
 
 java_library_static {
