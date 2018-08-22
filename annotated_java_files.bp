@@ -1,8 +1,0 @@
-// Do not edit; generated using libcore/annotations/generate_annotated_java_files.py
-filegroup {
-    name: "annotated_ojluni_files",
-    export_to_make_var: "annotated_ojluni_files",
-    srcs: [
-        "ojluni/src/main/java/java/io/PrintWriter.java",
-    ],
-}

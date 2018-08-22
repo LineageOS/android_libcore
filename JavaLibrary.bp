@@ -35,7 +35,6 @@
 build = [
     "openjdk_java_files.bp",
     "non_openjdk_java_files.bp",
-    "annotated_java_files.bp",
 ]
 
 // The Java files and their associated resources.
@@ -434,33 +433,6 @@ java_test {
     ],
 }
 
-genrule {
-    name: "gen-ojluni-jaif-annotated-srcs",
-    tools: [
-        "gen-annotated-java-files-bp",
-        "soong_zip",
-    ],
-    tool_files: [
-        ":insert-annotations-to-source",
-        "annotations/ojluni.jaif",
-    ],
-    srcs: [
-        ":annotated_ojluni_files",
-    ],
-    cmd: "($(location gen-annotated-java-files-bp) $(location annotations/ojluni.jaif) > $(genDir)/annotated_java_files.bp.tmp) && " +
-         "(diff -u `pwd`/libcore/annotated_java_files.bp $(genDir)/annotated_java_files.bp.tmp || " +
-         "(echo -e \"********************\" >&2; " +
-         " echo -e \"annotated_java_files.bp needs regenerating. Please run:\" >&2; " +
-         " echo -e \"libcore/annotations/generate_annotated_java_files.py libcore/annotations/ojluni.jaif > libcore/annotated_java_files.bp\" >&2; " +
-         " echo -e \"********************\" >&2; exit 1) ) && " +
-         "(rm $(genDir)/annotated_java_files.bp.tmp) && " +
-         "(external/annotation-tools/annotation-file-utilities/scripts/insert-annotations-to-source -d $(genDir) $(location annotations/ojluni.jaif) $(in)) && " +
-         "($(location soong_zip) -o $(out) -C $(genDir) -D $(genDir))",
-    out: [
-        "ojluni_jaif_annotated_srcs.srcjar",
-    ],
-}
-
 // Make the annotated stubs in ojluni/annotations available to metalava:
 droiddoc_exported_dir {
     name: "ojluni-annotated-stubs",
@@ -488,10 +460,6 @@ droiddoc {
         ":openjdk_javadoc_files",
         ":non_openjdk_javadoc_files",
         ":android_icu4j_src_files_for_docs",
-        ":gen-ojluni-jaif-annotated-srcs",
-    ],
-    exclude_srcs: [
-        ":annotated_ojluni_files",
     ],
     custom_template: "droiddoc-templates-sdk",
     hdf: [
@@ -511,10 +479,6 @@ droiddoc {
         ":openjdk_javadoc_files",
         ":non_openjdk_javadoc_files",
         ":android_icu4j_src_files_for_docs",
-        ":gen-ojluni-jaif-annotated-srcs",
-    ],
-    exclude_srcs: [
-        ":annotated_ojluni_files",
     ],
     metalava_enabled: true,
     dokka_enabled: true,
@@ -534,10 +498,6 @@ droiddoc {
         ":openjdk_javadoc_files",
         ":non_openjdk_javadoc_files",
         ":android_icu4j_src_files_for_docs",
-        ":gen-ojluni-jaif-annotated-srcs",
-    ],
-    exclude_srcs: [
-        ":annotated_ojluni_files",
     ],
     custom_template: "droiddoc-templates-sdk",
     installable: false,
