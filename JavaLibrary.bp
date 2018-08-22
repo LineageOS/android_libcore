@@ -363,6 +363,8 @@ java_test {
             "-Xep:ComparisonOutOfRange:ERROR",
         ],
     },
+
+    test_config: "AndroidTest-core-tests.xml",
 }
 
 // Make the core-ojtests library.
