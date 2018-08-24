@@ -16,9 +16,14 @@
 
 package libcore.icu;
 
+import android.icu.impl.ICUData;
+import android.icu.impl.ICUResourceBundle;
+import android.icu.text.NumberingSystem;
+import android.icu.util.UResourceBundle;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import libcore.util.Objects;
 
 /**
@@ -200,6 +205,9 @@ public final class LocaleData {
             throw new AssertionError("couldn't initialize LocaleData for locale " + locale);
         }
 
+        // Libcore localizes pattern separator while ICU doesn't. http://b/112080617
+        initializePatternSeparator(localeData, locale);
+
         // Get the SHORT and MEDIUM 12- and 24-hour time format strings.
         localeData.timeFormat_hm = ICU.getBestDateTimePattern("hm", locale);
         localeData.timeFormat_Hm = ICU.getBestDateTimePattern("Hm", locale);
@@ -225,5 +233,46 @@ public final class LocaleData {
             localeData.integerPattern = localeData.numberPattern.replaceAll("\\.[#,]*", "");
         }
         return localeData;
+    }
+
+    // Libcore localizes pattern separator while ICU doesn't. http://b/112080617
+    private static void initializePatternSeparator(LocaleData localeData, Locale locale) {
+        NumberingSystem ns = NumberingSystem.getInstance(locale);
+        // A numbering system could be numeric or algorithmic. DecimalFormat can only use
+        // a numeric and decimal-based (radix == 10) system. Fallback to a Latin, a known numeric
+        // and decimal-based if the default numbering system isn't. All locales should have data
+        // for Latin numbering system after locale data fallback. See Numbering system section
+        // in Unicode Technical Standard #35 for more details.
+        String nsName = ns != null && ns.getRadix() == 10 && !ns.isAlgorithmic()
+            ? ns.getName() : "latn";
+        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
+            ICUData.ICU_BASE_NAME, locale);
+        String patternSeparator = null;
+        // The fallback of number format data isn't well-specified in the spec.
+        // But the separator can't be null / empty, and ICU uses Latin numbering system
+        // as fallback.
+        if (!"latn".equals(nsName)) {
+            try {
+                patternSeparator = rb.getStringWithFallback(
+                    "NumberElements/" + nsName +"/symbols/list");
+            } catch (MissingResourceException e) {
+                // Try Latin numbering system later
+            }
+        }
+
+        if (patternSeparator == null) {
+            try {
+                patternSeparator = rb.getStringWithFallback("NumberElements/latn/symbols/list");
+            } catch (MissingResourceException e) {
+                // Fallback to the default separator ';'.
+            }
+        }
+
+        if (patternSeparator == null || patternSeparator.isEmpty()) {
+            patternSeparator = ";";
+        }
+
+        // Pattern separator in libcore supports single java character only.
+        localeData.patternSeparator = patternSeparator.charAt(0);
     }
 }
