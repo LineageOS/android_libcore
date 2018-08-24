@@ -572,6 +572,31 @@ public class DecimalFormatTest extends junit.framework.TestCase {
     }
 
     /**
+     * Pattern separator should be localized. http://b/112080617
+     */
+    public void testPatternSeparator() {
+        // Test US locale
+        {
+            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(Locale.US);
+            assertEquals(';', df.getDecimalFormatSymbols().getPatternSeparator());
+            // toLocalizedPattern() returns no pattern separator when input pattern has no prefix.
+            // Add prefixes 'AAA'/'BBB' to force pattern separator in output pattern.
+            df.applyLocalizedPattern("'AAA'+0;'BBB'-0");
+            assertEquals("'AAA'+#0;'BBB'-#0", df.toLocalizedPattern());
+            assertEquals("BBB-123", df.format(-123));
+        }
+        // Test a locale using non-ascii-semi-colon pattern separator.
+        {
+            DecimalFormat df = (DecimalFormat) NumberFormat.getInstance(
+                Locale.forLanguageTag("ar-EG"));
+            assertEquals('\u061b', df.getDecimalFormatSymbols().getPatternSeparator());
+            df.applyLocalizedPattern("'AAA'+\u0660\u061b'BBB'-\u0660");
+            assertEquals("'AAA'+#\u0660\u061b'BBB'-#\u0660", df.toLocalizedPattern());
+            assertEquals("BBB-\u0661\u0662\u0663", df.format(-123));
+        }
+    }
+
+    /**
      * Returns DecimalFormat instances created in different ways:
      * <ol>
      * <li>Using an implicit DecimalFormatSymbols created using the default locale.</li>
