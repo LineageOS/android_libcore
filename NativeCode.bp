@@ -21,7 +21,6 @@
 cc_defaults {
     name: "core_native_default_flags",
     host_supported: true,
-    local_include_dirs: ["include"],
     cflags: [
         "-Wall",
         "-Wextra",
