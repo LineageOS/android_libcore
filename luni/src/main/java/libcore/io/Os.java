@@ -57,6 +57,9 @@ public interface Os {
 
     public void close(FileDescriptor fd) throws ErrnoException;
     public void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId);
+    public long android_fdsan_get_owner_tag(FileDescriptor fd);
+    public String android_fdsan_get_tag_type(long tag);
+    public long android_fdsan_get_tag_value(long tag);
 
     public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;

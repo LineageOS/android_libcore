@@ -71,6 +71,9 @@ public class ForwardingOs implements Os {
     public void chown(String path, int uid, int gid) throws ErrnoException { os.chown(path, uid, gid); }
     public void close(FileDescriptor fd) throws ErrnoException { os.close(fd); }
     public void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId) { os.android_fdsan_exchange_owner_tag(fd, previousOwnerId, newOwnerId); }
+    public long android_fdsan_get_owner_tag(FileDescriptor fd) { return os.android_fdsan_get_owner_tag(fd); }
+    public String android_fdsan_get_tag_type(long tag) { return os.android_fdsan_get_tag_type(tag); }
+    public long android_fdsan_get_tag_value(long tag) { return os.android_fdsan_get_tag_value(tag); }
 
     public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { os.connect(fd, address, port); }
     public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { os.connect(fd, address); }

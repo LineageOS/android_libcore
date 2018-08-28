@@ -1123,6 +1123,35 @@ static void Linux_android_fdsan_exchange_owner_tag(JNIEnv* env, jclass,
 #endif
 }
 
+static jlong Linux_android_fdsan_get_owner_tag(JNIEnv* env, jclass, jobject javaFd) {
+#if defined(__BIONIC__)
+    int fd = jniGetFDFromFileDescriptor(env, javaFd);
+    return android_fdsan_get_owner_tag(fd);
+#else
+    UNUSED(env, javaFd);
+    return 0;
+#endif
+}
+
+static jstring Linux_android_fdsan_get_tag_type(JNIEnv* env, jclass, jlong tag) {
+#if defined(__BIONIC__)
+    return env->NewStringUTF(android_fdsan_get_tag_type(tag));
+#else
+    UNUSED(tag);
+    return env->NewStringUTF("unknown");
+#endif
+}
+
+static jlong Linux_android_fdsan_get_tag_value(JNIEnv* env, jclass, jlong tag) {
+#if defined(__BIONIC__)
+    UNUSED(env);
+    return android_fdsan_get_tag_value(tag);
+#else
+    UNUSED(env, tag);
+    return 0;
+#endif
+}
+
 static void Linux_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress, jint port) {
     (void) NET_IPV4_FALLBACK(env, int, connect, javaFd, javaAddress, port, NULL_ADDR_FORBIDDEN);
 }
@@ -2504,6 +2533,9 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, accept, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)Ljava/io/FileDescriptor;"),
     NATIVE_METHOD(Linux, access, "(Ljava/lang/String;I)Z"),
     NATIVE_METHOD(Linux, android_fdsan_exchange_owner_tag, "(Ljava/io/FileDescriptor;JJ)V"),
+    NATIVE_METHOD(Linux, android_fdsan_get_owner_tag, "(Ljava/io/FileDescriptor;)J"),
+    NATIVE_METHOD(Linux, android_fdsan_get_tag_type, "(J)Ljava/lang/String;"),
+    NATIVE_METHOD(Linux, android_fdsan_get_tag_value, "(J)J"),
     NATIVE_METHOD(Linux, android_getaddrinfo, "(Ljava/lang/String;Landroid/system/StructAddrinfo;I)[Ljava/net/InetAddress;"),
     NATIVE_METHOD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
     NATIVE_METHOD_OVERLOAD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),

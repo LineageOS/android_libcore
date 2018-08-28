@@ -63,6 +63,9 @@ public final class Linux implements Os {
 
     public native void close(FileDescriptor fd) throws ErrnoException;
     public native void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId);
+    public native long android_fdsan_get_owner_tag(FileDescriptor fd);
+    public native String android_fdsan_get_tag_type(long tag);
+    public native long android_fdsan_get_tag_value(long tag);
 
     public native void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public native void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
