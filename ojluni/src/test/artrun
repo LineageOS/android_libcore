@@ -103,6 +103,7 @@ core-libart-hostdex.jar
 conscrypt-hostdex.jar
 core-ojtests-hostdex.jar  # This is the *one* addition that makes our OJ tests actually run. The rest of these are standard jars on the bootclasspath.
 core-oj-hostdex.jar
+core-simple-hostdex.jar
 okhttp-hostdex.jar)
 
 BOOT_DEXJAR_PREFIX="$ANDROID_ROOT/framework"

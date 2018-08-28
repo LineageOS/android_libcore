@@ -12,12 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-java_library {
-    name: "core-simple",
+java_defaults {
+    name: "core-simple-defaults",
     srcs: [ "src/main/java/**/*.java" ],
     installable: true,
+    no_standard_libs: true,
     no_framework_libs: true,
+    libs: [
+        "core-oj",
+        "core-libart",
+    ],
+    system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
+}
+
+java_library {
+    name: "core-simple",
+    hostdex: true,
+    defaults: ["core-simple-defaults"],
+}
+
+// A guaranteed unstripped version of core-simple.
+// The build system may or may not strip the core-simple jar
+// but this will not be stripped. See b/24535627.
+java_library {
+    name: "core-simple-testdex",
+    defaults: ["core-simple-defaults"],
+    dex_preopt: {
+        enabled: false,
+    },
 }
 
 java_test {
