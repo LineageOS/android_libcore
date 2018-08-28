@@ -1,0 +1,113 @@
+// Copyright (C) 2018 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+filegroup {
+    name: "core_simple_mmodule_java_files",
+    srcs: ["src/main/java/**/*.java"]
+}
+
+java_defaults {
+    name: "core-simple-mmodule-defaults",
+    srcs: [":core_simple_mmodule_java_files"],
+    installable: true,
+    no_framework_libs: true,
+
+    // As a logical part of the set of core-* libs we cannot use
+    // no_standard_libs: false here because core-simple is one of the default
+    // standard libs and that leads to a cycle. core-simple can depend on
+    // core-oj and core-libart and there can be dependencies from core-libart
+    // or core-oj back onto core-simple. So, we deliberately compile against
+    // core-all to avoid cycles.
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+
+    dxflags: ["--core-library"],
+}
+
+// A library containing the implementation of the core-simple mmodule.
+java_library {
+    name: "core-simple",
+    hostdex: true,
+    defaults: ["core-simple-mmodule-defaults"],
+}
+
+// A guaranteed unstripped version of core-simple.
+// The build system may or may not strip the core-simple jar
+// but this will not be stripped. See b/24535627.
+java_library {
+    name: "core-simple-testdex",
+    defaults: ["core-simple-mmodule-defaults"],
+    dex_preopt: {
+        enabled: false,
+    },
+}
+
+// Tests associated with the core-simple mmodule.
+java_test {
+    name: "core-simple-mmodule-test",
+    srcs: [ "src/test/java/**/*.java" ],
+    no_framework_libs: true,
+
+    no_standard_libs: true,
+    libs: [
+          // We depend on stubs not the impl code. We do not test mmodule
+          // internals, just the {public SDK API + intra-core mmodule API}.
+          "core-all.mmodule.stubs",
+          // Other deps needed for tests.
+          "junit",
+    ],
+    system_modules: "core-all-mmodule-stubs-system-modules",
+}
+
+// Generates stub source files for the {public SDK API + intra-core mmodule API}
+// of the core-simple mmodule.
+droiddoc {
+    name: "core-simple-mmodule-stubs-docs",
+    srcs: [":core_simple_mmodule_java_files"],
+    installable: false,
+    no_framework_libs: true,
+    metalava_enabled: true,
+    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
+}
+
+// A library containing the {public SDK API + intra-core mmodule API} stubs for
+// the core-simple mmodule.
+java_library {
+    name: "core-simple.mmodule.stubs",
+    srcs: [
+      ":core-simple-mmodule-stubs-docs",
+    ],
+
+    no_framework_libs: true,
+
+    no_standard_libs: true,
+    // We use core-all.mmodule.stubs here to prove that we have all the
+    // dependencies needed to compile the mmodule stubs within the stubs, i.e.
+    // there are no non-API references.
+    libs: ["core-all.mmodule.stubs"],
+    system_modules: "core-all-mmodule-stubs-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
+java_system_modules {
+    name: "core-all-mmodule-stubs-system-modules",
+    libs: ["core-all.mmodule.stubs"],
+}
+
