@@ -64,6 +64,47 @@ public final class IoUtils {
         return rawFd;
     }
 
+    private static boolean isParcelFileDescriptor(Object object) {
+        // We need to look up ParcelFileDescriptor dynamically, because there are cases where the
+        // framework classes will not be found on the classpath such as on-host development.
+        try {
+            Class<?> pfdClass = Class.forName("android.os.ParcelFileDescriptor");
+            if (pfdClass.isInstance(object)) {
+                return true;
+            }
+            return false;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        }
+    }
+
+    private static long generateFdOwnerId(Object owner) {
+        if (owner == null) {
+            return 0;
+        }
+
+        // Type values from bionic's <android/fdsan.h>.
+        long tagType;
+        if (owner instanceof java.io.FileInputStream) {
+            tagType = 5;
+        } else if (owner instanceof java.io.FileOutputStream) {
+            tagType = 6;
+        } else if (owner instanceof java.io.RandomAccessFile) {
+            tagType = 7;
+        } else if (isParcelFileDescriptor(owner)) {
+            tagType = 8;
+        } else {
+            // Generic Java type.
+            tagType = 255;
+        }
+
+        // The owner ID is not required to be unique but should be stable and attempt to avoid
+        // collision with identifiers generated both here and in native code (which are simply the
+        // address of the owning object). identityHashCode(Object) meets these requirements.
+        long tagValue = System.identityHashCode(owner);
+        return tagType << 56 | tagValue;
+    }
+
     /**
      * Assigns ownership of an unowned FileDescriptor.
      *
@@ -88,10 +129,7 @@ public final class IoUtils {
                                             "FileDescriptor");
         }
 
-        // ownerId is not required to be unique but should be stable and should attempt to avoid
-        // collision with identifiers generated both here and in native code (which are simply the
-        // address of the owning object). identityHashCode(Object) meets these requirements.
-        int ownerId = System.identityHashCode(owner);
+        long ownerId = generateFdOwnerId(owner);
         fd.setOwnerId$(ownerId);
 
         // Set the file descriptor's owner ID, aborting if the previous value isn't as expected.
