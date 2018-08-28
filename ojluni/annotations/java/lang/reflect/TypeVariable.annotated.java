@@ -30,10 +30,9 @@ package java.lang.reflect;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public interface TypeVariable<D extends java.lang.reflect.GenericDeclaration> extends java.lang.reflect.Type {
 
-@libcore.util.NonNull public java.lang.reflect.Type[] getBounds();
+public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getBounds();
 
 @libcore.util.NonNull public D getGenericDeclaration();
 
 @libcore.util.NonNull public java.lang.String getName();
 }
-

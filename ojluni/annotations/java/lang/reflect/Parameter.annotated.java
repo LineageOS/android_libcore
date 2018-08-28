@@ -60,12 +60,11 @@ public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Cla
 
 public <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.annotation.Annotation[] getDeclaredAnnotations() { throw new RuntimeException("Stub!"); }
+public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations() { throw new RuntimeException("Stub!"); }
 
 public <T extends java.lang.annotation.Annotation> T getDeclaredAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 public <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.annotation.Annotation[] getAnnotations() { throw new RuntimeException("Stub!"); }
+public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getAnnotations() { throw new RuntimeException("Stub!"); }
 }
-

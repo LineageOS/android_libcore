@@ -26,15 +26,11 @@
 package java.util;
 
 import java.util.function.Consumer;
-import libcore.annotation.NonNull;
-import libcore.annotation.NullFromTypeParam;
 
 public interface Iterator<E> {
 
   public boolean hasNext();
-  public @NullFromTypeParam E next();
+  public @libcore.util.NullFromTypeParam E next();
   public default void remove() { throw new RuntimeException("Stub!"); }
-  public default void forEachRemaining(@NonNull Consumer<? super @NullFromTypeParam E> action) { throw new RuntimeException("Stub!"); }
+  public default void forEachRemaining(@libcore.util.NonNull Consumer<? super @libcore.util.NullFromTypeParam E> action) { throw new RuntimeException("Stub!"); }
 }
-
-

@@ -107,13 +107,13 @@ public void println(@libcore.util.Nullable java.lang.String x) { throw new Runti
 
 public void println(@libcore.util.Nullable java.lang.Object x) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.io.PrintWriter printf(@libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.io.PrintWriter printf(@libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.io.PrintWriter printf(@libcore.util.Nullable java.util.Locale l, @libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.io.PrintWriter printf(@libcore.util.Nullable java.util.Locale l, @libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.io.PrintWriter format(@libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.io.PrintWriter format(@libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.io.PrintWriter format(@libcore.util.Nullable java.util.Locale l, @libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.io.PrintWriter format(@libcore.util.Nullable java.util.Locale l, @libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.io.PrintWriter append(@libcore.util.Nullable java.lang.CharSequence csq) { throw new RuntimeException("Stub!"); }
 
@@ -123,4 +123,3 @@ public void println(@libcore.util.Nullable java.lang.Object x) { throw new Runti
 
 protected java.io.Writer out;
 }
-

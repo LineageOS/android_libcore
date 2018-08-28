@@ -73,7 +73,7 @@ public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.lang.ClassLoader getClassLoader() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public synchronized java.lang.reflect.TypeVariable<java.lang.Class<T>>[] getTypeParameters() { throw new RuntimeException("Stub!"); }
+public synchronized java.lang.reflect.@libcore.util.NonNull TypeVariable<java.lang.@libcore.util.NonNull Class<T>> @libcore.util.NonNull [] getTypeParameters() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.lang.Class<? super T> getSuperclass() { throw new RuntimeException("Stub!"); }
 
@@ -81,15 +81,15 @@ public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.lang.Package getPackage() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Class<?>[] getInterfaces() { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull [] getInterfaces() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Type[] getGenericInterfaces() { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getGenericInterfaces() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.lang.Class<?> getComponentType() { throw new RuntimeException("Stub!"); }
 
 public int getModifiers() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Object[] getSigners() { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull Object @libcore.util.Nullable [] getSigners() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.lang.reflect.Method getEnclosingMethod() { throw new RuntimeException("Stub!"); }
 
@@ -111,33 +111,33 @@ public boolean isLocalClass() { throw new RuntimeException("Stub!"); }
 
 public boolean isMemberClass() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Class<?>[] getClasses() { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull [] getClasses() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Field[] getFields() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Field @libcore.util.NonNull [] getFields() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Method[] getMethods() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Method @libcore.util.NonNull [] getMethods() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Constructor<?>[] getConstructors() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Constructor<?> @libcore.util.NonNull [] getConstructors() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.reflect.Field getField(@libcore.util.NonNull java.lang.String name) throws java.lang.NoSuchFieldException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Method getMethod(@libcore.util.NonNull java.lang.String name, @libcore.util.NonNull java.lang.Class<?>... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.reflect.Method getMethod(@libcore.util.NonNull java.lang.String name, java.lang.@libcore.util.NonNull Class<?> @libcore.util.Nullable ... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Constructor<T> getConstructor(@libcore.util.NonNull java.lang.Class<?>... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.reflect.Constructor<T> getConstructor(java.lang.@libcore.util.NonNull Class<?> @libcore.util.Nullable ... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public native java.lang.Class<?>[] getDeclaredClasses();
+public native java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull [] getDeclaredClasses();
 
-@libcore.util.NonNull public native java.lang.reflect.Field[] getDeclaredFields();
+public native java.lang.reflect.@libcore.util.NonNull Field @libcore.util.NonNull [] getDeclaredFields();
 
-@libcore.util.NonNull public java.lang.reflect.Method[] getDeclaredMethods() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Method @libcore.util.NonNull [] getDeclaredMethods() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Constructor<?>[] getDeclaredConstructors() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+public java.lang.reflect.@libcore.util.NonNull Constructor<?> @libcore.util.NonNull [] getDeclaredConstructors() throws java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public native java.lang.reflect.Field getDeclaredField(@libcore.util.NonNull java.lang.String name) throws java.lang.NoSuchFieldException;
 
-@libcore.util.NonNull public java.lang.reflect.Method getDeclaredMethod(@libcore.util.NonNull java.lang.String name, @libcore.util.NonNull java.lang.Class<?>... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.reflect.Method getDeclaredMethod(@libcore.util.NonNull java.lang.String name, java.lang.@libcore.util.NonNull Class<?> @libcore.util.Nullable ... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Constructor<T> getDeclaredConstructor(@libcore.util.NonNull java.lang.Class<?>... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.reflect.Constructor<T> getDeclaredConstructor(java.lang.@libcore.util.NonNull Class<?> @libcore.util.Nullable ... parameterTypes) throws java.lang.NoSuchMethodException, java.lang.SecurityException { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public java.io.InputStream getResourceAsStream(@libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
 
@@ -149,7 +149,8 @@ public boolean desiredAssertionStatus() { throw new RuntimeException("Stub!"); }
 
 public boolean isEnum() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public T[] getEnumConstants() { throw new RuntimeException("Stub!"); }
+// TODO: Make return type @NonNull T @Nullable [] once metalava supports TYPE_USE.
+public T @libcore.util.Nullable [] getEnumConstants() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public T cast(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
@@ -159,12 +160,11 @@ public <A extends java.lang.annotation.Annotation> A getAnnotation(@libcore.util
 
 public boolean isAnnotationPresent(@libcore.util.NonNull java.lang.Class<? extends java.lang.annotation.Annotation> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public <A extends java.lang.annotation.Annotation> A[] getAnnotationsByType(@libcore.util.NonNull java.lang.Class<A> annotationClass) { throw new RuntimeException("Stub!"); }
+public <A extends java.lang.annotation.Annotation> @libcore.util.NonNull A @libcore.util.NonNull [] getAnnotationsByType(@libcore.util.NonNull java.lang.Class<A> annotationClass) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.annotation.Annotation[] getAnnotations() { throw new RuntimeException("Stub!"); }
+public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getAnnotations() { throw new RuntimeException("Stub!"); }
 
-public native <A extends java.lang.annotation.Annotation> A getDeclaredAnnotation(@libcore.util.NonNull java.lang.Class<A> annotationClass);
+public native <A extends java.lang.annotation.Annotation> @libcore.util.Nullable A getDeclaredAnnotation(@libcore.util.NonNull java.lang.Class<A> annotationClass);
 
-@libcore.util.NonNull public native java.lang.annotation.Annotation[] getDeclaredAnnotations();
+public native java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations();
 }
-

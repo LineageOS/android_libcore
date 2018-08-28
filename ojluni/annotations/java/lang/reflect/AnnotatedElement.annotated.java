@@ -37,7 +37,7 @@ public default boolean isAnnotationPresent(java.lang.Class<? extends java.lang.a
 
 public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass);
 
-@libcore.util.NonNull public java.lang.annotation.Annotation[] getAnnotations();
+public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getAnnotations();
 
 public default <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
@@ -45,6 +45,5 @@ public default <T extends java.lang.annotation.Annotation> T getDeclaredAnnotati
 
 public default <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.annotation.Annotation[] getDeclaredAnnotations();
+public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations();
 }
-
