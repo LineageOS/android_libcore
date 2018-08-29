@@ -669,32 +669,46 @@ class ZipFile implements ZipConstants, Closeable {
         if (closeRequested)
             return;
         // Android-added: CloseGuard support
-        guard.close();
+        if (guard != null) {
+            guard.close();
+        }
         closeRequested = true;
 
         synchronized (this) {
             // Close streams, release their inflaters
-            synchronized (streams) {
-                if (false == streams.isEmpty()) {
-                    Map<InputStream, Inflater> copy = new HashMap<>(streams);
-                    streams.clear();
-                    for (Map.Entry<InputStream, Inflater> e : copy.entrySet()) {
-                        e.getKey().close();
-                        Inflater inf = e.getValue();
-                        if (inf != null) {
-                            inf.end();
+            // BEGIN Android-added: null field check to avoid NullPointerException during finalize.
+            // If the constructor threw an exception then the streams / inflaterCache fields can
+            // be null and close() can be called by the finalizer.
+            if (streams != null) {
+            // END Android-added: null field check to avoid NullPointerException during finalize.
+                synchronized (streams) {
+                    if (false == streams.isEmpty()) {
+                        Map<InputStream, Inflater> copy = new HashMap<>(streams);
+                        streams.clear();
+                        for (Map.Entry<InputStream, Inflater> e : copy.entrySet()) {
+                            e.getKey().close();
+                            Inflater inf = e.getValue();
+                            if (inf != null) {
+                                inf.end();
+                            }
                         }
                     }
                 }
+            // BEGIN Android-added: null field check to avoid NullPointerException during finalize.
             }
 
-            // Release cached inflaters
-            Inflater inf;
-            synchronized (inflaterCache) {
-                while (null != (inf = inflaterCache.poll())) {
-                    inf.end();
+            if (inflaterCache != null) {
+            // END Android-added: null field check to avoid NullPointerException during finalize.
+                // Release cached inflaters
+                Inflater inf;
+                synchronized (inflaterCache) {
+                    while (null != (inf = inflaterCache.poll())) {
+                        inf.end();
+                    }
                 }
+            // BEGIN Android-added: null field check to avoid NullPointerException during finalize.
             }
+            // END Android-added: null field check to avoid NullPointerException during finalize.
 
             if (jzfile != 0) {
                 // Close the zip file
