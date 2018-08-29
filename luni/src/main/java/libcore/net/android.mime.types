@@ -79,6 +79,7 @@ application/x-x509-ca-cert crt!
 audio/aac aac!
 audio/basic snd!
 audio/flac flac!
+audio/midi rtx!
 audio/mpeg mp3! m4a
 audio/x-mpegurl m3u8! m3u!
 image/jpeg jpg!
