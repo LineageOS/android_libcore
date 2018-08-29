@@ -62,7 +62,7 @@ public class FdsanTest extends TestCase {
         try {
             pfdClass = Class.forName("android.os.ParcelFileDescriptor");
         } catch (ClassNotFoundException ex) {
-            // Don't fail if ParcelFileDescriptor isn't on our classpath.
+            // Don't fail if ParcelFileDescriptor isn't on our classpath, e.g. in ART host tests.
             return;
         }
 
