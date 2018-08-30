@@ -36,7 +36,7 @@ public HashMap(int initialCapacity) { throw new RuntimeException("Stub!"); }
 
 public HashMap() { throw new RuntimeException("Stub!"); }
 
-public HashMap(@libcore.util.NonNull java.util.Map<? extends K, ? extends V> m) { throw new RuntimeException("Stub!"); }
+public HashMap(@libcore.util.NonNull java.util.Map<? extends @libcore.util.NullFromTypeParam K, ? extends @libcore.util.NullFromTypeParam V> m) { throw new RuntimeException("Stub!"); }
 
 public int size() { throw new RuntimeException("Stub!"); }
 
@@ -48,7 +48,7 @@ public boolean containsKey(@libcore.util.Nullable java.lang.Object key) { throw 
 
 @libcore.util.Nullable public V put(@libcore.util.NullFromTypeParam K key, @libcore.util.NullFromTypeParam V value) { throw new RuntimeException("Stub!"); }
 
-public void putAll(@libcore.util.NonNull java.util.Map<? extends K,? extends V> m) { throw new RuntimeException("Stub!"); }
+public void putAll(@libcore.util.NonNull java.util.Map<? extends @libcore.util.NullFromTypeParam K,? extends @libcore.util.NullFromTypeParam V> m) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public V remove(@libcore.util.Nullable java.lang.Object key) { throw new RuntimeException("Stub!"); }
 
@@ -56,11 +56,11 @@ public void clear() { throw new RuntimeException("Stub!"); }
 
 public boolean containsValue(@libcore.util.Nullable java.lang.Object value) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Set<K> keySet() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.Set<@libcore.util.NullFromTypeParam K> keySet() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Collection<V> values() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.Collection<@libcore.util.NullFromTypeParam V> values() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Set<java.util.Map.Entry<K,V>> entrySet() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.Set<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NullFromTypeParam K, @libcore.util.NullFromTypeParam V>> entrySet() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.Nullable public V getOrDefault(@libcore.util.Nullable java.lang.Object key, @libcore.util.Nullable V defaultValue) { throw new RuntimeException("Stub!"); }
 
@@ -72,18 +72,17 @@ public boolean replace(@libcore.util.NullFromTypeParam K key, @libcore.util.Null
 
 @libcore.util.Nullable public V replace(@libcore.util.NullFromTypeParam K key, @libcore.util.NullFromTypeParam V value) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public V computeIfAbsent(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.Function<? super K,? extends V> mappingFunction) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public V computeIfAbsent(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.Function<? super @libcore.util.NullFromTypeParam K,? extends @libcore.util.Nullable V> mappingFunction) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public V computeIfPresent(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.BiFunction<? super K,? super V,? extends V> remappingFunction) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public V computeIfPresent(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.BiFunction<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NonNull V,? extends Nu V> remappingFunction) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public V compute(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.BiFunction<? super K,? super V,? extends V> remappingFunction) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public V compute(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull java.util.function.BiFunction<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.Nullable V,? extends @libcore.util.Nullable V> remappingFunction) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public V merge(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull V value, @libcore.util.NonNull java.util.function.BiFunction<? super V,? super V,? extends V> remappingFunction) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public V merge(@libcore.util.NullFromTypeParam K key, @libcore.util.NonNull V value, @libcore.util.NonNull java.util.function.BiFunction<? super Nn V,? super @libcore.util.NonNull V,? extends @libcore.util.Nullable V> remappingFunction) { throw new RuntimeException("Stub!"); }
 
-public void forEach(@libcore.util.NonNull java.util.function.BiConsumer<? super K,? super V> action) { throw new RuntimeException("Stub!"); }
+public void forEach(@libcore.util.NonNull java.util.function.BiConsumer<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NullFromTypeParam V> action) { throw new RuntimeException("Stub!"); }
 
-public void replaceAll(@libcore.util.NonNull java.util.function.BiFunction<? super K,? super V,? extends V> function) { throw new RuntimeException("Stub!"); }
+public void replaceAll(@libcore.util.NonNull java.util.function.BiFunction<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NullFromTypeParam V,? extends @libcore.util.NullFromTypeParam V> function) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.Object clone() { throw new RuntimeException("Stub!"); }
 }
-
