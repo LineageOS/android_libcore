@@ -52,7 +52,7 @@ public static int hashCode(boolean value) { throw new RuntimeException("Stub!");
 
 public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public static boolean getBoolean(@libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public static boolean getBoolean(@libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
 
 public int compareTo(@libcore.util.NonNull java.lang.Boolean b) { throw new RuntimeException("Stub!"); }
 
@@ -73,4 +73,3 @@ static { TRUE = null; }
 public static final java.lang.Class<java.lang.Boolean> TYPE;
 static { TYPE = null; }
 }
-
