@@ -26,6 +26,10 @@ import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+// Android-changed: Android specific implementation.
+// The whole class was implemented from scratch for the Android runtime based
+// on the specification of the MethodHandle class.
+// The code does not originate from upstream OpenJDK.
 /**
  * A method handle that's directly associated with an ArtField or an ArtMethod and
  * specifies no additional transformations.
