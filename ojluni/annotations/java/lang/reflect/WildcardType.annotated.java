@@ -30,8 +30,7 @@ package java.lang.reflect;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public interface WildcardType extends java.lang.reflect.Type {
 
-@libcore.util.NonNull public java.lang.reflect.Type[] getUpperBounds();
+public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getUpperBounds();
 
-@libcore.util.NonNull public java.lang.reflect.Type[] getLowerBounds();
+public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getLowerBounds();
 }
-

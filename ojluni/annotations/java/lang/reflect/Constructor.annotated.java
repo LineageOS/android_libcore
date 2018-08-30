@@ -41,7 +41,7 @@ public int getModifiers() { throw new RuntimeException("Stub!"); }
 
 public java.lang.reflect.TypeVariable<java.lang.reflect.Constructor<T>>[] getTypeParameters() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Class<?>[] getParameterTypes() { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull [] getParameterTypes() { throw new RuntimeException("Stub!"); }
 
 public int getParameterCount() { throw new RuntimeException("Stub!"); }
 
@@ -71,4 +71,3 @@ public java.lang.annotation.Annotation[] getDeclaredAnnotations() { throw new Ru
 
 public java.lang.annotation.Annotation[][] getParameterAnnotations() { throw new RuntimeException("Stub!"); }
 }
-
