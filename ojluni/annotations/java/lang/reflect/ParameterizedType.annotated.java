@@ -30,10 +30,9 @@ package java.lang.reflect;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public interface ParameterizedType extends java.lang.reflect.Type {
 
-@libcore.util.NonNull public java.lang.reflect.Type[] getActualTypeArguments();
+public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getActualTypeArguments();
 
 @libcore.util.NonNull public java.lang.reflect.Type getRawType();
 
 public java.lang.reflect.Type getOwnerType();
 }
-

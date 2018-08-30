@@ -153,13 +153,13 @@ public boolean contains(@libcore.util.NonNull java.lang.CharSequence s) { throw 
 
 @libcore.util.NonNull public java.lang.String replace(@libcore.util.NonNull java.lang.CharSequence target, @libcore.util.NonNull java.lang.CharSequence replacement) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.String[] split(@libcore.util.NonNull java.lang.String regex, int limit) { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull String @libcore.util.NonNull [] split(@libcore.util.NonNull java.lang.String regex, int limit) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.String[] split(@libcore.util.NonNull java.lang.String regex) { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.NonNull String @libcore.util.NonNull [] split(@libcore.util.NonNull java.lang.String regex) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.String join(@libcore.util.NonNull java.lang.CharSequence delimiter, @libcore.util.Nullable java.lang.CharSequence... elements) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.String join(@libcore.util.NonNull java.lang.CharSequence delimiter, java.lang.@libcore.util.NonNull CharSequence @libcore.util.Nullable ... elements) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.String join(@libcore.util.NonNull java.lang.CharSequence delimiter, @libcore.util.NonNull java.lang.Iterable<? extends java.lang.CharSequence> elements) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.String join(@libcore.util.NonNull java.lang.CharSequence delimiter, @libcore.util.NonNull java.lang.Iterable<? extends @libcore.util.Nullable java.lang.CharSequence> elements) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String toLowerCase(@libcore.util.NonNull java.util.Locale locale) { throw new RuntimeException("Stub!"); }
 
@@ -175,9 +175,9 @@ public boolean contains(@libcore.util.NonNull java.lang.CharSequence s) { throw 
 
 public native char[] toCharArray();
 
-@libcore.util.NonNull public static java.lang.String format(@libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.String format(@libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.String format(@libcore.util.NonNull java.util.Locale l, @libcore.util.NonNull java.lang.String format, @libcore.util.Nullable java.lang.Object... args) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.String format(@libcore.util.NonNull java.util.Locale l, @libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public static java.lang.String valueOf(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
@@ -206,4 +206,3 @@ public native char[] toCharArray();
 public static final java.util.Comparator<java.lang.String> CASE_INSENSITIVE_ORDER;
 static { CASE_INSENSITIVE_ORDER = null; }
 }
-

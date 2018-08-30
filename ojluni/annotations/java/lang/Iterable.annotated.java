@@ -27,8 +27,8 @@ package java.lang;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
-import libcore.annotation.NonNull;
-import libcore.annotation.NullFromTypeParam;
+import libcore.util.NonNull;
+import libcore.util.NullFromTypeParam;
 
 public interface Iterable<T> {
 

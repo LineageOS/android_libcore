@@ -36,11 +36,12 @@ public boolean isEmpty();
 
 public boolean contains(@libcore.util.Nullable java.lang.Object o);
 
-@libcore.util.NonNull public java.util.Iterator<E> iterator();
+@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> iterator();
 
-@libcore.util.Nullable public java.lang.Object[] toArray();
+public java.lang.@libcore.util.Nullable Object @libcore.util.NonNull [] toArray();
 
-public <T> T[] toArray(@libcore.util.Nullable T[] a);
+// TODO: Make param and return types @Nullable T @NonNull [] once metalava supports TYPE_USE.
+public <T> T @libcore.util.NonNull [] toArray(T @libcore.util.NonNull [] a);
 
 public boolean add(@libcore.util.NullFromTypeParam E e);
 
@@ -48,7 +49,7 @@ public boolean remove(@libcore.util.Nullable java.lang.Object o);
 
 public boolean containsAll(@libcore.util.NonNull java.util.Collection<?> c);
 
-public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends E> c);
+public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c);
 
 public boolean retainAll(@libcore.util.NonNull java.util.Collection<?> c);
 
@@ -60,6 +61,5 @@ public boolean equals(@libcore.util.Nullable java.lang.Object o);
 
 public int hashCode();
 
-@libcore.util.NonNull public default java.util.Spliterator<E> spliterator() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public default java.util.Spliterator<@libcore.util.NullFromTypeParam E> spliterator() { throw new RuntimeException("Stub!"); }
 }
-

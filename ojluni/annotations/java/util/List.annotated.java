@@ -36,11 +36,12 @@ public boolean isEmpty();
 
 public boolean contains(@libcore.util.Nullable java.lang.Object o);
 
-@libcore.util.NonNull public java.util.Iterator<E> iterator();
+@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> iterator();
 
-@libcore.util.Nullable public java.lang.Object[] toArray();
+public java.lang.@libcore.util.Nullable Object @libcore.util.NonNull [] toArray();
 
-public <T> T[] toArray(@libcore.util.Nullable T[] a);
+// TODO: Make param and return types @Nullable T @NonNull [] once metalava supports TYPE_USE.
+public <T> T @libcore.util.NonNull [] toArray(T @libcore.util.NonNull [] a);
 
 public boolean add(@libcore.util.NullFromTypeParam E e);
 
@@ -48,17 +49,17 @@ public boolean remove(@libcore.util.Nullable java.lang.Object o);
 
 public boolean containsAll(@libcore.util.NonNull java.util.Collection<?> c);
 
-public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends E> c);
+public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c);
 
-public boolean addAll(int index, @libcore.util.NonNull java.util.Collection<? extends E> c);
+public boolean addAll(int index, @libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c);
 
 public boolean removeAll(@libcore.util.NonNull java.util.Collection<?> c);
 
 public boolean retainAll(@libcore.util.NonNull java.util.Collection<?> c);
 
-public default void replaceAll(@libcore.util.NonNull java.util.function.UnaryOperator<E> operator) { throw new RuntimeException("Stub!"); }
+public default void replaceAll(@libcore.util.NonNull java.util.function.UnaryOperator<@libcore.util.NullFromTypeParam E> operator) { throw new RuntimeException("Stub!"); }
 
-public default void sort(@libcore.util.Nullable java.util.Comparator<? super E> c) { throw new RuntimeException("Stub!"); }
+public default void sort(@libcore.util.Nullable java.util.Comparator<? super @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
 
 public void clear();
 
@@ -78,12 +79,11 @@ public int indexOf(@libcore.util.Nullable java.lang.Object o);
 
 public int lastIndexOf(@libcore.util.Nullable java.lang.Object o);
 
-@libcore.util.NonNull public java.util.ListIterator<E> listIterator();
+@libcore.util.NonNull public java.util.ListIterator<@libcore.util.NullFromTypeParam E> listIterator();
 
-@libcore.util.NonNull public java.util.ListIterator<E> listIterator(int index);
+@libcore.util.NonNull public java.util.ListIterator<@libcore.util.NullFromTypeParam E> listIterator(int index);
 
-@libcore.util.NonNull public java.util.List<E> subList(int fromIndex, int toIndex);
+@libcore.util.NonNull public java.util.List<@libcore.util.NullFromTypeParam E> subList(int fromIndex, int toIndex);
 
-@libcore.util.NonNull public default java.util.Spliterator<E> spliterator() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public default java.util.Spliterator<@libcore.util.NullFromTypeParam E> spliterator() { throw new RuntimeException("Stub!"); }
 }
-
