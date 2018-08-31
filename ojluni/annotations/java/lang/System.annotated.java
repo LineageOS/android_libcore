@@ -56,7 +56,7 @@ public static native long currentTimeMillis();
 
 public static native long nanoTime();
 
-public static native void arraycopy(@libcore.util.NonNull java.lang.Object src, @libcore.util.NonNull int srcPos, java.lang.Object dest, int destPos, int length);
+public static native void arraycopy(@libcore.util.NonNull java.lang.Object src, int srcPos, java.lang.Object dest, int destPos, int length);
 
 public static int identityHashCode(@libcore.util.Nullable java.lang.Object x) { throw new RuntimeException("Stub!"); }
 
@@ -101,4 +101,3 @@ static { in = null; }
 public static final java.io.PrintStream out;
 static { out = null; }
 }
-
