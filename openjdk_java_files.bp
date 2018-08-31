@@ -249,6 +249,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/invoke/MethodHandles.java",
         "ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java",
         "ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java",
+        "ojluni/src/main/java/java/lang/invoke/MethodHandleNatives.java",
         "ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java",
         "ojluni/src/main/java/java/lang/invoke/MethodType.java",
         "ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java",
