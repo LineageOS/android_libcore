@@ -35,7 +35,7 @@ public ArrayList(int initialCapacity) { throw new RuntimeException("Stub!"); }
 
 public ArrayList() { throw new RuntimeException("Stub!"); }
 
-public ArrayList(@libcore.util.NonNull java.util.Collection<? extends E> c) { throw new RuntimeException("Stub!"); }
+public ArrayList(@libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
 
 public void trimToSize() { throw new RuntimeException("Stub!"); }
 
@@ -53,9 +53,10 @@ public int lastIndexOf(@libcore.util.Nullable java.lang.Object o) { throw new Ru
 
 @libcore.util.NonNull public java.lang.Object clone() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public java.lang.Object[] toArray() { throw new RuntimeException("Stub!"); }
+public java.lang.@libcore.util.Nullable Object @libcore.util.NonNull [] toArray() { throw new RuntimeException("Stub!"); }
 
-public <T> T[] toArray(@libcore.util.Nullable T[] a) { throw new RuntimeException("Stub!"); }
+// TODO: Make param and return types @Nullable T @NonNull [] once metalava supports TYPE_USE.
+public <T> T @libcore.util.NonNull [] toArray(T @libcore.util.NonNull [] a) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NullFromTypeParam public E get(int index) { throw new RuntimeException("Stub!"); }
 
@@ -71,9 +72,9 @@ public boolean remove(@libcore.util.Nullable java.lang.Object o) { throw new Run
 
 public void clear() { throw new RuntimeException("Stub!"); }
 
-public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends E> c) { throw new RuntimeException("Stub!"); }
+public boolean addAll(@libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
 
-public boolean addAll(int index, @libcore.util.NonNull java.util.Collection<? extends E> c) { throw new RuntimeException("Stub!"); }
+public boolean addAll(int index, @libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
 
 protected void removeRange(int fromIndex, int toIndex) { throw new RuntimeException("Stub!"); }
 
@@ -81,22 +82,21 @@ public boolean removeAll(@libcore.util.NonNull java.util.Collection<?> c) { thro
 
 public boolean retainAll(@libcore.util.NonNull java.util.Collection<?> c) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.ListIterator<E> listIterator(int index) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.ListIterator<@libcore.util.NullFromTypeParam E> listIterator(int index) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.ListIterator<E> listIterator() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.ListIterator<@libcore.util.NullFromTypeParam E> listIterator() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Iterator<E> iterator() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> iterator() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.List<E> subList(int fromIndex, int toIndex) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.List<@libcore.util.NullFromTypeParam E> subList(int fromIndex, int toIndex) { throw new RuntimeException("Stub!"); }
 
-public void forEach(@libcore.util.NonNull java.util.function.Consumer<? super E> action) { throw new RuntimeException("Stub!"); }
+public void forEach(@libcore.util.NonNull java.util.function.Consumer<? super @libcore.util.NullFromTypeParam E> action) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Spliterator<E> spliterator() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.util.Spliterator<@libcore.util.NullFromTypeParam E> spliterator() { throw new RuntimeException("Stub!"); }
 
-public boolean removeIf(@libcore.util.NonNull java.util.function.Predicate<? super E> filter) { throw new RuntimeException("Stub!"); }
+public boolean removeIf(@libcore.util.NonNull java.util.function.Predicate<? super @libcore.util.NullFromTypeParam E> filter) { throw new RuntimeException("Stub!"); }
 
-public void replaceAll(@libcore.util.NonNull java.util.function.UnaryOperator<E> operator) { throw new RuntimeException("Stub!"); }
+public void replaceAll(@libcore.util.NonNull java.util.function.UnaryOperator<@libcore.util.NullFromTypeParam E> operator) { throw new RuntimeException("Stub!"); }
 
-public void sort(@libcore.util.Nullable java.util.Comparator<? super E> c) { throw new RuntimeException("Stub!"); }
+public void sort(@libcore.util.Nullable java.util.Comparator<? super @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
 }
-
