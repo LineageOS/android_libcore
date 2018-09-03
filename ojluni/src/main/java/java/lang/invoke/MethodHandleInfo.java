@@ -228,9 +228,7 @@ interface MethodHandleInfo {
             return false;
         // not in the public API: Modifier.VARARGS
         final int ACC_VARARGS = 0x00000080;  // from JVMS 4.6 (Table 4.20)
-
-        // Android-changed: Removed assert() due to http://b/30862573
-        // assert(ACC_VARARGS == Modifier.TRANSIENT);
+        assert(ACC_VARARGS == Modifier.TRANSIENT);
         return Modifier.isTransient(getModifiers());
     }
 
