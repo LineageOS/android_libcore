@@ -1,7 +1,3 @@
-subdirs = [
-    "mmodules/simple",
-]
-
 build = [
     "JavaLibrary.bp",
     "NativeCode.bp",
