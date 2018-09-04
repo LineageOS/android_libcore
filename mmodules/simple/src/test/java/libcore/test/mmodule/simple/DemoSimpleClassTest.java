@@ -14,32 +14,36 @@
  * limitations under the License.
  */
 
-package libcore.test.simple;
+package libcore.test.mmodule.simple;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-
-import libcore.simple.TestClass;
+import libcore.mmodule.simple.DemoSimpleClass;
 
 import org.junit.Test;
 
 /**
- * A test for the presence and behavior of {@link TestClass}.
+ * A test for the presence and behavior of {@link DemoSimpleClass}.
  */
-public class TestClassTest {
+public class DemoSimpleClassTest {
 
     @Test
     public void classLoader() {
-        Class<?> clazz = TestClass.class;
+        Class<?> clazz = DemoSimpleClass.class;
         ClassLoader bootClassLoader = ClassLoader.getSystemClassLoader().getParent();
 
-        // The TestClass must be loaded by the boot classloader.
+        // The DemoSimpleClass must be loaded by the boot classloader.
         assertSame(bootClassLoader, clazz.getClassLoader());
     }
 
     @Test
     public void simpleMethod() {
-        assertEquals("Hello World", TestClass.simpleMethod());
+        assertEquals("Hello World", DemoSimpleClass.simpleMethod());
+    }
+
+    @Test
+    public void intraCoreDependencyMethod() {
+        assertEquals("Hello World", DemoSimpleClass.intraCoreDependencyMethod());
     }
 }
