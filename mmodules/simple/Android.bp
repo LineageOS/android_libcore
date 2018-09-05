@@ -21,7 +21,6 @@ java_defaults {
     name: "core-simple-mmodule-defaults",
     srcs: [":core_simple_mmodule_java_files"],
     installable: true,
-    no_framework_libs: true,
 
     // As a logical part of the set of core-* libs we cannot use
     // no_standard_libs: false here because core-simple is one of the default
@@ -61,7 +60,6 @@ java_library {
 java_test {
     name: "core-simple-mmodule-test",
     srcs: [ "src/test/java/**/*.java" ],
-    no_framework_libs: true,
 
     no_standard_libs: true,
     libs: [
@@ -80,7 +78,6 @@ droiddoc {
     name: "core-simple-mmodule-stubs-docs",
     srcs: [":core_simple_mmodule_java_files"],
     installable: false,
-    no_framework_libs: true,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
 }
@@ -93,8 +90,6 @@ java_library {
       ":core-simple-mmodule-stubs-docs",
     ],
 
-    no_framework_libs: true,
-
     no_standard_libs: true,
     // We use core-all.mmodule.stubs here to prove that we have all the
     // dependencies needed to compile the mmodule stubs within the stubs, i.e.
@@ -105,9 +100,3 @@ java_library {
         javacflags: ["--patch-module=java.base=."],
     },
 }
-
-java_system_modules {
-    name: "core-all-mmodule-stubs-system-modules",
-    libs: ["core-all.mmodule.stubs"],
-}
-
