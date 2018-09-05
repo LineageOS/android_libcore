@@ -509,7 +509,6 @@ java_library {
     srcs: [
       ":core-all-mmodule-stubs-docs",
     ],
-    no_framework_libs: true,
 
     no_standard_libs: true,
     libs: ["core-all"],
@@ -517,4 +516,10 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+}
+
+// Used when compiling mmodule code against core-all.mmodule.stubs.
+java_system_modules {
+    name: "core-all-mmodule-stubs-system-modules",
+    libs: ["core-all.mmodule.stubs"],
 }
