@@ -54,6 +54,21 @@ java_library {
     },
 }
 
+// A rule that checks we can build core-simple using only the source for
+// core-simple and the APIs in the core.intra.stubs.
+java_library {
+    name: "core-simple.depscheck",
+    srcs: [":core_simple_java_files"],
+    installable: false,
+
+    no_standard_libs: true,
+    libs: ["core.intra.stubs"],
+    system_modules: "core-intra-stubs-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
 // Tests associated with the core-simple intra-core APIs.
 java_test {
     name: "core-simple-intra-test",
@@ -75,6 +90,8 @@ java_test {
 droiddoc {
     name: "core-simple-intra-stubs-docs",
     srcs: [":core_simple_java_files"],
+    no_framework_libs: true,
+
     installable: false,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
