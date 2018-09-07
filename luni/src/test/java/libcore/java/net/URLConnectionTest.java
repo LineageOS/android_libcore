@@ -2069,6 +2069,16 @@ public final class URLConnectionTest extends TestCase {
         }
     }
 
+    public void testSetSSLSocketFactory_null() throws Exception {
+        URL url = new URL("https://google.com");
+        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        try {
+            connection.setSSLSocketFactory(null);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+    }
+
     public void testSetDefaultSSLSocketFactory_null() {
         try {
             HttpsURLConnection.setDefaultSSLSocketFactory(null);
