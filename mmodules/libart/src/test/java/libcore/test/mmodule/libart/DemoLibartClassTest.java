@@ -19,7 +19,7 @@ package libcore.test.mmodule.libart;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import libcore.mmodule.DemoLibartClass;
+import libcore.mmodule.libart.DemoLibartClass;
 
 import org.junit.Test;
 

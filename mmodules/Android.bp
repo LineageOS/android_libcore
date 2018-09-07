@@ -1,0 +1,93 @@
+// Copyright (C) 2018 The Android Open Source Project
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// This build file contains rules related to a set of jars that collectively
+// form Android's "core". Core provides low-level behavior to Android's
+// software stack and apps.
+
+//
+// This section contains build rules for the APIs that the various core
+// libraries can depend on from each other: public SDK APIs and "intra-core"
+// APIs. Intra-core APIs are not for use by other parts of the Android software
+// stack.
+//
+
+// Generates stub source files for the {public SDK + intra-core} API
+// of the core jars.
+droiddoc {
+    name: "core-intra-stubs-docs",
+    srcs: [":core_api_files"],
+
+    installable: false,
+    no_framework_libs: true,
+    metalava_enabled: true,
+    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
+}
+
+// A library containing the {public SDK + intra-core} API stubs for the
+// core jars.
+java_library {
+    name: "core.intra.stubs",
+    srcs: [":core-intra-stubs-docs"],
+
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
+// Used when compiling against core.intra.stubs.
+java_system_modules {
+    name: "core-intra-stubs-system-modules",
+    libs: ["core.intra.stubs"],
+}
+
+//
+// This section contains build rules for the APIs that various core libraries
+// provide to other parts of the Android software stack: these include the
+// public SDK APIs plus some "core APIs" that only the Android software stack
+// can use.
+//
+
+// Generates stub source files for the {public SDK + core} API of the core jars.
+droiddoc {
+    name: "core-api-stubs-docs",
+    srcs: [":core_api_files"],
+
+    installable: false,
+    no_framework_libs: true,
+    metalava_enabled: true,
+    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.CoreApi",
+}
+
+// A library containing the {public SDK + core} API stubs for the core jars.
+java_library {
+    name: "core.api.stubs",
+    srcs: [":core-api-stubs-docs"],
+
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
+// Used when compiling higher-level code against core.api.stubs.
+java_system_modules {
+    name: "core-api-stubs-system-modules",
+    libs: ["core.api.stubs"],
+}
