@@ -12,14 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-filegroup {
-    name: "core_simple_java_files",
-    srcs: ["src/main/java/**/*.java"]
-}
-
 java_defaults {
-    name: "core-simple-defaults",
-    srcs: [":core_simple_java_files"],
+    name: "core-libart-defaults",
+    srcs: [":core_libart_java_files"],
     installable: true,
 
     // As a logical part of the set of core libs we cannot use
@@ -36,27 +31,28 @@ java_defaults {
     dxflags: ["--core-library"],
 }
 
-// A library containing the implementation of core-simple.
+// A library containing the implementation of core-libart.
 java_library {
-    name: "core-simple",
+    // TODO: Rename / replace the existing core-libart.
+    name: "core-libart.mmodule",
     hostdex: true,
-    defaults: ["core-simple-defaults"],
+    defaults: ["core-libart-defaults"],
 }
 
-// A guaranteed unstripped version of core-simple.
-// The build system may or may not strip the core-simple jar
+// A guaranteed unstripped version of core-libart.
+// The build system may or may not strip the core-libart jar
 // but this will not be stripped. See b/24535627.
 java_library {
-    name: "core-simple-testdex",
-    defaults: ["core-simple-defaults"],
+    name: "core-libart-testdex.mmodule",
+    defaults: ["core-libart-defaults"],
     dex_preopt: {
         enabled: false,
     },
 }
 
-// Tests associated with the core-simple intra-core APIs.
+// Tests associated with the core-libart intra-core APIs.
 java_test {
-    name: "core-simple-intra-test",
+    name: "core-libart-intra-test",
     srcs: [ "src/test/java/**/*.java" ],
 
     no_standard_libs: true,
@@ -71,24 +67,24 @@ java_test {
 }
 
 // Generates stub source files for the {public SDK + intra-core} APIs
-// of core-simple.
+// of core-libart.
 droiddoc {
-    name: "core-simple-intra-stubs-docs",
-    srcs: [":core_simple_java_files"],
+    name: "core-libart-intra-stubs-docs",
+    srcs: [":core_libart_api_files"],
     installable: false,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for
-// core-simple.
+// core-libart.
 java_library {
-    name: "core-simple.intra.stubs",
-    srcs: [":core-simple-intra-stubs-docs"],
+    name: "core-libart.intra.stubs",
+    srcs: [":core-libart-intra-stubs-docs"],
 
     no_standard_libs: true,
     // We use core.intra.stubs here to prove that we have all the dependencies
-    // needed to compile the simple intra stubs within the intra stubs, i.e.
+    // needed to compile the libart intra stubs within the intra stubs, i.e.
     // there are no non-API references.
     libs: ["core.intra.stubs"],
     system_modules: "core-intra-stubs-system-modules",

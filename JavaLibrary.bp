@@ -45,6 +45,49 @@ core_resource_dirs = [
     "ojluni/src/main/resources/",
 ]
 
+// The source files that go into core-oj.
+filegroup {
+    name: "core_oj_java_files",
+    srcs: [":openjdk_java_files"],
+}
+
+// OpenJDK source is not annotated with @hide so we need a separate
+// filegroup for just the parts that contribute to the API.
+filegroup {
+    name: "core_oj_api_files",
+    srcs: [":openjdk_javadoc_files"],
+}
+
+// The source files that go into core-libart.
+filegroup {
+    name: "core_libart_java_files",
+    srcs: [
+        ":non_openjdk_java_files",
+        ":android_icu4j_src_files",
+    ],
+}
+
+// Some parts of libart are not annotated with @hide so we need a separate
+// filegroup for just the parts that contribute to the API.
+filegroup {
+    name: "core_libart_api_files",
+    srcs: [
+        ":non_openjdk_javadoc_files",
+        ":android_icu4j_src_files",
+    ],
+}
+
+// The set of files in core that have been marked up with @hide and API-related
+// annotations.
+filegroup {
+    name: "core_api_files",
+    srcs: [
+        ":core_oj_api_files",
+        ":core_libart_api_files",
+        ":core_simple_java_files",
+    ],
+}
+
 java_defaults {
     name: "libcore_java_defaults",
     javacflags: [
@@ -69,10 +112,9 @@ java_library {
     defaults: ["libcore_java_defaults"],
 
     srcs: [
-        ":openjdk_java_files",
-        ":non_openjdk_java_files",
-        ":android_icu4j_src_files",
-        ":core_simple_mmodule_java_files",
+        ":core_oj_java_files",
+        ":core_libart_java_files",
+        ":core_simple_java_files",
         ":openjdk_lambda_stub_files",
     ],
 
@@ -105,7 +147,7 @@ java_library {
     installable: true,
     hostdex: true,
 
-    srcs: [":openjdk_java_files"],
+    srcs: [":core_oj_java_files"],
     java_resource_dirs: core_resource_dirs,
 
     no_standard_libs: true,
@@ -148,10 +190,7 @@ java_library {
     installable: true,
     hostdex: true,
 
-    srcs: [
-        ":non_openjdk_java_files",
-        ":android_icu4j_src_files",
-    ],
+    srcs: [":core_libart_java_files"],
     java_resources: [":android_icu4j_resources"],
 
     no_standard_libs: true,
@@ -237,12 +276,16 @@ java_library {
     include_srcs: true,
 }
 
+// The libraries that make up core.
 java_system_modules {
     name: "core-system-modules",
     libs: [
         "core-oj",
         "core-libart",
-        "core-lambda-stubs",
+        "core-simple",
+        // This one is not on device but it's needed when javac compiles code
+        // containing lambdas.
+        "core-lambda-stubs"
     ],
 }
 
@@ -453,11 +496,7 @@ filegroup {
 
 droiddoc {
     name: "core-current-stubs-gen-docs",
-    srcs: [
-        ":openjdk_javadoc_files",
-        ":non_openjdk_javadoc_files",
-        ":android_icu4j_src_files_for_docs",
-    ],
+    srcs: [":core_api_files"],
     installable: false,
     no_framework_libs: true,
     metalava_enabled: true,
@@ -466,9 +505,7 @@ droiddoc {
 
 java_library_static {
     name: "core.current.stubs",
-    srcs: [
-        ":core-current-stubs-gen-docs",
-    ],
+    srcs: [":core-current-stubs-gen-docs"],
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",
@@ -481,45 +518,3 @@ java_library_static {
     system_modules: "none",
 }
 
-//
-// Targets related to core mmodule APIs / dependencies.
-//
-
-// Generates stub source files for the {public SDK API + intra-core mmodule API}
-// of core-all.
-droiddoc {
-    name: "core-all-mmodule-stubs-docs",
-    srcs: [
-        ":openjdk_javadoc_files",
-        ":non_openjdk_javadoc_files",
-        ":android_icu4j_src_files_for_docs",
-        ":core_simple_mmodule_java_files",
-    ],
-
-    installable: false,
-    no_framework_libs: true,
-    metalava_enabled: true,
-    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
-}
-
-// A library containing the {public SDK API + intra-core mmodule API} stubs for
-// core-all.
-java_library {
-    name: "core-all.mmodule.stubs",
-    srcs: [
-      ":core-all-mmodule-stubs-docs",
-    ],
-
-    no_standard_libs: true,
-    libs: ["core-all"],
-    system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
-}
-
-// Used when compiling mmodule code against core-all.mmodule.stubs.
-java_system_modules {
-    name: "core-all-mmodule-stubs-system-modules",
-    libs: ["core-all.mmodule.stubs"],
-}

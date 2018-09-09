@@ -17,7 +17,7 @@
 package libcore.mmodule.simple;
 
 import libcore.mmodule.IntraCoreMModuleApi;
-import libcore.mmodule.DemoLibartClass;
+import libcore.mmodule.libart.DemoLibartClass;
 
 /**
  * A class that nothing in libcore or the Android framework depends on to provide public SDK
