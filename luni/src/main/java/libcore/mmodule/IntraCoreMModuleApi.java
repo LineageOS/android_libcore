@@ -34,6 +34,7 @@ import java.lang.annotation.Target;
  *
  * @hide
  */
+@IntraCoreMModuleApi // @IntraCoreMModuleApi is itself part of the intra-core API
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface IntraCoreMModuleApi {

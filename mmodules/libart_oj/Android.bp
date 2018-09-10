@@ -12,47 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-java_defaults {
-    name: "core-libart-defaults",
-    srcs: [":core_libart_java_files"],
-    installable: true,
+// This build file handles the logical unit that is the combined "core-libart"
+// + "core-oj" jars. These two jars will always be shipped as a unit but are
+// kept separate on device for licensing reasons. Because they will be shipped
+// together we can consider them as a unit and we don't need a well-defined
+// intra-core API between them.
 
-    // As a logical part of the set of core libs we cannot use
-    // no_standard_libs: false here because this core jar is one of the
-    // default standard libs and that leads to a cycle.
-    // So, we deliberately compile against core-all to avoid cycles.
+// A rule that checks we can build core-libart and core-oj using only the source
+// for core-libart and core-oj and the APIs in core-intra-stubs.
+java_library {
+    name: "core-libart-oj.depscheck",
+    srcs: [
+        ":core_libart_java_files",
+        ":core_oj_java_files",
+    ],
+    errorprone: {
+        javacflags: [
+            "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
+            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
+        ],
+    },
+
+    installable: false,
+
     no_standard_libs: true,
-    libs: ["core-all"],
-    system_modules: "core-all-system-modules",
+    libs: ["core.intra.stubs"],
+    system_modules: "core-intra-stubs-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
-
-    dxflags: ["--core-library"],
 }
 
-// A library containing the implementation of core-libart.
-java_library {
-    // TODO: Rename / replace the existing core-libart.
-    name: "core-libart.mmodule",
-    hostdex: true,
-    defaults: ["core-libart-defaults"],
-}
-
-// A guaranteed unstripped version of core-libart.
-// The build system may or may not strip the core-libart jar
-// but this will not be stripped. See b/24535627.
-java_library {
-    name: "core-libart-testdex.mmodule",
-    defaults: ["core-libart-defaults"],
-    dex_preopt: {
-        enabled: false,
-    },
-}
-
-// Tests associated with the core-libart intra-core APIs.
+// Tests associated with the {core-libart + core-oj} intra-core APIs.
 java_test {
-    name: "core-libart-intra-test",
+    name: "core-libart+oj-intra-test",
     srcs: [ "src/test/java/**/*.java" ],
 
     no_standard_libs: true,
@@ -69,8 +62,13 @@ java_test {
 // Generates stub source files for the {public SDK + intra-core} APIs
 // of core-libart.
 droiddoc {
-    name: "core-libart-intra-stubs-docs",
-    srcs: [":core_libart_api_files"],
+    name: "core-libart+oj-intra-stubs-docs",
+    srcs: [
+        ":core_libart_api_files",
+        ":core_oj_api_files",
+    ],
+    no_framework_libs: true,
+
     installable: false,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
@@ -79,8 +77,8 @@ droiddoc {
 // A library containing the {public SDK + intra-core} API stubs for
 // core-libart.
 java_library {
-    name: "core-libart.intra.stubs",
-    srcs: [":core-libart-intra-stubs-docs"],
+    name: "core-libart+oj.intra.stubs",
+    srcs: [":core-libart+oj-intra-stubs-docs"],
 
     no_standard_libs: true,
     // We use core.intra.stubs here to prove that we have all the dependencies
