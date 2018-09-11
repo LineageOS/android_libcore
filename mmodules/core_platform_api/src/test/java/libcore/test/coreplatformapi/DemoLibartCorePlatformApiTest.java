@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.test.coreapi;
+package libcore.test.coreplatformapi;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,12 +23,12 @@ import libcore.mmodule.libart.DemoLibartClass;
 import org.junit.Test;
 
 /**
- * A test of the behavior of {@link DemoLibartClass} core API methods.
+ * A test of the behavior of {@link DemoLibartClass} core platform API methods.
  */
-public class DemoLibartCoreApiTest {
+public class DemoLibartCorePlatformApiTest {
 
     @Test
-    public void coreApiMethod() {
-        assertEquals("Hello World", DemoLibartClass.coreApiMethod());
+    public void corePlatformApiMethod() {
+        assertEquals("Hello World", DemoLibartClass.corePlatformApiMethod());
     }
 }
