@@ -258,23 +258,24 @@ public abstract class Enum<E extends Enum<E>>
                 "No enum constant " + enumType.getCanonicalName() + "." + name);
     }
 
+    private static Object[] enumValues(Class<? extends Enum> clazz) {
+        if (!clazz.isEnum()) {
+            // Either clazz is Enum.class itself, or it is not an enum class and the method was
+            // called unsafely e.g. using an unchecked cast or via reflection.
+            return null;
+        }
+        try {
+            Method valueMethod = clazz.getDeclaredMethod("values");
+            return (Object[]) valueMethod.invoke(null);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static final BasicLruCache<Class<? extends Enum>, Object[]> sharedConstantsCache
             = new BasicLruCache<Class<? extends Enum>, Object[]>(64) {
         @Override protected Object[] create(Class<? extends Enum> enumType) {
-            if (!enumType.isEnum()) {
-                return null;
-            }
-            try {
-                Method method = enumType.getDeclaredMethod("values", EmptyArray.CLASS);
-                method.setAccessible(true);
-                return (Object[]) method.invoke((Object[]) null);
-            } catch (NoSuchMethodException impossible) {
-                throw new AssertionError("impossible", impossible);
-            } catch (IllegalAccessException impossible) {
-                throw new AssertionError("impossible", impossible);
-            } catch (InvocationTargetException impossible) {
-                throw new AssertionError("impossible", impossible);
-            }
+            return enumValues(enumType);
         }
     };
 
