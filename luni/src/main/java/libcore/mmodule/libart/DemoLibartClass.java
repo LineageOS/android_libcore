@@ -16,7 +16,7 @@
 
 package libcore.mmodule.libart;
 
-import libcore.mmodule.CoreApi;
+import libcore.mmodule.CorePlatformApi;
 import libcore.mmodule.IntraCoreMModuleApi;
 import libcore.mmodule.simple.DemoSimpleClass;
 
@@ -26,12 +26,12 @@ import libcore.mmodule.simple.DemoSimpleClass;
  * <li>A method within core-libart for the core-simple mmodule to depend on,
  * and a method that depends on the core-simple mmodule thereby demonstrating a
  * bi-directional, intra-module dependency.</li>
- * <li>A "core module API" method for use by higher-level code.</li>
+ * <li>A "core platform API" method for use by higher-level code.</li>
  * </ul>
  *
  * @hide
  */
-@CoreApi
+@CorePlatformApi
 @IntraCoreMModuleApi
 public class DemoLibartClass {
 
@@ -60,16 +60,16 @@ public class DemoLibartClass {
     }
 
     /**
-     * A core API method provided to higher-level code in the Android software stack.
+     * A core platform API method provided to higher-level code in the Android software stack.
      */
-    @CoreApi
-    public static String coreApiMethod() {
+    @CorePlatformApi
+    public static String corePlatformApiMethod() {
         return "Hello World";
     }
 
     /**
-     * A method that is public but not part of the intra-core mmodule API contract, i.e. it cannot
-     * be used from an mmodule.
+     * A method that is public but not part of either the intra-core or core platform API
+     * contracts, i.e. it cannot be used from the rest of the platform or another core mmodule.
      *
      * @hide
      */
