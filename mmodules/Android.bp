@@ -28,9 +28,9 @@
 droiddoc {
     name: "core-intra-stubs-docs",
     srcs: [":core_api_files"],
+    no_framework_libs: true,
 
     installable: false,
-    no_framework_libs: true,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
 }
@@ -66,9 +66,9 @@ java_system_modules {
 droiddoc {
     name: "core-api-stubs-docs",
     srcs: [":core_api_files"],
+    no_framework_libs: true,
 
     installable: false,
-    no_framework_libs: true,
     metalava_enabled: true,
     args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.CoreApi",
 }
