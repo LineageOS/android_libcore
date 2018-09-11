@@ -354,7 +354,7 @@ class DatagramChannelImpl
         synchronized (readLock) {
             ensureOpen();
             // Socket was not bound before attempting receive
-            // Android-Changed: Do not implicitly to bind to 0 (or 0.0.0.0), return null instead.
+            // Android-changed: Do not implicitly to bind to 0 (or 0.0.0.0), return null instead.
             if (localAddress() == null)
             //     bind(null);
                 return null;

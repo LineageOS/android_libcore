@@ -509,7 +509,7 @@ class DateTimeTextProvider {
     //     ResourceBundle rb = lr.getJavaTimeFormatData();
     //     return rb.containsKey(key) ? (T) rb.getObject(key) : null;
     // }
-    // END BEGIN Android-removed: Android uses ICU resources and has no LocaleProviderAdapter.
+    // END Android-removed: Android uses ICU resources and has no LocaleProviderAdapter.
 
     /**
      * Stores the text for a single locale.
