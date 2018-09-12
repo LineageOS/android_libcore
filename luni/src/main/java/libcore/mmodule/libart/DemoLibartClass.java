@@ -61,6 +61,8 @@ public class DemoLibartClass {
 
     /**
      * A core platform API method provided to higher-level code in the Android software stack.
+     *
+     * @hide
      */
     @CorePlatformApi
     public static String corePlatformApiMethod() {
