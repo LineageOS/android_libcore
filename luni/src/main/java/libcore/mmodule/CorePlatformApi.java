@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
 
 /**
  * Indicates an API is part of a contract provided by the "core" set of
- * libraries to the rest of the Android software stack.
+ * libraries to select parts of the Android software stack.
  * <p>
  * This annotation should only appear on API that is already marked <pre>@hide</pre>.
  *
@@ -36,5 +36,5 @@ import java.lang.annotation.Target;
  */
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface CoreApi {
+public @interface CorePlatformApi {
 }
