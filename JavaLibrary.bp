@@ -494,18 +494,17 @@ filegroup {
     ],
 }
 
-droiddoc {
-    name: "core-current-stubs-gen-docs",
+droidstubs {
+    name: "core-current-stubs-gen",
     srcs: [":core_api_files"],
     installable: false,
     no_framework_libs: true,
-    metalava_enabled: true,
     args: " --exclude-annotations",
 }
 
 java_library_static {
     name: "core.current.stubs",
-    srcs: [":core-current-stubs-gen-docs"],
+    srcs: [":core-current-stubs-gen"],
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",

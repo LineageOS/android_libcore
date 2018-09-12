@@ -87,21 +87,20 @@ java_test {
 
 // Generates stub source files for the {public SDK + intra-core} APIs
 // of core-simple.
-droiddoc {
-    name: "core-simple-intra-stubs-docs",
+droidstubs {
+    name: "core-simple-intra-stubs",
     srcs: [":core_simple_java_files"],
     no_framework_libs: true,
 
     installable: false,
-    metalava_enabled: true,
-    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
+    args: "--show-annotation libcore.mmodule.IntraCoreMModuleApi",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for
 // core-simple.
 java_library {
     name: "core-simple.intra.stubs",
-    srcs: [":core-simple-intra-stubs-docs"],
+    srcs: [":core-simple-intra-stubs"],
 
     no_standard_libs: true,
     // We use core.intra.stubs here to prove that we have all the dependencies
