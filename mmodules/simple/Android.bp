@@ -41,6 +41,7 @@ java_library {
     name: "core-simple",
     hostdex: true,
     defaults: ["core-simple-defaults"],
+    java_version: "1.9",
 }
 
 // A guaranteed unstripped version of core-simple.
@@ -52,6 +53,7 @@ java_library {
     dex_preopt: {
         enabled: false,
     },
+    java_version: "1.9",
 }
 
 // A rule that checks we can build core-simple using only the source for
@@ -93,6 +95,7 @@ droidstubs {
     no_framework_libs: true,
 
     installable: false,
+    java_version: "1.9",
     args: "--show-annotation libcore.mmodule.IntraCoreMModuleApi",
 }
 
@@ -111,4 +114,5 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+    java_version: "1.9",
 }
