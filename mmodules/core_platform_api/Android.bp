@@ -18,20 +18,19 @@
 
 // Generates stub source files for the {public SDK + core platform} API of the
 // core jars.
-droiddoc {
-    name: "core-platform-api-stubs-docs",
+droidstubs {
+    name: "core-platform-api-stubs",
     srcs: [":core_api_files"],
     no_framework_libs: true,
 
     installable: false,
-    metalava_enabled: true,
-    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.CorePlatformApi",
+    args: "--show-annotation libcore.mmodule.CorePlatformApi",
 }
 
 // A library containing the {public SDK + core platform} API stubs for the core jars.
 java_library {
     name: "core.platform.api.stubs",
-    srcs: [":core-platform-api-stubs-docs"],
+    srcs: [":core-platform-api-stubs"],
 
     no_standard_libs: true,
     libs: ["core-all"],

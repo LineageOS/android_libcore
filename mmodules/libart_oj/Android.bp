@@ -61,8 +61,8 @@ java_test {
 
 // Generates stub source files for the {public SDK + intra-core} APIs
 // of core-libart.
-droiddoc {
-    name: "core-libart+oj-intra-stubs-docs",
+droidstubs {
+    name: "core-libart+oj-intra-stubs",
     srcs: [
         ":core_libart_api_files",
         ":core_oj_api_files",
@@ -70,15 +70,14 @@ droiddoc {
     no_framework_libs: true,
 
     installable: false,
-    metalava_enabled: true,
-    args: "-nodocs -stubsourceonly -showAnnotation libcore.mmodule.IntraCoreMModuleApi",
+    args: "--show-annotation libcore.mmodule.IntraCoreMModuleApi",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for
 // core-libart.
 java_library {
     name: "core-libart+oj.intra.stubs",
-    srcs: [":core-libart+oj-intra-stubs-docs"],
+    srcs: [":core-libart+oj-intra-stubs"],
 
     no_standard_libs: true,
     // We use core.intra.stubs here to prove that we have all the dependencies
