@@ -33,6 +33,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectStreamException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import libcore.util.BasicLruCache;
 import libcore.util.EmptyArray;
 
@@ -232,15 +233,13 @@ public abstract class Enum<E extends Enum<E>>
      *         is null
      * @since 1.5
      */
+    // BEGIN Android-changed: Use a static BasicLruCache mapping Enum class -> Enum instance array.
+    // This change was made to fix a performance regression. See b/4087759 and b/109791362 for more
+    // background information.
     public static <T extends Enum<T>> T valueOf(Class<T> enumType,
                                                 String name) {
-        // Android-changed: Use a static BasicLruCache mapping Enum class -> Enum instance array.
-        if (enumType == null) {
-            throw new NullPointerException("enumType == null");
-        }
-        if (name == null) {
-            throw new NullPointerException("name == null");
-        }
+        Objects.requireNonNull(enumType, "enumType == null");
+        Objects.requireNonNull(enumType, "name == null");
         T[] values = getSharedConstants(enumType);
         if (values == null) {
             throw new IllegalArgumentException(enumType.toString() + " is not an enum type.");
@@ -289,6 +288,7 @@ public abstract class Enum<E extends Enum<E>>
     public static <T extends Enum<T>> T[] getSharedConstants(Class<T> enumType) {
         return (T[]) sharedConstantsCache.get(enumType);
     }
+    // END Android-changed: Use a static BasicLruCache mapping Enum class -> Enum instance array.
 
     /**
      * enum classes cannot have finalize methods.
