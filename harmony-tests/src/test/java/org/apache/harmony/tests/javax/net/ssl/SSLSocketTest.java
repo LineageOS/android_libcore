@@ -23,8 +23,10 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.List;
 import javax.net.ssl.HandshakeCompletedEvent;
 import javax.net.ssl.HandshakeCompletedListener;
 import javax.net.ssl.KeyManager;
@@ -371,8 +373,12 @@ public class SSLSocketTest extends TestCase {
         ssl.setEnabledCipherSuites(ssl.getSupportedCipherSuites());
         String[] res = ssl.getEnabledCipherSuites();
         assertNotNull("NULL result", res);
+        // By default, the socket only supports TLS 1.2, so the TLS 1.3 cipher suites
+        // shouldn't be enabled.
+        List<String> supported = new ArrayList<>(Arrays.asList(ssl.getSupportedCipherSuites()));
+        supported.removeAll(StandardNames.CIPHER_SUITES_TLS13);
         assertEquals("not all supported cipher suites were enabled",
-                     Arrays.asList(ssl.getSupportedCipherSuites()),
+                     supported,
                      Arrays.asList(res));
         ssl.close();
     }
