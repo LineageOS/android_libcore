@@ -1,0 +1,16 @@
+This directory contains annotated stub files which can be merged into
+the main source files by metalava when it is producing API stubs. This
+mechanism is used instead of adding the annotations to the main source
+files, to avoid carrying patches against the upstream sources.
+
+Directory structure
+===================
+
+libcore/ojluni/annotations/sdk:
+ - Contains annotations to be included in the public SDK, for example
+   annotations specifying additional details about method contracts.
+
+libcore/ojluni/annotations/sdk/nullability:
+ - Contains annotations to be included in the public SDK specifically
+   relating to nullability. Adding an annotated stub file to this subdirectory
+   will cause the annotations to be validated for correctness and completeness.

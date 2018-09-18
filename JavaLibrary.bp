@@ -483,8 +483,8 @@ java_test {
 
 // Make the annotated stubs in ojluni/annotations available to metalava:
 droiddoc_exported_dir {
-    name: "ojluni-annotated-stubs",
-    path: "ojluni/annotations",
+    name: "ojluni-annotated-sdk-stubs",
+    path: "ojluni/annotations/sdk",
 }
 
 // A file containing the list of tags that are "known" to us from the OpenJdk
