@@ -25,8 +25,10 @@ import java.nio.channels.Pipe.SinkChannel;
 import java.nio.channels.Pipe.SourceChannel;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -62,7 +64,10 @@ public class SSLEngineTest extends TestCase {
         assertEquals(-1, e.getPeerPort());
         String[] suites = e.getSupportedCipherSuites();
         e.setEnabledCipherSuites(suites);
-        assertEquals(e.getEnabledCipherSuites().length, suites.length);
+        // By default, the engine only supports TLS 1.2, so the TLS 1.3 cipher suites
+        // shouldn't be enabled.
+        assertEquals(suites.length - StandardNames.CIPHER_SUITES_TLS13.size(),
+                e.getEnabledCipherSuites().length);
     }
 
     /**
@@ -99,7 +104,10 @@ public class SSLEngineTest extends TestCase {
         assertEquals(e.getPeerPort(), port);
         String[] suites = e.getSupportedCipherSuites();
         e.setEnabledCipherSuites(suites);
-        assertEquals(e.getEnabledCipherSuites().length, suites.length);
+        // By default, the engine only supports TLS 1.2, so the TLS 1.3 cipher suites
+        // shouldn't be enabled.
+        assertEquals(suites.length - StandardNames.CIPHER_SUITES_TLS13.size(),
+                e.getEnabledCipherSuites().length);
         e.setUseClientMode(true);
         assertTrue(e.getUseClientMode());
     }
@@ -176,8 +184,12 @@ public class SSLEngineTest extends TestCase {
         sse.setEnabledCipherSuites(st);
         String[] res = sse.getEnabledCipherSuites();
         assertNotNull("Null array was returned", res);
-        assertEquals("Incorrect array length", res.length, st.length);
-        assertTrue("Incorrect array was returned", Arrays.equals(res, st));
+        // By default, the engine only supports TLS 1.2, so the TLS 1.3 cipher suites
+        // shouldn't be enabled.
+        List<String> supported = new ArrayList<>(Arrays.asList(st));
+        supported.removeAll(StandardNames.CIPHER_SUITES_TLS13);
+        assertEquals("Incorrect array length", res.length, supported.size());
+        assertEquals("Incorrect array was returned", Arrays.asList(res), supported);
 
         try {
             sse.setEnabledCipherSuites(null);

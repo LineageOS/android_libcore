@@ -264,6 +264,7 @@ public final class StandardNames {
         provide("SSLContext", "TLSv1");
         provide("SSLContext", "TLSv1.1");
         provide("SSLContext", "TLSv1.2");
+        provide("SSLContext", "TLSv1.3");
         provide("SecretKeyFactory", "DES");
         provide("SecretKeyFactory", "DESede");
         provide("SecretKeyFactory", "PBEWithMD5AndDES");
@@ -683,7 +684,8 @@ public final class StandardNames {
     public static final Set<String> SSL_SOCKET_PROTOCOLS = new HashSet<String>(Arrays.asList(
         "TLSv1",
         "TLSv1.1",
-        "TLSv1.2"));
+        "TLSv1.2",
+        "TLSv1.3"));
     public static final Set<String> SSL_SOCKET_PROTOCOLS_CLIENT_DEFAULT =
             new HashSet<String>(Arrays.asList(
                 "TLSv1",
@@ -710,11 +712,13 @@ public final class StandardNames {
         }
     }
 
-    private static enum TLSVersion {
+    private enum TLSVersion {
         SSLv3("SSLv3"),
         TLSv1("TLSv1"),
         TLSv11("TLSv1.1"),
-        TLSv12("TLSv1.2");
+        TLSv12("TLSv1.2"),
+        TLSv13("TLSv1.3"),
+        ;
 
         private final String name;
 
@@ -735,8 +739,9 @@ public final class StandardNames {
 
     /**
      * Valid values for X509TrustManager.checkServerTrusted authType,
-     * either key exchange algorithm part of the cipher suite
-     * or UNKNOWN.
+     * either key exchange algorithm part of the cipher suite, UNKNOWN,
+     * or GENERIC (for TLS 1.3 cipher suites that don't imply a specific
+     * key exchange method).
      */
     public static final Set<String> SERVER_AUTH_TYPES = new HashSet<String>(Arrays.asList(
         "DHE_DSS",
@@ -756,7 +761,8 @@ public final class StandardNames {
         "ECDH_RSA",
         "ECDHE_ECDSA",
         "ECDHE_RSA",
-        "UNKNOWN"));
+        "UNKNOWN",
+        "GENERIC"));
 
     public static final String CIPHER_SUITE_INVALID = "SSL_NULL_WITH_NULL_NULL";
 
@@ -810,6 +816,11 @@ public final class StandardNames {
         addOpenSsl("TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384");
         addOpenSsl("TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256");
         addOpenSsl("TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
+
+        // TLSv1.3 cipher suites
+        addOpenSsl("TLS_AES_128_GCM_SHA256");
+        addOpenSsl("TLS_AES_256_GCM_SHA384");
+        addOpenSsl("TLS_CHACHA20_POLY1305_SHA256");
 
         // Pre-Shared Key (PSK) cipher suites
         addOpenSsl("TLS_PSK_WITH_AES_128_CBC_SHA");
@@ -942,6 +953,14 @@ public final class StandardNames {
                     "SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA",
                     "SSL_DH_anon_EXPORT_WITH_DES40_CBC_SHA"
             );
+
+    /**
+     * Cipher suites that are only supported with TLS 1.3.
+     */
+    public static final List<String> CIPHER_SUITES_TLS13 = Arrays.asList(
+            "TLS_AES_128_GCM_SHA256",
+            "TLS_AES_256_GCM_SHA384",
+            "TLS_CHACHA20_POLY1305_SHA256");
 
     // NOTE: This list needs to be kept in sync with Javadoc of javax.net.ssl.SSLSocket and
     // javax.net.ssl.SSLEngine.
