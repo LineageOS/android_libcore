@@ -496,6 +496,7 @@ filegroup {
     ],
 }
 
+// Stubs for the parts of the public SDK API provided by the core libraries.
 droidstubs {
     name: "core-current-stubs-gen",
     srcs: [":core_api_files"],
@@ -504,7 +505,9 @@ droidstubs {
     args: " --exclude-annotations",
 }
 
-java_library_static {
+// A library containing the parts of the public SDK API provided by the core libraries.
+// Don't use this directly, use "sdk_version: core_current".
+java_library {
     name: "core.current.stubs",
     srcs: [":core-current-stubs-gen"],
     errorprone: {
@@ -518,4 +521,3 @@ java_library_static {
     no_standard_libs: true,
     system_modules: "none",
 }
-
