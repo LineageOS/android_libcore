@@ -1,0 +1,8 @@
+package libcore.mmodule.libart {
+
+  public class DemoLibartClass {
+    method public static java.lang.String corePlatformApiMethod();
+  }
+
+}
+
