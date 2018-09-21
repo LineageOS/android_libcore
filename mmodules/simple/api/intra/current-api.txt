@@ -1,0 +1,9 @@
+package libcore.mmodule.simple {
+
+  public class DemoSimpleClass {
+    method public static java.lang.String intraCoreDependencyMethod();
+    method public static java.lang.String simpleMethod();
+  }
+
+}
+
