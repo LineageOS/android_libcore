@@ -117,7 +117,8 @@
 #ifndef START_CHILD_USE_VFORK
 // Android-changed: disable vfork under AddressSanitizer.
 //  #ifdef __linux__
-  #if defined(__linux__) && !__has_feature(address_sanitizer)
+  #if defined(__linux__) && !__has_feature(address_sanitizer) && \
+      !__has_feature(hwaddress_sanitizer)
     #define START_CHILD_USE_VFORK 1
   #else
     #define START_CHILD_USE_VFORK 0
