@@ -23,6 +23,7 @@ droidstubs {
     srcs: [":core_api_files"],
     no_framework_libs: true,
 
+    api_filename: "api.txt",
     installable: false,
     args: "--show-annotation libcore.mmodule.IntraCoreMModuleApi",
 }
