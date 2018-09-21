@@ -379,6 +379,11 @@ public final class OsConstants {
     public static final int NETLINK_NETFILTER = placeholder();
     /** @hide */
     public static final int NETLINK_ROUTE = placeholder();
+    /** 
+     * SELinux enforces that only system_server and netd may use this netlink socket type.
+     * @hide
+     */
+    public static final int NETLINK_INET_DIAG = placeholder();
     public static final int NI_DGRAM = placeholder();
     public static final int NI_NAMEREQD = placeholder();
     public static final int NI_NOFQDN = placeholder();
