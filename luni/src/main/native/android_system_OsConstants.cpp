@@ -385,6 +385,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "MS_SYNC", MS_SYNC);
     initConstant(env, c, "NETLINK_NETFILTER", NETLINK_NETFILTER);
     initConstant(env, c, "NETLINK_ROUTE", NETLINK_ROUTE);
+    initConstant(env, c, "NETLINK_INET_DIAG", NETLINK_INET_DIAG);
     initConstant(env, c, "NI_DGRAM", NI_DGRAM);
     initConstant(env, c, "NI_NAMEREQD", NI_NAMEREQD);
     initConstant(env, c, "NI_NOFQDN", NI_NOFQDN);
