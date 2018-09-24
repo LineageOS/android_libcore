@@ -21,7 +21,8 @@
 droidstubs {
     name: "core-intra-stubs",
     srcs: [":core_api_files"],
-    no_framework_libs: true,
+    no_standard_libs: true,
+    libs: ["core-all"],
 
     api_filename: "api.txt",
     installable: false,
