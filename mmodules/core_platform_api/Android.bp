@@ -24,7 +24,7 @@ droidstubs {
     no_framework_libs: true,
 
     installable: false,
-    args: "--show-annotation libcore.mmodule.CorePlatformApi",
+    args: "--show-annotation libcore.api.CorePlatformApi",
 
     api_filename: "api.txt",
     removed_api_filename: "removed.txt",

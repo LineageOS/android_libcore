@@ -70,7 +70,7 @@ droidstubs {
     no_framework_libs: true,
 
     installable: false,
-    args: "--show-annotation libcore.mmodule.IntraCoreMModuleApi",
+    args: "--show-annotation libcore.api.IntraCoreApi",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for

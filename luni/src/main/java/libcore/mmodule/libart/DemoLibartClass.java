@@ -16,8 +16,6 @@
 
 package libcore.mmodule.libart;
 
-import libcore.mmodule.CorePlatformApi;
-import libcore.mmodule.IntraCoreMModuleApi;
 import libcore.mmodule.simple.DemoSimpleClass;
 
 /**
@@ -31,8 +29,8 @@ import libcore.mmodule.simple.DemoSimpleClass;
  *
  * @hide
  */
-@CorePlatformApi
-@IntraCoreMModuleApi
+@libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public class DemoLibartClass {
 
     private DemoLibartClass() {}
@@ -42,7 +40,7 @@ public class DemoLibartClass {
      *
      * @hide
      */
-    @IntraCoreMModuleApi
+    @libcore.api.IntraCoreApi
     public static String intraCoreDependencyMethod() {
         // Delegate to core-simple code to implement the method.
         return DemoSimpleClass.simpleMethod();
@@ -54,7 +52,7 @@ public class DemoLibartClass {
      *
      * @hide
      */
-    @IntraCoreMModuleApi
+    @libcore.api.IntraCoreApi
     public static String simpleMethod() {
         return "Hello World";
     }
@@ -64,7 +62,7 @@ public class DemoLibartClass {
      *
      * @hide
      */
-    @CorePlatformApi
+    @libcore.api.CorePlatformApi
     public static String corePlatformApiMethod() {
         return "Hello World";
     }
