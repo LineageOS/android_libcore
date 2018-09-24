@@ -25,11 +25,15 @@ package libcore.net;
  *
  * <p>The policy currently consists of a single flag: whether cleartext network traffic is
  * permitted. See {@link #isCleartextTrafficPermitted()}.
+ *
+ * @hide
  */
+@libcore.api.IntraCoreApi
 public abstract class NetworkSecurityPolicy {
 
     private static volatile NetworkSecurityPolicy instance = new DefaultNetworkSecurityPolicy();
 
+    @libcore.api.IntraCoreApi
     public static NetworkSecurityPolicy getInstance() {
         return instance;
     }
@@ -77,6 +81,7 @@ public abstract class NetworkSecurityPolicy {
      *
      * <p>See RFC6962 section 3.3 for more details.
      */
+    @libcore.api.IntraCoreApi
     public abstract boolean isCertificateTransparencyVerificationRequired(String hostname);
 
     public static final class DefaultNetworkSecurityPolicy extends NetworkSecurityPolicy {

@@ -24,11 +24,14 @@ import libcore.util.Objects;
  *
  * @hide
  */
+@libcore.api.IntraCoreApi
 public final class StructTimeval {
     /** Seconds. */
+    @libcore.api.IntraCoreApi
     public final long tv_sec;
 
     /** Microseconds. */
+    @libcore.api.IntraCoreApi
     public final long tv_usec;
 
     private StructTimeval(long tv_sec, long tv_usec) {
@@ -36,17 +39,21 @@ public final class StructTimeval {
         this.tv_usec = tv_usec;
     }
 
+    @libcore.api.IntraCoreApi
     public static StructTimeval fromMillis(long millis) {
         long tv_sec = millis / 1000;
         long tv_usec = (millis - (tv_sec * 1000)) * 1000;
         return new StructTimeval(tv_sec, tv_usec);
     }
 
+    @libcore.api.IntraCoreApi
     public long toMillis() {
         return (tv_sec * 1000) + (tv_usec / 1000);
     }
 
-    @Override public String toString() {
+    @libcore.api.IntraCoreApi
+    @Override
+    public String toString() {
         return Objects.toString(this);
     }
 }

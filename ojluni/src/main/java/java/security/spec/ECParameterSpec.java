@@ -121,6 +121,7 @@ public class ECParameterSpec implements AlgorithmParameterSpec {
      *
      * @hide
      */
+    @libcore.api.IntraCoreApi
     public void setCurveName(String curveName) {
         this.curveName = curveName;
     }
@@ -131,6 +132,7 @@ public class ECParameterSpec implements AlgorithmParameterSpec {
      *
      * @hide
      */
+    @libcore.api.IntraCoreApi
     public String getCurveName() {
         return curveName;
     }

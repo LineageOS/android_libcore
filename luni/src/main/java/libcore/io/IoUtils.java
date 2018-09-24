@@ -31,6 +31,8 @@ import java.util.Random;
 import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
+/** @hide */
+@libcore.api.IntraCoreApi
 public final class IoUtils {
     private IoUtils() {
     }
@@ -151,6 +153,7 @@ public final class IoUtils {
     /**
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
+    @libcore.api.IntraCoreApi
     public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {
