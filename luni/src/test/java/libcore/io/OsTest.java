@@ -705,8 +705,12 @@ public class OsTest extends TestCase {
       int newValue = 3000;
       Libcore.os.setsockoptInt(fd, OsConstants.IPPROTO_TCP, OsConstants.TCP_USER_TIMEOUT,
               newValue);
-      assertEquals(newValue, Libcore.os.getsockoptInt(fd, OsConstants.IPPROTO_TCP,
-              OsConstants.TCP_USER_TIMEOUT));
+      int actualValue = Libcore.os.getsockoptInt(fd, OsConstants.IPPROTO_TCP,
+              OsConstants.TCP_USER_TIMEOUT);
+      // The kernel can round the requested value based on the HZ setting. We allow up to 10ms
+      // difference.
+      assertTrue("Returned incorrect timeout:" + actualValue,
+              Math.abs(newValue - actualValue) <= 10);
       // No need to reset the value to 0, since we're throwing the socket away
     } finally {
       Libcore.os.close(fd);
