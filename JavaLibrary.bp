@@ -85,6 +85,7 @@ filegroup {
         ":core_oj_api_files",
         ":core_libart_api_files",
         ":core_simple_java_files",
+        ":okhttp_api_files",
     ],
 }
 
