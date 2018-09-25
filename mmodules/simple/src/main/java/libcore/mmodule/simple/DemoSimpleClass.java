@@ -34,8 +34,6 @@ public class DemoSimpleClass {
     /**
      * A simple method that has no native or data file dependencies but is part of the simple
      * mmodule's API contract.
-     *
-     * @hide
      */
     @libcore.api.IntraCoreApi
     public static String simpleMethod() {
@@ -44,8 +42,6 @@ public class DemoSimpleClass {
 
     /**
      * A method that depends on another part of the core libraries to work.
-     *
-     * @hide
      */
     @libcore.api.IntraCoreApi // Exposed for tests
     public static String intraCoreDependencyMethod() {
@@ -55,8 +51,6 @@ public class DemoSimpleClass {
 
     /**
      * A method that is public but not part of the simple mmodule's API contract.
-     *
-     * @hide
      */
     public static String hiddenMethod() {
         return "Hello World";
