@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.mmodule;
+package libcore.api;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;

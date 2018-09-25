@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.mmodule;
+package libcore.api;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
@@ -34,8 +34,8 @@ import java.lang.annotation.Target;
  *
  * @hide
  */
-@IntraCoreMModuleApi // @IntraCoreMModuleApi is itself part of the intra-core API
+@IntraCoreApi // @IntraCoreApi is itself part of the intra-core API
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE})
 @Retention(RetentionPolicy.SOURCE)
-public @interface IntraCoreMModuleApi {
+public @interface IntraCoreApi {
 }
