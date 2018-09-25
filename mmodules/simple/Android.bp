@@ -93,7 +93,7 @@ droidstubs {
     no_framework_libs: true,
 
     installable: false,
-    args: "--show-annotation libcore.api.IntraCoreApi",
+    args: "--show-single-annotation libcore.api.IntraCoreApi",
 
     api_filename: "api.txt",
     removed_api_filename: "removed.txt",
