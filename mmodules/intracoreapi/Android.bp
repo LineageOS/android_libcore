@@ -25,7 +25,7 @@ droidstubs {
 
     api_filename: "api.txt",
     installable: false,
-    args: "--show-annotation libcore.api.IntraCoreApi",
+    args: "--show-single-annotation libcore.api.IntraCoreApi",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for the
