@@ -1,3 +1,5 @@
+// Classes which are part of the public API, except where classes and
+// members are hidden using @hide javadoc tags.
 filegroup {
     name: "openjdk_javadoc_files",
     export_to_make_var: "openjdk_javadoc_files",
@@ -1346,8 +1348,8 @@ filegroup {
         "ojluni/src/main/java/javax/sql/StatementEventListener.java",
         "ojluni/src/main/java/sun/reflect/CallerSensitive.java",
     ],
-
 }
+
 // Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
 // not used on Android devices or required by the Jack compiler.
 //
@@ -1366,7 +1368,6 @@ filegroup {
         "ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java",
     ],
 }
-
 filegroup {
     name: "openjdk_lambda_duplicate_stub_files",
     export_to_make_var: "openjdk_lambda_duplicate_stub_files",
@@ -1380,11 +1381,24 @@ filegroup {
     ],
 }
 
-// NOTE: Files in java/lang/invoke are listed here because they're not being made public
-// until the entire package is available for use.
+// Classes which are exposed in the intra-core or core-platform APIs but not in
+// the public APIs. Unless they are annotated, these classes and all their
+// members will be exposed in all such APIs. To avoid patching the main ojluni
+// sources, these API annotations can be placed in .annotated.java stub files
+// under ojluni/annotations/mmodule. Classes must be hidden using the
+// libcore.api.Hide annotation, and then the class and the members to be exposed
+// must be annotated with libcore.api.CorePlatformApi and/or
+// libcore.api.IntraCoreApi.
 filegroup {
-    name: "openjdk_java_files",
-    export_to_make_var: "openjdk_java_files",
+    name: "openjdk_mmodule_extra_files",
+    path: "ojluni/src/lambda/java",
+    srcs: [
+    ],
+}
+
+// Classes not exposed in any API (either public or mmodule).
+filegroup {
+    name: "openjdk_internal_files",
     path: "ojluni/src/lambda/java",
     srcs: [
         "ojluni/src/main/java/com/sun/net/ssl/internal/ssl/X509ExtendedTrustManager.java",
@@ -1776,7 +1790,18 @@ filegroup {
         "ojluni/src/main/java/sun/util/logging/PlatformLogger.java",
         "ojluni/src/main/java/sun/util/ResourceBundleEnumeration.java",
         "ojluni/src/main/java/sun/util/resources/OpenListResourceBundle.java",
+    ],
+}
+
+// All classes, whether exposed in any API or not.
+filegroup {
+    name: "openjdk_java_files",
+    export_to_make_var: "openjdk_java_files",
+    path: "ojluni/src/lambda/java",
+    srcs: [
         ":openjdk_javadoc_files",
+        ":openjdk_mmodule_extra_files",
+        ":openjdk_internal_files",
         ":openjdk_lambda_stub_files",
     ],
 }
