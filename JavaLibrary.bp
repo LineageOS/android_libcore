@@ -82,9 +82,12 @@ filegroup {
 filegroup {
     name: "core_api_files",
     srcs: [
+        ":bouncycastle_java_files",
+        ":conscrypt_java_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
         ":core_simple_java_files",
+        ":okhttp_api_files",
     ],
 }
 
