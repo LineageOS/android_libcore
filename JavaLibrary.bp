@@ -110,6 +110,17 @@ java_defaults {
 // Build for the target (device).
 //
 
+// Rule generating resource lib for android_icu4j.
+// In the downstream branch master-icu-dev, the resource files are generated.
+// This rule can't be moved external/icu because soong enforces that no_standard_libs:true can only
+// be used in libcore/ or development/
+java_library {
+    name: "android_icu4j_resources_lib",
+    java_resources: [":android_icu4j_resources"],
+    no_standard_libs: true,
+    system_modules: "none",
+}
+
 java_library {
     name: "core-all",
     defaults: ["libcore_java_defaults"],
@@ -129,7 +140,7 @@ java_library {
     },
 
     java_resource_dirs: core_resource_dirs,
-    java_resources: [":android_icu4j_resources"],
+    static_libs: ["android_icu4j_resources_lib"],
 
     required: [
         "tzdata",
@@ -194,7 +205,7 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
-    java_resources: [":android_icu4j_resources"],
+    static_libs: ["android_icu4j_resources_lib"],
 
     no_standard_libs: true,
     libs: ["core-all"],
