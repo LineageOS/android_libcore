@@ -26,7 +26,9 @@ droidstubs {
 
     api_filename: "api.txt",
     installable: false,
-    args: "--show-single-annotation libcore.api.IntraCoreApi",
+    args: "--hide-annotation libcore.api.Hide "
+        + "--show-single-annotation libcore.api.IntraCoreApi",
+    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 }
 
 // A library containing the {public SDK + intra-core} API stubs for the

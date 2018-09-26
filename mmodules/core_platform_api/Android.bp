@@ -24,7 +24,9 @@ droidstubs {
     no_framework_libs: true,
 
     installable: false,
-    args: "--show-single-annotation libcore.api.CorePlatformApi",
+    args: "--hide-annotation libcore.api.Hide "
+        + "--show-single-annotation libcore.api.CorePlatformApi",
+    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 
     api_filename: "api.txt",
     removed_api_filename: "removed.txt",
