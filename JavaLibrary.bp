@@ -86,6 +86,7 @@ filegroup {
 filegroup {
     name: "core_api_files",
     srcs: [
+        ":apache-xml_api_files",
         ":bouncycastle_java_files",
         ":conscrypt_java_files",
         ":core_oj_api_files",
