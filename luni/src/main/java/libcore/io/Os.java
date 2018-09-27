@@ -44,6 +44,8 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 
+/** @hide */
+@libcore.api.IntraCoreApi
 public interface Os {
     public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException;
     public boolean access(String path, int mode) throws ErrnoException;
@@ -164,6 +166,7 @@ public interface Os {
     public void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException;
     public void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException;
     public void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException;
+    @libcore.api.IntraCoreApi
     public void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException;
     public void setuid(int uid) throws ErrnoException;
     public void setxattr(String path, String name, byte[] value, int flags) throws ErrnoException;
