@@ -1393,6 +1393,8 @@ filegroup {
     name: "openjdk_mmodule_extra_files",
     path: "ojluni/src/lambda/java",
     srcs: [
+        "ojluni/src/main/java/sun/security/util/DerEncoder.java",
+        "ojluni/src/main/java/sun/security/x509/AlgorithmId.java",
     ],
 }
 
@@ -1671,7 +1673,6 @@ filegroup {
         "ojluni/src/main/java/sun/security/util/ByteArrayTagOrder.java",
         "ojluni/src/main/java/sun/security/util/Cache.java",
         "ojluni/src/main/java/sun/security/util/Debug.java",
-        "ojluni/src/main/java/sun/security/util/DerEncoder.java",
         "ojluni/src/main/java/sun/security/util/DerIndefLenConverter.java",
         "ojluni/src/main/java/sun/security/util/DerInputBuffer.java",
         "ojluni/src/main/java/sun/security/util/DerInputStream.java",
@@ -1689,7 +1690,6 @@ filegroup {
         "ojluni/src/main/java/sun/security/util/SecurityConstants.java",
         "ojluni/src/main/java/sun/security/util/SignatureFileVerifier.java",
         "ojluni/src/main/java/sun/security/x509/AccessDescription.java",
-        "ojluni/src/main/java/sun/security/x509/AlgorithmId.java",
         "ojluni/src/main/java/sun/security/x509/AttributeNameEnumeration.java",
         "ojluni/src/main/java/sun/security/x509/AuthorityInfoAccessExtension.java",
         "ojluni/src/main/java/sun/security/x509/AuthorityKeyIdentifierExtension.java",
