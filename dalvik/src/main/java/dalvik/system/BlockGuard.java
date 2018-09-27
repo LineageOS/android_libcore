@@ -33,6 +33,7 @@ import java.util.Objects;
  *
  * @hide
  */
+@libcore.api.IntraCoreApi
 public final class BlockGuard {
 
     // TODO: refactor class name to something more generic, since its scope is
@@ -41,6 +42,7 @@ public final class BlockGuard {
     /**
      * Per-thread interface used to implement {@code StrictMode.ThreadPolicy}.
      */
+    @libcore.api.IntraCoreApi
     public interface Policy {
         /**
          * Called on disk writes.
@@ -55,6 +57,7 @@ public final class BlockGuard {
         /**
          * Called on network operations.
          */
+        @libcore.api.IntraCoreApi
         void onNetwork();
 
         /**
@@ -182,6 +185,7 @@ public final class BlockGuard {
      * @return the current thread's policy. Will return the {@link #LAX_POLICY}
      *         instance if nothing else is set.
      */
+    @libcore.api.IntraCoreApi
     public static @NonNull Policy getThreadPolicy() {
         return threadPolicy.get();
     }
