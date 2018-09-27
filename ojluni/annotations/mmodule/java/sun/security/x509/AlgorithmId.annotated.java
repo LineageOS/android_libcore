@@ -26,11 +26,10 @@
 
 package sun.security.x509;
 
-import java.io.*;
-import java.util.*;
-import java.security.*;
+import java.io.Serializable;
+import java.security.NoSuchAlgorithmException;
 
-import sun.security.util.*;
+import sun.security.util.DerEncoder;
 
 @libcore.api.Hide
 @libcore.api.IntraCoreApi
