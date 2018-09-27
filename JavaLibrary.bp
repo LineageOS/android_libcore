@@ -78,16 +78,22 @@ filegroup {
 }
 
 // The set of files in core that have been marked up with @hide and API-related
-// annotations.
+// annotations. Note that this includes the intra-core and core-platform APIs as
+// well as the public APIs. Some source files in :openjdk_mmodule_extra_files
+// are annotated by applying annotation to the .annotated.java stubs files in
+// ojluni/annotated/mmodules and rather than in the original source. See the
+// comments in openjdk_java_files.bp for more details.
 filegroup {
     name: "core_api_files",
     srcs: [
+        ":apache-xml_api_files",
         ":bouncycastle_java_files",
         ":conscrypt_java_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
         ":core_simple_java_files",
         ":okhttp_api_files",
+        ":openjdk_mmodule_extra_files",
     ],
 }
 
@@ -110,6 +116,17 @@ java_defaults {
 // Build for the target (device).
 //
 
+// Rule generating resource lib for android_icu4j.
+// In the downstream branch master-icu-dev, the resource files are generated.
+// This rule can't be moved external/icu because soong enforces that no_standard_libs:true can only
+// be used in libcore/ or development/
+java_library {
+    name: "android_icu4j_resources_lib",
+    java_resources: [":android_icu4j_resources"],
+    no_standard_libs: true,
+    system_modules: "none",
+}
+
 java_library {
     name: "core-all",
     defaults: ["libcore_java_defaults"],
@@ -129,7 +146,7 @@ java_library {
     },
 
     java_resource_dirs: core_resource_dirs,
-    java_resources: [":android_icu4j_resources"],
+    static_libs: ["android_icu4j_resources_lib"],
 
     required: [
         "tzdata",
@@ -194,7 +211,7 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
-    java_resources: [":android_icu4j_resources"],
+    static_libs: ["android_icu4j_resources_lib"],
 
     no_standard_libs: true,
     libs: ["core-all"],
@@ -488,6 +505,10 @@ java_test {
 droiddoc_exported_dir {
     name: "ojluni-annotated-sdk-stubs",
     path: "ojluni/annotations/sdk",
+}
+droiddoc_exported_dir {
+    name: "ojluni-annotated-mmodule-stubs",
+    path: "ojluni/annotations/mmodule",
 }
 
 // A file containing the list of tags that are "known" to us from the OpenJdk
