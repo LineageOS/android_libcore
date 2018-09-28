@@ -42,7 +42,9 @@ import libcore.util.CountryTimeZones.TimeZoneMapping;
 
 /**
  * A class that can find matching time zones by loading data from the tzlookup.xml file.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class TimeZoneFinder {
 
     private static final String TZLOOKUP_FILE_NAME = "tzlookup.xml";
@@ -89,6 +91,7 @@ public final class TimeZoneFinder {
      * file when there are several to choose from. This method never returns {@code null}. No
      * in-depth validation is performed on the file content, see {@link #validate()}.
      */
+    @libcore.api.CorePlatformApi
     public static TimeZoneFinder getInstance() {
         synchronized(TimeZoneFinder.class) {
             if (instance == null) {
@@ -130,6 +133,7 @@ public final class TimeZoneFinder {
      * exist or is not readable. This method never returns {@code null}. No in-depth validation is
      * performed on the file content, see {@link #validate()}.
      */
+    @libcore.api.CorePlatformApi
     public static TimeZoneFinder createInstance(String path) throws IOException {
         ReaderSupplier xmlSupplier = ReaderSupplier.forFile(path, StandardCharsets.UTF_8);
         return new TimeZoneFinder(xmlSupplier);
@@ -144,6 +148,7 @@ public final class TimeZoneFinder {
     /**
      * Parses the data file, throws an exception if it is invalid or cannot be read.
      */
+    @libcore.api.CorePlatformApi
     public void validate() throws IOException {
         try {
             processXml(new TimeZonesValidator());
@@ -213,6 +218,7 @@ public final class TimeZoneFinder {
      * <p>If the country code is not recognized or there is an error during lookup this can return
      * null.
      */
+    @libcore.api.CorePlatformApi
     public String lookupDefaultTimeZoneIdByCountry(String countryIso) {
         CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         return countryTimeZones == null ? null : countryTimeZones.getDefaultTimeZoneId();
@@ -249,6 +255,7 @@ public final class TimeZoneFinder {
      * Caching is handled as needed. If the country code is not recognized or there is an error
      * during lookup this method can return null.
      */
+    @libcore.api.CorePlatformApi
     public CountryTimeZones lookupCountryTimeZones(String countryIso) {
         synchronized (this) {
             if (lastCountryTimeZones != null && lastCountryTimeZones.isForCountryCode(countryIso)) {
