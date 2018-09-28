@@ -94,6 +94,11 @@ public class DelegateLastClassLoaderTest extends TestCase {
     }
 
     private ClassLoader createClassLoader(String parentName, String thisName) {
+      return createClassLoader(parentName, thisName, true);
+    }
+
+    private ClassLoader createClassLoader(String parentName, String thisName,
+            boolean delegateResourceLoading) {
         File parentPath = resourcesMap.get(parentName);
         File thisPath = resourcesMap.get(thisName);
         assertNotNull(parentPath);
@@ -102,7 +107,8 @@ public class DelegateLastClassLoaderTest extends TestCase {
         ClassLoader parent = new PathClassLoader(parentPath.getAbsolutePath(),
                 Object.class.getClassLoader());
 
-        return new DelegateLastClassLoader(thisPath.getAbsolutePath(), parent);
+        return new DelegateLastClassLoader(thisPath.getAbsolutePath(), null, parent,
+            delegateResourceLoading);
     }
 
     private static String callMethod(ClassLoader cl, String name) throws Exception {
@@ -116,7 +122,9 @@ public class DelegateLastClassLoaderTest extends TestCase {
 
     private static String readResource(ClassLoader cl, String resourceName) throws Exception {
         InputStream in = cl.getResourceAsStream(resourceName);
-        assertNotNull(in);
+        if (in == null) {
+            return null;
+        }
 
         byte[] contents = Streams.readFully(in);
         return new String(contents, StandardCharsets.UTF_8);
@@ -186,9 +194,21 @@ public class DelegateLastClassLoaderTest extends TestCase {
     public void testLookupOrder_getResource() throws Exception {
         ClassLoader delegate = createClassLoader("parent.jar", "child.jar");
         assertEquals("child", readResource(delegate, "resource.txt"));
+        assertEquals("parent2", readResource(delegate, "resource2.txt"));
 
         delegate = createClassLoader("child.jar", "parent.jar");
         assertEquals("parent", readResource(delegate, "resource.txt"));
+        assertEquals("parent2", readResource(delegate, "resource2.txt"));
+    }
+
+    public void testLookupOrderNodelegate_getResource() throws Exception {
+        ClassLoader delegate = createClassLoader("parent.jar", "child.jar", false);
+        assertEquals("child", readResource(delegate, "resource.txt"));
+        assertEquals(null, readResource(delegate, "resource2.txt"));
+
+        delegate = createClassLoader("child.jar", "parent.jar", false);
+        assertEquals("parent", readResource(delegate, "resource.txt"));
+        assertEquals("parent2", readResource(delegate, "resource2.txt"));
     }
 
     public void testLookupOrder_getResources() throws Exception {
@@ -205,6 +225,43 @@ public class DelegateLastClassLoaderTest extends TestCase {
         assertEquals(2, resources.size());
         assertEquals("parent", resources.get(0));
         assertEquals("child", resources.get(1));
+    }
+
+    public void testLookupOrder_getResources2() throws Exception {
+        ClassLoader delegate = createClassLoader("parent.jar", "child.jar");
+        List<String> resources = readResources(delegate, "resource2.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("parent2", resources.get(0));
+
+        delegate = createClassLoader("child.jar", "parent.jar");
+        resources = readResources(delegate, "resource2.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("parent2", resources.get(0));
+    }
+
+    public void testLookupOrderNoDelegate_getResources() throws Exception {
+        ClassLoader delegate = createClassLoader("parent.jar", "child.jar", false);
+        List<String> resources = readResources(delegate, "resource.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("child", resources.get(0));
+
+        resources = readResources(delegate, "resource2.txt");
+
+        assertEquals(0, resources.size());
+
+        delegate = createClassLoader("child.jar", "parent.jar", false);
+        resources = readResources(delegate, "resource.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("parent", resources.get(0));
+
+        resources = readResources(delegate, "resource2.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("parent2", resources.get(0));
     }
 
     public void testLookupOrder_bootOverride() throws Exception {
