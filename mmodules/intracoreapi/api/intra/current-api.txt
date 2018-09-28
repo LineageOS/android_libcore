@@ -60,6 +60,9 @@ package java.security.spec {
 
 package libcore.api {
 
+  public abstract class CorePlatformApi implements java.lang.annotation.Annotation {
+  }
+
   public abstract class IntraCoreApi implements java.lang.annotation.Annotation {
   }
 
