@@ -1,3 +1,42 @@
+package com.android.okhttp.internalandroidapi {
+
+  public final class AndroidResponseCacheAdapter {
+    ctor public AndroidResponseCacheAdapter(com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder);
+    method public void close() throws java.io.IOException;
+    method public void delete() throws java.io.IOException;
+    method public void flush() throws java.io.IOException;
+    method public java.net.CacheResponse get(java.net.URI, java.lang.String, java.util.Map<java.lang.String, java.util.List<java.lang.String>>) throws java.io.IOException;
+    method public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+    method public int getHitCount();
+    method public long getMaxSize();
+    method public int getNetworkCount();
+    method public int getRequestCount();
+    method public long getSize() throws java.io.IOException;
+    method public java.net.CacheRequest put(java.net.URI, java.net.URLConnection) throws java.io.IOException;
+  }
+
+  public abstract interface Dns {
+    method public abstract java.util.List<java.net.InetAddress> lookup(java.lang.String) throws java.net.UnknownHostException;
+  }
+
+  public abstract interface HasCacheHolder {
+    method public abstract com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+  }
+
+  public static final class HasCacheHolder.CacheHolder {
+    method public static com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder create(java.io.File, long);
+    method public boolean isEquivalent(java.io.File, long);
+  }
+
+  public final class HttpURLConnectionFactory {
+    ctor public HttpURLConnectionFactory();
+    method public java.net.URLConnection openConnection(java.net.URL, javax.net.SocketFactory, java.net.Proxy) throws java.io.IOException;
+    method public void setDns(com.android.okhttp.internalandroidapi.Dns);
+    method public void setNewConnectionPool(int, long, java.util.concurrent.TimeUnit);
+  }
+
+}
+
 package com.android.org.bouncycastle.asn1 {
 
   public abstract class ASN1BitString extends com.android.org.bouncycastle.asn1.ASN1Primitive {
