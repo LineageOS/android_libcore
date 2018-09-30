@@ -37,11 +37,24 @@ import java.util.Enumeration;
 public final class DelegateLastClassLoader extends PathClassLoader {
 
     /**
-     * Equivalent to calling {@link #DelegateLastClassLoader(String, String, ClassLoader)}
-     * with {@code librarySearchPath = null}.
+     * Whether resource loading delegates to the parent class loader. True by default.
+     */
+    private final boolean delegateResourceLoading;
+
+    /**
+     * Equivalent to calling {@link #DelegateLastClassLoader(String, String, ClassLoader, boolean)}
+     * with {@code librarySearchPath = null, delegateResourceLoading = true}.
      */
     public DelegateLastClassLoader(String dexPath, ClassLoader parent) {
-        super(dexPath, parent);
+        this(dexPath, null, parent, true);
+    }
+
+    /**
+     * Equivalent to calling {@link #DelegateLastClassLoader(String, String, ClassLoader, boolean)}
+     * with {@code delegateResourceLoading = true}.
+     */
+    public DelegateLastClassLoader(String dexPath, String librarySearchPath, ClassLoader parent) {
+        this(dexPath, librarySearchPath, parent, true);
     }
 
     /**
@@ -76,9 +89,15 @@ public final class DelegateLastClassLoader extends PathClassLoader {
      * @param librarySearchPath the list of directories containing native libraries, delimited
      *                          by {@code File.pathSeparator}; may be {@code null}.
      * @param parent the parent class loader
+     * @param delegateResourceLoading whether to delegate resource loading to the parent if
+     *                                the resource is not found. This does not affect class
+     *                                loading delegation.
      */
-    public DelegateLastClassLoader(String dexPath, String librarySearchPath, ClassLoader parent) {
+
+    public DelegateLastClassLoader(String dexPath, String librarySearchPath, ClassLoader parent,
+            boolean delegateResourceLoading) {
         super(dexPath, librarySearchPath, parent);
+        this.delegateResourceLoading = delegateResourceLoading;
     }
 
     @Override
@@ -131,9 +150,11 @@ public final class DelegateLastClassLoader extends PathClassLoader {
             return resource;
         }
 
-
-        final ClassLoader cl = getParent();
-        return (cl == null) ? null : cl.getResource(name);
+        if (delegateResourceLoading) {
+            final ClassLoader cl = getParent();
+            return (cl == null) ? null : cl.getResource(name);
+        }
+        return null;
     }
 
     @Override
@@ -142,7 +163,8 @@ public final class DelegateLastClassLoader extends PathClassLoader {
         final Enumeration<URL>[] resources = (Enumeration<URL>[]) new Enumeration<?>[] {
                 Object.class.getClassLoader().getResources(name),
                 findResources(name),
-                (getParent() == null) ? null : getParent().getResources(name) };
+                (getParent() == null || !delegateResourceLoading)
+                        ? null : getParent().getResources(name) };
 
         return new CompoundEnumeration<>(resources);
     }
