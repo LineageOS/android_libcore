@@ -38,6 +38,7 @@ import java.lang.annotation.Target;
  *
  * @hide
  */
+@IntraCoreApi
 @Target({TYPE, FIELD, METHOD, CONSTRUCTOR, ANNOTATION_TYPE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface CorePlatformApi {
