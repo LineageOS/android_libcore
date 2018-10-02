@@ -28,6 +28,7 @@ public final class OsConstants {
      * in.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static int CAP_TO_INDEX(int x) { return x >>> 5; }
 
     /**
@@ -35,6 +36,7 @@ public final class OsConstants {
      * element, the index of which can be retrieved with CAP_TO_INDEX.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static int CAP_TO_MASK(int x) { return 1 << (x & 31); }
 
     /**
@@ -267,6 +269,7 @@ public final class OsConstants {
     public static final int ETIMEDOUT = placeholder();
     public static final int ETXTBSY = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int EUSERS = placeholder();
     // On Linux, EWOULDBLOCK == EAGAIN. Use EAGAIN instead, to reduce confusion.
     public static final int EXDEV = placeholder();
@@ -355,9 +358,11 @@ public final class OsConstants {
     public static final int IP_TOS = placeholder();
     public static final int IP_TTL = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int _LINUX_CAPABILITY_VERSION_3 = placeholder();
     public static final int MAP_FIXED = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int MAP_POPULATE = placeholder();
     public static final int MAP_PRIVATE = placeholder();
     public static final int MAP_SHARED = placeholder();
@@ -420,8 +425,10 @@ public final class OsConstants {
     public static final int POLLWRBAND = placeholder();
     public static final int POLLWRNORM = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int PR_CAP_AMBIENT = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int PR_CAP_AMBIENT_RAISE = placeholder();
     public static final int PR_GET_DUMPABLE = placeholder();
     public static final int PR_SET_DUMPABLE = placeholder();
@@ -580,6 +587,7 @@ public final class OsConstants {
     public static final int TCP_NODELAY = placeholder();
     public static final int TCP_USER_TIMEOUT = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int TIOCOUTQ = placeholder();
     /** @hide */
     public static final int UDP_ENCAP = placeholder();

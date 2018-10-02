@@ -20,7 +20,10 @@ package libcore.internal;
  * A pool of string instances. Unlike the {@link String#intern() VM's
  * interned strings}, this pool provides no guarantee of reference equality.
  * It is intended only to save allocations. This class is not thread safe.
+ *
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class StringPool {
 
     private final String[] pool = new String[512];
@@ -40,6 +43,7 @@ public final class StringPool {
     /**
      * Returns a string equal to {@code new String(array, start, length)}.
      */
+    @libcore.api.CorePlatformApi
     public String get(char[] array, int start, int length) {
         // Compute an arbitrary hash of the content
         int hashCode = 0;
