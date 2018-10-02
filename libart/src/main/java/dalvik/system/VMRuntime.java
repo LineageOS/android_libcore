@@ -29,6 +29,7 @@ import java.util.function.Consumer;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class VMRuntime {
 
     /**
@@ -58,6 +59,7 @@ public final class VMRuntime {
      * any released version in {@code android.os.Build.VERSION_CODES}.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000;
 
     private static Consumer<String> nonSdkApiUsageConsumer = null;
@@ -76,6 +78,7 @@ public final class VMRuntime {
      *
      * @return the runtime object
      */
+    @libcore.api.CorePlatformApi
     public static VMRuntime getRuntime() {
         return THE_ONE;
     }
@@ -104,6 +107,7 @@ public final class VMRuntime {
     /**
      * Returns the name of the shared library providing the VM implementation.
      */
+    @libcore.api.CorePlatformApi
     public native String vmLibrary();
 
     /**
@@ -146,6 +150,7 @@ public final class VMRuntime {
      * @return the previous ideal heap utilization
      * @throws IllegalArgumentException if newTarget is &lt;= 0.0 or &gt;= 1.0
      */
+    @libcore.api.CorePlatformApi
     public float setTargetHeapUtilization(float newTarget) {
         if (newTarget <= 0.0f || newTarget >= 1.0f) {
             throw new IllegalArgumentException(newTarget +
@@ -253,12 +258,14 @@ public final class VMRuntime {
      * Tells the VM to enable the JIT compiler. If the VM does not have a JIT
      * implementation, calling this method should have no effect.
      */
+    @libcore.api.CorePlatformApi
     public native void startJitCompilation();
 
     /**
      * Tells the VM to disable the JIT compiler. If the VM does not have a JIT
      * implementation, calling this method should have no effect.
      */
+    @libcore.api.CorePlatformApi
     public native void disableJitCompilation();
 
     /**
@@ -312,6 +319,7 @@ public final class VMRuntime {
      * Removes any growth limits, allowing the application to allocate
      * up to the maximum heap size.
      */
+    @libcore.api.CorePlatformApi
     public native void clearGrowthLimit();
 
     /**

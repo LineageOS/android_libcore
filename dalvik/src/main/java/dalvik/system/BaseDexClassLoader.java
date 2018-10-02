@@ -262,6 +262,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public interface Reporter {
         /**
          * Reports the construction of a BaseDexClassLoader and provides information about the

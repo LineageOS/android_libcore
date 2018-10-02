@@ -28,18 +28,24 @@ import java.util.Objects;
 
 /**
  * Information about a country's time zones.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class CountryTimeZones {
 
     /**
      * The result of lookup up a time zone using offset information (and possibly more).
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public final static class OffsetResult {
 
         /** A zone that matches the supplied criteria. See also {@link #mOneMatch}. */
+        @libcore.api.CorePlatformApi
         public final TimeZone mTimeZone;
 
         /** True if there is one match for the supplied criteria */
+        @libcore.api.CorePlatformApi
         public final boolean mOneMatch;
 
         public OffsetResult(TimeZone timeZone, boolean oneMatch) {
@@ -184,6 +190,7 @@ public final class CountryTimeZones {
     /**
      * Returns true if the ISO code for the country is a match for the one specified.
      */
+    @libcore.api.CorePlatformApi
     public boolean isForCountryCode(String countryIso) {
         return this.countryIso.equals(normalizeCountryIso(countryIso));
     }
@@ -211,6 +218,7 @@ public final class CountryTimeZones {
      * available or the time zone ID provided to
      * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
      */
+    @libcore.api.CorePlatformApi
     public String getDefaultTimeZoneId() {
         return defaultTimeZoneId;
     }
@@ -289,6 +297,7 @@ public final class CountryTimeZones {
     /**
      * Returns true if the country has at least one zone that is the same as UTC at the given time.
      */
+    @libcore.api.CorePlatformApi
     public boolean hasUtcZone(long whenMillis) {
         // If the data tells us the country never uses UTC we don't have to check anything.
         if (!everUsesUtc) {
@@ -309,6 +318,7 @@ public final class CountryTimeZones {
      * </em> making the default equivalent to all other zones used by the country <em>at that time
      * </em>.
      */
+    @libcore.api.CorePlatformApi
     public boolean isDefaultOkForCountryTimeZoneDetection(long whenMillis) {
         if (timeZoneMappings.isEmpty()) {
             // Should never happen unless there's been an error loading the data.
@@ -350,6 +360,7 @@ public final class CountryTimeZones {
      * @param bias the time zone to prefer, can be null
      * @deprecated Use {@link #lookupByOffsetWithBias(int, Integer, long, TimeZone)} instead
      */
+    @libcore.api.CorePlatformApi
     @Deprecated
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
