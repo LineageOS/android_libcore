@@ -37,6 +37,7 @@ import libcore.io.MemoryMappedFile;
  *
  * @hide - used to implement TimeZone
  */
+@libcore.api.CorePlatformApi
 public final class ZoneInfoDB {
 
   // VisibleForTesting
@@ -45,6 +46,8 @@ public final class ZoneInfoDB {
   private static final TzData DATA =
           TzData.loadTzDataWithFallback(TimeZoneDataFiles.getTimeZoneFilePaths(TZDATA_FILE));
 
+  /** @hide */
+  @libcore.api.CorePlatformApi
   public static class TzData implements AutoCloseable {
 
     // The database reserves 40 bytes for each id.
@@ -128,6 +131,7 @@ public final class ZoneInfoDB {
      * Loads the data at the specified path and returns the {@link TzData} object if it is valid,
      * otherwise {@code null}.
      */
+    @libcore.api.CorePlatformApi
     public static TzData loadTzData(String path) {
       TzData tzData = new TzData();
       if (tzData.loadData(path)) {
@@ -290,6 +294,7 @@ public final class ZoneInfoDB {
       }
     }
 
+    @libcore.api.CorePlatformApi
     public void validate() throws IOException {
       checkNotClosed();
       // Validate the data in the tzdata file by loading each and every zone.
@@ -405,6 +410,7 @@ public final class ZoneInfoDB {
      * file. This method just reads the header of the file, and so is less expensive than mapping
      * the whole file into memory (and provides no guarantees about validity).
      */
+    @libcore.api.CorePlatformApi
     public static String getRulesVersion(File tzDataFile) throws IOException {
       try (FileInputStream is = new FileInputStream(tzDataFile)) {
 

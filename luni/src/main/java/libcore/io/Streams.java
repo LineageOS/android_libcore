@@ -27,6 +27,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.util.concurrent.atomic.AtomicReference;
 
+/** @hide */
+@libcore.api.CorePlatformApi
 public final class Streams {
     private static AtomicReference<byte[]> skipBuffer = new AtomicReference<byte[]>();
 
@@ -177,6 +179,7 @@ public final class Streams {
      * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
      * Returns the total number of bytes transferred.
      */
+    @libcore.api.CorePlatformApi
     public static int copy(InputStream in, OutputStream out) throws IOException {
         int total = 0;
         byte[] buffer = new byte[8192];

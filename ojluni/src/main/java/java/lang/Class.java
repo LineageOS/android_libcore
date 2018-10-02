@@ -908,6 +908,7 @@ public final class Class<T> implements java.io.Serializable,
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public String getPackageName$() {
         String name = getName();
         int last = name.lastIndexOf('.');
