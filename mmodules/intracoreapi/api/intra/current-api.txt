@@ -1,0 +1,132 @@
+package android.system {
+
+  public final class ErrnoException extends java.lang.Exception {
+    method public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
+  }
+
+  public final class StructTimeval {
+    method public static android.system.StructTimeval fromMillis(long);
+    method public long toMillis();
+    field public final long tv_sec;
+    field public final long tv_usec;
+  }
+
+}
+
+package dalvik.system {
+
+  public final class BlockGuard {
+    method public static dalvik.system.BlockGuard.Policy getThreadPolicy();
+  }
+
+  public static abstract interface BlockGuard.Policy {
+    method public abstract int getPolicyMask();
+    method public abstract void onExplicitGc();
+    method public abstract void onNetwork();
+    method public abstract void onReadFromDisk();
+    method public abstract void onUnbufferedIO();
+    method public abstract void onWriteToDisk();
+  }
+
+  public final class CloseGuard {
+    method public void close();
+    method public static dalvik.system.CloseGuard get();
+    method public void open(java.lang.String);
+    method public void warnIfOpen();
+  }
+
+}
+
+package java.net {
+
+  public class InetAddress implements java.io.Serializable {
+    method public static boolean isNumeric(java.lang.String);
+  }
+
+  public class Socket implements java.io.Closeable {
+    method public java.io.FileDescriptor getFileDescriptor$();
+  }
+
+}
+
+package java.security.spec {
+
+  public class ECParameterSpec implements java.security.spec.AlgorithmParameterSpec {
+    method public java.lang.String getCurveName();
+    method public void setCurveName(java.lang.String);
+  }
+
+}
+
+package libcore.api {
+
+  public abstract class CorePlatformApi implements java.lang.annotation.Annotation {
+  }
+
+  public abstract class IntraCoreApi implements java.lang.annotation.Annotation {
+  }
+
+}
+
+package libcore.io {
+
+  public final class IoUtils {
+    method public static void closeQuietly(java.lang.AutoCloseable);
+  }
+
+  public final class Libcore {
+    field public static libcore.io.Os os;
+  }
+
+  public abstract interface Os {
+    method public abstract void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
+  }
+
+}
+
+package libcore.mmodule.libart {
+
+  public class DemoLibartClass {
+    method public static java.lang.String intraCoreDependencyMethod();
+    method public static java.lang.String simpleMethod();
+  }
+
+}
+
+package libcore.mmodule.simple {
+
+  public class DemoSimpleClass {
+    method public static java.lang.String intraCoreDependencyMethod();
+    method public static java.lang.String simpleMethod();
+  }
+
+}
+
+package libcore.net {
+
+  public abstract class NetworkSecurityPolicy {
+    ctor public NetworkSecurityPolicy();
+    method public static libcore.net.NetworkSecurityPolicy getInstance();
+    method public abstract boolean isCertificateTransparencyVerificationRequired(java.lang.String);
+  }
+
+}
+
+package sun.security.util {
+
+  public abstract interface DerEncoder {
+    method public abstract void derEncode(java.io.OutputStream) throws java.io.IOException;
+  }
+
+}
+
+package sun.security.x509 {
+
+  public class AlgorithmId implements sun.security.util.DerEncoder java.io.Serializable {
+    method public void derEncode(java.io.OutputStream) throws java.io.IOException;
+    method public static sun.security.x509.AlgorithmId get(java.lang.String) throws java.security.NoSuchAlgorithmException;
+    method public java.lang.String getName();
+  }
+
+}
+
