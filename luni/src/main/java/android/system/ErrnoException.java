@@ -67,6 +67,7 @@ public final class ErrnoException extends Exception {
     /**
      * @hide - internal use only.
      */
+    @libcore.api.CorePlatformApi
     public IOException rethrowAsIOException() throws IOException {
         IOException newException = new IOException(getMessage());
         newException.initCause(this);

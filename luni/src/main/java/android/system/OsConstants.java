@@ -123,6 +123,7 @@ public final class OsConstants {
     public static final int AI_PASSIVE = placeholder();
     public static final int AI_V4MAPPED = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ARPHRD_ETHER = placeholder();
     /** @hide */
     public static final int ARPHRD_LOOPBACK = placeholder();
@@ -256,8 +257,10 @@ public final class OsConstants {
     /** @hide */
     public static final int ETH_P_ARP = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_IP = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_IPV6 = placeholder();
     public static final int ETIME = placeholder();
     public static final int ETIMEDOUT = placeholder();
