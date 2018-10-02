@@ -23,7 +23,9 @@ import libcore.util.CountryTimeZones.TimeZoneMapping;
 
 /**
  * An in-memory representation of country &lt;-&gt; time zone mapping data.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class CountryZonesFinder {
 
     private final List<CountryTimeZones> countryTimeZonesList;
@@ -41,6 +43,7 @@ public final class CountryZonesFinder {
      * Returns an immutable list of country ISO codes with time zones. The codes can be passed to
      * {@link #lookupCountryTimeZones(String)} and similar methods.
      */
+    @libcore.api.CorePlatformApi
     public List<String> lookupAllCountryIsoCodes() {
         List<String> isoCodes = new ArrayList<>(countryTimeZonesList.size());
         for (CountryTimeZones countryTimeZones : countryTimeZonesList) {
@@ -54,6 +57,7 @@ public final class CountryZonesFinder {
      * time zone. An exact, case-sensitive match is performed on the zone ID. This method never
      * returns null.
      */
+    @libcore.api.CorePlatformApi
     public List<CountryTimeZones> lookupCountryTimeZonesForZoneId(String zoneId) {
         List<CountryTimeZones> matches = new ArrayList<>(2);
         for (CountryTimeZones countryTimeZones : countryTimeZonesList) {
@@ -70,6 +74,7 @@ public final class CountryZonesFinder {
      * Returns a {@link CountryTimeZones} object associated with the specified country code. If one
      * cannot be found this method returns {@code null}.
      */
+    @libcore.api.CorePlatformApi
     public CountryTimeZones lookupCountryTimeZones(String countryIso) {
         String normalizedCountryIso = TimeZoneFinder.normalizeCountryIso(countryIso);
         for (CountryTimeZones countryTimeZones : countryTimeZonesList) {

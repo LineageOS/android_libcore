@@ -95,6 +95,7 @@ class Inet4Address extends InetAddress {
 
     // BEGIN Android-added: Define special-purpose IPv4 address
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final InetAddress ANY = new Inet4Address(null, new byte[] { 0, 0, 0, 0 });
 
     /** @hide */
