@@ -39,6 +39,7 @@ public class HexEncoding {
     /**
      * Encodes the provided data as a sequence of hexadecimal characters.
      */
+    @libcore.api.CorePlatformApi
     public static char[] encode(byte[] data, int offset, int len) {
         char[] result = new char[len * 2];
         for (int i = 0; i < len; i++) {
@@ -98,6 +99,7 @@ public class HexEncoding {
      *
      * Throws an {@code IllegalArgumentException} if the input is malformed.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] decode(char[] encoded, boolean allowSingleChar) throws IllegalArgumentException {
         int resultLengthBytes = (encoded.length + 1) / 2;
         byte[] result = new byte[resultLengthBytes];

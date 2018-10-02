@@ -183,6 +183,7 @@ public final class CountryTimeZones {
     /**
      * Returns the ISO code for the country.
      */
+    @libcore.api.CorePlatformApi
     public String getCountryIso() {
         return countryIso;
     }
@@ -228,6 +229,7 @@ public final class CountryTimeZones {
      * "priority" order. The list can be empty if there were no zones configured or the configured
      * zone IDs were not recognized.
      */
+    @libcore.api.CorePlatformApi
     public List<TimeZoneMapping> getTimeZoneMappings() {
         return timeZoneMappings;
     }

@@ -108,6 +108,7 @@ package dalvik.system;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public final class CloseGuard {
 
@@ -135,6 +136,7 @@ public final class CloseGuard {
      * Returns a CloseGuard instance. {@code #open(String)} can be used to set
      * up the instance to warn on failure to close.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static CloseGuard get() {
         return new CloseGuard();
@@ -209,6 +211,7 @@ public final class CloseGuard {
      * @param closer non-null name of explicit termination method. Printed by warnIfOpen.
      * @throws NullPointerException if closer is null.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void open(String closer) {
         // always perform the check for valid API usage...
@@ -238,6 +241,7 @@ public final class CloseGuard {
      * Marks this CloseGuard instance as closed to avoid warnings on
      * finalization.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void close() {
         Tracker tracker = currentTracker;
@@ -255,6 +259,7 @@ public final class CloseGuard {
      * the allocation to the current reporter. If it was not enabled, it just
      * directly logs a brief message.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void warnIfOpen() {
         if (closerNameOrAllocationInfo != null) {
@@ -284,9 +289,11 @@ public final class CloseGuard {
 
     /**
      * Interface to allow customization of reporting behavior.
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public interface Reporter {
-        void report (String message, Throwable allocationSite);
+        void report(String message, Throwable allocationSite);
     }
 
     /**

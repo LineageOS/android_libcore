@@ -175,6 +175,7 @@ public final class TimeZoneFinder {
      * Loads all the country &lt;-&gt; time zone mapping data into memory. This method can return
      * {@code null} in the event of an error while reading the underlying data files.
      */
+    @libcore.api.CorePlatformApi
     public CountryZonesFinder getCountryZonesFinder() {
         CountryZonesLookupExtractor extractor = new CountryZonesLookupExtractor();
         try {
@@ -244,6 +245,7 @@ public final class TimeZoneFinder {
      * {@link android.icu.util.TimeZone#getTimeZone(String)}. This method can return an empty list
      * in a case when the underlying data files reference only unknown zone IDs.
      */
+    @libcore.api.CorePlatformApi
     public List<String> lookupTimeZoneIdsByCountry(String countryIso) {
         CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         return countryTimeZones == null

@@ -147,6 +147,7 @@ public final class IoUtils {
      * Calls close(2) on 'fd'. Also resets the internal int to -1. Does nothing if 'fd' is null
      * or invalid.
      */
+    @libcore.api.CorePlatformApi
     public static void close(FileDescriptor fd) throws IOException {
         IoBridge.closeAndSignalBlockedThreads(fd);
     }
@@ -210,6 +211,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a byte array.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFileAsByteArray(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
     }
