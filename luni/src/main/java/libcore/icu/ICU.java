@@ -28,7 +28,9 @@ import libcore.util.BasicLruCache;
 
 /**
  * Makes ICU data accessible to Java.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class ICU {
   private static final BasicLruCache<String, String> CACHED_PATTERNS =
       new BasicLruCache<String, String>(8);
@@ -439,6 +441,7 @@ public final class ICU {
 
   public static native String getISO3Language(String languageTag);
 
+  @libcore.api.CorePlatformApi
   public static Locale addLikelySubtags(Locale locale) {
       return Locale.forLanguageTag(addLikelySubtags(locale.toLanguageTag()).replace('_', '-'));
   }
