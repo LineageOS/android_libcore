@@ -26,6 +26,7 @@ import java.net.SocketAddress;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class PacketSocketAddress extends SocketAddress {
     /** Protocol. An Ethernet protocol type, e.g., {@code ETH_P_IPV6}. */
     public short sll_protocol;

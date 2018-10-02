@@ -38,6 +38,7 @@ import sun.misc.Cleaner;
  * used to register any number of native allocations of that kind.
  * @hide
  */
+@libcore.api.CorePlatformApi
 public class NativeAllocationRegistry {
 
     private final ClassLoader classLoader;
