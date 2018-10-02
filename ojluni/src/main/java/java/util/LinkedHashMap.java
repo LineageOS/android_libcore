@@ -493,6 +493,7 @@ public class LinkedHashMap<K,V>
      * Returns the eldest entry in the map, or {@code null} if the map is empty.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public Map.Entry<K, V> eldest() {
         return head;
     }
