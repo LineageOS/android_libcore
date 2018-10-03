@@ -22,9 +22,6 @@ import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import junit.framework.TestCase;
 
 import libcore.io.Libcore;
@@ -34,7 +31,7 @@ public class FdsanTest extends TestCase {
         try (FileInputStream fis = new FileInputStream("/dev/null")) {
             FileDescriptor fd = fis.getFD();
             long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-            assertTrue(tag != FileDescriptor.NO_OWNER);
+            assertTrue(tag != 0);
             assertEquals("FileInputStream", Libcore.os.android_fdsan_get_tag_type(tag));
             assertEquals(System.identityHashCode(fis), Libcore.os.android_fdsan_get_tag_value(tag));
         }
@@ -44,7 +41,7 @@ public class FdsanTest extends TestCase {
         try (FileOutputStream fis = new FileOutputStream("/dev/null")) {
             FileDescriptor fd = fis.getFD();
             long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-            assertTrue(tag != FileDescriptor.NO_OWNER);
+            assertTrue(tag != 0);
             assertEquals("FileOutputStream", Libcore.os.android_fdsan_get_tag_type(tag));
             assertEquals(System.identityHashCode(fis), Libcore.os.android_fdsan_get_tag_value(tag));
         }
@@ -54,7 +51,7 @@ public class FdsanTest extends TestCase {
         try (RandomAccessFile fis = new RandomAccessFile("/dev/null", "r")) {
             FileDescriptor fd = fis.getFD();
             long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-            assertTrue(tag != FileDescriptor.NO_OWNER);
+            assertTrue(tag != 0);
             assertEquals("RandomAccessFile", Libcore.os.android_fdsan_get_tag_type(tag));
             assertEquals(System.identityHashCode(fis), Libcore.os.android_fdsan_get_tag_value(tag));
         }
@@ -78,49 +75,10 @@ public class FdsanTest extends TestCase {
             Object pfd = pfdMethodDup.invoke(null, fis.getFD());
             FileDescriptor fd = (FileDescriptor)pfdMethodGetFileDescriptor.invoke(pfd);
             long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-            assertTrue(tag != FileDescriptor.NO_OWNER);
+            assertTrue(tag != 0);
             assertEquals("ParcelFileDescriptor", Libcore.os.android_fdsan_get_tag_type(tag));
             assertEquals(System.identityHashCode(pfd), Libcore.os.android_fdsan_get_tag_value(tag));
             pfdMethodClose.invoke(pfd);
-        }
-    }
-
-    public void testDatagramSocket() throws Exception {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            FileDescriptor fd = socket.getFileDescriptor$();
-            assertTrue(fd.valid());
-
-            long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-            assertTrue(tag != FileDescriptor.NO_OWNER);
-            assertEquals("DatagramSocketImpl", Libcore.os.android_fdsan_get_tag_type(tag));
-            assertTrue(Libcore.os.android_fdsan_get_tag_value(tag) != 0);
-            socket.close();
-        }
-    }
-
-    public void assertFdOwnedBySocket(FileDescriptor fd) throws Exception {
-        long tag = Libcore.os.android_fdsan_get_owner_tag(fd);
-        assertTrue(tag != FileDescriptor.NO_OWNER);
-        assertEquals("SocketImpl", Libcore.os.android_fdsan_get_tag_type(tag));
-        assertTrue(Libcore.os.android_fdsan_get_tag_value(tag) != 0);
-    }
-
-    public void testSocket() throws Exception {
-        try (Socket socket = new Socket()) {
-            assertFalse("new Socket shouldn't have an associated FileDescriptor",
-                        socket.getFileDescriptor$().valid());
-        }
-
-        int port = 0; // auto-allocate port
-        try (ServerSocket serverSocket = new ServerSocket(port, /* backlog */ 1)) {
-            assertFdOwnedBySocket(serverSocket.getFileDescriptor$());
-
-            Socket client = new Socket(serverSocket.getInetAddress(), serverSocket.getLocalPort());
-            Socket server = serverSocket.accept();
-            assertFdOwnedBySocket(client.getFileDescriptor$());
-            assertFdOwnedBySocket(server.getFileDescriptor$());
-            client.close();
-            server.close();
         }
     }
 }
