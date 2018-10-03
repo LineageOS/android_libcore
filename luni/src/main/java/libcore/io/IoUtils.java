@@ -32,6 +32,7 @@ import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
 /** @hide */
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public final class IoUtils {
     private IoUtils() {
@@ -146,6 +147,7 @@ public final class IoUtils {
      * Calls close(2) on 'fd'. Also resets the internal int to -1. Does nothing if 'fd' is null
      * or invalid.
      */
+    @libcore.api.CorePlatformApi
     public static void close(FileDescriptor fd) throws IOException {
         IoBridge.closeAndSignalBlockedThreads(fd);
     }
@@ -153,6 +155,7 @@ public final class IoUtils {
     /**
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
@@ -168,6 +171,7 @@ public final class IoUtils {
     /**
      * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
      */
+    @libcore.api.CorePlatformApi
     public static void closeQuietly(FileDescriptor fd) {
         try {
             IoUtils.close(fd);
@@ -207,6 +211,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a byte array.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFileAsByteArray(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
     }

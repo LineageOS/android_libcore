@@ -32,7 +32,9 @@ import libcore.util.Objects;
  * Note that you share these; you must not alter any of the fields, nor their array elements
  * in the case of arrays. If you ever expose any of these things to user code, you must give
  * them a clone rather than the original.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class LocaleData {
     // A cache for the locale-specific data.
     private static final HashMap<String, LocaleData> localeDataCache = new HashMap<String, LocaleData>();
@@ -88,10 +90,14 @@ public final class LocaleData {
     public String narrowPm; // "p".
 
     // Used by DateFormat to implement 12- and 24-hour SHORT and MEDIUM.
-    // The first two are also used directly by frameworks code.
+    // They are also used directly by frameworks code.
+    @libcore.api.CorePlatformApi
     public String timeFormat_hm;
+    @libcore.api.CorePlatformApi
     public String timeFormat_Hm;
+    @libcore.api.CorePlatformApi
     public String timeFormat_hms;
+    @libcore.api.CorePlatformApi
     public String timeFormat_Hms;
 
     // Used by DecimalFormatSymbols.
@@ -134,6 +140,7 @@ public final class LocaleData {
     /**
      * Returns a shared LocaleData for the given locale.
      */
+    @libcore.api.CorePlatformApi
     public static LocaleData get(Locale locale) {
         if (locale == null) {
             throw new NullPointerException("locale == null");
@@ -161,6 +168,7 @@ public final class LocaleData {
         return Objects.toString(this);
     }
 
+    @libcore.api.CorePlatformApi
     public String getDateFormat(int style) {
         switch (style) {
         case DateFormat.SHORT:

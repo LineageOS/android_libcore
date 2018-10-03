@@ -2105,11 +2105,13 @@ class Thread implements Runnable {
      * @hide used when configuring the runtime for exception logging; see
      *     {@link dalvik.system.RuntimeHooks} b/29624607
      */
+    @libcore.api.CorePlatformApi
     public static void setUncaughtExceptionPreHandler(UncaughtExceptionHandler eh) {
         uncaughtExceptionPreHandler = eh;
     }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static UncaughtExceptionHandler getUncaughtExceptionPreHandler() {
         return uncaughtExceptionPreHandler;
     }

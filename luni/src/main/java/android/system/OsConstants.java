@@ -123,6 +123,7 @@ public final class OsConstants {
     public static final int AI_PASSIVE = placeholder();
     public static final int AI_V4MAPPED = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ARPHRD_ETHER = placeholder();
     /** @hide */
     public static final int ARPHRD_LOOPBACK = placeholder();
@@ -256,8 +257,10 @@ public final class OsConstants {
     /** @hide */
     public static final int ETH_P_ARP = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_IP = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_IPV6 = placeholder();
     public static final int ETIME = placeholder();
     public static final int ETIMEDOUT = placeholder();
@@ -531,10 +534,12 @@ public final class OsConstants {
     public static final int SO_SNDTIMEO = placeholder();
     public static final int SO_TYPE = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int SPLICE_F_MOVE = placeholder();
     /** @hide */
     public static final int SPLICE_F_NONBLOCK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int SPLICE_F_MORE = placeholder();
     public static final int STDERR_FILENO = placeholder();
     public static final int STDIN_FILENO = placeholder();
