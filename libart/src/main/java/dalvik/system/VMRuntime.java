@@ -433,6 +433,7 @@ public final class VMRuntime {
                 "mips64".equals(instructionSet);
     }
 
+    @libcore.api.CorePlatformApi
     public static boolean is64BitAbi(String abi) {
         return is64BitInstructionSet(getInstructionSet(abi));
     }
