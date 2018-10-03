@@ -569,6 +569,7 @@ public final class Os {
     public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**

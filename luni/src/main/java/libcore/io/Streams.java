@@ -93,6 +93,7 @@ public final class Streams {
     /**
      * Returns a byte[] containing the remainder of 'in', closing it when done.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] readFully(InputStream in) throws IOException {
         try {
             return readFullyNoClose(in);
@@ -117,6 +118,7 @@ public final class Streams {
     /**
      * Returns the remainder of 'reader' as a string, closing it when done.
      */
+    @libcore.api.CorePlatformApi
     public static String readFully(Reader reader) throws IOException {
         try {
             StringWriter writer = new StringWriter();
