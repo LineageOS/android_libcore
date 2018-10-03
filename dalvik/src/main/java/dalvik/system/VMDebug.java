@@ -31,11 +31,13 @@ import java.util.Map;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class VMDebug {
     /**
      * flag for startMethodTracing(), which adds the results from
      * startAllocCounting to the trace key file.
      */
+    @libcore.api.CorePlatformApi
     public static final int TRACE_COUNT_ALLOCS = 1;
 
     /* constants for getAllocCount */

@@ -231,6 +231,7 @@ public abstract class SocketImpl implements SocketOptions {
     /**
      * @hide used by java.nio tests
      */
+    @libcore.api.CorePlatformApi
     public FileDescriptor getFD$() {
         return fd;
     }
