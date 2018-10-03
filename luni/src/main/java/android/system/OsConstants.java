@@ -227,6 +227,7 @@ public final class OsConstants {
     public static final int ENOMEM = placeholder();
     public static final int ENOMSG = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ENONET = placeholder();
     public static final int ENOPROTOOPT = placeholder();
     public static final int ENOSPC = placeholder();
