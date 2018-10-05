@@ -20,12 +20,7 @@ package dalvik.system {
   }
 
   public static abstract interface BlockGuard.Policy {
-    method public abstract int getPolicyMask();
-    method public abstract void onExplicitGc();
     method public abstract void onNetwork();
-    method public abstract void onReadFromDisk();
-    method public abstract void onUnbufferedIO();
-    method public abstract void onWriteToDisk();
   }
 
   public final class CloseGuard {

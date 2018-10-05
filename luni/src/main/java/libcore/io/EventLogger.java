@@ -16,6 +16,10 @@
 
 package libcore.io;
 
+/**
+ * @hide
+ */
+@libcore.api.CorePlatformApi
 public final class EventLogger {
 
     /**
@@ -26,6 +30,7 @@ public final class EventLogger {
     /**
      * Used to replace default Reporter for logging events. Must be non-null.
      */
+    @libcore.api.CorePlatformApi
     public static void setReporter(Reporter reporter) {
         if (reporter == null) {
             throw new NullPointerException("reporter == null");
@@ -42,8 +47,12 @@ public final class EventLogger {
 
     /**
      * Interface to allow customization of reporting behavior.
+     *
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public static interface Reporter {
+        @libcore.api.CorePlatformApi
         public void report (int code, Object... list);
     }
 

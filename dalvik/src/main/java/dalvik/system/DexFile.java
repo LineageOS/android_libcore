@@ -37,6 +37,7 @@ import libcore.io.Libcore;
  *     as {@link dalvik.system.PathClassLoader} instead. <b>This API will be removed
  *     in a future Android release</b>.
  */
+@libcore.api.CorePlatformApi
 @Deprecated
 public final class DexFile {
   /**
@@ -424,6 +425,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final int NO_DEXOPT_NEEDED = 0;
 
     /**
@@ -498,6 +500,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static native int getDexOptNeeded(String fileName,
             String instructionSet, String compilerFilter, String classLoaderContext,
             boolean newProfile, boolean downgrade)
