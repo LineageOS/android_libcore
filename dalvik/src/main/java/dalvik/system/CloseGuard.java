@@ -149,6 +149,7 @@ public final class CloseGuard {
      * #getReporter() reporter} is informed of unclosed resources; otherwise a
      * one-line warning is logged.
      */
+    @libcore.api.CorePlatformApi
     public static void setEnabled(boolean enabled) {
         CloseGuard.stackAndTrackingEnabled = enabled;
     }
@@ -164,6 +165,7 @@ public final class CloseGuard {
      * Used to replace default Reporter used to warn of CloseGuard
      * violations when stack tracking is enabled. Must be non-null.
      */
+    @libcore.api.CorePlatformApi
     public static void setReporter(Reporter rep) {
         if (rep == null) {
             throw new NullPointerException("reporter == null");
@@ -174,6 +176,7 @@ public final class CloseGuard {
     /**
      * Returns non-null CloseGuard.Reporter.
      */
+    @libcore.api.CorePlatformApi
     public static Reporter getReporter() {
         return reporter;
     }
@@ -293,6 +296,7 @@ public final class CloseGuard {
      */
     @libcore.api.CorePlatformApi
     public interface Reporter {
+        @libcore.api.CorePlatformApi
         void report(String message, Throwable allocationSite);
     }
 

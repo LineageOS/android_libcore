@@ -51,6 +51,7 @@ public final class IoUtils {
      * @param fd FileDescriptor to take ownership from, must be non-null.
      * @throws NullPointerException if fd is null
      */
+    @libcore.api.CorePlatformApi
     public static int acquireRawFd(@NonNull FileDescriptor fd) {
         Objects.requireNonNull(fd);
 
@@ -122,6 +123,7 @@ public final class IoUtils {
      * @throws NullPointerException if fd or owner are null
      * @throws IllegalStateException if fd is already owned
      */
+    @libcore.api.CorePlatformApi
     public static void setFdOwner(@NonNull FileDescriptor fd, @NonNull Object owner) {
         Objects.requireNonNull(fd);
         Objects.requireNonNull(owner);
@@ -178,6 +180,7 @@ public final class IoUtils {
     /**
      * Closes 'socket', ignoring any exceptions. Does nothing if 'socket' is null.
      */
+    @libcore.api.CorePlatformApi
     public static void closeQuietly(Socket socket) {
         if (socket != null) {
             try {
@@ -190,6 +193,7 @@ public final class IoUtils {
     /**
      * Sets 'fd' to be blocking or non-blocking, according to the state of 'blocking'.
      */
+    @libcore.api.CorePlatformApi
     public static void setBlocking(FileDescriptor fd, boolean blocking) throws IOException {
         try {
             int flags = Libcore.os.fcntlVoid(fd, F_GETFL);
