@@ -112,8 +112,10 @@ public final class OsConstants {
     public static final int AF_INET = placeholder();
     public static final int AF_INET6 = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int AF_NETLINK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int AF_PACKET = placeholder();
     public static final int AF_UNIX = placeholder();
     public static final int AF_UNSPEC = placeholder();
@@ -256,8 +258,10 @@ public final class OsConstants {
     public static final int ESRCH = placeholder();
     public static final int ESTALE = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_ALL = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ETH_P_ARP = placeholder();
     /** @hide */
     @libcore.api.CorePlatformApi
@@ -385,13 +389,16 @@ public final class OsConstants {
     public static final int MS_INVALIDATE = placeholder();
     public static final int MS_SYNC = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int NETLINK_NETFILTER = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int NETLINK_ROUTE = placeholder();
-    /** 
+    /**
      * SELinux enforces that only system_server and netd may use this netlink socket type.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final int NETLINK_INET_DIAG = placeholder();
     public static final int NI_DGRAM = placeholder();
     public static final int NI_NAMEREQD = placeholder();
@@ -439,6 +446,7 @@ public final class OsConstants {
     public static final int PROT_WRITE = placeholder();
     public static final int R_OK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int RLIMIT_NOFILE = placeholder();
     public static final int RT_SCOPE_HOST = placeholder();
     public static final int RT_SCOPE_LINK = placeholder();
@@ -446,6 +454,7 @@ public final class OsConstants {
     public static final int RT_SCOPE_SITE = placeholder();
     public static final int RT_SCOPE_UNIVERSE = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int RTMGRP_IPV4_IFADDR = placeholder();
     /** @hide */
     public static final int RTMGRP_IPV4_MROUTE = placeholder();
@@ -466,6 +475,7 @@ public final class OsConstants {
     /** @hide */
     public static final int RTMGRP_LINK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int RTMGRP_NEIGH = placeholder();
     /** @hide */
     public static final int RTMGRP_NOTIFY = placeholder();
@@ -590,10 +600,12 @@ public final class OsConstants {
     @libcore.api.CorePlatformApi
     public static final int TIOCOUTQ = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int UDP_ENCAP = placeholder();
     /** @hide */
     public static final int UDP_ENCAP_ESPINUDP_NON_IKE = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int UDP_ENCAP_ESPINUDP = placeholder();
     /** @hide */
     public static final int UNIX_PATH_MAX = placeholder();
@@ -605,6 +617,7 @@ public final class OsConstants {
     public static final int WUNTRACED = placeholder();
     public static final int W_OK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int XATTR_CREATE = placeholder();
     /** @hide */
     public static final int XATTR_REPLACE = placeholder();

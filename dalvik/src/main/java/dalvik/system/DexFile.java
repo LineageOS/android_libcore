@@ -455,6 +455,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final int DEX2OAT_FOR_FILTER = 3;
 
 
@@ -525,6 +526,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static final class OptimizationInfo {
         // The optimization status.
         private final String status;
@@ -537,10 +539,12 @@ public final class DexFile {
             this.reason = reason;
         }
 
+        @libcore.api.CorePlatformApi
         public String getStatus() {
             return status;
         }
 
+        @libcore.api.CorePlatformApi
         public String getReason() {
             return reason;
         }
@@ -551,6 +555,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static OptimizationInfo getDexFileOptimizationInfo(
             String fileName, String instructionSet) throws FileNotFoundException {
         String[] status = getDexFileOptimizationStatus(fileName, instructionSet);
@@ -577,6 +582,7 @@ public final class DexFile {
      * If no optimized code exists the method returns null.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static native String[] getDexFileOutputPaths(String fileName, String instructionSet)
         throws FileNotFoundException;
 
@@ -585,6 +591,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public native static boolean isValidCompilerFilter(String filter);
 
     /**
@@ -592,6 +599,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public native static boolean isProfileGuidedCompilerFilter(String filter);
 
     /**
@@ -610,6 +618,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public native static String getSafeModeCompilerFilter(String filter);
 
     /**

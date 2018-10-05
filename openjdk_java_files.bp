@@ -1388,9 +1388,6 @@ filegroup {
 filegroup {
     name: "openjdk_mmodule_extra_files",
     srcs: [
-        "ojluni/src/main/java/sun/security/util/DerEncoder.java",
-        "ojluni/src/main/java/sun/security/util/ObjectIdentifier.java",
-        "ojluni/src/main/java/sun/security/x509/AlgorithmId.java",
         "ojluni/src/main/java/java/nio/DirectByteBuffer.java",
         "ojluni/src/main/java/sun/misc/Cleaner.java",
         "ojluni/src/main/java/sun/nio/ch/DirectBuffer.java",
@@ -1398,6 +1395,10 @@ filegroup {
         "ojluni/src/main/java/sun/security/pkcs/ParsingException.java",
         "ojluni/src/main/java/sun/security/pkcs/PKCS7.java",
         "ojluni/src/main/java/sun/security/pkcs/SignerInfo.java",
+        "ojluni/src/main/java/sun/security/util/DerEncoder.java",
+        "ojluni/src/main/java/sun/security/util/ObjectIdentifier.java",
+        "ojluni/src/main/java/sun/security/x509/AlgorithmId.java",
+        "ojluni/src/main/java/sun/util/locale/LanguageTag.java",
     ],
 }
 
@@ -1774,7 +1775,6 @@ filegroup {
         "ojluni/src/main/java/sun/util/locale/BaseLocale.java",
         "ojluni/src/main/java/sun/util/locale/Extension.java",
         "ojluni/src/main/java/sun/util/locale/InternalLocaleBuilder.java",
-        "ojluni/src/main/java/sun/util/locale/LanguageTag.java",
         "ojluni/src/main/java/sun/util/locale/LocaleEquivalentMaps.java",
         "ojluni/src/main/java/sun/util/locale/LocaleExtensions.java",
         "ojluni/src/main/java/sun/util/locale/LocaleMatcher.java",
