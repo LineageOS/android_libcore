@@ -18,6 +18,10 @@ package libcore.io;
 
 import java.util.Base64;
 
+/**
+ * @hide
+ */
+@libcore.api.CorePlatformApi
 public final class DropBox {
 
     /**
@@ -28,6 +32,7 @@ public final class DropBox {
     /**
      * Used to replace default Reporter for logging events. Must be non-null.
      */
+    @libcore.api.CorePlatformApi
     public static void setReporter(Reporter reporter) {
         if (reporter == null) {
             throw new NullPointerException("reporter == null");
@@ -44,9 +49,15 @@ public final class DropBox {
 
     /**
      * Interface to allow customization of reporting behavior.
+     *
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public static interface Reporter {
+        @libcore.api.CorePlatformApi
         public void addData(String tag, byte[] data, int flags);
+
+        @libcore.api.CorePlatformApi
         public void addText(String tag, String data);
     }
 

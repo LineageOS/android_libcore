@@ -25,7 +25,10 @@ import org.xmlpull.v1.XmlSerializer;
 
 /**
  * An internal class for creating platform-default XML parsers and related objects.
+ *
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public class XmlObjectFactory {
 
     private XmlObjectFactory() {}
@@ -34,6 +37,7 @@ public class XmlObjectFactory {
      * Returns a new instance of the platform default {@link XmlSerializer} more efficiently than
      * using {@code XmlPullParserFactory.newInstance().newSerializer()}.
      */
+    @libcore.api.CorePlatformApi
     public static XmlSerializer newXmlSerializer() {
         return new KXmlSerializer();
     }
@@ -42,6 +46,7 @@ public class XmlObjectFactory {
      * Returns a new instance of the platform default {@link XmlPullParser} more efficiently than
      * using {@code XmlPullParserFactory.newInstance().newPullParser()}.
      */
+    @libcore.api.CorePlatformApi
     public static XmlPullParser newXmlPullParser() {
         return new KXmlParser();
     }
@@ -49,6 +54,7 @@ public class XmlObjectFactory {
     /**
      * Returns the plaform default {@link XMLReader}.
      */
+    @libcore.api.CorePlatformApi
     public static XMLReader newXMLReader() {
         return new ExpatReader();
     }

@@ -74,6 +74,7 @@ public class NativeAllocationRegistry {
      *                     allocation
      * @throws IllegalArgumentException If <code>size</code> is negative
      */
+    @libcore.api.CorePlatformApi
     public NativeAllocationRegistry(ClassLoader classLoader, long freeFunction, long size) {
         if (size < 0) {
             throw new IllegalArgumentException("Invalid native allocation size: " + size);
@@ -116,6 +117,7 @@ public class NativeAllocationRegistry {
      *                           argument before the OutOfMemoryError is
      *                           thrown.
      */
+    @libcore.api.CorePlatformApi
     public Runnable registerNativeAllocation(Object referent, long nativePtr) {
         if (referent == null) {
             throw new IllegalArgumentException("referent is null");
@@ -237,6 +239,7 @@ public class NativeAllocationRegistry {
      * native allocation using a <code>freeFunction</code> without using a
      * NativeAllocationRegistry.
      */
+    @libcore.api.CorePlatformApi
     public static native void applyFreeFunction(long freeFunction, long nativePtr);
 }
 

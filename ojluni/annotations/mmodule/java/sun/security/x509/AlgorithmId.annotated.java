@@ -29,11 +29,11 @@ import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 
 import sun.security.util.DerEncoder;
-import sun.security.util.ObjectIdentifier
+import sun.security.util.ObjectIdentifier;
 
 @libcore.api.CorePlatformApi
-@libcore.api.Hide
 @libcore.api.IntraCoreApi
+@libcore.api.Hide
 public class AlgorithmId implements Serializable, DerEncoder {
 
     @libcore.api.CorePlatformApi

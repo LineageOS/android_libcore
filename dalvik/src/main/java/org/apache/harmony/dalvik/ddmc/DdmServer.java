@@ -24,9 +24,13 @@ import java.util.Iterator;
 
 /**
  * This represents our connection to the DDM Server.
+ *
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public class DdmServer {
 
+    @libcore.api.CorePlatformApi
     public static final int CLIENT_PROTOCOL_VERSION = 1;
 
     private static HashMap<Integer,ChunkHandler> mHandlerMap =
@@ -50,6 +54,7 @@ public class DdmServer {
      *
      * Throws an exception if the type already has a handler registered.
      */
+    @libcore.api.CorePlatformApi
     public static void registerHandler(int type, ChunkHandler handler) {
         if (handler == null) {
             throw new NullPointerException("handler == null");
@@ -78,6 +83,7 @@ public class DdmServer {
      * The application must call here after it finishes registering
      * handlers.
      */
+    @libcore.api.CorePlatformApi
     public static void registrationComplete() {
         // sync on mHandlerMap because it's convenient and makes a kind of
         // sense
@@ -93,6 +99,7 @@ public class DdmServer {
      *
      * Use this for "unsolicited" chunks.
      */
+    @libcore.api.CorePlatformApi
     public static void sendChunk(Chunk chunk) {
         nativeSendChunk(chunk.type, chunk.data, chunk.offset, chunk.length);
     }

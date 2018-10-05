@@ -144,6 +144,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public void addDexPath(String dexPath) {
         addDexPath(dexPath, false /*isTrusted*/);
     }
@@ -160,6 +161,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * {@link #findLibrary(String)}
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public void addNativePath(Collection<String> libPaths) {
         pathList.addNativePath(libPaths);
     }
@@ -224,6 +226,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public String getLdLibraryPath() {
         StringBuilder result = new StringBuilder();
         for (File directory : pathList.getNativeLibraryDirectories()) {
@@ -248,6 +251,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @param newReporter the new Reporter. Setting null will cancel reporting.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static void setReporter(Reporter newReporter) {
         reporter = newReporter;
     }
@@ -277,6 +281,7 @@ public class BaseDexClassLoader extends ClassLoader {
          *     loader and so on. A classpath is represented as a list of dex files separated by
          *     {@code File.pathSeparator}.
          */
+        @libcore.api.CorePlatformApi
         void report(List<BaseDexClassLoader> classLoadersChain, List<String> classPaths);
     }
 }

@@ -50,7 +50,10 @@ import static android.system.OsConstants.*;
 
 /**
  * Implements java.io/java.net/java.nio semantics in terms of the underlying POSIX system calls.
+ *
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class IoBridge {
 
     private IoBridge() {
@@ -237,6 +240,7 @@ public final class IoBridge {
      *
      * <p>This method is a no-op if passed a {@code null} or already-closed file descriptor.
      */
+    @libcore.api.CorePlatformApi
     public static void closeAndSignalBlockedThreads(FileDescriptor fd) throws IOException {
         if (fd == null || !fd.valid()) {
             return;
@@ -467,6 +471,7 @@ public final class IoBridge {
      * directories: POSIX says read-only is okay, but java.io doesn't even allow that. We also
      * have an Android-specific hack to alter the default permissions.
      */
+    @libcore.api.CorePlatformApi
     public static FileDescriptor open(String path, int flags) throws FileNotFoundException {
         FileDescriptor fd = null;
         try {
@@ -496,6 +501,7 @@ public final class IoBridge {
      * java.io thinks that a read at EOF is an error and should return -1, contrary to traditional
      * Unix practice where you'd read until you got 0 bytes (and any future read would return -1).
      */
+    @libcore.api.CorePlatformApi
     public static int read(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws IOException {
         ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {
@@ -520,6 +526,7 @@ public final class IoBridge {
      * java.io always writes every byte it's asked to, or fails with an error. (That is, unlike
      * Unix it never just writes as many bytes as happens to be convenient.)
      */
+    @libcore.api.CorePlatformApi
     public static void write(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws IOException {
         ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {

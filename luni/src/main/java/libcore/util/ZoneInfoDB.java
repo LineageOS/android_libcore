@@ -348,6 +348,7 @@ public final class ZoneInfoDB {
       return rawUtcOffsetsCache;
     }
 
+    @libcore.api.CorePlatformApi
     public String getVersion() {
       checkNotClosed();
       return version;
@@ -358,6 +359,7 @@ public final class ZoneInfoDB {
       return zoneTab;
     }
 
+    @libcore.api.CorePlatformApi
     public ZoneInfo makeTimeZone(String id) throws IOException {
       checkNotClosed();
       ZoneInfo zoneInfo = cache.get(id);
@@ -365,6 +367,7 @@ public final class ZoneInfoDB {
       return zoneInfo == null ? null : (ZoneInfo) zoneInfo.clone();
     }
 
+    @libcore.api.CorePlatformApi
     public boolean hasTimeZone(String id) throws IOException {
       checkNotClosed();
       return cache.get(id) != null;
@@ -433,6 +436,7 @@ public final class ZoneInfoDB {
   private ZoneInfoDB() {
   }
 
+  @libcore.api.CorePlatformApi
   public static TzData getInstance() {
     return DATA;
   }
