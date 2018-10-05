@@ -30,6 +30,7 @@ import java.util.function.Supplier;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class RuntimeHooks {
 
     private static Supplier<String> zoneIdSupplier;
@@ -48,6 +49,7 @@ public final class RuntimeHooks {
      *
      * <p>Once set the supplier cannot be changed.
      */
+    @libcore.api.CorePlatformApi
     public static void setTimeZoneIdSupplier(Supplier<String> zoneIdSupplier) {
         if (RuntimeHooks.zoneIdSupplier != null) {
             throw new UnsupportedOperationException("zoneIdSupplier instance already set");
@@ -70,6 +72,7 @@ public final class RuntimeHooks {
      * throwables thrown by the handler will be ignored by
      * {@link Thread#dispatchUncaughtException(Throwable)}.
      */
+    @libcore.api.CorePlatformApi
     public static void setUncaughtExceptionPreHandler(
             Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         Thread.setUncaughtExceptionPreHandler(uncaughtExceptionHandler);

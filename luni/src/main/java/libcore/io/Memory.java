@@ -25,7 +25,10 @@ import java.nio.ByteOrder;
 
 /**
  * Unsafe access to memory.
+ *
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class Memory {
     private Memory() { }
 
@@ -43,6 +46,7 @@ public final class Memory {
     public static native void unsafeBulkPut(byte[] dst, int dstOffset, int byteCount,
             Object src, int srcOffset, int sizeofElements, boolean swap);
 
+    @libcore.api.CorePlatformApi
     public static int peekInt(byte[] src, int offset, ByteOrder order) {
         if (order == ByteOrder.BIG_ENDIAN) {
             return (((src[offset++] & 0xff) << 24) |
@@ -81,6 +85,7 @@ public final class Memory {
         }
     }
 
+    @libcore.api.CorePlatformApi
     public static short peekShort(byte[] src, int offset, ByteOrder order) {
         if (order == ByteOrder.BIG_ENDIAN) {
             return (short) ((src[offset] << 8) | (src[offset + 1] & 0xff));
@@ -89,6 +94,7 @@ public final class Memory {
         }
     }
 
+    @libcore.api.CorePlatformApi
     public static void pokeInt(byte[] dst, int offset, int value, ByteOrder order) {
         if (order == ByteOrder.BIG_ENDIAN) {
             dst[offset++] = (byte) ((value >> 24) & 0xff);
@@ -103,6 +109,7 @@ public final class Memory {
         }
     }
 
+    @libcore.api.CorePlatformApi
     public static void pokeLong(byte[] dst, int offset, long value, ByteOrder order) {
         if (order == ByteOrder.BIG_ENDIAN) {
             int i = (int) (value >> 32);
@@ -129,6 +136,7 @@ public final class Memory {
         }
     }
 
+    @libcore.api.CorePlatformApi
     public static void pokeShort(byte[] dst, int offset, short value, ByteOrder order) {
         if (order == ByteOrder.BIG_ENDIAN) {
             dst[offset++] = (byte) ((value >> 8) & 0xff);
@@ -149,6 +157,7 @@ public final class Memory {
      *
      * @hide make type-safe before making public?
      */
+    @libcore.api.CorePlatformApi
     public static native void memmove(Object dstObject, int dstOffset, Object srcObject, int srcOffset, long byteCount);
 
     @FastNative

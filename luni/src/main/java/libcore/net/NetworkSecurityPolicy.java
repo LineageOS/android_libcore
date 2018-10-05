@@ -28,16 +28,19 @@ package libcore.net;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public abstract class NetworkSecurityPolicy {
 
     private static volatile NetworkSecurityPolicy instance = new DefaultNetworkSecurityPolicy();
 
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static NetworkSecurityPolicy getInstance() {
         return instance;
     }
 
+    @libcore.api.CorePlatformApi
     public static void setInstance(NetworkSecurityPolicy policy) {
         if (policy == null) {
             throw new NullPointerException("policy == null");
@@ -64,6 +67,7 @@ public abstract class NetworkSecurityPolicy {
      * this flag from day one, and well-established third-party network stacks will eventually
      * honor it.
      */
+    @libcore.api.CorePlatformApi
     public abstract boolean isCleartextTrafficPermitted();
 
     /**
@@ -73,6 +77,7 @@ public abstract class NetworkSecurityPolicy {
      *
      * <p>See {@link #isCleartextTrafficPermitted} for more details.
      */
+    @libcore.api.CorePlatformApi
     public abstract boolean isCleartextTrafficPermitted(String hostname);
 
     /**
@@ -81,6 +86,7 @@ public abstract class NetworkSecurityPolicy {
      *
      * <p>See RFC6962 section 3.3 for more details.
      */
+    @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public abstract boolean isCertificateTransparencyVerificationRequired(String hostname);
 
