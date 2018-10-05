@@ -27,6 +27,7 @@ import java.net.SocketAddress;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class NetlinkSocketAddress extends SocketAddress {
     /** port ID */
     private final int nlPortId;
@@ -42,15 +43,18 @@ public final class NetlinkSocketAddress extends SocketAddress {
         this(nlPortId, 0);
     }
 
+    @libcore.api.CorePlatformApi
     public NetlinkSocketAddress(int nlPortId, int nlGroupsMask) {
         this.nlPortId = nlPortId;
         this.nlGroupsMask = nlGroupsMask;
     }
 
+    @libcore.api.CorePlatformApi
     public int getPortId() {
         return nlPortId;
     }
 
+    @libcore.api.CorePlatformApi
     public int getGroupsMask() {
         return nlGroupsMask;
     }

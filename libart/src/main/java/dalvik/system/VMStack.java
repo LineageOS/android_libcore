@@ -24,6 +24,7 @@ import dalvik.annotation.optimization.FastNative;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class VMStack {
     /**
      * Returns the defining class loader of the caller's caller.
@@ -83,6 +84,7 @@ public final class VMStack {
      * @return an array of annotated stack frames, or null if the thread
      *      doesn't have a stack trace (e.g. because it exited)
      */
+    @libcore.api.CorePlatformApi
     @FastNative
     native public static AnnotatedStackTraceElement[]
             getAnnotatedThreadStackTrace(Thread t);
