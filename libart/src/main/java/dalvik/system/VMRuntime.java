@@ -465,6 +465,7 @@ public final class VMRuntime {
      * set mapped from disk storage, versus being interpretted from
      * dirty pages in memory.
      */
+    @libcore.api.CorePlatformApi
     public static native boolean isBootClassPathOnDisk(String instructionSet);
 
     /**
@@ -478,6 +479,7 @@ public final class VMRuntime {
      * various reasons, e.g., after an OTA. The return value is for the current instruction
      * set.
      */
+    @libcore.api.CorePlatformApi
     public static native boolean didPruneDalvikCache();
 
     /**

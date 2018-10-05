@@ -54,11 +54,13 @@ public final class PacketSocketAddress extends SocketAddress {
     }
 
     /** Constructs a new PacketSocketAddress suitable for binding to. */
+    @libcore.api.CorePlatformApi
     public PacketSocketAddress(short sll_protocol, int sll_ifindex) {
         this(sll_protocol, sll_ifindex, (short) 0, (byte) 0, null);
     }
 
     /** Constructs a new PacketSocketAddress suitable for sending to. */
+    @libcore.api.CorePlatformApi
     public PacketSocketAddress(int sll_ifindex, byte[] sll_addr) {
         this((short) 0, sll_ifindex, (short) 0, (byte) 0, sll_addr);
     }

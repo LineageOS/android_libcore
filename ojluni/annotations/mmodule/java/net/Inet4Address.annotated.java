@@ -62,6 +62,7 @@ public int hashCode() { throw new RuntimeException("Stub!"); }
 
 public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
+@libcore.api.CorePlatformApi
 public static final java.net.InetAddress ALL;
 static { ALL = null; }
 
