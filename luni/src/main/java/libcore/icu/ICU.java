@@ -477,5 +477,6 @@ public final class ICU {
   public static native String getDefaultLocale();
 
   /** Returns the TZData version as reported by ICU4C. */
+  @libcore.api.CorePlatformApi
   public static native String getTZDataVersion();
 }

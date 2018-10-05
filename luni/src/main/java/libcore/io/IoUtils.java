@@ -219,6 +219,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a string. The contents are assumed to be UTF-8.
      */
+    @libcore.api.CorePlatformApi
     public static String readFileAsString(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toString(StandardCharsets.UTF_8);
     }
