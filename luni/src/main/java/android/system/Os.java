@@ -60,6 +60,7 @@ public final class Os {
     public static void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.bind(fd, address, port); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
     /**
@@ -67,6 +68,7 @@ public final class Os {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException {
         return Libcore.os.capget(hdr);
     }
@@ -76,6 +78,7 @@ public final class Os {
      *
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static void capset(StructCapUserHeader hdr, StructCapUserData[] data)
             throws ErrnoException {
         Libcore.os.capset(hdr, data);
@@ -102,6 +105,7 @@ public final class Os {
     public static void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.connect(fd, address, port); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
 
     /**
@@ -143,6 +147,7 @@ public final class Os {
     public static int fcntlFlock(FileDescriptor fd, int cmd, StructFlock arg) throws ErrnoException, InterruptedIOException { return Libcore.os.fcntlFlock(fd, cmd, arg); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
 
     /** @hide */
@@ -216,6 +221,7 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/getpgid.2.html">getpgid(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static int getpgid(int pid) throws ErrnoException { return Libcore.os.getpgid(pid); }
 
     /**
@@ -235,6 +241,7 @@ public final class Os {
     public static StructPasswd getpwuid(int uid) throws ErrnoException { return Libcore.os.getpwuid(uid); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static StructRlimit getrlimit(int resource) throws ErrnoException { return Libcore.os.getrlimit(resource); }
 
     /**
@@ -249,12 +256,15 @@ public final class Os {
     public static InetAddress getsockoptInAddr(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInAddr(fd, level, option); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static int getsockoptInt(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptInt(fd, level, option); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static StructLinger getsockoptLinger(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static StructTimeval getsockoptTimeval(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
 
     /** @hide */
@@ -295,6 +305,7 @@ public final class Os {
 
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static int ioctlInt(FileDescriptor fd, int cmd, Int32Ref arg) throws ErrnoException {
         return Libcore.os.ioctlInt(fd, cmd, arg);
     }
@@ -390,6 +401,7 @@ public final class Os {
     public static FileDescriptor[] pipe() throws ErrnoException { return Libcore.os.pipe2(0); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static FileDescriptor[] pipe2(int flags) throws ErrnoException { return Libcore.os.pipe2(flags); }
 
     /**
@@ -450,6 +462,7 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man3/realpath.3.html">realpath(3)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static String realpath(String path) throws ErrnoException { return Libcore.os.realpath(path); }
 
     /**
@@ -503,6 +516,7 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/sendto.2.html">sendto(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
 
     /**
@@ -529,18 +543,21 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/setpgid.2.html">setpgid(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static void setpgid(int pid, int pgid) throws ErrnoException { Libcore.os.setpgid(pid, pgid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setregid.2.html">setregid(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static void setregid(int rgid, int egid) throws ErrnoException { Libcore.os.setregid(rgid, egid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setreuid.2.html">setreuid(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static void setreuid(int ruid, int euid) throws ErrnoException { Libcore.os.setreuid(ruid, euid); }
 
     /**
@@ -552,6 +569,7 @@ public final class Os {
     public static void setsockoptByte(FileDescriptor fd, int level, int option, int value) throws ErrnoException { Libcore.os.setsockoptByte(fd, level, option, value); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static void setsockoptIfreq(FileDescriptor fd, int level, int option, String value) throws ErrnoException { Libcore.os.setsockoptIfreq(fd, level, option, value); }
 
     /**
@@ -566,6 +584,7 @@ public final class Os {
     public static void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException { Libcore.os.setsockoptGroupReq(fd, level, option, value); }
 
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
     /** @hide */
@@ -601,6 +620,7 @@ public final class Os {
      * See <a href="http://man7.org/linux/man-pages/man2/splice.2.html">splice(2)</a>.
      * @hide
      */
+    @libcore.api.CorePlatformApi
     public static long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException { return Libcore.os.splice(fdIn, offIn, fdOut, offOut, len, flags); }
 
     /**

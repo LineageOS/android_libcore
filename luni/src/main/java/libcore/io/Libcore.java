@@ -17,6 +17,7 @@
 package libcore.io;
 
 /** @hide */
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public final class Libcore {
     private Libcore() { }

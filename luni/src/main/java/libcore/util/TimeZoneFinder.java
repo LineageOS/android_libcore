@@ -161,6 +161,7 @@ public final class TimeZoneFinder {
      * Returns the IANA rules version associated with the data. If there is no version information
      * or there is a problem reading the file then {@code null} is returned.
      */
+    @libcore.api.CorePlatformApi
     public String getIanaVersion() {
         IanaVersionExtractor ianaVersionExtractor = new IanaVersionExtractor();
         try {
@@ -198,6 +199,7 @@ public final class TimeZoneFinder {
      * also matches the (optional) bias parameter then the bias time zone will be returned.
      * Otherwise the first match found is returned.
      */
+    @libcore.api.CorePlatformApi
     public TimeZone lookupTimeZoneByCountryAndOffset(
             String countryIso, int offsetMillis, boolean isDst, long whenMillis, TimeZone bias) {
 
