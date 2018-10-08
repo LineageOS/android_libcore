@@ -70,7 +70,7 @@ package libcore.io {
   }
 
   public final class Libcore {
-    field public static libcore.io.Os os;
+    field public static volatile libcore.io.Os os;
   }
 
   public abstract interface Os {
