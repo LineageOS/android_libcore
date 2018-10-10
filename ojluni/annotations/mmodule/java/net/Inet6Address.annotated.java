@@ -77,6 +77,7 @@ public boolean isIPv4CompatibleAddress() { throw new RuntimeException("Stub!"); 
 public static final java.net.InetAddress ANY;
 static { ANY = null; }
 
+@libcore.api.CorePlatformApi
 public static final java.net.InetAddress LOOPBACK;
 static { LOOPBACK = null; }
 }
