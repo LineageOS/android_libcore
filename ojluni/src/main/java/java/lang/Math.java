@@ -781,6 +781,7 @@ public final class Math {
     /**
      * @hide for internal use only.
      */
+    @libcore.api.CorePlatformApi
     public static long randomLongInternal() {
         return RandomNumberGeneratorHolder.randomNumberGenerator.nextLong();
     }
