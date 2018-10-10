@@ -251,6 +251,7 @@ public final class IoUtils {
      *
      * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
      */
+    @libcore.api.CorePlatformApi
     @Deprecated
     public static File createTemporaryDirectory(String prefix) {
         while (true) {
