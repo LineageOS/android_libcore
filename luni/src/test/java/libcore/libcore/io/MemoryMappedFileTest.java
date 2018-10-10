@@ -29,9 +29,9 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 import java.util.function.Function;
 import libcore.io.BufferIterator;
-import libcore.io.IoUtils;
 import libcore.io.MemoryMappedFile;
 import libcore.io.SizeOf;
+import libcore.testing.io.TestIoUtils;
 
 public class MemoryMappedFileTest extends TestCase {
 
@@ -40,7 +40,7 @@ public class MemoryMappedFileTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        tempDir = IoUtils.createTemporaryDirectory("MemoryMappedFileTest");
+        tempDir = TestIoUtils.createTemporaryDirectory("MemoryMappedFileTest");
     }
 
     public void testMmapRo_missingFile() throws Exception {
