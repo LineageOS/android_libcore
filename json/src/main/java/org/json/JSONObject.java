@@ -668,6 +668,7 @@ public class JSONObject {
      *
      * @hide.
      */
+    @libcore.api.CorePlatformApi
     public Set<String> keySet() {
         return nameValuePairs.keySet();
     }
