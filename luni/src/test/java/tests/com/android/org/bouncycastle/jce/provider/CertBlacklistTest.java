@@ -14,28 +14,26 @@
  * limitations under the License.
  */
 
-package com.android.org.bouncycastle.jce.provider;
+package tests.com.android.org.bouncycastle.jce.provider;
+
+import junit.framework.TestCase;
+
+import com.android.org.bouncycastle.jce.provider.CertBlacklist;
+import com.android.org.bouncycastle.util.encoders.Base64;
+import com.android.org.bouncycastle.util.encoders.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigInteger;
-import java.security.cert.CertificateFactory;
-import java.security.cert.Certificate;
-import java.security.cert.X509Certificate;
 import java.security.MessageDigest;
-import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.HashSet;
 import java.util.Set;
-import junit.framework.TestCase;
-import com.android.org.bouncycastle.jce.provider.CertBlacklist;
-import com.android.org.bouncycastle.crypto.Digest;
-import com.android.org.bouncycastle.util.encoders.Base64;
-import com.android.org.bouncycastle.util.encoders.Hex;
 
 public class CertBlacklistTest extends TestCase {
 
