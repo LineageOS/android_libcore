@@ -469,6 +469,16 @@ public final class VMRuntime {
     public static native boolean isBootClassPathOnDisk(String instructionSet);
 
     /**
+     * Returns whether the runtime is using a boot image.
+     *
+     * <p>While isBootClassPathOnDisk checks for the existence of an image file on disk,
+     * this method queries the runtime whether it is <em>using</em> an image.
+     */
+    @libcore.api.CorePlatformApi
+    @FastNative
+    public static native boolean hasBootImageSpaces();
+
+    /**
      * Returns the instruction set of the current runtime.
      */
     @libcore.api.CorePlatformApi
