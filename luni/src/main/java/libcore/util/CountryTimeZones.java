@@ -64,10 +64,16 @@ public final class CountryTimeZones {
 
     /**
      * A mapping to a time zone ID with some associated metadata.
+     *
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public final static class TimeZoneMapping {
+        @libcore.api.CorePlatformApi
         public final String timeZoneId;
+        @libcore.api.CorePlatformApi
         public final boolean showInPicker;
+        @libcore.api.CorePlatformApi
         public final Long notUsedAfter;
 
         TimeZoneMapping(String timeZoneId, boolean showInPicker, Long notUsedAfter) {
@@ -77,6 +83,7 @@ public final class CountryTimeZones {
         }
 
         // VisibleForTesting
+        @libcore.api.CorePlatformApi
         public static TimeZoneMapping createForTests(
                 String timeZoneId, boolean showInPicker, Long notUsedAfter) {
             return new TimeZoneMapping(timeZoneId, showInPicker, notUsedAfter);
