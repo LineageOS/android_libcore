@@ -305,7 +305,10 @@ java_system_modules {
         "core-simple",
         // This one is not on device but it's needed when javac compiles code
         // containing lambdas.
-        "core-lambda-stubs"
+        "core-lambda-stubs",
+        "bouncycastle",
+        "conscrypt",
+        "okhttp",
     ],
 }
 
@@ -405,10 +408,6 @@ java_test {
         ":parameter-metadata-test",
     ],
 
-    libs: [
-        "okhttp",
-        "bouncycastle",
-    ],
     static_libs: [
         "archive-patcher",
         "core-test-rules",
@@ -447,10 +446,7 @@ java_test {
         "ojluni/src/test/java",
         "ojluni/src/test/resources",
     ],
-    libs: [
-        "okhttp",
-        "bouncycastle",
-    ],
+
     static_libs: ["testng"],
 
     // ojluni/src/test/java/util/stream/{bootlib,boottest}
@@ -494,11 +490,7 @@ java_test {
         // Include source code as part of JAR
         "ojluni/src/test/dist",
     ],
-    libs: [
-        "bouncycastle",
-        "okhttp",
-        "testng",
-    ],
+    libs: ["testng"],
 }
 
 // Make the annotated stubs in ojluni/annotations available to metalava:
