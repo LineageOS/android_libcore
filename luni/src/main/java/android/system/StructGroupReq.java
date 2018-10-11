@@ -24,7 +24,6 @@ import libcore.util.Objects;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi
 public final class StructGroupReq {
     public final int gr_interface;
     public final InetAddress gr_group;
