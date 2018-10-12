@@ -334,16 +334,14 @@ java_library_static {
     hostdex: true,
     srcs: ["support/src/test/java/**/*.java"],
 
-    no_standard_libs: true,
+    sdk_version: "core_platform_current",
     libs: [
-        "core-all",
         "junit",
-        "bouncycastle",
     ],
-    system_modules: "core-all-system-modules",
     static_libs: [
-        "bouncycastle-bcpkix",
-        "bouncycastle-ocsp",
+        "bouncycastle-unbundled",
+        "bouncycastle-bcpkix-unbundled",
+        "bouncycastle-ocsp-unbundled",
     ],
 }
 
