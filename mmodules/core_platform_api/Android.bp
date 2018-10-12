@@ -21,7 +21,7 @@
 droidstubs {
     name: "core-platform-api-stubs",
     srcs: [":core_api_files"],
-    no_framework_libs: true,
+    no_standard_libs: true,
 
     installable: false,
     args: "--hide-annotation libcore.api.Hide "
@@ -50,6 +50,7 @@ droidstubs {
 java_library {
     name: "core.platform.api.stubs",
     srcs: [":core-platform-api-stubs"],
+    hostdex: true,
 
     no_standard_libs: true,
     libs: ["core-all"],
