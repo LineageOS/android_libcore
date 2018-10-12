@@ -43,15 +43,21 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Objects;
 
 /**
  * Subclass this if you want to override some {@link Os} methods but otherwise delegate.
  */
 public class ForwardingOs implements Os {
-    protected final Os os;
+    private final Os os;
 
-    public ForwardingOs(Os os) {
-        this.os = os;
+    protected ForwardingOs(Os os) {
+        this.os = Objects.requireNonNull(os);
+    }
+
+    /** @return the delegate object passed to the constructor. */
+    protected final Os delegate() {
+        return os;
     }
 
     public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException { return os.accept(fd, peerAddress); }
@@ -199,4 +205,6 @@ public class ForwardingOs implements Os {
     public int write(FileDescriptor fd, ByteBuffer buffer) throws ErrnoException, InterruptedIOException { return os.write(fd, buffer); }
     public int write(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws ErrnoException, InterruptedIOException { return os.write(fd, bytes, byteOffset, byteCount); }
     public int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts) throws ErrnoException, InterruptedIOException { return os.writev(fd, buffers, offsets, byteCounts); }
+
+    public String toString() { return "ForwardingOs{os=" + os + "}"; }
 }
