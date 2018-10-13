@@ -63,7 +63,12 @@ java_library {
 // Used when compiling higher-level code against core.platform.api.stubs.
 java_system_modules {
     name: "core-platform-api-stubs-system-modules",
-    libs: ["core.platform.api.stubs"],
+    libs: [
+        "core.platform.api.stubs",
+        // This one is not on device but it's needed when javac compiles code
+        // containing lambdas.
+        "core-lambda-stubs",
+    ],
 }
 
 // Tests associated with the core platform APIs.
