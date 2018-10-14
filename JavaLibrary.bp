@@ -277,6 +277,7 @@ java_library {
 java_library {
     name: "core-lambda-stubs",
     defaults: ["libcore_java_defaults"],
+    hostdex: true,
 
     srcs: [
         ":openjdk_lambda_stub_files",
@@ -305,7 +306,10 @@ java_system_modules {
         "core-simple",
         // This one is not on device but it's needed when javac compiles code
         // containing lambdas.
-        "core-lambda-stubs"
+        "core-lambda-stubs",
+        "bouncycastle",
+        "conscrypt",
+        "okhttp",
     ],
 }
 
@@ -313,24 +317,30 @@ java_system_modules {
 java_library_static {
     name: "core-test-rules",
     hostdex: true,
-    no_framework_libs: true,
     srcs: [
         "dalvik/test-rules/src/main/**/*.java",
         "test-rules/src/main/**/*.java",
     ],
     static_libs: ["junit"],
+
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
 }
 
 // Make the core-tests-support library.
 java_library_static {
     name: "core-tests-support",
     hostdex: true,
-    no_framework_libs: true,
     srcs: ["support/src/test/java/**/*.java"],
+
+    no_standard_libs: true,
     libs: [
+        "core-all",
         "junit",
         "bouncycastle",
     ],
+    system_modules: "core-all-system-modules",
     static_libs: [
         "bouncycastle-bcpkix",
         "bouncycastle-ocsp",
@@ -341,10 +351,12 @@ java_library_static {
 java_test {
     name: "jsr166-tests",
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
-    no_framework_libs: true,
+    no_standard_libs: true,
     libs: [
+        "core-all",
         "junit",
     ],
+    system_modules: "core-all-system-modules",
 }
 
 // Build a library just containing files from luni/src/test/filesystems for use in tests.
@@ -376,7 +388,6 @@ java_test {
     name: "core-tests",
     defaults: ["libcore_java_defaults"],
     hostdex: true,
-    no_framework_libs: true,
     srcs: [
         "dalvik/src/test/java/**/*.java",
         "dalvik/test-rules/src/test/java/**/*.java",
@@ -405,10 +416,14 @@ java_test {
         ":parameter-metadata-test",
     ],
 
+    no_standard_libs: true,
     libs: [
+        "core-all",
         "okhttp",
         "bouncycastle",
     ],
+    system_modules: "core-all-system-modules",
+
     static_libs: [
         "archive-patcher",
         "core-test-rules",
@@ -438,7 +453,6 @@ java_test {
     name: "core-ojtests",
     defaults: ["libcore_java_defaults"],
     hostdex: true,
-    no_framework_libs: true,
 
     srcs: [
         "ojluni/src/test/java/**/*.java",
@@ -447,10 +461,15 @@ java_test {
         "ojluni/src/test/java",
         "ojluni/src/test/resources",
     ],
+
+    no_standard_libs: true,
     libs: [
+        "core-all",
         "okhttp",
         "bouncycastle",
     ],
+    system_modules: "core-all-system-modules",
+
     static_libs: ["testng"],
 
     // ojluni/src/test/java/util/stream/{bootlib,boottest}
@@ -474,7 +493,6 @@ java_test {
 java_test {
     name: "core-ojtests-public",
     defaults: ["libcore_java_defaults"],
-    no_framework_libs: true,
     srcs: [
         "ojluni/src/test/java/**/*.java",
     ],
@@ -494,11 +512,15 @@ java_test {
         // Include source code as part of JAR
         "ojluni/src/test/dist",
     ],
+
+    no_standard_libs: true,
     libs: [
+        "core-all",
         "bouncycastle",
         "okhttp",
         "testng",
     ],
+    system_modules: "core-all-system-modules",
 }
 
 // Make the annotated stubs in ojluni/annotations available to metalava:

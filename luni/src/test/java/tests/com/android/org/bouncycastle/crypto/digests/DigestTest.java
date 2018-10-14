@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package com.android.org.bouncycastle.crypto.digests;
+package tests.com.android.org.bouncycastle.crypto.digests;
 
 import junit.framework.TestCase;
+
 import com.android.org.bouncycastle.crypto.Digest;
 import com.android.org.bouncycastle.crypto.ExtendedDigest;
+import com.android.org.bouncycastle.crypto.digests.MD5Digest;
+import com.android.org.bouncycastle.crypto.digests.OpenSSLDigest;
+import com.android.org.bouncycastle.crypto.digests.SHA1Digest;
+import com.android.org.bouncycastle.crypto.digests.SHA256Digest;
+import com.android.org.bouncycastle.crypto.digests.SHA384Digest;
+import com.android.org.bouncycastle.crypto.digests.SHA512Digest;
 import tests.util.SummaryStatistics;
 
 /**

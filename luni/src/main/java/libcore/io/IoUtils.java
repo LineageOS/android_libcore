@@ -27,7 +27,7 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
-import java.util.Random;
+
 import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
@@ -231,8 +231,10 @@ public final class IoUtils {
      * Deliberately ignores errors, on the assumption that test cleanup is only
      * supposed to be best-effort.
      *
-     * @deprecated Use {@link #createTemporaryDirectory} instead.
+     * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
      */
+    @libcore.api.CorePlatformApi
+    @Deprecated
     public static void deleteContents(File dir) throws IOException {
         File[] files = dir.listFiles();
         if (files != null) {
@@ -247,7 +249,11 @@ public final class IoUtils {
 
     /**
      * Creates a unique new temporary directory under "java.io.tmpdir".
+     *
+     * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
      */
+    @libcore.api.CorePlatformApi
+    @Deprecated
     public static File createTemporaryDirectory(String prefix) {
         while (true) {
             String candidateName = prefix + Math.randomIntInternal();
