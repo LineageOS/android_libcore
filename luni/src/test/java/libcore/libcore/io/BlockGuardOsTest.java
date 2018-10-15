@@ -28,6 +28,7 @@ import android.system.OsConstants;
 import android.system.StructAddrinfo;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -215,7 +216,11 @@ public class BlockGuardOsTest {
 
         // Verify that all the methods in libcore.io.Os should either be overridden in BlockGuardOs
         // or else they should be in the "methodsNotRequiredBlockGuardCheckSet".
+        // We don't care about static methods because they can't be overridden.
         for (Method method : Os.class.getDeclaredMethods()) {
+            if (Modifier.isStatic(method.getModifiers())) {
+                continue;
+            }
             String methodSignature = method.toString();
             String methodNameAndParameters = getMethodNameAndParameters(methodSignature);
             if (!methodsNotRequiredBlockGuardCheckSet.contains(methodNameAndParameters) &&
