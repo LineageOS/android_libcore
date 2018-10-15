@@ -22,11 +22,14 @@ import java.util.Map;
 /**
  * A minimal least-recently-used cache for libcore. Prefer {@code
  * android.util.LruCache} where that is available.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public class BasicLruCache<K, V> {
     private final LinkedHashMap<K, V> map;
     private final int maxSize;
 
+    @libcore.api.CorePlatformApi
     public BasicLruCache(int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");
