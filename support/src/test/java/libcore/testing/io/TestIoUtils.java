@@ -17,8 +17,10 @@
 package libcore.testing.io;
 
 import java.io.File;
+import java.util.Random;
 
 public class TestIoUtils {
+    private final static Random random = new Random();
 
     private TestIoUtils() {}
 
@@ -27,7 +29,7 @@ public class TestIoUtils {
      */
     public static File createTemporaryDirectory(String prefix) {
         while (true) {
-            String candidateName = prefix + Math.randomIntInternal();
+            String candidateName = prefix + nextRandomInt();
             File result = new File(System.getProperty("java.io.tmpdir"), candidateName);
             if (result.mkdir()) {
                 return result;
@@ -47,5 +49,9 @@ public class TestIoUtils {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    private synchronized static int nextRandomInt() {
+        return random.nextInt();
     }
 }
