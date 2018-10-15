@@ -492,7 +492,9 @@ throwIOException(JNIEnv *env, int errnum, const char *defaultDetail)
 
     if (errnum != 0) {
         const char *s = strerror(errnum);
-        if (strcmp(s, "Unknown error") != 0)
+        // Android-changed: Fix logic for recognizing error strings. http://b/110019823
+        // if (strcmp(s, "Unknown error") != 0)
+        if (strstr(s, "Unknown error") == 0)
             detail = s;
     }
     /* ASCII Decimal representation uses 2.4 times as many bits as binary. */
