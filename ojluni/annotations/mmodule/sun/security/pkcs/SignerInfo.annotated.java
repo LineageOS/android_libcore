@@ -35,6 +35,9 @@ import java.io.IOException;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class SignerInfo implements sun.security.util.DerEncoder {
 
+@libcore.api.CorePlatformApi
+public SignerInfo() { throw new RuntimeException("Stub!"); }
+
 public SignerInfo(sun.security.x509.X500Name issuerName, java.math.BigInteger serial, sun.security.x509.AlgorithmId digestAlgorithmId, sun.security.x509.AlgorithmId digestEncryptionAlgorithmId, byte[] encryptedDigest) { throw new RuntimeException("Stub!"); }
 
 public SignerInfo(sun.security.x509.X500Name issuerName, java.math.BigInteger serial, sun.security.x509.AlgorithmId digestAlgorithmId, sun.security.pkcs.PKCS9Attributes authenticatedAttributes, sun.security.x509.AlgorithmId digestEncryptionAlgorithmId, byte[] encryptedDigest, sun.security.pkcs.PKCS9Attributes unauthenticatedAttributes) { throw new RuntimeException("Stub!"); }
