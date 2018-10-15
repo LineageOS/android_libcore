@@ -51,9 +51,14 @@ import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
 
+import libcore.io.BlockGuardOs;
+import libcore.io.ForwardingOs;
 import libcore.io.IoBridge;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
+import libcore.io.Os;
+
+import org.mockito.Mockito;
 
 import static android.system.OsConstants.*;
 import static libcore.libcore.io.OsTest.SendFileImpl.ANDROID_SYSTEM_OS_INT64_REF;
@@ -1044,5 +1049,53 @@ public class OsTest extends TestCase {
       fail();
     } catch (NullPointerException expected) {
     }
+  }
+
+  public void testGetDefault_instanceofBlockguardOs() {
+    Os os = Os.getDefault();
+    assertTrue(os.getClass().toString(), os instanceof BlockGuardOs);
+  }
+
+  public void testCompareAndSetDefault_success() throws Exception {
+    Os defaultOs = Os.getDefault();
+    Os mockOs = Mockito.mock(Os.class);
+    try {
+      // There shouldn't be any concurrent threads replacing the default Os.
+      assertTrue(Os.compareAndSetDefault(defaultOs, mockOs));
+      assertSame(mockOs, Os.getDefault());
+
+      // Calls to android.system.Os should now reach our custom Os instance.
+      android.system.Os.rename("/old/path", "/new/path");
+      Mockito.verify(mockOs).rename("/old/path", "/new/path");
+    } finally {
+      assertTrue(Os.compareAndSetDefault(mockOs, defaultOs));
+      assertSame(defaultOs, Os.getDefault());
+    }
+  }
+
+  public void testCompareandSetDefault_null() {
+    Os defaultOs = Os.getDefault();
+    // update == null is not allowed
+    try {
+      Os.compareAndSetDefault(defaultOs, null);
+      fail();
+    } catch (NullPointerException expected) {
+    }
+    // value hasn't changed
+    assertSame(defaultOs, Os.getDefault());
+
+  }
+
+  public void testCompareAndSetDefault_comparisonFailure() throws Exception {
+    Os defaultOs = Os.getDefault();
+    Os otherOs = new ForwardingOs(defaultOs) { };
+
+    // current default is non-null, but expect is null
+    assertFalse(Os.compareAndSetDefault(null, otherOs));
+    assertSame(defaultOs, Os.getDefault());
+
+    // current default != expect (both non-null)
+    assertFalse(Os.compareAndSetDefault(otherOs, otherOs));
+    assertSame(defaultOs, Os.getDefault());
   }
 }

@@ -45,6 +45,7 @@ import java.net.SocketException;
 import java.nio.ByteBuffer;
 
 /** @hide */
+@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public interface Os {
     public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException;
@@ -190,4 +191,25 @@ public interface Os {
     public int write(FileDescriptor fd, ByteBuffer buffer) throws ErrnoException, InterruptedIOException;
     public int write(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws ErrnoException, InterruptedIOException;
     public int writev(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts) throws ErrnoException, InterruptedIOException;
+
+    /**
+     * Atomically sets the system's default {@link Os} implementation to be
+     * {@code update} if the current value {@code == expect}.
+     *
+     * @param expect the expected value.
+     * @param update the new value to set; must not be null.
+     * @return whether the update was successful.
+     */
+    @libcore.api.CorePlatformApi
+    public static boolean compareAndSetDefault(Os expect, Os update) {
+        return Libcore.compareAndSetOs(expect, update);
+    }
+
+    /**
+     * @return the system's default {@link Os} implementation currently in use.
+     */
+    @libcore.api.CorePlatformApi
+    public static Os getDefault() {
+        return Libcore.getOs();
+    }
 }
