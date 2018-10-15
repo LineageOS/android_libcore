@@ -28,7 +28,9 @@ import libcore.util.ZoneInfoDB;
 
 /**
  * Provides access to ICU's time zone name data.
+ * @hide
  */
+@libcore.api.CorePlatformApi
 public final class TimeZoneNames {
     private static final String[] availableTimeZoneIds = TimeZone.getAvailableIDs();
 
@@ -44,6 +46,8 @@ public final class TimeZoneNames {
 
     private static final ZoneStringsCache cachedZoneStrings = new ZoneStringsCache();
 
+    /** @hide */
+    @libcore.api.CorePlatformApi
     public static class ZoneStringsCache extends BasicLruCache<Locale, String[][]> {
         public ZoneStringsCache() {
             super(5); // Room for a handful of locales.
