@@ -53,11 +53,7 @@ java_library {
     hostdex: true,
 
     no_standard_libs: true,
-    libs: ["core-all"],
-    system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    system_modules: "none",
 }
 
 // Used when compiling higher-level code against core.platform.api.stubs.
