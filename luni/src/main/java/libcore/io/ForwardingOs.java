@@ -48,9 +48,11 @@ import java.util.Objects;
 /**
  * Subclass this if you want to override some {@link Os} methods but otherwise delegate.
  */
+@libcore.api.CorePlatformApi
 public class ForwardingOs implements Os {
     private final Os os;
 
+    @libcore.api.CorePlatformApi
     protected ForwardingOs(Os os) {
         this.os = Objects.requireNonNull(os);
     }
@@ -145,6 +147,7 @@ public class ForwardingOs implements Os {
     public void msync(long address, long byteCount, int flags) throws ErrnoException { os.msync(address, byteCount, flags); }
     public void munlock(long address, long byteCount) throws ErrnoException { os.munlock(address, byteCount); }
     public void munmap(long address, long byteCount) throws ErrnoException { os.munmap(address, byteCount); }
+    @libcore.api.CorePlatformApi
     public FileDescriptor open(String path, int flags, int mode) throws ErrnoException { return os.open(path, flags, mode); }
     public FileDescriptor[] pipe2(int flags) throws ErrnoException { return os.pipe2(flags); }
     public int poll(StructPollfd[] fds, int timeoutMs) throws ErrnoException { return os.poll(fds, timeoutMs); }
