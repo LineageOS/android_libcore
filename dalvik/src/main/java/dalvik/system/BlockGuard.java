@@ -89,7 +89,9 @@ public final class BlockGuard {
 
     /**
      * Per-process interface used to implement {@code StrictMode.VmPolicy}.
+     * @hide
      */
+    @libcore.api.CorePlatformApi
     public interface VmPolicy {
         /**
          * Called by core libraries code when the given path is accessed. This
@@ -110,6 +112,7 @@ public final class BlockGuard {
          * @param path The path in the local file system that is being accessed
          *            for reading or writing.
          */
+        @libcore.api.CorePlatformApi
         void onPathAccess(String path);
     }
 
@@ -175,6 +178,7 @@ public final class BlockGuard {
     /**
      * The default, permissive per-process policy.
      */
+    @libcore.api.CorePlatformApi
     public static final VmPolicy LAX_VM_POLICY = new VmPolicy() {
         @Override public String toString() { return "LAX_VM_POLICY"; }
         @Override public void onPathAccess(String path) {}
@@ -220,6 +224,7 @@ public final class BlockGuard {
      * @return the current process's policy. Will return the
      *         {@link #LAX_VM_POLICY} instance if nothing else is set.
      */
+    @libcore.api.CorePlatformApi
     public static @NonNull VmPolicy getVmPolicy() {
         return vmPolicy;
     }
@@ -233,6 +238,7 @@ public final class BlockGuard {
      * @param policy policy to set. Use the public {@link #LAX_VM_POLICY} if you
      *            want to unset the active policy.
      */
+    @libcore.api.CorePlatformApi
     public static void setVmPolicy(@NonNull VmPolicy policy) {
         vmPolicy = Objects.requireNonNull(policy);
     }
