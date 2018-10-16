@@ -45,6 +45,7 @@ public final java.nio.ByteBuffer duplicate() { throw new RuntimeException("Stub!
 
 public final java.nio.ByteBuffer asReadOnlyBuffer() { throw new RuntimeException("Stub!"); }
 
+@libcore.api.CorePlatformApi
 public final long address() { throw new RuntimeException("Stub!"); }
 
 public final byte get() { throw new RuntimeException("Stub!"); }
