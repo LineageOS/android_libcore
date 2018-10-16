@@ -54,6 +54,9 @@ java_library {
 
     no_standard_libs: true,
     system_modules: "none",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
 }
 
 // Used when compiling higher-level code against core.platform.api.stubs.
