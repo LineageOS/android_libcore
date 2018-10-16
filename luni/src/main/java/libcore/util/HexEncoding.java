@@ -55,6 +55,7 @@ public class HexEncoding {
     /**
      * Encodes the provided data as a sequence of hexadecimal characters.
      */
+    @libcore.api.CorePlatformApi
     public static String encodeToString(byte[] data) {
         return new String(encode(data));
     }

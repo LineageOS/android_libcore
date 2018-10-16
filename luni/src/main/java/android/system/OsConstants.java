@@ -300,12 +300,16 @@ public final class OsConstants {
     public static final int F_UNLCK = placeholder();
     public static final int F_WRLCK = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ICMP_ECHO = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ICMP_ECHOREPLY = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ICMP6_ECHO_REQUEST = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int ICMP6_ECHO_REPLY = placeholder();
     public static final int IFA_F_DADFAILED = placeholder();
     public static final int IFA_F_DEPRECATED = placeholder();
@@ -410,6 +414,7 @@ public final class OsConstants {
     public static final int O_CLOEXEC = placeholder();
     public static final int O_CREAT = placeholder();
     /** @hide */
+    @libcore.api.CorePlatformApi
     public static final int O_DIRECT = placeholder();
     public static final int O_EXCL = placeholder();
     public static final int O_NOCTTY = placeholder();
