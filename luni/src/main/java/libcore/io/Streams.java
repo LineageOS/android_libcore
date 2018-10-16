@@ -18,6 +18,7 @@ package libcore.io;
 
 import libcore.util.ArrayUtils;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
@@ -186,6 +187,7 @@ public final class Streams {
      * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
      * Returns the total number of bytes transferred.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static int copy(InputStream in, OutputStream out) throws IOException {
         int total = 0;
