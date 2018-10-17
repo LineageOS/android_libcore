@@ -304,6 +304,8 @@ public final class CloseGuard {
      * Default Reporter which reports CloseGuard violations to the log.
      */
     private static final class DefaultReporter implements Reporter {
+        private DefaultReporter() {}
+
         @Override public void report (String message, Throwable allocationSite) {
             System.logW(message, allocationSite);
         }
