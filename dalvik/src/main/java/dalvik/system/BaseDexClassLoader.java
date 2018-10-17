@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.File;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -43,6 +44,7 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     /* @NonNull */ private static volatile Reporter reporter = null;
 
+    @UnsupportedAppUsage
     private final DexPathList pathList;
 
     /**
@@ -68,6 +70,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @UnsupportedAppUsage
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent, boolean isTrusted) {
         super(parent);
@@ -144,6 +147,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public void addDexPath(String dexPath) {
         addDexPath(dexPath, false /*isTrusted*/);
@@ -152,6 +156,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @UnsupportedAppUsage
     public void addDexPath(String dexPath, boolean isTrusted) {
         pathList.addDexPath(dexPath, null /*optimizedDirectory*/, isTrusted);
     }
@@ -226,6 +231,7 @@ public class BaseDexClassLoader extends ClassLoader {
     /**
      * @hide
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String getLdLibraryPath() {
         StringBuilder result = new StringBuilder();

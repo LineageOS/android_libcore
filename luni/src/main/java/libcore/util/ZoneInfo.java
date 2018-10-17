@@ -22,6 +22,7 @@
  */
 package libcore.util;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
@@ -132,6 +133,7 @@ public final class ZoneInfo extends TimeZone {
      *
      * @see #mTypes
      */
+    @UnsupportedAppUsage
     private final long[] mTransitions;
 
     /**

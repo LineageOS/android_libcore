@@ -16,6 +16,7 @@
 
 package libcore.util;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import java.util.Map;
  */
 @libcore.api.CorePlatformApi
 public class BasicLruCache<K, V> {
+    @UnsupportedAppUsage
     private final LinkedHashMap<K, V> map;
     private final int maxSize;
 
