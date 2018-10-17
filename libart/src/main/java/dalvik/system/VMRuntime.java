@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 import java.lang.ref.FinalizerReference;
 import java.util.HashMap;
@@ -78,6 +79,7 @@ public final class VMRuntime {
      *
      * @return the runtime object
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static VMRuntime getRuntime() {
         return THE_ONE;
@@ -107,18 +109,21 @@ public final class VMRuntime {
     /**
      * Returns the name of the shared library providing the VM implementation.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public native String vmLibrary();
 
     /**
      * Returns the VM's instruction set.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public native String vmInstructionSet();
 
     /**
      * Returns whether the VM is running in 64-bit mode.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @FastNative
     public native boolean is64Bit();
@@ -154,6 +159,7 @@ public final class VMRuntime {
      * @return the previous ideal heap utilization
      * @throws IllegalArgumentException if newTarget is &lt;= 0.0 or &gt;= 1.0
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public float setTargetHeapUtilization(float newTarget) {
         if (newTarget <= 0.0f || newTarget >= 1.0f) {
@@ -176,6 +182,7 @@ public final class VMRuntime {
      * app starts to run, because it may change the VM's behavior in
      * dangerous ways. Defaults to {@link #SDK_VERSION_CUR_DEVELOPMENT}.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public synchronized void setTargetSdkVersion(int targetSdkVersion) {
         this.targetSdkVersion = targetSdkVersion;
@@ -197,6 +204,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It was part of a
      * heap sizing API which was removed in Android 3.0 (Honeycomb).
      */
+    @UnsupportedAppUsage
     @Deprecated
     public long getMinimumHeapSize() {
         return 0;
@@ -206,6 +214,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It was part of a
      * heap sizing API which was removed in Android 3.0 (Honeycomb).
      */
+    @UnsupportedAppUsage
     @Deprecated
     public long setMinimumHeapSize(long size) {
         return 0;
@@ -215,6 +224,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It used to
      * perform a garbage collection that cleared SoftReferences.
      */
+    @UnsupportedAppUsage
     @Deprecated
     public void gcSoftReferences() {}
 
@@ -222,6 +232,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It is equivalent
      * to {@link System#runFinalization}.
      */
+    @UnsupportedAppUsage
     @Deprecated
     public void runFinalizationSync() {
         System.runFinalization();
@@ -239,6 +250,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It was part of
      * the external allocation API which was removed in Android 3.0 (Honeycomb).
      */
+    @UnsupportedAppUsage
     @Deprecated
     public boolean trackExternalAllocation(long size) {
         return true;
@@ -248,6 +260,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It was part of
      * the external allocation API which was removed in Android 3.0 (Honeycomb).
      */
+    @UnsupportedAppUsage
     @Deprecated
     public void trackExternalFree(long size) {}
 
@@ -255,6 +268,7 @@ public final class VMRuntime {
      * This method exists for binary compatibility.  It was part of
      * the external allocation API which was removed in Android 3.0 (Honeycomb).
      */
+    @UnsupportedAppUsage
     @Deprecated
     public long getExternalBytesAllocated() {
         return 0;
@@ -306,6 +320,7 @@ public final class VMRuntime {
      * This is used to implement native allocations on the Java heap, such as DirectByteBuffers
      * and Bitmaps.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @FastNative
     public native Object newNonMovableArray(Class<?> componentType, int length);
@@ -323,6 +338,7 @@ public final class VMRuntime {
      * Returns the address of array[0]. This differs from using JNI in that JNI might lie and
      * give you the address of a copy of the array when in forcecopy mode.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @FastNative
     public native long addressOf(Object array);
@@ -331,6 +347,7 @@ public final class VMRuntime {
      * Removes any growth limits, allowing the application to allocate
      * up to the maximum heap size.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public native void clearGrowthLimit();
 
@@ -367,12 +384,14 @@ public final class VMRuntime {
      * unusually high rate and a GC is performed inside of the function to prevent memory usage
      * from excessively increasing.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public native void registerNativeAllocation(int bytes);
 
     /**
      * Registers a native free by reducing the number of native bytes accounted for.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public native void registerNativeFree(int bytes);
 
@@ -390,6 +409,7 @@ public final class VMRuntime {
      * @see #Runtime.runFinalization()
      * @see #wait(long,int)
      */
+    @UnsupportedAppUsage
     public static void runFinalization(long timeout) {
         try {
             FinalizerReference.finalizeAllEnqueued(timeout);
@@ -438,6 +458,7 @@ public final class VMRuntime {
      *
      * This influences the compilation of the applications classes.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String getInstructionSet(String abi) {
         final String instructionSet = ABI_TO_INSTRUCTION_SET_MAP.get(abi);
@@ -455,6 +476,7 @@ public final class VMRuntime {
                 "mips64".equals(instructionSet);
     }
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static boolean is64BitAbi(String abi) {
         return is64BitInstructionSet(getInstructionSet(abi));
@@ -481,6 +503,7 @@ public final class VMRuntime {
     /**
      * Returns the instruction set of the current runtime.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static native String getCurrentInstructionSet();
 

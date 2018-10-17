@@ -16,6 +16,7 @@
 
 package android.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import libcore.util.Objects;
 
 /**
@@ -42,6 +43,7 @@ public final class StructTimeval {
         this.tv_usec = tv_usec;
     }
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static StructTimeval fromMillis(long millis) {
