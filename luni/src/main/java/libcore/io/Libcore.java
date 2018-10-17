@@ -16,6 +16,7 @@
 
 package libcore.io;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Objects;
 
 /** @hide */
@@ -36,6 +37,7 @@ public final class Libcore {
      * For read access only; the only supported way to update this field is via
      * {@link #compareAndSetOs}.
      */
+    @UnsupportedAppUsage
     @libcore.api.IntraCoreApi
     public static volatile Os os = new BlockGuardOs(rawOs);
 

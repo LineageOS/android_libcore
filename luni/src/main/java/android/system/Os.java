@@ -676,6 +676,7 @@ public final class Os {
     /**
      * @hide See <a href="http://man7.org/linux/man-pages/man2/unlink.2.html">unlink(2)</a>.
      */
+    @libcore.api.CorePlatformApi
     public static void unlink(String pathname) throws ErrnoException { Libcore.os.unlink(pathname); }
 
     /**
