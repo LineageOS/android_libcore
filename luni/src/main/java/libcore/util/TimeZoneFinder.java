@@ -234,6 +234,7 @@ public final class TimeZoneFinder {
      * can return an empty list in a case when the underlying data files reference only unknown
      * zone IDs.
      */
+    @libcore.api.CorePlatformApi
     public List<TimeZone> lookupTimeZonesByCountry(String countryIso) {
         CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
         return countryTimeZones == null ? null : countryTimeZones.getIcuTimeZones();
