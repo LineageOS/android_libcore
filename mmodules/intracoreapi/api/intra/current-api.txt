@@ -13,6 +13,404 @@ package android.system {
 
 }
 
+package com.android.org.conscrypt {
+
+  public final class ClientSessionContext implements javax.net.ssl.SSLSessionContext {
+  }
+
+  public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
+    ctor public DESEDESecretKeyFactory();
+  }
+
+  public final class DefaultSSLContextImpl extends com.android.org.conscrypt.OpenSSLContextImpl {
+    ctor public DefaultSSLContextImpl() throws java.security.GeneralSecurityException, java.io.IOException;
+  }
+
+  public class ECParameters extends java.security.AlgorithmParametersSpi {
+    ctor public ECParameters();
+  }
+
+  public final class GCMParameters extends java.security.AlgorithmParametersSpi {
+    ctor public GCMParameters();
+  }
+
+  public class IvParameters extends java.security.AlgorithmParametersSpi {
+    ctor public IvParameters();
+  }
+
+  public static class IvParameters.AES extends com.android.org.conscrypt.IvParameters {
+    ctor public IvParameters.AES();
+  }
+
+  public static class IvParameters.ChaCha20 extends com.android.org.conscrypt.IvParameters {
+    ctor public IvParameters.ChaCha20();
+  }
+
+  public static class IvParameters.DESEDE extends com.android.org.conscrypt.IvParameters {
+    ctor public IvParameters.DESEDE();
+  }
+
+  public abstract class KeyGeneratorImpl extends javax.crypto.KeyGeneratorSpi {
+  }
+
+  public static final class KeyGeneratorImpl.AES extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.AES();
+  }
+
+  public static final class KeyGeneratorImpl.ARC4 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.ARC4();
+  }
+
+  public static final class KeyGeneratorImpl.ChaCha20 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.ChaCha20();
+  }
+
+  public static final class KeyGeneratorImpl.DESEDE extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.DESEDE();
+  }
+
+  public static final class KeyGeneratorImpl.HmacMD5 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacMD5();
+  }
+
+  public static final class KeyGeneratorImpl.HmacSHA1 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacSHA1();
+  }
+
+  public static final class KeyGeneratorImpl.HmacSHA224 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacSHA224();
+  }
+
+  public static final class KeyGeneratorImpl.HmacSHA256 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacSHA256();
+  }
+
+  public static final class KeyGeneratorImpl.HmacSHA384 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacSHA384();
+  }
+
+  public static final class KeyGeneratorImpl.HmacSHA512 extends com.android.org.conscrypt.KeyGeneratorImpl {
+    ctor public KeyGeneratorImpl.HmacSHA512();
+  }
+
+  public class OAEPParameters extends java.security.AlgorithmParametersSpi {
+    ctor public OAEPParameters();
+  }
+
+  public abstract class OpenSSLCipher extends javax.crypto.CipherSpi {
+  }
+
+  public static abstract class OpenSSLCipher.EVP_AEAD extends com.android.org.conscrypt.OpenSSLCipher {
+  }
+
+  public static abstract class OpenSSLCipher.EVP_AEAD.AES extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD {
+  }
+
+  public static class OpenSSLCipher.EVP_AEAD.AES.GCM extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES {
+    ctor public OpenSSLCipher.EVP_AEAD.AES.GCM();
+  }
+
+  public static class OpenSSLCipher.EVP_AEAD.AES.GCM.AES_128 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES.GCM {
+    ctor public OpenSSLCipher.EVP_AEAD.AES.GCM.AES_128();
+  }
+
+  public static class OpenSSLCipher.EVP_AEAD.AES.GCM.AES_256 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES.GCM {
+    ctor public OpenSSLCipher.EVP_AEAD.AES.GCM.AES_256();
+  }
+
+  public static class OpenSSLCipher.EVP_AEAD.ChaCha20 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD {
+    ctor public OpenSSLCipher.EVP_AEAD.ChaCha20();
+  }
+
+  public static abstract class OpenSSLCipher.EVP_CIPHER extends com.android.org.conscrypt.OpenSSLCipher {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES.CBC.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES.CBC.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.CTR extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES.CTR();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES.ECB.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES.ECB.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128 {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_128.CBC.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_128.CBC.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128 {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_128.ECB.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_128.ECB.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256 {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_256.CBC.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_256.CBC.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256 {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_256.ECB.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.ECB {
+    ctor public OpenSSLCipher.EVP_CIPHER.AES_256.ECB.PKCS5Padding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.ARC4 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
+    ctor public OpenSSLCipher.EVP_CIPHER.ARC4();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.DESEDE extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE {
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.NoPadding();
+  }
+
+  public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE.CBC {
+    ctor public OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.PKCS5Padding();
+  }
+
+  public class OpenSSLCipherChaCha20 extends com.android.org.conscrypt.OpenSSLCipher {
+    ctor public OpenSSLCipherChaCha20();
+  }
+
+  public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
+  }
+
+  public static final class OpenSSLContextImpl.TLSv1 extends com.android.org.conscrypt.OpenSSLContextImpl {
+    ctor public OpenSSLContextImpl.TLSv1();
+  }
+
+  public static final class OpenSSLContextImpl.TLSv11 extends com.android.org.conscrypt.OpenSSLContextImpl {
+    ctor public OpenSSLContextImpl.TLSv11();
+  }
+
+  public static final class OpenSSLContextImpl.TLSv12 extends com.android.org.conscrypt.OpenSSLContextImpl {
+    ctor public OpenSSLContextImpl.TLSv12();
+  }
+
+  public static final class OpenSSLContextImpl.TLSv13 extends com.android.org.conscrypt.OpenSSLContextImpl {
+    ctor public OpenSSLContextImpl.TLSv13();
+  }
+
+  public final class OpenSSLECDHKeyAgreement extends javax.crypto.KeyAgreementSpi {
+    ctor public OpenSSLECDHKeyAgreement();
+  }
+
+  public final class OpenSSLECKeyFactory extends java.security.KeyFactorySpi {
+    ctor public OpenSSLECKeyFactory();
+  }
+
+  public final class OpenSSLECKeyPairGenerator extends java.security.KeyPairGenerator {
+    ctor public OpenSSLECKeyPairGenerator();
+  }
+
+  public abstract class OpenSSLMac extends javax.crypto.MacSpi {
+  }
+
+  public static final class OpenSSLMac.HmacMD5 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacMD5();
+  }
+
+  public static final class OpenSSLMac.HmacSHA1 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacSHA1();
+  }
+
+  public static final class OpenSSLMac.HmacSHA224 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacSHA224() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMac.HmacSHA256 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacSHA256() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMac.HmacSHA384 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacSHA384() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMac.HmacSHA512 extends com.android.org.conscrypt.OpenSSLMac {
+    ctor public OpenSSLMac.HmacSHA512();
+  }
+
+  public class OpenSSLMessageDigestJDK extends java.security.MessageDigestSpi implements java.lang.Cloneable {
+  }
+
+  public static final class OpenSSLMessageDigestJDK.MD5 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.MD5() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMessageDigestJDK.SHA1 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.SHA1() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMessageDigestJDK.SHA224 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.SHA224() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMessageDigestJDK.SHA256 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.SHA256() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMessageDigestJDK.SHA384 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.SHA384() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public static final class OpenSSLMessageDigestJDK.SHA512 extends com.android.org.conscrypt.OpenSSLMessageDigestJDK {
+    ctor public OpenSSLMessageDigestJDK.SHA512() throws java.security.NoSuchAlgorithmException;
+  }
+
+  public final class OpenSSLRSAKeyFactory extends java.security.KeyFactorySpi {
+    ctor public OpenSSLRSAKeyFactory();
+  }
+
+  public final class OpenSSLRSAKeyPairGenerator extends java.security.KeyPairGeneratorSpi {
+    ctor public OpenSSLRSAKeyPairGenerator();
+  }
+
+  public final class OpenSSLRandom extends java.security.SecureRandomSpi implements java.io.Serializable {
+    ctor public OpenSSLRandom();
+  }
+
+  public class OpenSSLSignature extends java.security.SignatureSpi {
+  }
+
+  public static final class OpenSSLSignature.MD5RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.MD5RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA1ECDSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA1ECDSA();
+  }
+
+  public static final class OpenSSLSignature.SHA1RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA1RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA1RSAPSS extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA1RSAPSS();
+  }
+
+  public static final class OpenSSLSignature.SHA224ECDSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA224ECDSA();
+  }
+
+  public static final class OpenSSLSignature.SHA224RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA224RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA224RSAPSS extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA224RSAPSS();
+  }
+
+  public static final class OpenSSLSignature.SHA256ECDSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA256ECDSA();
+  }
+
+  public static final class OpenSSLSignature.SHA256RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA256RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA256RSAPSS extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA256RSAPSS();
+  }
+
+  public static final class OpenSSLSignature.SHA384ECDSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA384ECDSA();
+  }
+
+  public static final class OpenSSLSignature.SHA384RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA384RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA384RSAPSS extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA384RSAPSS();
+  }
+
+  public static final class OpenSSLSignature.SHA512ECDSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA512ECDSA();
+  }
+
+  public static final class OpenSSLSignature.SHA512RSA extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA512RSA();
+  }
+
+  public static final class OpenSSLSignature.SHA512RSAPSS extends com.android.org.conscrypt.OpenSSLSignature {
+    ctor public OpenSSLSignature.SHA512RSAPSS();
+  }
+
+  public class OpenSSLSignatureRawECDSA extends java.security.SignatureSpi {
+    ctor public OpenSSLSignatureRawECDSA();
+  }
+
+  public final class OpenSSLSignatureRawRSA extends java.security.SignatureSpi {
+    ctor public OpenSSLSignatureRawRSA();
+  }
+
+  public class OpenSSLX509CertificateFactory extends java.security.cert.CertificateFactorySpi {
+    ctor public OpenSSLX509CertificateFactory();
+  }
+
+  public class PSSParameters extends java.security.AlgorithmParametersSpi {
+    ctor public PSSParameters();
+  }
+
+  public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
+  }
+
+}
+
 package dalvik.system {
 
   public final class BlockGuard {
