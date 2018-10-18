@@ -213,10 +213,20 @@ class Thread implements Runnable {
      */
     private long stackSize;
 
+    // BEGIN Android-changed: Keep track of whether this thread was unparked while not alive.
+    /*
     /*
      * JVM-private state that persists after native thread termination.
-     */
+     *
     private long nativeParkEventPointer;
+    */
+    /**
+     * Indicates whether this thread was unpark()ed while not alive, in which case start()ing
+     * it should leave it in unparked state. This field is read and written by native code in
+     * the runtime, guarded by thread_list_lock. See http://b/28845097#comment49
+     */
+    private boolean unparkedBeforeStart;
+    // END Android-changed: Keep track of whether this thread was unparked while not alive.
 
     /*
      * Thread ID
@@ -412,8 +422,9 @@ class Thread implements Runnable {
             return;
         }
 
+        final int nanosPerMilli = 1000000;
         long start = System.nanoTime();
-        long duration = (millis * NANOS_PER_MILLI) + nanos;
+        long duration = (millis * nanosPerMilli) + nanos;
 
         Object lock = currentThread().lock;
 
@@ -432,8 +443,8 @@ class Thread implements Runnable {
 
                 duration -= elapsed;
                 start = now;
-                millis = duration / NANOS_PER_MILLI;
-                nanos = (int) (duration % NANOS_PER_MILLI);
+                millis = duration / nanosPerMilli;
+                nanos = (int) (duration % nanosPerMilli);
             }
         }
         // END Android-changed: Implement sleep() methods using a shared native implementation.
@@ -2271,170 +2282,4 @@ class Thread implements Runnable {
 
     // Android-added: Android specific nativeGetStatus() method.
     private native int nativeGetStatus(boolean hasBeenStarted);
-
-    // BEGIN Android-added: Support for parking threads, used by Unsafe.park()/unpark().
-    /** Park states */
-    private static class ParkState {
-        /** park state indicating unparked */
-        private static final int UNPARKED = 1;
-
-        /** park state indicating preemptively unparked */
-        private static final int PREEMPTIVELY_UNPARKED = 2;
-
-        /** park state indicating parked */
-        private static final int PARKED = 3;
-    }
-
-    private static final int NANOS_PER_MILLI = 1000000;
-
-    /** the park state of the thread */
-    private int parkState = ParkState.UNPARKED;
-
-    /**
-     * Unparks this thread. This unblocks the thread it if it was
-     * previously parked, or indicates that the thread is "preemptively
-     * unparked" if it wasn't already parked. The latter means that the
-     * next time the thread is told to park, it will merely clear its
-     * latent park bit and carry on without blocking.
-     *
-     * <p>See {@link java.util.concurrent.locks.LockSupport} for more
-     * in-depth information of the behavior of this method.</p>
-     *
-     * @hide for Unsafe
-     */
-    public final void unpark$() {
-        synchronized(lock) {
-        switch (parkState) {
-            case ParkState.PREEMPTIVELY_UNPARKED: {
-                /*
-                 * Nothing to do in this case: By definition, a
-                 * preemptively unparked thread is to remain in
-                 * the preemptively unparked state if it is told
-                 * to unpark.
-                 */
-                break;
-            }
-            case ParkState.UNPARKED: {
-                parkState = ParkState.PREEMPTIVELY_UNPARKED;
-                break;
-            }
-            default /*parked*/: {
-                parkState = ParkState.UNPARKED;
-                lock.notifyAll();
-                break;
-            }
-        }
-        }
-    }
-
-    /**
-     * Parks the current thread for a particular number of nanoseconds, or
-     * indefinitely. If not indefinitely, this method unparks the thread
-     * after the given number of nanoseconds if no other thread unparks it
-     * first. If the thread has been "preemptively unparked," this method
-     * cancels that unparking and returns immediately. This method may
-     * also return spuriously (that is, without the thread being told to
-     * unpark and without the indicated amount of time elapsing).
-     *
-     * <p>See {@link java.util.concurrent.locks.LockSupport} for more
-     * in-depth information of the behavior of this method.</p>
-     *
-     * <p>This method must only be called when <code>this</code> is the current
-     * thread.
-     *
-     * @param nanos number of nanoseconds to park for or <code>0</code>
-     * to park indefinitely
-     * @throws IllegalArgumentException thrown if <code>nanos &lt; 0</code>
-     *
-     * @hide for Unsafe
-     */
-    public final void parkFor$(long nanos) {
-        synchronized(lock) {
-        switch (parkState) {
-            case ParkState.PREEMPTIVELY_UNPARKED: {
-                parkState = ParkState.UNPARKED;
-                break;
-            }
-            case ParkState.UNPARKED: {
-                long millis = nanos / NANOS_PER_MILLI;
-                nanos %= NANOS_PER_MILLI;
-
-                parkState = ParkState.PARKED;
-                try {
-                    lock.wait(millis, (int) nanos);
-                } catch (InterruptedException ex) {
-                    interrupt();
-                } finally {
-                    /*
-                     * Note: If parkState manages to become
-                     * PREEMPTIVELY_UNPARKED before hitting this
-                     * code, it should left in that state.
-                     */
-                    if (parkState == ParkState.PARKED) {
-                        parkState = ParkState.UNPARKED;
-                    }
-                }
-                break;
-            }
-            default /*parked*/: {
-                throw new AssertionError("Attempt to repark");
-            }
-        }
-        }
-    }
-
-    /**
-     * Parks the current thread until the specified system time. This
-     * method attempts to unpark the current thread immediately after
-     * <code>System.currentTimeMillis()</code> reaches the specified
-     * value, if no other thread unparks it first. If the thread has
-     * been "preemptively unparked," this method cancels that
-     * unparking and returns immediately. This method may also return
-     * spuriously (that is, without the thread being told to unpark
-     * and without the indicated amount of time elapsing).
-     *
-     * <p>See {@link java.util.concurrent.locks.LockSupport} for more
-     * in-depth information of the behavior of this method.</p>
-     *
-     * <p>This method must only be called when <code>this</code> is the
-     * current thread.
-     *
-     * @param time the time after which the thread should be unparked,
-     * in absolute milliseconds-since-the-epoch
-     *
-     * @hide for Unsafe
-     */
-    public final void parkUntil$(long time) {
-        synchronized(lock) {
-        /*
-         * Note: This conflates the two time bases of "wall clock"
-         * time and "monotonic uptime" time. However, given that
-         * the underlying system can only wait on monotonic time,
-         * it is unclear if there is any way to avoid the
-         * conflation. The downside here is that if, having
-         * calculated the delay, the wall clock gets moved ahead,
-         * this method may not return until well after the wall
-         * clock has reached the originally designated time. The
-         * reverse problem (the wall clock being turned back)
-         * isn't a big deal, since this method is allowed to
-         * spuriously return for any reason, and this situation
-         * can safely be construed as just such a spurious return.
-         */
-        final long currentTime = System.currentTimeMillis();
-        if (time <= currentTime) {
-            parkState = ParkState.UNPARKED;
-        } else {
-            long delayMillis = time - currentTime;
-            // Long.MAX_VALUE / NANOS_PER_MILLI (0x8637BD05SF6) is the largest
-            // long value that won't overflow to negative value when
-            // multiplyed by NANOS_PER_MILLI (10^6).
-            long maxValue = (Long.MAX_VALUE / NANOS_PER_MILLI);
-            if (delayMillis > maxValue) {
-                delayMillis = maxValue;
-            }
-            parkFor$(delayMillis * NANOS_PER_MILLI);
-        }
-        }
-    }
-    // END Android-added: Support for parking threads, used by Unsafe.park()/unpark().
 }
