@@ -13,8 +13,13 @@
 // limitations under the License.
 
 //
-// Definitions for building the Java library and associated tests.
+// Definitions for building the Android core library and associated tests.
 //
+
+// The Android core library provides low-level APIs for use by the rest of the
+// Android software stack. It is made up of various parts, some of which can be
+// found in libcore/ and other parts that can be found in various external/
+// directories. See the "core-system-modules" definition for the parts.
 
 // libcore has some sub-directories that follow a common structure:
 // e.g. dalvik, dom, harmony-tests, json, jsr166-tests, luni, libart, ojluni,
@@ -77,12 +82,14 @@ filegroup {
     ],
 }
 
-// The set of files in core that have been marked up with @hide and API-related
-// annotations. Note that this includes the intra-core and core-platform APIs as
-// well as the public APIs. Some source files in :openjdk_mmodule_extra_files
-// are annotated by applying annotation to the .annotated.java stubs files in
-// ojluni/annotated/mmodules and rather than in the original source. See the
-// comments in openjdk_java_files.bp for more details.
+// The set of files for the core library that have been marked up with @hide and
+// API-related annotations. Note that this includes the intra-core and
+// core-platform APIs as well as the public APIs.
+//
+// Some source files in :openjdk_mmodule_extra_files are annotated by applying
+// annotations to the .annotated.java stubs files in ojluni/annotated/mmodules
+// and rather than in the original source. See the comments in
+// openjdk_java_files.bp for more details.
 filegroup {
     name: "core_api_files",
     srcs: [
@@ -127,6 +134,8 @@ java_library {
     system_modules: "none",
 }
 
+// A target used to bootstrap compilation for the core library.
+// See core-all-system-modules for more details.
 java_library {
     name: "core-all",
     defaults: ["libcore_java_defaults"],
@@ -156,11 +165,22 @@ java_library {
     installable: false,
 }
 
+// A system modules definition for use by core library targets only. It only
+// contains the core-all jar, which contains the classes that end up in core-oj,
+// core-libart as well as the lambda stubs needed to compile Java lambda code.
+// It does not contain other parts of core library like conscrypt, bouncycastle,
+// etc. This system_modules definition is used to bootstrap compilation for
+// other parts of the core library like core-oj, core-libart, conscrypt,
+// bouncycastle, etc.
+//
+// If you want to compile against the entire core library implementation, for
+// example to build core library tests, see "core-system-modules" instead.
 java_system_modules {
     name: "core-all-system-modules",
     libs: ["core-all"],
 }
 
+// Contains the parts of core library associated with OpenJDK.
 java_library {
     name: "core-oj",
     defaults: ["libcore_java_defaults"],
@@ -203,7 +223,9 @@ java_library {
 
 }
 
-// Definitions to make the core library.
+// Contains parts of core library not associated with OpenJDK. Contains not
+// just java.*, javax.* code but also android.icu.*, android.system.* and
+// various internal libcore.* packages.
 java_library {
     name: "core-libart",
     defaults: ["libcore_java_defaults"],
@@ -233,9 +255,13 @@ java_library {
     ],
 }
 
-// A guaranteed unstripped version of core-oj and core-libart.
+//
+// Guaranteed unstripped versions of core-oj and core-libart.
+//
 // The build system may or may not strip the core-oj and core-libart jars,
 // but these will not be stripped. See b/24535627.
+//
+
 java_library {
     name: "core-oj-testdex",
     installable: true,
@@ -272,8 +298,8 @@ java_library {
     ],
 }
 
-// A library that exists to satisfy javac when
-// compiling source code that contains lambdas.
+// Creates a jar that exists to satisfy javac when compiling source code that
+// contains lambdas.
 java_library {
     name: "core-lambda-stubs",
     defaults: ["libcore_java_defaults"],
@@ -297,23 +323,33 @@ java_library {
     include_srcs: true,
 }
 
-// The libraries that make up core.
+// A system modules definition containing the implementations for the various
+// parts that make up the core library.
+//
+// This system module is intended for use by tests that may need access to
+// core library internals. It should not be generally used; most of the
+// platform build should build against API stubs instead. See
+// "core-platform-api-stubs-system-modules", which is the default used by the
+// Android build.
+//
+// This module also includes lambda stubs for compiling source containing
+// Java lambdas.
 java_system_modules {
     name: "core-system-modules",
     libs: [
         "core-oj",
         "core-libart",
         "core-simple",
-        // This one is not on device but it's needed when javac compiles code
-        // containing lambdas.
-        "core-lambda-stubs",
         "bouncycastle",
         "conscrypt",
         "okhttp",
+        // This one is not on device but it's needed when javac compiles code
+        // containing lambdas.
+        "core-lambda-stubs",
     ],
 }
 
-// Build libcore test rules
+// Builds libcore test rules
 java_library_static {
     name: "core-test-rules",
     hostdex: true,
@@ -328,7 +364,7 @@ java_library_static {
     system_modules: "core-all-system-modules",
 }
 
-// Make the core-tests-support library.
+// Builds the core-tests-support library used by various tests.
 java_library_static {
     name: "core-tests-support",
     hostdex: true,
@@ -345,7 +381,7 @@ java_library_static {
     ],
 }
 
-// Make the jsr166-tests library.
+// Builds the jsr166-tests library.
 java_test {
     name: "jsr166-tests",
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
@@ -357,7 +393,8 @@ java_test {
     system_modules: "core-all-system-modules",
 }
 
-// Build a library just containing files from luni/src/test/filesystems for use in tests.
+// Builds a library just containing files from luni/src/test/filesystems
+// for use in tests.
 java_library {
     name: "filesystemstest",
     compile_dex: true,
@@ -369,7 +406,8 @@ java_library {
     },
 }
 
-// Build a library just containing files from luni/src/test/parameter_metadata for use in tests.
+// Builds a library just containing files from luni/src/test/parameter_metadata
+// for use in tests.
 java_library {
     name: "parameter-metadata-test",
     compile_dex: true,
@@ -381,7 +419,7 @@ java_library {
     },
 }
 
-// Make the core-tests library.
+// Builds the core-tests library.
 java_test {
     name: "core-tests",
     defaults: ["libcore_java_defaults"],
@@ -446,7 +484,7 @@ java_test {
     test_config: "AndroidTest-core-tests.xml",
 }
 
-// Make the core-ojtests library.
+// Builds the core-ojtests library that contains test code from OpenJDK.
 java_test {
     name: "core-ojtests",
     defaults: ["libcore_java_defaults"],
@@ -487,7 +525,8 @@ java_test {
     patch_module: "java.base",
 }
 
-// Make the core-ojtests-public library. Excludes any private API tests.
+// Builds the core-ojtests-public library. Excludes any private API tests.
+// Like core-ojtests but smaller.
 java_test {
     name: "core-ojtests-public",
     defaults: ["libcore_java_defaults"],
@@ -521,11 +560,16 @@ java_test {
     system_modules: "core-all-system-modules",
 }
 
-// Make the annotated stubs in ojluni/annotations available to metalava:
+// Exports annotated stubs source files in ojluni/annotations/sdk to make them
+// available to metalava. Used for nullability annotations in OpenJDK source.
 droiddoc_exported_dir {
     name: "ojluni-annotated-sdk-stubs",
     path: "ojluni/annotations/sdk",
 }
+
+// Exports annotated stubs source files in ojluni/annotations/mmodules to make
+// them available to metalava. Used for core platform API and intra-code API
+// annotations in OpenJDK source.
 droiddoc_exported_dir {
     name: "ojluni-annotated-mmodule-stubs",
     path: "ojluni/annotations/mmodule",
@@ -540,7 +584,8 @@ filegroup {
     ],
 }
 
-// Stubs for the parts of the public SDK API provided by the core libraries.
+// Generates stubs for the parts of the public SDK API provided by the core
+// library.
 droidstubs {
     name: "core-current-stubs-gen",
     srcs: [":core_api_files"],
@@ -551,7 +596,9 @@ droidstubs {
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 }
 
-// A library containing the parts of the public SDK API provided by the core libraries.
+// A stubs target containing the parts of the public SDK API provided by the
+// core library.
+//
 // Don't use this directly, use "sdk_version: core_current".
 java_library {
     name: "core.current.stubs",
