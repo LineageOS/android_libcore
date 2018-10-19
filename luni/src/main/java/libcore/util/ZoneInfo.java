@@ -699,6 +699,8 @@ public final class ZoneInfo extends TimeZone {
      *
      * <p>All offsets are considered to be safe for addition / subtraction / multiplication without
      * worrying about overflow. All absolute time arithmetic is checked for overflow / underflow.
+     *
+     * @hide
      */
     @libcore.api.CorePlatformApi
     public static class WallTime {
@@ -720,6 +722,7 @@ public final class ZoneInfo extends TimeZone {
         private int isDst;
         private int gmtOffsetSeconds;
 
+        @libcore.api.CorePlatformApi
         public WallTime() {
             this.calendar = new GregorianCalendar(0, 0, 0, 0, 0, 0);
             calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
