@@ -104,6 +104,15 @@ public final class ZygoteHooks {
     }
 
     /**
+     * Called by the zygote in the system server process after forking. This method is is called
+     * before {@code postForkChild} for system server.
+     */
+    @libcore.api.CorePlatformApi
+    public void postForkSystemServer() {
+        nativePostForkSystemServer();
+    }
+
+    /**
      * Called by the zygote in the child process after every fork. The runtime
      * flags from {@code runtimeFlags} are applied to the child process. The string
      * {@code instructionSet} determines whether to use a native bridge.
@@ -127,6 +136,11 @@ public final class ZygoteHooks {
     }
 
     private static native long nativePreFork();
+
+    // Hook for SystemServer specific early initialization post-forking.
+    private static native void nativePostForkSystemServer();
+
+    // Hook for all child processes post forking.
     private static native void nativePostForkChild(long token, int runtimeFlags,
                                                    boolean isSystemServer, boolean isZygote,
                                                    String instructionSet);
