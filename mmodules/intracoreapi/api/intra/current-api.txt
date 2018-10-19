@@ -4,6 +4,10 @@ package android.system {
     method public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
   }
 
+  public final class Os {
+    method public static void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
+  }
+
   public final class StructTimeval {
     method public static android.system.StructTimeval fromMillis(long);
     method public long toMillis();
