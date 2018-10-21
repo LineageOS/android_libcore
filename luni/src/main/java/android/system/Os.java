@@ -589,6 +589,7 @@ public final class Os {
 
     /** @hide */
     @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
