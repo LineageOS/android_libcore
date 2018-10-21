@@ -343,6 +343,7 @@ java_system_modules {
         "bouncycastle",
         "conscrypt",
         "okhttp",
+        "apache-xml",
         // This one is not on device but it's needed when javac compiles code
         // containing lambdas.
         "core-lambda-stubs",
