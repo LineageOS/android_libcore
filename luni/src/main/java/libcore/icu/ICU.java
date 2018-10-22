@@ -453,6 +453,7 @@ public final class ICU {
   /**
    * @deprecated use {@link #addLikelySubtags(java.util.Locale)} instead.
    */
+  @UnsupportedAppUsage
   @Deprecated
   public static native String addLikelySubtags(String locale);
 
@@ -460,6 +461,7 @@ public final class ICU {
    * @deprecated use {@link java.util.Locale#getScript()} instead. This has been kept
    *     around only for the support library.
    */
+  @UnsupportedAppUsage
   @Deprecated
   public static native String getScript(String locale);
 
