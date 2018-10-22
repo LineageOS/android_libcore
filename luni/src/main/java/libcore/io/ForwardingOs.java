@@ -47,6 +47,8 @@ import java.util.Objects;
 
 /**
  * Subclass this if you want to override some {@link Os} methods but otherwise delegate.
+ *
+ * @hide
  */
 @libcore.api.CorePlatformApi
 public class ForwardingOs implements Os {
