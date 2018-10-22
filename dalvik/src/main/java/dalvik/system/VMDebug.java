@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -139,6 +140,7 @@ public final class VMDebug {
      *
      * @return true if (and only if) a debugger is connected
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @FastNative
     public static native boolean isDebuggerConnected();
@@ -393,6 +395,7 @@ public final class VMDebug {
      * Dumps the contents of the VM reference tables (e.g. JNI locals and
      * globals) to the log file.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static native void dumpReferenceTables();
 
@@ -580,5 +583,6 @@ public final class VMDebug {
      *
      * @param klass The class whose methods should be exempted.
      */
+    @UnsupportedAppUsage
     public static native void allowHiddenApiReflectionFrom(Class<?> klass);
 }
