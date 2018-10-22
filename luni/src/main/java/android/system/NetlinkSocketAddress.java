@@ -16,6 +16,7 @@
 
 package android.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import libcore.util.Objects;
 import java.net.SocketAddress;
 
@@ -43,6 +44,7 @@ public final class NetlinkSocketAddress extends SocketAddress {
         this(nlPortId, 0);
     }
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public NetlinkSocketAddress(int nlPortId, int nlGroupsMask) {
         this.nlPortId = nlPortId;

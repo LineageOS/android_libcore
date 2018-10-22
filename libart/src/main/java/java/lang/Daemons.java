@@ -18,6 +18,7 @@ package java.lang;
 
 import android.system.Os;
 import android.system.OsConstants;
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.system.VMRuntime;
 import java.lang.ref.FinalizerReference;
 import java.lang.ref.Reference;
@@ -37,8 +38,10 @@ import libcore.util.EmptyArray;
 public final class Daemons {
     private static final int NANOS_PER_MILLI = 1000 * 1000;
     private static final int NANOS_PER_SECOND = NANOS_PER_MILLI * 1000;
+    @UnsupportedAppUsage
     private static final long MAX_FINALIZE_NANOS = 10L * NANOS_PER_SECOND;
 
+    @UnsupportedAppUsage
     public static void start() {
         ReferenceQueueDaemon.INSTANCE.start();
         FinalizerDaemon.INSTANCE.start();
@@ -53,6 +56,7 @@ public final class Daemons {
         HeapTaskDaemon.INSTANCE.startPostZygoteFork();
     }
 
+    @UnsupportedAppUsage
     public static void stop() {
         HeapTaskDaemon.INSTANCE.stop();
         ReferenceQueueDaemon.INSTANCE.stop();
@@ -66,6 +70,7 @@ public final class Daemons {
      * single-threaded process when it forks.
      */
     private static abstract class Daemon implements Runnable {
+        @UnsupportedAppUsage
         private Thread thread;
         private String name;
         private boolean postZygoteFork;
@@ -74,6 +79,7 @@ public final class Daemons {
             this.name = name;
         }
 
+        @UnsupportedAppUsage
         public synchronized void start() {
             startInternal();
         }
@@ -109,6 +115,7 @@ public final class Daemons {
          * Returns true while the current thread should continue to run; false
          * when it should return.
          */
+        @UnsupportedAppUsage
         protected synchronized boolean isRunning() {
             return thread != null;
         }
@@ -128,6 +135,7 @@ public final class Daemons {
          * Waits for the runtime thread to stop. This interrupts the thread
          * currently running the runnable and then waits for it to exit.
          */
+        @UnsupportedAppUsage
         public void stop() {
             Thread threadToStop;
             synchronized (this) {
@@ -163,6 +171,7 @@ public final class Daemons {
      * pending list to the managed reference queue.
      */
     private static class ReferenceQueueDaemon extends Daemon {
+        @UnsupportedAppUsage
         private static final ReferenceQueueDaemon INSTANCE = new ReferenceQueueDaemon();
 
         ReferenceQueueDaemon() {
@@ -191,10 +200,12 @@ public final class Daemons {
     }
 
     private static class FinalizerDaemon extends Daemon {
+        @UnsupportedAppUsage
         private static final FinalizerDaemon INSTANCE = new FinalizerDaemon();
         private final ReferenceQueue<Object> queue = FinalizerReference.queue;
         private final AtomicInteger progressCounter = new AtomicInteger(0);
         // Object (not reference!) being finalized. Accesses may race!
+        @UnsupportedAppUsage
         private Object finalizingObject = null;
 
         FinalizerDaemon() {
@@ -264,6 +275,7 @@ public final class Daemons {
      * on one instance.
      */
     private static class FinalizerWatchdogDaemon extends Daemon {
+        @UnsupportedAppUsage
         private static final FinalizerWatchdogDaemon INSTANCE = new FinalizerWatchdogDaemon();
 
         private boolean needToWork = true;  // Only accessed in synchronized methods.
@@ -439,6 +451,7 @@ public final class Daemons {
 
     // Adds a heap trim task to the heap event processor, not called from java. Left for
     // compatibility purposes due to reflection.
+    @UnsupportedAppUsage
     public static void requestHeapTrim() {
         VMRuntime.getRuntime().requestHeapTrim();
     }
