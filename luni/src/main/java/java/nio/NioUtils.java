@@ -24,6 +24,7 @@ import java.nio.channels.FileChannel;
 import java.util.Set;
 
 import static android.system.OsConstants.*;
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import sun.misc.Cleaner;
 import sun.nio.ch.DirectBuffer;
 import sun.nio.ch.FileChannelImpl;
@@ -36,6 +37,7 @@ public final class NioUtils {
     private NioUtils() {
     }
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void freeDirectBuffer(ByteBuffer buffer) {
         if (buffer == null) {
@@ -72,6 +74,7 @@ public final class NioUtils {
      * Exposes the array backing a non-direct ByteBuffer, even if the ByteBuffer is read-only.
      * Normally, attempting to access the array backing a read-only buffer throws.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static byte[] unsafeArray(ByteBuffer b) {
         return b.array();
@@ -81,6 +84,7 @@ public final class NioUtils {
      * Exposes the array offset for the array backing a non-direct ByteBuffer,
      * even if the ByteBuffer is read-only.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static int unsafeArrayOffset(ByteBuffer b) {
         return b.arrayOffset();
