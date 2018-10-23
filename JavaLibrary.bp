@@ -298,17 +298,11 @@ java_library {
     ],
 }
 
-// Creates a jar that exists to satisfy javac when compiling source code that
-// contains lambdas.
-java_library {
-    name: "core-lambda-stubs",
+
+java_defaults {
+    name: "core_lambda_stubs_defaults",
     defaults: ["libcore_java_defaults"],
     hostdex: true,
-
-    srcs: [
-        ":openjdk_lambda_stub_files",
-        ":openjdk_lambda_duplicate_stub_files",
-    ],
 
     no_standard_libs: true,
     libs: ["core-all"],
@@ -321,6 +315,30 @@ java_library {
 
     installable: false,
     include_srcs: true,
+}
+
+// Creates a jar that exists to satisfy javac when compiling source code that
+// contains lambdas. This contains all classes / methods required by javac
+// when generating invoke-dynamic lambda implementation code, even those that
+// are also in the public SDK API from API level 26 onwards.
+java_library {
+    name: "core-lambda-stubs",
+    defaults: ["core_lambda_stubs_defaults"],
+    srcs: [
+        ":openjdk_lambda_stub_files",
+        ":openjdk_lambda_duplicate_stub_files",
+    ],
+}
+
+// An alternative to core-lambda-stubs that omits openjdk_lambda_duplicate_stub_files
+// because those classes are also part of the core library public SDK API
+// (since API level 26).
+java_library {
+    name: "core-lambda-stubs-for-system-modules",
+    defaults: ["core_lambda_stubs_defaults"],
+    srcs: [
+        ":openjdk_lambda_stub_files",
+    ],
 }
 
 // A system modules definition containing the implementations for the various
@@ -346,7 +364,7 @@ java_system_modules {
         "apache-xml",
         // This one is not on device but it's needed when javac compiles code
         // containing lambdas.
-        "core-lambda-stubs",
+        "core-lambda-stubs-for-system-modules",
     ],
 }
 
