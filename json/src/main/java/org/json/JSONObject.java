@@ -16,6 +16,7 @@
 
 package org.json;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -80,6 +81,7 @@ import java.util.Set;
  */
 public class JSONObject {
 
+    @UnsupportedAppUsage
     private static final Double NEGATIVE_ZERO = -0d;
 
     /**
@@ -108,6 +110,7 @@ public class JSONObject {
         }
     };
 
+    @UnsupportedAppUsage
     private final LinkedHashMap<String, Object> nameValuePairs;
 
     /**
@@ -328,6 +331,7 @@ public class JSONObject {
      *
      * @hide
      */
+    @UnsupportedAppUsage
     public JSONObject append(String name, Object value) throws JSONException {
         Object current = nameValuePairs.get(checkName(name));
 
@@ -347,6 +351,7 @@ public class JSONObject {
         return this;
     }
 
+    @UnsupportedAppUsage
     String checkName(String name) throws JSONException {
         if (name == null) {
             throw new JSONException("Names must be non-null");
@@ -668,6 +673,7 @@ public class JSONObject {
      *
      * @hide.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public Set<String> keySet() {
         return nameValuePairs.keySet();
@@ -718,6 +724,7 @@ public class JSONObject {
         return stringer.toString();
     }
 
+    @UnsupportedAppUsage
     void writeTo(JSONStringer stringer) throws JSONException {
         stringer.object();
         for (Map.Entry<String, Object> entry : nameValuePairs.entrySet()) {

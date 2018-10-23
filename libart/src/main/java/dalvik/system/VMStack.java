@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 
 /**
@@ -35,6 +36,7 @@ public final class VMStack {
      *         Note that that can return {@link BootClassLoader} on Android where the RI
      *         would have returned null.
      */
+    @UnsupportedAppUsage
     @FastNative
     @Deprecated
     native public static ClassLoader getCallingClassLoader();
@@ -55,6 +57,7 @@ public final class VMStack {
      *
      * @return the requested class, or {@code null}.
      */
+    @UnsupportedAppUsage
     @FastNative
     native public static Class<?> getStackClass2();
 
@@ -73,6 +76,7 @@ public final class VMStack {
      * @return an array of stack trace elements, or null if the thread
      *      doesn't have a stack trace (e.g. because it exited)
      */
+    @UnsupportedAppUsage
     @FastNative
     native public static StackTraceElement[] getThreadStackTrace(Thread t);
 
@@ -100,6 +104,7 @@ public final class VMStack {
      *      desired. Unused elements will be filled with null values.
      * @return the number of elements filled
      */
+    @UnsupportedAppUsage
     @FastNative
     native public static int fillStackTraceElements(Thread t,
         StackTraceElement[] stackTraceElements);
