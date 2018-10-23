@@ -93,13 +93,13 @@ public boolean equals(@libcore.util.Nullable java.lang.Object o);
 
 public int hashCode();
 
-public static <K extends java.lang.Comparable<? super K>, V> @libcore.util.NonNull java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NonNull K, @libcore.util.Nullable V>> comparingByKey() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <K extends java.lang.Comparable<? super K>, V> java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NonNull K, @libcore.util.Nullable V>> comparingByKey() { throw new RuntimeException("Stub!"); }
 
-public static <K, V extends java.lang.Comparable<? super V>> @libcore.util.NonNull java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.Nullable K, @libcore.util.NonNull V>> comparingByValue() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <K, V extends java.lang.Comparable<? super V>> java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.Nullable K, @libcore.util.NonNull V>> comparingByValue() { throw new RuntimeException("Stub!"); }
 
-public static <K, V> @libcore.util.NonNull java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NullFromTypeParam K, @libcore.util.Nullable V>> comparingByKey(@libcore.util.NonNull java.util.Comparator<? super @libcore.util.NullFromTypeParam K> cmp) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <K, V> java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NullFromTypeParam K, @libcore.util.Nullable V>> comparingByKey(@libcore.util.NonNull java.util.Comparator<? super @libcore.util.NullFromTypeParam K> cmp) { throw new RuntimeException("Stub!"); }
 
-public static <K, V> @libcore.util.NonNull java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.Nullable K, @libcore.util.NullFromTypeParam V>> comparingByValue(@libcore.util.NonNull java.util.Comparator<? super @libcore.util.NullFromTypeParam V> cmp) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <K, V> java.util.Comparator<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.Nullable K, @libcore.util.NullFromTypeParam V>> comparingByValue(@libcore.util.NonNull java.util.Comparator<? super @libcore.util.NullFromTypeParam V> cmp) { throw new RuntimeException("Stub!"); }
 }
 
 }
