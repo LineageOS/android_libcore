@@ -33,6 +33,6 @@ import libcore.util.NullFromTypeParam;
 public interface Iterable<T> {
 
   public @NonNull Iterator<@NullFromTypeParam T> iterator();
-  public default void forEach(Consumer<? super T> action) { throw new RuntimeException("Stub!"); }
-  public default Spliterator<T> spliterator() { throw new RuntimeException("Stub!"); }
+  public default void forEach(@NonNull Consumer<? super T> action) { throw new RuntimeException("Stub!"); }
+  @NonNull public default Spliterator<T> spliterator() { throw new RuntimeException("Stub!"); }
 }
