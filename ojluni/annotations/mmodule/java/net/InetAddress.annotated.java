@@ -87,6 +87,8 @@ public static java.net.InetAddress getByAddress(byte[] addr) throws java.net.Unk
 
 public static java.net.InetAddress getLocalHost() throws java.net.UnknownHostException { throw new RuntimeException("Stub!"); }
 
+@libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public static boolean isNumeric(java.lang.String address) { throw new RuntimeException("Stub!"); }
 
 @libcore.api.CorePlatformApi
