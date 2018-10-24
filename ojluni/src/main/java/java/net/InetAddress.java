@@ -1614,8 +1614,6 @@ class InetAddress implements java.io.Serializable {
      *
      * @hide used by frameworks/base to ensure that a getAllByName won't cause a DNS lookup.
      */
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public static boolean isNumeric(String address) {
         InetAddress inetAddress = parseNumericAddressNoThrow(address);
         return inetAddress != null && disallowDeprecatedFormats(address, inetAddress) != null;
@@ -1655,7 +1653,6 @@ class InetAddress implements java.io.Serializable {
      * @hide used by frameworks/base's NetworkUtils.numericToInetAddress
      * @throws IllegalArgumentException if {@code numericAddress} is not a numeric address
      */
-    @libcore.api.CorePlatformApi
     public static InetAddress parseNumericAddress(String numericAddress) {
         if (numericAddress == null || numericAddress.isEmpty()) {
             return Inet6Address.LOOPBACK;

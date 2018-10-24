@@ -203,7 +203,6 @@ class FileInputStream extends InputStream
     // Android-added: Internal/hidden constructor for specifying FileDescriptor ownership.
     // Android-removed: SecurityManager calls.
     /** @hide */
-    @libcore.api.CorePlatformApi
     public FileInputStream(FileDescriptor fdObj, boolean isFdOwner) {
         if (fdObj == null) {
             // Android-changed: Improved NullPointerException message.
