@@ -18,6 +18,6 @@
 java_library {
     name: "core_platform_api_client_demo",
     srcs: ["src/main/java/**/*.java"],
-    sdk_version: "core_platform_current",
+    no_framework_libs: true,
 }
 
