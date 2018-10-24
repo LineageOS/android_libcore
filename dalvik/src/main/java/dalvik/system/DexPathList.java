@@ -18,6 +18,7 @@ package dalvik.system;
 
 import android.system.ErrnoException;
 import android.system.StructStat;
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -54,6 +55,7 @@ import static android.system.OsConstants.S_ISDIR;
     private static final String zipSeparator = "!/";
 
     /** class definition context */
+    @UnsupportedAppUsage
     private final ClassLoader definingContext;
 
     /**
@@ -61,21 +63,26 @@ import static android.system.OsConstants.S_ISDIR;
      * Should be called pathElements, but the Facebook app uses reflection
      * to modify 'dexElements' (http://b/7726934).
      */
+    @UnsupportedAppUsage
     private Element[] dexElements;
 
     /** List of native library path elements. */
     // Some applications rely on this field being an array or we'd use a final list here
+    @UnsupportedAppUsage
     /* package visible for testing */ NativeLibraryElement[] nativeLibraryPathElements;
 
     /** List of application native library directories. */
+    @UnsupportedAppUsage
     private final List<File> nativeLibraryDirectories;
 
     /** List of system native library directories. */
+    @UnsupportedAppUsage
     private final List<File> systemNativeLibraryDirectories;
 
     /**
      * Exceptions thrown during creation of the dexElements list.
      */
+    @UnsupportedAppUsage
     private IOException[] dexElementsSuppressedExceptions;
 
     /**
@@ -127,6 +134,7 @@ import static android.system.OsConstants.S_ISDIR;
      * should be found and written to, or {@code null} to use the default
      * system directory for same
      */
+    @UnsupportedAppUsage
     public DexPathList(ClassLoader definingContext, String dexPath,
             String librarySearchPath, File optimizedDirectory) {
         this(definingContext, dexPath, librarySearchPath, optimizedDirectory, false);
@@ -217,6 +225,7 @@ import static android.system.OsConstants.S_ISDIR;
      * should be found and written to, or {@code null} to use the default
      * system directory for same
      */
+    @UnsupportedAppUsage
     public void addDexPath(String dexPath, File optimizedDirectory) {
       addDexPath(dexPath, optimizedDirectory, false);
     }
@@ -271,6 +280,7 @@ import static android.system.OsConstants.S_ISDIR;
      * are empty or {@code null}, or all elements get pruned out, then
      * this returns a zero-element list.
      */
+    @UnsupportedAppUsage
     private static List<File> splitPaths(String searchPath, boolean directoriesOnly) {
         List<File> result = new ArrayList<>();
 
@@ -293,6 +303,7 @@ import static android.system.OsConstants.S_ISDIR;
         return result;
     }
 
+    @UnsupportedAppUsage
     private static Element[] makeInMemoryDexElements(ByteBuffer[] dexFiles,
             List<IOException> suppressedExceptions) {
         Element[] elements = new Element[dexFiles.length];
@@ -316,6 +327,7 @@ import static android.system.OsConstants.S_ISDIR;
      * Makes an array of dex/resource path elements, one per element of
      * the given array.
      */
+    @UnsupportedAppUsage
     private static Element[] makeDexElements(List<File> files, File optimizedDirectory,
             List<IOException> suppressedExceptions, ClassLoader loader) {
         return makeDexElements(files, optimizedDirectory, suppressedExceptions, loader, false);
@@ -387,6 +399,7 @@ import static android.system.OsConstants.S_ISDIR;
      * {@code optimizedDirectory} is {@code null}. An application image file may be associated with
      * the {@code loader} if it is not null.
      */
+    @UnsupportedAppUsage
     private static DexFile loadDexFile(File file, File optimizedDirectory, ClassLoader loader,
                                        Element[] elements)
             throws IOException {
@@ -437,6 +450,7 @@ import static android.system.OsConstants.S_ISDIR;
      * TODO (dimitry): Revert after apps stops relying on the existence of this
      * method (see http://b/21957414 and http://b/26317852 for details)
      */
+    @UnsupportedAppUsage
     @SuppressWarnings("unused")
     private static Element[] makePathElements(List<File> files, File optimizedDirectory,
             List<IOException> suppressedExceptions) {
@@ -447,6 +461,7 @@ import static android.system.OsConstants.S_ISDIR;
      * Makes an array of directory/zip path elements for the native library search path, one per
      * element of the given array.
      */
+    @UnsupportedAppUsage
     private static NativeLibraryElement[] makePathElements(List<File> files) {
         NativeLibraryElement[] elements = new NativeLibraryElement[files.size()];
         int elementsPos = 0;
@@ -580,6 +595,7 @@ import static android.system.OsConstants.S_ISDIR;
      * Note: This method will attempt to dedupe elements.
      * Note: This method replaces the value of {@link #nativeLibraryPathElements}
      */
+    @UnsupportedAppUsage
     public void addNativePath(Collection<String> libPaths) {
         if (libPaths.isEmpty()) {
             return;
@@ -608,8 +624,10 @@ import static android.system.OsConstants.S_ISDIR;
          * A file denoting a zip file (in case of a resource jar or a dex jar), or a directory
          * (only when dexFile is null).
          */
+        @UnsupportedAppUsage
         private final File path;
 
+        @UnsupportedAppUsage
         private final DexFile dexFile;
 
         private ClassPathURLStreamHandler urlHandler;
@@ -619,6 +637,7 @@ import static android.system.OsConstants.S_ISDIR;
          * Element encapsulates a dex file. This may be a plain dex file (in which case dexZipPath
          * should be null), or a jar (in which case dexZipPath should denote the zip file).
          */
+        @UnsupportedAppUsage
         public Element(DexFile dexFile, File dexZipPath) {
             this.dexFile = dexFile;
             this.path = dexZipPath;
@@ -642,6 +661,7 @@ import static android.system.OsConstants.S_ISDIR;
          *             classes and resources, and NativeLibraryElement for the library
          *             search path.
          */
+        @UnsupportedAppUsage
         @Deprecated
         public Element(File dir, boolean isDirectory, File zip, DexFile dexFile) {
             System.err.println("Warning: Using deprecated Element constructor. Do not use internal"
@@ -756,6 +776,7 @@ import static android.system.OsConstants.S_ISDIR;
         /**
          * A file denoting a directory or zip file.
          */
+        @UnsupportedAppUsage
         private final File path;
 
         /**
@@ -766,6 +787,7 @@ import static android.system.OsConstants.S_ISDIR;
         private ClassPathURLStreamHandler urlHandler;
         private boolean initialized;
 
+        @UnsupportedAppUsage
         public NativeLibraryElement(File dir) {
             this.path = dir;
             this.zipDir = null;

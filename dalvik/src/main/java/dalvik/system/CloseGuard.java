@@ -16,6 +16,8 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
+
 /**
  * CloseGuard is a mechanism for flagging implicit finalizer cleanup of
  * resources that should have been cleaned up by explicit close
@@ -136,6 +138,7 @@ public final class CloseGuard {
      * Returns a CloseGuard instance. {@code #open(String)} can be used to set
      * up the instance to warn on failure to close.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static CloseGuard get() {
@@ -149,6 +152,7 @@ public final class CloseGuard {
      * #getReporter() reporter} is informed of unclosed resources; otherwise a
      * one-line warning is logged.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void setEnabled(boolean enabled) {
         CloseGuard.stackAndTrackingEnabled = enabled;
@@ -165,6 +169,7 @@ public final class CloseGuard {
      * Used to replace default Reporter used to warn of CloseGuard
      * violations when stack tracking is enabled. Must be non-null.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void setReporter(Reporter rep) {
         if (rep == null) {
@@ -204,6 +209,7 @@ public final class CloseGuard {
         return currentTracker;
     }
 
+    @UnsupportedAppUsage
     private CloseGuard() {}
 
     /**
@@ -214,6 +220,7 @@ public final class CloseGuard {
      * @param closer non-null name of explicit termination method. Printed by warnIfOpen.
      * @throws NullPointerException if closer is null.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void open(String closer) {
@@ -244,6 +251,7 @@ public final class CloseGuard {
      * Marks this CloseGuard instance as closed to avoid warnings on
      * finalization.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void close() {
@@ -262,6 +270,7 @@ public final class CloseGuard {
      * the allocation to the current reporter. If it was not enabled, it just
      * directly logs a brief message.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void warnIfOpen() {
@@ -296,6 +305,7 @@ public final class CloseGuard {
      */
     @libcore.api.CorePlatformApi
     public interface Reporter {
+        @UnsupportedAppUsage
         @libcore.api.CorePlatformApi
         void report(String message, Throwable allocationSite);
     }
@@ -304,6 +314,7 @@ public final class CloseGuard {
      * Default Reporter which reports CloseGuard violations to the log.
      */
     private static final class DefaultReporter implements Reporter {
+        @UnsupportedAppUsage
         private DefaultReporter() {}
 
         @Override public void report (String message, Throwable allocationSite) {

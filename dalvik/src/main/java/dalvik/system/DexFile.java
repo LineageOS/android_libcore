@@ -17,6 +17,7 @@
 package dalvik.system;
 
 import android.system.ErrnoException;
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,10 +45,13 @@ public final class DexFile {
    * If close is called, mCookie becomes null but the internal cookie is preserved if the close
    * failed so that we can free resources in the finalizer.
    */
+    @UnsupportedAppUsage
     @ReachabilitySensitive
     private Object mCookie;
 
+    @UnsupportedAppUsage
     private Object mInternalCookie;
+    @UnsupportedAppUsage
     private final String mFileName;
 
     /**
@@ -190,6 +194,7 @@ public final class DexFile {
      * @throws IOException
      *  If unable to open the source or output file.
      */
+    @UnsupportedAppUsage
     static DexFile loadDex(String sourcePathName, String outputPathName,
         int flags, ClassLoader loader, DexPathList.Element[] elements) throws IOException {
 
@@ -273,6 +278,7 @@ public final class DexFile {
      *
      * @hide
      */
+    @UnsupportedAppUsage
     public Class loadClassBinaryName(String name, ClassLoader loader, List<Throwable> suppressed) {
         return defineClass(name, loader, mCookie, this, suppressed);
     }
@@ -309,6 +315,7 @@ public final class DexFile {
      */
     private static class DFEnum implements Enumeration<String> {
         private int mIndex;
+        @UnsupportedAppUsage
         private String[] mNameList;
 
         DFEnum(DexFile df) {
@@ -349,6 +356,7 @@ public final class DexFile {
      * Open a DEX file.  The value returned is a magic VM cookie.  On
      * failure, an IOException is thrown.
      */
+    @UnsupportedAppUsage
     private static Object openDexFile(String sourceName, String outputName, int flags,
             ClassLoader loader, DexPathList.Element[] elements) throws IOException {
         // Use absolute paths to enable the use of relative paths when testing on host.
@@ -375,6 +383,7 @@ public final class DexFile {
     /*
      * Returns true if the dex file is backed by a valid oat file.
      */
+    @UnsupportedAppUsage
     /*package*/ boolean isBackedByOatFile() {
         return isBackedByOatFile(mCookie);
     }
@@ -393,6 +402,7 @@ public final class DexFile {
     private static native Class defineClassNative(String name, ClassLoader loader, Object cookie,
                                                   DexFile dexFile)
             throws ClassNotFoundException, NoClassDefFoundError;
+    @UnsupportedAppUsage
     private static native String[] getClassNameList(Object cookie);
     private static native boolean isBackedByOatFile(Object cookie);
     private static native void setTrusted(Object cookie);
@@ -400,6 +410,7 @@ public final class DexFile {
      * Open a DEX file.  The value returned is a magic VM cookie.  On
      * failure, an IOException is thrown.
      */
+    @UnsupportedAppUsage
     private static native Object openDexFileNative(String sourceName, String outputName, int flags,
             ClassLoader loader, DexPathList.Element[] elements);
 

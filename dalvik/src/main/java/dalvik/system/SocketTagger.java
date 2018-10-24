@@ -16,6 +16,7 @@
 
 package dalvik.system;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.FileDescriptor;
 import java.net.DatagramSocket;
 import java.net.Socket;
@@ -53,6 +54,7 @@ public abstract class SocketTagger {
     @libcore.api.CorePlatformApi
     public abstract void untag(FileDescriptor socketDescriptor) throws SocketException;
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public final void tag(Socket socket) throws SocketException {
         if (!socket.isClosed()) {
@@ -60,6 +62,7 @@ public abstract class SocketTagger {
         }
     }
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public final void untag(Socket socket) throws SocketException {
         if (!socket.isClosed()) {
@@ -95,6 +98,7 @@ public abstract class SocketTagger {
     /**
      * Returns this process socket tagger.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static synchronized SocketTagger get() {
         return tagger;

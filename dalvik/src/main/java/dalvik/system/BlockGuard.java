@@ -18,6 +18,7 @@ package dalvik.system;
 
 import libcore.util.NonNull;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Objects;
 
 /**
@@ -57,12 +58,14 @@ public final class BlockGuard {
         /**
          * Called on disk reads.
          */
+        @UnsupportedAppUsage
         @libcore.api.CorePlatformApi
         void onReadFromDisk();
 
         /**
          * Called on network operations.
          */
+        @UnsupportedAppUsage
         @libcore.api.IntraCoreApi
         void onNetwork();
 
@@ -122,14 +125,18 @@ public final class BlockGuard {
     @Deprecated
     public static class BlockGuardPolicyException extends RuntimeException {
         // bitmask of DISALLOW_*, PENALTY_*, etc flags
+        @UnsupportedAppUsage
         private final int mPolicyState;
+        @UnsupportedAppUsage
         private final int mPolicyViolated;
+        @UnsupportedAppUsage
         private final String mMessage;   // may be null
 
         public BlockGuardPolicyException(int policyState, int policyViolated) {
             this(policyState, policyViolated, null);
         }
 
+        @UnsupportedAppUsage
         public BlockGuardPolicyException(int policyState, int policyViolated, String message) {
             mPolicyState = policyState;
             mPolicyViolated = policyViolated;
@@ -160,6 +167,7 @@ public final class BlockGuard {
     /**
      * The default, permissive per-thread policy.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static final Policy LAX_POLICY = new Policy() {
         @Override public String toString() { return "LAX_POLICY"; }
@@ -184,6 +192,7 @@ public final class BlockGuard {
         @Override public void onPathAccess(String path) {}
     };
 
+    @UnsupportedAppUsage
     private static ThreadLocal<Policy> threadPolicy = new ThreadLocal<Policy>() {
         @Override protected Policy initialValue() {
             return LAX_POLICY;
@@ -198,6 +207,7 @@ public final class BlockGuard {
      * @return the current thread's policy. Will return the {@link #LAX_POLICY}
      *         instance if nothing else is set.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static @NonNull Policy getThreadPolicy() {
@@ -213,6 +223,7 @@ public final class BlockGuard {
      * @param policy policy to set. Use the public {@link #LAX_POLICY} if you
      *            want to unset the active policy.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void setThreadPolicy(@NonNull Policy policy) {
         threadPolicy.set(Objects.requireNonNull(policy));
