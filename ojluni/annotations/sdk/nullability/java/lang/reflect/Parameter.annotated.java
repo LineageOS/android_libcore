@@ -32,7 +32,7 @@ public final class Parameter implements java.lang.reflect.AnnotatedElement {
 
 Parameter(java.lang.String name, int modifiers, java.lang.reflect.Executable executable, int index) { throw new RuntimeException("Stub!"); }
 
-public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
+public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
 public int hashCode() { throw new RuntimeException("Stub!"); }
 
@@ -44,7 +44,7 @@ public boolean isNamePresent() { throw new RuntimeException("Stub!"); }
 
 public int getModifiers() { throw new RuntimeException("Stub!"); }
 
-public java.lang.String getName() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.String getName() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.reflect.Type getParameterizedType() { throw new RuntimeException("Stub!"); }
 
@@ -56,15 +56,15 @@ public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
 public boolean isVarArgs() { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+public <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations() { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T getDeclaredAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getDeclaredAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+public <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getAnnotations() { throw new RuntimeException("Stub!"); }
 }

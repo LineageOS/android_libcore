@@ -33,7 +33,7 @@ public final class Field extends java.lang.reflect.AccessibleObject implements j
 
 Field() { throw new RuntimeException("Stub!"); }
 
-public java.lang.Class<?> getDeclaringClass() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.Class<?> getDeclaringClass() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String getName() { throw new RuntimeException("Stub!"); }
 
@@ -45,9 +45,9 @@ public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.Class<?> getType() { throw new RuntimeException("Stub!"); }
 
-public java.lang.reflect.Type getGenericType() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.reflect.Type getGenericType() { throw new RuntimeException("Stub!"); }
 
-public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
+public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
 public int hashCode() { throw new RuntimeException("Stub!"); }
 
@@ -55,48 +55,47 @@ public int hashCode() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String toGenericString() { throw new RuntimeException("Stub!"); }
 
-public native java.lang.Object get(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+@libcore.util.Nullable public native java.lang.Object get(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native boolean getBoolean(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native boolean getBoolean(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native byte getByte(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native byte getByte(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native char getChar(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native char getChar(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native short getShort(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native short getShort(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native int getInt(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native int getInt(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native long getLong(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native long getLong(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native float getFloat(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native float getFloat(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native double getDouble(java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native double getDouble(@libcore.util.Nullable java.lang.Object obj) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void set(java.lang.Object obj, java.lang.Object value) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void set(@libcore.util.Nullable java.lang.Object obj, @libcore.util.Nullable java.lang.Object value) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setBoolean(java.lang.Object obj, boolean z) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setBoolean(@libcore.util.Nullable java.lang.Object obj, boolean z) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setByte(java.lang.Object obj, byte b) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setByte(@libcore.util.Nullable java.lang.Object obj, byte b) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setChar(java.lang.Object obj, char c) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setChar(@libcore.util.Nullable java.lang.Object obj, char c) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setShort(java.lang.Object obj, short s) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setShort(@libcore.util.Nullable java.lang.Object obj, short s) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setInt(java.lang.Object obj, int i) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setInt(@libcore.util.Nullable java.lang.Object obj, int i) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setLong(java.lang.Object obj, long l) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setLong(@libcore.util.Nullable java.lang.Object obj, long l) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setFloat(java.lang.Object obj, float f) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setFloat(@libcore.util.Nullable java.lang.Object obj, float f) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public native void setDouble(java.lang.Object obj, double d) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
+public native void setDouble(@libcore.util.Nullable java.lang.Object obj, double d) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException;
 
-public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+public <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public boolean isAnnotationPresent(java.lang.Class<? extends java.lang.annotation.Annotation> annotationType) { throw new RuntimeException("Stub!"); }
+public boolean isAnnotationPresent(@libcore.util.NonNull java.lang.Class<? extends java.lang.annotation.Annotation> annotationType) { throw new RuntimeException("Stub!"); }
 
 public native java.lang.annotation.Annotation[] getDeclaredAnnotations();
 }
-

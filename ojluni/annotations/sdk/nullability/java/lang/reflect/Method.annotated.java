@@ -35,7 +35,7 @@ Method() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.Class<?> getDeclaringClass() { throw new RuntimeException("Stub!"); }
 
-public java.lang.String getName() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.String getName() { throw new RuntimeException("Stub!"); }
 
 public int getModifiers() { throw new RuntimeException("Stub!"); }
 
@@ -55,7 +55,7 @@ public int getParameterCount() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.reflect.Type[] getGenericExceptionTypes() { throw new RuntimeException("Stub!"); }
 
-public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
+public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
 public int hashCode() { throw new RuntimeException("Stub!"); }
 
@@ -63,7 +63,7 @@ public int hashCode() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String toGenericString() { throw new RuntimeException("Stub!"); }
 
-public native java.lang.Object invoke(java.lang.Object obj, java.lang.Object... args) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException, java.lang.reflect.InvocationTargetException;
+@libcore.util.Nullable public native java.lang.Object invoke(@libcore.util.Nullable java.lang.Object obj, java.lang.@libcore.util.Nullable Object @libcore.util.Nullable ... args) throws java.lang.IllegalAccessException, java.lang.IllegalArgumentException, java.lang.reflect.InvocationTargetException;
 
 public boolean isBridge() { throw new RuntimeException("Stub!"); }
 
@@ -73,12 +73,11 @@ public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
 public boolean isDefault() { throw new RuntimeException("Stub!"); }
 
-public native java.lang.Object getDefaultValue();
+@libcore.util.Nullable public native java.lang.Object getDefaultValue();
 
-public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.annotation.Annotation[] getDeclaredAnnotations() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.annotation.Annotation[][] getParameterAnnotations() { throw new RuntimeException("Stub!"); }
 }
-
