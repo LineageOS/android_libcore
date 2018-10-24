@@ -371,10 +371,8 @@ java_library_static {
     hostdex: true,
     srcs: ["support/src/test/java/**/*.java"],
 
-    sdk_version: "core_platform_current",
-    libs: [
-        "junit",
-    ],
+    no_framework_libs: true,
+    libs: ["junit"],
     static_libs: [
         "bouncycastle-unbundled",
         "bouncycastle-bcpkix-unbundled",
