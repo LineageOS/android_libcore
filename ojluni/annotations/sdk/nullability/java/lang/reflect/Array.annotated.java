@@ -33,46 +33,45 @@ public final class Array {
 
 Array() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.Object newInstance(java.lang.Class<?> componentType, int length) throws java.lang.NegativeArraySizeException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.Object newInstance(@libcore.util.NonNull java.lang.Class<?> componentType, int length) throws java.lang.NegativeArraySizeException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.Object newInstance(java.lang.Class<?> componentType, int... dimensions) throws java.lang.IllegalArgumentException, java.lang.NegativeArraySizeException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.Object newInstance(@libcore.util.NonNull java.lang.Class<?> componentType, int... dimensions) throws java.lang.IllegalArgumentException, java.lang.NegativeArraySizeException { throw new RuntimeException("Stub!"); }
 
-public static int getLength(java.lang.Object array) { throw new RuntimeException("Stub!"); }
+public static int getLength(@libcore.util.NonNull java.lang.Object array) { throw new RuntimeException("Stub!"); }
 
-public static java.lang.Object get(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public static java.lang.Object get(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static boolean getBoolean(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static boolean getBoolean(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static byte getByte(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static byte getByte(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static char getChar(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static char getChar(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static short getShort(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static short getShort(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static int getInt(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static int getInt(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static long getLong(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static long getLong(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static float getFloat(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static float getFloat(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static double getDouble(java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static double getDouble(@libcore.util.NonNull java.lang.Object array, int index) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void set(java.lang.Object array, int index, java.lang.Object value) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void set(@libcore.util.NonNull java.lang.Object array, int index, @libcore.util.Nullable java.lang.Object value) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setBoolean(java.lang.Object array, int index, boolean z) { throw new RuntimeException("Stub!"); }
+public static void setBoolean(@libcore.util.NonNull java.lang.Object array, int index, boolean z) { throw new RuntimeException("Stub!"); }
 
-public static void setByte(java.lang.Object array, int index, byte b) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setByte(@libcore.util.NonNull java.lang.Object array, int index, byte b) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setChar(java.lang.Object array, int index, char c) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setChar(@libcore.util.NonNull java.lang.Object array, int index, char c) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setShort(java.lang.Object array, int index, short s) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setShort(@libcore.util.NonNull java.lang.Object array, int index, short s) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setInt(java.lang.Object array, int index, int i) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setInt(@libcore.util.NonNull java.lang.Object array, int index, int i) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setLong(java.lang.Object array, int index, long l) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setLong(@libcore.util.NonNull java.lang.Object array, int index, long l) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setFloat(java.lang.Object array, int index, float f) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setFloat(@libcore.util.NonNull java.lang.Object array, int index, float f) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static void setDouble(java.lang.Object array, int index, double d) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+public static void setDouble(@libcore.util.NonNull java.lang.Object array, int index, double d) throws java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 }
-
