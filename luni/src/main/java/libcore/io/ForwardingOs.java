@@ -65,6 +65,7 @@ public class ForwardingOs implements Os {
     }
 
     public FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException { return os.accept(fd, peerAddress); }
+    @libcore.api.CorePlatformApi
     public boolean access(String path, int mode) throws ErrnoException { return os.access(path, mode); }
     public InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException { return os.android_getaddrinfo(node, hints, netId); }
     public void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { os.bind(fd, address, port); }
@@ -194,6 +195,7 @@ public class ForwardingOs implements Os {
     public FileDescriptor socket(int domain, int type, int protocol) throws ErrnoException { return os.socket(domain, type, protocol); }
     public void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException { os.socketpair(domain, type, protocol, fd1, fd2); }
     public long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException { return os.splice(fdIn, offIn, fdOut, offOut, len, flags); }
+    @libcore.api.CorePlatformApi
     public StructStat stat(String path) throws ErrnoException { return os.stat(path); }
     public StructStatVfs statvfs(String path) throws ErrnoException { return os.statvfs(path); }
     public String strerror(int errno) { return os.strerror(errno); }

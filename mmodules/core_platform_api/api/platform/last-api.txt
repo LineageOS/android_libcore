@@ -1031,7 +1031,9 @@ package libcore.io {
 
   public class ForwardingOs implements libcore.io.Os {
     ctor protected ForwardingOs(libcore.io.Os);
+    method public boolean access(java.lang.String, int) throws android.system.ErrnoException;
     method public java.io.FileDescriptor open(java.lang.String, int, int) throws android.system.ErrnoException;
+    method public android.system.StructStat stat(java.lang.String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
