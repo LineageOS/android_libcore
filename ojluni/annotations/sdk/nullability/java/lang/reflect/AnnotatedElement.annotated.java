@@ -33,17 +33,17 @@ import java.lang.annotation.Annotation;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public interface AnnotatedElement {
 
-public default boolean isAnnotationPresent(java.lang.Class<? extends java.lang.annotation.Annotation> annotationClass) { throw new RuntimeException("Stub!"); }
+public default boolean isAnnotationPresent(@libcore.util.NonNull java.lang.Class<? extends java.lang.annotation.Annotation> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass);
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass);
 
 public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getAnnotations();
 
-public default <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+public default <T extends java.lang.annotation.Annotation> T[] getAnnotationsByType(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public default <T extends java.lang.annotation.Annotation> T getDeclaredAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public default <T extends java.lang.annotation.Annotation> T getDeclaredAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
-public default <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+public default <T extends java.lang.annotation.Annotation> T[] getDeclaredAnnotationsByType(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations();
 }

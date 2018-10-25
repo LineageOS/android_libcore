@@ -34,5 +34,5 @@ public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] get
 
 @libcore.util.NonNull public java.lang.reflect.Type getRawType();
 
-public java.lang.reflect.Type getOwnerType();
+@libcore.util.Nullable public java.lang.reflect.Type getOwnerType();
 }
