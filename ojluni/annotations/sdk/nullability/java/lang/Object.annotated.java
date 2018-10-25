@@ -39,7 +39,7 @@ public int hashCode() { throw new RuntimeException("Stub!"); }
 
 public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
-protected java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull protected java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
@@ -55,4 +55,3 @@ public final void wait() throws java.lang.InterruptedException { throw new Runti
 
 protected void finalize() throws java.lang.Throwable { throw new RuntimeException("Stub!"); }
 }
-
