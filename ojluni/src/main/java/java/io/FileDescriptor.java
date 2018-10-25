@@ -165,7 +165,6 @@ public final class FileDescriptor {
      * your needs with a libcore maintainer before using this method.
      * @hide internal use only
      */
-    @libcore.api.CorePlatformApi
     public final void setInt$(int fd) {
         this.descriptor = fd;
     }

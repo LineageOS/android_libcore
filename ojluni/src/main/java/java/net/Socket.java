@@ -1777,7 +1777,6 @@ class Socket implements java.io.Closeable {
     /**
      * @hide internal use only
      */
-    @libcore.api.IntraCoreApi
     public FileDescriptor getFileDescriptor$() {
         return impl.getFileDescriptor();
     }
