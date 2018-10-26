@@ -51,7 +51,7 @@ public native java.lang.Class<?>[] getExceptionTypes();
 
 public java.lang.reflect.Type[] getGenericExceptionTypes() { throw new RuntimeException("Stub!"); }
 
-public boolean equals(java.lang.Object obj) { throw new RuntimeException("Stub!"); }
+public boolean equals(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
 public int hashCode() { throw new RuntimeException("Stub!"); }
 
@@ -65,7 +65,7 @@ public boolean isVarArgs() { throw new RuntimeException("Stub!"); }
 
 public boolean isSynthetic() { throw new RuntimeException("Stub!"); }
 
-public <T extends java.lang.annotation.Annotation> T getAnnotation(java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
+@libcore.util.Nullable public <T extends java.lang.annotation.Annotation> T getAnnotation(@libcore.util.NonNull java.lang.Class<T> annotationClass) { throw new RuntimeException("Stub!"); }
 
 public java.lang.annotation.Annotation[] getDeclaredAnnotations() { throw new RuntimeException("Stub!"); }
 

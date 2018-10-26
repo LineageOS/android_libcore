@@ -32,16 +32,15 @@ import java.security.Permission;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class Proxy implements java.io.Serializable {
 
-protected Proxy(java.lang.reflect.InvocationHandler h) { throw new RuntimeException("Stub!"); }
+protected Proxy(@libcore.util.NonNull java.lang.reflect.InvocationHandler h) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.Class<?> getProxyClass(java.lang.ClassLoader loader, java.lang.Class<?>... interfaces) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.Class<?> getProxyClass(@libcore.util.Nullable java.lang.ClassLoader loader, java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull ... interfaces) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.Object newProxyInstance(java.lang.ClassLoader loader, java.lang.Class<?>[] interfaces, java.lang.reflect.InvocationHandler h) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.Object newProxyInstance(@libcore.util.Nullable java.lang.ClassLoader loader, java.lang.@libcore.util.NonNull Class<?> @libcore.util.NonNull [] interfaces, @libcore.util.NonNull java.lang.reflect.InvocationHandler h) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
-public static boolean isProxyClass(java.lang.Class<?> cl) { throw new RuntimeException("Stub!"); }
+public static boolean isProxyClass(@libcore.util.NonNull java.lang.Class<?> cl) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.lang.reflect.InvocationHandler getInvocationHandler(java.lang.Object proxy) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static java.lang.reflect.InvocationHandler getInvocationHandler(@libcore.util.NonNull java.lang.Object proxy) throws java.lang.IllegalArgumentException { throw new RuntimeException("Stub!"); }
 
 protected java.lang.reflect.InvocationHandler h;
 }
-
