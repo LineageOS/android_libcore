@@ -35,12 +35,11 @@ public int length();
 
 public char charAt(int index);
 
-public java.lang.CharSequence subSequence(int start, int end);
+@libcore.util.NonNull public java.lang.CharSequence subSequence(int start, int end);
 
 @libcore.util.NonNull public java.lang.String toString();
 
-public default java.util.stream.IntStream chars() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public default java.util.stream.IntStream chars() { throw new RuntimeException("Stub!"); }
 
-public default java.util.stream.IntStream codePoints() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public default java.util.stream.IntStream codePoints() { throw new RuntimeException("Stub!"); }
 }
-

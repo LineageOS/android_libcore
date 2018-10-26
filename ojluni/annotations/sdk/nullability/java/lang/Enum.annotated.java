@@ -31,26 +31,25 @@ package java.lang;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public abstract class Enum<E extends java.lang.Enum<E>> implements java.lang.Comparable<E>, java.io.Serializable {
 
-protected Enum(java.lang.String name, int ordinal) { throw new RuntimeException("Stub!"); }
+protected Enum(@libcore.util.NonNull java.lang.String name, int ordinal) { throw new RuntimeException("Stub!"); }
 
-public final java.lang.String name() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public final java.lang.String name() { throw new RuntimeException("Stub!"); }
 
 public final int ordinal() { throw new RuntimeException("Stub!"); }
 
-public java.lang.String toString() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
-public final boolean equals(java.lang.Object other) { throw new RuntimeException("Stub!"); }
+public final boolean equals(@libcore.util.Nullable java.lang.Object other) { throw new RuntimeException("Stub!"); }
 
 public final int hashCode() { throw new RuntimeException("Stub!"); }
 
-protected final java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull protected final java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
 
-public final int compareTo(E o) { throw new RuntimeException("Stub!"); }
+public final int compareTo(@libcore.util.NullFromTypeParam E o) { throw new RuntimeException("Stub!"); }
 
-public final java.lang.Class<E> getDeclaringClass() { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public final java.lang.Class<E> getDeclaringClass() { throw new RuntimeException("Stub!"); }
 
-public static <T extends java.lang.Enum<T>> T valueOf(java.lang.Class<T> enumType, java.lang.String name) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <T extends java.lang.Enum<T>> T valueOf(@libcore.util.NonNull java.lang.Class<T> enumType, @libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
 
 protected final void finalize() { throw new RuntimeException("Stub!"); }
 }
-
