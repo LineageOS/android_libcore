@@ -727,7 +727,6 @@ package dalvik.system {
     method public float getTargetHeapUtilization();
     method public synchronized int getTargetSdkVersion();
     method public static boolean hasBootImageSpaces();
-    method public boolean hasUsedHiddenApi();
     method public boolean is64Bit();
     method public static boolean is64BitAbi(java.lang.String);
     method public static boolean is64BitInstructionSet(java.lang.String);
