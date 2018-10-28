@@ -154,7 +154,7 @@ public T @libcore.util.Nullable [] getEnumConstants() { throw new RuntimeExcepti
 
 @libcore.util.Nullable public T cast(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
-public <U> java.lang.Class<? extends U> asSubclass(@libcore.util.NonNull java.lang.Class<U> clazz) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public <U> java.lang.Class<? extends U> asSubclass(@libcore.util.NonNull java.lang.Class<U> clazz) { throw new RuntimeException("Stub!"); }
 
 public <A extends java.lang.annotation.Annotation> A getAnnotation(@libcore.util.NonNull java.lang.Class<A> annotationClass) { throw new RuntimeException("Stub!"); }
 

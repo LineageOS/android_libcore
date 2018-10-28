@@ -1,0 +1,1412 @@
+package android.icu.impl {
+
+  public class CalendarAstronomer {
+    ctor public CalendarAstronomer(double, double);
+    method public long getSunRiseSet(boolean);
+    method public void setTime(long);
+  }
+
+  public class TimeZoneAdapter extends java.util.TimeZone {
+    method public static java.util.TimeZone wrap(android.icu.util.TimeZone);
+  }
+
+}
+
+package android.icu.text {
+
+  public final class StringPrep {
+    method public static android.icu.text.StringPrep getInstance(int);
+    method public java.lang.String prepare(java.lang.String, int) throws android.icu.text.StringPrepParseException;
+    field public static final int DEFAULT = 0; // 0x0
+    field public static final int RFC3920_RESOURCEPREP = 8; // 0x8
+  }
+
+  public class StringPrepParseException extends java.text.ParseException {
+    ctor public StringPrepParseException(java.lang.String, int);
+    ctor public StringPrepParseException(java.lang.String, int, java.lang.String, int);
+    ctor public StringPrepParseException(java.lang.String, int, java.lang.String, int, int);
+    method public int getError();
+    field public static final int ACE_PREFIX_ERROR = 6; // 0x6
+    field public static final int BUFFER_OVERFLOW_ERROR = 9; // 0x9
+    field public static final int CHECK_BIDI_ERROR = 4; // 0x4
+    field public static final int DOMAIN_NAME_TOO_LONG_ERROR = 11; // 0xb
+    field public static final int ILLEGAL_CHAR_FOUND = 1; // 0x1
+    field public static final int INVALID_CHAR_FOUND = 0; // 0x0
+    field public static final int LABEL_TOO_LONG_ERROR = 8; // 0x8
+    field public static final int PROHIBITED_ERROR = 2; // 0x2
+    field public static final int STD3_ASCII_RULES_ERROR = 5; // 0x5
+    field public static final int UNASSIGNED_ERROR = 3; // 0x3
+    field public static final int VERIFICATION_ERROR = 7; // 0x7
+    field public static final int ZERO_LENGTH_LABEL = 10; // 0xa
+  }
+
+  public abstract class Transliterator {
+    method public static final android.icu.text.Transliterator getInstance(java.lang.String);
+    method public final java.lang.String transliterate(java.lang.String);
+  }
+
+}
+
+package android.icu.util {
+
+  public abstract class BasicTimeZone extends android.icu.util.TimeZone {
+    method public abstract android.icu.util.TimeZoneTransition getNextTransition(long, boolean);
+  }
+
+  public class Region implements java.lang.Comparable {
+    method public static java.util.Set<android.icu.util.Region> getAvailable(android.icu.util.Region.RegionType);
+  }
+
+  public static final class Region.RegionType extends java.lang.Enum {
+    enum_constant public static final android.icu.util.Region.RegionType TERRITORY;
+  }
+
+  public abstract class TimeZoneRule implements java.io.Serializable {
+    method public int getDSTSavings();
+  }
+
+  public class TimeZoneTransition {
+    method public android.icu.util.TimeZoneRule getFrom();
+    method public long getTime();
+    method public android.icu.util.TimeZoneRule getTo();
+  }
+
+}
+
+package android.system {
+
+  public final class ErrnoException extends java.lang.Exception {
+    method public java.io.IOException rethrowAsIOException() throws java.io.IOException;
+    method public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
+  }
+
+  public class Int32Ref {
+    ctor public Int32Ref(int);
+    field public int value;
+  }
+
+  public final class NetlinkSocketAddress extends java.net.SocketAddress {
+    ctor public NetlinkSocketAddress(int, int);
+    method public int getGroupsMask();
+    method public int getPortId();
+  }
+
+  public final class Os {
+    method public static void bind(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method public static android.system.StructCapUserData[] capget(android.system.StructCapUserHeader) throws android.system.ErrnoException;
+    method public static void capset(android.system.StructCapUserHeader, android.system.StructCapUserData[]) throws android.system.ErrnoException;
+    method public static void connect(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method public static int fcntlInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
+    method public static int getpgid(int) throws android.system.ErrnoException;
+    method public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
+    method public static int getsockoptInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
+    method public static android.system.StructLinger getsockoptLinger(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
+    method public static android.system.StructTimeval getsockoptTimeval(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
+    method public static int ioctlInt(java.io.FileDescriptor, int, android.system.Int32Ref) throws android.system.ErrnoException;
+    method public static java.io.FileDescriptor[] pipe2(int) throws android.system.ErrnoException;
+    method public static java.lang.String realpath(java.lang.String) throws android.system.ErrnoException;
+    method public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method public static void setpgid(int, int) throws android.system.ErrnoException;
+    method public static void setregid(int, int) throws android.system.ErrnoException;
+    method public static void setreuid(int, int) throws android.system.ErrnoException;
+    method public static void setsockoptIfreq(java.io.FileDescriptor, int, int, java.lang.String) throws android.system.ErrnoException;
+    method public static void setsockoptLinger(java.io.FileDescriptor, int, int, android.system.StructLinger) throws android.system.ErrnoException;
+    method public static void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
+    method public static long splice(java.io.FileDescriptor, android.system.Int64Ref, java.io.FileDescriptor, android.system.Int64Ref, long, int) throws android.system.ErrnoException;
+    method public static void unlink(java.lang.String) throws android.system.ErrnoException;
+  }
+
+  public final class OsConstants {
+    method public static int CAP_TO_INDEX(int);
+    method public static int CAP_TO_MASK(int);
+    field public static final int AF_NETLINK;
+    field public static final int AF_PACKET;
+    field public static final int ARPHRD_ETHER;
+    field public static final int ENONET;
+    field public static final int ETH_P_ALL;
+    field public static final int ETH_P_ARP;
+    field public static final int ETH_P_IP;
+    field public static final int ETH_P_IPV6;
+    field public static final int EUSERS;
+    field public static final int ICMP6_ECHO_REPLY;
+    field public static final int ICMP6_ECHO_REQUEST;
+    field public static final int ICMP_ECHO;
+    field public static final int ICMP_ECHOREPLY;
+    field public static final int MAP_POPULATE;
+    field public static final int NETLINK_INET_DIAG;
+    field public static final int NETLINK_NETFILTER;
+    field public static final int NETLINK_ROUTE;
+    field public static final int O_DIRECT;
+    field public static final int PR_CAP_AMBIENT;
+    field public static final int PR_CAP_AMBIENT_RAISE;
+    field public static final int RLIMIT_NOFILE;
+    field public static final int RTMGRP_IPV4_IFADDR;
+    field public static final int RTMGRP_NEIGH;
+    field public static final int SPLICE_F_MORE;
+    field public static final int SPLICE_F_MOVE;
+    field public static final int TIOCOUTQ;
+    field public static final int UDP_ENCAP;
+    field public static final int UDP_ENCAP_ESPINUDP;
+    field public static final int XATTR_CREATE;
+    field public static final int _LINUX_CAPABILITY_VERSION_3;
+  }
+
+  public final class PacketSocketAddress extends java.net.SocketAddress {
+    ctor public PacketSocketAddress(short, int);
+    ctor public PacketSocketAddress(int, byte[]);
+  }
+
+  public final class StructCapUserData {
+    ctor public StructCapUserData(int, int, int);
+    field public final int effective;
+    field public final int inheritable;
+    field public final int permitted;
+  }
+
+  public final class StructCapUserHeader {
+    ctor public StructCapUserHeader(int, int);
+  }
+
+  public final class StructLinger {
+    ctor public StructLinger(int, int);
+    method public boolean isOn();
+    field public final int l_linger;
+  }
+
+  public final class StructRlimit {
+    field public final long rlim_cur;
+  }
+
+  public final class StructTimeval {
+    method public static android.system.StructTimeval fromMillis(long);
+    method public long toMillis();
+    field public final long tv_sec;
+    field public final long tv_usec;
+  }
+
+  public final class UnixSocketAddress extends java.net.SocketAddress {
+    method public static android.system.UnixSocketAddress createFileSystem(java.lang.String);
+  }
+
+}
+
+package com.android.okhttp.internalandroidapi {
+
+  public final class AndroidResponseCacheAdapter {
+    ctor public AndroidResponseCacheAdapter(com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder);
+    method public void close() throws java.io.IOException;
+    method public void delete() throws java.io.IOException;
+    method public void flush() throws java.io.IOException;
+    method public java.net.CacheResponse get(java.net.URI, java.lang.String, java.util.Map<java.lang.String, java.util.List<java.lang.String>>) throws java.io.IOException;
+    method public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+    method public int getHitCount();
+    method public long getMaxSize();
+    method public int getNetworkCount();
+    method public int getRequestCount();
+    method public long getSize() throws java.io.IOException;
+    method public java.net.CacheRequest put(java.net.URI, java.net.URLConnection) throws java.io.IOException;
+  }
+
+  public abstract interface Dns {
+    method public abstract java.util.List<java.net.InetAddress> lookup(java.lang.String) throws java.net.UnknownHostException;
+  }
+
+  public abstract interface HasCacheHolder {
+    method public abstract com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+  }
+
+  public static final class HasCacheHolder.CacheHolder {
+    method public static com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder create(java.io.File, long);
+    method public boolean isEquivalent(java.io.File, long);
+  }
+
+  public final class HttpURLConnectionFactory {
+    ctor public HttpURLConnectionFactory();
+    method public java.net.URLConnection openConnection(java.net.URL, javax.net.SocketFactory, java.net.Proxy) throws java.io.IOException;
+    method public void setDns(com.android.okhttp.internalandroidapi.Dns);
+    method public void setNewConnectionPool(int, long, java.util.concurrent.TimeUnit);
+  }
+
+}
+
+package com.android.org.bouncycastle.asn1 {
+
+  public abstract class ASN1BitString extends com.android.org.bouncycastle.asn1.ASN1Primitive {
+  }
+
+  public abstract interface ASN1Encodable {
+  }
+
+  public class ASN1EncodableVector {
+    ctor public ASN1EncodableVector();
+    method public void add(com.android.org.bouncycastle.asn1.ASN1Encodable);
+  }
+
+  public class ASN1InputStream extends java.io.FilterInputStream {
+    ctor public ASN1InputStream(java.io.InputStream);
+    ctor public ASN1InputStream(byte[]);
+    method public com.android.org.bouncycastle.asn1.ASN1Primitive readObject() throws java.io.IOException;
+  }
+
+  public class ASN1Integer extends com.android.org.bouncycastle.asn1.ASN1Primitive {
+    ctor public ASN1Integer(java.math.BigInteger);
+  }
+
+  public abstract class ASN1Null extends com.android.org.bouncycastle.asn1.ASN1Primitive {
+  }
+
+  public abstract class ASN1Object implements com.android.org.bouncycastle.asn1.ASN1Encodable {
+    ctor public ASN1Object();
+    method public byte[] getEncoded() throws java.io.IOException;
+    method public byte[] getEncoded(java.lang.String) throws java.io.IOException;
+  }
+
+  public class ASN1ObjectIdentifier extends com.android.org.bouncycastle.asn1.ASN1Primitive {
+    ctor public ASN1ObjectIdentifier(java.lang.String);
+    method public java.lang.String getId();
+    method public static com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getInstance(java.lang.Object);
+  }
+
+  public abstract class ASN1OctetString extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.asn1.ASN1Encodable {
+    method public byte[] getOctets();
+  }
+
+  public abstract class ASN1Primitive extends com.android.org.bouncycastle.asn1.ASN1Object {
+  }
+
+  public abstract class ASN1Sequence extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.util.Iterable {
+    method public com.android.org.bouncycastle.asn1.ASN1Encodable getObjectAt(int);
+    method public int size();
+  }
+
+  public abstract class ASN1TaggedObject extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.asn1.ASN1Encodable {
+    method public com.android.org.bouncycastle.asn1.ASN1Primitive getObject();
+  }
+
+  public class DERBitString extends com.android.org.bouncycastle.asn1.ASN1BitString {
+    ctor public DERBitString(byte[]);
+  }
+
+  public deprecated class DERInteger extends com.android.org.bouncycastle.asn1.ASN1Integer {
+    ctor public DERInteger(long);
+  }
+
+  public class DERNull extends com.android.org.bouncycastle.asn1.ASN1Null {
+    field public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
+  }
+
+  public class DEROctetString extends com.android.org.bouncycastle.asn1.ASN1OctetString {
+    ctor public DEROctetString(byte[]);
+  }
+
+  public class DERSequence extends com.android.org.bouncycastle.asn1.ASN1Sequence {
+    ctor public DERSequence();
+    ctor public DERSequence(com.android.org.bouncycastle.asn1.ASN1EncodableVector);
+  }
+
+  public class DERTaggedObject extends com.android.org.bouncycastle.asn1.ASN1TaggedObject {
+    ctor public DERTaggedObject(int, com.android.org.bouncycastle.asn1.ASN1Encodable);
+  }
+
+  public class DERUTF8String extends com.android.org.bouncycastle.asn1.ASN1Primitive {
+    ctor public DERUTF8String(java.lang.String);
+    method public java.lang.String getString();
+  }
+
+}
+
+package com.android.org.bouncycastle.asn1.pkcs {
+
+  public abstract interface PKCSObjectIdentifiers {
+    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha256WithRSAEncryption;
+  }
+
+  public class PrivateKeyInfo extends com.android.org.bouncycastle.asn1.ASN1Object {
+    method public static com.android.org.bouncycastle.asn1.pkcs.PrivateKeyInfo getInstance(java.lang.Object);
+    method public com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier getPrivateKeyAlgorithm();
+  }
+
+}
+
+package com.android.org.bouncycastle.asn1.x509 {
+
+  public class AlgorithmIdentifier extends com.android.org.bouncycastle.asn1.ASN1Object {
+    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier);
+    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier, com.android.org.bouncycastle.asn1.ASN1Encodable);
+    method public com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getAlgorithm();
+  }
+
+  public class BasicConstraints extends com.android.org.bouncycastle.asn1.ASN1Object {
+    method public static com.android.org.bouncycastle.asn1.x509.BasicConstraints getInstance(java.lang.Object);
+    method public boolean isCA();
+  }
+
+  public class Certificate extends com.android.org.bouncycastle.asn1.ASN1Object {
+    method public static com.android.org.bouncycastle.asn1.x509.Certificate getInstance(java.lang.Object);
+  }
+
+  public class GeneralName extends com.android.org.bouncycastle.asn1.ASN1Object {
+    ctor public GeneralName(int, com.android.org.bouncycastle.asn1.ASN1Encodable);
+    ctor public GeneralName(int, java.lang.String);
+    method public int getTagNo();
+    field public static final int dNSName = 2; // 0x2
+    field public static final int iPAddress = 7; // 0x7
+    field public static final int otherName = 0; // 0x0
+  }
+
+  public class SubjectPublicKeyInfo extends com.android.org.bouncycastle.asn1.ASN1Object {
+    method public static com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo getInstance(java.lang.Object);
+  }
+
+  public class TBSCertificate extends com.android.org.bouncycastle.asn1.ASN1Object {
+  }
+
+  public class Time extends com.android.org.bouncycastle.asn1.ASN1Object {
+    ctor public Time(java.util.Date);
+  }
+
+  public class V3TBSCertificateGenerator {
+    ctor public V3TBSCertificateGenerator();
+    method public com.android.org.bouncycastle.asn1.x509.TBSCertificate generateTBSCertificate();
+    method public void setEndDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method public deprecated void setIssuer(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method public void setSerialNumber(com.android.org.bouncycastle.asn1.ASN1Integer);
+    method public void setSignature(com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier);
+    method public void setStartDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method public deprecated void setSubject(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method public void setSubjectPublicKeyInfo(com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo);
+  }
+
+  public deprecated class X509Name extends com.android.org.bouncycastle.asn1.ASN1Object {
+    ctor public deprecated X509Name(java.lang.String);
+    method public static com.android.org.bouncycastle.asn1.x509.X509Name getInstance(java.lang.Object);
+    method public java.util.Vector getOIDs();
+    method public java.util.Vector getValues();
+    method public java.lang.String toString(boolean, java.util.Hashtable);
+    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier CN;
+    field public static final java.util.Hashtable DefaultSymbols;
+    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier O;
+    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier OU;
+  }
+
+}
+
+package com.android.org.bouncycastle.asn1.x9 {
+
+  public abstract interface X9ObjectIdentifiers {
+    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier ecdsa_with_SHA256;
+  }
+
+}
+
+package com.android.org.bouncycastle.jce {
+
+  public deprecated class X509Principal extends com.android.org.bouncycastle.asn1.x509.X509Name implements java.security.Principal {
+    ctor public X509Principal(byte[]) throws java.io.IOException;
+    method public byte[] getEncoded();
+  }
+
+}
+
+package com.android.org.bouncycastle.jce.provider {
+
+  public final class BouncyCastleProvider extends java.security.Provider {
+    ctor public BouncyCastleProvider();
+  }
+
+  public deprecated class X509CertificateObject extends java.security.cert.X509Certificate {
+    ctor public X509CertificateObject(com.android.org.bouncycastle.asn1.x509.Certificate) throws java.security.cert.CertificateParsingException;
+  }
+
+}
+
+package com.android.org.bouncycastle.util {
+
+  public abstract interface Iterable<T> implements java.lang.Iterable {
+  }
+
+}
+
+package com.android.org.bouncycastle.util.io.pem {
+
+  public class PemObject implements com.android.org.bouncycastle.util.io.pem.PemObjectGenerator {
+    ctor public PemObject(java.lang.String, byte[]);
+    method public byte[] getContent();
+    method public java.lang.String getType();
+  }
+
+  public abstract interface PemObjectGenerator {
+  }
+
+  public class PemReader extends java.io.BufferedReader {
+    ctor public PemReader(java.io.Reader);
+    method public com.android.org.bouncycastle.util.io.pem.PemObject readPemObject() throws java.io.IOException;
+  }
+
+  public class PemWriter extends java.io.BufferedWriter {
+    ctor public PemWriter(java.io.Writer);
+    method public void writeObject(com.android.org.bouncycastle.util.io.pem.PemObjectGenerator) throws java.io.IOException;
+  }
+
+}
+
+package com.android.org.bouncycastle.x509 {
+
+  public deprecated class X509V3CertificateGenerator {
+    ctor public X509V3CertificateGenerator();
+    method public java.security.cert.X509Certificate generate(java.security.PrivateKey) throws java.security.cert.CertificateEncodingException, java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
+    method public void setIssuerDN(javax.security.auth.x500.X500Principal);
+    method public void setNotAfter(java.util.Date);
+    method public void setNotBefore(java.util.Date);
+    method public void setPublicKey(java.security.PublicKey) throws java.lang.IllegalArgumentException;
+    method public void setSerialNumber(java.math.BigInteger);
+    method public void setSignatureAlgorithm(java.lang.String);
+    method public void setSubjectDN(javax.security.auth.x500.X500Principal);
+  }
+
+}
+
+package com.android.org.conscrypt {
+
+  public abstract interface CertPinManager {
+  }
+
+  public final class ClientSessionContext implements javax.net.ssl.SSLSessionContext {
+    method public void setPersistentCache(com.android.org.conscrypt.SSLClientSessionCache);
+  }
+
+  public final class Conscrypt {
+    method public static javax.net.ssl.X509TrustManager getDefaultX509TrustManager() throws java.security.KeyManagementException;
+    method public static javax.net.ssl.SSLContextSpi newPreferredSSLContextSpi();
+  }
+
+  public abstract interface ConscryptCertStore {
+  }
+
+  public final class FileClientSessionCache {
+    method public static synchronized com.android.org.conscrypt.SSLClientSessionCache usingDirectory(java.io.File) throws java.io.IOException;
+  }
+
+  public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
+    method public com.android.org.conscrypt.ClientSessionContext engineGetClientSessionContext();
+    method public javax.net.ssl.SSLSocketFactory engineGetSocketFactory();
+    method public void engineInit(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], java.security.SecureRandom) throws java.security.KeyManagementException;
+  }
+
+  public final class OpenSSLProvider extends java.security.Provider {
+    ctor public OpenSSLProvider();
+  }
+
+  public abstract class OpenSSLSocketImpl extends javax.net.ssl.SSLSocket {
+    method public final deprecated byte[] getAlpnSelectedProtocol();
+    method public final deprecated byte[] getNpnSelectedProtocol();
+    method public final deprecated void setAlpnProtocols(byte[]);
+    method public abstract void setChannelIdPrivateKey(java.security.PrivateKey);
+    method public void setHandshakeTimeout(int) throws java.net.SocketException;
+    method public void setHostname(java.lang.String);
+    method public final deprecated void setNpnProtocols(byte[]);
+    method public void setSoWriteTimeout(int) throws java.net.SocketException;
+    method public abstract void setUseSessionTickets(boolean);
+  }
+
+  public abstract interface SSLClientSessionCache {
+  }
+
+  public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
+  }
+
+  public final class TrustManagerImpl extends javax.net.ssl.X509ExtendedTrustManager {
+    ctor public TrustManagerImpl(java.security.KeyStore);
+    ctor public TrustManagerImpl(java.security.KeyStore, com.android.org.conscrypt.CertPinManager, com.android.org.conscrypt.ConscryptCertStore);
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String) throws java.security.cert.CertificateException;
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String, java.net.Socket) throws java.security.cert.CertificateException;
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
+    method public java.util.List<java.security.cert.X509Certificate> checkServerTrusted(java.security.cert.X509Certificate[], java.lang.String, java.lang.String) throws java.security.cert.CertificateException;
+    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], java.lang.String, java.net.Socket) throws java.security.cert.CertificateException;
+    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], java.lang.String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
+    method public void handleTrustStorageUpdate();
+  }
+
+  public final class TrustedCertificateIndex {
+    ctor public TrustedCertificateIndex();
+    method public java.util.Set<java.security.cert.TrustAnchor> findAllByIssuerAndSignature(java.security.cert.X509Certificate);
+    method public java.security.cert.TrustAnchor findByIssuerAndSignature(java.security.cert.X509Certificate);
+    method public java.security.cert.TrustAnchor findBySubjectAndPublicKey(java.security.cert.X509Certificate);
+    method public java.security.cert.TrustAnchor index(java.security.cert.X509Certificate);
+  }
+
+  public class TrustedCertificateStore implements com.android.org.conscrypt.ConscryptCertStore {
+    ctor public TrustedCertificateStore();
+    method public java.util.Set<java.lang.String> aliases();
+    method public java.util.Set<java.lang.String> allSystemAliases();
+    method public boolean containsAlias(java.lang.String);
+    method public void deleteCertificateEntry(java.lang.String) throws java.security.cert.CertificateException, java.io.IOException;
+    method public java.util.Set<java.security.cert.X509Certificate> findAllIssuers(java.security.cert.X509Certificate);
+    method public java.security.cert.X509Certificate findIssuer(java.security.cert.X509Certificate);
+    method public java.security.cert.Certificate getCertificate(java.lang.String);
+    method public java.security.cert.Certificate getCertificate(java.lang.String, boolean);
+    method public java.lang.String getCertificateAlias(java.security.cert.Certificate);
+    method public java.lang.String getCertificateAlias(java.security.cert.Certificate, boolean);
+    method public java.util.List<java.security.cert.X509Certificate> getCertificateChain(java.security.cert.X509Certificate) throws java.security.cert.CertificateException;
+    method public java.io.File getCertificateFile(java.io.File, java.security.cert.X509Certificate);
+    method public java.util.Date getCreationDate(java.lang.String);
+    method public java.security.cert.X509Certificate getTrustAnchor(java.security.cert.X509Certificate);
+    method public void installCertificate(java.security.cert.X509Certificate) throws java.security.cert.CertificateException, java.io.IOException;
+    method public static final boolean isUser(java.lang.String);
+    method public boolean isUserAddedCertificate(java.security.cert.X509Certificate);
+    method public static void setDefaultUserDirectory(java.io.File);
+    method public java.util.Set<java.lang.String> userAliases();
+  }
+
+}
+
+package dalvik.annotation.optimization {
+
+  public abstract class CriticalNative implements java.lang.annotation.Annotation {
+  }
+
+  public abstract class FastNative implements java.lang.annotation.Annotation {
+  }
+
+}
+
+package dalvik.system {
+
+  public class AnnotatedStackTraceElement {
+    method public java.lang.Object getBlockedOn();
+    method public java.lang.Object[] getHeldLocks();
+    method public java.lang.StackTraceElement getStackTraceElement();
+  }
+
+  public class BaseDexClassLoader extends java.lang.ClassLoader {
+    method public void addDexPath(java.lang.String);
+    method public void addNativePath(java.util.Collection<java.lang.String>);
+    method public java.lang.String getLdLibraryPath();
+    method public static void setReporter(dalvik.system.BaseDexClassLoader.Reporter);
+  }
+
+  public static abstract interface BaseDexClassLoader.Reporter {
+    method public abstract void report(java.util.List<dalvik.system.BaseDexClassLoader>, java.util.List<java.lang.String>);
+  }
+
+  public final class BlockGuard {
+    method public static dalvik.system.BlockGuard.Policy getThreadPolicy();
+    method public static dalvik.system.BlockGuard.VmPolicy getVmPolicy();
+    method public static void setThreadPolicy(dalvik.system.BlockGuard.Policy);
+    method public static void setVmPolicy(dalvik.system.BlockGuard.VmPolicy);
+    field public static final dalvik.system.BlockGuard.Policy LAX_POLICY;
+    field public static final dalvik.system.BlockGuard.VmPolicy LAX_VM_POLICY;
+  }
+
+  public static abstract interface BlockGuard.Policy {
+    method public abstract int getPolicyMask();
+    method public abstract void onReadFromDisk();
+    method public abstract void onUnbufferedIO();
+    method public abstract void onWriteToDisk();
+  }
+
+  public static abstract interface BlockGuard.VmPolicy {
+    method public abstract void onPathAccess(java.lang.String);
+  }
+
+  public final class CloseGuard {
+    method public void close();
+    method public static dalvik.system.CloseGuard get();
+    method public static dalvik.system.CloseGuard.Reporter getReporter();
+    method public void open(java.lang.String);
+    method public static void setEnabled(boolean);
+    method public static void setReporter(dalvik.system.CloseGuard.Reporter);
+    method public void warnIfOpen();
+  }
+
+  public static abstract interface CloseGuard.Reporter {
+    method public abstract void report(java.lang.String, java.lang.Throwable);
+  }
+
+  public abstract interface DalvikLogHandler {
+    method public abstract void publish(java.util.logging.Logger, java.lang.String, java.util.logging.Level, java.lang.String);
+  }
+
+  public final class DalvikLogging {
+    method public static java.lang.String loggerNameToTag(java.lang.String);
+  }
+
+  public final deprecated class DexFile {
+    ctor public deprecated DexFile(java.io.File) throws java.io.IOException;
+    ctor public deprecated DexFile(java.lang.String) throws java.io.IOException;
+    method public void close() throws java.io.IOException;
+    method public java.util.Enumeration<java.lang.String> entries();
+    method public static dalvik.system.DexFile.OptimizationInfo getDexFileOptimizationInfo(java.lang.String, java.lang.String) throws java.io.FileNotFoundException;
+    method public static java.lang.String[] getDexFileOutputPaths(java.lang.String, java.lang.String) throws java.io.FileNotFoundException;
+    method public static int getDexOptNeeded(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, boolean) throws java.io.FileNotFoundException, java.io.IOException;
+    method public java.lang.String getName();
+    method public static java.lang.String getSafeModeCompilerFilter(java.lang.String);
+    method public static boolean isDexOptNeeded(java.lang.String) throws java.io.FileNotFoundException, java.io.IOException;
+    method public static boolean isProfileGuidedCompilerFilter(java.lang.String);
+    method public static boolean isValidCompilerFilter(java.lang.String);
+    method public java.lang.Class loadClass(java.lang.String, java.lang.ClassLoader);
+    method public static deprecated dalvik.system.DexFile loadDex(java.lang.String, java.lang.String, int) throws java.io.IOException;
+    field public static final int DEX2OAT_FOR_FILTER = 3; // 0x3
+    field public static final int NO_DEXOPT_NEEDED = 0; // 0x0
+  }
+
+  public static final class DexFile.OptimizationInfo {
+    method public java.lang.String getReason();
+    method public java.lang.String getStatus();
+  }
+
+  public final class RuntimeHooks {
+    method public static void setTimeZoneIdSupplier(java.util.function.Supplier<java.lang.String>);
+    method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
+  }
+
+  public abstract class SocketTagger {
+    ctor public SocketTagger();
+    method public static synchronized dalvik.system.SocketTagger get();
+    method public static synchronized void set(dalvik.system.SocketTagger);
+    method public abstract void tag(java.io.FileDescriptor) throws java.net.SocketException;
+    method public final void tag(java.net.Socket) throws java.net.SocketException;
+    method public final void tag(java.net.DatagramSocket) throws java.net.SocketException;
+    method public abstract void untag(java.io.FileDescriptor) throws java.net.SocketException;
+    method public final void untag(java.net.Socket) throws java.net.SocketException;
+    method public final void untag(java.net.DatagramSocket) throws java.net.SocketException;
+  }
+
+  public final class VMDebug {
+    method public static void attachAgent(java.lang.String, java.lang.ClassLoader) throws java.io.IOException;
+    method public static boolean cacheRegisterMap(java.lang.String);
+    method public static long countInstancesOfClass(java.lang.Class, boolean);
+    method public static long[] countInstancesOfClasses(java.lang.Class[], boolean);
+    method public static void dumpHprofData(java.lang.String) throws java.io.IOException;
+    method public static void dumpHprofData(java.lang.String, java.io.FileDescriptor) throws java.io.IOException;
+    method public static void dumpHprofDataDdms();
+    method public static void dumpReferenceTables();
+    method public static int getAllocCount(int);
+    method public static int getLoadedClassCount();
+    method public static int getMethodTracingMode();
+    method public static java.lang.String getRuntimeStat(java.lang.String);
+    method public static java.util.Map<java.lang.String, java.lang.String> getRuntimeStats();
+    method public static java.lang.String[] getVmFeatureList();
+    method public static boolean isDebuggerConnected();
+    method public static boolean isDebuggingEnabled();
+    method public static long lastDebuggerActivity();
+    method public static void printLoadedClasses(int);
+    method public static void resetAllocCount(int);
+    method public static void startAllocCounting();
+    method public static void startEmulatorTracing();
+    method public static void startMethodTracing(java.lang.String, int, int, boolean, int);
+    method public static void startMethodTracing(java.lang.String, java.io.FileDescriptor, int, int, boolean, int, boolean);
+    method public static void startMethodTracingDdms(int, int, boolean, int);
+    method public static void stopAllocCounting();
+    method public static void stopEmulatorTracing();
+    method public static void stopMethodTracing();
+    method public static long threadCpuTimeNanos();
+    field public static final int KIND_ALL_COUNTS = -1; // 0xffffffff
+    field public static final int KIND_GLOBAL_ALLOCATED_BYTES = 2; // 0x2
+    field public static final int KIND_GLOBAL_ALLOCATED_OBJECTS = 1; // 0x1
+    field public static final int KIND_GLOBAL_CLASS_INIT_COUNT = 32; // 0x20
+    field public static final int KIND_GLOBAL_CLASS_INIT_TIME = 64; // 0x40
+    field public static final int KIND_GLOBAL_FREED_BYTES = 8; // 0x8
+    field public static final int KIND_GLOBAL_FREED_OBJECTS = 4; // 0x4
+    field public static final int KIND_GLOBAL_GC_INVOCATIONS = 16; // 0x10
+    field public static final int KIND_THREAD_ALLOCATED_BYTES = 131072; // 0x20000
+    field public static final int KIND_THREAD_ALLOCATED_OBJECTS = 65536; // 0x10000
+    field public static final int KIND_THREAD_GC_INVOCATIONS = 1048576; // 0x100000
+    field public static final int TRACE_COUNT_ALLOCS = 1; // 0x1
+  }
+
+  public final class VMRuntime {
+    method public long addressOf(java.lang.Object);
+    method public void clampGrowthLimit();
+    method public void clearGrowthLimit();
+    method public static boolean didPruneDalvikCache();
+    method public void disableJitCompilation();
+    method public static java.lang.String getCurrentInstructionSet();
+    method public static java.lang.String getInstructionSet(java.lang.String);
+    method public static dalvik.system.VMRuntime getRuntime();
+    method public float getTargetHeapUtilization();
+    method public synchronized int getTargetSdkVersion();
+    method public static boolean hasBootImageSpaces();
+    method public boolean hasUsedHiddenApi();
+    method public boolean is64Bit();
+    method public static boolean is64BitAbi(java.lang.String);
+    method public static boolean is64BitInstructionSet(java.lang.String);
+    method public static boolean isBootClassPathOnDisk(java.lang.String);
+    method public boolean isCheckJniEnabled();
+    method public boolean isNativeDebuggable();
+    method public java.lang.Object newNonMovableArray(java.lang.Class<?>, int);
+    method public java.lang.Object newUnpaddedArray(java.lang.Class<?>, int);
+    method public void preloadDexCaches();
+    method public static void registerAppInfo(java.lang.String, java.lang.String[]);
+    method public void registerNativeAllocation(int);
+    method public void registerNativeFree(int);
+    method public static void registerSensitiveThread();
+    method public void requestConcurrentGC();
+    method public static void setDedupeHiddenApiWarnings(boolean);
+    method public void setHiddenApiAccessLogSamplingRate(int);
+    method public void setHiddenApiExemptions(java.lang.String[]);
+    method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
+    method public static void setProcessPackageName(java.lang.String);
+    method public float setTargetHeapUtilization(float);
+    method public synchronized void setTargetSdkVersion(int);
+    method public void startJitCompilation();
+    method public void updateProcessState(int);
+    method public java.lang.String vmInstructionSet();
+    method public java.lang.String vmLibrary();
+    field public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000; // 0x2710
+  }
+
+  public final class VMStack {
+    ctor public VMStack();
+    method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
+  }
+
+  public final class ZygoteHooks {
+    ctor public ZygoteHooks();
+    method public static void gcAndFinalize();
+    method public static void onBeginPreload();
+    method public static void onEndPreload();
+    method public void postForkChild(int, boolean, boolean, java.lang.String);
+    method public void postForkCommon();
+    method public void preFork();
+    method public static void startZygoteNoThreadCreation();
+    method public static void stopZygoteNoThreadCreation();
+  }
+
+}
+
+package java.io {
+
+  public final class FileDescriptor {
+    method public int getInt$();
+    method public void setInt$(int);
+  }
+
+  public class FileInputStream extends java.io.InputStream {
+    ctor public FileInputStream(java.io.FileDescriptor, boolean);
+  }
+
+}
+
+package java.lang {
+
+  public final class Byte extends java.lang.Number implements java.lang.Comparable {
+    method public static java.lang.String toHexString(byte, boolean);
+  }
+
+  public final class Class<T> implements java.lang.reflect.AnnotatedElement java.lang.reflect.GenericDeclaration java.io.Serializable java.lang.reflect.Type {
+    method public java.lang.reflect.Field[] getDeclaredFieldsUnchecked(boolean);
+    method public java.lang.reflect.Method[] getDeclaredMethodsUnchecked(boolean);
+    method public java.lang.String getPackageName$();
+  }
+
+  public final class Math {
+    method public static long randomLongInternal();
+  }
+
+  public final class System {
+    method public static void logE(java.lang.String, java.lang.Throwable);
+  }
+
+  public class Thread implements java.lang.Runnable {
+    method public static java.lang.Thread.UncaughtExceptionHandler getUncaughtExceptionPreHandler();
+    method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
+  }
+
+}
+
+package java.net {
+
+  public class DatagramSocket implements java.io.Closeable {
+    method public java.io.FileDescriptor getFileDescriptor$();
+  }
+
+  public final class Inet4Address extends java.net.InetAddress {
+    field public static final java.net.InetAddress ALL;
+    field public static final java.net.InetAddress ANY;
+    field public static final java.net.InetAddress LOOPBACK;
+  }
+
+  public final class Inet6Address extends java.net.InetAddress {
+    method public static java.net.Inet6Address getByAddress(java.lang.String, byte[], java.net.NetworkInterface) throws java.net.UnknownHostException;
+    method public static java.net.Inet6Address getByAddress(java.lang.String, byte[], int) throws java.net.UnknownHostException;
+    method public int getScopeId();
+    method public java.net.NetworkInterface getScopedInterface();
+    method public boolean isIPv4CompatibleAddress();
+    field public static final java.net.InetAddress ANY;
+    field public static final java.net.InetAddress LOOPBACK;
+  }
+
+  public class InetAddress implements java.io.Serializable {
+    method public static void clearDnsCache();
+    method public static java.net.InetAddress[] getAllByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
+    method public static java.net.InetAddress getByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
+    method public static boolean isNumeric(java.lang.String);
+    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+  }
+
+  public class InetSocketAddress extends java.net.SocketAddress {
+    ctor public InetSocketAddress();
+  }
+
+  public class ServerSocket implements java.io.Closeable {
+    method public java.net.SocketImpl getImpl() throws java.net.SocketException;
+  }
+
+  public class Socket implements java.io.Closeable {
+    method public java.io.FileDescriptor getFileDescriptor$();
+  }
+
+  public abstract class SocketImpl implements java.net.SocketOptions {
+    method public java.io.FileDescriptor getFD$();
+  }
+
+}
+
+package java.nio {
+
+  public abstract class ByteBuffer extends java.nio.Buffer implements java.lang.Comparable {
+    method public void setAccessible(boolean);
+  }
+
+  public class DirectByteBuffer extends java.nio.MappedByteBuffer {
+    ctor public DirectByteBuffer(int, long, java.io.FileDescriptor, java.lang.Runnable, boolean);
+    method public final long address();
+    method public final void setAccessible(boolean);
+  }
+
+  public final class NioUtils {
+    method public static void freeDirectBuffer(java.nio.ByteBuffer);
+    method public static byte[] unsafeArray(java.nio.ByteBuffer);
+    method public static int unsafeArrayOffset(java.nio.ByteBuffer);
+  }
+
+}
+
+package java.security {
+
+  public abstract class Provider extends java.util.Properties {
+    method public synchronized void warmUpServiceProvision();
+  }
+
+  public abstract class Signature extends java.security.SignatureSpi {
+    method public java.security.SignatureSpi getCurrentSpi();
+  }
+
+}
+
+package java.text {
+
+  public abstract class DateFormat extends java.text.Format {
+    method public static final void set24HourTimePref(java.lang.Boolean);
+  }
+
+}
+
+package java.util {
+
+  public class LinkedHashMap<K, V> extends java.util.HashMap implements java.util.Map {
+    method public java.util.Map.Entry<K, V> eldest();
+  }
+
+  public final class Locale implements java.lang.Cloneable java.io.Serializable {
+    method public static java.lang.String adjustLanguageCode(java.lang.String);
+  }
+
+}
+
+package java.util.concurrent {
+
+  public class CompletableFuture<T> implements java.util.concurrent.CompletionStage java.util.concurrent.Future {
+    method public java.util.concurrent.CompletableFuture<T> completeOnTimeout(T, long, java.util.concurrent.TimeUnit);
+    method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(java.lang.Throwable);
+  }
+
+}
+
+package java.util.zip {
+
+  public class ZipEntry implements java.lang.Cloneable {
+    method public long getDataOffset();
+  }
+
+}
+
+package javax.crypto {
+
+  public class Cipher {
+    method public javax.crypto.CipherSpi getCurrentSpi();
+  }
+
+  public class Mac implements java.lang.Cloneable {
+    method public javax.crypto.MacSpi getCurrentSpi();
+  }
+
+}
+
+package libcore.icu {
+
+  public final class DateIntervalFormat {
+    method public static java.lang.String formatDateRange(long, long, int, java.lang.String);
+  }
+
+  public final class ICU {
+    ctor public ICU();
+    method public static java.util.Locale addLikelySubtags(java.util.Locale);
+    method public static java.lang.String getBestDateTimePattern(java.lang.String, java.util.Locale);
+    method public static char[] getDateFormatOrder(java.lang.String);
+    method public static java.lang.String getTZDataVersion();
+  }
+
+  public final class LocaleData {
+    method public static libcore.icu.LocaleData get(java.util.Locale);
+    method public java.lang.String getDateFormat(int);
+    field public java.lang.String[] amPm;
+    field public java.lang.Integer firstDayOfWeek;
+    field public java.lang.String[] longMonthNames;
+    field public java.lang.String[] longStandAloneMonthNames;
+    field public java.lang.String[] longStandAloneWeekdayNames;
+    field public java.lang.String[] longWeekdayNames;
+    field public java.lang.String narrowAm;
+    field public java.lang.String narrowPm;
+    field public java.lang.String[] shortMonthNames;
+    field public java.lang.String[] shortStandAloneMonthNames;
+    field public java.lang.String[] shortStandAloneWeekdayNames;
+    field public java.lang.String[] shortWeekdayNames;
+    field public java.lang.String timeFormat_Hm;
+    field public java.lang.String timeFormat_Hms;
+    field public java.lang.String timeFormat_hm;
+    field public java.lang.String timeFormat_hms;
+    field public java.lang.String[] tinyMonthNames;
+    field public java.lang.String[] tinyStandAloneMonthNames;
+    field public java.lang.String[] tinyStandAloneWeekdayNames;
+    field public java.lang.String[] tinyWeekdayNames;
+    field public java.lang.String today;
+    field public java.lang.String yesterday;
+    field public char zeroDigit;
+  }
+
+  public final class RelativeDateTimeFormatter {
+    method public static java.lang.String getRelativeDateTimeString(java.util.Locale, java.util.TimeZone, long, long, long, long, int);
+    method public static java.lang.String getRelativeTimeSpanString(java.util.Locale, java.util.TimeZone, long, long, long, int);
+  }
+
+  public final class TimeZoneNames {
+  }
+
+  public static class TimeZoneNames.ZoneStringsCache extends libcore.util.BasicLruCache {
+  }
+
+}
+
+package libcore.internal {
+
+  public final class StringPool {
+    ctor public StringPool();
+    method public java.lang.String get(char[], int, int);
+  }
+
+}
+
+package libcore.io {
+
+  public final class DropBox {
+    ctor public DropBox();
+    method public static void setReporter(libcore.io.DropBox.Reporter);
+  }
+
+  public static abstract interface DropBox.Reporter {
+    method public abstract void addData(java.lang.String, byte[], int);
+    method public abstract void addText(java.lang.String, java.lang.String);
+  }
+
+  public final class EventLogger {
+    ctor public EventLogger();
+    method public static void setReporter(libcore.io.EventLogger.Reporter);
+  }
+
+  public static abstract interface EventLogger.Reporter {
+    method public abstract void report(int, java.lang.Object...);
+  }
+
+  public class ForwardingOs implements libcore.io.Os {
+    ctor protected ForwardingOs(libcore.io.Os);
+    method public boolean access(java.lang.String, int) throws android.system.ErrnoException;
+    method public java.io.FileDescriptor open(java.lang.String, int, int) throws android.system.ErrnoException;
+    method public android.system.StructStat stat(java.lang.String) throws android.system.ErrnoException;
+  }
+
+  public final class IoBridge {
+    method public static void closeAndSignalBlockedThreads(java.io.FileDescriptor) throws java.io.IOException;
+    method public static java.net.InetSocketAddress getLocalInetSocketAddress(java.io.FileDescriptor) throws java.net.SocketException;
+    method public static java.io.FileDescriptor open(java.lang.String, int) throws java.io.FileNotFoundException;
+    method public static int read(java.io.FileDescriptor, byte[], int, int) throws java.io.IOException;
+    method public static int recvfrom(boolean, java.io.FileDescriptor, byte[], int, int, int, java.net.DatagramPacket, boolean) throws java.io.IOException;
+    method public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.InetAddress, int) throws java.io.IOException;
+    method public static java.io.FileDescriptor socket(int, int, int) throws java.net.SocketException;
+    method public static void write(java.io.FileDescriptor, byte[], int, int) throws java.io.IOException;
+  }
+
+  public final class IoUtils {
+    method public static int acquireRawFd(java.io.FileDescriptor);
+    method public static void close(java.io.FileDescriptor) throws java.io.IOException;
+    method public static void closeQuietly(java.lang.AutoCloseable);
+    method public static void closeQuietly(java.io.FileDescriptor);
+    method public static void closeQuietly(java.net.Socket);
+    method public static deprecated java.io.File createTemporaryDirectory(java.lang.String);
+    method public static deprecated void deleteContents(java.io.File) throws java.io.IOException;
+    method public static byte[] readFileAsByteArray(java.lang.String) throws java.io.IOException;
+    method public static java.lang.String readFileAsString(java.lang.String) throws java.io.IOException;
+    method public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
+    method public static void setFdOwner(java.io.FileDescriptor, java.lang.Object);
+  }
+
+  public final class Libcore {
+  }
+
+  public final class Memory {
+    method public static void memmove(java.lang.Object, int, java.lang.Object, int, long);
+    method public static int peekInt(byte[], int, java.nio.ByteOrder);
+    method public static short peekShort(byte[], int, java.nio.ByteOrder);
+    method public static void pokeInt(byte[], int, int, java.nio.ByteOrder);
+    method public static void pokeLong(byte[], int, long, java.nio.ByteOrder);
+    method public static void pokeShort(byte[], int, short, java.nio.ByteOrder);
+  }
+
+  public abstract interface Os {
+    method public static boolean compareAndSetDefault(libcore.io.Os, libcore.io.Os);
+    method public static libcore.io.Os getDefault();
+  }
+
+  public final class SizeOf {
+    field public static final int INT = 4; // 0x4
+    field public static final int SHORT = 2; // 0x2
+  }
+
+  public final class Streams {
+    method public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
+    method public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
+    method public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
+    method public static java.lang.String readFully(java.io.Reader) throws java.io.IOException;
+    method public static byte[] readFullyNoClose(java.io.InputStream) throws java.io.IOException;
+    method public static int readSingleByte(java.io.InputStream) throws java.io.IOException;
+    method public static long skipByReading(java.io.InputStream, long) throws java.io.IOException;
+    method public static void writeSingleByte(java.io.OutputStream, int) throws java.io.IOException;
+  }
+
+}
+
+package libcore.mmodule.libart {
+
+  public class DemoLibartClass {
+    method public static java.lang.String corePlatformApiMethod();
+  }
+
+}
+
+package libcore.net {
+
+  public final class MimeUtils {
+    ctor public MimeUtils();
+    method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
+    method public static java.lang.String guessMimeTypeFromExtension(java.lang.String);
+    method public static boolean hasExtension(java.lang.String);
+    method public static boolean hasMimeType(java.lang.String);
+  }
+
+  public abstract class NetworkSecurityPolicy {
+    ctor public NetworkSecurityPolicy();
+    method public static libcore.net.NetworkSecurityPolicy getInstance();
+    method public abstract boolean isCertificateTransparencyVerificationRequired(java.lang.String);
+    method public abstract boolean isCleartextTrafficPermitted();
+    method public abstract boolean isCleartextTrafficPermitted(java.lang.String);
+    method public static void setInstance(libcore.net.NetworkSecurityPolicy);
+  }
+
+}
+
+package libcore.net.event {
+
+  public class NetworkEventDispatcher {
+    method public static libcore.net.event.NetworkEventDispatcher getInstance();
+    method public void onNetworkConfigurationChanged();
+  }
+
+}
+
+package libcore.util {
+
+  public final class ArrayUtils {
+    method public static void throwsIfOutOfBounds(int, int, int);
+  }
+
+  public class BasicLruCache<K, V> {
+    ctor public BasicLruCache(int);
+  }
+
+  public final class CountryTimeZones {
+    method public java.lang.String getCountryIso();
+    method public java.lang.String getDefaultTimeZoneId();
+    method public java.util.List<libcore.util.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
+    method public boolean hasUtcZone(long);
+    method public boolean isDefaultOkForCountryTimeZoneDetection(long);
+    method public boolean isForCountryCode(java.lang.String);
+    method public deprecated libcore.util.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
+  }
+
+  public static final class CountryTimeZones.OffsetResult {
+    field public final boolean mOneMatch;
+    field public final android.icu.util.TimeZone mTimeZone;
+  }
+
+  public static final class CountryTimeZones.TimeZoneMapping {
+    method public static libcore.util.CountryTimeZones.TimeZoneMapping createForTests(java.lang.String, boolean, java.lang.Long);
+    field public final java.lang.Long notUsedAfter;
+    field public final boolean showInPicker;
+    field public final java.lang.String timeZoneId;
+  }
+
+  public final class CountryZonesFinder {
+    method public java.util.List<java.lang.String> lookupAllCountryIsoCodes();
+    method public libcore.util.CountryTimeZones lookupCountryTimeZones(java.lang.String);
+    method public java.util.List<libcore.util.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
+  }
+
+  public final class EmptyArray {
+    field public static final boolean[] BOOLEAN;
+    field public static final byte[] BYTE;
+    field public static final float[] FLOAT;
+    field public static final int[] INT;
+    field public static final long[] LONG;
+    field public static final java.lang.Object[] OBJECT;
+    field public static final java.lang.String[] STRING;
+  }
+
+  public class HexEncoding {
+    method public static byte[] decode(java.lang.String) throws java.lang.IllegalArgumentException;
+    method public static byte[] decode(char[]) throws java.lang.IllegalArgumentException;
+    method public static byte[] decode(char[], boolean) throws java.lang.IllegalArgumentException;
+    method public static char[] encode(byte[]);
+    method public static char[] encode(byte[], int, int);
+    method public static java.lang.String encodeToString(byte[]);
+  }
+
+  public class NativeAllocationRegistry {
+    ctor public NativeAllocationRegistry(java.lang.ClassLoader, long, long);
+    method public static void applyFreeFunction(long, long);
+    method public java.lang.Runnable registerNativeAllocation(java.lang.Object, long);
+  }
+
+  public class SneakyThrow {
+    ctor public SneakyThrow();
+    method public static void sneakyThrow(java.lang.Throwable);
+  }
+
+  public final class TimeZoneFinder {
+    method public static libcore.util.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
+    method public libcore.util.CountryZonesFinder getCountryZonesFinder();
+    method public java.lang.String getIanaVersion();
+    method public static libcore.util.TimeZoneFinder getInstance();
+    method public libcore.util.CountryTimeZones lookupCountryTimeZones(java.lang.String);
+    method public java.lang.String lookupDefaultTimeZoneIdByCountry(java.lang.String);
+    method public android.icu.util.TimeZone lookupTimeZoneByCountryAndOffset(java.lang.String, int, boolean, long, android.icu.util.TimeZone);
+    method public java.util.List<java.lang.String> lookupTimeZoneIdsByCountry(java.lang.String);
+    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(java.lang.String);
+    method public void validate() throws java.io.IOException;
+  }
+
+  public class XmlObjectFactory {
+    method public static org.xml.sax.XMLReader newXMLReader();
+    method public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
+    method public static org.xmlpull.v1.XmlSerializer newXmlSerializer();
+  }
+
+  public final class ZoneInfo extends java.util.TimeZone {
+  }
+
+  public static class ZoneInfo.WallTime {
+    ctor public ZoneInfo.WallTime();
+    method public int getGmtOffset();
+    method public int getHour();
+    method public int getIsDst();
+    method public int getMinute();
+    method public int getMonth();
+    method public int getMonthDay();
+    method public int getSecond();
+    method public int getWeekDay();
+    method public int getYear();
+    method public int getYearDay();
+    method public void localtime(int, libcore.util.ZoneInfo);
+    method public int mktime(libcore.util.ZoneInfo);
+    method public void setGmtOffset(int);
+    method public void setHour(int);
+    method public void setIsDst(int);
+    method public void setMinute(int);
+    method public void setMonth(int);
+    method public void setMonthDay(int);
+    method public void setSecond(int);
+    method public void setWeekDay(int);
+    method public void setYear(int);
+    method public void setYearDay(int);
+  }
+
+  public final class ZoneInfoDB {
+    method public static libcore.util.ZoneInfoDB.TzData getInstance();
+  }
+
+  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
+    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
+    method public java.lang.String getVersion();
+    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
+    method public static libcore.util.ZoneInfoDB.TzData loadTzData(java.lang.String);
+    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
+    method public void validate() throws java.io.IOException;
+  }
+
+}
+
+package org.apache.harmony.dalvik {
+
+  public final class NativeTestTarget {
+    ctor public NativeTestTarget();
+    method public static void emptyInlineMethod();
+    method public static void emptyInternalStaticMethod();
+    method public void emptyJniMethod0();
+    method public void emptyJniMethod0_Fast();
+    method public void emptyJniMethod6(int, int, int, int, int, int);
+    method public void emptyJniMethod6L(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
+    method public void emptyJniMethod6L_Fast(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
+    method public void emptyJniMethod6_Fast(int, int, int, int, int, int);
+    method public static void emptyJniStaticMethod0();
+    method public static void emptyJniStaticMethod0_Critical();
+    method public static void emptyJniStaticMethod0_Fast();
+    method public static void emptyJniStaticMethod6(int, int, int, int, int, int);
+    method public static void emptyJniStaticMethod6L(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
+    method public static void emptyJniStaticMethod6L_Fast(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
+    method public static void emptyJniStaticMethod6_Critical(int, int, int, int, int, int);
+    method public static void emptyJniStaticMethod6_Fast(int, int, int, int, int, int);
+    method public static synchronized void emptyJniStaticSynchronizedMethod0();
+    method public synchronized void emptyJniSynchronizedMethod0();
+  }
+
+}
+
+package org.apache.harmony.dalvik.ddmc {
+
+  public class Chunk {
+    ctor public Chunk(int, byte[], int, int);
+    ctor public Chunk(int, java.nio.ByteBuffer);
+    field public int type;
+  }
+
+  public abstract class ChunkHandler {
+    ctor public ChunkHandler();
+    method public abstract void connected();
+    method public static org.apache.harmony.dalvik.ddmc.Chunk createFailChunk(int, java.lang.String);
+    method public abstract void disconnected();
+    method public static java.lang.String getString(java.nio.ByteBuffer, int);
+    method public abstract org.apache.harmony.dalvik.ddmc.Chunk handleChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    method public static java.lang.String name(int);
+    method public static void putString(java.nio.ByteBuffer, java.lang.String);
+    method public static int type(java.lang.String);
+    method public static java.nio.ByteBuffer wrapChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    field public static final java.nio.ByteOrder CHUNK_ORDER;
+  }
+
+  public class DdmServer {
+    method public static void registerHandler(int, org.apache.harmony.dalvik.ddmc.ChunkHandler);
+    method public static void registrationComplete();
+    method public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    field public static final int CLIENT_PROTOCOL_VERSION = 1; // 0x1
+  }
+
+  public class DdmVmInternal {
+    method public static void enableRecentAllocations(boolean);
+    method public static boolean getRecentAllocationStatus();
+    method public static byte[] getRecentAllocations();
+    method public static java.lang.StackTraceElement[] getStackTraceById(int);
+    method public static byte[] getThreadStats();
+    method public static boolean heapInfoNotify(int);
+    method public static boolean heapSegmentNotify(int, int, boolean);
+    method public static void threadNotify(boolean);
+  }
+
+}
+
+package org.json {
+
+  public class JSONObject {
+    method public java.util.Set<java.lang.String> keySet();
+  }
+
+}
+
+package sun.misc {
+
+  public class Cleaner extends java.lang.ref.PhantomReference {
+    method public void clean();
+    method public static sun.misc.Cleaner create(java.lang.Object, java.lang.Runnable);
+  }
+
+}
+
+package sun.security.jca {
+
+  public class Providers {
+    method public static java.lang.Object startJarVerification();
+    method public static void stopJarVerification(java.lang.Object);
+  }
+
+}
+
+package sun.security.pkcs {
+
+  public class ContentInfo {
+    method public byte[] getContentBytes() throws java.io.IOException;
+  }
+
+  public class PKCS7 {
+    ctor public PKCS7(java.io.InputStream) throws java.io.IOException, sun.security.pkcs.ParsingException;
+    ctor public PKCS7(byte[]) throws sun.security.pkcs.ParsingException;
+    method public java.security.cert.X509Certificate[] getCertificates();
+    method public sun.security.pkcs.ContentInfo getContentInfo();
+    method public sun.security.pkcs.SignerInfo[] getSignerInfos();
+    method public sun.security.pkcs.SignerInfo verify(sun.security.pkcs.SignerInfo, java.io.InputStream) throws java.io.IOException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
+    method public sun.security.pkcs.SignerInfo[] verify(byte[]) throws java.security.NoSuchAlgorithmException, java.security.SignatureException;
+  }
+
+  public class ParsingException extends java.io.IOException {
+  }
+
+  public class SignerInfo {
+    ctor public SignerInfo();
+    method public java.util.ArrayList<java.security.cert.X509Certificate> getCertificateChain(sun.security.pkcs.PKCS7) throws java.io.IOException;
+  }
+
+}
+
+package sun.security.util {
+
+  public final class ObjectIdentifier implements java.io.Serializable {
+    ctor public ObjectIdentifier(java.lang.String) throws java.io.IOException;
+  }
+
+}
+
+package sun.security.x509 {
+
+  public class AlgorithmId implements java.io.Serializable {
+    ctor public AlgorithmId(sun.security.util.ObjectIdentifier);
+    method public java.lang.String getName();
+  }
+
+}
+
+package sun.util.locale {
+
+  public class LanguageTag {
+    method public static boolean isLanguage(java.lang.String);
+  }
+
+}
+

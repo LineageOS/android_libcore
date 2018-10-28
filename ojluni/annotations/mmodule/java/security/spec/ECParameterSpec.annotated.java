@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2003, 2004, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,16 +24,26 @@
  * questions.
  */
 
-
-package java.lang.reflect;
+package java.security.spec;
 
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
-public interface ParameterizedType extends java.lang.reflect.Type {
+public class ECParameterSpec implements java.security.spec.AlgorithmParameterSpec {
 
-public java.lang.reflect.@libcore.util.NonNull Type @libcore.util.NonNull [] getActualTypeArguments();
+public ECParameterSpec(java.security.spec.EllipticCurve curve, java.security.spec.ECPoint g, java.math.BigInteger n, int h) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.reflect.Type getRawType();
+public java.security.spec.EllipticCurve getCurve() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public java.lang.reflect.Type getOwnerType();
+public java.security.spec.ECPoint getGenerator() { throw new RuntimeException("Stub!"); }
+
+public java.math.BigInteger getOrder() { throw new RuntimeException("Stub!"); }
+
+public int getCofactor() { throw new RuntimeException("Stub!"); }
+
+@libcore.api.IntraCoreApi
+public void setCurveName(String curveName) { throw new RuntimeException("Stub!"); }
+
+@libcore.api.IntraCoreApi
+public String getCurveName() { throw new RuntimeException("Stub!"); }
 }
+

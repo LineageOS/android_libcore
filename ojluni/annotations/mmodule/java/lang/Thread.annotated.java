@@ -39,21 +39,21 @@ public class Thread implements java.lang.Runnable {
 
 public Thread() { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.Runnable target) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.Runnable target) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.ThreadGroup group, @libcore.util.Nullable java.lang.Runnable target) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.ThreadGroup group, java.lang.Runnable target) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.String name) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.ThreadGroup group, @libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.ThreadGroup group, java.lang.String name) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.Runnable target, @libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.Runnable target, java.lang.String name) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.ThreadGroup group, @libcore.util.Nullable java.lang.Runnable target, @libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.ThreadGroup group, java.lang.Runnable target, java.lang.String name) { throw new RuntimeException("Stub!"); }
 
-public Thread(@libcore.util.Nullable java.lang.ThreadGroup group, @libcore.util.Nullable java.lang.Runnable target, @libcore.util.NonNull java.lang.String name, long stackSize) { throw new RuntimeException("Stub!"); }
+public Thread(java.lang.ThreadGroup group, java.lang.Runnable target, java.lang.String name, long stackSize) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static native java.lang.Thread currentThread();
+public static native java.lang.Thread currentThread();
 
 public static native void yield();
 
@@ -61,15 +61,17 @@ public static void sleep(long millis) throws java.lang.InterruptedException { th
 
 public static void sleep(long millis, int nanos) throws java.lang.InterruptedException { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull protected java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
+protected java.lang.Object clone() throws java.lang.CloneNotSupportedException { throw new RuntimeException("Stub!"); }
 
 public synchronized void start() { throw new RuntimeException("Stub!"); }
 
 public void run() { throw new RuntimeException("Stub!"); }
 
-@Deprecated public final void stop() { throw new RuntimeException("Stub!"); }
+@Deprecated
+public final void stop() { throw new RuntimeException("Stub!"); }
 
-@Deprecated public final synchronized void stop(@libcore.util.Nullable java.lang.Throwable obj) { throw new RuntimeException("Stub!"); }
+@Deprecated
+public final synchronized void stop(java.lang.Throwable obj) { throw new RuntimeException("Stub!"); }
 
 public void interrupt() { throw new RuntimeException("Stub!"); }
 
@@ -77,29 +79,33 @@ public static native boolean interrupted();
 
 public native boolean isInterrupted();
 
-@Deprecated public void destroy() { throw new RuntimeException("Stub!"); }
+@Deprecated
+public void destroy() { throw new RuntimeException("Stub!"); }
 
 public final boolean isAlive() { throw new RuntimeException("Stub!"); }
 
-@Deprecated public final void suspend() { throw new RuntimeException("Stub!"); }
+@Deprecated
+public final void suspend() { throw new RuntimeException("Stub!"); }
 
-@Deprecated public final void resume() { throw new RuntimeException("Stub!"); }
+@Deprecated
+public final void resume() { throw new RuntimeException("Stub!"); }
 
 public final void setPriority(int newPriority) { throw new RuntimeException("Stub!"); }
 
 public final int getPriority() { throw new RuntimeException("Stub!"); }
 
-public final synchronized void setName(@libcore.util.NonNull java.lang.String name) { throw new RuntimeException("Stub!"); }
+public final synchronized void setName(java.lang.String name) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public final java.lang.String getName() { throw new RuntimeException("Stub!"); }
+public final java.lang.String getName() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public final java.lang.ThreadGroup getThreadGroup() { throw new RuntimeException("Stub!"); }
+public final java.lang.ThreadGroup getThreadGroup() { throw new RuntimeException("Stub!"); }
 
 public static int activeCount() { throw new RuntimeException("Stub!"); }
 
 public static int enumerate(java.lang.Thread[] tarray) { throw new RuntimeException("Stub!"); }
 
-@Deprecated public int countStackFrames() { throw new RuntimeException("Stub!"); }
+@Deprecated
+public int countStackFrames() { throw new RuntimeException("Stub!"); }
 
 public final void join(long millis) throws java.lang.InterruptedException { throw new RuntimeException("Stub!"); }
 
@@ -115,29 +121,35 @@ public final boolean isDaemon() { throw new RuntimeException("Stub!"); }
 
 public final void checkAccess() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
+public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public java.lang.ClassLoader getContextClassLoader() { throw new RuntimeException("Stub!"); }
+public java.lang.ClassLoader getContextClassLoader() { throw new RuntimeException("Stub!"); }
 
-public void setContextClassLoader(@libcore.util.Nullable java.lang.ClassLoader cl) { throw new RuntimeException("Stub!"); }
+public void setContextClassLoader(java.lang.ClassLoader cl) { throw new RuntimeException("Stub!"); }
 
-public static native boolean holdsLock(@libcore.util.NonNull java.lang.Object obj);
+public static native boolean holdsLock(java.lang.Object obj);
 
-public java.lang.@libcore.util.NonNull StackTraceElement @libcore.util.NonNull [] getStackTrace() { throw new RuntimeException("Stub!"); }
+public java.lang.StackTraceElement[] getStackTrace() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static java.util.Map<@libcore.util.NonNull java.lang.Thread,java.lang.@libcore.util.NonNull StackTraceElement @libcore.util.NonNull []> getAllStackTraces() { throw new RuntimeException("Stub!"); }
+public static java.util.Map<java.lang.Thread,java.lang.StackTraceElement[]> getAllStackTraces() { throw new RuntimeException("Stub!"); }
 
 public long getId() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Thread.State getState() { throw new RuntimeException("Stub!"); }
+public java.lang.Thread.State getState() { throw new RuntimeException("Stub!"); }
 
-public static void setDefaultUncaughtExceptionHandler(@libcore.util.Nullable java.lang.Thread.UncaughtExceptionHandler eh) { throw new RuntimeException("Stub!"); }
+public static void setDefaultUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler eh) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public static java.lang.Thread.UncaughtExceptionHandler getDefaultUncaughtExceptionHandler() { throw new RuntimeException("Stub!"); }
+public static java.lang.Thread.UncaughtExceptionHandler getDefaultUncaughtExceptionHandler() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.Nullable public java.lang.Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() { throw new RuntimeException("Stub!"); }
+@libcore.api.CorePlatformApi
+public static void setUncaughtExceptionPreHandler(UncaughtExceptionHandler eh) { throw new RuntimeException("Stub!"); }
 
-public void setUncaughtExceptionHandler(@libcore.util.Nullable java.lang.Thread.UncaughtExceptionHandler eh) { throw new RuntimeException("Stub!"); }
+@libcore.api.CorePlatformApi
+public static UncaughtExceptionHandler getUncaughtExceptionPreHandler() { throw new RuntimeException("Stub!"); }
+
+public java.lang.Thread.UncaughtExceptionHandler getUncaughtExceptionHandler() { throw new RuntimeException("Stub!"); }
+
+public void setUncaughtExceptionHandler(java.lang.Thread.UncaughtExceptionHandler eh) { throw new RuntimeException("Stub!"); }
 
 public static final int MAX_PRIORITY = 10; // 0xa
 
@@ -158,7 +170,8 @@ TERMINATED;
 @java.lang.FunctionalInterface
 public static interface UncaughtExceptionHandler {
 
-public void uncaughtException(@libcore.util.NonNull java.lang.Thread t, @libcore.util.NonNull java.lang.Throwable e);
+public void uncaughtException(java.lang.Thread t, java.lang.Throwable e);
 }
 
 }
+

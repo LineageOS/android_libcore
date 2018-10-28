@@ -155,7 +155,6 @@ public class InetSocketAddress
     /**
      * @hide internal use only
      */
-    @libcore.api.CorePlatformApi
     public InetSocketAddress() {
         // These will be filled in the native implementation of recvfrom.
         holder = new InetSocketAddressHolder(null, null, 0);
