@@ -83,8 +83,8 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     assertEquals("1/19/2009 – 2/9/2012", formatDateRange(en_US, tz, fixedTime, fixedTime + 3 * YEAR, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
 
     assertEquals("19.1.2009", formatDateRange(de_DE, tz, fixedTime, fixedTime + HOUR, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
-    assertEquals("19.01.2009 – 22.01.2009", formatDateRange(de_DE, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
-    assertEquals("19.01.2009 – 22.04.2009", formatDateRange(de_DE, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
+    assertEquals("19.–22.01.2009", formatDateRange(de_DE, tz, fixedTime, fixedTime + 3 * DAY, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
+    assertEquals("19.01. – 22.04.2009", formatDateRange(de_DE, tz, fixedTime, fixedTime + 3 * MONTH, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
     assertEquals("19.01.2009 – 09.02.2012", formatDateRange(de_DE, tz, fixedTime, fixedTime + 3 * YEAR, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
 
     assertEquals("19/1/2009", formatDateRange(es_US, tz, fixedTime, fixedTime + HOUR, FORMAT_SHOW_YEAR | FORMAT_NUMERIC_DATE));
