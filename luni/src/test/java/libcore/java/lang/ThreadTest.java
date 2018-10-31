@@ -19,7 +19,6 @@ package libcore.java.lang;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 
 import junit.framework.Assert;
@@ -242,7 +241,7 @@ public final class ThreadTest extends TestCase {
 
                 if (!afterPark.get()) {
                     wasParkedForLongTime.set(true);
-                    LockSupport.unpark(current);
+                    current.unpark$();
                 }
             }
         };
@@ -251,7 +250,7 @@ public final class ThreadTest extends TestCase {
         // b/29746125 is caused by underflow: parkUntilArg - System.currentTimeMillis() > 0.
         // parkUntil$ should return immediately for everyargument that's <=
         // System.currentTimeMillis().
-        LockSupport.parkUntil(Long.MIN_VALUE);
+        current.parkUntil$(Long.MIN_VALUE);
         if (wasParkedForLongTime.get()) {
             fail("Current thread was parked, but was expected to return immediately");
         }
