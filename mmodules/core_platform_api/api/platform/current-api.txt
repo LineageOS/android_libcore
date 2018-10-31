@@ -768,6 +768,7 @@ package dalvik.system {
     method public static void onEndPreload();
     method public void postForkChild(int, boolean, boolean, java.lang.String);
     method public void postForkCommon();
+    method public void postForkSystemServer();
     method public void preFork();
     method public static void startZygoteNoThreadCreation();
     method public static void stopZygoteNoThreadCreation();
