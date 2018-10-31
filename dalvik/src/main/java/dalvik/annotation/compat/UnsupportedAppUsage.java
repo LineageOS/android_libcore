@@ -49,13 +49,13 @@ public @interface UnsupportedAppUsage {
          * Magic version number for a current development build, which has
          * not yet turned into an official release.
          */
-        public static int CUR_DEVELOPMENT = VMRuntime.SDK_VERSION_CUR_DEVELOPMENT;
+        public static final int CUR_DEVELOPMENT = VMRuntime.SDK_VERSION_CUR_DEVELOPMENT;
 
-        public static int O = 26;
+        public static final int O = 26;
 
-        public static int P = 28;
+        public static final int P = 28;
 
-        public static int Q = CUR_DEVELOPMENT;
+        public static final int Q = CUR_DEVELOPMENT;
     }
 
     /**
