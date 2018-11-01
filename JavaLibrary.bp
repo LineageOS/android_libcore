@@ -255,6 +255,23 @@ java_library {
     ],
 }
 
+// Provided solely to contribute information about which hidden parts of the
+// core-oj API are used by apps.
+java_library {
+    name: "core-oj-hiddenapi",
+    defaults: ["libcore_java_defaults"],
+    compile_dex: true,
+
+    srcs: [":openjdk_hiddenapi_javadoc_files"],
+
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
 //
 // Guaranteed unstripped versions of core-oj and core-libart.
 //
