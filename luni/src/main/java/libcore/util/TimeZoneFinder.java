@@ -97,7 +97,7 @@ public final class TimeZoneFinder {
             if (instance == null) {
                 String[] tzLookupFilePaths =
                         TimeZoneDataFiles.getTimeZoneFilePaths(TZLOOKUP_FILE_NAME);
-                instance = createInstanceWithFallback(tzLookupFilePaths[0], tzLookupFilePaths[1]);
+                instance = createInstanceWithFallback(tzLookupFilePaths);
             }
         }
         return instance;
