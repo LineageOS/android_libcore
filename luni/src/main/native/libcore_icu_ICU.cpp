@@ -949,21 +949,35 @@ struct ICURegistration {
     // Tell ICU it can *only* use our memory-mapped data.
     udata_setFileAccess(UDATA_NO_FILES, &status);
     if (status != U_ZERO_ERROR) {
-        ALOGE("Couldn't initialize ICU (s_setFileAccess): %s", u_errorName(status)); 
+        ALOGE("Couldn't initialize ICU (s_setFileAccess): %s", u_errorName(status));
         abort();
     }
 
-    std::string dataPath = getTzDataOverridePath();
-
-    // Map in optional TZ data files.
-    struct stat sb;
-    if (stat(dataPath.c_str(), &sb) == 0) {
-        ALOGD("Timezone override file found: %s", dataPath.c_str());
+    // Check the timezone /data override file exists from the "Time zone update via APK" feature.
+    // https://source.android.com/devices/tech/config/timezone-rules
+    // If it does, map it first so we use its data in preference to later ones.
+    std::string dataPath = getDataTimeZonePath();
+    if (pathExists(dataPath)) {
+        ALOGD("Time zone override file found: %s", dataPath.c_str());
         if ((icu_datamap_from_data_ = IcuDataMap::Create(dataPath)) == nullptr) {
-            ALOGW("TZ override file %s exists but could not be loaded. Skipping.", dataPath.c_str());
+            ALOGW("TZ override /data file %s exists but could not be loaded. Skipping.",
+                    dataPath.c_str());
         }
     } else {
-        ALOGV("No timezone override file found: %s", dataPath.c_str());
+        ALOGV("No timezone override /data file found: %s", dataPath.c_str());
+    }
+
+    // Check the timezone override file exists from a mounted APEX file.
+    // If it does, map it next so we use its data in preference to later ones.
+    std::string apexPath = getApexTimeZonePath();
+    if (pathExists(apexPath)) {
+        ALOGD("Time zone APEX file found: %s", apexPath.c_str());
+        if ((icu_datamap_from_apex_ = IcuDataMap::Create(apexPath)) == nullptr) {
+            ALOGW("TZ override APEX file %s exists but could not be loaded. Skipping.",
+                    apexPath.c_str());
+        }
+    } else {
+        ALOGV("No time zone override APEX file found: %s", apexPath.c_str());
     }
 
     // Use the ICU data files that shipped with the device for everything else.
@@ -990,18 +1004,25 @@ struct ICURegistration {
     // Reset libicu state to before it was loaded.
     u_cleanup();
 
-    // Unmap ICU data files that shipped with the device for everything else.
+    // Unmap ICU data files from /system.
     icu_datamap_from_system_.reset();
 
-    // Unmap optional TZ data files.
+    // Unmap optional TZ files from /apex.
+    icu_datamap_from_apex_.reset();
+
+    // Unmap optional TZ /data file.
     icu_datamap_from_data_.reset();
 
     // We don't need to call udata_setFileAccess because u_cleanup takes care of it.
   }
 
-  // Check the timezone override file exists. If it does, map it first so we use it in preference
-  // to the one that shipped with the device.
-  static std::string getTzDataOverridePath() {
+  static bool pathExists(const std::string path) {
+    struct stat sb;
+    return stat(path.c_str(), &sb) == 0;
+  }
+
+  // Returns a string containing the expected path of the (optional) /data tz data file
+  static std::string getDataTimeZonePath() {
     const char* dataPathPrefix = getenv("ANDROID_DATA");
     if (dataPathPrefix == NULL) {
       ALOGE("ANDROID_DATA environment variable not set"); \
@@ -1012,6 +1033,12 @@ struct ICURegistration {
     dataPath += "/misc/zoneinfo/current/icu/icu_tzdata.dat";
 
     return dataPath;
+  }
+
+  // Returns a string containing the expected path of the (optional) /apex tz data file
+  static std::string getApexTimeZonePath() {
+    std::string apexPath = "/apex/com.android.tzdata.apex/etc/icu_tzdata.dat";
+    return apexPath;
   }
 
   static std::string getSystemPath() {
@@ -1030,6 +1057,7 @@ struct ICURegistration {
   }
 
   std::unique_ptr<IcuDataMap> icu_datamap_from_data_;
+  std::unique_ptr<IcuDataMap> icu_datamap_from_apex_;
   std::unique_ptr<IcuDataMap> icu_datamap_from_system_;
 };
 

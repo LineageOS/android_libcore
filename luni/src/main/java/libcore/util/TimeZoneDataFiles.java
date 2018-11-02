@@ -16,6 +16,9 @@
 
 package libcore.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Utility methods associated with finding updateable time zone data files.
  */
@@ -27,17 +30,19 @@ public final class TimeZoneDataFiles {
     private TimeZoneDataFiles() {}
 
     /**
-     * Returns two time zone file paths for the specified file name in an array in the order they
+     * Returns time zone file paths for the specified file name in an array in the order they
      * should be tried. See {@link #generateIcuDataPath()} for ICU files instead.
      * <ul>
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
-     * <li>[1] - the location of the file in the /system partition (should exist).</li>
+     * <li>[1] - the location of the file in a mounted APEX partition (may not exist).</li>
+     * <li>[2] - the location of the file in the /system partition (should exist).</li>
      * </ul>
      */
     // VisibleForTesting
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
+                getApexTimeZoneFile(fileName),
                 getSystemTimeZoneFile(fileName)
         };
     }
@@ -46,28 +51,38 @@ public final class TimeZoneDataFiles {
         return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/current/" + fileName;
     }
 
+    private static String getApexTimeZoneFile(String fileName) {
+        return "/apex/com.android.tzdata.apex/etc/" + fileName;
+    }
+
     // VisibleForTesting
     public static String getSystemTimeZoneFile(String fileName) {
         return System.getenv(ANDROID_ROOT_ENV) + "/usr/share/zoneinfo/" + fileName;
     }
 
     public static String generateIcuDataPath() {
-        StringBuilder icuDataPathBuilder = new StringBuilder();
-        // ICU should first look in ANDROID_DATA. This is used for (optional) timezone data.
+        List<String> paths = new ArrayList<>(3);
+
+        // ICU should first look in ANDROID_DATA. This is used for (optional) time zone data
+        // delivered by APK (https://source.android.com/devices/tech/config/timezone-rules)
         String dataIcuDataPath = getEnvironmentPath(ANDROID_DATA_ENV, "/misc/zoneinfo/current/icu");
         if (dataIcuDataPath != null) {
-            icuDataPathBuilder.append(dataIcuDataPath);
+            paths.add(dataIcuDataPath);
         }
 
-        // ICU should always look in ANDROID_ROOT.
+        // ICU should then look for a mounted APEX file. This is used for (optional) time zone data
+        // that can be updated with an APEX file.
+        String mainlineModuleIcuDataPath = getApexTimeZoneFile("");
+        if (mainlineModuleIcuDataPath != null) {
+            paths.add(mainlineModuleIcuDataPath);
+        }
+
+        // ICU should always look in ANDROID_ROOT as this is where most of the data can be found.
         String systemIcuDataPath = getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu");
         if (systemIcuDataPath != null) {
-            if (icuDataPathBuilder.length() > 0) {
-                icuDataPathBuilder.append(":");
-            }
-            icuDataPathBuilder.append(systemIcuDataPath);
+            paths.add(systemIcuDataPath);
         }
-        return icuDataPathBuilder.toString();
+        return String.join(":", paths);
     }
 
     /**
