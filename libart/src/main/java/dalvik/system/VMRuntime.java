@@ -289,13 +289,6 @@ public final class VMRuntime {
     public native void disableJitCompilation();
 
     /**
-     * Returns true if the app has accessed a hidden API. This does not include
-     * attempts which have been blocked.
-     */
-    @libcore.api.CorePlatformApi
-    public native boolean hasUsedHiddenApi();
-
-    /**
      * Sets the list of exemptions from hidden API access enforcement.
      *
      * @param signaturePrefixes
