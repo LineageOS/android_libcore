@@ -40,6 +40,7 @@ java_library {
     name: "core-simple",
     hostdex: true,
     defaults: ["core-simple-defaults"],
+    java_version: "1.9",
 }
 
 // A guaranteed unstripped version of core-simple.
@@ -51,6 +52,7 @@ java_library {
     dex_preopt: {
         enabled: false,
     },
+    java_version: "1.9",
 }
 
 // Tests associated with the core-simple intra-core APIs.
@@ -92,6 +94,7 @@ droidstubs {
             removed_api_file: "api/intra/last-removed.txt",
         },
     },
+    java_version: "1.9",
 }
 
 // A library containing the {public SDK + intra-core} API stubs for
@@ -109,4 +112,5 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
+    java_version: "1.9",
 }
