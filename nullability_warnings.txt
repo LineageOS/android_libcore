@@ -1,0 +1,4 @@
+WARNING: method java.lang.Character.UnicodeScript.valueOf(String), parameter s, MISSING
+WARNING: method java.lang.Character.UnicodeScript.valueOf(String), return value, MISSING
+WARNING: method java.lang.Thread.State.valueOf(String), parameter s, MISSING
+WARNING: method java.lang.Thread.State.valueOf(String), return value, MISSING

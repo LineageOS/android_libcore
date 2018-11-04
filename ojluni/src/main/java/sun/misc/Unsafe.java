@@ -353,7 +353,14 @@ public final class Unsafe {
      * nanoseconds-from-now (<code>false</code>)
      * @param time the (absolute millis or relative nanos) time value
      */
-    public native void park(boolean absolute, long time);
+    public void park(boolean absolute, long time) {
+        if (absolute) {
+            Thread.currentThread().parkUntil$(time);
+        } else {
+            Thread.currentThread().parkFor$(time);
+        }
+    }
+
     /**
      * Unparks the given object, which must be a {@link Thread}.
      *
@@ -362,8 +369,14 @@ public final class Unsafe {
      *
      * @param obj non-null; the object to unpark
      */
-    @FastNative
-    public native void unpark(Object obj);
+    public void unpark(Object obj) {
+        if (obj instanceof Thread) {
+            ((Thread) obj).unpark$();
+        } else {
+            throw new IllegalArgumentException("valid for Threads only");
+        }
+    }
+
     /**
      * Allocates an instance of the given class without running the constructor.
      * The class' <clinit> will be run, if necessary.

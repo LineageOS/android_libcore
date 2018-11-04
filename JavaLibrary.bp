@@ -255,6 +255,23 @@ java_library {
     ],
 }
 
+// Provided solely to contribute information about which hidden parts of the
+// core-oj API are used by apps.
+java_library {
+    name: "core-oj-hiddenapi",
+    defaults: ["libcore_java_defaults"],
+    compile_dex: true,
+
+    srcs: [":openjdk_hiddenapi_javadoc_files"],
+
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
 //
 // Guaranteed unstripped versions of core-oj and core-libart.
 //
@@ -583,6 +600,10 @@ droiddoc_exported_dir {
     name: "ojluni-annotated-sdk-stubs",
     path: "ojluni/annotations/sdk",
 }
+droiddoc_exported_dir {
+    name: "ojluni-annotated-nullability-stubs",
+    path: "ojluni/annotations/sdk/nullability",
+}
 
 // Exports annotated stubs source files in ojluni/annotations/mmodules to make
 // them available to metalava. Used for core platform API and intra-code API
@@ -611,6 +632,31 @@ droidstubs {
     args: " --exclude-annotations "
         + "--hide-annotation libcore.api.Hide",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
+}
+
+// Target for validating nullability annotations for correctness and
+// completeness. To check that there are no nullability errors:
+//   make core-current-stubs-nullability-validation
+// To check that there are only the expected nullability warnings:
+//   make core-current-stubs-nullability-validation-check-nullability-warnings
+// To update the the list of known expected nullability warnings:
+//   make core-current-stubs-nullability-validation-update-nullability-warnings
+droidstubs {
+    name: "core-current-stubs-nullability-validation",
+    srcs: [":core_api_files"],
+    installable: false,
+    no_framework_libs: true,
+    annotations_enabled: true,
+    args: "--hide-annotation libcore.api.Hide " +
+        "--validate-nullability-from-merged-stubs ",
+    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
+    merge_annotations_dirs: [
+        "metalava-manual",
+        // N.B. Stubs in this filegroup will be validated:
+        "ojluni-annotated-nullability-stubs",
+    ],
+    // The expected set of warnings about missing annotations:
+    check_nullability_warnings: "nullability_warnings.txt",
 }
 
 // A stubs target containing the parts of the public SDK API provided by the

@@ -1805,6 +1805,12 @@ filegroup {
     ],
 }
 
+// Classes that provide information about hidden APIs.
+filegroup {
+    name: "openjdk_hiddenapi_javadoc_files",
+    srcs: ["ojluni/annotations/hiddenapi/**/*.java"],
+}
+
 // Generates stub files for the classes exposed in the public API, without
 // javadoc. This can be used as a starting point for adding a new file to
 // libcore/ojluni/annotations/sdk. See libcore/ojluni/annotations/README.
