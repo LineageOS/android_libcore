@@ -20,7 +20,6 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Objects;
 
 /** @hide */
-@libcore.api.CorePlatformApi
 @libcore.api.IntraCoreApi
 public final class Libcore {
     private Libcore() { }
