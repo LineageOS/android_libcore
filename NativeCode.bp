@@ -104,7 +104,6 @@ cc_defaults {
     shared_libs: [
         "libcrypto",
         "libicuuc",
-        "libssl",
         "libz",
 
         "libnativehelper",
