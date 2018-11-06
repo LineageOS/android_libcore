@@ -1061,9 +1061,6 @@ package libcore.io {
     method public static void setFdOwner(java.io.FileDescriptor, java.lang.Object);
   }
 
-  public final class Libcore {
-  }
-
   public final class Memory {
     method public static void memmove(java.lang.Object, int, java.lang.Object, int, long);
     method public static int peekInt(byte[], int, java.nio.ByteOrder);
