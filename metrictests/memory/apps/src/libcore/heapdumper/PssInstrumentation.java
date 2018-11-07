@@ -40,9 +40,7 @@ public class PssInstrumentation extends AbstractMetricInstrumentation {
     protected void takeMeasurement(String label) throws IOException {
         ActivityManager activityManager = getContext().getSystemService(ActivityManager.class);
         tryRemoveGarbage();
-        Debug.MemoryInfo memoryInfo =
-                activityManager.getProcessMemoryInfo(new int[] { Process.myPid() })[0];
-        int totalPssKb = memoryInfo.getTotalPss();
+        int totalPssKb = Math.toIntExact(Debug.getPss());
         File output = resolveRelativeOutputFilename(label + ".pss.txt");
         Charset cs = StandardCharsets.UTF_8;
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(output), cs)) {
