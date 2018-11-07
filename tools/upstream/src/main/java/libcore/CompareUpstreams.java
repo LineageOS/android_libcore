@@ -64,6 +64,8 @@ import java.util.regex.Pattern;
  *  To get the 9b113+ upstream, follow the instructions from the commit
  *  message of AOSP libcore commit 29957558cf0db700bfaae360a80c42dc3871d0e5
  *  at https://android-review.googlesource.com/c/304056/
+ *
+ *  To get OpenJDK head: hg clone http://hg.openjdk.java.net/jdk/jdk/ head
  */
 public class CompareUpstreams {
 
