@@ -42,11 +42,12 @@ public class PssInstrumentation extends AbstractMetricInstrumentation {
         tryRemoveGarbage();
         Debug.MemoryInfo memoryInfo =
                 activityManager.getProcessMemoryInfo(new int[] { Process.myPid() })[0];
+        int totalPssKb = memoryInfo.getTotalPss();
         File output = resolveRelativeOutputFilename(label + ".pss.txt");
         Charset cs = StandardCharsets.UTF_8;
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(output), cs)) {
-            writer.append(Integer.toString(memoryInfo.getTotalPss()));
+            writer.append(Integer.toString(totalPssKb));
         }
-        Log.i(TAG, "Wrote to total PSS in kB to " + output.getCanonicalPath());
+        Log.i(TAG, "Wrote to total PSS of " + totalPssKb + " kB to " + output.getCanonicalPath());
     }
 }
