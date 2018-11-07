@@ -31,13 +31,13 @@ public class TimeZoneDataFilesTest {
         assertEquals(3, paths.length);
 
         assertTrue(paths[0].contains("/misc/zoneinfo/current/"));
-        assertTrue(paths[0].endsWith("foo"));
+        assertTrue(paths[0].endsWith("/foo"));
 
-        assertTrue(paths[1].contains("/apex/com.android.tzdata.apex/"));
-        assertTrue(paths[1].endsWith("foo"));
+        assertTrue(paths[1].startsWith("/apex/com.android.tzdata/"));
+        assertTrue(paths[1].endsWith("/foo"));
 
         assertTrue(paths[2].contains("/usr/share/zoneinfo/"));
-        assertTrue(paths[2].endsWith("foo"));
+        assertTrue(paths[2].endsWith("/foo"));
     }
 
     // http://b/34867424
@@ -50,7 +50,7 @@ public class TimeZoneDataFilesTest {
         assertEquals(3, paths.length);
 
         assertTrue(paths[0].contains("/misc/zoneinfo/current/icu"));
-        assertTrue(paths[1].contains("/apex/com.android.tzdata.apex"));
+        assertTrue(paths[1].startsWith("/apex/com.android.tzdata"));
         assertTrue(paths[2].contains("/usr/icu"));
     }
 }

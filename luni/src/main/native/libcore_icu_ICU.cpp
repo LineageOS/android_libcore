@@ -969,15 +969,15 @@ struct ICURegistration {
 
     // Check the timezone override file exists from a mounted APEX file.
     // If it does, map it next so we use its data in preference to later ones.
-    std::string apexPath = getApexTimeZonePath();
-    if (pathExists(apexPath)) {
-        ALOGD("Time zone APEX file found: %s", apexPath.c_str());
-        if ((icu_datamap_from_apex_ = IcuDataMap::Create(apexPath)) == nullptr) {
-            ALOGW("TZ override APEX file %s exists but could not be loaded. Skipping.",
-                    apexPath.c_str());
+    std::string tzModulePath = getTimeZoneModulePath();
+    if (pathExists(tzModulePath)) {
+        ALOGD("Time zone APEX file found: %s", tzModulePath.c_str());
+        if ((icu_datamap_from_tz_module_ = IcuDataMap::Create(tzModulePath)) == nullptr) {
+            ALOGW("TZ module override file %s exists but could not be loaded. Skipping.",
+                    tzModulePath.c_str());
         }
     } else {
-        ALOGV("No time zone override APEX file found: %s", apexPath.c_str());
+        ALOGV("No time zone module override file found: %s", tzModulePath.c_str());
     }
 
     // Use the ICU data files that shipped with the device for everything else.
@@ -1007,8 +1007,8 @@ struct ICURegistration {
     // Unmap ICU data files from /system.
     icu_datamap_from_system_.reset();
 
-    // Unmap optional TZ files from /apex.
-    icu_datamap_from_apex_.reset();
+    // Unmap optional TZ module files from /apex.
+    icu_datamap_from_tz_module_.reset();
 
     // Unmap optional TZ /data file.
     icu_datamap_from_data_.reset();
@@ -1035,9 +1035,9 @@ struct ICURegistration {
     return dataPath;
   }
 
-  // Returns a string containing the expected path of the (optional) /apex tz data file
-  static std::string getApexTimeZonePath() {
-    std::string apexPath = "/apex/com.android.tzdata.apex/etc/icu_tzdata.dat";
+  // Returns a string containing the expected path of the (optional) /apex tz module data file
+  static std::string getTimeZoneModulePath() {
+    std::string apexPath = "/apex/com.android.tzdata/etc/icu_tzdata.dat";
     return apexPath;
   }
 
@@ -1057,7 +1057,7 @@ struct ICURegistration {
   }
 
   std::unique_ptr<IcuDataMap> icu_datamap_from_data_;
-  std::unique_ptr<IcuDataMap> icu_datamap_from_apex_;
+  std::unique_ptr<IcuDataMap> icu_datamap_from_tz_module_;
   std::unique_ptr<IcuDataMap> icu_datamap_from_system_;
 };
 
