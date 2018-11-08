@@ -34,7 +34,8 @@ public final class TimeZoneDataFiles {
      * should be tried. See {@link #generateIcuDataPath()} for ICU files instead.
      * <ul>
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
-     * <li>[1] - the location of the file in a mounted APEX partition (may not exist).</li>
+     * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
+     * </li>
      * <li>[2] - the location of the file in the /system partition (should exist).</li>
      * </ul>
      */
@@ -42,7 +43,7 @@ public final class TimeZoneDataFiles {
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
-                getApexTimeZoneFile(fileName),
+                getTimeZoneModuleFile(fileName),
                 getSystemTimeZoneFile(fileName)
         };
     }
@@ -51,8 +52,8 @@ public final class TimeZoneDataFiles {
         return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/current/" + fileName;
     }
 
-    private static String getApexTimeZoneFile(String fileName) {
-        return "/apex/com.android.tzdata.apex/etc/" + fileName;
+    private static String getTimeZoneModuleFile(String fileName) {
+        return "/apex/com.android.tzdata/etc/" + fileName;
     }
 
     // VisibleForTesting
@@ -70,11 +71,11 @@ public final class TimeZoneDataFiles {
             paths.add(dataIcuDataPath);
         }
 
-        // ICU should then look for a mounted APEX file. This is used for (optional) time zone data
-        // that can be updated with an APEX file.
-        String mainlineModuleIcuDataPath = getApexTimeZoneFile("");
-        if (mainlineModuleIcuDataPath != null) {
-            paths.add(mainlineModuleIcuDataPath);
+        // ICU should then look for a mounted time zone module file in /apex. This is used for
+        // (optional) time zone data that can be updated with an APEX file.
+        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("");
+        if (timeZoneModuleIcuDataPath != null) {
+            paths.add(timeZoneModuleIcuDataPath);
         }
 
         // ICU should always look in ANDROID_ROOT as this is where most of the data can be found.
