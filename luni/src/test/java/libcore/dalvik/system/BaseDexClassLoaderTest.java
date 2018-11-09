@@ -16,6 +16,11 @@
 
 package libcore.dalvik.system;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.PathClassLoader;
 import java.io.File;
@@ -26,62 +31,115 @@ import java.util.ArrayList;
 
 import libcore.io.Streams;
 
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
-public final class BaseDexClassLoaderTest extends TestCase {
+@RunWith(JUnit4.class)
+public final class BaseDexClassLoaderTest {
     private static class Reporter implements BaseDexClassLoader.Reporter {
-        public List<BaseDexClassLoader> classLoaders = new ArrayList<>();
-        public List<String> loadedDexPaths = new ArrayList<>();
+        public final List<ClassLoader> classLoaders = new ArrayList<>();
+        public final List<String> loadedDexPaths = new ArrayList<>();
 
         @Override
-        public void report(List<BaseDexClassLoader> loaders, List<String> dexPaths) {
+        public void report(List<ClassLoader> loaders, List<String> dexPaths) {
             classLoaders.addAll(loaders);
             loadedDexPaths.addAll(dexPaths);
         }
+
+        void reset() {
+            classLoaders.clear();
+            loadedDexPaths.clear();
+        }
     }
 
-    public void testReporting() throws Exception {
+    private ClassLoader pcl;
+    private File jar;
+    private Reporter reporter;
+
+    @Before
+    public void extractTestJar() throws Exception {
         // Extract loading-test.jar from the resource.
-        ClassLoader pcl = BaseDexClassLoaderTest.class.getClassLoader();
-        File jar = File.createTempFile("loading-test", ".jar");
+        pcl = BaseDexClassLoaderTest.class.getClassLoader();
+        jar = File.createTempFile("loading-test", ".jar");
         try (InputStream in = pcl.getResourceAsStream("dalvik/system/loading-test.jar");
              FileOutputStream out = new FileOutputStream(jar)) {
           Streams.copy(in, out);
         }
+    }
 
-        // Set the reporter.
-        Reporter reporter = new Reporter();
+    @Before
+    public void registerReporter() {
+        reporter = new Reporter();
         BaseDexClassLoader.setReporter(reporter);
+    }
+
+    @After
+    public void unregisterReporter() {
+        BaseDexClassLoader.setReporter(null);
+    }
+
+    @After
+    public void deleteTestJar() throws Exception {
+        assertTrue(jar.delete());
+    }
+
+    @Test
+    public void testReporting() throws Exception {
         // Load the jar file using a PathClassLoader.
         BaseDexClassLoader cl1 = new PathClassLoader(jar.getPath(),
             ClassLoader.getSystemClassLoader());
 
-        // Verify the reporter files.
+        // Verify the reported data.
         assertEquals(2, reporter.loadedDexPaths.size());
         assertEquals(2, reporter.classLoaders.size());
 
         // First class loader should be the one loading the files
         assertEquals(jar.getPath(), reporter.loadedDexPaths.get(0));
         assertEquals(cl1, reporter.classLoaders.get(0));
+
         // Second class loader should be the system class loader.
         // Don't check the actual classpath as that might vary based on system properties.
         assertEquals(ClassLoader.getSystemClassLoader(), reporter.classLoaders.get(1));
+    }
 
-        // Reset the reporter and check we don't report anymore.
-        BaseDexClassLoader.setReporter(null);
+    @Test
+    public void testReportingUnknownLoader() throws Exception {
+        // Add an unknown classloader between cl1 and the system
+        ClassLoader unknownLoader = new ClassLoader(ClassLoader.getSystemClassLoader()) {};
+        BaseDexClassLoader cl1 = new PathClassLoader(jar.getPath(), unknownLoader);
+
+        assertEquals(3, reporter.loadedDexPaths.size());
+        assertEquals(3, reporter.classLoaders.size());
+
+        assertEquals(jar.getPath(), reporter.loadedDexPaths.get(0));
+        assertEquals(cl1, reporter.classLoaders.get(0));
+
+        assertNull(reporter.loadedDexPaths.get(1));
+        assertEquals(unknownLoader, reporter.classLoaders.get(1));
+
+        assertEquals(ClassLoader.getSystemClassLoader(), reporter.classLoaders.get(2));
+    }
+
+    @Test
+    public void testNoReportingAfterResetting() throws Exception {
+        BaseDexClassLoader cl1 = new PathClassLoader(jar.getPath(),
+            ClassLoader.getSystemClassLoader());
+
+        assertEquals(2, reporter.loadedDexPaths.size());
+        assertEquals(2, reporter.classLoaders.size());
+
+        // Check we don't report after the reporter is unregistered.
+        unregisterReporter();
+        reporter.reset();
 
         // Load the jar file using another PathClassLoader.
         BaseDexClassLoader cl2 = new PathClassLoader(jar.getPath(), pcl);
 
-        // Verify the list reporter files did not change.
-        assertEquals(2, reporter.loadedDexPaths.size());
-        assertEquals(2, reporter.classLoaders.size());
-
-        assertEquals(jar.getPath(), reporter.loadedDexPaths.get(0));
-        assertEquals(cl1, reporter.classLoaders.get(0));
-        assertEquals(ClassLoader.getSystemClassLoader(), reporter.classLoaders.get(1));
-
-        // Clean up the extracted jar file.
-        assertTrue(jar.delete());
+        // Verify nothing reported
+        assertEquals(0, reporter.loadedDexPaths.size());
+        assertEquals(0, reporter.classLoaders.size());
     }
 }
