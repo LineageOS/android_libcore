@@ -40,11 +40,6 @@ package android.icu.text {
     field public static final int ZERO_LENGTH_LABEL = 10; // 0xa
   }
 
-  public abstract class Transliterator {
-    method public static final android.icu.text.Transliterator getInstance(java.lang.String);
-    method public final java.lang.String transliterate(java.lang.String);
-  }
-
 }
 
 package android.icu.util {
