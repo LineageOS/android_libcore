@@ -1211,10 +1211,17 @@ public final class ZoneInfo extends TimeZone {
                         rawOffsetSeconds);
             }
 
+            if ((transitionIndex == 0) && (timeZone.mTransitions[0] == Integer.MIN_VALUE)) {
+                int endWallTimeSeconds = checkedAdd(timeZone.mTransitions[1], rawOffsetSeconds);
+                return new OffsetInterval(Integer.MIN_VALUE, endWallTimeSeconds, 0 /* isDst */,
+                        rawOffsetSeconds);
+            }
+
             int type = timeZone.mTypes[transitionIndex] & 0xff;
             int totalOffsetSeconds = timeZone.mOffsets[type] + rawOffsetSeconds;
             int endWallTimeSeconds;
-            if (transitionIndex == timeZone.mTransitions.length - 1) {
+            if ((transitionIndex == timeZone.mTransitions.length - 1) ||
+                (timeZone.mTransitions[transitionIndex + 1] == Integer.MAX_VALUE)) {
                 // If this is the last transition, make up the end time.
                 endWallTimeSeconds = Integer.MAX_VALUE;
             } else {
