@@ -1214,7 +1214,8 @@ public final class ZoneInfo extends TimeZone {
             int type = timeZone.mTypes[transitionIndex] & 0xff;
             int totalOffsetSeconds = timeZone.mOffsets[type] + rawOffsetSeconds;
             int endWallTimeSeconds;
-            if (transitionIndex == timeZone.mTransitions.length - 1) {
+            if ((transitionIndex == timeZone.mTransitions.length - 1) ||
+                (timeZone.mTransitions[transitionIndex + 1] == INT32_MAX)) {
                 // If this is the last transition, make up the end time.
                 endWallTimeSeconds = Integer.MAX_VALUE;
             } else {
