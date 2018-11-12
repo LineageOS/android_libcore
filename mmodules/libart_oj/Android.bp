@@ -18,32 +18,6 @@
 // together we can consider them as a unit and we don't need a well-defined
 // intra-core API between them.
 
-// A rule that checks we can build core-libart and core-oj using only the source
-// for core-libart and core-oj and the APIs in core-intra-stubs.
-java_library {
-    name: "core-libart-oj.depscheck",
-    srcs: [
-        ":core_libart_java_files",
-        ":core_oj_java_files",
-    ],
-    errorprone: {
-        javacflags: [
-            "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
-            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
-        ],
-    },
-
-    installable: false,
-
-    no_standard_libs: true,
-    libs: ["core.intra.stubs"],
-    system_modules: "core-intra-stubs-system-modules",
-    java_version: "1.9",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
-}
-
 // Tests associated with the {core-libart + core-oj} intra-core APIs.
 java_test {
     name: "core-libart+oj-intra-test",
