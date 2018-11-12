@@ -23,6 +23,8 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 import dalvik.system.VMRuntime;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
+import libcore.api.CorePlatformApi;
+import libcore.api.IntraCoreApi;
 
 /**
  * Indicates that a class member, that is not part of the SDK, is used by apps.
@@ -42,19 +44,31 @@ import java.lang.annotation.Target;
  */
 @Retention(CLASS)
 @Target({CONSTRUCTOR, METHOD, FIELD})
+@CorePlatformApi
+@IntraCoreApi
 public @interface UnsupportedAppUsage {
 
+    @CorePlatformApi
+    @IntraCoreApi
     class VERSION_CODES {
         /**
          * Magic version number for a current development build, which has
          * not yet turned into an official release.
          */
+        @CorePlatformApi
+        @IntraCoreApi
         public static final int CUR_DEVELOPMENT = VMRuntime.SDK_VERSION_CUR_DEVELOPMENT;
 
+        @CorePlatformApi
+        @IntraCoreApi
         public static final int O = 26;
 
+        @CorePlatformApi
+        @IntraCoreApi
         public static final int P = 28;
 
+        @CorePlatformApi
+        @IntraCoreApi
         public static final int Q = CUR_DEVELOPMENT;
     }
 
@@ -63,6 +77,8 @@ public @interface UnsupportedAppUsage {
      *
      * @return ID of the associated tracking bug
      */
+    @CorePlatformApi
+    @IntraCoreApi
     long trackingBug() default 0;
 
     /**
@@ -96,6 +112,8 @@ public @interface UnsupportedAppUsage {
      *
      * @return The maximum value for an apps targetSdkVersion in order to access this API.
      */
+    @CorePlatformApi
+    @IntraCoreApi
     int maxTargetSdk() default Integer.MAX_VALUE;
 
     /**
@@ -104,5 +122,7 @@ public @interface UnsupportedAppUsage {
      *
      * @return A dex API signature.
      */
+    @CorePlatformApi
+    @IntraCoreApi
     String expectedSignature() default "";
 }
