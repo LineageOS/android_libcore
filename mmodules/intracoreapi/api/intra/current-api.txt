@@ -415,6 +415,21 @@ package com.android.org.conscrypt {
 
 }
 
+package dalvik.annotation.compat {
+
+  public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
+  }
+
+  public static class UnsupportedAppUsage.VERSION_CODES {
+    ctor public UnsupportedAppUsage.VERSION_CODES();
+    field public static final int CUR_DEVELOPMENT = 10000; // 0x2710
+    field public static final int O = 26; // 0x1a
+    field public static final int P = 28; // 0x1c
+    field public static final int Q = 10000; // 0x2710
+  }
+
+}
+
 package dalvik.system {
 
   public final class BlockGuard {
