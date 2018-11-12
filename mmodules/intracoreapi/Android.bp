@@ -64,3 +64,31 @@ java_system_modules {
     libs: ["core.intra.stubs"],
 }
 
+// A rule that checks we can build core-libart and core-oj using only the source
+// for core-libart and core-oj and the APIs in core-intra-stubs. This proves we
+// don't actually depend on things from (for example) conscrypt we haven't added
+// to the intra-core API.
+java_library {
+    name: "core-libart-oj.depscheck",
+    srcs: [
+        ":core_libart_java_files",
+        ":core_oj_java_files",
+    ],
+    errorprone: {
+        javacflags: [
+            "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
+            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
+        ],
+    },
+
+    installable: false,
+
+    no_standard_libs: true,
+    libs: ["core.intra.stubs"],
+    system_modules: "core-intra-stubs-system-modules",
+    java_version: "1.9",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+}
+
