@@ -1006,12 +1006,6 @@ package libcore.icu {
     method public static java.lang.String getRelativeTimeSpanString(java.util.Locale, java.util.TimeZone, long, long, long, int);
   }
 
-  public final class TimeZoneNames {
-  }
-
-  public static class TimeZoneNames.ZoneStringsCache extends libcore.util.BasicLruCache {
-  }
-
 }
 
 package libcore.internal {
@@ -1150,10 +1144,6 @@ package libcore.util {
 
   public final class ArrayUtils {
     method public static void throwsIfOutOfBounds(int, int, int);
-  }
-
-  public class BasicLruCache<K, V> {
-    ctor public BasicLruCache(int);
   }
 
   public final class CountryTimeZones {
