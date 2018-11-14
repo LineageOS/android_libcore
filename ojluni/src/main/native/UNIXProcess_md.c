@@ -44,7 +44,9 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <ctype.h>
-#ifdef _ALLBSD_SOURCE
+// Android-changed: Fuchsia: Point to correct location of header. http://b/119426171
+// #ifdef _ALLBSD_SOURCE
+#if defined(_ALLBSD_SOURCE) && !defined(__Fuchsia__)
 #include <wait.h>
 #else
 #include <sys/wait.h>
