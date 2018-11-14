@@ -46,7 +46,9 @@
 #include <string.h>
 #endif
 
-#ifdef _ALLBSD_SOURCE
+// Android-changed: Fuchsia: Alias *64 on Fuchsia builds. http://b/119496969
+// #ifdef _ALLBSD_SOURCE
+#if defined(_ALLBSD_SOURCE) || defined(__Fuchsia__)
 #include <string.h>
 
 #define stat64 stat
