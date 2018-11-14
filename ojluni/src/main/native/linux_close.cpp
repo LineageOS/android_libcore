@@ -30,12 +30,22 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
+// Android-changed: Fuchsia: Drop #include of resource.h absent on Fuchsia. http://b/119433484
+// #include <sys/resource.h>
+#if !defined(__Fuchsia__)
 #include <sys/resource.h>
+#endif
 #include <sys/uio.h>
 #include <unistd.h>
 #include <errno.h>
 
+// Android-changed: Fuchsia: Fix poll.h include location
+// #include <sys/poll.h>
+#if !defined(__Fuchsia__)
 #include <sys/poll.h>
+#else
+#include <poll.h>
+#endif
 
 
 #include <nativehelper/AsynchronousCloseMonitor.h>
