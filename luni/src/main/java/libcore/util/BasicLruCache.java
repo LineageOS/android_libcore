@@ -25,13 +25,11 @@ import java.util.Map;
  * android.util.LruCache} where that is available.
  * @hide
  */
-@libcore.api.CorePlatformApi
 public class BasicLruCache<K, V> {
     @UnsupportedAppUsage
     private final LinkedHashMap<K, V> map;
     private final int maxSize;
 
-    @libcore.api.CorePlatformApi
     public BasicLruCache(int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");
