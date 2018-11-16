@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package libcore.util;
+package libcore.timezone;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Utility methods associated with finding updateable time zone data files.
+ *
+ * @hide
  */
 public final class TimeZoneDataFiles {
 
