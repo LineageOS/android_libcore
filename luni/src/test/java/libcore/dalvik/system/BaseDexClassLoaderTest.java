@@ -22,12 +22,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import dalvik.system.BaseDexClassLoader;
+import dalvik.system.DelegateLastClassLoader;
 import dalvik.system.PathClassLoader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.List;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
 
 import libcore.io.Streams;
 
@@ -58,6 +64,21 @@ public final class BaseDexClassLoaderTest {
     private ClassLoader pcl;
     private File jar;
     private Reporter reporter;
+
+    // For resources that we will load in this test. We're re-using parent.jar and child.jar
+    // from DelegateLastClassLoaderTest for convenience.
+    private Map<String, File> resourcesMap;
+
+    @Before
+    public void setupResourcesMap() throws Exception {
+        resourcesMap = ClassLoaderTestSupport.setupAndCopyResources(
+                Arrays.asList("parent.jar", "child.jar"));
+    }
+
+    @After
+    public void cleanupResourcesMap() throws Exception {
+        ClassLoaderTestSupport.cleanUpResources(resourcesMap);
+    }
 
     @Before
     public void extractTestJar() throws Exception {
@@ -141,5 +162,179 @@ public final class BaseDexClassLoaderTest {
         // Verify nothing reported
         assertEquals(0, reporter.loadedDexPaths.size());
         assertEquals(0, reporter.classLoaders.size());
+    }
+
+    /* package */ static List<String> readResources(ClassLoader cl, String resourceName)
+            throws Exception {
+        Enumeration<URL> resources = cl.getResources(resourceName);
+
+        List<String> contents = new ArrayList<>();
+        while (resources.hasMoreElements()) {
+            URL url = resources.nextElement();
+
+            try (InputStream is = url.openStream()) {
+                byte[] bytes = Streams.readFully(is);
+                contents.add(new String(bytes, StandardCharsets.UTF_8));
+            }
+        }
+
+        return contents;
+    }
+
+    /* package */ static String readResource(ClassLoader cl, String resourceName) throws Exception {
+        InputStream in = cl.getResourceAsStream(resourceName);
+        if (in == null) {
+            return null;
+        }
+
+        byte[] contents = Streams.readFully(in);
+        return new String(contents, StandardCharsets.UTF_8);
+    }
+
+    private void checkResources(ClassLoader loader) throws Exception {
+        List<String> resources = readResources(loader, "resource.txt");
+
+        assertEquals(2, resources.size());
+        assertTrue(resources.contains("parent"));
+        assertTrue(resources.contains("child"));
+
+        resources = readResources(loader, "resource2.txt");
+
+        assertEquals(1, resources.size());
+        assertEquals("parent2", resources.get(0));
+    }
+
+    @Test
+    public void testGetResourceSharedLibraries1() throws Exception {
+        File parentPath = resourcesMap.get("parent.jar");
+        File childPath = resourcesMap.get("child.jar");
+        assertTrue(parentPath != null);
+        assertTrue(childPath != null);
+
+        ClassLoader parent = Object.class.getClassLoader();
+
+        ClassLoader[] sharedLibraries = {
+          new PathClassLoader(parentPath.getAbsolutePath(), null, parent),
+          new PathClassLoader(childPath.getAbsolutePath(), null, parent),
+        };
+
+        // PCL[]{PCL[parent.jar]#PCL[child.jar]}
+        ClassLoader loader = new PathClassLoader("", null, parent, sharedLibraries);
+        assertEquals("parent", readResource(loader, "resource.txt"));
+        checkResources(loader);
+
+        // DLC[]{PCL[parent.jar]#PCL[child.jar]}
+        loader = new DelegateLastClassLoader("", null, parent, sharedLibraries);
+        assertEquals("parent", readResource(loader, "resource.txt"));
+        checkResources(loader);
+    }
+
+    @Test
+    public void testGetResourceSharedLibraries2() throws Exception {
+        File parentPath = resourcesMap.get("parent.jar");
+        File childPath = resourcesMap.get("child.jar");
+        assertTrue(parentPath != null);
+        assertTrue(childPath != null);
+
+        ClassLoader parent = Object.class.getClassLoader();
+
+        ClassLoader[] sharedLibraries = {
+          new PathClassLoader(childPath.getAbsolutePath(), null, parent),
+          new PathClassLoader(parentPath.getAbsolutePath(), null, parent),
+        };
+
+        // PCL[]{PCL[child.jar]#PCL[parent.jar]}
+        ClassLoader loader = new PathClassLoader("", null, parent, sharedLibraries);
+        assertEquals("child", readResource(loader, "resource.txt"));
+        checkResources(loader);
+
+        // DLC[]{PCL[child.jar]#PCL[parent.jar]}
+        loader = new DelegateLastClassLoader("", null, parent, sharedLibraries);
+        assertEquals("child", readResource(loader, "resource.txt"));
+        checkResources(loader);
+    }
+
+    @Test
+    public void testGetResourceSharedLibraries3() throws Exception {
+        File parentPath = resourcesMap.get("parent.jar");
+        File childPath = resourcesMap.get("child.jar");
+        assertTrue(parentPath != null);
+        assertTrue(childPath != null);
+
+        ClassLoader parent = Object.class.getClassLoader();
+
+        ClassLoader[] sharedLibraryLevel2 = {
+          new PathClassLoader(parentPath.getAbsolutePath(), null, parent),
+        };
+
+        ClassLoader[] sharedLibraryLevel1 = {
+          new PathClassLoader(childPath.getAbsolutePath(), null, parent, sharedLibraryLevel2),
+        };
+
+        // PCL[]{PCL[child.jar]{PCL[parent.jar]}}
+        ClassLoader loader = new PathClassLoader("", null, parent, sharedLibraryLevel1);
+        assertEquals("parent", readResource(loader, "resource.txt"));
+        checkResources(loader);
+
+        // DLC[]{PCL[child.jar]{PCL[parent.jar]}}
+        loader = new DelegateLastClassLoader("", null, parent, sharedLibraryLevel1);
+        assertEquals("parent", readResource(loader, "resource.txt"));
+        checkResources(loader);
+    }
+
+    @Test
+    public void testGetResourceSharedLibraries4() throws Exception {
+        File parentPath = resourcesMap.get("parent.jar");
+        File childPath = resourcesMap.get("child.jar");
+        assertTrue(parentPath != null);
+        assertTrue(childPath != null);
+
+        ClassLoader parent = Object.class.getClassLoader();
+
+        ClassLoader[] sharedLibraryLevel2 = {
+          new PathClassLoader(childPath.getAbsolutePath(), null, parent),
+        };
+
+        ClassLoader[] sharedLibraryLevel1 = {
+          new PathClassLoader(parentPath.getAbsolutePath(), null, parent, sharedLibraryLevel2),
+        };
+
+        // PCL[]{PCL[parent.jar]{PCL[child.jar]}}
+        ClassLoader loader = new PathClassLoader("", null, parent, sharedLibraryLevel1);
+        assertEquals("child", readResource(loader, "resource.txt"));
+        checkResources(loader);
+
+        // DLC[]{PCL[parent.jar]{PCL[child.jar]}}
+        loader = new DelegateLastClassLoader("", null, parent, sharedLibraryLevel1);
+        assertEquals("child", readResource(loader, "resource.txt"));
+        checkResources(loader);
+    }
+
+    @Test
+    public void testGetResourceSharedLibraries5() throws Exception {
+        File parentPath = resourcesMap.get("parent.jar");
+        File childPath = resourcesMap.get("child.jar");
+        assertTrue(parentPath != null);
+        assertTrue(childPath != null);
+
+        ClassLoader parentParent = Object.class.getClassLoader();
+        ClassLoader parent = new PathClassLoader(parentPath.getAbsolutePath(), null, parentParent);
+
+        ClassLoader[] sharedLibrary = {
+          new PathClassLoader(childPath.getAbsolutePath(), null, parentParent),
+        };
+
+        // PCL[]{PCL[child.jar]};PCL[parent.jar]
+        ClassLoader pathLoader = new PathClassLoader("", null, parent, sharedLibrary);
+
+        // Check that the parent was queried first.
+        assertEquals("parent", readResource(pathLoader, "resource.txt"));
+
+        // DLC[]{PCL[child.jar]};PCL[parent.jar]
+        ClassLoader delegateLast = new DelegateLastClassLoader("", null, parent, sharedLibrary);
+
+        // Check that the shared library was queried first.
+        assertEquals("child", readResource(delegateLast, "resource.txt"));
+
     }
 }
