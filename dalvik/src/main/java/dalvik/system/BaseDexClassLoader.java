@@ -18,12 +18,15 @@ package dalvik.system;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import sun.misc.CompoundEnumeration;
 
 /**
  * Base class for common functionality between various dex-based
@@ -48,6 +51,20 @@ public class BaseDexClassLoader extends ClassLoader {
     private final DexPathList pathList;
 
     /**
+     * Array of ClassLoaders that can be used to load classes and resources that the code in
+     * {@code pathList} may depend on. This is used to implement Android's
+     * <a href=https://developer.android.com/guide/topics/manifest/uses-library-element>
+     * shared libraries</a> feature.
+     * <p>The shared library loaders are always checked before the {@code pathList} when looking
+     * up classes and resources.
+     *
+     * <p>{@code null} if the class loader has no shared library.
+     *
+     * @hide
+     */
+    protected final ClassLoader[] sharedLibraryLoaders;
+
+    /**
      * Constructs an instance.
      * Note that all the *.jar and *.apk files from {@code dexPath} might be
      * first extracted in-memory before the code is loaded. This can be avoided
@@ -64,7 +81,7 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent) {
-        this(dexPath, optimizedDirectory, librarySearchPath, parent, false);
+        this(dexPath, librarySearchPath, parent, null, false);
     }
 
     /**
@@ -73,8 +90,38 @@ public class BaseDexClassLoader extends ClassLoader {
     @UnsupportedAppUsage
     public BaseDexClassLoader(String dexPath, File optimizedDirectory,
             String librarySearchPath, ClassLoader parent, boolean isTrusted) {
+        this(dexPath, librarySearchPath, parent, null, isTrusted);
+    }
+
+    /**
+     * @hide
+     */
+    public BaseDexClassLoader(String dexPath,
+            String librarySearchPath, ClassLoader parent, ClassLoader[] libraries) {
+        this(dexPath, librarySearchPath, parent, libraries, false);
+    }
+
+    /**
+     * BaseDexClassLoader implements the Android
+     * <a href=https://developer.android.com/guide/topics/manifest/uses-library-element>
+     * shared libraries</a> feature by changing the typical parent delegation mechanism
+     * of class loaders.
+     * <p> Each shared library is associated with its own class loader, which is added to a list of
+     * class loaders this BaseDexClassLoader tries to load from in order, immediately checking
+     * after the parent.
+     * The shared library loaders are always checked before the {@code pathList} when looking
+     * up classes and resources.
+     *
+     * @hide
+     */
+    public BaseDexClassLoader(String dexPath,
+            String librarySearchPath, ClassLoader parent, ClassLoader[] sharedLibraryLoaders,
+            boolean isTrusted) {
         super(parent);
         this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
+        this.sharedLibraryLoaders = sharedLibraryLoaders == null
+                ? null
+                : Arrays.copyOf(sharedLibraryLoaders, sharedLibraryLoaders.length);
 
         if (reporter != null) {
             reportClassLoaderChain();
@@ -123,10 +170,22 @@ public class BaseDexClassLoader extends ClassLoader {
         // TODO We should support giving this a library search path maybe.
         super(parent);
         this.pathList = new DexPathList(this, dexFiles);
+        this.sharedLibraryLoaders = null;
     }
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+        // First, check whether the class is present in our shared libraries.
+        if (sharedLibraryLoaders != null) {
+            for (ClassLoader loader : sharedLibraryLoaders) {
+                try {
+                    return loader.loadClass(name);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+        }
+        // Check whether the class in question is present in the dexPath that
+        // this classloader operates on.
         List<Throwable> suppressedExceptions = new ArrayList<Throwable>();
         Class c = pathList.findClass(name, suppressedExceptions);
         if (c == null) {
@@ -169,12 +228,37 @@ public class BaseDexClassLoader extends ClassLoader {
 
     @Override
     protected URL findResource(String name) {
+        if (sharedLibraryLoaders != null) {
+            for (ClassLoader loader : sharedLibraryLoaders) {
+                URL url = loader.getResource(name);
+                if (url != null) {
+                    return url;
+                }
+            }
+        }
         return pathList.findResource(name);
     }
 
     @Override
     protected Enumeration<URL> findResources(String name) {
-        return pathList.findResources(name);
+        Enumeration<URL> myResources = pathList.findResources(name);
+        if (sharedLibraryLoaders == null) {
+          return myResources;
+        }
+
+        Enumeration<URL>[] tmp =
+            (Enumeration<URL>[]) new Enumeration<?>[sharedLibraryLoaders.length + 1];
+        // This will add duplicate resources if a shared library is loaded twice, but that's ok
+        // as we don't guarantee uniqueness.
+        for (int i = 0; i < sharedLibraryLoaders.length; i++) {
+            try {
+                tmp[i] = sharedLibraryLoaders[i].getResources(name);
+            } catch (IOException e) {
+                // Ignore.
+            }
+        }
+        tmp[sharedLibraryLoaders.length] = myResources;
+        return new CompoundEnumeration<>(tmp);
     }
 
     @Override
