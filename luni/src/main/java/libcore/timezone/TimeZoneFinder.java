@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.util;
+package libcore.timezone;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -39,8 +39,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import libcore.timezone.TimeZoneDataFiles;
-import libcore.util.CountryTimeZones.TimeZoneMapping;
+import libcore.timezone.CountryTimeZones.TimeZoneMapping;
 
 /**
  * A class that can find matching time zones by loading data from the tzlookup.xml file.

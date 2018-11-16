@@ -31,7 +31,7 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import libcore.icu.ICU;
-import libcore.util.TimeZoneFinder;
+import libcore.timezone.TimeZoneFinder;
 import libcore.util.ZoneInfoDB;
 
 import static org.junit.Assert.assertEquals;
