@@ -1198,6 +1198,19 @@ package libcore.timezone {
     ctor public TzDataSetVersion.TzDataSetException(java.lang.String, java.lang.Throwable);
   }
 
+  public final class ZoneInfoDB {
+    method public static libcore.timezone.ZoneInfoDB.TzData getInstance();
+  }
+
+  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
+    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
+    method public java.lang.String getVersion();
+    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
+    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(java.lang.String);
+    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
+    method public void validate() throws java.io.IOException;
+  }
+
 }
 
 package libcore.util {
@@ -1268,19 +1281,6 @@ package libcore.util {
     method public void setWeekDay(int);
     method public void setYear(int);
     method public void setYearDay(int);
-  }
-
-  public final class ZoneInfoDB {
-    method public static libcore.util.ZoneInfoDB.TzData getInstance();
-  }
-
-  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
-    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
-    method public java.lang.String getVersion();
-    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
-    method public static libcore.util.ZoneInfoDB.TzData loadTzData(java.lang.String);
-    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
-    method public void validate() throws java.io.IOException;
   }
 
 }
