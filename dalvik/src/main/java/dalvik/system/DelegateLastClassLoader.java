@@ -100,6 +100,18 @@ public final class DelegateLastClassLoader extends PathClassLoader {
         this.delegateResourceLoading = delegateResourceLoading;
     }
 
+    /**
+     * @hide
+     */
+    @libcore.api.CorePlatformApi
+    public DelegateLastClassLoader(
+            String dexPath, String librarySearchPath, ClassLoader parent,
+            ClassLoader[] sharedLibraryLoaders) {
+        super(dexPath, librarySearchPath, parent, sharedLibraryLoaders);
+        // Delegating is the default behavior.
+        this.delegateResourceLoading = true;
+    }
+
     @Override
     protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
         // First, check whether the class has already been loaded. Return it if that's the
@@ -116,7 +128,7 @@ public final class DelegateLastClassLoader extends PathClassLoader {
         }
 
         // Next, check whether the class in question is present in the dexPath that this classloader
-        // operates on.
+        // operates on, or its shared libraries.
         ClassNotFoundException fromSuper = null;
         try {
             return findClass(name);
