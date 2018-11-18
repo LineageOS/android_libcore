@@ -641,6 +641,10 @@ package dalvik.system {
     method public static java.lang.String loggerNameToTag(java.lang.String);
   }
 
+  public final class DelegateLastClassLoader extends dalvik.system.PathClassLoader {
+    ctor public DelegateLastClassLoader(java.lang.String, java.lang.String, java.lang.ClassLoader, java.lang.ClassLoader[]);
+  }
+
   public final deprecated class DexFile {
     ctor public deprecated DexFile(java.io.File) throws java.io.IOException;
     ctor public deprecated DexFile(java.lang.String) throws java.io.IOException;
@@ -663,6 +667,10 @@ package dalvik.system {
   public static final class DexFile.OptimizationInfo {
     method public java.lang.String getReason();
     method public java.lang.String getStatus();
+  }
+
+  public class PathClassLoader extends dalvik.system.BaseDexClassLoader {
+    ctor public PathClassLoader(java.lang.String, java.lang.String, java.lang.ClassLoader, java.lang.ClassLoader[]);
   }
 
   public final class RuntimeHooks {

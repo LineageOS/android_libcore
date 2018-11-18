@@ -121,30 +121,12 @@ public class DelegateLastClassLoaderTest extends TestCase {
     }
 
     private static String readResource(ClassLoader cl, String resourceName) throws Exception {
-        InputStream in = cl.getResourceAsStream(resourceName);
-        if (in == null) {
-            return null;
-        }
-
-        byte[] contents = Streams.readFully(in);
-        return new String(contents, StandardCharsets.UTF_8);
+      return BaseDexClassLoaderTest.readResource(cl, resourceName);
     }
 
     private static List<String> readResources(ClassLoader cl, String resourceName)
             throws Exception {
-        Enumeration<URL> resources = cl.getResources(resourceName);
-
-        List<String> contents = new ArrayList<>();
-        while (resources.hasMoreElements()) {
-            URL url = resources.nextElement();
-
-            try (InputStream is = url.openStream()) {
-                byte[] bytes = Streams.readFully(is);
-                contents.add(new String(bytes, StandardCharsets.UTF_8));
-            }
-        }
-
-        return contents;
+      return BaseDexClassLoaderTest.readResources(cl, resourceName);
     }
 
     public void testLookupOrder_loadClass() throws Exception {
