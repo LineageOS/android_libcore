@@ -681,3 +681,11 @@ java_library {
     no_standard_libs: true,
     system_modules: "none",
 }
+
+// A host library containing time zone related classes. Used for
+// host-side tools and tests that have to deal with Android
+// time zone data.
+java_library_host {
+    name: "timezone-host",
+    srcs: [":timezone_host_files"],
+}
