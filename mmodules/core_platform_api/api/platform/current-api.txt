@@ -1143,6 +1143,27 @@ package libcore.net.event {
 
 }
 
+package libcore.timezone {
+
+  public class TzDataSetVersion {
+    ctor public TzDataSetVersion(int, int, java.lang.String, int) throws libcore.timezone.TzDataSetVersion.TzDataSetException;
+    method public static int currentFormatMajorVersion();
+    method public static int currentFormatMinorVersion();
+    method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
+    method public byte[] toBytes();
+    field public final int formatMajorVersion;
+    field public final int formatMinorVersion;
+    field public final int revision;
+    field public final java.lang.String rulesVersion;
+  }
+
+  public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
+    ctor public TzDataSetVersion.TzDataSetException(java.lang.String);
+    ctor public TzDataSetVersion.TzDataSetException(java.lang.String, java.lang.Throwable);
+  }
+
+}
+
 package libcore.util {
 
   public final class ArrayUtils {

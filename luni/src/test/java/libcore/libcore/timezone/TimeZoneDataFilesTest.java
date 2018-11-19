@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package libcore.libcore.util;
+package libcore.libcore.timezone;
 
 import org.junit.Test;
 
-import libcore.util.TimeZoneDataFiles;
+import libcore.timezone.TimeZoneDataFiles;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

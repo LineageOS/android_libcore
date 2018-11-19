@@ -21,8 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-import libcore.tzdata.testing.ZoneInfoTestHelper;
-import libcore.util.TimeZoneDataFiles;
+import libcore.timezone.TimeZoneDataFiles;
+import libcore.timezone.testing.ZoneInfoTestHelper;
 import libcore.util.ZoneInfo;
 import libcore.util.ZoneInfoDB;
 
