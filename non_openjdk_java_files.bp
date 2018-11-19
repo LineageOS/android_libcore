@@ -181,6 +181,8 @@ filegroup {
         "luni/src/main/java/libcore/net/MimeUtils.java",
         "luni/src/main/java/libcore/net/NetworkSecurityPolicy.java",
         "luni/src/main/java/libcore/net/event/NetworkEventDispatcher.java",
+        "luni/src/main/java/libcore/timezone/TimeZoneDataFiles.java",
+        "luni/src/main/java/libcore/timezone/TzDataSetVersion.java",
         "luni/src/main/java/libcore/util/ArrayUtils.java",
         "luni/src/main/java/libcore/util/BasicLruCache.java",
         "luni/src/main/java/libcore/util/CountryTimeZones.java",
@@ -327,7 +329,6 @@ filegroup {
         "luni/src/main/java/libcore/util/Nullable.java",
         "luni/src/main/java/libcore/util/NullFromTypeParam.java",
         "luni/src/main/java/libcore/util/Objects.java",
-        "luni/src/main/java/libcore/util/TimeZoneDataFiles.java",
         "luni/src/main/java/org/apache/harmony/xml/ExpatAttributes.java",
         "luni/src/main/java/org/apache/harmony/xml/ExpatException.java",
         "luni/src/main/java/org/apache/harmony/xml/ExpatParser.java",
@@ -361,5 +362,16 @@ filegroup {
         "xml/src/main/java/com/android/org/kxml2/io/KXmlParser.java",
         "xml/src/main/java/com/android/org/kxml2/io/KXmlSerializer.java",
         ":non_openjdk_javadoc_files",
+    ],
+}
+
+// timezone-related source that is also used in host tests / tools and its
+// dependencies.
+filegroup {
+    name: "timezone_host_files",
+    srcs: [
+        "luni/src/main/java/libcore/api/CorePlatformApi.java",
+        "luni/src/main/java/libcore/api/IntraCoreApi.java",
+        "luni/src/main/java/libcore/timezone/TzDataSetVersion.java",
     ],
 }

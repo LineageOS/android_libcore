@@ -40,7 +40,7 @@ import java.util.Properties;
 import java.util.PropertyPermission;
 import libcore.icu.ICU;
 import libcore.io.Libcore;
-import libcore.util.TimeZoneDataFiles;
+import libcore.timezone.TimeZoneDataFiles;
 
 import sun.reflect.CallerSensitive;
 import sun.reflect.Reflection;
