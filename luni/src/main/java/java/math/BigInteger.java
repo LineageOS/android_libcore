@@ -919,7 +919,7 @@ public class BigInteger extends Number
      * @see #divide
      * @see #remainder
      */
-    public @NonNull BigInteger @NonNull [] divideAndRemainder(BigInteger divisor) {
+    public @NonNull BigInteger @NonNull [] divideAndRemainder(@NonNull BigInteger divisor) {
         BigInt divisorBigInt = divisor.getBigInt();
         BigInt quotient = new BigInt();
         BigInt remainder = new BigInt();
