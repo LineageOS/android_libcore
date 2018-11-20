@@ -85,6 +85,12 @@ import static android.system.OsConstants.S_ISDIR;
     @UnsupportedAppUsage
     private IOException[] dexElementsSuppressedExceptions;
 
+    private List<File> getAllNativeLibraryDirectories() {
+        List<File> allNativeLibraryDirectories = new ArrayList<>(nativeLibraryDirectories);
+        allNativeLibraryDirectories.addAll(systemNativeLibraryDirectories);
+        return allNativeLibraryDirectories;
+    }
+
     /**
      * Construct an instance.
      *
@@ -93,7 +99,8 @@ import static android.system.OsConstants.S_ISDIR;
      *
      * @param dexFiles the bytebuffers containing the dex files that we should load classes from.
      */
-    public DexPathList(ClassLoader definingContext, ByteBuffer[] dexFiles) {
+    public DexPathList(ClassLoader definingContext, ByteBuffer[] dexFiles,
+            String librarySearchPath) {
         if (definingContext == null) {
             throw new NullPointerException("definingContext == null");
         }
@@ -105,11 +112,11 @@ import static android.system.OsConstants.S_ISDIR;
         }
 
         this.definingContext = definingContext;
-        // TODO It might be useful to let in-memory dex-paths have native libraries.
-        this.nativeLibraryDirectories = Collections.emptyList();
+
+        this.nativeLibraryDirectories = splitPaths(librarySearchPath, false);
         this.systemNativeLibraryDirectories =
                 splitPaths(System.getProperty("java.library.path"), true);
-        this.nativeLibraryPathElements = makePathElements(this.systemNativeLibraryDirectories);
+        this.nativeLibraryPathElements = makePathElements(getAllNativeLibraryDirectories());
 
         ArrayList<IOException> suppressedExceptions = new ArrayList<IOException>();
         this.dexElements = makeInMemoryDexElements(dexFiles, suppressedExceptions);
@@ -185,10 +192,7 @@ import static android.system.OsConstants.S_ISDIR;
         this.nativeLibraryDirectories = splitPaths(librarySearchPath, false);
         this.systemNativeLibraryDirectories =
                 splitPaths(System.getProperty("java.library.path"), true);
-        List<File> allNativeLibraryDirectories = new ArrayList<>(nativeLibraryDirectories);
-        allNativeLibraryDirectories.addAll(systemNativeLibraryDirectories);
-
-        this.nativeLibraryPathElements = makePathElements(allNativeLibraryDirectories);
+        this.nativeLibraryPathElements = makePathElements(getAllNativeLibraryDirectories());
 
         if (suppressedExceptions.size() > 0) {
             this.dexElementsSuppressedExceptions =
@@ -199,15 +203,9 @@ import static android.system.OsConstants.S_ISDIR;
     }
 
     @Override public String toString() {
-        List<File> allNativeLibraryDirectories = new ArrayList<>(nativeLibraryDirectories);
-        allNativeLibraryDirectories.addAll(systemNativeLibraryDirectories);
-
-        File[] nativeLibraryDirectoriesArray =
-                allNativeLibraryDirectories.toArray(
-                    new File[allNativeLibraryDirectories.size()]);
-
         return "DexPathList[" + Arrays.toString(dexElements) +
-            ",nativeLibraryDirectories=" + Arrays.toString(nativeLibraryDirectoriesArray) + "]";
+            ",nativeLibraryDirectories=" +
+            Arrays.toString(getAllNativeLibraryDirectories().toArray()) + "]";
     }
 
     /**
