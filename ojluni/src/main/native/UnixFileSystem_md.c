@@ -44,7 +44,9 @@
 
 #include <nativehelper/JNIHelp.h>
 
-#if defined(_ALLBSD_SOURCE)
+// Android-changed: Fuchsia: Alias *64 on Fuchsia builds. http://b/119496969
+// #if defined(_ALLBSD_SOURCE)
+#if defined(_ALLBSD_SOURCE) || defined(__Fuchsia__)
 #define dirent64 dirent
 #define readdir64_r readdir_r
 #define stat64 stat

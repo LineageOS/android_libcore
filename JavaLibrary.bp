@@ -659,6 +659,9 @@ droidstubs {
         // N.B. Stubs in this filegroup will be validated:
         "ojluni-annotated-nullability-stubs",
     ],
+    // The list of classes which have nullability annotations included in the source.
+    // (This is in addition to those which have annotations in the merged stubs.)
+    validate_nullability_from_list: "nullability_annotated_classes.txt",
     // The expected set of warnings about missing annotations:
     check_nullability_warnings: "nullability_warnings.txt",
 }
@@ -680,4 +683,12 @@ java_library {
     },
     no_standard_libs: true,
     system_modules: "none",
+}
+
+// A host library containing time zone related classes. Used for
+// host-side tools and tests that have to deal with Android
+// time zone data.
+java_library_host {
+    name: "timezone-host",
+    srcs: [":timezone_host_files"],
 }
