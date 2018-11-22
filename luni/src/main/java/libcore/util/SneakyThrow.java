@@ -27,6 +27,10 @@ package libcore.util;
  */
 @libcore.api.CorePlatformApi
 public class SneakyThrow {
+
+    private SneakyThrow() {
+    }
+
     /**
      * A hacky method that always throws {@code t} even if {@code t} is a checked exception,
      * and is not declared to be thrown.
