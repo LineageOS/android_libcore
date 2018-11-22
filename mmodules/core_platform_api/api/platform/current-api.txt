@@ -774,7 +774,6 @@ package dalvik.system {
   }
 
   public final class VMStack {
-    ctor public VMStack();
     method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
   }
 
@@ -969,7 +968,6 @@ package libcore.icu {
   }
 
   public final class ICU {
-    ctor public ICU();
     method public static java.util.Locale addLikelySubtags(java.util.Locale);
     method public static java.lang.String getBestDateTimePattern(java.lang.String, java.util.Locale);
     method public static char[] getDateFormatOrder(java.lang.String);
@@ -1023,7 +1021,6 @@ package libcore.internal {
 package libcore.io {
 
   public final class DropBox {
-    ctor public DropBox();
     method public static void setReporter(libcore.io.DropBox.Reporter);
   }
 
@@ -1033,7 +1030,6 @@ package libcore.io {
   }
 
   public final class EventLogger {
-    ctor public EventLogger();
     method public static void setReporter(libcore.io.EventLogger.Reporter);
   }
 
@@ -1116,7 +1112,6 @@ package libcore.mmodule.libart {
 package libcore.net {
 
   public final class MimeUtils {
-    ctor public MimeUtils();
     method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
     method public static java.lang.String guessMimeTypeFromExtension(java.lang.String);
     method public static boolean hasExtension(java.lang.String);
@@ -1224,7 +1219,6 @@ package libcore.util {
   }
 
   public class SneakyThrow {
-    ctor public SneakyThrow();
     method public static void sneakyThrow(java.lang.Throwable);
   }
 

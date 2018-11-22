@@ -29,6 +29,9 @@ public final class DropBox {
      */
     private static volatile Reporter REPORTER = new DefaultReporter();
 
+    private DropBox() {
+    }
+
     /**
      * Used to replace default Reporter for logging events. Must be non-null.
      */

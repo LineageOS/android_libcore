@@ -28,6 +28,10 @@ public final class StringPool {
 
     private final String[] pool = new String[512];
 
+    @libcore.api.CorePlatformApi
+    public StringPool() {
+    }
+
     private static boolean contentEquals(String s, char[] chars, int start, int length) {
         if (s.length() != length) {
             return false;
