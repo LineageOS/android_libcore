@@ -33,6 +33,7 @@ import libcore.util.BasicLruCache;
  */
 @libcore.api.CorePlatformApi
 public final class ICU {
+
   private static final BasicLruCache<String, String> CACHED_PATTERNS =
       new BasicLruCache<String, String>(8);
 
@@ -41,6 +42,9 @@ public final class ICU {
   private static String[] isoCountries;
 
   private static String[] isoLanguages;
+
+  private ICU() {
+  }
 
   /**
    * Returns an array of two-letter ISO 639-1 language codes, either from ICU or our cache.
