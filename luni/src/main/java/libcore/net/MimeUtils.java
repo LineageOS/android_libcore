@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
  */
 @libcore.api.CorePlatformApi
 public final class MimeUtils {
+
     private static final Pattern splitPattern = Pattern.compile("\\s+");
 
     private static final Map<String, String> mimeTypeToExtensionMap = new HashMap<String, String>();
@@ -85,6 +86,9 @@ public final class MimeUtils {
         } catch (IOException e) {
             throw new RuntimeException("Failed to parse " + resource, e);
         }
+    }
+
+    private MimeUtils() {
     }
 
     /**
