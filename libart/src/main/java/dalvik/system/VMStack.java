@@ -27,6 +27,10 @@ import dalvik.annotation.optimization.FastNative;
  */
 @libcore.api.CorePlatformApi
 public final class VMStack {
+
+    private VMStack() {
+    }
+
     /**
      * Returns the defining class loader of the caller's caller.
      *

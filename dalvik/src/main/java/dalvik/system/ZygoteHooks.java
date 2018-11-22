@@ -32,6 +32,10 @@ import java.io.File;
 public final class ZygoteHooks {
     private long token;
 
+    @libcore.api.CorePlatformApi
+    public ZygoteHooks() {
+    }
+
     /**
      * Called by the zygote when starting up. It marks the point when any thread
      * start should be an error, as only internal daemon threads are allowed there.

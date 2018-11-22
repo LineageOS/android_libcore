@@ -36,6 +36,11 @@ public abstract class NetworkSecurityPolicy {
 
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
+    public NetworkSecurityPolicy() {
+    }
+
+    @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static NetworkSecurityPolicy getInstance() {
         return instance;
     }
