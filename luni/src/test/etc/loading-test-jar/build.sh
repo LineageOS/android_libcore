@@ -47,7 +47,8 @@ javac -d classes2 ../loading-test2-jar/*.java
 
 mkdir classes
 javac -classpath classes2 -d classes *.java
-dx --dex --output=classes.dex classes
+# Code has invokedynamic which requires min-sdk-version>=26.
+dx --dex --output=classes.dex --min-sdk-version=26 classes
 jar cf loading-test.jar classes.dex -C resources .
 
 rm -rf classes

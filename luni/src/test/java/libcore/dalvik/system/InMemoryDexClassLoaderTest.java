@@ -23,9 +23,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
 import libcore.io.Streams;
 import junit.framework.TestCase;
 
+import dalvik.system.BaseDexClassLoader;
 import dalvik.system.InMemoryDexClassLoader;
 
 /**
@@ -114,13 +116,14 @@ public class InMemoryDexClassLoaderTest extends TestCase {
      *
      * @param files The .dex files to use for the class path.
      */
-    private static ClassLoader createLoaderDirect(File... files) throws IOException {
+    private ClassLoader createLoaderDirect(File... files) throws IOException {
         assertNotNull(files);
         assertTrue(files.length > 0);
         ClassLoader result = ClassLoader.getSystemClassLoader();
         for (int i = 0; i < files.length; ++i) {
             ByteBuffer buffer = ReadFileToByteBufferDirect(files[i]);
-            result = new InMemoryDexClassLoader(buffer, result);
+            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer },
+                    srcDir.getAbsolutePath(), result);
         }
         return result;
     }
@@ -133,13 +136,14 @@ public class InMemoryDexClassLoaderTest extends TestCase {
      *
      * @param files The .dex files to use for the class path.
      */
-    private static ClassLoader createLoaderIndirect(File... files) throws IOException {
+    private ClassLoader createLoaderIndirect(File... files) throws IOException {
         assertNotNull(files);
         assertTrue(files.length > 0);
         ClassLoader result = ClassLoader.getSystemClassLoader();
         for (int i = 0; i < files.length; ++i) {
             ByteBuffer buffer = ReadFileToByteBufferIndirect(files[i]);
-            result = new InMemoryDexClassLoader(buffer, result);
+            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer },
+                    srcDir.getAbsolutePath(), result);
         }
         return result;
     }
@@ -298,5 +302,12 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         // NB See comment in test_twoDexDirect_diff_constructor.
         createLoaderDirectAndCallMethod(
             "test.TestMethods", "test_diff_getInstanceVariable", dex2, dex1);
+    }
+
+    public void test_nativeMethod() throws Exception {
+        String libPath = ((BaseDexClassLoader) ClassLoader.getSystemClassLoader())
+                .findLibrary("javacoretests");
+        Files.copy(new File(libPath).toPath(), new File(srcDir, "libtest_jni.so").toPath());
+        createLoaderDirectAndCallMethod("test.TestJni", "test_nativeMethod", dex1);
     }
 }
