@@ -193,6 +193,7 @@ filegroup {
         "luni/src/main/java/libcore/util/NativeAllocationRegistry.java",
         "luni/src/main/java/libcore/util/SneakyThrow.java",
         "luni/src/main/java/libcore/util/XmlObjectFactory.java",
+        "luni/src/main/java/libcore/util/TimeZoneFinder.java",
         "luni/src/main/java/libcore/util/ZoneInfo.java",
         "luni/src/main/java/libcore/util/ZoneInfoDB.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/NativeTestTarget.java",
