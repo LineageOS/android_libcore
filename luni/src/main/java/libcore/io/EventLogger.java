@@ -27,6 +27,9 @@ public final class EventLogger {
      */
     private static volatile Reporter REPORTER = new DefaultReporter();
 
+    private EventLogger() {
+    }
+
     /**
      * Used to replace default Reporter for logging events. Must be non-null.
      */

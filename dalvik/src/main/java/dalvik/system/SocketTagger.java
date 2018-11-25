@@ -35,6 +35,10 @@ public abstract class SocketTagger {
         @Override public void untag(FileDescriptor socketDescriptor) throws SocketException {}
     };
 
+    @libcore.api.CorePlatformApi
+    public SocketTagger() {
+    }
+
     /**
      * Notified when {@code socketDescriptor} is either assigned to the current
      * thread. The socket is either newly connected or reused from a connection
