@@ -327,7 +327,7 @@ public abstract class Preferences {
         // Finally return a default...
         return new FileSystemPreferencesFactory();
     }
-    // END Android-changed: Android-changed: Logic for constructing the default Preferences factory.
+    // END Android-changed: Logic for constructing the default Preferences factory.
 
     // BEGIN Android-added: Allow Preferences.factory to be set by tests.
     /** @hide for testing only. */

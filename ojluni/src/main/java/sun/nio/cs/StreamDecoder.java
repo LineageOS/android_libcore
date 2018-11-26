@@ -320,7 +320,7 @@ public class StreamDecoder extends Reader
         // Ensure that cb[0] == cbuf[off]
         cb = cb.slice();
 
-        // BEGIN Android-added: Flush the CharsetDecoder correctly.
+        // BEGIN Android-added: Flush the CharsetDecoder properly.
         if (needsFlush) {
             CoderResult cr = decoder.flush(cb);
             if (cr.isOverflow()) {

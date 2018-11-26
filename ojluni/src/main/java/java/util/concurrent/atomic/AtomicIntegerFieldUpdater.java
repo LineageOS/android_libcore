@@ -383,7 +383,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
             final Field field;
             final int modifiers;
             try {
-                // Android-changed: Skip privilege escalation which is a noop on Android.
+                // BEGIN Android-changed: Skip privilege escalation which is a noop on Android.
                 /*
                 field = AccessController.doPrivileged(
                     new PrivilegedExceptionAction<Field>() {
@@ -393,6 +393,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
                     });
                 */
                 field = tclass.getDeclaredField(fieldName);
+                // END Android-changed: Skip privilege escalation which is a noop on Android.
                 modifiers = field.getModifiers();
                 sun.reflect.misc.ReflectUtil.ensureMemberAccess(
                     caller, tclass, null, modifiers);
@@ -405,11 +406,13 @@ public abstract class AtomicIntegerFieldUpdater<T> {
                     sun.reflect.misc.ReflectUtil.checkPackageAccess(tclass);
                 }
                 */
+                // END Android-removed: Skip checkPackageAccess which is a noop on Android.
             // BEGIN Android-removed: Skip privilege escalation which is a noop on Android.
             /*
             } catch (PrivilegedActionException pae) {
                 throw new RuntimeException(pae.getException());
             */
+            // END Android-removed: Skip privilege escalation which is a noop on Android.
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -425,7 +428,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
             this.offset = U.objectFieldOffset(field);
         }
 
-        // Android-removed: isAncestor's only usage was removed above.
+        // BEGIN Android-removed: isAncestor()'s only usage was removed above.
         /*
         /**
          * Returns true if the second classloader can be found in the first
@@ -443,6 +446,7 @@ public abstract class AtomicIntegerFieldUpdater<T> {
             return false;
         }
         */
+        // END Android-removed: isAncestor()'s only usage was removed above.
 
         /**
          * Checks that target argument is instance of cclass.  On

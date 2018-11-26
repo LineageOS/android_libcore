@@ -253,7 +253,7 @@ public class SecureRandom extends java.util.Random {
                 " algorithm from: " + this.provider.getName());
         }
         */
-        // END Android-removed
+        // END Android-removed: this debugging mechanism is not supported in Android.
     }
 
     /**
