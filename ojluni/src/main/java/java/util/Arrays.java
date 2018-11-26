@@ -4110,7 +4110,7 @@ public class Arrays {
 
         for (Object element : a) {
             int elementHash = 0;
-            // BEGIN Android-changed: getComponentType() is faster than instanceof
+            // BEGIN Android-changed: getComponentType() is faster than instanceof()
             if (element != null) {
                 Class<?> cl = element.getClass().getComponentType();
                 if (cl == null)
