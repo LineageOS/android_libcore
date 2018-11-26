@@ -478,7 +478,7 @@ class FileInputStream extends InputStream
         initIDs();
     }
     */
-    // END Android-changed: Unused code.
+    // END Android-removed: Unused code.
 
     /**
      * Ensures that the <code>close</code> method of this file input stream is

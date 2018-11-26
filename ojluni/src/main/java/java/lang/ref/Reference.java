@@ -311,5 +311,5 @@ public abstract class Reference<T> {
             }
         };
     }
-    // END Android-added: Add reachabilityFence() from upstream OpenJDK9+181.
+    // END Android-added: reachabilityFence() from upstream OpenJDK9+181.
 }

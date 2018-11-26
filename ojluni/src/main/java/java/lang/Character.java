@@ -6333,7 +6333,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
 
     @FastNative
     static native boolean isUnicodeIdentifierStartImpl(int codePoint);
-    // END Android-changed: Reimplement methods natively on top of ICU4C..
+    // END Android-changed: Reimplement methods natively on top of ICU4C.
 
     /**
      * Determines if the specified character may be part of a Unicode
@@ -6407,7 +6407,7 @@ class Character implements java.io.Serializable, Comparable<Character> {
 
     @FastNative
     static native boolean isUnicodeIdentifierPartImpl(int codePoint);
-    // END Android-changed: Reimplement methods natively on top of ICU4C..
+    // END Android-changed: Reimplement methods natively on top of ICU4C.
 
     /**
      * Determines if the specified character should be regarded as
