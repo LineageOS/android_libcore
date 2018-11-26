@@ -150,7 +150,7 @@ class Thread implements Runnable {
     }
     */
 
-    // BEGIN Android-added: Android specific fields, lock, nativePeer.
+    // BEGIN Android-added: Android specific fields lock, nativePeer.
     /**
      * The synchronization object responsible for this thread's join/sleep/park operations.
      */
@@ -162,7 +162,7 @@ class Thread implements Runnable {
      * <p>Is 0 if the native thread has not yet been created/started, or has been destroyed.
      */
     private volatile long nativePeer;
-    // END Android-added: Android specific fields, lock, nativePeer, started.
+    // END Android-added: Android specific fields lock, nativePeer.
 
     private volatile String name;
     private int            priority;

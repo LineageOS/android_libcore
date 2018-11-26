@@ -247,7 +247,7 @@ public final class Currency implements Serializable {
     private static final int SYMBOL = 0;
     private static final int DISPLAYNAME = 1;
     */
-
+    // END Android-removed: Use ICU.
 
     /**
      * Constructs a <code>Currency</code> instance. The constructor is private
