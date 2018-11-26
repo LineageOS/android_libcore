@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package libcore.util;
+package libcore.timezone;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import libcore.util.CountryTimeZones.TimeZoneMapping;
+import libcore.timezone.CountryTimeZones.TimeZoneMapping;
 
 /**
  * An in-memory representation of country &lt;-&gt; time zone mapping data.
