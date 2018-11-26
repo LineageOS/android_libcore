@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package libcore.util;
+package libcore.timezone;
 
 import android.icu.util.TimeZone;
+
+import libcore.util.ZoneInfoDB;
 
 import java.util.ArrayList;
 import java.util.Arrays;

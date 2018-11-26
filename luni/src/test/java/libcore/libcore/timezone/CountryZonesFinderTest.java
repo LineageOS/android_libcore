@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package libcore.libcore.util;
+package libcore.libcore.timezone;
 
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import libcore.util.CountryTimeZones;
-import libcore.util.CountryTimeZones.TimeZoneMapping;
-import libcore.util.CountryZonesFinder;
+import libcore.timezone.CountryTimeZones;
+import libcore.timezone.CountryTimeZones.TimeZoneMapping;
+import libcore.timezone.CountryZonesFinder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

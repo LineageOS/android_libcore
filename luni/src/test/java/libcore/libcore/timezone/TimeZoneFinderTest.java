@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.libcore.util;
+package libcore.libcore.timezone;
 
 import org.junit.After;
 import org.junit.Before;
@@ -33,10 +33,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import libcore.util.CountryTimeZones;
-import libcore.util.CountryTimeZones.TimeZoneMapping;
-import libcore.util.CountryZonesFinder;
-import libcore.util.TimeZoneFinder;
+import libcore.timezone.CountryTimeZones;
+import libcore.timezone.CountryTimeZones.TimeZoneMapping;
+import libcore.timezone.CountryZonesFinder;
+import libcore.timezone.TimeZoneFinder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
