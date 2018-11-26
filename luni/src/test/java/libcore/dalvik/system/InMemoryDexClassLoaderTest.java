@@ -89,7 +89,7 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         }
     }
 
-    private static ByteBuffer ReadFileToByteBufferDirect(File file) throws IOException {
+    private static ByteBuffer readFileToByteBufferDirect(File file) throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
             ByteBuffer buffer = ByteBuffer.allocateDirect((int)file.length());
             int done = 0;
@@ -101,8 +101,8 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         }
     }
 
-    private static ByteBuffer ReadFileToByteBufferIndirect(File file) throws IOException {
-        ByteBuffer direct = ReadFileToByteBufferDirect(file);
+    private static ByteBuffer readFileToByteBufferIndirect(File file) throws IOException {
+        ByteBuffer direct = readFileToByteBufferDirect(file);
         byte[] array = new byte[direct.limit()];
         direct.get(array);
         return ByteBuffer.wrap(array);
@@ -121,9 +121,8 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         assertTrue(files.length > 0);
         ClassLoader result = ClassLoader.getSystemClassLoader();
         for (int i = 0; i < files.length; ++i) {
-            ByteBuffer buffer = ReadFileToByteBufferDirect(files[i]);
-            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer },
-                    srcDir.getAbsolutePath(), result);
+            ByteBuffer buffer = readFileToByteBufferDirect(files[i]);
+            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer }, result);
         }
         return result;
     }
@@ -141,9 +140,8 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         assertTrue(files.length > 0);
         ClassLoader result = ClassLoader.getSystemClassLoader();
         for (int i = 0; i < files.length; ++i) {
-            ByteBuffer buffer = ReadFileToByteBufferIndirect(files[i]);
-            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer },
-                    srcDir.getAbsolutePath(), result);
+            ByteBuffer buffer = readFileToByteBufferIndirect(files[i]);
+            result = new InMemoryDexClassLoader(new ByteBuffer[] { buffer }, result);
         }
         return result;
     }
@@ -182,6 +180,21 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         Method m = c.getMethod(methodName, (Class[]) null);
         assertNotNull(m);
         return m.invoke(null, (Object[]) null);
+    }
+
+    /**
+     * Creates an InMemoryDexClassLoader using the content of {@code dex} and with a
+     * library path of {@code applicationLibPath}. The parent classloader is the boot
+     * classloader.
+     *
+     * @param dex The .dex file to be loaded.
+     * @param applicationLibPath Library search path of the new class loader.
+     */
+    private static InMemoryDexClassLoader createLoaderWithLibPath(File dex, File applicationLibPath)
+            throws IOException {
+        return new InMemoryDexClassLoader(
+                new ByteBuffer[] { readFileToByteBufferIndirect(dex) },
+                applicationLibPath.toString(), null);
     }
 
     // ONE_DEX with direct ByteBuffer.
@@ -304,10 +317,36 @@ public class InMemoryDexClassLoaderTest extends TestCase {
             "test.TestMethods", "test_diff_getInstanceVariable", dex2, dex1);
     }
 
-    public void test_nativeMethod() throws Exception {
-        String libPath = ((BaseDexClassLoader) ClassLoader.getSystemClassLoader())
-                .findLibrary("javacoretests");
-        Files.copy(new File(libPath).toPath(), new File(srcDir, "libtest_jni.so").toPath());
-        createLoaderDirectAndCallMethod("test.TestJni", "test_nativeMethod", dex1);
+    public void testLibraryPath() throws IOException {
+        File applicationLibPath = new File(srcDir, "applicationLibPath");
+        File applicationLib = makeEmptyFile(applicationLibPath, "libtestlibpath.so");
+
+        InMemoryDexClassLoader classLoader = createLoaderWithLibPath(dex1, applicationLibPath);
+
+        String path = classLoader.findLibrary("testlibpath");
+        assertEquals(applicationLib.toString(), path);
     }
+
+    public void testLibraryPathSearchOrder() throws IOException {
+        File systemLibPath = new File(srcDir, "systemLibPath");
+        File applicationLibPath = new File(srcDir, "applicationLibPath");
+        makeEmptyFile(systemLibPath, "libduplicated.so");
+        File applicationLib = makeEmptyFile(applicationLibPath, "libduplicated.so");
+
+        System.setProperty("java.library.path", systemLibPath.toString());
+        InMemoryDexClassLoader classLoader = createLoaderWithLibPath(dex1, applicationLibPath);
+
+        String path = classLoader.findLibrary("duplicated");
+        assertEquals(applicationLib.toString(), path);
+    }
+
+    private static File makeEmptyFile(File directory, String name) throws IOException {
+        assertTrue(directory.mkdirs());
+        File result = new File(directory, name);
+        FileOutputStream stream = new FileOutputStream(result);
+        stream.close();
+        assertTrue(result.exists());
+        return result;
+    }
+
 }
