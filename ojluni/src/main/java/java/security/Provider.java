@@ -817,14 +817,15 @@ public abstract class Provider extends Properties {
             if (!checkLegacy(key)) {
                 return null;
             }
-            // BEGIN Android-changed: was
+            // BEGIN Android-changed: use compute() instead of computeIfAbsent() to avoid cast fails
+            // The upstream code cannot ever succeed as the cast from BiFunction to Function
+            // always fails.
             // legacyStrings.computeIfAbsent((String) key,
             //         (Function<? super String, ? extends String>) remappingFunction);
-            // which cannot ever succeed as the cast from BiFunction to Function always fails
             legacyStrings.compute((String) key,
                     (BiFunction<? super String, ? super String, ? extends String>)
                             remappingFunction);
-            // END Android-changed
+            // END Android-changed: use compute() instead of computeIfAbsent() to avoid cast fails
         }
         return super.compute(key, remappingFunction);
     }

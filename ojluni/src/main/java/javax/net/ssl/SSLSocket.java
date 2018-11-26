@@ -1403,7 +1403,7 @@ public abstract class SSLSocket extends Socket
         }
     }
 
-    // BEGIN Android-added: Integrate ALPN-related methods from OpenJDK 9+181
+    // BEGIN Android-added: Add ALPN-related methods from OpenJDK 9.
     // Also removed references to DTLS in documentation; Android doesn't support DTLS.
     /**
      * Returns the most recent application protocol value negotiated for this
@@ -1543,7 +1543,7 @@ public abstract class SSLSocket extends Socket
             getHandshakeApplicationProtocolSelector() {
         throw new UnsupportedOperationException();
     }
-    // END Android-added: Add ALPN-related methods from OpenJDK 9
+    // END Android-added: Add ALPN-related methods from OpenJDK 9.
 
     // Android-added: Make toString explicit that this is an SSLSocket (http://b/6602228)
     @Override
