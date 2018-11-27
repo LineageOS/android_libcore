@@ -20,6 +20,7 @@ import android.icu.impl.ICUData;
 import android.icu.impl.ICUResourceBundle;
 import android.icu.text.NumberingSystem;
 import android.icu.util.UResourceBundle;
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -49,8 +50,10 @@ public final class LocaleData {
     }
 
     // Used by Calendar.
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public Integer firstDayOfWeek;
+    @UnsupportedAppUsage
     public Integer minimalDaysInFirstWeek;
 
     // Used by DateFormatSymbols.
@@ -60,12 +63,14 @@ public final class LocaleData {
 
     @libcore.api.CorePlatformApi
     public String[] longMonthNames; // "January", ...
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String[] shortMonthNames; // "Jan", ...
     @libcore.api.CorePlatformApi
     public String[] tinyMonthNames; // "J", ...
     @libcore.api.CorePlatformApi
     public String[] longStandAloneMonthNames; // "January", ...
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String[] shortStandAloneMonthNames; // "Jan", ...
     @libcore.api.CorePlatformApi
@@ -77,8 +82,10 @@ public final class LocaleData {
     public String[] shortWeekdayNames; // "Sun", ...
     @libcore.api.CorePlatformApi
     public String[] tinyWeekdayNames; // "S", ...
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String[] longStandAloneWeekdayNames; // "Sunday", ...
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String[] shortStandAloneWeekdayNames; // "Sun", ...
     @libcore.api.CorePlatformApi
@@ -87,8 +94,10 @@ public final class LocaleData {
     // Used by frameworks/base DateSorter and DateUtils.
     @libcore.api.CorePlatformApi
     public String yesterday; // "Yesterday".
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String today; // "Today".
+    @UnsupportedAppUsage
     public String tomorrow; // "Tomorrow".
 
     public String fullTimeFormat;
@@ -109,8 +118,10 @@ public final class LocaleData {
 
     // Used by DateFormat to implement 12- and 24-hour SHORT and MEDIUM.
     // They are also used directly by frameworks code.
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String timeFormat_hm;
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public String timeFormat_Hm;
     @libcore.api.CorePlatformApi
@@ -119,6 +130,7 @@ public final class LocaleData {
     public String timeFormat_Hms;
 
     // Used by DecimalFormatSymbols.
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public char zeroDigit;
     public char decimalSeparator;
@@ -144,6 +156,7 @@ public final class LocaleData {
     private LocaleData() {
     }
 
+    @UnsupportedAppUsage
     public static Locale mapInvalidAndNullLocales(Locale locale) {
         if (locale == null) {
             return Locale.getDefault();
@@ -159,6 +172,7 @@ public final class LocaleData {
     /**
      * Returns a shared LocaleData for the given locale.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static LocaleData get(Locale locale) {
         if (locale == null) {

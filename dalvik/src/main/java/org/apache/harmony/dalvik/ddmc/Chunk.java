@@ -16,6 +16,7 @@
 
 package org.apache.harmony.dalvik.ddmc;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.nio.ByteBuffer;
 
 /**
@@ -58,6 +59,7 @@ public class Chunk {
      * Construct from a ByteBuffer.  The chunk is assumed to start at
      * offset 0 and continue to the current position.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public Chunk(int type, ByteBuffer buf) {
         this.type = type;

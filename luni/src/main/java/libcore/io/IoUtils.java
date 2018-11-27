@@ -28,6 +28,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import libcore.util.NonNull;
 import static android.system.OsConstants.*;
 
@@ -153,6 +154,7 @@ public final class IoUtils {
     /**
      * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static void closeQuietly(AutoCloseable closeable) {
@@ -169,6 +171,7 @@ public final class IoUtils {
     /**
      * Closes 'fd', ignoring any exceptions. Does nothing if 'fd' is null or invalid.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void closeQuietly(FileDescriptor fd) {
         try {
@@ -180,6 +183,7 @@ public final class IoUtils {
     /**
      * Closes 'socket', ignoring any exceptions. Does nothing if 'socket' is null.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void closeQuietly(Socket socket) {
         if (socket != null) {
@@ -193,6 +197,7 @@ public final class IoUtils {
     /**
      * Sets 'fd' to be blocking or non-blocking, according to the state of 'blocking'.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void setBlocking(FileDescriptor fd, boolean blocking) throws IOException {
         try {
@@ -211,6 +216,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a byte array.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static byte[] readFileAsByteArray(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toByteArray();
@@ -219,6 +225,7 @@ public final class IoUtils {
     /**
      * Returns the contents of 'path' as a string. The contents are assumed to be UTF-8.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String readFileAsString(String absolutePath) throws IOException {
         return new FileReader(absolutePath).readFully().toString(StandardCharsets.UTF_8);
