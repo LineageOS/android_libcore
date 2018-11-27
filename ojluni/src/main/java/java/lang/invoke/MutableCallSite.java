@@ -278,5 +278,5 @@ public class MutableCallSite extends CallSite {
     }
     private static final AtomicInteger STORE_BARRIER = new AtomicInteger();
     */
-    // END Android-removed: syncAll() implementation is incomplete. 
+    // END Android-removed: syncAll() implementation is incomplete.
 }

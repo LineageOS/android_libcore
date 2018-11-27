@@ -732,6 +732,7 @@ class Bits {                            // package-private
         assert cnt >= 0 && reservedMem >= 0 && totalCap >= 0;
     }
     */
+    // END Android-removed: Direct memory management unused on Android.
 
     // -- Monitoring of direct buffer usage --
 
@@ -876,4 +877,5 @@ class Bits {                            // package-private
     static native void copyToLongArray(long srcAddr, Object dst, long dstPos,
                                        long length);
     */
+    // END Android-removed: Bulk get/put methods are unused on Android.
 }

@@ -1399,7 +1399,7 @@ public final class Pattern
         if ((f & ~supportedFlags) != 0) {
             throw new IllegalArgumentException("Unsupported flags: " + (f & ~supportedFlags));
         }
-        // END Android-changed: Only specific flags are supported supported.
+        // END Android-changed: Only specific flags are supported.
 
         // BEGIN Android-removed: Pattern is eagerly compiled() upon construction.
         // if (pattern.length() > 0) {
