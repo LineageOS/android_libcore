@@ -1248,6 +1248,11 @@ package libcore.util {
     method public static void sneakyThrow(java.lang.Throwable);
   }
 
+  public final class TimeZoneFinder {
+    method public static libcore.util.TimeZoneFinder getInstance();
+    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(java.lang.String);
+  }
+
   public class XmlObjectFactory {
     method public static org.xml.sax.XMLReader newXMLReader();
     method public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
