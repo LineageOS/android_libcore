@@ -35,7 +35,6 @@ public class TzDataSetVersion {
      * The major tz data format version supported by this device.
      * Increment this for non-backwards compatible changes to the tz data format. Reset the minor
      * version to 1 when doing so.
-     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     private static final int CURRENT_FORMAT_MAJOR_VERSION = 3; // Android Q
 
@@ -50,7 +49,6 @@ public class TzDataSetVersion {
     /**
      * The minor tz data format version supported by this device. Increment this for
      * backwards-compatible changes to the tz data format.
-     * This constant must match the one in system/core/tzdatacheck/tzdatacheck.cpp.
      */
     private static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
