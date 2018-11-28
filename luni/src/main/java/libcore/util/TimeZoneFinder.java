@@ -30,6 +30,7 @@ import java.util.List;
  * to the new package. See http://b/119921242 and http://b/116544863.
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class TimeZoneFinder {
 
     private static TimeZoneFinder instance;
@@ -45,6 +46,7 @@ public final class TimeZoneFinder {
      * Obtains an instance for use when resolving time zones. This method never returns
      * {@code null}.
      */
+    @libcore.api.CorePlatformApi
     public static TimeZoneFinder getInstance() {
         synchronized(TimeZoneFinder.class) {
             if (instance == null) {
@@ -69,6 +71,7 @@ public final class TimeZoneFinder {
      * can return an empty list in a case when the underlying data files reference only unknown
      * zone IDs.
      */
+    @libcore.api.CorePlatformApi
     public List<TimeZone> lookupTimeZonesByCountry(String countryIso) {
         return delegate.lookupTimeZonesByCountry(countryIso);
     }
