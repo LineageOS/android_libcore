@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import libcore.io.IoUtils;
-import libcore.util.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDB;
 
 import dalvik.system.RuntimeHooks;
 
