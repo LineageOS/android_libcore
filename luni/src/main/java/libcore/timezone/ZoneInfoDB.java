@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.util;
+package libcore.timezone;
 
 import android.system.ErrnoException;
 import dalvik.annotation.optimization.ReachabilitySensitive;
@@ -28,7 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import libcore.io.BufferIterator;
 import libcore.io.MemoryMappedFile;
-import libcore.timezone.TimeZoneDataFiles;
+import libcore.util.BasicLruCache;
+import libcore.util.ZoneInfo;
 
 /**
  * A class used to initialize the time zone database. This implementation uses the

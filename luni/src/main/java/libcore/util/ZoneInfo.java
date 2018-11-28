@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import libcore.io.BufferIterator;
+import libcore.timezone.ZoneInfoDB;
 
 /**
  * Our concrete TimeZone implementation, backed by zoneinfo data.
@@ -60,6 +61,9 @@ import libcore.io.BufferIterator;
  * 69 years either side of the epoch (1st Jan 1970 00:00:00) that means that it cannot handle any
  * dates before 1900 and after 2038. There is an extended version of the table that uses 64 bits
  * to store the data but that information is not used by this.
+ *
+ * <p>This class should be in libcore.timezone but this class is Serializable so cannot
+ * be moved there without breaking apps that have (for some reason) serialized TimeZone objects.
  *
  * @hide - used to implement TimeZone
  */
