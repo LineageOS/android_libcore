@@ -32,6 +32,7 @@
 
 package java.lang;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 
 /**
@@ -42,6 +43,7 @@ final class DexCache {
     private String location;
 
     /** Holds C pointer to dexFile. */
+    @UnsupportedAppUsage
     private long dexFile;
 
     /**
