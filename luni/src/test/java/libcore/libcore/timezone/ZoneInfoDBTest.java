@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.libcore.util;
+package libcore.libcore.timezone;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,9 +24,9 @@ import java.io.RandomAccessFile;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.testing.ZoneInfoTestHelper;
 import libcore.util.ZoneInfo;
-import libcore.util.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDB;
 
-import static libcore.util.ZoneInfoDB.TzData.SIZEOF_INDEX_ENTRY;
+import static libcore.timezone.ZoneInfoDB.TzData.SIZEOF_INDEX_ENTRY;
 
 public class ZoneInfoDBTest extends junit.framework.TestCase {
 

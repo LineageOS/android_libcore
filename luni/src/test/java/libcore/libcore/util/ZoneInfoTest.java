@@ -24,9 +24,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
 import libcore.io.BufferIterator;
+import libcore.timezone.ZoneInfoDB;
 import libcore.timezone.testing.ZoneInfoTestHelper;
 import libcore.util.ZoneInfo;
-import libcore.util.ZoneInfoDB;
 
 /**
  * Tests for {@link ZoneInfo}
