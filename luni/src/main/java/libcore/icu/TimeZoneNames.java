@@ -16,6 +16,7 @@
 
 package libcore.icu;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -161,6 +162,7 @@ public final class TimeZoneNames {
      * supplies them in alphabetical order where zone.tab has them in a kind of "importance"
      * order (as defined in the zone.tab header).
      */
+    @UnsupportedAppUsage
     public static String[] forLocale(Locale locale) {
         String countryCode = locale.getCountry();
         ArrayList<String> ids = new ArrayList<String>();

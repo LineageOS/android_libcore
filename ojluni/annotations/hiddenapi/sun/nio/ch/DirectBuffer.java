@@ -30,6 +30,7 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public interface DirectBuffer {
 
+    @UnsupportedAppUsage
     public long address();
 
     public java.lang.Object attachment();

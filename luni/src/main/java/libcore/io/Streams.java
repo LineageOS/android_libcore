@@ -40,6 +40,7 @@ public final class Streams {
      * InputStream assumes that you implement InputStream.read(int) and provides default
      * implementations of the others, but often the opposite is more efficient.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static int readSingleByte(InputStream in) throws IOException {
         byte[] buffer = new byte[1];
@@ -52,6 +53,7 @@ public final class Streams {
      * OutputStream assumes that you implement OutputStream.write(int) and provides default
      * implementations of the others, but often the opposite is more efficient.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void writeSingleByte(OutputStream out, int b) throws IOException {
         byte[] buffer = new byte[1];
@@ -62,6 +64,7 @@ public final class Streams {
     /**
      * Fills 'dst' with bytes from 'in', throwing EOFException if insufficient bytes are available.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void readFully(InputStream in, byte[] dst) throws IOException {
         readFully(in, dst, 0, dst.length);
@@ -97,6 +100,7 @@ public final class Streams {
     /**
      * Returns a byte[] containing the remainder of 'in', closing it when done.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static byte[] readFully(InputStream in) throws IOException {
         try {
@@ -138,6 +142,7 @@ public final class Streams {
         }
     }
 
+    @UnsupportedAppUsage
     public static void skipAll(InputStream in) throws IOException {
         do {
             in.skip(Long.MAX_VALUE);
@@ -207,6 +212,7 @@ public final class Streams {
      * @throws java.io.EOFException if the stream is exhausted before the next newline
      *     character.
      */
+    @UnsupportedAppUsage
     public static String readAsciiLine(InputStream in) throws IOException {
         // TODO: support UTF-8 here instead
 
