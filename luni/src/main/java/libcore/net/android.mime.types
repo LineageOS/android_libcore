@@ -80,7 +80,7 @@ audio/aac aac!
 audio/basic snd!
 audio/flac flac!
 audio/midi rtx!
-audio/mpeg mp3! m4a
+audio/mpeg mp3! m4a m4r
 audio/x-mpegurl m3u8! m3u!
 image/jpeg jpg!
 image/x-ms-bmp bmp!
