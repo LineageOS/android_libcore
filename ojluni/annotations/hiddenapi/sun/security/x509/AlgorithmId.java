@@ -32,14 +32,17 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 public class AlgorithmId implements java.io.Serializable, sun.security.util.DerEncoder {
 
     @Deprecated
+    @UnsupportedAppUsage
     public AlgorithmId() {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public AlgorithmId(sun.security.util.ObjectIdentifier oid) {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public AlgorithmId(
             sun.security.util.ObjectIdentifier oid, java.security.AlgorithmParameters algparams) {
         throw new RuntimeException("Stub!");
@@ -54,18 +57,22 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public final void encode(sun.security.util.DerOutputStream out) throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public void derEncode(java.io.OutputStream out) throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public final byte[] encode() throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public final sun.security.util.ObjectIdentifier getOID() {
         throw new RuntimeException("Stub!");
     }
@@ -75,14 +82,17 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public java.security.AlgorithmParameters getParameters() {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public byte[] getEncodedParams() throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public boolean equals(sun.security.x509.AlgorithmId other) {
         throw new RuntimeException("Stub!");
     }
@@ -107,12 +117,14 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public static sun.security.x509.AlgorithmId parse(sun.security.util.DerValue val)
             throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
 
     @Deprecated
+    @UnsupportedAppUsage
     public static sun.security.x509.AlgorithmId getAlgorithmId(java.lang.String algname)
             throws java.security.NoSuchAlgorithmException {
         throw new RuntimeException("Stub!");
@@ -146,10 +158,12 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public static java.lang.String getEncAlgFromSigAlg(java.lang.String signatureAlgorithm) {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public static java.lang.String getDigAlgFromSigAlg(java.lang.String signatureAlgorithm) {
         throw new RuntimeException("Stub!");
     }
@@ -202,6 +216,7 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         DSA_PKIX_data = new int[0];
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier DSA_oid;
 
     static {
@@ -214,18 +229,21 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         ECDH_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier EC_oid;
 
     static {
         EC_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier MD2_oid;
 
     static {
         MD2_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier MD5_oid;
 
     static {
@@ -238,6 +256,7 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         RSAEncryption_data = new int[0];
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier RSAEncryption_oid;
 
     static {
@@ -262,24 +281,28 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         SHA224_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier SHA256_oid;
 
     static {
         SHA256_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier SHA384_oid;
 
     static {
         SHA384_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier SHA512_oid;
 
     static {
         SHA512_oid = null;
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier SHA_oid;
 
     static {
@@ -338,6 +361,7 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         oidTable = null;
     }
 
+    @UnsupportedAppUsage
     protected sun.security.util.DerValue params;
 
     public static final sun.security.util.ObjectIdentifier pbeWithMD5AndDES_oid;
@@ -412,6 +436,7 @@ public class AlgorithmId implements java.io.Serializable, sun.security.util.DerE
         sha1WithRSAEncryption_data = new int[0];
     }
 
+    @UnsupportedAppUsage
     public static final sun.security.util.ObjectIdentifier sha1WithRSAEncryption_oid;
 
     static {

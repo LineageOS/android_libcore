@@ -36,6 +36,7 @@ import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.StructUtsname;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -55,15 +56,18 @@ public interface Os {
     public void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
     public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException;
     public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException;
+    @UnsupportedAppUsage
     public void chmod(String path, int mode) throws ErrnoException;
     public void chown(String path, int uid, int gid) throws ErrnoException;
 
+    @UnsupportedAppUsage
     public void close(FileDescriptor fd) throws ErrnoException;
     public void android_fdsan_exchange_owner_tag(FileDescriptor fd, long previousOwnerId, long newOwnerId);
     public long android_fdsan_get_owner_tag(FileDescriptor fd);
     public String android_fdsan_get_tag_type(long tag);
     public long android_fdsan_get_tag_value(long tag);
 
+    @UnsupportedAppUsage
     public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
     public FileDescriptor dup(FileDescriptor oldFd) throws ErrnoException;
@@ -81,6 +85,7 @@ public interface Os {
     public StructStatVfs fstatvfs(FileDescriptor fd) throws ErrnoException;
     public void fsync(FileDescriptor fd) throws ErrnoException;
     public void ftruncate(FileDescriptor fd, long length) throws ErrnoException;
+    @UnsupportedAppUsage
     public String gai_strerror(int error);
     public int getegid();
     public int geteuid();
@@ -146,6 +151,7 @@ public interface Os {
     public int readv(FileDescriptor fd, Object[] buffers, int[] offsets, int[] byteCounts) throws ErrnoException, InterruptedIOException;
     public int recvfrom(FileDescriptor fd, ByteBuffer buffer, int flags, InetSocketAddress srcAddress) throws ErrnoException, SocketException;
     public int recvfrom(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, InetSocketAddress srcAddress) throws ErrnoException, SocketException;
+    @UnsupportedAppUsage
     public void remove(String path) throws ErrnoException;
     public void removexattr(String path, String name) throws ErrnoException;
     public void rename(String oldPath, String newPath) throws ErrnoException;
@@ -154,6 +160,7 @@ public interface Os {
     public int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException;
     public long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref offset, long byteCount) throws ErrnoException;
     public void setegid(int egid) throws ErrnoException;
+    @UnsupportedAppUsage
     public void setenv(String name, String value, boolean overwrite) throws ErrnoException;
     public void seteuid(int euid) throws ErrnoException;
     public void setgid(int gid) throws ErrnoException;
@@ -167,6 +174,7 @@ public interface Os {
     public void setsockoptIpMreqn(FileDescriptor fd, int level, int option, int value) throws ErrnoException;
     public void setsockoptGroupReq(FileDescriptor fd, int level, int option, StructGroupReq value) throws ErrnoException;
     public void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException;
+    @UnsupportedAppUsage
     @libcore.api.IntraCoreApi
     public void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException;
     public void setuid(int uid) throws ErrnoException;
@@ -175,11 +183,14 @@ public interface Os {
     public FileDescriptor socket(int domain, int type, int protocol) throws ErrnoException;
     public void socketpair(int domain, int type, int protocol, FileDescriptor fd1, FileDescriptor fd2) throws ErrnoException;
     public long splice(FileDescriptor fdIn, Int64Ref offIn, FileDescriptor fdOut, Int64Ref offOut, long len, int flags) throws ErrnoException;
+    @UnsupportedAppUsage
     public StructStat stat(String path) throws ErrnoException;
     public StructStatVfs statvfs(String path) throws ErrnoException;
+    @UnsupportedAppUsage
     public String strerror(int errno);
     public String strsignal(int signal);
     public void symlink(String oldPath, String newPath) throws ErrnoException;
+    @UnsupportedAppUsage
     public long sysconf(int name);
     public void tcdrain(FileDescriptor fd) throws ErrnoException;
     public void tcsendbreak(FileDescriptor fd, int duration) throws ErrnoException;

@@ -880,6 +880,7 @@ public class ParserAdapter implements XMLReader, DocumentHandler
     /**
      * Construct a new adapter.
      */
+    @UnsupportedAppUsage
     AttributeListAdapter ()
     {
     }

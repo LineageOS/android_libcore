@@ -79,6 +79,7 @@ public class DirectByteBuffer extends java.nio.MappedByteBuffer implements sun.n
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public final sun.misc.Cleaner cleaner() {
         throw new RuntimeException("Stub!");
     }

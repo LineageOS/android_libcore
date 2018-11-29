@@ -16,6 +16,7 @@
 
 package org.apache.harmony.dalvik.ddmc;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 import java.util.Collection;
 import java.util.HashMap;
@@ -99,6 +100,7 @@ public class DdmServer {
      *
      * Use this for "unsolicited" chunks.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static void sendChunk(Chunk chunk) {
         nativeSendChunk(chunk.type, chunk.data, chunk.offset, chunk.length);
@@ -112,6 +114,7 @@ public class DdmServer {
     /*
      * Called by the VM when the DDM server connects or disconnects.
      */
+    @UnsupportedAppUsage
     private static void broadcast(int event)
     {
         synchronized (mHandlerMap) {

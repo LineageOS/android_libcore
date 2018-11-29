@@ -25,6 +25,7 @@ import android.system.StructTimeval;
 
 import libcore.util.ArrayUtils;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -255,6 +256,7 @@ public final class IoBridge {
         }
     }
 
+    @UnsupportedAppUsage
     public static boolean isConnected(FileDescriptor fd, InetAddress inetAddress, int port,
             int timeoutMs, int remainingTimeoutMs) throws IOException {
         ErrnoException cause;

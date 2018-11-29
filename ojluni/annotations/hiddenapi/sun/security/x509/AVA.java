@@ -31,6 +31,7 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class AVA implements sun.security.util.DerEncoder {
 
+    @UnsupportedAppUsage
     public AVA(sun.security.util.ObjectIdentifier type, sun.security.util.DerValue val) {
         throw new RuntimeException("Stub!");
     }
@@ -61,14 +62,17 @@ public class AVA implements sun.security.util.DerEncoder {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public sun.security.util.ObjectIdentifier getObjectIdentifier() {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public sun.security.util.DerValue getDerValue() {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public java.lang.String getValueString() {
         throw new RuntimeException("Stub!");
     }
@@ -155,6 +159,7 @@ public class AVA implements sun.security.util.DerEncoder {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public java.lang.String toRFC2253CanonicalString() {
         throw new RuntimeException("Stub!");
     }
