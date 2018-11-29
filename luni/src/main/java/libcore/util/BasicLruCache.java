@@ -30,6 +30,7 @@ public class BasicLruCache<K, V> {
     private final LinkedHashMap<K, V> map;
     private final int maxSize;
 
+    @UnsupportedAppUsage
     public BasicLruCache(int maxSize) {
         if (maxSize <= 0) {
             throw new IllegalArgumentException("maxSize <= 0");
@@ -44,6 +45,7 @@ public class BasicLruCache<K, V> {
      * head of the queue. This returns null if a value is not cached and cannot
      * be created.
      */
+    @UnsupportedAppUsage
     public final V get(K key) {
         if (key == null) {
             throw new NullPointerException("key == null");
@@ -82,6 +84,7 @@ public class BasicLruCache<K, V> {
      * @return the previous value mapped by {@code key}. Although that entry is
      *     no longer cached, it has not been passed to {@link #entryEvicted}.
      */
+    @UnsupportedAppUsage
     public synchronized final V put(K key, V value) {
         if (key == null) {
             throw new NullPointerException("key == null");
@@ -132,6 +135,7 @@ public class BasicLruCache<K, V> {
     /**
      * Clear the cache, calling {@link #entryEvicted} on each removed entry.
      */
+    @UnsupportedAppUsage
     public synchronized final void evictAll() {
         trimToSize(0);
     }

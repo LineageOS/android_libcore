@@ -16,6 +16,8 @@
 
 package libcore.net;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
+
 /**
  * Network security policy for this process/application.
  *
@@ -72,6 +74,7 @@ public abstract class NetworkSecurityPolicy {
      * this flag from day one, and well-established third-party network stacks will eventually
      * honor it.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public abstract boolean isCleartextTrafficPermitted();
 

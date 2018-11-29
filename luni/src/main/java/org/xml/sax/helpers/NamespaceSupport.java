@@ -550,6 +550,7 @@ public class NamespaceSupport
     /**
      * Create the root-level Namespace context.
      */
+    @UnsupportedAppUsage
     Context ()
     {
         copyTables();

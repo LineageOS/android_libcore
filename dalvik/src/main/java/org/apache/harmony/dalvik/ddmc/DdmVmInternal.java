@@ -16,6 +16,7 @@
 
 package org.apache.harmony.dalvik.ddmc;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 
 /**
@@ -66,6 +67,7 @@ public class DdmVmInternal {
      * Returns a byte array with the THST data, or null if something
      * went wrong.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     native public static byte[] getThreadStats();
 
