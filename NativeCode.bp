@@ -37,9 +37,6 @@ cc_defaults {
 
 cc_defaults {
     name: "core_native_default_libs",
-    static_libs: [
-        "libfdlibm",
-    ],
 
     shared_libs: [
         "libbase",
