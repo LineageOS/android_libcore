@@ -127,6 +127,10 @@ public class MimeUtilsTest extends TestCase {
         assertMimeTypeFromExtension("image/jp2", "jpg2");
     }
 
+    public void test_120135571_audio() {
+        assertMimeTypeFromExtension("audio/mpeg", "m4r");
+    }
+
     private static void assertMimeTypeFromExtension(String mimeType, String extension) {
         final String actual = MimeUtils.guessMimeTypeFromExtension(extension);
         if (!Objects.equals(mimeType, actual)) {
