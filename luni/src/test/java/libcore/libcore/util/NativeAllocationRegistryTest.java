@@ -46,6 +46,16 @@ public class NativeAllocationRegistryTest extends TestCase {
     // Verify that NativeAllocations and their referents are freed before we run
     // out of space for new allocations.
     private void testNativeAllocation(TestConfig config) {
+        if (isNativeBridgedABI()) {
+            // 1. This test is intended to test platform internals, not public API.
+            // 2. The test would fail under native bridge as a side effect of how the tests work:
+            //  - The tests run using the app architecture instead of the platform architecture
+            //  - That scenario will never happen in practice due to (1)
+            // 3. This leaves a hole in testing for the case of native bridge, due to limitations
+            //    in the testing infrastructure from (2).
+            System.logI("Skipping test for native bridged ABI");
+            return;
+        }
         Runtime.getRuntime().gc();
         long max = Runtime.getRuntime().maxMemory();
         long total = Runtime.getRuntime().totalMemory();
@@ -119,6 +129,11 @@ public class NativeAllocationRegistryTest extends TestCase {
     }
 
     public void testEarlyFree() {
+        if (isNativeBridgedABI()) {
+            // See the explanation in testNativeAllocation.
+            System.logI("Skipping test for native bridged ABI");
+            return;
+        }
         long size = 1234;
         NativeAllocationRegistry registry
             = new NativeAllocationRegistry(classLoader, getNativeFinalizer(), size);
@@ -193,6 +208,7 @@ public class NativeAllocationRegistryTest extends TestCase {
         fail("Expected IllegalArgumentException, but no exception was thrown.");
     }
 
+    private static native boolean isNativeBridgedABI();
     private static native long getNativeFinalizer();
     private static native long doNativeAllocation(long size);
     private static native long getNumNativeBytesAllocated();
