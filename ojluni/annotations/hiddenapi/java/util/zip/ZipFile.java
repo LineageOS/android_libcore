@@ -244,6 +244,7 @@ public class ZipFile implements java.util.zip.ZipConstants, java.io.Closeable {
             throw new RuntimeException("Stub!");
         }
 
+        @UnsupportedAppUsage
         public java.util.zip.ZipEntry nextElement() {
             throw new RuntimeException("Stub!");
         }

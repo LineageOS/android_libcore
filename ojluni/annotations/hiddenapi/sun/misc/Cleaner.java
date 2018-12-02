@@ -43,6 +43,7 @@ public class Cleaner extends java.lang.ref.PhantomReference<java.lang.Object> {
         throw new RuntimeException("Stub!");
     }
 
+    @UnsupportedAppUsage
     public static sun.misc.Cleaner create(java.lang.Object ob, java.lang.Runnable thunk) {
         throw new RuntimeException("Stub!");
     }

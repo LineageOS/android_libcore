@@ -19,6 +19,7 @@ package libcore.icu;
 import android.icu.util.Calendar;
 import android.icu.util.ULocale;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.text.FieldPosition;
 import java.util.TimeZone;
 import libcore.util.BasicLruCache;
@@ -40,6 +41,7 @@ public final class DateIntervalFormat {
   }
 
   // This is public DateUtils API in frameworks/base.
+  @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static String formatDateRange(long startMs, long endMs, int flags, String olsonId) {
     if ((flags & FORMAT_UTC) != 0) {

@@ -16,6 +16,7 @@
 
 package org.apache.harmony.dalvik.ddmc;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -30,6 +31,7 @@ import java.nio.ByteOrder;
 @libcore.api.CorePlatformApi
 public abstract class ChunkHandler {
 
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static final ByteOrder CHUNK_ORDER = ByteOrder.BIG_ENDIAN;
 

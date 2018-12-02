@@ -16,6 +16,7 @@
 
 package libcore.io;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Base64;
 
 /**
@@ -82,6 +83,7 @@ public final class DropBox {
         getReporter().addData(tag, data, flags);
     }
 
+    @UnsupportedAppUsage
     public static void addText(String tag, String data) {
         getReporter().addText(tag, data);
     }

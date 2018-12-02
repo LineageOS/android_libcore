@@ -16,6 +16,7 @@
 
 package libcore.net;
 
+import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -108,6 +109,7 @@ public final class MimeUtils {
      * @return The MIME type has been registered for
      * the given case insensitive file extension or null if there is none.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String guessMimeTypeFromExtension(String extension) {
         if (extension == null || extension.isEmpty()) {
@@ -136,6 +138,7 @@ public final class MimeUtils {
      * @return The extension has been registered for
      * the given case insensitive MIME type or null if there is none.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static String guessExtensionFromMimeType(String mimeType) {
         if (mimeType == null || mimeType.isEmpty()) {
