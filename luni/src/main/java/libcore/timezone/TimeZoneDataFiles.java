@@ -24,8 +24,8 @@ import java.util.List;
  *
  * @hide
  */
+@libcore.api.CorePlatformApi
 public final class TimeZoneDataFiles {
-
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
@@ -50,15 +50,15 @@ public final class TimeZoneDataFiles {
         };
     }
 
-    private static String getDataTimeZoneFile(String fileName) {
+    @libcore.api.CorePlatformApi
+    public static String getDataTimeZoneFile(String fileName) {
         return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/current/" + fileName;
     }
 
-    private static String getTimeZoneModuleFile(String fileName) {
+    public static String getTimeZoneModuleFile(String fileName) {
         return "/apex/com.android.tzdata/etc/" + fileName;
     }
 
-    // VisibleForTesting
     public static String getSystemTimeZoneFile(String fileName) {
         return System.getenv(ANDROID_ROOT_ENV) + "/usr/share/zoneinfo/" + fileName;
     }

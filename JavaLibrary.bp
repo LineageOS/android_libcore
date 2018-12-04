@@ -161,6 +161,7 @@ java_library {
     required: [
         "tzdata",
         "tzlookup.xml",
+        "tz_version",
     ],
 
     installable: false,
@@ -220,6 +221,7 @@ java_library {
     required: [
         "tzdata",
         "tzlookup.xml",
+        "tz_version",
     ],
 
 }
@@ -254,6 +256,7 @@ java_library {
     required: [
         "tzdata",
         "tzlookup.xml",
+        "tz_version",
     ],
 }
 
@@ -297,6 +300,7 @@ java_library {
     required: [
         "tzdata",
         "tzlookup.xml",
+        "tz_version",
     ],
 }
 
@@ -315,6 +319,7 @@ java_library {
     required: [
         "tzdata",
         "tzlookup.xml",
+        "tz_version",
     ],
 }
 
