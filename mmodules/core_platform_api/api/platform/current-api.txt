@@ -1168,6 +1168,10 @@ package libcore.timezone {
     method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
   }
 
+  public final class TimeZoneDataFiles {
+    method public static java.lang.String getDataTimeZoneFile(java.lang.String);
+  }
+
   public final class TimeZoneFinder {
     method public static libcore.timezone.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
     method public libcore.timezone.CountryZonesFinder getCountryZonesFinder();
@@ -1186,11 +1190,6 @@ package libcore.timezone {
     method public static int currentFormatMajorVersion();
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
-    method public byte[] toBytes();
-    field public final int formatMajorVersion;
-    field public final int formatMinorVersion;
-    field public final int revision;
-    field public final java.lang.String rulesVersion;
   }
 
   public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
@@ -1217,6 +1216,23 @@ package libcore.util {
 
   public final class ArrayUtils {
     method public static void throwsIfOutOfBounds(int, int, int);
+  }
+
+  public class CoreLibraryDebug {
+    method public static libcore.util.DebugInfo getDebugInfo();
+  }
+
+  public class DebugInfo {
+    ctor public DebugInfo();
+    method public libcore.util.DebugInfo addStringEntry(java.lang.String, java.lang.String);
+    method public libcore.util.DebugInfo addStringEntry(java.lang.String, int);
+    method public java.util.List<libcore.util.DebugInfo.DebugEntry> getDebugEntries();
+  }
+
+  public static class DebugInfo.DebugEntry {
+    ctor public DebugInfo.DebugEntry(java.lang.String, java.lang.String);
+    method public java.lang.String getKey();
+    method public java.lang.String getStringValue();
   }
 
   public final class EmptyArray {
