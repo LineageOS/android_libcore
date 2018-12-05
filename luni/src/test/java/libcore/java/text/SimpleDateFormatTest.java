@@ -733,6 +733,41 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertDayPeriodParseFailure("HH B", "08 in the morning");
     }
 
+    public void testContextSensitiveMonth() {
+        Locale ru = new Locale("ru");
+        assertEquals("1", formatDateUtc(ru, "M"));
+        assertEquals("01", formatDateUtc(ru, "MM"));
+        assertEquals("янв.", formatDateUtc(ru, "MMM"));
+        assertEquals("января", formatDateUtc(ru, "MMMM"));
+        assertEquals("Я", formatDateUtc(ru, "MMMMM"));
+    }
+
+    /*
+     * Tests that forced standalone form is not used on Android. In some languages, e.g. Russian,
+     * Polish or Czech, in some cases the month name form depends on the usage context. For example,
+     * January in Russian is "Январь" (nominative case), but if you say 11th of January
+     * (genitive case), it will look like "11 Января" (notice the difference in the last letter).
+     * Five Ms format makes month name independent on the context (in this case "11 Январь").
+     */
+    public void testContextSensitiveMonth_nonGregorianCalendar() {
+        final String fmt = "MMMMM";
+        final Locale ru = new Locale("ru");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(fmt, ru);
+        NonGregorianCalendar cal = new NonGregorianCalendar();
+        cal.clear();
+        cal.setTimeZone(UTC);
+        dateFormat.setCalendar(cal);
+
+        // The RI forces standalone form here, which would be "январь".
+        // Android does not force standalone form. http://b/66411240#comment7
+        assertEquals("января", dateFormat.format(new Date(0)));
+
+        // Ensure that Android is not forcing standalone form as above
+        dateFormat.applyPattern("LLLLL");
+        assertEquals("января", dateFormat.format(new Date(0)));
+    }
+
     private void assertDayPeriodParseFailure(String pattern, String source) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, Locale.US);
         ParsePosition parsePosition = new ParsePosition(0);
@@ -766,7 +801,7 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
     /**
      * Format a date using a "non-gregorian" calendar. This means that we use a calendar that is not
      * exactly {@code java.util.GregorianCalendar} as checked by
-     * {@link SimpleDateFormat#isGregorianCalendar()}.
+     * {@link SimpleDateFormat#useDateFormatSymbols()}.
      */
     private static String formatDateNonGregorianCalendar(String fmt) {
         DateFormat dateFormat = new SimpleDateFormat(fmt, Locale.US);
