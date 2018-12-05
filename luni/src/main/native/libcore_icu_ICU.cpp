@@ -1037,7 +1037,7 @@ struct ICURegistration {
 
   // Returns a string containing the expected path of the (optional) /apex tz module data file
   static std::string getTimeZoneModulePath() {
-    std::string apexPath = "/apex/com.android.tzdata/etc/icu_tzdata.dat";
+    std::string apexPath = "/apex/com.android.tzdata/etc/icu/icu_tzdata.dat";
     return apexPath;
   }
 
