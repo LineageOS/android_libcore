@@ -68,7 +68,14 @@ public abstract class SSLSocketFactory extends javax.net.SocketFactory {
         DEBUG = false;
     }
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #getDefault()} to read the current default; from Android API
+     * level 21 onwards, apps should have no need to ever write this value because it is
+     * automatically recomputed when the set of {@link java.security.Provider security providers}
+     * changes.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P,
+            trackingBug = 118741276)
     private static javax.net.ssl.SSLSocketFactory defaultSocketFactory;
 
     private static int lastVersion = -1; // 0xffffffff
