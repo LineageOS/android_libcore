@@ -75,7 +75,7 @@ public final class TimeZoneDataFiles {
 
         // ICU should then look for a mounted time zone module file in /apex. This is used for
         // (optional) time zone data that can be updated with an APEX file.
-        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("");
+        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("icu/");
         if (timeZoneModuleIcuDataPath != null) {
             paths.add(timeZoneModuleIcuDataPath);
         }
