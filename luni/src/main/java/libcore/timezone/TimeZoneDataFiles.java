@@ -45,7 +45,7 @@ public final class TimeZoneDataFiles {
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
-                getTimeZoneModuleFile(fileName),
+                getTimeZoneModuleFile("tz/" + fileName),
                 getSystemTimeZoneFile(fileName)
         };
     }
