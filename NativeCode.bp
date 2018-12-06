@@ -55,7 +55,6 @@ cc_library_shared {
         ":luni_native_srcs",
         "dalvik/src/main/native/org_apache_harmony_dalvik_NativeTestTarget.cpp",
     ],
-
     shared_libs: [
         "libbase",
         "libcrypto",
@@ -68,13 +67,6 @@ cc_library_shared {
     static_libs: [
         "libziparchive",
     ],
-    target: {
-        android: {
-            shared_libs: [
-                "libutils",
-            ],
-        },
-    },
 }
 
 cc_defaults {
