@@ -19,6 +19,7 @@ package libcore.util;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.TzDataSetVersion;
 import libcore.timezone.TzDataSetVersion.TzDataSetException;
+import libcore.timezone.ZoneInfoDB;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +32,9 @@ import java.io.IOException;
  */
 @libcore.api.CorePlatformApi
 public class CoreLibraryDebug {
+
+    private static final String CORE_LIBRARY_TIMEZONE_DEBUG_PREFIX = "core_library.timezone.";
+
     private CoreLibraryDebug() {}
 
     /**
@@ -39,25 +43,33 @@ public class CoreLibraryDebug {
     @libcore.api.CorePlatformApi
     public static DebugInfo getDebugInfo() {
         DebugInfo debugInfo = new DebugInfo();
-        populateTimeZoneInfo(debugInfo);
+        populateTimeZoneFilesInfo(debugInfo);
+        populateTimeZoneLibraryReportedVersion(debugInfo);
         return debugInfo;
     }
 
-    /** Adds time zone data information to the supplied {@link DebugInfo}. */
-    private static void populateTimeZoneInfo(DebugInfo debugInfo) {
+    /**
+     * Adds information about the available time zone file sets on the device to the supplied
+     * {@link DebugInfo}. See also {@link #populateTimeZoneLibraryReportedVersion(DebugInfo)} for a method
+     * that provides information about the time zone files actually in use by libraries.
+     */
+    private static void populateTimeZoneFilesInfo(DebugInfo debugInfo) {
+        String debugKeyPrefix = CORE_LIBRARY_TIMEZONE_DEBUG_PREFIX + "source.";
+
         // Time zone module tz data set.
         {
-            String debugKeyPrefix = "core_library.timezone.tzdata_module_";
+            String tzDataModulePrefix = debugKeyPrefix + "tzdata_module_";
             String versionFileName =
                     TimeZoneDataFiles.getTimeZoneModuleFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFileName, debugKeyPrefix, debugInfo);
+            addTzDataSetVersionDebugInfo(versionFileName, tzDataModulePrefix, debugInfo);
         }
+
         // /system tz data set.
         {
-            String debugKeyPrefix = "core_library.timezone.system_";
+            String systemDirPrefix = debugKeyPrefix + "system_";
             String versionFileName =
                     TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFileName, debugKeyPrefix, debugInfo);
+            addTzDataSetVersionDebugInfo(versionFileName, systemDirPrefix, debugInfo);
         }
     }
 
@@ -88,4 +100,16 @@ public class CoreLibraryDebug {
         }
     }
 
+    private static void populateTimeZoneLibraryReportedVersion(DebugInfo debugInfo) {
+        String debugKeyPrefix = CORE_LIBRARY_TIMEZONE_DEBUG_PREFIX + "lib.";
+        debugInfo.addStringEntry(
+                debugKeyPrefix + "icu4j.tzdb_version",
+                android.icu.util.TimeZone.getTZDataVersion());
+        debugInfo.addStringEntry(
+                debugKeyPrefix + "libcore.tzdb_version",
+                ZoneInfoDB.getInstance().getVersion());
+        debugInfo.addStringEntry(
+                debugKeyPrefix + "icu4c.tzdb_version",
+                libcore.icu.ICU.getTZDataVersion());
+    }
 }
