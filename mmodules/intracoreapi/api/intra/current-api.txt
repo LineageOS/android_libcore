@@ -420,6 +420,9 @@ package dalvik.annotation.compat {
   public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
   }
 
+  public static abstract class UnsupportedAppUsage.Container implements java.lang.annotation.Annotation {
+  }
+
   public static class UnsupportedAppUsage.VERSION_CODES {
     ctor public UnsupportedAppUsage.VERSION_CODES();
     field public static final int CUR_DEVELOPMENT = 10000; // 0x2710
