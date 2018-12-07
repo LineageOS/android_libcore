@@ -18,9 +18,11 @@ package dalvik.annotation.compat;
 import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
 import dalvik.system.VMRuntime;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import libcore.api.CorePlatformApi;
@@ -43,7 +45,8 @@ import libcore.api.IntraCoreApi;
  * {@hide}
  */
 @Retention(CLASS)
-@Target({CONSTRUCTOR, METHOD, FIELD})
+@Target({CONSTRUCTOR, METHOD, FIELD, TYPE})
+@Repeatable(UnsupportedAppUsage.Container.class)
 @CorePlatformApi
 @IntraCoreApi
 public @interface UnsupportedAppUsage {
@@ -125,4 +128,33 @@ public @interface UnsupportedAppUsage {
     @CorePlatformApi
     @IntraCoreApi
     String expectedSignature() default "";
+
+    /**
+     * The signature of an implicit (not present in the source) member that forms part of the
+     * hiddenapi.
+     *
+     * <p>Allows access to non-SDK API elements that are not represented in the input source to be
+     * managed.
+     *
+     * <p>This must only be used when applying the annotation to a type, using it in any other
+     * situation is an error.
+     *
+     * @return A dex API signature.
+     */
+    @CorePlatformApi
+    @IntraCoreApi
+    String implicitMember() default "";
+
+    /**
+     * Container for {@link UnsupportedAppUsage} that allows it to be applied repeatedly to types.
+     */
+    @Retention(CLASS)
+    @Target(TYPE)
+    @CorePlatformApi
+    @IntraCoreApi
+    @interface Container {
+        @CorePlatformApi
+        @IntraCoreApi
+        UnsupportedAppUsage[] value();
+    }
 }
