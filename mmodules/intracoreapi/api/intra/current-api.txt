@@ -524,6 +524,16 @@ package libcore.net {
 
 }
 
+package libcore.util {
+
+  public abstract class NonNull implements java.lang.annotation.Annotation {
+  }
+
+  public abstract class Nullable implements java.lang.annotation.Annotation {
+  }
+
+}
+
 package sun.security.util {
 
   public abstract interface DerEncoder {

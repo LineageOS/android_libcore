@@ -194,6 +194,8 @@ filegroup {
         "luni/src/main/java/libcore/util/EmptyArray.java",
         "luni/src/main/java/libcore/util/HexEncoding.java",
         "luni/src/main/java/libcore/util/NativeAllocationRegistry.java",
+        "luni/src/main/java/libcore/util/NonNull.java",
+        "luni/src/main/java/libcore/util/Nullable.java",
         "luni/src/main/java/libcore/util/SneakyThrow.java",
         "luni/src/main/java/libcore/util/XmlObjectFactory.java",
         "luni/src/main/java/libcore/util/ZoneInfo.java",
