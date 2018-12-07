@@ -558,9 +558,14 @@ package com.android.org.conscrypt {
 package dalvik.annotation.compat {
 
   public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
+    method public abstract java.lang.String expectedSignature();
+    method public abstract java.lang.String implicitMember();
+    method public abstract int maxTargetSdk();
+    method public abstract long trackingBug();
   }
 
   public static abstract class UnsupportedAppUsage.Container implements java.lang.annotation.Annotation {
+    method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
   public static class UnsupportedAppUsage.VERSION_CODES {
