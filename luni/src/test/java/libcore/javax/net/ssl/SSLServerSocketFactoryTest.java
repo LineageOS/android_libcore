@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,40 +18,38 @@ package libcore.javax.net.ssl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.io.InputStream;
-import java.net.Socket;
 import java.security.Provider;
 import java.security.Security;
 import java.util.Properties;
-import javax.net.SocketFactory;
+import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.SSLServerSocketFactory;
 import junit.framework.TestCase;
 import libcore.java.security.StandardNames;
 
 import static org.junit.Assert.assertNotEquals;
 
-public class SSLSocketFactoryTest extends TestCase {
-    private static final String SSL_PROPERTY = "ssl.SocketFactory.provider";
-
-    public void test_SSLSocketFactory_getDefault_cacheInvalidate() throws Exception {
+public class SSLServerSocketFactoryTest extends TestCase {
+    private static final String SSL_PROPERTY = "ssl.ServerSocketFactory.provider";
+    
+    public void test_SSLServerSocketFactory_getDefault_cacheInvalidate() throws Exception {
         String origProvider = resetSslProvider();
         try {
-            SocketFactory sf1 = SSLSocketFactory.getDefault();
+            ServerSocketFactory sf1 = SSLServerSocketFactory.getDefault();
             assertNotNull(sf1);
-            assertTrue(SSLSocketFactory.class.isAssignableFrom(sf1.getClass()));
+            assertTrue(SSLServerSocketFactory.class.isAssignableFrom(sf1.getClass()));
 
             Provider fakeProvider = new FakeSSLSocketProvider();
-            SocketFactory sf4;
+            ServerSocketFactory sf4;
             SSLContext origContext = null;
             try {
                 origContext = SSLContext.getDefault();
                 Security.insertProviderAt(fakeProvider, 1);
                 SSLContext.setDefault(SSLContext.getInstance("Default", fakeProvider));
 
-                sf4 = SSLSocketFactory.getDefault();
+                sf4 = SSLServerSocketFactory.getDefault();
                 assertNotNull(sf4);
-                assertTrue(SSLSocketFactory.class.isAssignableFrom(sf4.getClass()));
+                assertTrue(SSLServerSocketFactory.class.isAssignableFrom(sf4.getClass()));
 
                 assertNotEquals(sf1.getClass(), sf4.getClass());
             } finally {
@@ -59,17 +57,18 @@ public class SSLSocketFactoryTest extends TestCase {
                 Security.removeProvider(fakeProvider.getName());
             }
 
-            SocketFactory sf3 = SSLSocketFactory.getDefault();
+            ServerSocketFactory sf3 = SSLServerSocketFactory.getDefault();
             assertNotNull(sf3);
-            assertTrue(SSLSocketFactory.class.isAssignableFrom(sf3.getClass()));
+            assertTrue(SSLServerSocketFactory.class.isAssignableFrom(sf3.getClass()));
 
-            assertEquals(sf1.getClass(), sf3.getClass());
+            assertEquals(sf1.getClass() + " should be " + sf3.getClass(), sf1.getClass(),
+                    sf3.getClass());
 
             if (!StandardNames.IS_RI) {
-                Security.setProperty(SSL_PROPERTY, FakeSSLSocketFactory.class.getName());
-                SocketFactory sf2 = SSLSocketFactory.getDefault();
+                Security.setProperty(SSL_PROPERTY, FakeSSLServerSocketFactory.class.getName());
+                ServerSocketFactory sf2 = SSLServerSocketFactory.getDefault();
                 assertNotNull(sf2);
-                assertTrue(SSLSocketFactory.class.isAssignableFrom(sf2.getClass()));
+                assertTrue(SSLServerSocketFactory.class.isAssignableFrom(sf2.getClass()));
 
                 assertNotEquals(sf1.getClass(), sf2.getClass());
                 assertEquals(sf2.getClass(), sf4.getClass());
@@ -101,16 +100,5 @@ public class SSLSocketFactoryTest extends TestCase {
 
         assertNull(Security.getProperty(SSL_PROPERTY));
         return origProvider;
-    }
-
-
-    public void test_SSLSocketFactory_createSocket_withConsumedInputStream()
-            throws Exception {
-        try {
-            SSLSocketFactory sf = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            Socket sslSocket = sf.createSocket(null, (InputStream) null, false);
-            fail();
-        } catch (UnsupportedOperationException expected) {
-        }
     }
 }

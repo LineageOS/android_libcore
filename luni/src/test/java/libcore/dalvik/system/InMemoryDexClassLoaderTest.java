@@ -340,6 +340,21 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         assertEquals(applicationLib.toString(), path);
     }
 
+    public void testNullParent() throws IOException, ClassNotFoundException {
+        // Other tests set up InMemoryDexClassLoader with the system class loader
+        // as parent. Test that passing {@code null} works too (b/120603906).
+        InMemoryDexClassLoader classLoader = new InMemoryDexClassLoader(
+                new ByteBuffer[] { readFileToByteBufferIndirect(dex1) },
+                /* parent */ null);
+
+        // Try to load a class from the boot class loader.
+        Class<?> objectClass = classLoader.loadClass("java.lang.Object");
+        assertEquals(objectClass, Object.class);
+
+        // Try to load a class from this class loader.
+        classLoader.loadClass("test.TestMethods");
+    }
+
     private static File makeEmptyFile(File directory, String name) throws IOException {
         assertTrue(directory.mkdirs());
         File result = new File(directory, name);
