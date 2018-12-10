@@ -27,6 +27,7 @@ import java.util.List;
 @libcore.api.CorePlatformApi
 public final class TimeZoneDataFiles {
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
+    private static final String ANDROID_RUNTIME_ROOT_ENV = "ANDROID_RUNTIME_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
     private TimeZoneDataFiles() {}
@@ -38,14 +39,16 @@ public final class TimeZoneDataFiles {
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
      * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
      * </li>
-     * <li>[2] - the location of the file in the /system partition (should exist).</li>
+     * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
      * </ul>
+     * <li>[3] - the location of the file in the /system partition (should exist).</li>
      */
     // VisibleForTesting
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
                 getTimeZoneModuleFile("tz/" + fileName),
+                getRuntimeModuleFile("tz/" + fileName),
                 getSystemTimeZoneFile(fileName)
         };
     }
@@ -57,6 +60,10 @@ public final class TimeZoneDataFiles {
 
     public static String getTimeZoneModuleFile(String fileName) {
         return "/apex/com.android.tzdata/etc/" + fileName;
+    }
+
+    private static String getRuntimeModuleFile(String fileName) {
+        return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
     }
 
     public static String getSystemTimeZoneFile(String fileName) {
