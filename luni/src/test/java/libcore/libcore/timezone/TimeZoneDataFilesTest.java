@@ -28,7 +28,7 @@ public class TimeZoneDataFilesTest {
     @Test
     public void getTimeZoneFilePaths() {
         String[] paths = TimeZoneDataFiles.getTimeZoneFilePaths("foo");
-        assertEquals(3, paths.length);
+        assertEquals(4, paths.length);
 
         assertTrue(paths[0].contains("/misc/zoneinfo/current/"));
         assertTrue(paths[0].endsWith("/foo"));
@@ -36,8 +36,11 @@ public class TimeZoneDataFilesTest {
         assertTrue(paths[1].startsWith("/apex/com.android.tzdata/"));
         assertTrue(paths[1].endsWith("/foo"));
 
-        assertTrue(paths[2].contains("/usr/share/zoneinfo/"));
+        assertTrue(paths[2].startsWith("/apex/com.android.runtime/"));
         assertTrue(paths[2].endsWith("/foo"));
+
+        assertTrue(paths[3].contains("/usr/share/zoneinfo/"));
+        assertTrue(paths[3].endsWith("/foo"));
     }
 
     // http://b/34867424
