@@ -54,6 +54,6 @@ public class TimeZoneDataFilesTest {
 
         assertTrue(paths[0].contains("/misc/zoneinfo/current/icu"));
         assertTrue(paths[1].startsWith("/apex/com.android.tzdata"));
-        assertTrue(paths[2].contains("/usr/icu"));
+        assertTrue(paths[2].contains("/etc/icu"));
     }
 }
