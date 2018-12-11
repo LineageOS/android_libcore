@@ -624,6 +624,8 @@ import static android.system.OsConstants.S_ISDIR;
          */
         @UnsupportedAppUsage
         private final File path;
+        /** Whether {@code path.isDirectory()}, or {@code null} if {@code path == null}. */
+        private final Boolean pathIsDirectory;
 
         @UnsupportedAppUsage
         private final DexFile dexFile;
@@ -639,16 +641,16 @@ import static android.system.OsConstants.S_ISDIR;
         public Element(DexFile dexFile, File dexZipPath) {
             this.dexFile = dexFile;
             this.path = dexZipPath;
+            // Do any I/O in the constructor so we don't have to do it elsewhere, eg. toString().
+            this.pathIsDirectory = (path == null) ? null : path.isDirectory();
         }
 
         public Element(DexFile dexFile) {
-            this.dexFile = dexFile;
-            this.path = null;
+            this(dexFile, null);
         }
 
         public Element(File path) {
-          this.path = path;
-          this.dexFile = null;
+            this(null, path);
         }
 
         /**
@@ -678,6 +680,7 @@ import static android.system.OsConstants.S_ISDIR;
                 this.path = zip;
                 this.dexFile = dexFile;
             }
+            this.pathIsDirectory = (path == null) ? null : path.isDirectory();
         }
 
         /*
@@ -696,7 +699,7 @@ import static android.system.OsConstants.S_ISDIR;
         @Override
         public String toString() {
             if (dexFile == null) {
-              return (path.isDirectory() ? "directory \"" : "zip file \"") + path + "\"";
+              return (pathIsDirectory ? "directory \"" : "zip file \"") + path + "\"";
             } else {
               if (path == null) {
                 return "dex file \"" + dexFile + "\"";
@@ -711,7 +714,7 @@ import static android.system.OsConstants.S_ISDIR;
                 return;
             }
 
-            if (path == null || path.isDirectory()) {
+            if (path == null || pathIsDirectory) {
                 initialized = true;
                 return;
             }
