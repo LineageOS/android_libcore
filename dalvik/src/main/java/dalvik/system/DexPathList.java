@@ -639,6 +639,9 @@ import static android.system.OsConstants.S_ISDIR;
          */
         @UnsupportedAppUsage
         public Element(DexFile dexFile, File dexZipPath) {
+            if (dexFile == null && dexZipPath == null) {
+                throw new NullPointerException("Either dexFile or path must be non-null");
+            }
             this.dexFile = dexFile;
             this.path = dexZipPath;
             // Do any I/O in the constructor so we don't have to do it elsewhere, eg. toString().
@@ -664,6 +667,7 @@ import static android.system.OsConstants.S_ISDIR;
         @UnsupportedAppUsage
         @Deprecated
         public Element(File dir, boolean isDirectory, File zip, DexFile dexFile) {
+            this(dir != null ? null : dexFile, dir != null ? dir : zip);
             System.err.println("Warning: Using deprecated Element constructor. Do not use internal"
                     + " APIs, this constructor will be removed in the future.");
             if (dir != null && (zip != null || dexFile != null)) {
@@ -673,14 +677,6 @@ import static android.system.OsConstants.S_ISDIR;
             if (isDirectory && (zip != null || dexFile != null)) {
                 throw new IllegalArgumentException("Unsupported argument combination.");
             }
-            if (dir != null) {
-                this.path = dir;
-                this.dexFile = null;
-            } else {
-                this.path = zip;
-                this.dexFile = dexFile;
-            }
-            this.pathIsDirectory = (path == null) ? null : path.isDirectory();
         }
 
         /*
@@ -701,11 +697,7 @@ import static android.system.OsConstants.S_ISDIR;
             if (dexFile == null) {
               return (pathIsDirectory ? "directory \"" : "zip file \"") + path + "\"";
             } else {
-              if (path == null) {
-                return "dex file \"" + dexFile + "\"";
-              } else {
-                return "zip file \"" + path + "\"";
-              }
+              return "zip file \"" + path + "\"";
             }
         }
 
