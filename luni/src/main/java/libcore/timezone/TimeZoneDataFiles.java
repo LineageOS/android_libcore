@@ -87,11 +87,10 @@ public final class TimeZoneDataFiles {
             paths.add(timeZoneModuleIcuDataPath);
         }
 
-        // ICU should always look in the runtime module path as this is where most of the data
-        // can be found.
-        String runtimeModuleIcuDataPath = getRuntimeModuleFile("icu/");
-        if (runtimeModuleIcuDataPath != null) {
-            paths.add(runtimeModuleIcuDataPath);
+        // ICU should always look in ANDROID_ROOT as this is where most of the data can be found.
+        String systemIcuDataPath = getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu");
+        if (systemIcuDataPath != null) {
+            paths.add(systemIcuDataPath);
         }
         return String.join(":", paths);
     }
