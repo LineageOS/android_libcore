@@ -59,16 +59,16 @@ public class CoreLibraryDebug {
         // Time zone module tz data set.
         {
             String tzDataModulePrefix = debugKeyPrefix + "tzdata_module_";
-            String versionFileName =
-                    TimeZoneDataFiles.getTimeZoneModuleFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+            String versionFileName = TimeZoneDataFiles.getTimeZoneModuleFile(
+                    "tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
             addTzDataSetVersionDebugInfo(versionFileName, tzDataModulePrefix, debugInfo);
         }
 
         // Runtime module tz data set.
         {
             String runtimeModulePrefix = debugKeyPrefix + "runtime_module_";
-            String versionFileName =
-                    TimeZoneDataFiles.getRuntimeModuleFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+            String versionFileName = TimeZoneDataFiles.getRuntimeModuleFile(
+                    "tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
             addTzDataSetVersionDebugInfo(versionFileName, runtimeModulePrefix, debugInfo);
         }
 
