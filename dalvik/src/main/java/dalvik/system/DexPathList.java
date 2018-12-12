@@ -696,6 +696,8 @@ import static android.system.OsConstants.S_ISDIR;
         public String toString() {
             if (dexFile == null) {
               return (pathIsDirectory ? "directory \"" : "zip file \"") + path + "\"";
+            } else if (path == null) {
+              return "dex file \"" + dexFile + "\"";
             } else {
               return "zip file \"" + path + "\"";
             }
