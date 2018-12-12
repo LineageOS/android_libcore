@@ -176,7 +176,10 @@ public final class Double extends java.lang.Number
 
     private static final long serialVersionUID = -9172774392245257468L; // 0x80b3c24a296bfb04L
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #doubleValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
     private final double value;
 
     {
