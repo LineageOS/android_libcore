@@ -301,7 +301,10 @@ public final class Integer extends java.lang.Number
         sizeTable = new int[0];
     }
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #intValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
     private final int value;
 
     {
