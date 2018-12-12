@@ -62,7 +62,7 @@ public final class TimeZoneDataFiles {
         return "/apex/com.android.tzdata/etc/" + fileName;
     }
 
-    private static String getRuntimeModuleFile(String fileName) {
+    public static String getRuntimeModuleFile(String fileName) {
         return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
     }
 
