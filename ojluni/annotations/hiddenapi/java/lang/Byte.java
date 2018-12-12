@@ -159,7 +159,10 @@ public final class Byte extends java.lang.Number implements java.lang.Comparable
 
     private static final long serialVersionUID = -7183698231559129828L; // 0x9c4e6084ee50f51cL
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #byteValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
     private final byte value;
 
     {
