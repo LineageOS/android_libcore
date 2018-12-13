@@ -459,10 +459,6 @@ package dalvik.system {
 
 package java.net {
 
-  public class InetAddress implements java.io.Serializable {
-    method public static boolean isNumeric(java.lang.String);
-  }
-
   public class Socket implements java.io.Closeable {
     method public java.io.FileDescriptor getFileDescriptor$();
   }
