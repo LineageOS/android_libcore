@@ -73,6 +73,7 @@ public abstract class CharacterEncoder {
         throw new RuntimeException("Stub!");
     }
 
+    @dalvik.annotation.compat.UnsupportedAppUsage
     public java.lang.String encode(byte[] aBuffer) {
         throw new RuntimeException("Stub!");
     }
@@ -114,5 +115,6 @@ public abstract class CharacterEncoder {
         throw new RuntimeException("Stub!");
     }
 
-    @dalvik.annotation.compat.UnsupportedAppUsage protected java.io.PrintStream pStream;
+    @dalvik.annotation.compat.UnsupportedAppUsage
+    protected java.io.PrintStream pStream;
 }
