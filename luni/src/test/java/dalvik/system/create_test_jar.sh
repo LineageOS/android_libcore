@@ -3,6 +3,7 @@ set -e
 
 # Create the child JAR
 # --------------------------------------
+rm -rf /tmp/delegate_last_child
 mkdir -p /tmp/delegate_last_child/libcore/test/delegatelast;
 pushd /tmp/delegate_last_child
 echo "package libcore.test.delegatelast;\
@@ -26,6 +27,7 @@ popd
 
 # Create the parent JAR
 # --------------------------------------
+rm -rf /tmp/delegate_last_parent
 mkdir -p /tmp/delegate_last_parent/libcore/test/delegatelast;
 pushd /tmp/delegate_last_parent
 echo "package libcore.test.delegatelast;\
@@ -50,6 +52,7 @@ popd
 
 # Create a jar that overloads boot classpath classes and resources
 # ----------------------------------------------------------------
+rm -rf /tmp/delegate_last_bootoverride
 mkdir -p /tmp/delegate_last_bootoverride/java/util;
 pushd /tmp/delegate_last_bootoverride
 echo "package java.util;\
