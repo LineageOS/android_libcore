@@ -949,7 +949,7 @@ public final class Pattern
     transient long address;
 
     private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(
-            Pattern.class.getClassLoader(), getNativeFinalizer(), nativeSize());
+            Pattern.class.getClassLoader(), getNativeFinalizer());
     // END Android-changed: reimplement matching logic natively via ICU.
 
     /**
@@ -1435,7 +1435,6 @@ public final class Pattern
 
     private static native long compileImpl(String regex, int flags);
     private static native long getNativeFinalizer();
-    private static native int nativeSize();
     // END Android-changed: reimplement matching logic natively via ICU.
 
     /**
