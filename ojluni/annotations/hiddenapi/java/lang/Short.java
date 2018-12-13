@@ -146,7 +146,10 @@ public final class Short extends java.lang.Number implements java.lang.Comparabl
 
     private static final long serialVersionUID = 7515723908773894738L; // 0x684d37133460da52L
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@link #shortValue()}.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
     private final short value;
 
     {
