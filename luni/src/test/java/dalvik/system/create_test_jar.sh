@@ -58,7 +58,7 @@ echo "package java.util;\
               return \"I'm not really a HashMap\";\
           }\
       }" > java/util/HashMap.java
-javac java/util/HashMap.java
+javac --patch-module=java.base=. java/util/HashMap.java
 dx --dex --core-library --output=./bootoverride.jar --verbose java/util/HashMap.class
 
 mkdir -p android/icu
