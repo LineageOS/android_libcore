@@ -1028,23 +1028,6 @@ package libcore.internal {
 
 package libcore.io {
 
-  public final class DropBox {
-    method public static void setReporter(libcore.io.DropBox.Reporter);
-  }
-
-  public static abstract interface DropBox.Reporter {
-    method public abstract void addData(java.lang.String, byte[], int);
-    method public abstract void addText(java.lang.String, java.lang.String);
-  }
-
-  public final class EventLogger {
-    method public static void setReporter(libcore.io.EventLogger.Reporter);
-  }
-
-  public static abstract interface EventLogger.Reporter {
-    method public abstract void report(int, java.lang.Object...);
-  }
-
   public class ForwardingOs implements libcore.io.Os {
     ctor protected ForwardingOs(libcore.io.Os);
     method public boolean access(java.lang.String, int) throws android.system.ErrnoException;

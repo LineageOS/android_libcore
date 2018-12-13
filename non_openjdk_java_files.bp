@@ -167,8 +167,6 @@ filegroup {
         "luni/src/main/java/libcore/icu/RelativeDateTimeFormatter.java",
         "luni/src/main/java/libcore/icu/TimeZoneNames.java",
         "luni/src/main/java/libcore/internal/StringPool.java",
-        "luni/src/main/java/libcore/io/DropBox.java",
-        "luni/src/main/java/libcore/io/EventLogger.java",
         "luni/src/main/java/libcore/io/ForwardingOs.java",
         "luni/src/main/java/libcore/io/IoBridge.java",
         "luni/src/main/java/libcore/io/IoUtils.java",
