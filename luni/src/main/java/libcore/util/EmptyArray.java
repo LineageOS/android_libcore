@@ -35,6 +35,7 @@ public final class EmptyArray {
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static final int[] INT = new int[0];
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static final long[] LONG = new long[0];
 

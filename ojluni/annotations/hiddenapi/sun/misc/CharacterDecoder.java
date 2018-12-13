@@ -78,6 +78,7 @@ public abstract class CharacterDecoder {
         throw new RuntimeException("Stub!");
     }
 
+    @dalvik.annotation.compat.UnsupportedAppUsage
     public byte[] decodeBuffer(java.lang.String inputString) throws java.io.IOException {
         throw new RuntimeException("Stub!");
     }
