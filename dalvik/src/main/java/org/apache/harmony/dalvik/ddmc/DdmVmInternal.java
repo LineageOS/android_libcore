@@ -75,6 +75,7 @@ public class DdmVmInternal {
      * Get a stack trace for the specified thread ID.  The ID can be found
      * in the data from getThreadStats.
      */
+    @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     native public static StackTraceElement[] getStackTraceById(int threadId);
 

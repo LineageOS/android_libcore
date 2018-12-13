@@ -130,10 +130,13 @@ public interface Os {
     public void mkdir(String path, int mode) throws ErrnoException;
     public void mkfifo(String path, int mode) throws ErrnoException;
     public void mlock(long address, long byteCount) throws ErrnoException;
+    @UnsupportedAppUsage
     public long mmap(long address, long byteCount, int prot, int flags, FileDescriptor fd, long offset) throws ErrnoException;
     public void msync(long address, long byteCount, int flags) throws ErrnoException;
     public void munlock(long address, long byteCount) throws ErrnoException;
+    @UnsupportedAppUsage
     public void munmap(long address, long byteCount) throws ErrnoException;
+    @UnsupportedAppUsage
     public FileDescriptor open(String path, int flags, int mode) throws ErrnoException;
     public FileDescriptor[] pipe2(int flags) throws ErrnoException;
     /* TODO: if we used the non-standard ppoll(2) behind the scenes, we could take a long timeout. */
@@ -145,6 +148,7 @@ public interface Os {
     public int pwrite(FileDescriptor fd, ByteBuffer buffer, long offset) throws ErrnoException, InterruptedIOException;
     public int pwrite(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, long offset) throws ErrnoException, InterruptedIOException;
     public int read(FileDescriptor fd, ByteBuffer buffer) throws ErrnoException, InterruptedIOException;
+    @UnsupportedAppUsage
     public int read(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount) throws ErrnoException, InterruptedIOException;
     public String readlink(String path) throws ErrnoException;
     public String realpath(String path) throws ErrnoException;

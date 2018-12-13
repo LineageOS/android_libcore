@@ -37,6 +37,7 @@ public abstract class AbstractCalendar extends sun.util.calendar.CalendarSystem 
         throw new RuntimeException("Stub!");
     }
 
+    @dalvik.annotation.compat.UnsupportedAppUsage
     public sun.util.calendar.Era[] getEras() {
         throw new RuntimeException("Stub!");
     }
