@@ -75,12 +75,6 @@ static jlong Pattern_getNativeFinalizer(JNIEnv*, jclass) {
     return reinterpret_cast<jlong>(&Pattern_free);
 }
 
-// Return a guess of the amount of native memory to be deallocated by a typical call to
-// Pattern_free().
-static jint Pattern_nativeSize(JNIEnv*, jclass) {
-    return 500;  // Very rough guess based on a quick look at the implementation.
-}
-
 static jlong Pattern_compileImpl(JNIEnv* env, jclass, jstring javaRegex, jint flags) {
     flags |= UREGEX_ERROR_ON_UNKNOWN_ESCAPES;
 
@@ -103,7 +97,6 @@ static jlong Pattern_compileImpl(JNIEnv* env, jclass, jstring javaRegex, jint fl
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Pattern, compileImpl, "(Ljava/lang/String;I)J"),
     NATIVE_METHOD(Pattern, getNativeFinalizer, "()J"),
-    NATIVE_METHOD(Pattern, nativeSize, "()I"),
 };
 
 void register_java_util_regex_Pattern(JNIEnv* env) {

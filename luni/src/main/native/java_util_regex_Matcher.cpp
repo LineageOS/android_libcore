@@ -158,16 +158,6 @@ static jlong Matcher_getNativeFinalizer(JNIEnv*, jclass) {
     return reinterpret_cast<jlong>(&Matcher_free);
 }
 
-// Return a guess of the amount of native memory to be deallocated by a typical call to
-// Matcher_free().
-static jint Matcher_nativeSize(JNIEnv*, jclass) {
-    // This value can be tuned. 200 was found to cause performance issues (b/111141123) so 10000
-    // is being used instead. If the value is too small, there's no pressure to collect matchers,
-    // too large and we'll run GC too often.
-    // Also see b/111141123.
-    return 10000;
-}
-
 static jint Matcher_findImpl(JNIEnv* env, jclass, jlong addr, jint startIndex, jintArray offsets) {
     MatcherState* state = toMatcherState(addr);
     UBool result = state->matcher()->find(startIndex, state->status());
@@ -273,7 +263,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Matcher, hitEndImpl, "(J)Z"),
     NATIVE_METHOD(Matcher, lookingAtImpl, "(J[I)Z"),
     NATIVE_METHOD(Matcher, matchesImpl, "(J[I)Z"),
-    NATIVE_METHOD(Matcher, nativeSize, "()I"),
     NATIVE_METHOD(Matcher, openImpl, "(J)J"),
     NATIVE_METHOD(Matcher, requireEndImpl, "(J)Z"),
     NATIVE_METHOD(Matcher, setInputImpl, "(JLjava/lang/String;II)V"),
