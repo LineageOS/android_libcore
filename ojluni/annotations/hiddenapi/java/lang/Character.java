@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Character
@@ -600,7 +601,7 @@ public final class Character
     /**
      * @deprecated Use {@link #charValue()}.
      */
-    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final char value;
 
     {
