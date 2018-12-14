@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Byte extends java.lang.Number implements java.lang.Comparable<java.lang.Byte> {
@@ -162,7 +163,7 @@ public final class Byte extends java.lang.Number implements java.lang.Comparable
     /**
      * @deprecated Use {@link #byteValue()}.
      */
-    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final byte value;
 
     {
