@@ -2345,9 +2345,7 @@ public class SimpleDateFormat extends DateFormat {
                         return index;
                     }
                 } else {
-                    Map<String, Integer> map = calendar.getDisplayNames(field,
-                        Calendar.ALL_STYLES,
-                        locale);
+                    Map<String, Integer> map = getDisplayNamesMap(field, locale);
                     if ((index = matchString(text, start, field, map, calb)) > 0) {
                         return index;
                     }
@@ -2521,7 +2519,7 @@ public class SimpleDateFormat extends DateFormat {
                         return index;
                     }
                 } else {
-                    Map<String,Integer> map = calendar.getDisplayNames(field, Calendar.ALL_STYLES, locale);
+                    Map<String,Integer> map = getDisplayNamesMap(field, locale);
                     if ((index = matchString(text, start, field, map, calb)) > 0) {
                         return index;
                     }
@@ -2751,9 +2749,7 @@ public class SimpleDateFormat extends DateFormat {
                 return index;
             }
         } else {
-            Map<String, Integer> map = calendar.getDisplayNames(field,
-                Calendar.ALL_STYLES,
-                locale);
+            Map<String, Integer> map = getDisplayNamesMap(field, locale);
             if ((index = matchString(text, start, field, map, out)) > 0) {
                 return index;
             }
@@ -2971,6 +2967,21 @@ public class SimpleDateFormat extends DateFormat {
         SimpleDateFormat that = (SimpleDateFormat) obj;
         return (pattern.equals(that.pattern)
                 && formatData.equals(that.formatData));
+    }
+
+    private static final int[] REST_OF_STYLES = {
+        Calendar.SHORT_STANDALONE, Calendar.LONG_FORMAT, Calendar.LONG_STANDALONE,
+    };
+    private Map<String, Integer> getDisplayNamesMap(int field, Locale locale) {
+        Map<String, Integer> map = calendar.getDisplayNames(field, Calendar.SHORT_FORMAT, locale);
+        // Get all SHORT and LONG styles (avoid NARROW styles).
+        for (int style : REST_OF_STYLES) {
+            Map<String, Integer> m = calendar.getDisplayNames(field, style, locale);
+            if (m != null) {
+                map.putAll(m);
+            }
+        }
+        return map;
     }
 
     /**
