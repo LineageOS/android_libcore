@@ -27,6 +27,7 @@
 package javax.net.ssl;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public abstract class SSLServerSocketFactory extends javax.net.ServerSocketFactory {
@@ -53,7 +54,7 @@ public abstract class SSLServerSocketFactory extends javax.net.ServerSocketFacto
      * automatically recomputed when the set of {@link java.security.Provider security providers}
      * changes.
      */
-    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P,
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P,
         trackingBug = 118741276)
     private static javax.net.ssl.SSLServerSocketFactory defaultServerSocketFactory;
 
