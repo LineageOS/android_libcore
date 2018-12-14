@@ -762,10 +762,6 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         // The RI forces standalone form here, which would be "январь".
         // Android does not force standalone form. http://b/66411240#comment7
         assertEquals("января", dateFormat.format(new Date(0)));
-
-        // Ensure that Android is not forcing standalone form as above
-        dateFormat.applyPattern("LLLLL");
-        assertEquals("января", dateFormat.format(new Date(0)));
     }
 
     private void assertDayPeriodParseFailure(String pattern, String source) {
@@ -798,6 +794,43 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         assertEquals("Thu", formatDateNonGregorianCalendar("ccc")); // STANDALONE_DAY_OF_WEEK
     }
 
+    /*
+     * This is a regression test to ensure that month name can't be parsed using narrow format.
+     * There are still some cases when parsing can succeed, because on some locales
+     * (e.g. "ko", "th" and others) long, short and narrow forms of month are equal.
+     * There are two locales tested: AK and UK. AK locale has all months names unique
+     * (i.e. 01, 02, 03, ...), so there is no ambiguity and theoretically it is possible to parse
+     * them, however SimpleDateFormat doesn't allow it. UK locale is ambiguous
+     * (i.e. J, F, M, A, M, J, J, ...) so it is impossible to distinguish January, June or July in
+     * narrow form.
+     */
+    public void testParseNarrowFormat_throws() {
+        // narrow format for months is not ambiguous (01, 02, 03, ...)
+        checkParseNarrowFormat_throws(Locale.forLanguageTag("ak"));
+        // narrow format for months is ambiguous (J, F, M, A, M, J, J, ...).
+        checkParseNarrowFormat_throws(Locale.UK);
+    }
+
+    private static void checkParseNarrowFormat_throws(Locale locale) {
+        final Date date = new Date(0);
+        final TimeZone tz = TimeZone.getTimeZone("UTC");
+
+        // Format the date with DateFormatSymbol data and parsing it with Calendar data
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMMM", locale);
+        sdf.setTimeZone(tz);
+        String formattedDate = sdf.format(date);
+
+        // non-gregorian calendar to trigger getDisplayNamesMap() call while
+        // parsing narrow format date
+        sdf.setCalendar(new NonGregorianCalendar(tz, locale));
+
+        try {
+            sdf.parse(formattedDate);
+            fail(String.format("Parsed unparseable date on %s locale", locale.toLanguageTag()));
+        } catch (ParseException expected) {
+        }
+    }
+
     /**
      * Format a date using a "non-gregorian" calendar. This means that we use a calendar that is not
      * exactly {@code java.util.GregorianCalendar} as checked by
@@ -817,5 +850,13 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
      * #testDisplayNamesOnNonGregorianCalendar()}.
      */
     private static class NonGregorianCalendar extends GregorianCalendar {
+        NonGregorianCalendar() {
+            super();
+        }
+
+        NonGregorianCalendar(TimeZone timeZone, Locale locale) {
+            super(timeZone, locale);
+        }
     }
+
 }
