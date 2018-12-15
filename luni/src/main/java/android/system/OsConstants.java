@@ -571,7 +571,32 @@ public final class OsConstants {
     public static final int SIOCGIFBRDADDR = placeholder();
     public static final int SIOCGIFDSTADDR = placeholder();
     public static final int SIOCGIFNETMASK = placeholder();
+
+    /**
+     * Set the close-on-exec ({@code FD_CLOEXEC}) flag on the new file
+     * descriptor created by {@link Os#socket(int,int,int)} or
+     * {@link Os#socketpair(int,int,int,java.io.FileDescriptor,java.io.FileDescriptor)}.
+     * See the description of the O_CLOEXEC flag in
+     * <a href="http://man7.org/linux/man-pages/man2/open.2.html">open(2)</a>
+     * for reasons why this may be useful.
+     *
+     * <p>Applications wishing to make use of this flag on older API versions
+     * may use {@link #O_CLOEXEC} instead. On Android, {@code O_CLOEXEC} and
+     * {@code SOCK_CLOEXEC} are the same value.
+     */
+    public static final int SOCK_CLOEXEC = placeholder();
     public static final int SOCK_DGRAM = placeholder();
+
+    /**
+     * Set the O_NONBLOCK file status flag on the file descriptor
+     * created by {@link Os#socket(int,int,int)} or
+     * {@link Os#socketpair(int,int,int,java.io.FileDescriptor,java.io.FileDescriptor)}.
+     *
+     * <p>Applications wishing to make use of this flag on older API versions
+     * may use {@link #O_NONBLOCK} instead. On Android, {@code O_NONBLOCK}
+     * and {@code SOCK_NONBLOCK} are the same value.
+     */
+    public static final int SOCK_NONBLOCK = placeholder();
     public static final int SOCK_RAW = placeholder();
     public static final int SOCK_SEQPACKET = placeholder();
     public static final int SOCK_STREAM = placeholder();
