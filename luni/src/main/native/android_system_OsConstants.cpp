@@ -510,7 +510,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "SIOCGIFBRDADDR", SIOCGIFBRDADDR);
     initConstant(env, c, "SIOCGIFDSTADDR", SIOCGIFDSTADDR);
     initConstant(env, c, "SIOCGIFNETMASK", SIOCGIFNETMASK);
+    initConstant(env, c, "SOCK_CLOEXEC", SOCK_CLOEXEC);
     initConstant(env, c, "SOCK_DGRAM", SOCK_DGRAM);
+    initConstant(env, c, "SOCK_NONBLOCK", SOCK_NONBLOCK);
     initConstant(env, c, "SOCK_RAW", SOCK_RAW);
     initConstant(env, c, "SOCK_SEQPACKET", SOCK_SEQPACKET);
     initConstant(env, c, "SOCK_STREAM", SOCK_STREAM);
