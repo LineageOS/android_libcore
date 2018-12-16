@@ -27,6 +27,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Long extends java.lang.Number implements java.lang.Comparable<java.lang.Long> {
@@ -268,7 +269,7 @@ public final class Long extends java.lang.Number implements java.lang.Comparable
     /**
      * @deprecated Use {@link #longValue()}.
      */
-    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final long value;
 
     {

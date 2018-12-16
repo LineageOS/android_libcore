@@ -26,6 +26,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Boolean
@@ -122,7 +123,7 @@ public final class Boolean
     /**
      * @deprecated Use {@link #booleanValue()}.
      */
-    @UnsupportedAppUsage(maxTargetSdk = UnsupportedAppUsage.VERSION_CODES.P)
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P)
     private final boolean value;
 
     {

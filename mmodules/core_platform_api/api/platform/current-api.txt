@@ -568,14 +568,6 @@ package dalvik.annotation.compat {
     method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
-  public static class UnsupportedAppUsage.VERSION_CODES {
-    ctor public UnsupportedAppUsage.VERSION_CODES();
-    field public static final int CUR_DEVELOPMENT = 10000; // 0x2710
-    field public static final int O = 26; // 0x1a
-    field public static final int P = 28; // 0x1c
-    field public static final int Q = 10000; // 0x2710
-  }
-
 }
 
 package dalvik.annotation.optimization {
@@ -783,6 +775,11 @@ package dalvik.system {
 
   public final class VMStack {
     method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
+  }
+
+  public class VersionCodes {
+    field public static final int O = 26; // 0x1a
+    field public static final int P = 28; // 0x1c
   }
 
   public final class ZygoteHooks {

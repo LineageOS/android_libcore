@@ -21,7 +21,7 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.CLASS;
 
-import dalvik.system.VMRuntime;
+import dalvik.system.VersionCodes;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -51,30 +51,6 @@ import libcore.api.IntraCoreApi;
 @IntraCoreApi
 public @interface UnsupportedAppUsage {
 
-    @CorePlatformApi
-    @IntraCoreApi
-    class VERSION_CODES {
-        /**
-         * Magic version number for a current development build, which has
-         * not yet turned into an official release.
-         */
-        @CorePlatformApi
-        @IntraCoreApi
-        public static final int CUR_DEVELOPMENT = VMRuntime.SDK_VERSION_CUR_DEVELOPMENT;
-
-        @CorePlatformApi
-        @IntraCoreApi
-        public static final int O = 26;
-
-        @CorePlatformApi
-        @IntraCoreApi
-        public static final int P = 28;
-
-        @CorePlatformApi
-        @IntraCoreApi
-        public static final int Q = CUR_DEVELOPMENT;
-    }
-
     /**
      * Associates a bug tracking the work to add a public alternative to this API. Optional.
      *
@@ -98,8 +74,14 @@ public @interface UnsupportedAppUsage {
      * <p>Possible values are:
      * <ul>
      *     <li>
-     *         {@link VERSION_CODES#O} or {@link VERSION_CODES#P},
-     *         to limit access to apps targeting these SDKs (or earlier).
+     *         {@link VersionCodes#O} - in which case the API is available up to and including the
+     *         O release and all intermediate releases between O and P. Or in other words the API
+     *         is blacklisted (unavailable) from P onwards.
+     *     </li>
+     *     <li>
+     *         {@link VersionCodes#P} - in which case the API is available up to and including the
+     *         P release and all intermediate releases between P and Q. Or in other words the API
+     *         is blacklisted (unavailable) from Q onwards.
      *     </li>
      *     <li>
      *         absent (default value) - All apps can access this API, but doing so may result in
@@ -108,10 +90,6 @@ public @interface UnsupportedAppUsage {
      *     </li>
      *
      * </ul>
-     *
-     * Note, if this is set to {@link VERSION_CODES#O}, apps targeting O
-     * maintenance releases will also be allowed to use the API, and similarly for any future
-     * maintenance releases of P.
      *
      * @return The maximum value for an apps targetSdkVersion in order to access this API.
      */

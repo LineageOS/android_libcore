@@ -150,7 +150,7 @@ public final class Matcher implements MatchResult {
     private Runnable nativeFinalizer;
 
     private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(
-            Matcher.class.getClassLoader(), getNativeFinalizer(), nativeSize());
+            Matcher.class.getClassLoader(), getNativeFinalizer());
 
     /**
      * The index of the last position appended in a substitution.
@@ -1227,7 +1227,6 @@ public final class Matcher implements MatchResult {
     private static native boolean hitEndImpl(long addr);
     private static native boolean lookingAtImpl(long addr, int[] offsets);
     private static native boolean matchesImpl(long addr, int[] offsets);
-    private static native int nativeSize();
     private static native long openImpl(long patternAddr);
     private static native boolean requireEndImpl(long addr);
     private static native void setInputImpl(long addr, String s, int start, int end);
