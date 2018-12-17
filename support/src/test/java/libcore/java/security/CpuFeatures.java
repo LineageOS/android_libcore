@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
 
 import dalvik.system.VMRuntime;
 
-public class CpuFeatures {
+class CpuFeatures {
     private CpuFeatures() {
     }
 
