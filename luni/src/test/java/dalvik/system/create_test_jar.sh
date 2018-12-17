@@ -19,10 +19,9 @@ echo "package libcore.test.delegatelast;\
           }\
       }" > libcore/test/delegatelast/Child.java
 javac libcore/test/delegatelast/*.java
-
-d8 --output . libcore/test/delegatelast/*.class # Creates ./classes.dex
+dx --dex --output=./child.jar --verbose libcore/test/delegatelast/*.class
 echo -ne "child" > ./resource.txt
-jar cf ./child.jar classes.dex resource.txt
+jar uf ./child.jar resource.txt
 cp ./child.jar $ANDROID_BUILD_TOP/libcore/luni/src/test/resources/dalvik/system/child.jar
 popd
 
@@ -44,9 +43,9 @@ echo "package libcore.test.delegatelast;\
           }\
       }" > libcore/test/delegatelast/Parent.java
 javac libcore/test/delegatelast/*.java
-d8 --output . libcore/test/delegatelast/*.class # Creates ./classes.dex
+dx --dex --output=./parent.jar --verbose libcore/test/delegatelast/*.class
 echo -ne "parent" > ./resource.txt
-jar cf ./parent.jar classes.dex resource.txt
+jar uf ./parent.jar resource.txt
 cp ./parent.jar $ANDROID_BUILD_TOP/libcore/luni/src/test/resources/dalvik/system/parent.jar
 popd
 
@@ -63,9 +62,10 @@ echo "package java.util;\
           }\
       }" > java/util/HashMap.java
 javac --patch-module=java.base=. java/util/HashMap.java
-d8 --output . java/util/HashMap.class # Creates ./classes.dex
+dx --dex --core-library --output=./bootoverride.jar --verbose java/util/HashMap.class
+
 mkdir -p android/icu
 echo -ne "NOT ICU" > android/icu/ICUConfig.properties
-jar cf ./bootoverride.jar classes.dex android/icu/ICUConfig.properties
+jar uf ./bootoverride.jar android/icu/ICUConfig.properties
 cp ./bootoverride.jar $ANDROID_BUILD_TOP/libcore/luni/src/test/resources/dalvik/system/bootoverride.jar
 popd
