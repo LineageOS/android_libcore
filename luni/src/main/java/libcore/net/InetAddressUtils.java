@@ -26,7 +26,7 @@ import static android.system.OsConstants.AI_NUMERICHOST;
 
 /**
  * Android specific utility methods for {@link InetAddress} instances.
- * 
+ *
  * @hide
  */
 @libcore.api.CorePlatformApi
@@ -78,12 +78,6 @@ public class InetAddressUtils {
     }
 
     public static InetAddress parseNumericAddressNoThrow(String address) {
-        InetAddress inetAddress = parseNumericAddressNoThrowAllowDeprecated(address);
-        inetAddress = disallowDeprecatedFormats(address, inetAddress);
-        return inetAddress;
-    }
-
-    private static InetAddress parseNumericAddressNoThrowAllowDeprecated(String address) {
         StructAddrinfo hints = new StructAddrinfo();
         hints.ai_flags = AI_NUMERICHOST;
         InetAddress[] addresses = null;
@@ -95,21 +89,5 @@ public class InetAddressUtils {
             return null;
         }
         return addresses[0];
-    }
-
-    /**
-     * Exclude IPv4 addresses that do not consist of 4 decimal numbers.
-     *
-     * <p>See b/4539262 for more information.
-     */
-    public static InetAddress disallowDeprecatedFormats(String address, InetAddress inetAddress) {
-        // Only IPv4 addresses are problematic.
-        if (!(inetAddress instanceof Inet4Address) || address.indexOf(':') != -1) {
-            return inetAddress;
-        }
-        // If inet_pton(3) can't parse it, it must have been a deprecated format.
-        // We need to return inet_pton(3)'s result to ensure that numbers assumed to be octal
-        // by getaddrinfo(3) are reinterpreted by inet_pton(3) as decimal.
-        return Libcore.os.inet_pton(AF_INET, address);
     }
 }
