@@ -863,8 +863,8 @@ package java.net {
     method public static void clearDnsCache();
     method public static java.net.InetAddress[] getAllByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
     method public static java.net.InetAddress getByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
-    method public static boolean isNumeric(java.lang.String);
-    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+    method public static deprecated boolean isNumeric(java.lang.String);
+    method public static deprecated java.net.InetAddress parseNumericAddress(java.lang.String);
   }
 
   public class InetSocketAddress extends java.net.SocketAddress {
@@ -1098,6 +1098,11 @@ package libcore.mmodule.libart {
 }
 
 package libcore.net {
+
+  public class InetAddressUtils {
+    method public static boolean isNumericAddress(java.lang.String);
+    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+  }
 
   public final class MimeUtils {
     method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
