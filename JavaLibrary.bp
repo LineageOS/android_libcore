@@ -514,6 +514,7 @@ java_test {
         "slf4j-jdk14",
         "sqlite-jdbc",
         "tzdata-testing",
+        "truth-prebuilt",
     ],
 
     errorprone: {
