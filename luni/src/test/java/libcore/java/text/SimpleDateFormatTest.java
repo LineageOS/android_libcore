@@ -750,18 +750,25 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
      * Five Ms format makes month name independent on the context (in this case "11 Январь").
      */
     public void testContextSensitiveMonth_nonGregorianCalendar() {
-        final String fmt = "MMMMM";
         final Locale ru = new Locale("ru");
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat(fmt, ru);
-        NonGregorianCalendar cal = new NonGregorianCalendar();
-        cal.clear();
-        cal.setTimeZone(UTC);
-        dateFormat.setCalendar(cal);
+        final Locale cs = new Locale("cs");
 
         // The RI forces standalone form here, which would be "январь".
         // Android does not force standalone form. http://b/66411240#comment7
-        assertEquals("января", dateFormat.format(new Date(0)));
+        assertEquals("янв.", formatDateNonGregorianCalendar("MMM", ru));
+        assertEquals("января", formatDateNonGregorianCalendar("MMMM", ru));
+        assertEquals("января", formatDateNonGregorianCalendar("MMMMM", ru));
+        assertEquals("led", formatDateNonGregorianCalendar("MMM", cs));
+        assertEquals("ledna", formatDateNonGregorianCalendar("MMMM", cs));
+        assertEquals("ledna", formatDateNonGregorianCalendar("MMMMM", cs));
+
+        // Ensure that Android standalone form is used for Ls format strings
+        assertEquals("янв.", formatDateNonGregorianCalendar("LLL", ru));
+        assertEquals("январь", formatDateNonGregorianCalendar("LLLL", ru));
+        assertEquals("январь", formatDateNonGregorianCalendar("LLLLL", ru));
+        assertEquals("led", formatDateNonGregorianCalendar("LLL", cs));
+        assertEquals("leden", formatDateNonGregorianCalendar("LLLL", cs));
+        assertEquals("leden", formatDateNonGregorianCalendar("LLLLL", cs));
     }
 
     private void assertDayPeriodParseFailure(String pattern, String source) {
@@ -788,10 +795,10 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
 
     // http://b/38396219
     public void testDisplayNamesOnNonGregorianCalendar() {
-        assertEquals("Jan", formatDateNonGregorianCalendar("MMM")); // MONTH
-        assertEquals("Jan", formatDateNonGregorianCalendar("LLL")); // MONTH_STANDALONE
-        assertEquals("Thu", formatDateNonGregorianCalendar("EEE")); // DAY_OF_WEEK
-        assertEquals("Thu", formatDateNonGregorianCalendar("ccc")); // STANDALONE_DAY_OF_WEEK
+        assertEquals("Jan", formatDateNonGregorianCalendar("MMM", Locale.US)); // MONTH
+        assertEquals("Jan", formatDateNonGregorianCalendar("LLL", Locale.US)); // MONTH_STANDALONE
+        assertEquals("Thu", formatDateNonGregorianCalendar("EEE", Locale.US)); // DAY_OF_WEEK
+        assertEquals("Thu", formatDateNonGregorianCalendar("ccc", Locale.US)); // STANDALONE_DAY_OF_WEEK
     }
 
     /*
@@ -836,8 +843,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
      * exactly {@code java.util.GregorianCalendar} as checked by
      * {@link SimpleDateFormat#useDateFormatSymbols()}.
      */
-    private static String formatDateNonGregorianCalendar(String fmt) {
-        DateFormat dateFormat = new SimpleDateFormat(fmt, Locale.US);
+    private static String formatDateNonGregorianCalendar(String fmt, Locale locale) {
+        DateFormat dateFormat = new SimpleDateFormat(fmt, locale);
         NonGregorianCalendar cal = new NonGregorianCalendar();
         cal.clear();
         cal.setTimeZone(UTC);
