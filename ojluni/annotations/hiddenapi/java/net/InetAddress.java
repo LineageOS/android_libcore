@@ -27,6 +27,7 @@
 package java.net;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class InetAddress implements java.io.Serializable {
@@ -180,7 +181,7 @@ public class InetAddress implements java.io.Serializable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P, trackingBug = 78686891)
     public static boolean isNumeric(java.lang.String address) {
         throw new RuntimeException("Stub!");
     }
@@ -194,7 +195,10 @@ public class InetAddress implements java.io.Serializable {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage
+    /**
+     * @deprecated Use {@code android.net.InetAddresses.parseNumericAddress(String)} instead.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.P, trackingBug = 78686891)
     public static java.net.InetAddress parseNumericAddress(java.lang.String numericAddress) {
         throw new RuntimeException("Stub!");
     }
