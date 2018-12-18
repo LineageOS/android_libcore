@@ -96,10 +96,6 @@ class Inet6AddressImpl implements InetAddressImpl {
         // Is it a numeric address?
         InetAddress result = InetAddressUtils.parseNumericAddressNoThrow(host);
         if (result != null) {
-            result = InetAddressUtils.disallowDeprecatedFormats(host, result);
-            if (result == null) {
-                throw new UnknownHostException("Deprecated IPv4 address format: " + host);
-            }
             return new InetAddress[] { result };
         }
 
