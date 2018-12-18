@@ -1294,9 +1294,9 @@ public class SimpleDateFormat extends DateFormat {
             break;
 
         case PATTERN_MONTH:            // 'M' (context seinsive)
-            if (useDateFormatSymbols) {
             // BEGIN Android-changed: formatMonth() method to format using ICU data.
             /*
+            if (useDateFormatSymbols) {
                 String[] months;
                 if (count >= 4) {
                     months = formatData.getMonths();
@@ -1319,10 +1319,9 @@ public class SimpleDateFormat extends DateFormat {
                 zeroPaddingNumber(value+1, count, maxIntCount, buffer);
             }
             */
-                current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
-                    false /* standalone */);
+            current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
+                false /* standalone */, field, style);
             // END Android-changed: formatMonth() method to format using ICU data.
-            }
             break;
 
         case PATTERN_MONTH_STANDALONE: // 'L'
@@ -1345,12 +1344,11 @@ public class SimpleDateFormat extends DateFormat {
             }
             if (current == null) {
                 zeroPaddingNumber(value+1, count, maxIntCount, buffer);
-            */
-            if (useDateFormatSymbols) {
-                current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
-                        true /* standalone */);
-              // END Android-changed: formatMonth() method to format using ICU data.
             }
+            */
+            current = formatMonth(count, value, maxIntCount, buffer, useDateFormatSymbols,
+                   true /* standalone */, field, style);
+            // END Android-changed: formatMonth() method to format using ICU data.
             break;
 
         case PATTERN_HOUR_OF_DAY1: // 'k' 1-based.  eg, 23:59 + 1 hour =>> 24:59
@@ -1596,7 +1594,8 @@ public class SimpleDateFormat extends DateFormat {
     }
 
     private String formatMonth(int count, int value, int maxIntCount, StringBuffer buffer,
-                               boolean useDateFormatSymbols, boolean standalone) {
+                               boolean useDateFormatSymbols, boolean standalone,
+                               int field, int style) {
         String current = null;
         if (useDateFormatSymbols) {
             final String[] months;
@@ -1616,6 +1615,11 @@ public class SimpleDateFormat extends DateFormat {
         } else {
             if (count < 3) {
                 current = null;
+            } else {
+                if (standalone) {
+                    style = Calendar.toStandaloneStyle(style);
+                }
+                current = calendar.getDisplayName(field, style, locale);
             }
         }
 
