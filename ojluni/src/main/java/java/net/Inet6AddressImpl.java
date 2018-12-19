@@ -36,6 +36,7 @@ import libcore.io.Libcore;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import libcore.net.InetAddressUtils;
 
 import static android.system.OsConstants.AF_INET;
 import static android.system.OsConstants.AF_INET6;
@@ -93,12 +94,8 @@ class Inet6AddressImpl implements InetAddressImpl {
         }
 
         // Is it a numeric address?
-        InetAddress result = InetAddress.parseNumericAddressNoThrow(host);
+        InetAddress result = InetAddressUtils.parseNumericAddressNoThrow(host);
         if (result != null) {
-            result = InetAddress.disallowDeprecatedFormats(host, result);
-            if (result == null) {
-                throw new UnknownHostException("Deprecated IPv4 address format: " + host);
-            }
             return new InetAddress[] { result };
         }
 
