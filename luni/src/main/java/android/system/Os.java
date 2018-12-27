@@ -525,7 +525,9 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setegid.2.html">setegid(2)</a>.
+     * @deprecated Android Applications do not have sufficient privileges to call this method.
      */
+    @Deprecated
     public static void setegid(int egid) throws ErrnoException { Libcore.os.setegid(egid); }
 
     /**
@@ -535,12 +537,16 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/seteuid.2.html">seteuid(2)</a>.
+     * @deprecated Android Applications do not have sufficient privileges to call this method.
      */
+    @Deprecated
     public static void seteuid(int euid) throws ErrnoException { Libcore.os.seteuid(euid); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setgid.2.html">setgid(2)</a>.
+     * @deprecated Android Applications do not have sufficient privileges to call this method.
      */
+    @Deprecated
     public static void setgid(int gid) throws ErrnoException { Libcore.os.setgid(gid); }
 
     /**
@@ -600,7 +606,9 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setuid.2.html">setuid(2)</a>.
+     * @deprecated Android Applications do not have sufficient privileges to call this method.
      */
+    @Deprecated
     public static void setuid(int uid) throws ErrnoException { Libcore.os.setuid(uid); }
 
     /**
