@@ -19,6 +19,8 @@ package libcore.util;
 import dalvik.system.VMRuntime;
 import sun.misc.Cleaner;
 
+import java.lang.ref.Reference;
+
 /**
  * A NativeAllocationRegistry is used to associate native allocations with
  * Java objects and register them with the runtime.
@@ -154,6 +156,8 @@ public class NativeAllocationRegistry {
         } // Other exceptions are impossible.
         // Enable the cleaner only after we can no longer throw anything, including OOME.
         thunk.setNativePtr(nativePtr);
+        // Ensure that cleaner doesn't get invoked before we enable it.
+        Reference.reachabilityFence(referent);
         return result;
     }
 
@@ -204,6 +208,7 @@ public class NativeAllocationRegistry {
         }
         registerNativeAllocation(this.size);
         thunk.setNativePtr(nativePtr);
+        Reference.reachabilityFence(referent);
         return result;
     }
 
