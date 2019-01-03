@@ -21,7 +21,6 @@ import android.icu.util.TimeZone;
 import android.icu.util.ULocale;
 
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import static android.icu.util.TimeZone.GMT_ZONE;
 import static android.icu.util.ULocale.ENGLISH;
@@ -443,22 +442,22 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
             ENGLISH, GMT_ZONE, from, to, FORMAT_SHOW_DATE | FORMAT_SHOW_TIME | FORMAT_24HOUR);
     // If we're showing times and the end-point is midnight the following day, we want the
     // behaviour of suppressing the date for the end...
-    assertEquals("February 27, 2018, 04:00 – 00:00", fmt.apply(1519704000000L, 1519776000000L));
+    assertEquals("February 27, 2007, 04:00 – 00:00", fmt.apply(1172548800000L, 1172620800000L));
     // ...unless the start-point is also midnight, in which case we need dates to disambiguate.
-    assertEquals("February 27, 2018, 00:00 – February 28, 2018, 00:00",
-            fmt.apply(1519689600000L, 1519776000000L));
+    assertEquals("February 27, 2007, 00:00 – February 28, 2007, 00:00",
+            fmt.apply(1172534400000L, 1172620800000L));
     // We want to show the date if the end-point is a millisecond after midnight the following
     // day, or if it is exactly midnight the day after that.
-    assertEquals("February 27, 2018, 04:00 – February 28, 2018, 00:00",
-            fmt.apply(1519704000000L, 1519776000001L));
-    assertEquals("February 27, 2018, 04:00 – March 1, 2018, 00:00",
-            fmt.apply(1519704000000L, 1519862400000L));
+    assertEquals("February 27, 2007, 04:00 – February 28, 2007, 00:00",
+            fmt.apply(1172548800000L, 1172620800001L));
+    assertEquals("February 27, 2007, 04:00 – March 1, 2007, 00:00",
+            fmt.apply(1172548800000L, 1172707200000L));
     // We want to show the date if the start-point is anything less than a minute after midnight,
     // since that gets displayed as midnight...
-    assertEquals("February 27, 2018, 00:00 – February 28, 2018, 00:00",
-            fmt.apply(1519689659999L, 1519776000000L));
+    assertEquals("February 27, 2007, 00:00 – February 28, 2007, 00:00",
+            fmt.apply(1172534459999L, 1172620800000L));
     // ...but not if it is exactly one minute after midnight.
-    assertEquals("February 27, 2018, 00:01 – 00:00", fmt.apply(1519689660000L, 1519776000000L));
+    assertEquals("February 27, 2007, 00:01 – 00:00", fmt.apply(1172534460000L, 1172620800000L));
   }
 
   // http://b/68847519
@@ -466,14 +465,17 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     BiFunction<Long, Long, String> fmt = (from, to) -> formatDateRange(
             ENGLISH, GMT_ZONE, from, to, FORMAT_SHOW_DATE);
     // If we're only showing dates and the end-point is midnight of any day, we want the
-    // behaviour of showing an end date one earlier. So if the end-point is March 2, 00:00, show
-    // March 1 instead (whether the start-point is midnight or not).
-    assertEquals("February 27 – March 1, 2018", fmt.apply(1519689600000L, 1519948800000L));
-    assertEquals("February 27 – March 1, 2018", fmt.apply(1519704000000L, 1519948800000L));
+    // behaviour of showing an end date one earlier. So if the end-point is March 2, 2007 00:00,
+    // show March 1, 2007 instead (whether the start-point is midnight or not).
+    assertEquals("February 27 – March 1, 2007", fmt.apply(1172534400000L, 1172793600000L));
+    assertEquals("February 27 – March 1, 2007", fmt.apply(1172548800000L, 1172793600000L));
     // We want to show the true date if the end-point is a millisecond after midnight.
-    assertEquals("February 27 – March 2, 2018", fmt.apply(1519689600000L, 1519948800001L));
+    assertEquals("February 27 – March 2, 2007", fmt.apply(1172534400000L, 1172793600001L));
 
-    // 2017-02-27 00:00:00.000 GMT - 2018-03-02 00:00:00.000 GMT
-    assertEquals("February 27, 2017 – March 1, 2018", fmt.apply(1488153600000L, 1519948800000L));
+    // 2006-02-27 00:00:00.000 GMT - 2007-03-02 00:00:00.000 GMT
+    assertEquals("February 27, 2006 – March 1, 2007", fmt.apply(1140998400000L, 1172793600000L));
+
+    // Spans a leap year's Feb 29th.
+    assertEquals("February 27 – March 1, 2004", fmt.apply(1077840000000L, 1078185600000L));
   }
 }
