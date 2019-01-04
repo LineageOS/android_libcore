@@ -425,6 +425,9 @@ java_test {
 java_library {
     name: "filesystemstest",
     compile_dex: true,
+    dex_preopt: {
+        enabled: false,
+    },
     srcs: ["luni/src/test/filesystems/src/**/*.java"],
     java_resource_dirs: ["luni/src/test/filesystems/resources"],
     no_framework_libs: true,
@@ -438,6 +441,9 @@ java_library {
 java_library {
     name: "parameter-metadata-test",
     compile_dex: true,
+    dex_preopt: {
+        enabled: false,
+    },
     srcs: ["luni/src/test/parameter_metadata/src/**/*.java"],
     no_framework_libs: true,
     javacflags: ["-parameters"],
