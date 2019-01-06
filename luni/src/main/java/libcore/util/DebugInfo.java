@@ -61,6 +61,16 @@ public class DebugInfo {
         return entries;
     }
 
+    /** Returns the first debug entry with the given key, or {@code null} if it does not exist. */
+    public DebugEntry getDebugEntry(String key) {
+        for (DebugEntry entry : getDebugEntries()) {
+            if (key.equals(entry.getKey())) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
     /**
      * A generic key/value for a single piece of debug information.
      *

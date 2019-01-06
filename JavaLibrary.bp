@@ -158,12 +158,6 @@ java_library {
     static_libs: ["android_icu4j_resources_lib"],
     java_version: "1.9",
 
-    required: [
-        "tzdata",
-        "tzlookup.xml",
-        "tz_version",
-    ],
-
     installable: false,
 }
 
@@ -218,12 +212,6 @@ java_library {
 
     notice: "ojluni/NOTICE",
 
-    required: [
-        "tzdata",
-        "tzlookup.xml",
-        "tz_version",
-    ],
-
 }
 
 // Contains parts of core library not associated with OpenJDK. Contains not
@@ -254,9 +242,16 @@ java_library {
     },
 
     required: [
+        // Device files put in /system.
         "tzdata",
-        "tzlookup.xml",
         "tz_version",
+        // Files used to simulate the /system and runtime APEX dir
+        // structure on host.
+        "tzdata_host",
+        "tzdata_host_runtime_apex",
+        "tzlookup.xml_host_runtime_apex",
+        "tz_version_host",
+        "tz_version_host_runtime_apex",
     ],
 }
 
@@ -297,11 +292,6 @@ java_library {
     },
     java_version: "1.9",
     notice: "ojluni/NOTICE",
-    required: [
-        "tzdata",
-        "tzlookup.xml",
-        "tz_version",
-    ],
 }
 
 java_library {
@@ -316,11 +306,6 @@ java_library {
         enabled: false,
     },
     notice: "ojluni/NOTICE",
-    required: [
-        "tzdata",
-        "tzlookup.xml",
-        "tz_version",
-    ],
 }
 
 
@@ -440,6 +425,9 @@ java_test {
 java_library {
     name: "filesystemstest",
     compile_dex: true,
+    dex_preopt: {
+        enabled: false,
+    },
     srcs: ["luni/src/test/filesystems/src/**/*.java"],
     java_resource_dirs: ["luni/src/test/filesystems/resources"],
     no_framework_libs: true,
@@ -453,6 +441,9 @@ java_library {
 java_library {
     name: "parameter-metadata-test",
     compile_dex: true,
+    dex_preopt: {
+        enabled: false,
+    },
     srcs: ["luni/src/test/parameter_metadata/src/**/*.java"],
     no_framework_libs: true,
     javacflags: ["-parameters"],

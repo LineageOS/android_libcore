@@ -67,7 +67,11 @@ public final class TimeZoneDataFiles {
     }
 
     public static String getSystemTimeZoneFile(String fileName) {
-        return System.getenv(ANDROID_ROOT_ENV) + "/usr/share/zoneinfo/" + fileName;
+        return getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/share/zoneinfo/" + fileName);
+    }
+
+    public static String getSystemIcuFile(String fileName) {
+        return getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu/" + fileName);
     }
 
     public static String generateIcuDataPath() {
@@ -75,7 +79,8 @@ public final class TimeZoneDataFiles {
 
         // ICU should first look in ANDROID_DATA. This is used for (optional) time zone data
         // delivered by APK (https://source.android.com/devices/tech/config/timezone-rules)
-        String dataIcuDataPath = getEnvironmentPath(ANDROID_DATA_ENV, "/misc/zoneinfo/current/icu");
+        String dataIcuDataPath =
+                getEnvironmentPath(ANDROID_DATA_ENV, "/misc/zoneinfo/current/icu/");
         if (dataIcuDataPath != null) {
             paths.add(dataIcuDataPath);
         }
@@ -88,7 +93,7 @@ public final class TimeZoneDataFiles {
         }
 
         // ICU should always look in ANDROID_ROOT as this is where most of the data can be found.
-        String systemIcuDataPath = getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/icu");
+        String systemIcuDataPath = getSystemIcuFile("");
         if (systemIcuDataPath != null) {
             paths.add(systemIcuDataPath);
         }

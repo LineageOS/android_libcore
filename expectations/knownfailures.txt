@@ -1823,11 +1823,5 @@
   result: EXEC_FAILED,
   bug: 62408076,
   name: "libcore.java.lang.reflect.annotations.AnnotatedElementParameterTest#testImplicitConstructorParameters_singleAnnotation"
-},
-{
-  description: "Awaiting fix from libcore team",
-  result: EXEC_FAILED,
-  bug: 122240208,
-  name: "libcore.libcore.icu.DateIntervalFormatTest#testEndAtMidnight"
 }
 ]
