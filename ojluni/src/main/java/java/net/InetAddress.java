@@ -1615,18 +1615,7 @@ class InetAddress implements java.io.Serializable {
      */
     @Deprecated
     public static boolean isNumeric(String address) {
-        return parseNumericAddressStripOptionalBrackets(address) != null;
-    }
-
-    private static InetAddress parseNumericAddressStripOptionalBrackets(String address) {
-        if (address == null || address.isEmpty()) {
-            return Inet6Address.LOOPBACK;
-        }
-        // Accept IPv6 addresses (only) in square brackets for compatibility.
-        if (address.startsWith("[") && address.endsWith("]") && address.indexOf(':') != -1) {
-            address = address.substring(1, address.length() - 1);
-        }
-        return InetAddressUtils.parseNumericAddressNoThrow(address);
+        return _parseNumericAddress(address) != null;
     }
 
     /**
@@ -1640,11 +1629,18 @@ class InetAddress implements java.io.Serializable {
      */
     @Deprecated
     public static InetAddress parseNumericAddress(String numericAddress) {
-        InetAddress result = parseNumericAddressStripOptionalBrackets(numericAddress);
+        InetAddress result = _parseNumericAddress(numericAddress);
         if (result == null) {
             throw new IllegalArgumentException("Not a numeric address: " + numericAddress);
         }
         return result;
+    }
+
+    private static InetAddress _parseNumericAddress(String numericAddress) {
+        if (numericAddress == null || numericAddress.isEmpty()) {
+            return Inet6Address.LOOPBACK;
+        }
+        return InetAddressUtils.parseNumericAddressNoThrowStripOptionalBrackets(numericAddress);
     }
 
     /**
