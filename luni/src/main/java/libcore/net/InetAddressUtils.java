@@ -18,6 +18,7 @@ package libcore.net;
 import android.system.GaiException;
 import android.system.StructAddrinfo;
 import java.net.Inet4Address;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import libcore.io.Libcore;
 
@@ -89,5 +90,17 @@ public class InetAddressUtils {
             return null;
         }
         return addresses[0];
+    }
+
+    /**
+     * Like {@link #parseNumericAddressNoThrow(String)}}, but strips optional []
+     * around a numeric IPv6 address.
+     */
+    public static InetAddress parseNumericAddressNoThrowStripOptionalBrackets(String address) {
+        // Accept IPv6 addresses (only) in square brackets for compatibility.
+        if (address.startsWith("[") && address.endsWith("]") && address.indexOf(':') != -1) {
+            address = address.substring(1, address.length() - 1);
+        }
+        return InetAddressUtils.parseNumericAddressNoThrow(address);
     }
 }
