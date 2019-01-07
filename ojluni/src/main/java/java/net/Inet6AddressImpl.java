@@ -94,7 +94,7 @@ class Inet6AddressImpl implements InetAddressImpl {
         }
 
         // Is it a numeric address?
-        InetAddress result = InetAddressUtils.parseNumericAddressNoThrow(host);
+        InetAddress result = InetAddressUtils.parseNumericAddressNoThrowStripOptionalBrackets(host);
         if (result != null) {
             return new InetAddress[] { result };
         }
