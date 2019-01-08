@@ -42,7 +42,8 @@ public class TzDataSetVersion {
      * Increment this for non-backwards compatible changes to the tz data format. Reset the minor
      * version to 1 when doing so.
      */
-    private static final int CURRENT_FORMAT_MAJOR_VERSION = 3; // Android Q
+    // @VisibleForTesting : Keep this inline-able: it is used from CTS tests.
+    public static final int CURRENT_FORMAT_MAJOR_VERSION = 3; // Android Q
 
     /**
      * Returns the major tz data format version supported by this device.
@@ -56,7 +57,8 @@ public class TzDataSetVersion {
      * The minor tz data format version supported by this device. Increment this for
      * backwards-compatible changes to the tz data format.
      */
-    private static final int CURRENT_FORMAT_MINOR_VERSION = 1;
+    // @VisibleForTesting : Keep this inline-able: it is used from CTS tests.
+    public static final int CURRENT_FORMAT_MINOR_VERSION = 1;
 
     /**
      * Returns the minor tz data format version supported by this device.
