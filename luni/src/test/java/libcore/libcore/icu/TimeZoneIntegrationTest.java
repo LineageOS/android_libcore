@@ -234,7 +234,7 @@ public class TimeZoneIntegrationTest {
 
         String icuDatFileName = "icudt" + VersionInfo.ICU_VERSION.getMajor() + "l.dat";
         // TODO Make the ICU .dat file exist.
-//        assertFileDoesNotExist(TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName));
+        assertFileDoesNotExist(TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName));
 
         // Devices currently have a subset of the time zone files in /system. These are going away
         // but we test them while they exist. Host ART should match device.
