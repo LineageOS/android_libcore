@@ -194,6 +194,67 @@ public class TimeZoneIntegrationTest {
     }
 
     /**
+     * Asserts that the time zone format major / minor versions meets expectations.
+     *
+     * <p>If a set of time zone files is to be compatible with a device then the format of the files
+     * must meet the Android team's expectations. This is a sanity check to ensure that devices
+     * running the test (e.g. under CTS) have not modified the TzDataSetVersion major / minor
+     * versions for some reason: if they have it would render updated time zone files sent to the
+     * device incompatible.
+     */
+    @Test
+    public void testTimeZoneFormatVersion() {
+        // The code below compares the final static int constant values (inlined at test compile
+        // time) with the version reported at runtime. This saves us hardcoding the numbers in two
+        // places.
+        assertEquals(TzDataSetVersion.CURRENT_FORMAT_MAJOR_VERSION,
+                TzDataSetVersion.currentFormatMajorVersion());
+        assertEquals(TzDataSetVersion.CURRENT_FORMAT_MINOR_VERSION,
+                TzDataSetVersion.currentFormatMinorVersion());
+    }
+
+    /**
+     * Asserts that all expected sets of time zone files meet format expectations.
+     *
+     * <p>This uses the device's knowledge of the format version it expects and the
+     * {@link TzDataSetVersion} files that accompany the known time zone data files.
+     *
+     * <p>This is a sanity check to ensure that there's no way of installing incompatible data
+     * on a device. It assumes that {@link TzDataSetVersion} is updated as it should be when changes
+     * are made that might affect time zone code / time zone data compatibility.
+     */
+    @Test
+    public void testTzDataSetVersions() throws Exception {
+        String moduleTzVersionFile = "tz/" + TzDataSetVersion.DEFAULT_FILE_NAME;
+
+        String timeZoneModuleVersionFile =
+                TimeZoneDataFiles.getTimeZoneModuleFile(moduleTzVersionFile);
+        // We currently treat the time zone APEX as optional in code. Its is also not present on ART
+        // host environments.
+        if (fileExists(timeZoneModuleVersionFile)) {
+            assertTzDataSetVersionIsCompatible(timeZoneModuleVersionFile);
+        }
+
+        assertTzDataSetVersionIsCompatible(
+                TimeZoneDataFiles.getRuntimeModuleFile(moduleTzVersionFile));
+
+        // TODO: Remove this once the /system copy of time zone files have gone away. See also
+        // testTimeZoneDebugInfo().
+        assertTzDataSetVersionIsCompatible(
+                TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME));
+    }
+
+    private static void assertTzDataSetVersionIsCompatible(String versionFile) throws Exception {
+        TzDataSetVersion actualVersion =
+                TzDataSetVersion.readFromFile(new File(versionFile));
+        assertEquals(
+                TzDataSetVersion.currentFormatMajorVersion(),
+                actualVersion.formatMajorVersion);
+        int minDeviceMinorVersion = TzDataSetVersion.currentFormatMinorVersion();
+        assertTrue(actualVersion.formatMinorVersion >= minDeviceMinorVersion);
+    }
+
+    /**
      * A test for confirming debug information matches file system state on device.
      * It can also be used to confirm that device and host environments satisfy file system
      * expectations.
@@ -240,7 +301,8 @@ public class TimeZoneIntegrationTest {
         // but we test them while they exist. Host ART should match device.
         assertEquals("OK", getDebugStringValue(debugInfo,
                 "core_library.timezone.source.system_status"));
-        assertFileExists(TimeZoneDataFiles.getSystemTimeZoneFile("tz_version"));
+        assertFileExists(
+                TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME));
         assertFileExists(TimeZoneDataFiles.getSystemTimeZoneFile("tzdata"));
         assertFileExists(TimeZoneDataFiles.getSystemIcuFile(icuDatFileName));
         // The following files once existed in /system but have been removed as part of APEX work.
