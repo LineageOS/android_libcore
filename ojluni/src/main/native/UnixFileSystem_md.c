@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -48,7 +48,9 @@
 // #if defined(_ALLBSD_SOURCE)
 #if defined(_ALLBSD_SOURCE) || defined(__Fuchsia__)
 #define dirent64 dirent
-#define readdir64_r readdir_r
+// Android-changed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+// #define readdir64_r readdir_r
+#define readdir64 readdir
 #define stat64 stat
 #define statvfs64 statvfs
 #endif
@@ -296,7 +298,8 @@ Java_java_io_UnixFileSystem_list0(JNIEnv *env, jobject this,
 {
     DIR *dir = NULL;
     struct dirent64 *ptr;
-    struct dirent64 *result;
+    // Android-removed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+    // struct dirent64 *result;
     int len, maxlen;
     jobjectArray rv, old;
     jclass str_class;
@@ -310,12 +313,15 @@ Java_java_io_UnixFileSystem_list0(JNIEnv *env, jobject this,
     } END_PLATFORM_STRING(env, path);
     if (dir == NULL) return NULL;
 
+    // Android-removed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+    /*
     ptr = malloc(sizeof(struct dirent64) + (PATH_MAX + 1));
     if (ptr == NULL) {
         JNU_ThrowOutOfMemoryError(env, "heap allocation failed");
         closedir(dir);
         return NULL;
     }
+    */
 
     /* Allocate an initial String array */
     len = 0;
@@ -324,7 +330,9 @@ Java_java_io_UnixFileSystem_list0(JNIEnv *env, jobject this,
     if (rv == NULL) goto error;
 
     /* Scan the directory */
-    while ((readdir64_r(dir, ptr, &result) == 0)  && (result != NULL)) {
+    // Android-changed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+    // while ((readdir64_r(dir, ptr, &result) == 0)  && (result != NULL)) {
+    while ((ptr = readdir64(dir)) != NULL) {
         jstring name;
         if (!strcmp(ptr->d_name, ".") || !strcmp(ptr->d_name, ".."))
             continue;
@@ -345,7 +353,8 @@ Java_java_io_UnixFileSystem_list0(JNIEnv *env, jobject this,
         (*env)->DeleteLocalRef(env, name);
     }
     closedir(dir);
-    free(ptr);
+    // Android-removed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+    // free(ptr);
 
     /* Copy the final results into an appropriately-sized array */
     old = rv;
@@ -360,7 +369,8 @@ Java_java_io_UnixFileSystem_list0(JNIEnv *env, jobject this,
 
  error:
     closedir(dir);
-    free(ptr);
+    // Android-removed: Integrate OpenJDK 12 commit to use readdir, not readdir_r. b/64362645
+    // free(ptr);
     return NULL;
 }
 
