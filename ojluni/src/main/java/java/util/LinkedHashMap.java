@@ -146,10 +146,10 @@ import java.io.IOException;
  * to obtain a correctly ordered Spliterator on API level 24 and 25:
  * <ul>
  *     <li>For a Collection view {@code c = lhm.keySet()},
- *         {@code c = lhm.keySet()} or {@code c = lhm.values()}, use
+ *         {@code c = lhm.entrySet()} or {@code c = lhm.values()}, use
  *         {@code java.util.Spliterators.spliterator(c, c.spliterator().characteristics())}
  *         instead of {@code c.spliterator()}.
- *     <li>Instead of {@code lhm.stream()} or {@code lhm.parallelStream()}, use
+ *     <li>Instead of {@code c.stream()} or {@code c.parallelStream()}, use
  *         {@code java.util.stream.StreamSupport.stream(spliterator, false)}
  *         to construct a (nonparallel) {@link java.util.stream.Stream} from
  *         such a {@code Spliterator}.
