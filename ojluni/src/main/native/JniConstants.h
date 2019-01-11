@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 The Android Open Source Project
+ * Copyright (C) 2018 The Android Open Source Project
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
@@ -19,23 +19,23 @@
  * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include <nativehelper/JNIHelp.h>
+#ifndef JNI_CONSTANTS_H_included
+#define JNI_CONSTANTS_H_included
 
-#include "JniConstants.h"
+#include <jni.h>
 
-extern "C" int tagSocket(JNIEnv* env, int fd) {
-    if (env->ExceptionOccurred()) {
-      return fd;
-    }
+/**
+ * A cache to avoid calling FindClass at runtime.
+ */
+struct JniConstants {
+    // Initialized cached heap objects. This should be called in JNI_OnLoad.
+    static void Initialize(JNIEnv* env);
 
-    jclass socketTaggerClass = JniConstants::GetSocketTaggerClass(env);
-    jmethodID get = env->GetStaticMethodID(socketTaggerClass,
-                                           "get",
-                                           "()Ldalvik/system/SocketTagger;");
-    jobject socketTagger = env->CallStaticObjectMethod(socketTaggerClass, get);
-    jmethodID tag = env->GetMethodID(socketTaggerClass, "tag", "(Ljava/io/FileDescriptor;)V");
+    // Invalidate cached heap objects. This should be called in JNI_OnUnload.
+    static void Invalidate();
 
-    jobject fileDescriptor = jniCreateFileDescriptor(env, fd);
-    env->CallVoidMethod(socketTagger, tag, fileDescriptor);
-    return fd;
-}
+    // Gets class representing SocketTagger from cache.
+    static jclass GetSocketTaggerClass(JNIEnv* env);
+};
+
+#endif  // JNI_CONSTANTS_H_included
