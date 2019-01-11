@@ -18,11 +18,10 @@
 
 #include <stdlib.h>
 
-#include "log/log.h"
-
-#include <nativehelper/JniConstants.h>
-#include "nativehelper/JniConstants-priv.h"
+#include <log/log.h>
 #include <nativehelper/ScopedLocalFrame.h>
+
+#include "JniConstants.h"
 
 // DalvikVM calls this on startup, so we can statically register all our native methods.
 jint JNI_OnLoad(JavaVM* vm, void*) {
@@ -31,7 +30,6 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
         ALOGE("JavaVM::GetEnv() failed");
         abort();
     }
-    JniConstants::init(env);
 
     ScopedLocalFrame localFrame(env);
 
@@ -55,6 +53,7 @@ jint JNI_OnLoad(JavaVM* vm, void*) {
     REGISTER(register_sun_misc_Unsafe);
 #undef REGISTER
 
+    JniConstants::Initialize(env);
     return JNI_VERSION_1_6;
 }
 
@@ -74,7 +73,5 @@ void JNI_OnUnload(JavaVM* vm, void*) {
     UNREGISTER(unregister_libcore_icu_ICU);
 #undef UNREGISTER
 
-    // Ensure that libnativehelper caching is invalidated, in case a new runtime is to be brought
-    // up later.
-    android::ClearJniConstantsCache();
+    JniConstants::Invalidate();
 }
