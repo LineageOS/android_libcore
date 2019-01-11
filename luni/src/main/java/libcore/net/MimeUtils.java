@@ -35,9 +35,12 @@ public final class MimeUtils {
 
     private static final Pattern splitPattern = Pattern.compile("\\s+");
 
-    private static final Map<String, String> mimeTypeToExtensionMap = new HashMap<String, String>();
-
-    private static final Map<String, String> extensionToMimeTypeMap = new HashMap<String, String>();
+    // Note: These maps only contain lowercase keys/values, regarded as the canonical form.
+    // This is the case for both extensions and MIME types. The mime.types data file contains
+    // examples of mixed-case MIME types, but some applications use the lowercase version of
+    // these same types. RFC 2045 section 2 states MIME types are case insensitive.
+    private static final Map<String, String> mimeTypeToExtensionMap = new HashMap<>();
+    private static final Map<String, String> extensionToMimeTypeMap = new HashMap<>();
 
     static {
         parseTypes("mime.types");
@@ -59,7 +62,7 @@ public final class MimeUtils {
                 }
 
                 final String[] split = splitPattern.split(line);
-                final String mimeType = split[0];
+                final String mimeType = split[0].toLowerCase(Locale.US);
                 for (int i = 1; i < split.length; i++) {
                     String extension = split[i].toLowerCase(Locale.US);
 
