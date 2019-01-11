@@ -3,6 +3,7 @@ filegroup {
     srcs: [
         "ExecStrings.cpp",
         "IcuUtilities.cpp",
+        "JniConstants.cpp",
         "JniException.cpp",
         "NetworkUtilities.cpp",
         "Register.cpp",

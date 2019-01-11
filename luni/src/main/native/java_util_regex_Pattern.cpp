@@ -19,11 +19,13 @@
 #include <stdlib.h>
 
 #include <nativehelper/JNIHelp.h>
-#include <nativehelper/JniConstants.h>
-#include "ScopedJavaUnicodeString.h"
-#include "jni.h"
+#include <nativehelper/jni_macros.h>
+
 #include "unicode/parseerr.h"
 #include "unicode/regex.h"
+
+#include "JniConstants.h"
+#include "ScopedJavaUnicodeString.h"
 
 // ICU documentation: http://icu-project.org/apiref/icu4c/classRegexPattern.html
 
@@ -59,10 +61,10 @@ static const char* regexDetailMessage(UErrorCode status) {
 }
 
 static void throwPatternSyntaxException(JNIEnv* env, UErrorCode status, jstring pattern, UParseError error) {
-    static jmethodID method = env->GetMethodID(JniConstants::patternSyntaxExceptionClass,
+    static jmethodID method = env->GetMethodID(JniConstants::GetPatternSyntaxExceptionClass(env),
             "<init>", "(Ljava/lang/String;Ljava/lang/String;I)V");
     jstring message = env->NewStringUTF(regexDetailMessage(status));
-    jclass exceptionClass = JniConstants::patternSyntaxExceptionClass;
+    jclass exceptionClass = JniConstants::GetPatternSyntaxExceptionClass(env);
     jobject exception = env->NewObject(exceptionClass, method, message, pattern, error.offset);
     env->Throw(reinterpret_cast<jthrowable>(exception));
 }
