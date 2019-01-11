@@ -29,8 +29,9 @@
 
 #include <log/log.h>
 
-#include <nativehelper/JniConstants.h>
 #include <nativehelper/ScopedLocalFrame.h>
+
+#include "JniConstants.h"
 
 extern "C" {
 
@@ -133,5 +134,11 @@ jint JNI_OnLoad(JavaVM* vm, void*) { JNIEnv* env;
     register_sun_nio_ch_DatagramDispatcher(env);
     register_java_nio_MappedByteBuffer(env);
     net_JNI_OnLoad(vm, NULL);
+
+    JniConstants::Initialize(env);
     return JNI_VERSION_1_6;
+}
+
+void JNI_OnUnload(JavaVM* vm, void*) {
+    JniConstants::Invalidate();
 }
