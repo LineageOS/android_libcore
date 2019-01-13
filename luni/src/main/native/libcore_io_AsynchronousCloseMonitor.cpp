@@ -18,9 +18,7 @@
 
 #include <nativehelper/AsynchronousCloseMonitor.h>
 #include <nativehelper/JNIHelp.h>
-#include <nativehelper/JniConstants.h>
-
-#include "jni.h"
+#include <nativehelper/jni_macros.h>
 
 static void AsynchronousCloseMonitor_signalBlockedThreads(JNIEnv* env, jclass, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);

@@ -35,12 +35,13 @@
 #include <android-base/unique_fd.h>
 #include <log/log.h>
 #include <nativehelper/JNIHelp.h>
-#include <nativehelper/JniConstants.h>
 #include <nativehelper/ScopedLocalRef.h>
 #include <nativehelper/ScopedUtfChars.h>
+#include <nativehelper/jni_macros.h>
 #include <nativehelper/toStringArray.h>
 
 #include "IcuUtilities.h"
+#include "JniConstants.h"
 #include "JniException.h"
 #include "ScopedIcuLocale.h"
 #include "ScopedJavaUnicodeString.h"
@@ -328,24 +329,24 @@ static jobjectArray ICU_getAvailableNumberFormatLocalesNative(JNIEnv* env, jclas
 static bool setIntegerField(JNIEnv* env, jobject obj, const char* fieldName, int value) {
     ScopedLocalRef<jobject> integerValue(env, integerValueOf(env, value));
     if (integerValue.get() == NULL) return false;
-    jfieldID fid = env->GetFieldID(JniConstants::localeDataClass, fieldName, "Ljava/lang/Integer;");
+    jfieldID fid = env->GetFieldID(JniConstants::GetLocaleDataClass(env), fieldName, "Ljava/lang/Integer;");
     env->SetObjectField(obj, fid, integerValue.get());
     return true;
 }
 
 static void setStringField(JNIEnv* env, jobject obj, const char* fieldName, jstring value) {
-    jfieldID fid = env->GetFieldID(JniConstants::localeDataClass, fieldName, "Ljava/lang/String;");
+    jfieldID fid = env->GetFieldID(JniConstants::GetLocaleDataClass(env), fieldName, "Ljava/lang/String;");
     env->SetObjectField(obj, fid, value);
     env->DeleteLocalRef(value);
 }
 
 static void setStringArrayField(JNIEnv* env, jobject obj, const char* fieldName, jobjectArray value) {
-    jfieldID fid = env->GetFieldID(JniConstants::localeDataClass, fieldName, "[Ljava/lang/String;");
+    jfieldID fid = env->GetFieldID(JniConstants::GetLocaleDataClass(env), fieldName, "[Ljava/lang/String;");
     env->SetObjectField(obj, fid, value);
 }
 
 static void setStringArrayField(JNIEnv* env, jobject obj, const char* fieldName, const icu::UnicodeString* valueArray, int32_t size) {
-    ScopedLocalRef<jobjectArray> result(env, env->NewObjectArray(size, JniConstants::stringClass, NULL));
+    ScopedLocalRef<jobjectArray> result(env, env->NewObjectArray(size, JniConstants::GetStringClass(env), NULL));
     for (int32_t i = 0; i < size ; i++) {
         ScopedLocalRef<jstring> s(env, jniCreateString(env, valueArray[i].getBuffer(),valueArray[i].length()));
         if (env->ExceptionCheck()) {
@@ -389,7 +390,7 @@ static void setCharField(JNIEnv* env, jobject obj, const char* fieldName, const 
     if (value.length() == 0) {
         return;
     }
-    jfieldID fid = env->GetFieldID(JniConstants::localeDataClass, fieldName, "C");
+    jfieldID fid = env->GetFieldID(JniConstants::GetLocaleDataClass(env), fieldName, "C");
     env->SetCharField(obj, fid, value.charAt(0));
 }
 
@@ -761,7 +762,7 @@ static jstring ICU_getTZDataVersion(JNIEnv* env, jclass) {
   return env->NewStringUTF(version);
 }
 
-static jobject ICU_getAvailableCurrencyCodes(JNIEnv* env, jclass) {
+static jobjectArray ICU_getAvailableCurrencyCodes(JNIEnv* env, jclass) {
   UErrorCode status = U_ZERO_ERROR;
   icu::UStringEnumeration e(ucurr_openISOCurrencies(UCURR_COMMON|UCURR_NON_DEPRECATED, &status));
   return fromStringEnumeration(env, status, "ucurr_openISOCurrencies", &e);
