@@ -981,8 +981,9 @@ struct ICURegistration {
         ALOGV("No time zone module override file found: %s", tzModulePath.c_str());
     }
 
-    // Use the ICU data files that shipped with the device for everything else.
-    if ((icu_datamap_from_system_ = IcuDataMap::Create(getSystemPath())) == nullptr) {
+    // Use the ICU data files that shipped with the runtime module for everything else.
+    icu_datamap_from_runtime_module_ = IcuDataMap::Create(getRuntimeModulePath());
+    if (icu_datamap_from_runtime_module_ == nullptr) {
         abort();
     }
 
@@ -1005,8 +1006,8 @@ struct ICURegistration {
     // Reset libicu state to before it was loaded.
     u_cleanup();
 
-    // Unmap ICU data files from /system.
-    icu_datamap_from_system_.reset();
+    // Unmap ICU data files from the runtime module.
+    icu_datamap_from_runtime_module_.reset();
 
     // Unmap optional TZ module files from /apex.
     icu_datamap_from_tz_module_.reset();
@@ -1042,24 +1043,24 @@ struct ICURegistration {
     return apexPath;
   }
 
-  static std::string getSystemPath() {
-    const char* systemPathPrefix = getenv("ANDROID_ROOT");
-    if (systemPathPrefix == NULL) {
-      ALOGE("ANDROID_ROOT environment variable not set"); \
-      abort();
-    }
+  static std::string getRuntimeModulePath() {
+      const char* runtimeModulePathPrefix = getenv("ANDROID_RUNTIME_ROOT");
+      if (runtimeModulePathPrefix == NULL) {
+        ALOGE("ANDROID_RUNTIME_ROOT environment variable not set"); \
+        abort();
+      }
 
-    std::string systemPath;
-    systemPath = systemPathPrefix;
-    systemPath += "/usr/icu/";
-    systemPath += U_ICUDATA_NAME;
-    systemPath += ".dat";
-    return systemPath;
+    std::string runtimeModulePath;
+    runtimeModulePath = runtimeModulePathPrefix;
+    runtimeModulePath += "/etc/icu/";
+    runtimeModulePath += U_ICUDATA_NAME;
+    runtimeModulePath += ".dat";
+    return runtimeModulePath;
   }
 
   std::unique_ptr<IcuDataMap> icu_datamap_from_data_;
   std::unique_ptr<IcuDataMap> icu_datamap_from_tz_module_;
-  std::unique_ptr<IcuDataMap> icu_datamap_from_system_;
+  std::unique_ptr<IcuDataMap> icu_datamap_from_runtime_module_;
 };
 
 // Use RAII-style initialization/teardown so that we can get unregistered
