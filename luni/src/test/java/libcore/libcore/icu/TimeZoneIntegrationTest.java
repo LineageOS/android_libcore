@@ -294,8 +294,7 @@ public class TimeZoneIntegrationTest {
         runtimeModuleFiles.forEach(TimeZoneIntegrationTest::assertFileExists);
 
         String icuDatFileName = "icudt" + VersionInfo.ICU_VERSION.getMajor() + "l.dat";
-        // TODO Make the ICU .dat file exist.
-        assertFileDoesNotExist(TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName));
+        assertFileExists(TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName));
 
         // Devices currently have a subset of the time zone files in /system. These are going away
         // but we test them while they exist. Host ART should match device.
@@ -304,8 +303,8 @@ public class TimeZoneIntegrationTest {
         assertFileExists(
                 TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME));
         assertFileExists(TimeZoneDataFiles.getSystemTimeZoneFile("tzdata"));
-        assertFileExists(TimeZoneDataFiles.getSystemIcuFile(icuDatFileName));
         // The following files once existed in /system but have been removed as part of APEX work.
+        assertFileDoesNotExist(TimeZoneDataFiles.getSystemIcuFile(icuDatFileName));
         assertFileDoesNotExist(TimeZoneDataFiles.getSystemTimeZoneFile("tzlookup.xml"));
     }
 
