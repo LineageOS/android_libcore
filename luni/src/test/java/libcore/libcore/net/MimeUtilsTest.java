@@ -153,6 +153,31 @@ public class MimeUtilsTest extends TestCase {
         assertEquals("apk", MimeUtils.guessExtensionFromMimeType(mimeType.toLowerCase(Locale.US)));
     }
 
+    public void test_invalid_empty() {
+        checkInvalidExtension("");
+        checkInvalidMimeType("");
+    }
+
+    public void test_invalid_null() {
+        checkInvalidExtension(null);
+        checkInvalidMimeType(null);
+    }
+
+    public void test_invalid() {
+        checkInvalidMimeType("invalid mime type");
+        checkInvalidExtension("invalid extension");
+    }
+
+    private static void checkInvalidExtension(String s) {
+        assertFalse(MimeUtils.hasExtension(s));
+        assertNull(MimeUtils.guessMimeTypeFromExtension(s));
+    }
+
+    private static void checkInvalidMimeType(String s) {
+        assertFalse(MimeUtils.hasMimeType(s));
+        assertNull(MimeUtils.guessExtensionFromMimeType(s));
+    }
+
     private static void assertMimeTypeFromExtension(String mimeType, String extension) {
         final String actual = MimeUtils.guessMimeTypeFromExtension(extension);
         if (!Objects.equals(mimeType, actual)) {
