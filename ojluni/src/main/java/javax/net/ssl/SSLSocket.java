@@ -175,6 +175,11 @@ import java.util.function.BiFunction;
  *             <td>16+</td>
  *             <td>20+</td>
  *         </tr>
+ *         <tr>
+ *             <td>TLSv1.3</td>
+ *             <td>29+</td>
+ *             <td>29+</td>
+ *         </tr>
  *     </tbody>
  * </table>
  *
@@ -207,6 +212,11 @@ import java.util.function.BiFunction;
  *             <td>TLSv1.2</td>
  *             <td>16+</td>
  *             <td>16+</td>
+ *         </tr>
+ *         <tr>
+ *             <td>TLSv1.3</td>
+ *             <td>29+</td>
+ *             <td>29+</td>
  *         </tr>
  *     </tbody>
  * </table>
@@ -323,6 +333,21 @@ import java.util.function.BiFunction;
  *       <td>9-25</td>
  *       <td>9-23</td>
  *     </tr>
+ *     <tr>
+ *       <td>TLS_AES_128_GCM_SHA256</td>
+ *       <td>29+</td>
+ *       <td>29+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLS_AES_256_GCM_SHA384</td>
+ *       <td>29+</td>
+ *       <td>29+</td>
+ *     </tr>
+ *     <tr>
+ *       <td>TLS_CHACHA20_POLY1305_SHA256</td>
+ *       <td>29+</td>
+ *       <td>29+</td>
+ *     </tr>
  *     <tr class="deprecated">
  *       <td>TLS_DHE_DSS_WITH_AES_128_CBC_SHA</td>
  *       <td>9-22</td>
@@ -423,9 +448,9 @@ import java.util.function.BiFunction;
  *       <td>11+</td>
  *       <td>11+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
@@ -438,9 +463,9 @@ import java.util.function.BiFunction;
  *       <td>11+</td>
  *       <td>11+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
@@ -488,9 +513,9 @@ import java.util.function.BiFunction;
  *       <td>11+</td>
  *       <td>11+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
@@ -503,9 +528,9 @@ import java.util.function.BiFunction;
  *       <td>11+</td>
  *       <td>11+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
@@ -678,9 +703,9 @@ import java.util.function.BiFunction;
  *       <td>9+</td>
  *       <td>9+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_RSA_WITH_AES_128_CBC_SHA256</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
@@ -693,9 +718,9 @@ import java.util.function.BiFunction;
  *       <td>9+</td>
  *       <td>11+</td>
  *     </tr>
- *     <tr>
+ *     <tr class="deprecated">
  *       <td>TLS_RSA_WITH_AES_256_CBC_SHA256</td>
- *       <td>20+</td>
+ *       <td>20-28</td>
  *       <td></td>
  *     </tr>
  *     <tr>
