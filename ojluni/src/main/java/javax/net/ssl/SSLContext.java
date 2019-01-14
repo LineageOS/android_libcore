@@ -74,6 +74,10 @@ import sun.security.jca.GetInstance;
  *       <td>TLSv1.2</td>
  *       <td>16+</td>
  *     </tr>
+ *     <tr>
+ *       <td>TLSv1.3</td>
+ *       <td>29+</td>
+ *     </tr>
  *   </tbody>
  * </table>
  *
