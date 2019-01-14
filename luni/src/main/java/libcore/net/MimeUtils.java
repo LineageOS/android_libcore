@@ -112,7 +112,7 @@ public final class MimeUtils {
      * Returns the canonical (lowercase) form of the given extension or MIME type.
      */
     private static String canonicalize(String s) {
-        return s.toLowerCase(Locale.US);
+        return s.toLowerCase(Locale.ROOT);
     }
 
     /**
