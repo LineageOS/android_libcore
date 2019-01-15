@@ -20,6 +20,7 @@ import libcore.net.MimeUtils;
 
 import junit.framework.TestCase;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class MimeUtilsTest extends TestCase {
@@ -129,6 +130,52 @@ public class MimeUtilsTest extends TestCase {
 
     public void test_120135571_audio() {
         assertMimeTypeFromExtension("audio/mpeg", "m4r");
+    }
+
+    // http://b/122734564
+    public void testNonLowercaseMimeType() {
+        // A mixed-case mimeType that appears in mime.types; we expect guessMimeTypeFromExtension()
+        // to return it in lowercase because MimeUtils considers lowercase to be the canonical form.
+        String mimeType = "application/vnd.ms-word.document.macroEnabled.12".toLowerCase(Locale.US);
+        assertBidirectional(mimeType, "docm");
+    }
+
+    // Check that the keys given for lookups in either direction are not case sensitive
+    public void testCaseInsensitiveKeys() {
+        String mimeType = MimeUtils.guessMimeTypeFromExtension("apk");
+        assertNotNull(mimeType);
+
+        assertEquals(mimeType, MimeUtils.guessMimeTypeFromExtension("APK"));
+        assertEquals(mimeType, MimeUtils.guessMimeTypeFromExtension("aPk"));
+
+        assertEquals("apk", MimeUtils.guessExtensionFromMimeType(mimeType));
+        assertEquals("apk", MimeUtils.guessExtensionFromMimeType(mimeType.toUpperCase(Locale.US)));
+        assertEquals("apk", MimeUtils.guessExtensionFromMimeType(mimeType.toLowerCase(Locale.US)));
+    }
+
+    public void test_invalid_empty() {
+        checkInvalidExtension("");
+        checkInvalidMimeType("");
+    }
+
+    public void test_invalid_null() {
+        checkInvalidExtension(null);
+        checkInvalidMimeType(null);
+    }
+
+    public void test_invalid() {
+        checkInvalidMimeType("invalid mime type");
+        checkInvalidExtension("invalid extension");
+    }
+
+    private static void checkInvalidExtension(String s) {
+        assertFalse(MimeUtils.hasExtension(s));
+        assertNull(MimeUtils.guessMimeTypeFromExtension(s));
+    }
+
+    private static void checkInvalidMimeType(String s) {
+        assertFalse(MimeUtils.hasMimeType(s));
+        assertNull(MimeUtils.guessExtensionFromMimeType(s));
     }
 
     private static void assertMimeTypeFromExtension(String mimeType, String extension) {
