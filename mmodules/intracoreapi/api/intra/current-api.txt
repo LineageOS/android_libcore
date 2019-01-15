@@ -497,24 +497,6 @@ package libcore.io {
 
 }
 
-package libcore.mmodule.libart {
-
-  public class DemoLibartClass {
-    method public static java.lang.String intraCoreDependencyMethod();
-    method public static java.lang.String simpleMethod();
-  }
-
-}
-
-package libcore.mmodule.simple {
-
-  public class DemoSimpleClass {
-    method public static java.lang.String intraCoreDependencyMethod();
-    method public static java.lang.String simpleMethod();
-  }
-
-}
-
 package libcore.net {
 
   public abstract class NetworkSecurityPolicy {

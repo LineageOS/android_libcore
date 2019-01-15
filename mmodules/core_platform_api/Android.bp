@@ -67,20 +67,3 @@ java_system_modules {
     ],
 }
 
-// Tests associated with the core platform APIs.
-java_test {
-    name: "core-platform-api-test",
-    srcs: [ "src/test/java/**/*.java" ],
-
-    no_standard_libs: true,
-    libs: [
-          // We depend on stubs not the impl code. We do not test
-          // internals, just the {public SDK + core platform} APIs.
-          "core.platform.api.stubs",
-          // Other deps needed for tests.
-          "junit",
-    ],
-    system_modules: "core-platform-api-stubs-system-modules",
-}
-
-
