@@ -229,10 +229,7 @@ public class SSLServerSocketTest extends TestCase {
         sss.setEnabledCipherSuites(sss.getSupportedCipherSuites());
         String[] res = sss.getEnabledCipherSuites();
         assertNotNull("NULL result", res);
-        // By default, the socket only supports TLS 1.2, so the TLS 1.3 cipher suites
-        // shouldn't be enabled.
         List<String> supported = new ArrayList<>(Arrays.asList(sss.getSupportedCipherSuites()));
-        supported.removeAll(StandardNames.CIPHER_SUITES_TLS13);
         assertEquals("not all supported cipher suites were enabled",
                      supported,
                      Arrays.asList(res));
