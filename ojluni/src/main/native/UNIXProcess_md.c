@@ -387,7 +387,17 @@ static int
 restartableClose(int fd)
 {
     int err;
-    RESTARTABLE(close(fd), err);
+    // Android-changed: do not retry EINTR close() failures. b/20501816
+    // Note: This code was removed upstream in OpenJDK 7u50,
+    // commit http://hg.openjdk.java.net/jdk/jdk/rev/e2e5122cd62e
+    // relating to upstream bug JDK-5049299. The entire file was
+    // then dropped in favor of .java code in upstream OpenJDK 9,
+    // commit http://hg.openjdk.java.net/jdk/jdk/rev/fe8344cf6496
+    //
+    // If we integrate OpenJDK 7u50+, this Android patch can be dropped.
+    //
+    // RESTARTABLE(close(fd), err);
+    err = close(fd);
     return err;
 }
 
