@@ -1004,7 +1004,7 @@ public class Runtime {
     */
     void loadLibrary0(Class<?> fromClass, String libname) {
         ClassLoader classLoader = ClassLoader.getClassLoader(fromClass);
-        loadLibrary0(classLoader, libname);
+        loadLibrary0(classLoader, fromClass, libname);
     }
 
     /**
@@ -1021,10 +1021,33 @@ public class Runtime {
         checkTargetSdkVersionForLoad("java.lang.Runtime#loadLibrary(String, ClassLoader)");
         java.lang.System.logE("java.lang.Runtime#loadLibrary(String, ClassLoader)" +
                               " is private and will be removed in a future Android release");
-        loadLibrary0(classLoader, libname);
+        // Pass null for callerClass, we don't know it at this point. Passing null preserved
+        // the behavior when we used to not pass the class.
+        loadLibrary0(classLoader, null, libname);
     }
 
-    synchronized void loadLibrary0(ClassLoader loader, String libname) {
+    // This overload exists for @UnsupportedAppUsage
+    void loadLibrary0(ClassLoader loader, String libname) {
+        // Pass null for callerClass, we don't know it at this point. Passing null preserved
+        // the behavior when we used to not pass the class.
+        loadLibrary0(loader, null, libname);
+    }
+    
+    /**
+     * Loads the shared library {@code libname} in the context of {@code loader} and
+     * {@code callerClass}.
+     *
+     * @param      loader    the class loader that initiated the loading. Used by the
+     *                       underlying linker to determine linker namespace. A {@code null}
+     *                       value represents the boot class loader.
+     * @param      fromClass the class that initiated the loading. Used when loader is
+     *                       {@code null} and ignored in all other cases. When used, it 
+     *                       determines the linker namespace from the class's .dex location.
+     *                       {@code null} indicates the default namespace for the boot 
+     *                       class loader.
+     * @param      libname   the name of the library.
+     */
+    private synchronized void loadLibrary0(ClassLoader loader, Class<?> callerClass, String libname) {
         if (libname.indexOf((int)File.separatorChar) != -1) {
             throw new UnsatisfiedLinkError(
     "Directory separator should not appear in library name: " + libname);
@@ -1050,26 +1073,14 @@ public class Runtime {
             return;
         }
 
+        // We know some apps use mLibPaths directly, potentially assuming it's not null.
+        // Initialize it here to make sure apps see a non-null value.
+        getLibPaths();
         String filename = System.mapLibraryName(libraryName);
-        List<String> candidates = new ArrayList<String>();
-        String lastError = null;
-        for (String directory : getLibPaths()) {
-            String candidate = directory + filename;
-            candidates.add(candidate);
-
-            if (IoUtils.canOpenReadOnly(candidate)) {
-                String error = nativeLoad(candidate, loader);
-                if (error == null) {
-                    return; // We successfully loaded the library. Job done.
-                }
-                lastError = error;
-            }
+        String error = nativeLoad(filename, loader, callerClass);
+        if (error != null) {
+            throw new UnsatisfiedLinkError(error);
         }
-
-        if (lastError != null) {
-            throw new UnsatisfiedLinkError(lastError);
-        }
-        throw new UnsatisfiedLinkError("Library " + libraryName + " not found; tried " + candidates);
     }
 
     private volatile String[] mLibPaths = null;
@@ -1100,7 +1111,11 @@ public class Runtime {
         return paths;
     }
 
-    private static native String nativeLoad(String filename, ClassLoader loader);
+    private static String nativeLoad(String filename, ClassLoader loader) {
+        return nativeLoad(filename, loader, null);
+    }
+
+    private static native String nativeLoad(String filename, ClassLoader loader, Class<?> caller);
     // END Android-changed: Different implementation of loadLibrary0(Class, String).
 
     /**
