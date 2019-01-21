@@ -154,7 +154,7 @@ public class Runtime {
     }
 
     @UnsupportedAppUsage
-    synchronized void loadLibrary0(java.lang.ClassLoader loader, java.lang.String libname) {
+    void loadLibrary0(java.lang.ClassLoader loader, java.lang.String libname) {
         throw new RuntimeException("Stub!");
     }
 
@@ -167,8 +167,10 @@ public class Runtime {
     }
 
     @UnsupportedAppUsage
-    private static native java.lang.String nativeLoad(
-            java.lang.String filename, java.lang.ClassLoader loader);
+    private static java.lang.String nativeLoad(
+            java.lang.String filename, java.lang.ClassLoader loader) {
+        throw new RuntimeException("Stub!");
+    }
 
     @Deprecated
     public java.io.InputStream getLocalizedInputStream(java.io.InputStream in) {
