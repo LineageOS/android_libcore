@@ -23,7 +23,7 @@ import java.nio.NIOAccess;
 
 public class DirectDoubleBufferTest extends DoubleBufferTest {
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*8).asDoubleBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Double.BYTES).asDoubleBuffer();
         loadTestData1(buf);
         baseBuf = buf;
     }
