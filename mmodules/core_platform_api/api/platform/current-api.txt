@@ -1,3 +1,4 @@
+// Signature format: 2.0
 package android.icu.impl {
 
   public class CalendarAstronomer {
@@ -16,15 +17,15 @@ package android.icu.text {
 
   public final class StringPrep {
     method public static android.icu.text.StringPrep getInstance(int);
-    method public java.lang.String prepare(java.lang.String, int) throws android.icu.text.StringPrepParseException;
+    method public String prepare(String, int) throws android.icu.text.StringPrepParseException;
     field public static final int DEFAULT = 0; // 0x0
     field public static final int RFC3920_RESOURCEPREP = 8; // 0x8
   }
 
   public class StringPrepParseException extends java.text.ParseException {
-    ctor public StringPrepParseException(java.lang.String, int);
-    ctor public StringPrepParseException(java.lang.String, int, java.lang.String, int);
-    ctor public StringPrepParseException(java.lang.String, int, java.lang.String, int, int);
+    ctor public StringPrepParseException(String, int);
+    ctor public StringPrepParseException(String, int, String, int);
+    ctor public StringPrepParseException(String, int, String, int, int);
     method public int getError();
     field public static final int ACE_PREFIX_ERROR = 6; // 0x6
     field public static final int BUFFER_OVERFLOW_ERROR = 9; // 0x9
@@ -48,11 +49,11 @@ package android.icu.util {
     method public abstract android.icu.util.TimeZoneTransition getNextTransition(long, boolean);
   }
 
-  public class Region implements java.lang.Comparable {
+  public class Region implements java.lang.Comparable<android.icu.util.Region> {
     method public static java.util.Set<android.icu.util.Region> getAvailable(android.icu.util.Region.RegionType);
   }
 
-  public static final class Region.RegionType extends java.lang.Enum {
+  public enum Region.RegionType {
     enum_constant public static final android.icu.util.Region.RegionType TERRITORY;
   }
 
@@ -77,20 +78,20 @@ package android.system {
 
   public class Int32Ref {
     ctor public Int32Ref(int);
-    field public int value;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public int value;
   }
 
   public final class NetlinkSocketAddress extends java.net.SocketAddress {
-    ctor public NetlinkSocketAddress(int, int);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public NetlinkSocketAddress(int, int);
     method public int getGroupsMask();
     method public int getPortId();
   }
 
   public final class Os {
-    method public static void bind(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void bind(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
     method public static android.system.StructCapUserData[] capget(android.system.StructCapUserHeader) throws android.system.ErrnoException;
     method public static void capset(android.system.StructCapUserHeader, android.system.StructCapUserData[]) throws android.system.ErrnoException;
-    method public static void connect(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void connect(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
     method public static int fcntlInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
     method public static int getpgid(int) throws android.system.ErrnoException;
     method public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
@@ -99,56 +100,56 @@ package android.system {
     method public static android.system.StructTimeval getsockoptTimeval(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
     method public static int ioctlInt(java.io.FileDescriptor, int, android.system.Int32Ref) throws android.system.ErrnoException;
     method public static java.io.FileDescriptor[] pipe2(int) throws android.system.ErrnoException;
-    method public static java.lang.String realpath(java.lang.String) throws android.system.ErrnoException;
-    method public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
+    method public static String realpath(String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
     method public static void setpgid(int, int) throws android.system.ErrnoException;
     method public static void setregid(int, int) throws android.system.ErrnoException;
     method public static void setreuid(int, int) throws android.system.ErrnoException;
-    method public static void setsockoptIfreq(java.io.FileDescriptor, int, int, java.lang.String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setsockoptIfreq(java.io.FileDescriptor, int, int, String) throws android.system.ErrnoException;
     method public static void setsockoptLinger(java.io.FileDescriptor, int, int, android.system.StructLinger) throws android.system.ErrnoException;
-    method public static void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
     method public static long splice(java.io.FileDescriptor, android.system.Int64Ref, java.io.FileDescriptor, android.system.Int64Ref, long, int) throws android.system.ErrnoException;
-    method public static void unlink(java.lang.String) throws android.system.ErrnoException;
+    method public static void unlink(String) throws android.system.ErrnoException;
   }
 
   public final class OsConstants {
-    method public static int CAP_TO_INDEX(int);
-    method public static int CAP_TO_MASK(int);
-    field public static final int AF_NETLINK;
-    field public static final int AF_PACKET;
-    field public static final int ARPHRD_ETHER;
-    field public static final int ENONET;
-    field public static final int ETH_P_ALL;
-    field public static final int ETH_P_ARP;
-    field public static final int ETH_P_IP;
-    field public static final int ETH_P_IPV6;
-    field public static final int EUSERS;
-    field public static final int ICMP6_ECHO_REPLY;
-    field public static final int ICMP6_ECHO_REQUEST;
-    field public static final int ICMP_ECHO;
-    field public static final int ICMP_ECHOREPLY;
-    field public static final int MAP_POPULATE;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_INDEX(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_MASK(int);
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int AF_NETLINK;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int AF_PACKET;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ARPHRD_ETHER;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ENONET;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ETH_P_ALL;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ETH_P_ARP;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ETH_P_IP;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ETH_P_IPV6;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int EUSERS;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ICMP6_ECHO_REPLY;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ICMP6_ECHO_REQUEST;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ICMP_ECHO;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ICMP_ECHOREPLY;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int MAP_POPULATE;
     field public static final int NETLINK_INET_DIAG;
-    field public static final int NETLINK_NETFILTER;
-    field public static final int NETLINK_ROUTE;
-    field public static final int O_DIRECT;
-    field public static final int PR_CAP_AMBIENT;
-    field public static final int PR_CAP_AMBIENT_RAISE;
-    field public static final int RLIMIT_NOFILE;
-    field public static final int RTMGRP_IPV4_IFADDR;
-    field public static final int RTMGRP_NEIGH;
-    field public static final int SPLICE_F_MORE;
-    field public static final int SPLICE_F_MOVE;
-    field public static final int TIOCOUTQ;
-    field public static final int UDP_ENCAP;
-    field public static final int UDP_ENCAP_ESPINUDP;
-    field public static final int XATTR_CREATE;
-    field public static final int _LINUX_CAPABILITY_VERSION_3;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int NETLINK_NETFILTER;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int NETLINK_ROUTE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int O_DIRECT;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT_RAISE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int RLIMIT_NOFILE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int RTMGRP_IPV4_IFADDR;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int RTMGRP_NEIGH;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int SPLICE_F_MORE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int SPLICE_F_MOVE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int TIOCOUTQ;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int UDP_ENCAP;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int UDP_ENCAP_ESPINUDP;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int XATTR_CREATE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int _LINUX_CAPABILITY_VERSION_3;
   }
 
   public final class PacketSocketAddress extends java.net.SocketAddress {
-    ctor public PacketSocketAddress(short, int);
-    ctor public PacketSocketAddress(int, byte[]);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(short, int);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(int, byte[]);
   }
 
   public final class StructCapUserData {
@@ -173,14 +174,14 @@ package android.system {
   }
 
   public final class StructTimeval {
-    method public static android.system.StructTimeval fromMillis(long);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static android.system.StructTimeval fromMillis(long);
     method public long toMillis();
     field public final long tv_sec;
     field public final long tv_usec;
   }
 
   public final class UnixSocketAddress extends java.net.SocketAddress {
-    method public static android.system.UnixSocketAddress createFileSystem(java.lang.String);
+    method public static android.system.UnixSocketAddress createFileSystem(String);
   }
 
 }
@@ -192,7 +193,7 @@ package com.android.okhttp.internalandroidapi {
     method public void close() throws java.io.IOException;
     method public void delete() throws java.io.IOException;
     method public void flush() throws java.io.IOException;
-    method public java.net.CacheResponse get(java.net.URI, java.lang.String, java.util.Map<java.lang.String, java.util.List<java.lang.String>>) throws java.io.IOException;
+    method public java.net.CacheResponse get(java.net.URI, String, java.util.Map<java.lang.String,java.util.List<java.lang.String>>) throws java.io.IOException;
     method public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
     method public int getHitCount();
     method public long getMaxSize();
@@ -202,12 +203,12 @@ package com.android.okhttp.internalandroidapi {
     method public java.net.CacheRequest put(java.net.URI, java.net.URLConnection) throws java.io.IOException;
   }
 
-  public abstract interface Dns {
-    method public abstract java.util.List<java.net.InetAddress> lookup(java.lang.String) throws java.net.UnknownHostException;
+  public interface Dns {
+    method public java.util.List<java.net.InetAddress> lookup(String) throws java.net.UnknownHostException;
   }
 
-  public abstract interface HasCacheHolder {
-    method public abstract com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+  public interface HasCacheHolder {
+    method public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
   }
 
   public static final class HasCacheHolder.CacheHolder {
@@ -229,22 +230,22 @@ package com.android.org.bouncycastle.asn1 {
   public abstract class ASN1BitString extends com.android.org.bouncycastle.asn1.ASN1Primitive {
   }
 
-  public abstract interface ASN1Encodable {
+  public interface ASN1Encodable {
   }
 
   public class ASN1EncodableVector {
-    ctor public ASN1EncodableVector();
-    method public void add(com.android.org.bouncycastle.asn1.ASN1Encodable);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1EncodableVector();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void add(com.android.org.bouncycastle.asn1.ASN1Encodable);
   }
 
   public class ASN1InputStream extends java.io.FilterInputStream {
-    ctor public ASN1InputStream(java.io.InputStream);
-    ctor public ASN1InputStream(byte[]);
-    method public com.android.org.bouncycastle.asn1.ASN1Primitive readObject() throws java.io.IOException;
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1InputStream(java.io.InputStream);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1InputStream(byte[]);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.bouncycastle.asn1.ASN1Primitive readObject() throws java.io.IOException;
   }
 
   public class ASN1Integer extends com.android.org.bouncycastle.asn1.ASN1Primitive {
-    ctor public ASN1Integer(java.math.BigInteger);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1Integer(java.math.BigInteger);
   }
 
   public abstract class ASN1Null extends com.android.org.bouncycastle.asn1.ASN1Primitive {
@@ -253,13 +254,13 @@ package com.android.org.bouncycastle.asn1 {
   public abstract class ASN1Object implements com.android.org.bouncycastle.asn1.ASN1Encodable {
     ctor public ASN1Object();
     method public byte[] getEncoded() throws java.io.IOException;
-    method public byte[] getEncoded(java.lang.String) throws java.io.IOException;
+    method public byte[] getEncoded(String) throws java.io.IOException;
   }
 
   public class ASN1ObjectIdentifier extends com.android.org.bouncycastle.asn1.ASN1Primitive {
-    ctor public ASN1ObjectIdentifier(java.lang.String);
-    method public java.lang.String getId();
-    method public static com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getInstance(java.lang.Object);
+    ctor public ASN1ObjectIdentifier(String);
+    method public String getId();
+    method public static com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getInstance(Object);
   }
 
   public abstract class ASN1OctetString extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.asn1.ASN1Encodable {
@@ -269,7 +270,7 @@ package com.android.org.bouncycastle.asn1 {
   public abstract class ASN1Primitive extends com.android.org.bouncycastle.asn1.ASN1Object {
   }
 
-  public abstract class ASN1Sequence extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.util.Iterable {
+  public abstract class ASN1Sequence extends com.android.org.bouncycastle.asn1.ASN1Primitive implements com.android.org.bouncycastle.util.Iterable<com.android.org.bouncycastle.asn1.ASN1Encodable> {
     method public com.android.org.bouncycastle.asn1.ASN1Encodable getObjectAt(int);
     method public int size();
   }
@@ -279,24 +280,24 @@ package com.android.org.bouncycastle.asn1 {
   }
 
   public class DERBitString extends com.android.org.bouncycastle.asn1.ASN1BitString {
-    ctor public DERBitString(byte[]);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERBitString(byte[]);
   }
 
-  public deprecated class DERInteger extends com.android.org.bouncycastle.asn1.ASN1Integer {
-    ctor public DERInteger(long);
+  @Deprecated public class DERInteger extends com.android.org.bouncycastle.asn1.ASN1Integer {
+    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public DERInteger(long);
   }
 
   public class DERNull extends com.android.org.bouncycastle.asn1.ASN1Null {
-    field public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
   }
 
   public class DEROctetString extends com.android.org.bouncycastle.asn1.ASN1OctetString {
-    ctor public DEROctetString(byte[]);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DEROctetString(byte[]);
   }
 
   public class DERSequence extends com.android.org.bouncycastle.asn1.ASN1Sequence {
-    ctor public DERSequence();
-    ctor public DERSequence(com.android.org.bouncycastle.asn1.ASN1EncodableVector);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERSequence();
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERSequence(com.android.org.bouncycastle.asn1.ASN1EncodableVector);
   }
 
   public class DERTaggedObject extends com.android.org.bouncycastle.asn1.ASN1TaggedObject {
@@ -304,20 +305,20 @@ package com.android.org.bouncycastle.asn1 {
   }
 
   public class DERUTF8String extends com.android.org.bouncycastle.asn1.ASN1Primitive {
-    ctor public DERUTF8String(java.lang.String);
-    method public java.lang.String getString();
+    ctor public DERUTF8String(String);
+    method public String getString();
   }
 
 }
 
 package com.android.org.bouncycastle.asn1.pkcs {
 
-  public abstract interface PKCSObjectIdentifiers {
-    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha256WithRSAEncryption;
+  public interface PKCSObjectIdentifiers {
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha256WithRSAEncryption;
   }
 
   public class PrivateKeyInfo extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method public static com.android.org.bouncycastle.asn1.pkcs.PrivateKeyInfo getInstance(java.lang.Object);
+    method public static com.android.org.bouncycastle.asn1.pkcs.PrivateKeyInfo getInstance(Object);
     method public com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier getPrivateKeyAlgorithm();
   }
 
@@ -326,23 +327,23 @@ package com.android.org.bouncycastle.asn1.pkcs {
 package com.android.org.bouncycastle.asn1.x509 {
 
   public class AlgorithmIdentifier extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier);
-    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier, com.android.org.bouncycastle.asn1.ASN1Encodable);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier, com.android.org.bouncycastle.asn1.ASN1Encodable);
     method public com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getAlgorithm();
   }
 
   public class BasicConstraints extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method public static com.android.org.bouncycastle.asn1.x509.BasicConstraints getInstance(java.lang.Object);
+    method public static com.android.org.bouncycastle.asn1.x509.BasicConstraints getInstance(Object);
     method public boolean isCA();
   }
 
   public class Certificate extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method public static com.android.org.bouncycastle.asn1.x509.Certificate getInstance(java.lang.Object);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.bouncycastle.asn1.x509.Certificate getInstance(Object);
   }
 
   public class GeneralName extends com.android.org.bouncycastle.asn1.ASN1Object {
     ctor public GeneralName(int, com.android.org.bouncycastle.asn1.ASN1Encodable);
-    ctor public GeneralName(int, java.lang.String);
+    ctor public GeneralName(int, String);
     method public int getTagNo();
     field public static final int dNSName = 2; // 0x2
     field public static final int iPAddress = 7; // 0x7
@@ -350,54 +351,54 @@ package com.android.org.bouncycastle.asn1.x509 {
   }
 
   public class SubjectPublicKeyInfo extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method public static com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo getInstance(java.lang.Object);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo getInstance(Object);
   }
 
   public class TBSCertificate extends com.android.org.bouncycastle.asn1.ASN1Object {
   }
 
   public class Time extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor public Time(java.util.Date);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public Time(java.util.Date);
   }
 
   public class V3TBSCertificateGenerator {
-    ctor public V3TBSCertificateGenerator();
-    method public com.android.org.bouncycastle.asn1.x509.TBSCertificate generateTBSCertificate();
-    method public void setEndDate(com.android.org.bouncycastle.asn1.x509.Time);
-    method public deprecated void setIssuer(com.android.org.bouncycastle.asn1.x509.X509Name);
-    method public void setSerialNumber(com.android.org.bouncycastle.asn1.ASN1Integer);
-    method public void setSignature(com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier);
-    method public void setStartDate(com.android.org.bouncycastle.asn1.x509.Time);
-    method public deprecated void setSubject(com.android.org.bouncycastle.asn1.x509.X509Name);
-    method public void setSubjectPublicKeyInfo(com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public V3TBSCertificateGenerator();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.bouncycastle.asn1.x509.TBSCertificate generateTBSCertificate();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setEndDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setIssuer(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSerialNumber(com.android.org.bouncycastle.asn1.ASN1Integer);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSignature(com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setStartDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSubject(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSubjectPublicKeyInfo(com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo);
   }
 
-  public deprecated class X509Name extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor public deprecated X509Name(java.lang.String);
-    method public static com.android.org.bouncycastle.asn1.x509.X509Name getInstance(java.lang.Object);
-    method public java.util.Vector getOIDs();
-    method public java.util.Vector getValues();
-    method public java.lang.String toString(boolean, java.util.Hashtable);
-    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier CN;
-    field public static final java.util.Hashtable DefaultSymbols;
-    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier O;
-    field public static final deprecated com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier OU;
+  @Deprecated public class X509Name extends com.android.org.bouncycastle.asn1.ASN1Object {
+    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509Name(String);
+    method @Deprecated public static com.android.org.bouncycastle.asn1.x509.X509Name getInstance(Object);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Vector getOIDs();
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Vector getValues();
+    method @Deprecated public String toString(boolean, java.util.Hashtable);
+    field @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier CN;
+    field @Deprecated public static final java.util.Hashtable DefaultSymbols;
+    field @Deprecated public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier O;
+    field @Deprecated public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier OU;
   }
 
 }
 
 package com.android.org.bouncycastle.asn1.x9 {
 
-  public abstract interface X9ObjectIdentifiers {
-    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier ecdsa_with_SHA256;
+  public interface X9ObjectIdentifiers {
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier ecdsa_with_SHA256;
   }
 
 }
 
 package com.android.org.bouncycastle.jce {
 
-  public deprecated class X509Principal extends com.android.org.bouncycastle.asn1.x509.X509Name implements java.security.Principal {
-    ctor public X509Principal(byte[]) throws java.io.IOException;
+  @Deprecated public class X509Principal extends com.android.org.bouncycastle.asn1.x509.X509Name implements java.security.Principal {
+    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509Principal(byte[]) throws java.io.IOException;
     method public byte[] getEncoded();
   }
 
@@ -406,18 +407,18 @@ package com.android.org.bouncycastle.jce {
 package com.android.org.bouncycastle.jce.provider {
 
   public final class BouncyCastleProvider extends java.security.Provider {
-    ctor public BouncyCastleProvider();
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public BouncyCastleProvider();
   }
 
-  public deprecated class X509CertificateObject extends java.security.cert.X509Certificate {
-    ctor public X509CertificateObject(com.android.org.bouncycastle.asn1.x509.Certificate) throws java.security.cert.CertificateParsingException;
+  @Deprecated public class X509CertificateObject extends java.security.cert.X509Certificate {
+    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509CertificateObject(com.android.org.bouncycastle.asn1.x509.Certificate) throws java.security.cert.CertificateParsingException;
   }
 
 }
 
 package com.android.org.bouncycastle.util {
 
-  public abstract interface Iterable<T> implements java.lang.Iterable {
+  public interface Iterable<T> extends java.lang.Iterable<T> {
   }
 
 }
@@ -425,12 +426,12 @@ package com.android.org.bouncycastle.util {
 package com.android.org.bouncycastle.util.io.pem {
 
   public class PemObject implements com.android.org.bouncycastle.util.io.pem.PemObjectGenerator {
-    ctor public PemObject(java.lang.String, byte[]);
+    ctor public PemObject(String, byte[]);
     method public byte[] getContent();
-    method public java.lang.String getType();
+    method public String getType();
   }
 
-  public abstract interface PemObjectGenerator {
+  public interface PemObjectGenerator {
   }
 
   public class PemReader extends java.io.BufferedReader {
@@ -447,27 +448,33 @@ package com.android.org.bouncycastle.util.io.pem {
 
 package com.android.org.bouncycastle.x509 {
 
-  public deprecated class X509V3CertificateGenerator {
-    ctor public X509V3CertificateGenerator();
-    method public java.security.cert.X509Certificate generate(java.security.PrivateKey) throws java.security.cert.CertificateEncodingException, java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
-    method public void setIssuerDN(javax.security.auth.x500.X500Principal);
-    method public void setNotAfter(java.util.Date);
-    method public void setNotBefore(java.util.Date);
-    method public void setPublicKey(java.security.PublicKey) throws java.lang.IllegalArgumentException;
-    method public void setSerialNumber(java.math.BigInteger);
-    method public void setSignatureAlgorithm(java.lang.String);
-    method public void setSubjectDN(javax.security.auth.x500.X500Principal);
+  @Deprecated public class X509V3CertificateGenerator {
+    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509V3CertificateGenerator();
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.security.cert.X509Certificate generate(java.security.PrivateKey) throws java.security.cert.CertificateEncodingException, java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setIssuerDN(javax.security.auth.x500.X500Principal);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setNotAfter(java.util.Date);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setNotBefore(java.util.Date);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setPublicKey(java.security.PublicKey) throws java.lang.IllegalArgumentException;
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSerialNumber(java.math.BigInteger);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSignatureAlgorithm(String);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSubjectDN(javax.security.auth.x500.X500Principal);
   }
 
 }
 
 package com.android.org.conscrypt {
 
-  public abstract interface CertPinManager {
+  public interface CertPinManager {
   }
 
   public final class ClientSessionContext implements javax.net.ssl.SSLSessionContext {
-    method public void setPersistentCache(com.android.org.conscrypt.SSLClientSessionCache);
+    method public final java.util.Enumeration<byte[]> getIds();
+    method public final javax.net.ssl.SSLSession getSession(byte[]);
+    method public final int getSessionCacheSize();
+    method public final int getSessionTimeout();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setPersistentCache(com.android.org.conscrypt.SSLClientSessionCache);
+    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
+    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
   }
 
   public final class Conscrypt {
@@ -475,50 +482,65 @@ package com.android.org.conscrypt {
     method public static javax.net.ssl.SSLContextSpi newPreferredSSLContextSpi();
   }
 
-  public abstract interface ConscryptCertStore {
+  public interface ConscryptCertStore {
   }
 
   public final class FileClientSessionCache {
-    method public static synchronized com.android.org.conscrypt.SSLClientSessionCache usingDirectory(java.io.File) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.conscrypt.SSLClientSessionCache usingDirectory(java.io.File) throws java.io.IOException;
   }
 
   public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
-    method public com.android.org.conscrypt.ClientSessionContext engineGetClientSessionContext();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.conscrypt.ClientSessionContext engineGetClientSessionContext();
     method public javax.net.ssl.SSLSocketFactory engineGetSocketFactory();
     method public void engineInit(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], java.security.SecureRandom) throws java.security.KeyManagementException;
   }
 
   public final class OpenSSLProvider extends java.security.Provider {
-    ctor public OpenSSLProvider();
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public OpenSSLProvider();
   }
 
   public abstract class OpenSSLSocketImpl extends javax.net.ssl.SSLSocket {
-    method public final deprecated byte[] getAlpnSelectedProtocol();
-    method public final deprecated byte[] getNpnSelectedProtocol();
-    method public final deprecated void setAlpnProtocols(byte[]);
-    method public abstract void setChannelIdPrivateKey(java.security.PrivateKey);
-    method public void setHandshakeTimeout(int) throws java.net.SocketException;
-    method public void setHostname(java.lang.String);
-    method public final deprecated void setNpnProtocols(byte[]);
-    method public void setSoWriteTimeout(int) throws java.net.SocketException;
-    method public abstract void setUseSessionTickets(boolean);
+    method public void addHandshakeCompletedListener(javax.net.ssl.HandshakeCompletedListener);
+    method public final void connect(java.net.SocketAddress) throws java.io.IOException;
+    method public final void connect(java.net.SocketAddress, int) throws java.io.IOException;
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final byte[] getAlpnSelectedProtocol();
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final byte[] getNpnSelectedProtocol();
+    method public final int getPort();
+    method public final int getSoTimeout() throws java.net.SocketException;
+    method public void removeHandshakeCompletedListener(javax.net.ssl.HandshakeCompletedListener);
+    method public final void sendUrgentData(int) throws java.io.IOException;
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final void setAlpnProtocols(byte[]);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public abstract void setChannelIdPrivateKey(java.security.PrivateKey);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setHandshakeTimeout(int) throws java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setHostname(String);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final void setNpnProtocols(byte[]);
+    method public final void setOOBInline(boolean) throws java.net.SocketException;
+    method public final void setSoTimeout(int) throws java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSoWriteTimeout(int) throws java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public abstract void setUseSessionTickets(boolean);
   }
 
-  public abstract interface SSLClientSessionCache {
+  public interface SSLClientSessionCache {
   }
 
   public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
+    method public final java.util.Enumeration<byte[]> getIds();
+    method public final javax.net.ssl.SSLSession getSession(byte[]);
+    method public final int getSessionCacheSize();
+    method public final int getSessionTimeout();
+    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
+    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
   }
 
   public final class TrustManagerImpl extends javax.net.ssl.X509ExtendedTrustManager {
-    ctor public TrustManagerImpl(java.security.KeyStore);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public TrustManagerImpl(java.security.KeyStore);
     ctor public TrustManagerImpl(java.security.KeyStore, com.android.org.conscrypt.CertPinManager, com.android.org.conscrypt.ConscryptCertStore);
-    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String) throws java.security.cert.CertificateException;
-    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String, java.net.Socket) throws java.security.cert.CertificateException;
-    method public void checkClientTrusted(java.security.cert.X509Certificate[], java.lang.String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
-    method public java.util.List<java.security.cert.X509Certificate> checkServerTrusted(java.security.cert.X509Certificate[], java.lang.String, java.lang.String) throws java.security.cert.CertificateException;
-    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], java.lang.String, java.net.Socket) throws java.security.cert.CertificateException;
-    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], java.lang.String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], String) throws java.security.cert.CertificateException;
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], String, java.net.Socket) throws java.security.cert.CertificateException;
+    method public void checkClientTrusted(java.security.cert.X509Certificate[], String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public java.util.List<java.security.cert.X509Certificate> checkServerTrusted(java.security.cert.X509Certificate[], String, String) throws java.security.cert.CertificateException;
+    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], String, java.net.Socket) throws java.security.cert.CertificateException;
+    method public java.util.List<java.security.cert.X509Certificate> getTrustedChainForServer(java.security.cert.X509Certificate[], String, javax.net.ssl.SSLEngine) throws java.security.cert.CertificateException;
     method public void handleTrustStorageUpdate();
   }
 
@@ -531,23 +553,23 @@ package com.android.org.conscrypt {
   }
 
   public class TrustedCertificateStore implements com.android.org.conscrypt.ConscryptCertStore {
-    ctor public TrustedCertificateStore();
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public TrustedCertificateStore();
     method public java.util.Set<java.lang.String> aliases();
     method public java.util.Set<java.lang.String> allSystemAliases();
-    method public boolean containsAlias(java.lang.String);
-    method public void deleteCertificateEntry(java.lang.String) throws java.security.cert.CertificateException, java.io.IOException;
+    method public boolean containsAlias(String);
+    method public void deleteCertificateEntry(String) throws java.security.cert.CertificateException, java.io.IOException;
     method public java.util.Set<java.security.cert.X509Certificate> findAllIssuers(java.security.cert.X509Certificate);
     method public java.security.cert.X509Certificate findIssuer(java.security.cert.X509Certificate);
-    method public java.security.cert.Certificate getCertificate(java.lang.String);
-    method public java.security.cert.Certificate getCertificate(java.lang.String, boolean);
-    method public java.lang.String getCertificateAlias(java.security.cert.Certificate);
-    method public java.lang.String getCertificateAlias(java.security.cert.Certificate, boolean);
-    method public java.util.List<java.security.cert.X509Certificate> getCertificateChain(java.security.cert.X509Certificate) throws java.security.cert.CertificateException;
+    method public java.security.cert.Certificate getCertificate(String);
+    method public java.security.cert.Certificate getCertificate(String, boolean);
+    method public String getCertificateAlias(java.security.cert.Certificate);
+    method public String getCertificateAlias(java.security.cert.Certificate, boolean);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public java.util.List<java.security.cert.X509Certificate> getCertificateChain(java.security.cert.X509Certificate) throws java.security.cert.CertificateException;
     method public java.io.File getCertificateFile(java.io.File, java.security.cert.X509Certificate);
-    method public java.util.Date getCreationDate(java.lang.String);
+    method public java.util.Date getCreationDate(String);
     method public java.security.cert.X509Certificate getTrustAnchor(java.security.cert.X509Certificate);
     method public void installCertificate(java.security.cert.X509Certificate) throws java.security.cert.CertificateException, java.io.IOException;
-    method public static final boolean isUser(java.lang.String);
+    method public static final boolean isUser(String);
     method public boolean isUserAddedCertificate(java.security.cert.X509Certificate);
     method public static void setDefaultUserDirectory(java.io.File);
     method public java.util.Set<java.lang.String> userAliases();
@@ -557,14 +579,14 @@ package com.android.org.conscrypt {
 
 package dalvik.annotation.compat {
 
-  public abstract class UnsupportedAppUsage implements java.lang.annotation.Annotation {
-    method public abstract java.lang.String expectedSignature();
-    method public abstract java.lang.String implicitMember();
-    method public abstract int maxTargetSdk();
-    method public abstract long trackingBug();
+  @java.lang.annotation.Repeatable(UnsupportedAppUsage.Container.class) @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.TYPE}) public @interface UnsupportedAppUsage {
+    method public abstract String expectedSignature() default "";
+    method public abstract String implicitMember() default "";
+    method public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method public abstract long trackingBug() default 0;
   }
 
-  public static abstract class UnsupportedAppUsage.Container implements java.lang.annotation.Annotation {
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE) public static @interface UnsupportedAppUsage.Container {
     method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
@@ -572,10 +594,10 @@ package dalvik.annotation.compat {
 
 package dalvik.annotation.optimization {
 
-  public abstract class CriticalNative implements java.lang.annotation.Annotation {
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) public @interface CriticalNative {
   }
 
-  public abstract class FastNative implements java.lang.annotation.Annotation {
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.METHOD) public @interface FastNative {
   }
 
 }
@@ -583,94 +605,94 @@ package dalvik.annotation.optimization {
 package dalvik.system {
 
   public class AnnotatedStackTraceElement {
-    method public java.lang.Object getBlockedOn();
-    method public java.lang.Object[] getHeldLocks();
-    method public java.lang.StackTraceElement getStackTraceElement();
+    method public Object getBlockedOn();
+    method public Object[] getHeldLocks();
+    method public StackTraceElement getStackTraceElement();
   }
 
   public class BaseDexClassLoader extends java.lang.ClassLoader {
-    method public void addDexPath(java.lang.String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void addDexPath(String);
     method public void addNativePath(java.util.Collection<java.lang.String>);
-    method public java.lang.String getLdLibraryPath();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public String getLdLibraryPath();
     method public static void setReporter(dalvik.system.BaseDexClassLoader.Reporter);
   }
 
-  public static abstract interface BaseDexClassLoader.Reporter {
-    method public abstract void report(java.util.List<java.lang.ClassLoader>, java.util.List<java.lang.String>);
+  public static interface BaseDexClassLoader.Reporter {
+    method public void report(java.util.List<java.lang.ClassLoader>, java.util.List<java.lang.String>);
   }
 
   public final class BlockGuard {
-    method public static dalvik.system.BlockGuard.Policy getThreadPolicy();
-    method public static dalvik.system.BlockGuard.VmPolicy getVmPolicy();
-    method public static void setThreadPolicy(dalvik.system.BlockGuard.Policy);
-    method public static void setVmPolicy(dalvik.system.BlockGuard.VmPolicy);
-    field public static final dalvik.system.BlockGuard.Policy LAX_POLICY;
+    method @NonNull @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.BlockGuard.Policy getThreadPolicy();
+    method @NonNull public static dalvik.system.BlockGuard.VmPolicy getVmPolicy();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setThreadPolicy(@NonNull dalvik.system.BlockGuard.Policy);
+    method public static void setVmPolicy(@NonNull dalvik.system.BlockGuard.VmPolicy);
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final dalvik.system.BlockGuard.Policy LAX_POLICY;
     field public static final dalvik.system.BlockGuard.VmPolicy LAX_VM_POLICY;
   }
 
-  public static abstract interface BlockGuard.Policy {
-    method public abstract int getPolicyMask();
-    method public abstract void onReadFromDisk();
-    method public abstract void onUnbufferedIO();
-    method public abstract void onWriteToDisk();
+  public static interface BlockGuard.Policy {
+    method public int getPolicyMask();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void onReadFromDisk();
+    method public void onUnbufferedIO();
+    method public void onWriteToDisk();
   }
 
-  public static abstract interface BlockGuard.VmPolicy {
-    method public abstract void onPathAccess(java.lang.String);
+  public static interface BlockGuard.VmPolicy {
+    method public void onPathAccess(String);
   }
 
   public final class CloseGuard {
-    method public void close();
-    method public static dalvik.system.CloseGuard get();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void close();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.CloseGuard get();
     method public static dalvik.system.CloseGuard.Reporter getReporter();
-    method public void open(java.lang.String);
-    method public static void setEnabled(boolean);
-    method public static void setReporter(dalvik.system.CloseGuard.Reporter);
-    method public void warnIfOpen();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void open(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setEnabled(boolean);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setReporter(dalvik.system.CloseGuard.Reporter);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void warnIfOpen();
   }
 
-  public static abstract interface CloseGuard.Reporter {
-    method public abstract void report(java.lang.String, java.lang.Throwable);
+  public static interface CloseGuard.Reporter {
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void report(String, Throwable);
   }
 
-  public abstract interface DalvikLogHandler {
-    method public abstract void publish(java.util.logging.Logger, java.lang.String, java.util.logging.Level, java.lang.String);
+  public interface DalvikLogHandler {
+    method public void publish(java.util.logging.Logger, String, java.util.logging.Level, String);
   }
 
   public final class DalvikLogging {
-    method public static java.lang.String loggerNameToTag(java.lang.String);
+    method public static String loggerNameToTag(String);
   }
 
   public final class DelegateLastClassLoader extends dalvik.system.PathClassLoader {
-    ctor public DelegateLastClassLoader(java.lang.String, java.lang.String, java.lang.ClassLoader, java.lang.ClassLoader[]);
+    ctor public DelegateLastClassLoader(String, String, ClassLoader, ClassLoader[]);
   }
 
-  public final deprecated class DexFile {
-    ctor public deprecated DexFile(java.io.File) throws java.io.IOException;
-    ctor public deprecated DexFile(java.lang.String) throws java.io.IOException;
-    method public void close() throws java.io.IOException;
-    method public java.util.Enumeration<java.lang.String> entries();
-    method public static dalvik.system.DexFile.OptimizationInfo getDexFileOptimizationInfo(java.lang.String, java.lang.String) throws java.io.FileNotFoundException;
-    method public static java.lang.String[] getDexFileOutputPaths(java.lang.String, java.lang.String) throws java.io.FileNotFoundException;
-    method public static int getDexOptNeeded(java.lang.String, java.lang.String, java.lang.String, java.lang.String, boolean, boolean) throws java.io.FileNotFoundException, java.io.IOException;
-    method public java.lang.String getName();
-    method public static java.lang.String getSafeModeCompilerFilter(java.lang.String);
-    method public static boolean isDexOptNeeded(java.lang.String) throws java.io.FileNotFoundException, java.io.IOException;
-    method public static boolean isProfileGuidedCompilerFilter(java.lang.String);
-    method public static boolean isValidCompilerFilter(java.lang.String);
-    method public java.lang.Class loadClass(java.lang.String, java.lang.ClassLoader);
-    method public static deprecated dalvik.system.DexFile loadDex(java.lang.String, java.lang.String, int) throws java.io.IOException;
-    field public static final int DEX2OAT_FOR_FILTER = 3; // 0x3
-    field public static final int NO_DEXOPT_NEEDED = 0; // 0x0
+  @Deprecated public final class DexFile {
+    ctor @Deprecated public DexFile(java.io.File) throws java.io.IOException;
+    ctor @Deprecated public DexFile(String) throws java.io.IOException;
+    method @Deprecated public void close() throws java.io.IOException;
+    method @Deprecated public java.util.Enumeration<java.lang.String> entries();
+    method @Deprecated public static dalvik.system.DexFile.OptimizationInfo getDexFileOptimizationInfo(String, String) throws java.io.FileNotFoundException;
+    method @Deprecated public static String[] getDexFileOutputPaths(String, String) throws java.io.FileNotFoundException;
+    method @Deprecated public static int getDexOptNeeded(String, String, String, String, boolean, boolean) throws java.io.FileNotFoundException, java.io.IOException;
+    method @Deprecated public String getName();
+    method @Deprecated public static String getSafeModeCompilerFilter(String);
+    method @Deprecated public static boolean isDexOptNeeded(String) throws java.io.FileNotFoundException, java.io.IOException;
+    method @Deprecated public static boolean isProfileGuidedCompilerFilter(String);
+    method @Deprecated public static boolean isValidCompilerFilter(String);
+    method @Deprecated public Class loadClass(String, ClassLoader);
+    method @Deprecated public static dalvik.system.DexFile loadDex(String, String, int) throws java.io.IOException;
+    field @Deprecated public static final int DEX2OAT_FOR_FILTER = 3; // 0x3
+    field @Deprecated public static final int NO_DEXOPT_NEEDED = 0; // 0x0
   }
 
-  public static final class DexFile.OptimizationInfo {
-    method public java.lang.String getReason();
-    method public java.lang.String getStatus();
+  @Deprecated public static final class DexFile.OptimizationInfo {
+    method @Deprecated public String getReason();
+    method @Deprecated public String getStatus();
   }
 
   public class PathClassLoader extends dalvik.system.BaseDexClassLoader {
-    ctor public PathClassLoader(java.lang.String, java.lang.String, java.lang.ClassLoader, java.lang.ClassLoader[]);
+    ctor public PathClassLoader(String, String, ClassLoader, ClassLoader[]);
   }
 
   public final class RuntimeHooks {
@@ -680,45 +702,45 @@ package dalvik.system {
 
   public abstract class SocketTagger {
     ctor public SocketTagger();
-    method public static synchronized dalvik.system.SocketTagger get();
-    method public static synchronized void set(dalvik.system.SocketTagger);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.SocketTagger get();
+    method public static void set(dalvik.system.SocketTagger);
     method public abstract void tag(java.io.FileDescriptor) throws java.net.SocketException;
-    method public final void tag(java.net.Socket) throws java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public final void tag(java.net.Socket) throws java.net.SocketException;
     method public final void tag(java.net.DatagramSocket) throws java.net.SocketException;
     method public abstract void untag(java.io.FileDescriptor) throws java.net.SocketException;
-    method public final void untag(java.net.Socket) throws java.net.SocketException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public final void untag(java.net.Socket) throws java.net.SocketException;
     method public final void untag(java.net.DatagramSocket) throws java.net.SocketException;
   }
 
   public final class VMDebug {
-    method public static void attachAgent(java.lang.String, java.lang.ClassLoader) throws java.io.IOException;
-    method public static boolean cacheRegisterMap(java.lang.String);
-    method public static long countInstancesOfClass(java.lang.Class, boolean);
-    method public static long[] countInstancesOfClasses(java.lang.Class[], boolean);
-    method public static void dumpHprofData(java.lang.String) throws java.io.IOException;
-    method public static void dumpHprofData(java.lang.String, java.io.FileDescriptor) throws java.io.IOException;
+    method public static void attachAgent(String, ClassLoader) throws java.io.IOException;
+    method public static boolean cacheRegisterMap(String);
+    method public static long countInstancesOfClass(Class, boolean);
+    method public static long[] countInstancesOfClasses(Class[], boolean);
+    method public static void dumpHprofData(String) throws java.io.IOException;
+    method public static void dumpHprofData(String, java.io.FileDescriptor) throws java.io.IOException;
     method public static void dumpHprofDataDdms();
-    method public static void dumpReferenceTables();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void dumpReferenceTables();
     method public static int getAllocCount(int);
-    method public static int getLoadedClassCount();
+    method @dalvik.annotation.optimization.FastNative public static int getLoadedClassCount();
     method public static int getMethodTracingMode();
-    method public static java.lang.String getRuntimeStat(java.lang.String);
-    method public static java.util.Map<java.lang.String, java.lang.String> getRuntimeStats();
-    method public static java.lang.String[] getVmFeatureList();
-    method public static boolean isDebuggerConnected();
-    method public static boolean isDebuggingEnabled();
-    method public static long lastDebuggerActivity();
-    method public static void printLoadedClasses(int);
+    method public static String getRuntimeStat(String);
+    method public static java.util.Map<java.lang.String,java.lang.String> getRuntimeStats();
+    method public static String[] getVmFeatureList();
+    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public static boolean isDebuggerConnected();
+    method @dalvik.annotation.optimization.FastNative public static boolean isDebuggingEnabled();
+    method @dalvik.annotation.optimization.FastNative public static long lastDebuggerActivity();
+    method @dalvik.annotation.optimization.FastNative public static void printLoadedClasses(int);
     method public static void resetAllocCount(int);
     method public static void startAllocCounting();
     method public static void startEmulatorTracing();
-    method public static void startMethodTracing(java.lang.String, int, int, boolean, int);
-    method public static void startMethodTracing(java.lang.String, java.io.FileDescriptor, int, int, boolean, int, boolean);
+    method public static void startMethodTracing(String, int, int, boolean, int);
+    method public static void startMethodTracing(String, java.io.FileDescriptor, int, int, boolean, int, boolean);
     method public static void startMethodTracingDdms(int, int, boolean, int);
     method public static void stopAllocCounting();
     method public static void stopEmulatorTracing();
     method public static void stopMethodTracing();
-    method public static long threadCpuTimeNanos();
+    method @dalvik.annotation.optimization.FastNative public static long threadCpuTimeNanos();
     field public static final int KIND_ALL_COUNTS = -1; // 0xffffffff
     field public static final int KIND_GLOBAL_ALLOCATED_BYTES = 2; // 0x2
     field public static final int KIND_GLOBAL_ALLOCATED_OBJECTS = 1; // 0x1
@@ -734,47 +756,47 @@ package dalvik.system {
   }
 
   public final class VMRuntime {
-    method public long addressOf(java.lang.Object);
+    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public long addressOf(Object);
     method public void clampGrowthLimit();
-    method public void clearGrowthLimit();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void clearGrowthLimit();
     method public static boolean didPruneDalvikCache();
     method public void disableJitCompilation();
-    method public static java.lang.String getCurrentInstructionSet();
-    method public static java.lang.String getInstructionSet(java.lang.String);
-    method public static dalvik.system.VMRuntime getRuntime();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getCurrentInstructionSet();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getInstructionSet(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.VMRuntime getRuntime();
     method public float getTargetHeapUtilization();
-    method public synchronized int getTargetSdkVersion();
-    method public static boolean hasBootImageSpaces();
-    method public boolean is64Bit();
-    method public static boolean is64BitAbi(java.lang.String);
-    method public static boolean is64BitInstructionSet(java.lang.String);
-    method public static boolean isBootClassPathOnDisk(java.lang.String);
-    method public boolean isCheckJniEnabled();
-    method public boolean isNativeDebuggable();
-    method public java.lang.Object newNonMovableArray(java.lang.Class<?>, int);
-    method public java.lang.Object newUnpaddedArray(java.lang.Class<?>, int);
+    method public int getTargetSdkVersion();
+    method @dalvik.annotation.optimization.FastNative public static boolean hasBootImageSpaces();
+    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public boolean is64Bit();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static boolean is64BitAbi(String);
+    method public static boolean is64BitInstructionSet(String);
+    method public static boolean isBootClassPathOnDisk(String);
+    method @dalvik.annotation.optimization.FastNative public boolean isCheckJniEnabled();
+    method @dalvik.annotation.optimization.FastNative public boolean isNativeDebuggable();
+    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public Object newNonMovableArray(Class<?>, int);
+    method @dalvik.annotation.optimization.FastNative public Object newUnpaddedArray(Class<?>, int);
     method public void preloadDexCaches();
-    method public static void registerAppInfo(java.lang.String, java.lang.String[]);
-    method public void registerNativeAllocation(int);
-    method public void registerNativeFree(int);
+    method public static void registerAppInfo(String, String[]);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(int);
     method public static void registerSensitiveThread();
     method public void requestConcurrentGC();
     method public static void setDedupeHiddenApiWarnings(boolean);
     method public void setHiddenApiAccessLogSamplingRate(int);
-    method public void setHiddenApiExemptions(java.lang.String[]);
+    method public void setHiddenApiExemptions(String[]);
     method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
-    method public static void setProcessPackageName(java.lang.String);
-    method public float setTargetHeapUtilization(float);
-    method public synchronized void setTargetSdkVersion(int);
+    method public static void setProcessPackageName(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void setTargetSdkVersion(int);
     method public void startJitCompilation();
     method public void updateProcessState(int);
-    method public java.lang.String vmInstructionSet();
-    method public java.lang.String vmLibrary();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public String vmLibrary();
     field public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000; // 0x2710
   }
 
   public final class VMStack {
-    method public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(java.lang.Thread);
+    method @dalvik.annotation.optimization.FastNative public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(Thread);
   }
 
   public class VersionCodes {
@@ -787,7 +809,7 @@ package dalvik.system {
     method public static void gcAndFinalize();
     method public static void onBeginPreload();
     method public static void onEndPreload();
-    method public void postForkChild(int, boolean, boolean, java.lang.String);
+    method public void postForkChild(int, boolean, boolean, String);
     method public void postForkCommon();
     method public void postForkSystemServer();
     method public void preFork();
@@ -812,14 +834,14 @@ package java.io {
 
 package java.lang {
 
-  public final class Byte extends java.lang.Number implements java.lang.Comparable {
-    method public static java.lang.String toHexString(byte, boolean);
+  public final class Byte extends java.lang.Number implements java.lang.Comparable<java.lang.Byte> {
+    method public static String toHexString(byte, boolean);
   }
 
   public final class Class<T> implements java.lang.reflect.AnnotatedElement java.lang.reflect.GenericDeclaration java.io.Serializable java.lang.reflect.Type {
-    method public java.lang.reflect.Field[] getDeclaredFieldsUnchecked(boolean);
-    method public java.lang.reflect.Method[] getDeclaredMethodsUnchecked(boolean);
-    method public java.lang.String getPackageName$();
+    method @dalvik.annotation.optimization.FastNative public java.lang.reflect.Field[] getDeclaredFieldsUnchecked(boolean);
+    method @dalvik.annotation.optimization.FastNative public java.lang.reflect.Method[] getDeclaredMethodsUnchecked(boolean);
+    method public String getPackageName$();
   }
 
   public final class Math {
@@ -827,7 +849,7 @@ package java.lang {
   }
 
   public final class System {
-    method public static void logE(java.lang.String, java.lang.Throwable);
+    method public static void logE(String, Throwable);
   }
 
   public class Thread implements java.lang.Runnable {
@@ -850,8 +872,8 @@ package java.net {
   }
 
   public final class Inet6Address extends java.net.InetAddress {
-    method public static java.net.Inet6Address getByAddress(java.lang.String, byte[], java.net.NetworkInterface) throws java.net.UnknownHostException;
-    method public static java.net.Inet6Address getByAddress(java.lang.String, byte[], int) throws java.net.UnknownHostException;
+    method public static java.net.Inet6Address getByAddress(String, byte[], java.net.NetworkInterface) throws java.net.UnknownHostException;
+    method public static java.net.Inet6Address getByAddress(String, byte[], int) throws java.net.UnknownHostException;
     method public int getScopeId();
     method public java.net.NetworkInterface getScopedInterface();
     method public boolean isIPv4CompatibleAddress();
@@ -861,10 +883,10 @@ package java.net {
 
   public class InetAddress implements java.io.Serializable {
     method public static void clearDnsCache();
-    method public static java.net.InetAddress[] getAllByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
-    method public static java.net.InetAddress getByNameOnNet(java.lang.String, int) throws java.net.UnknownHostException;
-    method public static deprecated boolean isNumeric(java.lang.String);
-    method public static deprecated java.net.InetAddress parseNumericAddress(java.lang.String);
+    method public static java.net.InetAddress[] getAllByNameOnNet(String, int) throws java.net.UnknownHostException;
+    method public static java.net.InetAddress getByNameOnNet(String, int) throws java.net.UnknownHostException;
+    method @Deprecated public static boolean isNumeric(String);
+    method @Deprecated public static java.net.InetAddress parseNumericAddress(String);
   }
 
   public class InetSocketAddress extends java.net.SocketAddress {
@@ -887,20 +909,20 @@ package java.net {
 
 package java.nio {
 
-  public abstract class ByteBuffer extends java.nio.Buffer implements java.lang.Comparable {
+  public abstract class ByteBuffer extends java.nio.Buffer implements java.lang.Comparable<java.nio.ByteBuffer> {
     method public void setAccessible(boolean);
   }
 
   public class DirectByteBuffer extends java.nio.MappedByteBuffer {
-    ctor public DirectByteBuffer(int, long, java.io.FileDescriptor, java.lang.Runnable, boolean);
+    ctor public DirectByteBuffer(int, long, java.io.FileDescriptor, Runnable, boolean);
     method public final long address();
     method public final void setAccessible(boolean);
   }
 
   public final class NioUtils {
-    method public static void freeDirectBuffer(java.nio.ByteBuffer);
-    method public static byte[] unsafeArray(java.nio.ByteBuffer);
-    method public static int unsafeArrayOffset(java.nio.ByteBuffer);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void freeDirectBuffer(java.nio.ByteBuffer);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] unsafeArray(java.nio.ByteBuffer);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int unsafeArrayOffset(java.nio.ByteBuffer);
   }
 
 }
@@ -908,7 +930,7 @@ package java.nio {
 package java.security {
 
   public abstract class Provider extends java.util.Properties {
-    method public synchronized void warmUpServiceProvision();
+    method public void warmUpServiceProvision();
   }
 
   public abstract class Signature extends java.security.SignatureSpi {
@@ -920,28 +942,28 @@ package java.security {
 package java.text {
 
   public abstract class DateFormat extends java.text.Format {
-    method public static final void set24HourTimePref(java.lang.Boolean);
+    method public static final void set24HourTimePref(Boolean);
   }
 
 }
 
 package java.util {
 
-  public class LinkedHashMap<K, V> extends java.util.HashMap implements java.util.Map {
-    method public java.util.Map.Entry<K, V> eldest();
+  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> {
+    method public java.util.Map.Entry<K,V> eldest();
   }
 
   public final class Locale implements java.lang.Cloneable java.io.Serializable {
-    method public static java.lang.String adjustLanguageCode(java.lang.String);
+    method public static String adjustLanguageCode(String);
   }
 
 }
 
 package java.util.concurrent {
 
-  public class CompletableFuture<T> implements java.util.concurrent.CompletionStage java.util.concurrent.Future {
+  public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
     method public java.util.concurrent.CompletableFuture<T> completeOnTimeout(T, long, java.util.concurrent.TimeUnit);
-    method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(java.lang.Throwable);
+    method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(Throwable);
   }
 
 }
@@ -969,47 +991,47 @@ package javax.crypto {
 package libcore.icu {
 
   public final class DateIntervalFormat {
-    method public static java.lang.String formatDateRange(long, long, int, java.lang.String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String formatDateRange(long, long, int, String);
   }
 
   public final class ICU {
-    method public static java.util.Locale addLikelySubtags(java.util.Locale);
-    method public static java.lang.String getBestDateTimePattern(java.lang.String, java.util.Locale);
-    method public static char[] getDateFormatOrder(java.lang.String);
-    method public static java.lang.String getTZDataVersion();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static java.util.Locale addLikelySubtags(java.util.Locale);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getBestDateTimePattern(String, java.util.Locale);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static char[] getDateFormatOrder(String);
+    method public static String getTZDataVersion();
   }
 
   public final class LocaleData {
-    method public static libcore.icu.LocaleData get(java.util.Locale);
-    method public java.lang.String getDateFormat(int);
-    field public java.lang.String[] amPm;
-    field public java.lang.Integer firstDayOfWeek;
-    field public java.lang.String[] longMonthNames;
-    field public java.lang.String[] longStandAloneMonthNames;
-    field public java.lang.String[] longStandAloneWeekdayNames;
-    field public java.lang.String[] longWeekdayNames;
-    field public java.lang.String narrowAm;
-    field public java.lang.String narrowPm;
-    field public java.lang.String[] shortMonthNames;
-    field public java.lang.String[] shortStandAloneMonthNames;
-    field public java.lang.String[] shortStandAloneWeekdayNames;
-    field public java.lang.String[] shortWeekdayNames;
-    field public java.lang.String timeFormat_Hm;
-    field public java.lang.String timeFormat_Hms;
-    field public java.lang.String timeFormat_hm;
-    field public java.lang.String timeFormat_hms;
-    field public java.lang.String[] tinyMonthNames;
-    field public java.lang.String[] tinyStandAloneMonthNames;
-    field public java.lang.String[] tinyStandAloneWeekdayNames;
-    field public java.lang.String[] tinyWeekdayNames;
-    field public java.lang.String today;
-    field public java.lang.String yesterday;
-    field public char zeroDigit;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static libcore.icu.LocaleData get(java.util.Locale);
+    method public String getDateFormat(int);
+    field public String[] amPm;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public Integer firstDayOfWeek;
+    field public String[] longMonthNames;
+    field public String[] longStandAloneMonthNames;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] longStandAloneWeekdayNames;
+    field public String[] longWeekdayNames;
+    field public String narrowAm;
+    field public String narrowPm;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortMonthNames;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortStandAloneMonthNames;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortStandAloneWeekdayNames;
+    field public String[] shortWeekdayNames;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String timeFormat_Hm;
+    field public String timeFormat_Hms;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String timeFormat_hm;
+    field public String timeFormat_hms;
+    field public String[] tinyMonthNames;
+    field public String[] tinyStandAloneMonthNames;
+    field public String[] tinyStandAloneWeekdayNames;
+    field public String[] tinyWeekdayNames;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public String today;
+    field public String yesterday;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public char zeroDigit;
   }
 
   public final class RelativeDateTimeFormatter {
-    method public static java.lang.String getRelativeDateTimeString(java.util.Locale, java.util.TimeZone, long, long, long, long, int);
-    method public static java.lang.String getRelativeTimeSpanString(java.util.Locale, java.util.TimeZone, long, long, long, int);
+    method public static String getRelativeDateTimeString(java.util.Locale, java.util.TimeZone, long, long, long, long, int);
+    method public static String getRelativeTimeSpanString(java.util.Locale, java.util.TimeZone, long, long, long, int);
   }
 
 }
@@ -1018,7 +1040,7 @@ package libcore.internal {
 
   public final class StringPool {
     ctor public StringPool();
-    method public java.lang.String get(char[], int, int);
+    method public String get(char[], int, int);
   }
 
 }
@@ -1026,16 +1048,16 @@ package libcore.internal {
 package libcore.io {
 
   public class ForwardingOs implements libcore.io.Os {
-    ctor protected ForwardingOs(libcore.io.Os);
-    method public boolean access(java.lang.String, int) throws android.system.ErrnoException;
-    method public java.io.FileDescriptor open(java.lang.String, int, int) throws android.system.ErrnoException;
-    method public android.system.StructStat stat(java.lang.String) throws android.system.ErrnoException;
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage protected ForwardingOs(libcore.io.Os);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public boolean access(String, int) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public android.system.StructStat stat(String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
     method public static void closeAndSignalBlockedThreads(java.io.FileDescriptor) throws java.io.IOException;
     method public static java.net.InetSocketAddress getLocalInetSocketAddress(java.io.FileDescriptor) throws java.net.SocketException;
-    method public static java.io.FileDescriptor open(java.lang.String, int) throws java.io.FileNotFoundException;
+    method public static java.io.FileDescriptor open(String, int) throws java.io.FileNotFoundException;
     method public static int read(java.io.FileDescriptor, byte[], int, int) throws java.io.IOException;
     method public static int recvfrom(boolean, java.io.FileDescriptor, byte[], int, int, int, java.net.DatagramPacket, boolean) throws java.io.IOException;
     method public static int sendto(java.io.FileDescriptor, byte[], int, int, int, java.net.InetAddress, int) throws java.io.IOException;
@@ -1044,21 +1066,21 @@ package libcore.io {
   }
 
   public final class IoUtils {
-    method public static int acquireRawFd(java.io.FileDescriptor);
+    method public static int acquireRawFd(@NonNull java.io.FileDescriptor);
     method public static void close(java.io.FileDescriptor) throws java.io.IOException;
-    method public static void closeQuietly(java.lang.AutoCloseable);
-    method public static void closeQuietly(java.io.FileDescriptor);
-    method public static void closeQuietly(java.net.Socket);
-    method public static deprecated java.io.File createTemporaryDirectory(java.lang.String);
-    method public static deprecated void deleteContents(java.io.File) throws java.io.IOException;
-    method public static byte[] readFileAsByteArray(java.lang.String) throws java.io.IOException;
-    method public static java.lang.String readFileAsString(java.lang.String) throws java.io.IOException;
-    method public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
-    method public static void setFdOwner(java.io.FileDescriptor, java.lang.Object);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(AutoCloseable);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.io.FileDescriptor);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.net.Socket);
+    method @Deprecated public static java.io.File createTemporaryDirectory(String);
+    method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFileAsByteArray(String) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String readFileAsString(String) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
+    method public static void setFdOwner(@NonNull java.io.FileDescriptor, @NonNull Object);
   }
 
   public final class Memory {
-    method public static void memmove(java.lang.Object, int, java.lang.Object, int, long);
+    method public static void memmove(Object, int, Object, int, long);
     method public static int peekInt(byte[], int, java.nio.ByteOrder);
     method public static short peekShort(byte[], int, java.nio.ByteOrder);
     method public static void pokeInt(byte[], int, int, java.nio.ByteOrder);
@@ -1066,7 +1088,7 @@ package libcore.io {
     method public static void pokeShort(byte[], int, short, java.nio.ByteOrder);
   }
 
-  public abstract interface Os {
+  public interface Os {
     method public static boolean compareAndSetDefault(libcore.io.Os, libcore.io.Os);
     method public static libcore.io.Os getDefault();
   }
@@ -1077,14 +1099,14 @@ package libcore.io {
   }
 
   public final class Streams {
-    method public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
-    method public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
-    method public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
-    method public static java.lang.String readFully(java.io.Reader) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
+    method public static String readFully(java.io.Reader) throws java.io.IOException;
     method public static byte[] readFullyNoClose(java.io.InputStream) throws java.io.IOException;
-    method public static int readSingleByte(java.io.InputStream) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static int readSingleByte(java.io.InputStream) throws java.io.IOException;
     method public static long skipByReading(java.io.InputStream, long) throws java.io.IOException;
-    method public static void writeSingleByte(java.io.OutputStream, int) throws java.io.IOException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void writeSingleByte(java.io.OutputStream, int) throws java.io.IOException;
   }
 
 }
@@ -1092,23 +1114,23 @@ package libcore.io {
 package libcore.net {
 
   public class InetAddressUtils {
-    method public static boolean isNumericAddress(java.lang.String);
-    method public static java.net.InetAddress parseNumericAddress(java.lang.String);
+    method public static boolean isNumericAddress(String);
+    method public static java.net.InetAddress parseNumericAddress(String);
   }
 
   public final class MimeUtils {
-    method public static java.lang.String guessExtensionFromMimeType(java.lang.String);
-    method public static java.lang.String guessMimeTypeFromExtension(java.lang.String);
-    method public static boolean hasExtension(java.lang.String);
-    method public static boolean hasMimeType(java.lang.String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessExtensionFromMimeType(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessMimeTypeFromExtension(String);
+    method public static boolean hasExtension(String);
+    method public static boolean hasMimeType(String);
   }
 
   public abstract class NetworkSecurityPolicy {
     ctor public NetworkSecurityPolicy();
     method public static libcore.net.NetworkSecurityPolicy getInstance();
-    method public abstract boolean isCertificateTransparencyVerificationRequired(java.lang.String);
-    method public abstract boolean isCleartextTrafficPermitted();
-    method public abstract boolean isCleartextTrafficPermitted(java.lang.String);
+    method public abstract boolean isCertificateTransparencyVerificationRequired(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public abstract boolean isCleartextTrafficPermitted();
+    method public abstract boolean isCleartextTrafficPermitted(String);
     method public static void setInstance(libcore.net.NetworkSecurityPolicy);
   }
 
@@ -1117,7 +1139,7 @@ package libcore.net {
 package libcore.net.event {
 
   public class NetworkEventDispatcher {
-    method public static libcore.net.event.NetworkEventDispatcher getInstance();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static libcore.net.event.NetworkEventDispatcher getInstance();
     method public void onNetworkConfigurationChanged();
   }
 
@@ -1126,13 +1148,13 @@ package libcore.net.event {
 package libcore.timezone {
 
   public final class CountryTimeZones {
-    method public java.lang.String getCountryIso();
-    method public java.lang.String getDefaultTimeZoneId();
+    method public String getCountryIso();
+    method public String getDefaultTimeZoneId();
     method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
     method public boolean hasUtcZone(long);
     method public boolean isDefaultOkForCountryTimeZoneDetection(long);
-    method public boolean isForCountryCode(java.lang.String);
-    method public deprecated libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
+    method public boolean isForCountryCode(String);
+    method @Deprecated public libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
   }
 
   public static final class CountryTimeZones.OffsetResult {
@@ -1141,45 +1163,45 @@ package libcore.timezone {
   }
 
   public static final class CountryTimeZones.TimeZoneMapping {
-    method public static libcore.timezone.CountryTimeZones.TimeZoneMapping createForTests(java.lang.String, boolean, java.lang.Long);
-    field public final java.lang.Long notUsedAfter;
+    method public static libcore.timezone.CountryTimeZones.TimeZoneMapping createForTests(String, boolean, Long);
+    field public final Long notUsedAfter;
     field public final boolean showInPicker;
-    field public final java.lang.String timeZoneId;
+    field public final String timeZoneId;
   }
 
   public final class CountryZonesFinder {
     method public java.util.List<java.lang.String> lookupAllCountryIsoCodes();
-    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(java.lang.String);
-    method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(java.lang.String);
+    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
+    method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(String);
   }
 
   public final class TimeZoneDataFiles {
-    method public static java.lang.String getDataTimeZoneFile(java.lang.String);
+    method public static String getDataTimeZoneFile(String);
   }
 
   public final class TimeZoneFinder {
-    method public static libcore.timezone.TimeZoneFinder createInstance(java.lang.String) throws java.io.IOException;
+    method public static libcore.timezone.TimeZoneFinder createInstance(String) throws java.io.IOException;
     method public libcore.timezone.CountryZonesFinder getCountryZonesFinder();
-    method public java.lang.String getIanaVersion();
+    method public String getIanaVersion();
     method public static libcore.timezone.TimeZoneFinder getInstance();
-    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(java.lang.String);
-    method public java.lang.String lookupDefaultTimeZoneIdByCountry(java.lang.String);
-    method public android.icu.util.TimeZone lookupTimeZoneByCountryAndOffset(java.lang.String, int, boolean, long, android.icu.util.TimeZone);
-    method public java.util.List<java.lang.String> lookupTimeZoneIdsByCountry(java.lang.String);
-    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(java.lang.String);
+    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
+    method public String lookupDefaultTimeZoneIdByCountry(String);
+    method public android.icu.util.TimeZone lookupTimeZoneByCountryAndOffset(String, int, boolean, long, android.icu.util.TimeZone);
+    method public java.util.List<java.lang.String> lookupTimeZoneIdsByCountry(String);
+    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(String);
     method public void validate() throws java.io.IOException;
   }
 
   public class TzDataSetVersion {
-    ctor public TzDataSetVersion(int, int, java.lang.String, int) throws libcore.timezone.TzDataSetVersion.TzDataSetException;
+    ctor public TzDataSetVersion(int, int, String, int) throws libcore.timezone.TzDataSetVersion.TzDataSetException;
     method public static int currentFormatMajorVersion();
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
   }
 
   public static class TzDataSetVersion.TzDataSetException extends java.lang.Exception {
-    ctor public TzDataSetVersion.TzDataSetException(java.lang.String);
-    ctor public TzDataSetVersion.TzDataSetException(java.lang.String, java.lang.Throwable);
+    ctor public TzDataSetVersion.TzDataSetException(String);
+    ctor public TzDataSetVersion.TzDataSetException(String, Throwable);
   }
 
   public final class ZoneInfoDB {
@@ -1187,11 +1209,11 @@ package libcore.timezone {
   }
 
   public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
-    method public static java.lang.String getRulesVersion(java.io.File) throws java.io.IOException;
-    method public java.lang.String getVersion();
-    method public boolean hasTimeZone(java.lang.String) throws java.io.IOException;
-    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(java.lang.String);
-    method public libcore.util.ZoneInfo makeTimeZone(java.lang.String) throws java.io.IOException;
+    method public static String getRulesVersion(java.io.File) throws java.io.IOException;
+    method public String getVersion();
+    method public boolean hasTimeZone(String) throws java.io.IOException;
+    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(String);
+    method public libcore.util.ZoneInfo makeTimeZone(String) throws java.io.IOException;
     method public void validate() throws java.io.IOException;
   }
 
@@ -1209,44 +1231,44 @@ package libcore.util {
 
   public class DebugInfo {
     ctor public DebugInfo();
-    method public libcore.util.DebugInfo addStringEntry(java.lang.String, java.lang.String);
-    method public libcore.util.DebugInfo addStringEntry(java.lang.String, int);
+    method public libcore.util.DebugInfo addStringEntry(String, String);
+    method public libcore.util.DebugInfo addStringEntry(String, int);
     method public java.util.List<libcore.util.DebugInfo.DebugEntry> getDebugEntries();
   }
 
   public static class DebugInfo.DebugEntry {
-    ctor public DebugInfo.DebugEntry(java.lang.String, java.lang.String);
-    method public java.lang.String getKey();
-    method public java.lang.String getStringValue();
+    ctor public DebugInfo.DebugEntry(String, String);
+    method public String getKey();
+    method public String getStringValue();
   }
 
   public final class EmptyArray {
     field public static final boolean[] BOOLEAN;
-    field public static final byte[] BYTE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final byte[] BYTE;
     field public static final float[] FLOAT;
-    field public static final int[] INT;
-    field public static final long[] LONG;
-    field public static final java.lang.Object[] OBJECT;
-    field public static final java.lang.String[] STRING;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int[] INT;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final long[] LONG;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final Object[] OBJECT;
+    field public static final String[] STRING;
   }
 
   public class HexEncoding {
-    method public static byte[] decode(java.lang.String) throws java.lang.IllegalArgumentException;
+    method public static byte[] decode(String) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[]) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[], boolean) throws java.lang.IllegalArgumentException;
     method public static char[] encode(byte[]);
     method public static char[] encode(byte[], int, int);
-    method public static java.lang.String encodeToString(byte[]);
+    method public static String encodeToString(byte[]);
   }
 
   public class NativeAllocationRegistry {
-    ctor public NativeAllocationRegistry(java.lang.ClassLoader, long, long);
+    ctor public NativeAllocationRegistry(ClassLoader, long, long);
     method public static void applyFreeFunction(long, long);
-    method public java.lang.Runnable registerNativeAllocation(java.lang.Object, long);
+    method public Runnable registerNativeAllocation(Object, long);
   }
 
   public class SneakyThrow {
-    method public static void sneakyThrow(java.lang.Throwable);
+    method public static void sneakyThrow(Throwable);
   }
 
   public final class TimeZoneFinder {
@@ -1298,21 +1320,21 @@ package org.apache.harmony.dalvik {
     method public static void emptyInlineMethod();
     method public static void emptyInternalStaticMethod();
     method public void emptyJniMethod0();
-    method public void emptyJniMethod0_Fast();
+    method @dalvik.annotation.optimization.FastNative public void emptyJniMethod0_Fast();
     method public void emptyJniMethod6(int, int, int, int, int, int);
-    method public void emptyJniMethod6L(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
-    method public void emptyJniMethod6L_Fast(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
-    method public void emptyJniMethod6_Fast(int, int, int, int, int, int);
+    method public void emptyJniMethod6L(String, String[], int[][], Object, Object[], Object[][][][]);
+    method @dalvik.annotation.optimization.FastNative public void emptyJniMethod6L_Fast(String, String[], int[][], Object, Object[], Object[][][][]);
+    method @dalvik.annotation.optimization.FastNative public void emptyJniMethod6_Fast(int, int, int, int, int, int);
     method public static void emptyJniStaticMethod0();
-    method public static void emptyJniStaticMethod0_Critical();
-    method public static void emptyJniStaticMethod0_Fast();
+    method @dalvik.annotation.optimization.CriticalNative public static void emptyJniStaticMethod0_Critical();
+    method @dalvik.annotation.optimization.FastNative public static void emptyJniStaticMethod0_Fast();
     method public static void emptyJniStaticMethod6(int, int, int, int, int, int);
-    method public static void emptyJniStaticMethod6L(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
-    method public static void emptyJniStaticMethod6L_Fast(java.lang.String, java.lang.String[], int[][], java.lang.Object, java.lang.Object[], java.lang.Object[][][][]);
-    method public static void emptyJniStaticMethod6_Critical(int, int, int, int, int, int);
-    method public static void emptyJniStaticMethod6_Fast(int, int, int, int, int, int);
-    method public static synchronized void emptyJniStaticSynchronizedMethod0();
-    method public synchronized void emptyJniSynchronizedMethod0();
+    method public static void emptyJniStaticMethod6L(String, String[], int[][], Object, Object[], Object[][][][]);
+    method @dalvik.annotation.optimization.FastNative public static void emptyJniStaticMethod6L_Fast(String, String[], int[][], Object, Object[], Object[][][][]);
+    method @dalvik.annotation.optimization.CriticalNative public static void emptyJniStaticMethod6_Critical(int, int, int, int, int, int);
+    method @dalvik.annotation.optimization.FastNative public static void emptyJniStaticMethod6_Fast(int, int, int, int, int, int);
+    method public static void emptyJniStaticSynchronizedMethod0();
+    method public void emptyJniSynchronizedMethod0();
   }
 
 }
@@ -1321,38 +1343,38 @@ package org.apache.harmony.dalvik.ddmc {
 
   public class Chunk {
     ctor public Chunk(int, byte[], int, int);
-    ctor public Chunk(int, java.nio.ByteBuffer);
+    ctor @dalvik.annotation.compat.UnsupportedAppUsage public Chunk(int, java.nio.ByteBuffer);
     field public int type;
   }
 
   public abstract class ChunkHandler {
     ctor public ChunkHandler();
     method public abstract void connected();
-    method public static org.apache.harmony.dalvik.ddmc.Chunk createFailChunk(int, java.lang.String);
+    method public static org.apache.harmony.dalvik.ddmc.Chunk createFailChunk(int, String);
     method public abstract void disconnected();
-    method public static java.lang.String getString(java.nio.ByteBuffer, int);
+    method public static String getString(java.nio.ByteBuffer, int);
     method public abstract org.apache.harmony.dalvik.ddmc.Chunk handleChunk(org.apache.harmony.dalvik.ddmc.Chunk);
-    method public static java.lang.String name(int);
-    method public static void putString(java.nio.ByteBuffer, java.lang.String);
-    method public static int type(java.lang.String);
+    method public static String name(int);
+    method public static void putString(java.nio.ByteBuffer, String);
+    method public static int type(String);
     method public static java.nio.ByteBuffer wrapChunk(org.apache.harmony.dalvik.ddmc.Chunk);
-    field public static final java.nio.ByteOrder CHUNK_ORDER;
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final java.nio.ByteOrder CHUNK_ORDER;
   }
 
   public class DdmServer {
     method public static void registerHandler(int, org.apache.harmony.dalvik.ddmc.ChunkHandler);
     method public static void registrationComplete();
-    method public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
     field public static final int CLIENT_PROTOCOL_VERSION = 1; // 0x1
   }
 
   public class DdmVmInternal {
     method public static void enableRecentAllocations(boolean);
-    method public static boolean getRecentAllocationStatus();
-    method public static byte[] getRecentAllocations();
-    method public static java.lang.StackTraceElement[] getStackTraceById(int);
-    method public static byte[] getThreadStats();
-    method public static boolean heapInfoNotify(int);
+    method @dalvik.annotation.optimization.FastNative public static boolean getRecentAllocationStatus();
+    method @dalvik.annotation.optimization.FastNative public static byte[] getRecentAllocations();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static StackTraceElement[] getStackTraceById(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] getThreadStats();
+    method @dalvik.annotation.optimization.FastNative public static boolean heapInfoNotify(int);
     method public static boolean heapSegmentNotify(int, int, boolean);
     method public static void threadNotify(boolean);
   }
@@ -1362,16 +1384,16 @@ package org.apache.harmony.dalvik.ddmc {
 package org.json {
 
   public class JSONObject {
-    method public java.util.Set<java.lang.String> keySet();
+    method @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Set<java.lang.String> keySet();
   }
 
 }
 
 package sun.misc {
 
-  public class Cleaner extends java.lang.ref.PhantomReference {
+  public class Cleaner extends java.lang.ref.PhantomReference<java.lang.Object> {
     method public void clean();
-    method public static sun.misc.Cleaner create(java.lang.Object, java.lang.Runnable);
+    method public static sun.misc.Cleaner create(Object, Runnable);
   }
 
 }
@@ -1379,8 +1401,8 @@ package sun.misc {
 package sun.security.jca {
 
   public class Providers {
-    method public static java.lang.Object startJarVerification();
-    method public static void stopJarVerification(java.lang.Object);
+    method public static Object startJarVerification();
+    method public static void stopJarVerification(Object);
   }
 
 }
@@ -1414,7 +1436,7 @@ package sun.security.pkcs {
 package sun.security.util {
 
   public final class ObjectIdentifier implements java.io.Serializable {
-    ctor public ObjectIdentifier(java.lang.String) throws java.io.IOException;
+    ctor public ObjectIdentifier(String) throws java.io.IOException;
   }
 
 }
@@ -1423,7 +1445,7 @@ package sun.security.x509 {
 
   public class AlgorithmId implements java.io.Serializable {
     ctor public AlgorithmId(sun.security.util.ObjectIdentifier);
-    method public java.lang.String getName();
+    method public String getName();
   }
 
 }
@@ -1431,7 +1453,7 @@ package sun.security.x509 {
 package sun.util.locale {
 
   public class LanguageTag {
-    method public static boolean isLanguage(java.lang.String);
+    method public static boolean isLanguage(String);
   }
 
 }
