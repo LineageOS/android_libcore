@@ -23,7 +23,7 @@ import java.nio.NIOAccess;
 
 public class DirectLongBufferTest extends LongBufferTest {
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*8).asLongBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Long.BYTES).asLongBuffer();
         loadTestData1(buf);
         baseBuf = buf;
     }

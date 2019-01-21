@@ -23,7 +23,7 @@ import java.nio.NIOAccess;
 
 public class DirectFloatBufferTest extends FloatBufferTest {
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*4).asFloatBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Float.BYTES).asFloatBuffer();
         loadTestData1(buf);
         baseBuf = buf;
     }

@@ -23,7 +23,7 @@ import java.nio.ShortBuffer;
 
 public class DirectShortBufferTest extends ShortBufferTest {
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*2).asShortBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Short.BYTES).asShortBuffer();
         loadTestData1(buf);
         baseBuf = buf;
     }
@@ -55,7 +55,7 @@ public class DirectShortBufferTest extends ShortBufferTest {
     }
 
     // http://b/28964300
-    public void testJNIAccessByAddress() throws Exception {
+    public void testJNIAccessByAddress() {
         DirectByteBuffer directByteBuffer = (DirectByteBuffer) ByteBuffer.allocateDirect(10);
         directByteBuffer.put((byte)'a');
         ShortBuffer shortBuffer = directByteBuffer.asShortBuffer();
