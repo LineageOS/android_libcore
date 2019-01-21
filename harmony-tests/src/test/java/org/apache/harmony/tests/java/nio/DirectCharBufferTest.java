@@ -24,7 +24,7 @@ import java.nio.NIOAccess;
 public class DirectCharBufferTest extends CharBufferTest {
     
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*2).asCharBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Character.BYTES).asCharBuffer();
         super.loadTestData1(buf);
         baseBuf = buf;
     }

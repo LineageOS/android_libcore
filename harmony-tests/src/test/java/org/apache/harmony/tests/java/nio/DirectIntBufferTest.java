@@ -23,7 +23,7 @@ import java.nio.NIOAccess;
 
 public class DirectIntBufferTest extends IntBufferTest {
     public void setUp(){
-        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*4).asIntBuffer();
+        buf = ByteBuffer.allocateDirect(BUFFER_LENGTH*Integer.BYTES).asIntBuffer();
         loadTestData1(buf);
         baseBuf = buf;
     }
