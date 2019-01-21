@@ -174,7 +174,6 @@ filegroup {
         "luni/src/main/java/libcore/io/Libcore.java",
         "luni/src/main/java/libcore/io/Memory.java",
         "luni/src/main/java/libcore/io/Os.java",
-        "luni/src/main/java/libcore/io/SizeOf.java",
         "luni/src/main/java/libcore/io/Streams.java",
         "luni/src/main/java/libcore/net/InetAddressUtils.java",
         "luni/src/main/java/libcore/net/MimeUtils.java",
