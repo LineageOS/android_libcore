@@ -20,7 +20,6 @@ import java.nio.ByteOrder;
 import java.nio.DirectByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.NIOAccess;
-import libcore.io.SizeOf;
 
 public class DirectFloatBufferTest extends FloatBufferTest {
     public void setUp(){
@@ -66,7 +65,7 @@ public class DirectFloatBufferTest extends FloatBufferTest {
 
         // Check if the NIOAccess method adds up the current position value.
         floatBuffer.put((float)1);
-        assertEquals(floatBufferBasePointer + SizeOf.FLOAT, NIOAccess.getBasePointer(floatBuffer));
+        assertEquals(floatBufferBasePointer + Float.BYTES, NIOAccess.getBasePointer(floatBuffer));
     }
 
     public void testIsDirect() {
