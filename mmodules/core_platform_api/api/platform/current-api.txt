@@ -1093,11 +1093,6 @@ package libcore.io {
     method public static libcore.io.Os getDefault();
   }
 
-  public final class SizeOf {
-    field public static final int INT = 4; // 0x4
-    field public static final int SHORT = 2; // 0x2
-  }
-
   public final class Streams {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
