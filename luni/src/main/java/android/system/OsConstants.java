@@ -116,13 +116,7 @@ public final class OsConstants {
 
     public static final int AF_INET = placeholder();
     public static final int AF_INET6 = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int AF_NETLINK = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int AF_PACKET = placeholder();
     public static final int AF_UNIX = placeholder();
     public static final int AF_UNSPEC = placeholder();
@@ -133,9 +127,6 @@ public final class OsConstants {
     public static final int AI_NUMERICSERV = placeholder();
     public static final int AI_PASSIVE = placeholder();
     public static final int AI_V4MAPPED = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int ARPHRD_ETHER = placeholder();
     /** @hide */
     @UnsupportedAppUsage
@@ -267,21 +258,9 @@ public final class OsConstants {
     public static final int ESPIPE = placeholder();
     public static final int ESRCH = placeholder();
     public static final int ESTALE = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int ETH_P_ALL = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int ETH_P_ARP = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int ETH_P_IP = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int ETH_P_IPV6 = placeholder();
     public static final int ETIME = placeholder();
     public static final int ETIMEDOUT = placeholder();
@@ -419,15 +398,10 @@ public final class OsConstants {
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     public static final int NETLINK_NETFILTER = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int NETLINK_ROUTE = placeholder();
     /**
      * SELinux enforces that only system_server and netd may use this netlink socket type.
-     * @hide
      */
-    @libcore.api.CorePlatformApi
     public static final int NETLINK_INET_DIAG = placeholder();
     public static final int NI_DGRAM = placeholder();
     public static final int NI_NAMEREQD = placeholder();
@@ -518,9 +492,6 @@ public final class OsConstants {
     /** @hide */
     @UnsupportedAppUsage
     public static final int RTMGRP_LINK = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int RTMGRP_NEIGH = placeholder();
     /** @hide */
     @UnsupportedAppUsage
