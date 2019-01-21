@@ -46,10 +46,16 @@ droidstubs {
 }
 
 // A library containing the {public SDK + core platform} API stubs for the core jars.
+//
+// Although this stubs library is primarily used by the Java compiler / build to indicate
+// the core platform API surface area, compile_dex: true is used so that the Core Platform
+// API annotations are available to the dex tools that enable enforcement of runtime
+// accessibility. b/119068555
 java_library {
     name: "core.platform.api.stubs",
     srcs: [":core-platform-api-stubs"],
     hostdex: true,
+    compile_dex: true,
 
     no_standard_libs: true,
     system_modules: "none",
