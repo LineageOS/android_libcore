@@ -20,7 +20,6 @@ import java.nio.ByteOrder;
 import java.nio.DirectByteBuffer;
 import java.nio.NIOAccess;
 import java.nio.ShortBuffer;
-import libcore.io.SizeOf;
 
 public class DirectShortBufferTest extends ShortBufferTest {
     public void setUp(){
@@ -66,7 +65,7 @@ public class DirectShortBufferTest extends ShortBufferTest {
 
         // Check if the NIOAccess method adds up the current position value.
         shortBuffer.put((short)1);
-        assertEquals(shortBufferBasePointer + SizeOf.SHORT, NIOAccess.getBasePointer(shortBuffer));
+        assertEquals(shortBufferBasePointer + Short.BYTES, NIOAccess.getBasePointer(shortBuffer));
     }
 
     public void testIsDirect() {
