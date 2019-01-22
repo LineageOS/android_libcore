@@ -994,11 +994,9 @@ public final class System {
 
         StructUtsname info = Libcore.os.uname();
         p.put("os.arch", info.machine);
-        if (p.get("os.name") != null && !p.get("os.name").equals(info.sysname)) {
-            logE("Wrong compile-time assumption for os.name: " + p.get("os.name") + " vs " +
-                    info.sysname);
-            p.put("os.name", info.sysname);
-        }
+        // os.name was previously hardcoded to "Linux", but was reverted due to support
+        // for Fuchsia. b/121268567 shows initialization regressions.
+        p.put("os.name", info.sysname);
         p.put("os.version", info.release);
 
         // Android-added: Undocumented properties that exist only on Android.
