@@ -14,21 +14,30 @@
  * limitations under the License.
  */
 
-package tests.security;
+package libcore.java.security;
 
 import java.security.KeyPair;
-import javax.crypto.Cipher;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import javax.crypto.KeyAgreement;
+import junit.framework.Assert;
 
-public class CipherAsymmetricCryptHelper extends CipherHelper<KeyPair> {
+class KeyAgreementHelper {
 
-    private static final String plainData = "some data to encrypt and decrypt test";
+    private final String algorithmName;
 
-    public CipherAsymmetricCryptHelper(String algorithmName) {
-        super(algorithmName, plainData, Cipher.ENCRYPT_MODE,
-                Cipher.DECRYPT_MODE);
+    KeyAgreementHelper(String algorithmName) {
+        this.algorithmName = algorithmName;
     }
 
     public void test(KeyPair keyPair) throws Exception {
         test(keyPair.getPrivate(), keyPair.getPublic());
+    }
+
+    private void test(PrivateKey encryptKey, PublicKey decryptKey) throws Exception {
+        KeyAgreement keyAgreement = KeyAgreement.getInstance(algorithmName);
+        keyAgreement.init(encryptKey);
+        keyAgreement.doPhase(decryptKey, true);
+        Assert.assertNotNull("generated secret is null", keyAgreement.generateSecret());
     }
 }

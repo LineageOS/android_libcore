@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package tests.net;
+package libcore.java.net;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import javax.net.SocketFactory;
 
 /**
@@ -30,7 +29,7 @@ public class DelegatingSocketFactory extends SocketFactory {
 
   private final SocketFactory mDelegate;
 
-  public DelegatingSocketFactory(SocketFactory delegate) {
+  protected DelegatingSocketFactory(SocketFactory delegate) {
     this.mDelegate = delegate;
   }
 
@@ -50,14 +49,14 @@ public class DelegatingSocketFactory extends SocketFactory {
   }
 
   @Override
-  public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
+  public Socket createSocket(String host, int port) throws IOException {
     Socket socket = mDelegate.createSocket(host, port);
     return configureSocket(socket);
   }
 
   @Override
   public Socket createSocket(String host, int port, InetAddress localHost, int localPort)
-      throws IOException, UnknownHostException {
+      throws IOException {
     Socket socket = mDelegate.createSocket(host, port, localHost, localPort);
     return configureSocket(socket);
   }
