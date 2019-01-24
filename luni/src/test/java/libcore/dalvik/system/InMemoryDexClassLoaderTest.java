@@ -89,23 +89,74 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         }
     }
 
-    private static ByteBuffer readFileToByteBufferDirect(File file) throws IOException {
+    /**
+     * Helper to construct a direct ByteBuffer with the contents of a given file.
+     *
+     * Constructs a new direct ByteBuffer and inserts {@code paddingBefore} amount of
+     * zero padding followed by the contents of {@code file}. The buffer's position is
+     * set to the beginning of the file's data.
+     *
+     * @param file The file to be read
+     * @param paddingBefore Number of zero bytes to be inserted at the beginning of the buffer.
+     */
+    private static ByteBuffer readFileToByteBufferDirect(File file, int paddingBefore)
+            throws IOException {
         try (RandomAccessFile raf = new RandomAccessFile(file, "r")) {
-            ByteBuffer buffer = ByteBuffer.allocateDirect((int)file.length());
+            ByteBuffer buffer = ByteBuffer.allocateDirect(paddingBefore + (int)file.length());
+            buffer.put(new byte[paddingBefore]);
             int done = 0;
             while (done != file.length()) {
                 done += raf.getChannel().read(buffer);
             }
             buffer.rewind();
+            buffer.position(paddingBefore);
             return buffer;
         }
     }
 
-    private static ByteBuffer readFileToByteBufferIndirect(File file) throws IOException {
-        ByteBuffer direct = readFileToByteBufferDirect(file);
+    /**
+     * Helper to construct a direct ByteBuffer with the contents of a given file.
+     *
+     * Constructs a new direct ByteBuffer and the contents of {@code file}. The buffer's
+     * position is zero.
+     *
+     * @param file The file to be read
+     */
+    private static ByteBuffer readFileToByteBufferDirect(File file) throws IOException {
+        return readFileToByteBufferDirect(file, /* paddingBefore */ 0);
+    }
+
+    /**
+     * Helper to construct an indirect ByteBuffer with the contents of a given file.
+     *
+     * Constructs a new indirect ByteBuffer and inserts {@code paddingBefore} amount of
+     * zero padding followed by the contents of {@code file}. The buffer's position is
+     * set to the beginning of the file's data.
+     *
+     * @param file The file to be read
+     * @param paddingBefore Number of zero bytes to be inserted at the beginning of the buffer.
+     */
+    private static ByteBuffer readFileToByteBufferIndirect(File file, int paddingBefore)
+            throws IOException {
+        ByteBuffer direct = readFileToByteBufferDirect(file, paddingBefore);
+        direct.rewind();
         byte[] array = new byte[direct.limit()];
         direct.get(array);
-        return ByteBuffer.wrap(array);
+        ByteBuffer buf = ByteBuffer.wrap(array);
+        buf.position(paddingBefore);
+        return buf;
+    }
+
+    /**
+     * Helper to construct an indirect ByteBuffer with the contents of a given file.
+     *
+     * Constructs a new indirect ByteBuffer and the contents of {@code file}. The buffer's
+     * position is zero.
+     *
+     * @param file The file to be read
+     */
+    private static ByteBuffer readFileToByteBufferIndirect(File file) throws IOException {
+        return readFileToByteBufferIndirect(file, /* paddingBefore */ 0);
     }
 
     /**
@@ -352,6 +403,24 @@ public class InMemoryDexClassLoaderTest extends TestCase {
         assertEquals(objectClass, Object.class);
 
         // Try to load a class from this class loader.
+        classLoader.loadClass("test.TestMethods");
+    }
+
+    public void testNonZeroBufferOffsetDirect() throws IOException, ClassNotFoundException {
+        // Arbitrary amount of padding to prove a non-zero buffer position is supported.
+        int paddingBefore = 13;
+        InMemoryDexClassLoader classLoader = new InMemoryDexClassLoader(
+                new ByteBuffer[] { readFileToByteBufferDirect(dex1, paddingBefore) },
+                /* parent */ null);
+        classLoader.loadClass("test.TestMethods");
+    }
+
+    public void testNonZeroBufferOffsetIndirect() throws IOException, ClassNotFoundException {
+        // Arbitrary amount of padding to prove a non-zero buffer position is supported.
+        int paddingBefore = 13;
+        InMemoryDexClassLoader classLoader = new InMemoryDexClassLoader(
+                new ByteBuffer[] { readFileToByteBufferIndirect(dex1, paddingBefore) },
+                /* parent */ null);
         classLoader.loadClass("test.TestMethods");
     }
 
