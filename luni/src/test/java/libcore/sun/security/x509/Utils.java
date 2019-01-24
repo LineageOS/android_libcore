@@ -20,7 +20,7 @@ import junit.framework.Assert;
 
 import java.util.function.Function;
 
-public class Utils extends Assert {
+class Utils extends Assert {
     /**
      * Many classes in this package can be created using a bit array, and the toString method
      * depends only on the bit array. The logic for toString was changed in rev/04cda5b7a3c1.

@@ -13,19 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package tests.security;
+package tests.targets.security;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import junit.framework.TestCase;
 
 public abstract class MessageDigestTest extends TestCase {
 
     private String digestAlgorithmName;
 
-    protected MessageDigestTest(String digestAlgorithmName) {
+    MessageDigestTest(String digestAlgorithmName) {
         super();
         this.digestAlgorithmName = digestAlgorithmName;
     }
@@ -68,17 +67,17 @@ public abstract class MessageDigestTest extends TestCase {
         System.gc();
     }
 
-    InputStream getSourceData() {
+    private InputStream getSourceData() {
         InputStream sourceStream = getClass().getResourceAsStream(digestAlgorithmName + ".data");
         assertNotNull("digest source data not found: " + digestAlgorithmName, sourceStream);
         return sourceStream;
     }
 
-    byte[] getCheckDigest() throws Exception {
+    private byte[] getCheckDigest() throws Exception {
         InputStream checkDigestStream =
                 getClass().getResourceAsStream(digestAlgorithmName + ".check");
         byte[] checkDigest = new byte[digest.getDigestLength()];
-        int read = 0;
+        int read;
         int index = 0;
         while ((read = checkDigestStream.read()) != -1) {
             checkDigest[index++] = (byte)read;
@@ -89,7 +88,7 @@ public abstract class MessageDigestTest extends TestCase {
 
     public void testMessageDigest1() throws Exception {
         byte[] buf = new byte[128];
-        int read = 0;
+        int read;
         while ((read = sourceData.read(buf)) != -1) {
             digest.update(buf, 0, read);
         }
@@ -129,14 +128,14 @@ public abstract class MessageDigestTest extends TestCase {
      * Official FIPS180-2 testcases
      */
 
-    protected String source1;
-    protected String source2;
-    protected String source3;
-    protected String expected1;
-    protected String expected2;
-    protected String expected3;
+    String source1;
+    String source2;
+    private String source3;
+    String expected1;
+    String expected2;
+    String expected3;
 
-    String getLongMessage(int length) {
+    private String getLongMessage(int length) {
         StringBuilder sourceBuilder = new StringBuilder(length);
         for (int i = 0; i < length / 10; i++) {
             sourceBuilder.append("aaaaaaaaaa");
@@ -144,7 +143,7 @@ public abstract class MessageDigestTest extends TestCase {
         return sourceBuilder.toString();
     }
 
-    public void testfips180_2_singleblock() throws Exception {
+    public void testfips180_2_singleblock() {
 
         digest.update(source1.getBytes(), 0, source1.length());
 
@@ -152,15 +151,19 @@ public abstract class MessageDigestTest extends TestCase {
 
         assertNotNull("computed digest is null", computedDigest);
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < computedDigest.length; i++) {
-            String res = Integer.toHexString(computedDigest[i] & 0xFF);
-            sb.append((res.length() == 1 ? "0" : "") + res);
-        }
-        assertEquals("computed and check digest differ", expected1, sb.toString());
+        String actual = digestToString(computedDigest);
+        assertEquals("computed and check digest differ", expected1, actual);
     }
 
-    public void testfips180_2_multiblock() throws Exception {
+    private String digestToString(byte[] computedDigest) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : computedDigest) {
+          sb.append(String.format(Locale.US, "%02x", b));
+        }
+        return sb.toString();
+    }
+
+    public void testfips180_2_multiblock() {
 
         digest.update(source2.getBytes(), 0, source2.length());
 
@@ -168,15 +171,11 @@ public abstract class MessageDigestTest extends TestCase {
 
         assertNotNull("computed digest is null", computedDigest);
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < computedDigest.length; i++) {
-            String res = Integer.toHexString(computedDigest[i] & 0xFF);
-            sb.append((res.length() == 1 ? "0" : "") + res);
-        }
-        assertEquals("computed and check digest differ", expected2, sb.toString());
+        String actual = digestToString(computedDigest);
+        assertEquals("computed and check digest differ", expected2, actual);
     }
 
-    public void testfips180_2_longMessage() throws Exception {
+    public void testfips180_2_longMessage() {
 
         digest.update(source3.getBytes(), 0, source3.length());
 
@@ -184,11 +183,7 @@ public abstract class MessageDigestTest extends TestCase {
 
         assertNotNull("computed digest is null", computedDigest);
 
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < computedDigest.length; i++) {
-            String res = Integer.toHexString(computedDigest[i] & 0xFF);
-            sb.append((res.length() == 1 ? "0" : "") + res);
-        }
-        assertEquals("computed and check digest differ", expected3, sb.toString());
+        String actual = digestToString(computedDigest);
+        assertEquals("computed and check digest differ", expected3, actual);
     }
 }
