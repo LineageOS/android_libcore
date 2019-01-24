@@ -89,8 +89,6 @@ import javax.net.ssl.X509TrustManager;
 import libcore.java.security.TestKeyStore;
 import libcore.javax.net.ssl.TestSSLContext;
 
-import tests.net.DelegatingSocketFactory;
-
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
 import static com.google.mockwebserver.SocketPolicy.FAIL_HANDSHAKE;
