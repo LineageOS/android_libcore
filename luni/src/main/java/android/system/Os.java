@@ -60,9 +60,9 @@ public final class Os {
      */
     public static void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.bind(fd, address, port); }
 
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/bind.2.html">bind(2)</a>.
+     */
     public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
     /**
@@ -517,10 +517,7 @@ public final class Os {
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendto.2.html">sendto(2)</a>.
-     * @hide
      */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
 
     /**
