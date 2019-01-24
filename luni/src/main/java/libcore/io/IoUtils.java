@@ -96,6 +96,10 @@ public final class IoUtils {
             tagType = 6;
         } else if (owner instanceof java.io.RandomAccessFile) {
             tagType = 7;
+        } else if (owner instanceof java.net.DatagramSocketImpl) {
+            tagType = 10;
+        } else if (owner instanceof java.net.SocketImpl) {
+            tagType = 11;
         } else if (isParcelFileDescriptor(owner)) {
             tagType = 8;
         } else {
