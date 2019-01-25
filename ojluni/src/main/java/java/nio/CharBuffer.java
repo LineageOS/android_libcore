@@ -34,6 +34,8 @@ import java.util.Spliterator;
 import java.util.stream.StreamSupport;
 import java.util.stream.IntStream;
 
+import dalvik.annotation.codegen.CovariantReturnType;
+
 
 /**
  * A char buffer.
@@ -860,6 +862,50 @@ public abstract class CharBuffer
             throw new ReadOnlyBufferException();
         return offset;
     }
+
+    // BEGIN Android-added: covariant overloads of *Buffer methods that return this.
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer position(int newPosition) {
+        return super.position(newPosition);
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer limit(int newLimit) {
+        return super.limit(newLimit);
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer mark() {
+        return super.mark();
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer reset() {
+        return super.reset();
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer clear() {
+        return super.clear();
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer flip() {
+        return super.flip();
+    }
+
+    @CovariantReturnType(returnType = CharBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer rewind() {
+        return super.rewind();
+    }
+    // END Android-added: covariant overloads of *Buffer methods that return this.
 
     /**
      * Compacts this buffer&nbsp;&nbsp;<i>(optional operation)</i>.

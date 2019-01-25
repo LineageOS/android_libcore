@@ -28,6 +28,8 @@
 package java.nio;
 
 
+import dalvik.annotation.codegen.CovariantReturnType;
+
 /**
  * A double buffer.
  *
@@ -634,6 +636,50 @@ public abstract class DoubleBuffer
             throw new ReadOnlyBufferException();
         return offset;
     }
+
+    // BEGIN Android-added: covariant overloads of *Buffer methods that return this.
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer position(int newPosition) {
+        return super.position(newPosition);
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer limit(int newLimit) {
+        return super.limit(newLimit);
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer mark() {
+        return super.mark();
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer reset() {
+        return super.reset();
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer clear() {
+        return super.clear();
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer flip() {
+        return super.flip();
+    }
+
+    @CovariantReturnType(returnType = DoubleBuffer.class, presentAfter = 28)
+    @Override
+    public Buffer rewind() {
+        return super.rewind();
+    }
+    // END Android-added: covariant overloads of *Buffer methods that return this.
 
     /**
      * Compacts this buffer&nbsp;&nbsp;<i>(optional operation)</i>.
