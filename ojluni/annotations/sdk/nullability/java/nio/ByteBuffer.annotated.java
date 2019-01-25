@@ -70,6 +70,20 @@ public final byte @libcore.util.NonNull [] array() { throw new RuntimeException(
 
 public final int arrayOffset() { throw new RuntimeException("Stub!"); }
 
+@libcore.util.NonNull public java.nio.Buffer position(int newPosition) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer limit(int newLimit) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer mark() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer reset() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer clear() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer flip() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.nio.Buffer rewind() { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public abstract java.nio.ByteBuffer compact();
 
 public abstract boolean isDirect();
