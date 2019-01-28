@@ -41,6 +41,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
+import java.net.SocketAddress;
+import java.net.SocketException;
 import java.net.SocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -305,6 +307,157 @@ public class OsTest extends TestCase {
     assertEquals(sent + 16, input.position());
 
     Libcore.os.close(clientFd);
+  }
+
+  private static void expectBindConnectSendtoSuccess(FileDescriptor socket, String socketDesc,
+                                                     SocketAddress addr) {
+    String msg = socketDesc + " socket to " + addr.toString();
+
+    try {
+      // Expect bind to succeed.
+      try {
+        Libcore.os.bind(socket, addr);
+
+        // Find out which port we're actually bound to, and use that in subsequent connect() and
+        // send() calls. We can't send to addr because that has a port of 0.
+        if (addr instanceof InetSocketAddress) {
+          InetSocketAddress addrISA = (InetSocketAddress) addr;
+          InetSocketAddress socknameISA = (InetSocketAddress) Libcore.os.getsockname(socket);
+
+          assertEquals(addrISA.getAddress(), socknameISA.getAddress());
+          assertEquals(0, addrISA.getPort());
+          assertFalse(0 == socknameISA.getPort());
+          addr = socknameISA;
+        }
+
+        // Expect connect to succeed.
+        Libcore.os.connect(socket, addr);
+        assertEquals(Libcore.os.getsockname(socket), Libcore.os.getpeername(socket));
+
+        // Expect sendto to succeed.
+        byte[] packet = new byte[42];
+        Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
+      } catch (SocketException | ErrnoException e) {
+        fail("Expected success for " + msg + ", but got: " + e);
+      }
+
+    } finally {
+      IoUtils.closeQuietly(socket);
+    }
+  }
+
+  private static void expectBindConnectSendtoErrno(int bindErrno, int connectErrno, int sendtoErrno,
+                                                   FileDescriptor socket, String socketDesc,
+                                                   SocketAddress addr) {
+    try {
+
+      // Expect bind to fail with bindErrno.
+      String msg = "bind " + socketDesc + " socket to " + addr.toString();
+      try {
+        Libcore.os.bind(socket, addr);
+        fail("Expected to fail " + msg);
+      } catch (ErrnoException e) {
+        assertEquals("Expected errno " + bindErrno + " " + msg, bindErrno, e.errno);
+      } catch (SocketException e) {
+        fail("Unexpected SocketException " + msg);
+      }
+
+      // Expect connect to fail with connectErrno.
+      msg = "connect " + socketDesc + " socket to " + addr.toString();
+      try {
+        Libcore.os.connect(socket, addr);
+        fail("Expected to fail " + msg);
+      } catch (ErrnoException e) {
+        assertEquals("Expected errno " + connectErrno + " " + msg, connectErrno, e.errno);
+      } catch (SocketException e) {
+        fail("Unexpected SocketException " + msg);
+      }
+
+      // Expect sendto to fail with sendtoErrno.
+      byte[] packet = new byte[42];
+      msg = "sendto " + socketDesc + " socket to " + addr.toString();
+      try {
+        Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
+        fail("Expected to fail " + msg);
+      } catch (ErrnoException e) {
+        assertEquals("Expected errno " + sendtoErrno + " " + msg, sendtoErrno, e.errno);
+      } catch (SocketException e) {
+        fail("Unexpected SocketException " + msg);
+      }
+
+    } finally {
+      // No matter what happened, close the socket.
+      IoUtils.closeQuietly(socket);
+    }
+  }
+
+  private FileDescriptor makeIpv4Socket() throws Exception {
+    return Libcore.os.socket(AF_INET, SOCK_DGRAM, 0);
+  }
+
+  private FileDescriptor makeIpv6Socket() throws Exception {
+    return Libcore.os.socket(AF_INET6, SOCK_DGRAM, 0);
+  }
+
+  private FileDescriptor makeUnixSocket() throws Exception {
+    return Libcore.os.socket(AF_UNIX, SOCK_DGRAM, 0);
+  }
+
+  public void testCrossFamilyBindConnectSendto() throws Exception {
+    SocketAddress addrIpv4 = new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 0);
+    SocketAddress addrIpv6 = new InetSocketAddress(InetAddress.getByName("::1"), 0);
+    SocketAddress addrUnix = UnixSocketAddress.createAbstract("/abstract_name_unix_socket");
+
+    // TODO: fix and uncomment. Currently fails with EAFNOSUPPORT because
+    // Linux_bindSocketAddress uses NET_FAILURE_RETRY instead of NET_IPV4_RETRY.
+    // expectBindConnectSendtoSuccess(makeIpv4Socket(), "ipv4", addrIpv4);
+    expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EAFNOSUPPORT,
+                                 makeIpv4Socket(), "ipv4", addrIpv6);
+    expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EAFNOSUPPORT,
+                                 makeIpv4Socket(), "ipv4", addrUnix);
+
+    // This succeeds because Java always uses dual-stack sockets and all InetAddress and
+    // InetSocketAddress objects represent IPv4 addresses using IPv4-mapped IPv6 addresses.
+    expectBindConnectSendtoSuccess(makeIpv6Socket(), "ipv6", addrIpv4);
+    expectBindConnectSendtoSuccess(makeIpv6Socket(), "ipv6", addrIpv6);
+    expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EINVAL,
+                                 makeIpv6Socket(), "ipv6", addrUnix);
+
+    expectBindConnectSendtoErrno(EINVAL, EAFNOSUPPORT, EINVAL,
+                                 makeUnixSocket(), "unix", addrIpv4);
+    expectBindConnectSendtoErrno(EINVAL, EAFNOSUPPORT, EINVAL,
+                                 makeUnixSocket(), "unix", addrIpv6);
+    expectBindConnectSendtoSuccess(makeUnixSocket(), "unix", addrUnix);
+  }
+
+  public void testUnknownSocketAddressSubclass() throws Exception {
+    class MySocketAddress extends SocketAddress {}
+    MySocketAddress myaddr = new MySocketAddress();
+
+    for (int family : new int[]{AF_INET, AF_INET6, AF_NETLINK}) {
+      FileDescriptor s = Libcore.os.socket(family, SOCK_DGRAM, 0);
+      try {
+
+        try {
+          Libcore.os.bind(s, myaddr);
+          fail("bind socket family " + family + " to unknown SocketAddress subclass succeeded");
+        } catch (UnsupportedOperationException expected) {}
+
+        try {
+          Libcore.os.connect(s, myaddr);
+          fail("connect socket family " + family + " to unknown SocketAddress subclass succeeded");
+        } catch (UnsupportedOperationException expected) {}
+
+        byte[] msg = new byte[42];
+        try {
+          Libcore.os.sendto(s, msg, 0, msg.length, 0, myaddr);
+          fail("sendto socket family " + family + " to unknown SocketAddress subclass succeeded");
+        } catch (UnsupportedOperationException expected) {}
+
+      } finally {
+        Libcore.os.close(s);
+      }
+    }
   }
 
   public void test_NetlinkSocket() throws Exception {
