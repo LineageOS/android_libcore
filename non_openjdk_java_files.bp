@@ -42,6 +42,7 @@ filegroup {
         "dalvik/src/main/java/dalvik/annotation/codegen/CovariantReturnType.java",
         "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/CriticalNative.java",
+        "dalvik/src/main/java/dalvik/annotation/optimization/DeadReferenceSafe.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/FastNative.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/ReachabilitySensitive.java",
         "dalvik/src/main/java/dalvik/bytecode/OpcodeInfo.java",
