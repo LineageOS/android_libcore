@@ -56,6 +56,77 @@ public final class VMRuntime {
     }
 
     /**
+     * Interface for logging hidden API usage events.
+     */
+    @libcore.api.CorePlatformApi
+    public interface HiddenApiUsageLogger {
+
+        // The following ACCESS_METHOD_ constants must match the values in
+        // art/runtime/hidden_api.h
+        /**
+         * Internal test value that does not correspond to an actual access by the
+         * application. Never logged, added for completeness.
+         */
+        public static final int ACCESS_METHOD_NONE = 0;
+
+        /**
+         *  Used when a method has been accessed via reflection.
+         */
+        public static final int ACCESS_METHOD_REFLECTION = 1;
+
+        /**
+         *  Used when a method has been accessed via JNI.
+         */
+        public static final int ACCESS_METHOD_JNI = 2;
+
+        /**
+         * Used when a method is accessed at link time. Never logged, added only
+         * for completeness.
+         */
+        public static final int ACCESS_METHOD_LINKING = 3;
+
+        /**
+         * Logs hidden API access
+         *
+         * @param appPackageName package name of the app attempting the access
+         * @param signature signature of the method being called, i.e
+         *      class_name->member_name:type_signature (e.g.
+         *      {@code com.android.app.Activity->mDoReportFullyDrawn:Z}) for fields and
+         *      class_name->method_name_and_signature for methods (e.g
+         *      {@code com.android.app.Activity->finish(I)V})
+         * @param accessType how the accessed was done
+         * @param accessDenied whether the access was allowed or not
+         */
+        public void hiddenApiUsed(String appPackageName, String signature,
+            int accessType, boolean accessDenied);
+    }
+
+    static HiddenApiUsageLogger hiddenApiUsageLogger;
+
+    /**
+     * Sets the hidden API usage logger {@link #hiddenApiUsageLogger}.
+     * It should only be called if {@link #setHiddenApiAccessLogSamplingRate(int)}
+     * is called with a value > 0
+     */
+    @libcore.api.CorePlatformApi
+    public static void setHiddenApiUsageLogger(HiddenApiUsageLogger hiddenApiUsageLogger) {
+        VMRuntime.hiddenApiUsageLogger = hiddenApiUsageLogger;
+    }
+
+    /**
+     * Records an attempted hidden API access to
+     * {@link HiddenApiUsageLogger#hiddenApiUsed(String, String, int, boolean}
+     * if a logger is registered via {@link #setHiddenApiUsageLogger}.
+     */
+    private static void hiddenApiUsed(String appPackageName, String signature,
+         int accessType, boolean accessDenied) {
+        if (VMRuntime.hiddenApiUsageLogger != null) {
+            VMRuntime.hiddenApiUsageLogger.hiddenApiUsed(appPackageName, signature,
+                accessType, accessDenied);
+        }
+    }
+
+    /**
      * Magic version number for a current development build, which has not
      * yet turned into an official release. This number must be larger than
      * any released version in {@code android.os.Build.VERSION_CODES}.

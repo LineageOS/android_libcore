@@ -774,6 +774,7 @@ package dalvik.system {
     method public static void setDedupeHiddenApiWarnings(boolean);
     method public void setHiddenApiAccessLogSamplingRate(int);
     method public void setHiddenApiExemptions(String[]);
+    method public static void setHiddenApiUsageLogger(dalvik.system.VMRuntime.HiddenApiUsageLogger);
     method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
     method public static void setProcessPackageName(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
@@ -783,6 +784,14 @@ package dalvik.system {
     method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
     method @dalvik.annotation.compat.UnsupportedAppUsage public String vmLibrary();
     field public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000; // 0x2710
+  }
+
+  public static interface VMRuntime.HiddenApiUsageLogger {
+    method public void hiddenApiUsed(String, String, int, boolean);
+    field public static final int ACCESS_METHOD_JNI = 2; // 0x2
+    field public static final int ACCESS_METHOD_LINKING = 3; // 0x3
+    field public static final int ACCESS_METHOD_NONE = 0; // 0x0
+    field public static final int ACCESS_METHOD_REFLECTION = 1; // 0x1
   }
 
   public final class VMStack {
@@ -795,14 +804,13 @@ package dalvik.system {
   }
 
   public final class ZygoteHooks {
-    ctor public ZygoteHooks();
     method public static void gcAndFinalize();
     method public static void onBeginPreload();
     method public static void onEndPreload();
-    method public void postForkChild(int, boolean, boolean, String);
-    method public void postForkCommon();
-    method public void postForkSystemServer();
-    method public void preFork();
+    method public static void postForkChild(int, boolean, boolean, String);
+    method public static void postForkCommon();
+    method public static void postForkSystemServer();
+    method public static void preFork();
     method public static void startZygoteNoThreadCreation();
     method public static void stopZygoteNoThreadCreation();
   }

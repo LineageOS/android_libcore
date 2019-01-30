@@ -290,6 +290,7 @@ public class HashMap<K, V> extends java.util.AbstractMap<K, V>
     final class EntryIterator extends java.util.HashMap.HashIterator
             implements java.util.Iterator<java.util.Map.Entry<K, V>> {
 
+        @UnsupportedAppUsage(trackingBug = 122551864)
         public java.util.Map.Entry<K, V> next() {
             throw new RuntimeException("Stub!");
         }
