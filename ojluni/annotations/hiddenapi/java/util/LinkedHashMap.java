@@ -210,7 +210,6 @@ public class LinkedHashMap<K, V> extends java.util.HashMap<K, V> implements java
             throw new RuntimeException("Stub!");
         }
 
-        @UnsupportedAppUsage
         public final boolean hasNext() {
             throw new RuntimeException("Stub!");
         }
