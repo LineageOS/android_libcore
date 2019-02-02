@@ -368,7 +368,6 @@ public class HashMap<K, V> extends java.util.AbstractMap<K, V>
             throw new RuntimeException("Stub!");
         }
 
-        @UnsupportedAppUsage
         public final boolean hasNext() {
             throw new RuntimeException("Stub!");
         }
@@ -377,7 +376,6 @@ public class HashMap<K, V> extends java.util.AbstractMap<K, V>
             throw new RuntimeException("Stub!");
         }
 
-        @UnsupportedAppUsage
         public final void remove() {
             throw new RuntimeException("Stub!");
         }
