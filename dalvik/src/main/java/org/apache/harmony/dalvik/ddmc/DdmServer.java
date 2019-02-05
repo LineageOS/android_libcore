@@ -31,9 +31,6 @@ import java.util.Iterator;
 @libcore.api.CorePlatformApi
 public class DdmServer {
 
-    @libcore.api.CorePlatformApi
-    public static final int CLIENT_PROTOCOL_VERSION = 1;
-
     private static HashMap<Integer,ChunkHandler> mHandlerMap =
         new HashMap<Integer,ChunkHandler>();
 
