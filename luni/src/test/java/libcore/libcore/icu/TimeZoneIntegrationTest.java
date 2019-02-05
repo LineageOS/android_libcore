@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import android.icu.text.TimeZoneNames;
 import android.icu.util.VersionInfo;
+import android.system.Os;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -260,7 +261,7 @@ public class TimeZoneIntegrationTest {
      * expectations.
      */
     @Test
-    public void testTimeZoneDebugInfo() {
+    public void testTimeZoneDebugInfo() throws Exception {
         DebugInfo debugInfo = CoreLibraryDebug.getDebugInfo();
 
         // Devices are expected to have a time zone module which overrides or extends the data in
@@ -294,7 +295,9 @@ public class TimeZoneIntegrationTest {
         runtimeModuleFiles.forEach(TimeZoneIntegrationTest::assertFileExists);
 
         String icuDatFileName = "icudt" + VersionInfo.ICU_VERSION.getMajor() + "l.dat";
-        assertFileExists(TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName));
+        String runtimeModuleIcuData =
+                TimeZoneDataFiles.getRuntimeModuleFile("icu/" + icuDatFileName);
+        assertFileExists(runtimeModuleIcuData);
 
         // Devices currently have a subset of the time zone files in /system. These are going away
         // but we test them while they exist. Host ART should match device.
@@ -304,8 +307,15 @@ public class TimeZoneIntegrationTest {
                 TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME));
         assertFileExists(TimeZoneDataFiles.getSystemTimeZoneFile("tzdata"));
         // The following files once existed in /system but have been removed as part of APEX work.
-        assertFileDoesNotExist(TimeZoneDataFiles.getSystemIcuFile(icuDatFileName));
         assertFileDoesNotExist(TimeZoneDataFiles.getSystemTimeZoneFile("tzlookup.xml"));
+
+        // It's hard to assert much about this file as there is a symlink in /system on device for
+        // app compatibility (b/122985829) but it doesn't exist in host environments. If the file
+        // exists we can say it should resolve (realpath) to the same file as the runtime module.
+        String systemIcuData = TimeZoneDataFiles.getSystemIcuFile(icuDatFileName);
+        if (new File(systemIcuData).exists()) {
+            assertEquals(Os.realpath(runtimeModuleIcuData), Os.realpath(systemIcuData));
+        }
     }
 
     private static List<String> createModuleTzFileNames(
