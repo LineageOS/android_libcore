@@ -86,6 +86,9 @@ cc_defaults {
         "core_native_default_libs",
     ],
     srcs: [":libopenjdk_native_srcs"],
+    include_dirs: [
+        "libcore/luni/src/main/native",
+    ],
     cflags: [
         // TODO(narayan): Prune down this list of exclusions once the underlying
         // issues have been fixed. Most of these are small changes except for
@@ -100,9 +103,9 @@ cc_defaults {
     shared_libs: [
         "libcrypto",
         "libicuuc",
-        "libz",
-
+        "libjavacore",
         "libnativehelper",
+        "libz",
     ],
     static_libs: ["libfdlibm"],
 
