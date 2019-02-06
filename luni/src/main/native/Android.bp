@@ -1,6 +1,7 @@
 filegroup {
     name: "luni_native_srcs",
     srcs: [
+        "AsynchronousCloseMonitor.cpp",
         "ExecStrings.cpp",
         "IcuUtilities.cpp",
         "JniConstants.cpp",
