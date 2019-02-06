@@ -58,7 +58,6 @@
 #include <android-base/macros.h>
 #include <android-base/strings.h>
 #include <log/log.h>
-#include <nativehelper/AsynchronousCloseMonitor.h>
 #include <nativehelper/JNIHelp.h>
 #include <nativehelper/ScopedBytes.h>
 #include <nativehelper/ScopedLocalRef.h>
@@ -67,6 +66,7 @@
 #include <nativehelper/jni_macros.h>
 #include <nativehelper/toStringArray.h>
 
+#include "AsynchronousCloseMonitor.h"
 #include "ExecStrings.h"
 #include "JniConstants.h"
 #include "JniException.h"
