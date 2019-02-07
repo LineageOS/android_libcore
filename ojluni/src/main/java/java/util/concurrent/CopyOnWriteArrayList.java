@@ -51,11 +51,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 
-// BEGIN android-note
-// removed link to collections framework docs
-// fixed framework docs link to "Collection#optional"
-// END android-note
-
+// Android-changed: Removed javadoc link to collections framework docs
 /**
  * A thread-safe variant of {@link java.util.ArrayList} in which all mutative
  * operations ({@code add}, {@code set}, and so on) are implemented by
@@ -108,6 +104,7 @@ public class CopyOnWriteArrayList<E>
      * from CopyOnWriteArraySet class.
      */
     final Object[] getArray() {
+        // Android-changed: renamed array -> elements for backwards compatibility b/33916927
         return elements;
     }
 
@@ -115,6 +112,7 @@ public class CopyOnWriteArrayList<E>
      * Sets the array.
      */
     final void setArray(Object[] a) {
+        // Android-changed: renamed array -> elements for backwards compatibility b/33916927
         elements = a;
     }
 
