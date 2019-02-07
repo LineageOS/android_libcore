@@ -26,6 +26,7 @@
 package sun.misc;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+import dalvik.system.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Unsafe {
@@ -54,10 +55,10 @@ public final class Unsafe {
         throw new RuntimeException("Stub!");
     }
 
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.O)
     private static native int getArrayBaseOffsetForComponentType(java.lang.Class component_class);
 
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(maxTargetSdk = VersionCodes.O)
     private static native int getArrayIndexScaleForComponentType(java.lang.Class component_class);
 
     @UnsupportedAppUsage
