@@ -236,6 +236,11 @@ class Thread implements Runnable {
     /* For generating thread ID */
     private static long threadSeqNumber;
 
+
+    // Android-added: The concept of "system-daemon" threads. See java.lang.Daemons.
+    /** True if this thread is managed by {@link Daemons}. */
+    private boolean systemDaemon = false;
+
     /* Java thread status for tools,
      * initialized to indicate thread 'not yet started'
      */
@@ -2181,6 +2186,43 @@ class Thread implements Runnable {
         // END Android-added: uncaughtExceptionPreHandler for use by platform.
         getUncaughtExceptionHandler().uncaughtException(this, e);
     }
+
+    // BEGIN Android-added: The concept of "system-daemon" threads. See java.lang.Daemons.
+    /**
+     * Marks this thread as either a special runtime-managed ("system daemon")
+     * thread or a normal (i.e. app code created) daemon thread.)
+     *
+     * <p>System daemon threads get special handling when starting up in some
+     * cases.
+     *
+     * <p>This method must be invoked before the thread is started.
+     *
+     * <p>This method must only be invoked on Thread instances that have already
+     * had {@code setDaemon(true)} called on them.
+     *
+     * <p>Package-private since only {@link java.lang.Daemons} needs to call
+     * this.
+     *
+     * @param  on if {@code true}, marks this thread as a system daemon thread
+     *
+     * @throws  IllegalThreadStateException
+     *          if this thread is {@linkplain #isAlive alive} or not a
+     *          {@linkplain #isDaemon daemon}
+     *
+     * @throws  SecurityException
+     *          if {@link #checkAccess} determines that the current
+     *          thread cannot modify this thread
+     *
+     * @hide For use by Daemons.java only.
+     */
+    final void setSystemDaemon(boolean on) {
+        checkAccess();
+        if (isAlive() || !isDaemon()) {
+            throw new IllegalThreadStateException();
+        }
+        systemDaemon = on;
+    }
+    // END Android-added: The concept of "system-daemon" threads. See java.lang.Daemons.
 
     /**
      * Removes from the specified map any keys that have been enqueued
