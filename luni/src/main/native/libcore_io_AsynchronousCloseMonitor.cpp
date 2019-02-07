@@ -16,9 +16,10 @@
 
 #define LOG_TAG "AsynchronousCloseMonitor"
 
-#include <nativehelper/AsynchronousCloseMonitor.h>
 #include <nativehelper/JNIHelp.h>
 #include <nativehelper/jni_macros.h>
+
+#include "AsynchronousCloseMonitor.h"
 
 static void AsynchronousCloseMonitor_signalBlockedThreads(JNIEnv* env, jclass, jobject javaFd) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
