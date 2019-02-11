@@ -283,19 +283,37 @@ interface MethodHandleInfo {
     }
 
     // BEGIN Android-added: refKind...() methods needed for API compatibility with 26.
-    // These methods were accidentally added into the public API in API level 26 and so cannot be
-    // removed.
+    // These methods were accidentally added into the public API in API level. They are now
+    // deprecated as a prelude to being removed from the public API.
+    /**
+     * @deprecated This internal method was accidentally added to API 26 and must not be used. No
+     *             replacement is available but it is possible to replicate using information from
+     *             the <a href="MethodHandleInfo.html#refkinds">table above</a>, e.g.
+     *             {@code refKind >= 1 && refKind <= 9}. There are no guarantees that this logic
+     *             will work if future versions extend the table.
+     */
+    @Deprecated
     static boolean refKindIsValid(int refKind) {
         return MethodHandleNatives.refKindIsValid(refKind);
     }
 
-    // Android-changed: Inlined from MethodHandleNatives.
+    /**
+     * @deprecated This internal method was accidentally added to API 26 and must not be used. No
+     *             replacement is available but it is possible to replicate using information from
+     *             the <a href="MethodHandleInfo.html#refkinds">table above</a>, e.g.
+     *             {@code refKind >= 1 && refKind <= 4}.  There are no guarantees that this logic
+     *             will work if future versions extend the table.
+     */
+    @Deprecated
     static boolean refKindIsField(int refKind) {
         return MethodHandleNatives.refKindIsField((byte) refKind);
     }
 
-    // Android-changed: Inlined from MethodHandleNatives and replaced 'byte' argument with
-    // 'int'.
+    /**
+     * @deprecated This internal method was accidentally added to API 26 and must not be used. Use
+     *             {@link MethodHandleInfo#referenceKindToString(int)} instead.
+     */
+    @Deprecated
     static String refKindName(int refKind) {
         return MethodHandleNatives.refKindName((byte) refKind);
     }
