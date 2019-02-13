@@ -120,9 +120,7 @@ public class Throwable implements Serializable {
     /**
      * Native code saves some indication of the stack backtrace in this slot.
      */
-    // Android-changed: Add volatile keyword to avoid breaking serialization of some subclasses
-    // private transient Object backtrace;
-    private transient volatile Object backtrace;
+    private transient Object backtrace;
 
     /**
      * Specific details about the Throwable.  For example, for
