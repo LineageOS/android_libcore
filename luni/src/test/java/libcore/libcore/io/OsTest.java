@@ -423,9 +423,9 @@ public class OsTest extends TestCase {
     expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EINVAL,
                                  makeIpv6Socket(), "ipv6", addrUnix);
 
-    expectBindConnectSendtoErrno(EINVAL, EAFNOSUPPORT, EINVAL,
+    expectBindConnectSendtoErrno(EINVAL, EINVAL, EINVAL,
                                  makeUnixSocket(), "unix", addrIpv4);
-    expectBindConnectSendtoErrno(EINVAL, EAFNOSUPPORT, EINVAL,
+    expectBindConnectSendtoErrno(EINVAL, EINVAL, EINVAL,
                                  makeUnixSocket(), "unix", addrIpv6);
     expectBindConnectSendtoSuccess(makeUnixSocket(), "unix", addrUnix);
   }
