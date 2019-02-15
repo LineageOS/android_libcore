@@ -1607,21 +1607,26 @@ class InetAddress implements java.io.Serializable {
     // Particularly those required to deal with scope ids.
     /**
      * Returns true if the string is a valid numeric IPv4 or IPv6 address (such as "192.168.0.1").
-     * This copes with all forms of address that Java supports, detailed in the {@link InetAddress}
-     * class documentation.
+     *
+     * <p>This copes with all forms of address that Java supports, detailed in the
+     * {@link InetAddress} class documentation. An empty string is not treated as numeric.
      *
      * @hide used by frameworks/base to ensure that a getAllByName won't cause a DNS lookup.
      * @deprecated Use {@link InetAddressUtils#isNumericAddress(String)} instead, if possible.
+     * @throws NullPointerException if the {@code address} is {@code null}.
      */
     @Deprecated
     public static boolean isNumeric(String address) {
-        return _parseNumericAddress(address) != null;
+        return InetAddressUtils.parseNumericAddressNoThrowStripOptionalBrackets(address) != null;
     }
 
     /**
      * Returns an InetAddress corresponding to the given numeric address (such
      * as {@code "192.168.0.1"} or {@code "2001:4860:800d::68"}).
-     * This method will never do a DNS lookup. Non-numeric addresses are errors.
+     *
+     * <p>This method will never do a DNS lookup. Non-numeric addresses are errors. Passing either
+     * an empty string or a {@code null} as the {@code numericAddress} will return the
+     * {@link Inet6Address#LOOPBACK} address.
      *
      * @hide used by frameworks/base's NetworkUtils.numericToInetAddress
      * @throws IllegalArgumentException if {@code numericAddress} is not a numeric address
@@ -1629,18 +1634,15 @@ class InetAddress implements java.io.Serializable {
      */
     @Deprecated
     public static InetAddress parseNumericAddress(String numericAddress) {
-        InetAddress result = _parseNumericAddress(numericAddress);
+        if (numericAddress == null || numericAddress.isEmpty()) {
+            return Inet6Address.LOOPBACK;
+        }
+        InetAddress result = InetAddressUtils
+                .parseNumericAddressNoThrowStripOptionalBrackets(numericAddress);
         if (result == null) {
             throw new IllegalArgumentException("Not a numeric address: " + numericAddress);
         }
         return result;
-    }
-
-    private static InetAddress _parseNumericAddress(String numericAddress) {
-        if (numericAddress == null || numericAddress.isEmpty()) {
-            return Inet6Address.LOOPBACK;
-        }
-        return InetAddressUtils.parseNumericAddressNoThrowStripOptionalBrackets(numericAddress);
     }
 
     /**
