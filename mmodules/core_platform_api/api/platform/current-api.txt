@@ -776,7 +776,7 @@ package dalvik.system {
     method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
     method public static void setProcessPackageName(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setTargetSdkVersion(int);
+    method public void setTargetSdkVersion(int);
     method public void startJitCompilation();
     method public void updateProcessState(int);
     method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
