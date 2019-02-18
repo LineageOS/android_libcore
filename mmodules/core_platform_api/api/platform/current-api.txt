@@ -785,7 +785,7 @@ package dalvik.system {
   }
 
   public static interface VMRuntime.HiddenApiUsageLogger {
-    method public void hiddenApiUsed(String, String, int, boolean);
+    method public void hiddenApiUsed(int, String, String, int, boolean);
     field public static final int ACCESS_METHOD_JNI = 2; // 0x2
     field public static final int ACCESS_METHOD_LINKING = 3; // 0x3
     field public static final int ACCESS_METHOD_NONE = 0; // 0x0

@@ -88,6 +88,8 @@ public final class VMRuntime {
         /**
          * Logs hidden API access
          *
+         * @param sampledValue value that was sampled, to be compared against the
+         *      sampling rate
          * @param appPackageName package name of the app attempting the access
          * @param signature signature of the method being called, i.e
          *      class_name->member_name:type_signature (e.g.
@@ -97,8 +99,8 @@ public final class VMRuntime {
          * @param accessType how the accessed was done
          * @param accessDenied whether the access was allowed or not
          */
-        public void hiddenApiUsed(String appPackageName, String signature,
-            int accessType, boolean accessDenied);
+        public void hiddenApiUsed(int sampledValue, String appPackageName,
+            String signature, int accessType, boolean accessDenied);
     }
 
     static HiddenApiUsageLogger hiddenApiUsageLogger;
@@ -115,14 +117,14 @@ public final class VMRuntime {
 
     /**
      * Records an attempted hidden API access to
-     * {@link HiddenApiUsageLogger#hiddenApiUsed(String, String, int, boolean}
+     * {@link HiddenApiUsageLogger#hiddenApiUsed(int, String, String, int, boolean}
      * if a logger is registered via {@link #setHiddenApiUsageLogger}.
      */
-    private static void hiddenApiUsed(String appPackageName, String signature,
+    private static void hiddenApiUsed(int sampledValue, String appPackageName, String signature,
          int accessType, boolean accessDenied) {
         if (VMRuntime.hiddenApiUsageLogger != null) {
-            VMRuntime.hiddenApiUsageLogger.hiddenApiUsed(appPackageName, signature,
-                accessType, accessDenied);
+            VMRuntime.hiddenApiUsageLogger.hiddenApiUsed(sampledValue, appPackageName,
+                signature, accessType, accessDenied);
         }
     }
 
