@@ -247,47 +247,6 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     }
   }
 
-  public void testGetRulesVersion() throws Exception {
-    try (ZoneInfoDB.TzData data = ZoneInfoDB.TzData.loadTzData(SYSTEM_TZDATA_FILE)) {
-      String rulesVersion = ZoneInfoDB.TzData.getRulesVersion(new File(SYSTEM_TZDATA_FILE));
-      assertEquals(data.getVersion(), rulesVersion);
-    }
-  }
-
-  public void testGetRulesVersion_corruptFile() throws Exception {
-    File corruptFilePath = makeCorruptFile();
-    try {
-      ZoneInfoDB.TzData.getRulesVersion(corruptFilePath);
-      fail();
-    } catch (IOException expected) {
-    }
-  }
-
-  public void testGetRulesVersion_emptyFile() throws Exception {
-    File emptyFilePath = makeEmptyFile();
-    try {
-      ZoneInfoDB.TzData.getRulesVersion(emptyFilePath);
-      fail();
-    } catch (IOException expected) {
-    }
-  }
-
-  public void testGetRulesVersion_missingFile() throws Exception {
-    File missingFile = makeMissingFile();
-    try {
-      ZoneInfoDB.TzData.getRulesVersion(missingFile);
-      fail();
-    } catch (IOException expected) {
-    }
-  }
-
-  private static File makeMissingFile() throws Exception {
-    File file = File.createTempFile("temp-", ".txt");
-    assertTrue(file.delete());
-    assertFalse(file.exists());
-    return file;
-  }
-
   private static File makeCorruptFile() throws Exception {
     return makeTemporaryFile("invalid content".getBytes());
   }

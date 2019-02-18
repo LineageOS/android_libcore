@@ -53,13 +53,25 @@ public final class TimeZoneDataFiles {
         };
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
+    public static String getDataTimeZoneRootDir() {
+        return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/";
+    }
+
     @libcore.api.CorePlatformApi
     public static String getDataTimeZoneFile(String fileName) {
-        return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/current/" + fileName;
+        return getDataTimeZoneRootDir() + "current/" + fileName;
     }
 
     public static String getTimeZoneModuleFile(String fileName) {
         return "/apex/com.android.tzdata/etc/" + fileName;
+    }
+
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
+    public static String getRuntimeModuleTzVersionFile() {
+        return getRuntimeModuleFile("tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
     }
 
     public static String getRuntimeModuleFile(String fileName) {
