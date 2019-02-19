@@ -496,10 +496,6 @@ package libcore.api {
 
 package libcore.io {
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class IoUtils {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void closeQuietly(AutoCloseable);
-  }
-
   @libcore.api.IntraCoreApi public final class Libcore {
     field @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.IntraCoreApi public static volatile libcore.io.Os os;
   }
