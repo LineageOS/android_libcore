@@ -34,7 +34,6 @@ import static android.system.OsConstants.*;
 
 /** @hide */
 @libcore.api.CorePlatformApi
-@libcore.api.IntraCoreApi
 public final class IoUtils {
     private IoUtils() {
     }
@@ -160,7 +159,6 @@ public final class IoUtils {
      */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public static void closeQuietly(AutoCloseable closeable) {
         if (closeable != null) {
             try {
