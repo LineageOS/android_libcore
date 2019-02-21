@@ -20,15 +20,6 @@ package android.system {
 
 package com.android.org.conscrypt {
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class ClientSessionContext implements javax.net.ssl.SSLSessionContext {
-    method public final java.util.Enumeration<byte[]> getIds();
-    method public final javax.net.ssl.SSLSession getSession(byte[]);
-    method public final int getSessionCacheSize();
-    method public final int getSessionTimeout();
-    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
-    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
-  }
-
   @libcore.api.IntraCoreApi public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
     ctor @libcore.api.IntraCoreApi public DESEDESecretKeyFactory();
   }
@@ -237,7 +228,7 @@ package com.android.org.conscrypt {
     ctor @libcore.api.IntraCoreApi public OpenSSLCipherChaCha20();
   }
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
+  @libcore.api.IntraCoreApi public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
   }
 
   @libcore.api.IntraCoreApi public static final class OpenSSLContextImpl.TLSv1 extends com.android.org.conscrypt.OpenSSLContextImpl {
@@ -415,15 +406,6 @@ package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public class PSSParameters extends java.security.AlgorithmParametersSpi {
     ctor @libcore.api.IntraCoreApi public PSSParameters();
-  }
-
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
-    method public final java.util.Enumeration<byte[]> getIds();
-    method public final javax.net.ssl.SSLSession getSession(byte[]);
-    method public final int getSessionCacheSize();
-    method public final int getSessionTimeout();
-    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
-    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
   }
 
 }
