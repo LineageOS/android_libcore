@@ -25,7 +25,6 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeoutException;
 import libcore.util.EmptyArray;
 
@@ -41,44 +40,28 @@ public final class Daemons {
     private static final int NANOS_PER_SECOND = NANOS_PER_MILLI * 1000;
     @UnsupportedAppUsage
     private static final long MAX_FINALIZE_NANOS = 10L * NANOS_PER_SECOND;
-    private static final Daemon[] DAEMONS = new Daemon[] {
-            HeapTaskDaemon.INSTANCE,
-            ReferenceQueueDaemon.INSTANCE,
-            FinalizerDaemon.INSTANCE,
-            FinalizerWatchdogDaemon.INSTANCE,
-    };
-    private static final CountDownLatch POST_ZYGOTE_START_LATCH = new CountDownLatch(DAEMONS.length);
-    private static final CountDownLatch PRE_ZYGOTE_START_LATCH = new CountDownLatch(DAEMONS.length);
-
-    private static boolean postZygoteFork = false;
 
     @UnsupportedAppUsage
     public static void start() {
-        for (Daemon daemon : DAEMONS) {
-            daemon.start();
-        }
+        ReferenceQueueDaemon.INSTANCE.start();
+        FinalizerDaemon.INSTANCE.start();
+        FinalizerWatchdogDaemon.INSTANCE.start();
+        HeapTaskDaemon.INSTANCE.start();
     }
 
     public static void startPostZygoteFork() {
-        postZygoteFork = true;
-        for (Daemon daemon : DAEMONS) {
-            daemon.startPostZygoteFork();
-        }
+        ReferenceQueueDaemon.INSTANCE.startPostZygoteFork();
+        FinalizerDaemon.INSTANCE.startPostZygoteFork();
+        FinalizerWatchdogDaemon.INSTANCE.startPostZygoteFork();
+        HeapTaskDaemon.INSTANCE.startPostZygoteFork();
     }
 
     @UnsupportedAppUsage
     public static void stop() {
-        for (Daemon daemon : DAEMONS) {
-            daemon.stop();
-        }
-    }
-
-    private static void waitForDaemonStart() throws Exception {
-        if (postZygoteFork) {
-            POST_ZYGOTE_START_LATCH.await();
-        } else {
-            PRE_ZYGOTE_START_LATCH.await();
-        }
+        HeapTaskDaemon.INSTANCE.stop();
+        ReferenceQueueDaemon.INSTANCE.stop();
+        FinalizerDaemon.INSTANCE.stop();
+        FinalizerWatchdogDaemon.INSTANCE.stop();
     }
 
     /**
@@ -112,20 +95,16 @@ public final class Daemons {
             }
             thread = new Thread(ThreadGroup.systemThreadGroup, this, name);
             thread.setDaemon(true);
-            thread.setSystemDaemon(true);
             thread.start();
         }
 
-        public final void run() {
+        public void run() {
             if (postZygoteFork) {
                 // We don't set the priority before the Thread.start() call above because
                 // Thread.start() will call SetNativePriority and overwrite the desired native
                 // priority. We (may) use a native priority that doesn't have a corresponding
                 // java.lang.Thread-level priority (native priorities are more coarse-grained.)
                 VMRuntime.getRuntime().setSystemDaemonThreadPriority();
-                POST_ZYGOTE_START_LATCH.countDown();
-            } else {
-                PRE_ZYGOTE_START_LATCH.countDown();
             }
             runInternal();
         }
