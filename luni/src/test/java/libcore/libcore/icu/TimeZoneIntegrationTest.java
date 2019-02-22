@@ -236,8 +236,14 @@ public class TimeZoneIntegrationTest {
             assertTzDataSetVersionIsCompatible(timeZoneModuleVersionFile);
         }
 
-        assertTzDataSetVersionIsCompatible(
-                TimeZoneDataFiles.getRuntimeModuleFile(moduleTzVersionFile));
+        String runtimeModuleVersionFile =
+                TimeZoneDataFiles.getRuntimeModuleFile(moduleTzVersionFile);
+        assertTzDataSetVersionIsCompatible(runtimeModuleVersionFile);
+
+        // Check getRuntimeModuleTzVersionFile() is doing the right thing.
+        // getRuntimeModuleTzVersionFile() should go away when its one user, RulesManagerService,
+        // is removed from the platform code. http://b/123398797
+        assertEquals(TimeZoneDataFiles.getRuntimeModuleTzVersionFile(), runtimeModuleVersionFile);
 
         // TODO: Remove this once the /system copy of time zone files have gone away. See also
         // testTimeZoneDebugInfo().

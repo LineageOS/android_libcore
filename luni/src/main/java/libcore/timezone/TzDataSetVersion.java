@@ -31,10 +31,12 @@ import java.util.regex.Pattern;
 @libcore.api.CorePlatformApi
 public class TzDataSetVersion {
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
     /**
      * The name typically given to the {@link TzDataSetVersion} file. See
      * {@link TzDataSetVersion#readFromFile(File)}.
      */
+    @libcore.api.CorePlatformApi
     public static final String DEFAULT_FILE_NAME = "tz_version";
 
     /**
@@ -102,7 +104,11 @@ public class TzDataSetVersion {
 
     public final int formatMajorVersion;
     public final int formatMinorVersion;
+
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
     public final String rulesVersion;
+
     public final int revision;
 
     @libcore.api.CorePlatformApi
@@ -142,11 +148,15 @@ public class TzDataSetVersion {
         }
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
     public static TzDataSetVersion readFromFile(File file) throws IOException, TzDataSetException {
         byte[] versionBytes = readBytes(file, TzDataSetVersion.TZ_DATA_VERSION_FILE_LENGTH);
         return fromBytes(versionBytes);
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
     public byte[] toBytes() {
         return toBytes(formatMajorVersion, formatMinorVersion, rulesVersion, revision);
     }
