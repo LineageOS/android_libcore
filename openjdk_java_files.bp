@@ -2,7 +2,6 @@
 // members are hidden using @hide javadoc tags.
 filegroup {
     name: "openjdk_javadoc_files",
-    export_to_make_var: "openjdk_javadoc_files",
     srcs: [
         "ojluni/src/main/java/java/awt/font/NumericShaper.java",
         "ojluni/src/main/java/java/awt/font/TextAttribute.java",
@@ -1359,7 +1358,6 @@ filegroup {
 // any of these classes.
 filegroup {
     name: "openjdk_lambda_stub_files",
-    export_to_make_var: "openjdk_lambda_stub_files",
     srcs: [
         "ojluni/src/lambda/java/java/lang/invoke/LambdaMetafactory.java",
         "ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java",
@@ -1367,7 +1365,6 @@ filegroup {
 }
 filegroup {
     name: "openjdk_lambda_duplicate_stub_files",
-    export_to_make_var: "openjdk_lambda_duplicate_stub_files",
     srcs: [
         "ojluni/src/lambda/java/java/lang/invoke/CallSite.java",
         "ojluni/src/lambda/java/java/lang/invoke/MethodHandles.java",
@@ -1796,7 +1793,6 @@ filegroup {
 // All classes, whether exposed in any API or not.
 filegroup {
     name: "openjdk_java_files",
-    export_to_make_var: "openjdk_java_files",
     srcs: [
         ":openjdk_javadoc_files",
         ":openjdk_mmodule_extra_files",

@@ -1,6 +1,5 @@
 filegroup {
     name: "non_openjdk_javadoc_files",
-    export_to_make_var: "non_openjdk_javadoc_files",
     srcs: [
         "luni/src/main/java/android/system/ErrnoException.java",
         "luni/src/main/java/android/system/GaiException.java",
@@ -295,7 +294,6 @@ filegroup {
 
 filegroup {
     name: "non_openjdk_java_files",
-    export_to_make_var: "non_openjdk_java_files",
     srcs: [
         "luni/src/main/java/java/net/AddressCache.java",
         "luni/src/main/java/libcore/icu/CollationKeyICU.java",
