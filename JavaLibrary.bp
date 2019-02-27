@@ -56,7 +56,7 @@ filegroup {
     srcs: [":openjdk_java_files"],
 }
 
-// OpenJDK source is not annotated with @hide so we need a separate
+// OpenJDK source is not annotated with @hide so we need this separate
 // filegroup for just the parts that contribute to the API.
 filegroup {
     name: "core_oj_api_files",
@@ -72,7 +72,7 @@ filegroup {
     ],
 }
 
-// Some parts of libart are not annotated with @hide so we need a separate
+// Some parts of libart are not annotated with @hide so we need this separate
 // filegroup for just the parts that contribute to the API.
 filegroup {
     name: "core_libart_api_files",
@@ -82,14 +82,26 @@ filegroup {
     ],
 }
 
+// The set of files for the core library that have been marked up with @hide
+// for the public SDK APIs. Used from frameworks/base/ to indicate the source
+// files for inclusion in the public SDK docs.
+filegroup {
+    name: "core_public_api_files",
+    srcs: [
+        ":core_oj_api_files",
+        ":core_libart_api_files",
+        ":conscrypt_public_api_files",
+    ],
+}
+
 // The set of files for the core library that have been marked up with @hide and
 // API-related annotations. Note that this includes the intra-core and
 // core-platform APIs as well as the public APIs.
 //
-// Some source files in :openjdk_mmodule_extra_files are annotated by applying
-// annotations to the .annotated.java stubs files in ojluni/annotated/mmodules
-// and rather than in the original source. See the comments in
-// openjdk_java_files.bp for more details.
+// Some source files in :core_oj_api_files and :openjdk_mmodule_extra_files are
+// annotated by applying annotations to the .annotated.java stubs files in
+// ojluni/annotated/mmodules and rather than in the original source. See the comments
+// in openjdk_java_files.bp for more details.
 filegroup {
     name: "core_api_files",
     srcs: [
