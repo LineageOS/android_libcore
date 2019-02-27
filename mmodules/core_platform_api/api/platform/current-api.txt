@@ -467,7 +467,6 @@ package com.android.org.conscrypt {
 
   public final class Conscrypt {
     method public static javax.net.ssl.X509TrustManager getDefaultX509TrustManager() throws java.security.KeyManagementException;
-    method public static javax.net.ssl.SSLContextSpi newPreferredSSLContextSpi();
   }
 
   public interface ConscryptCertStore {
@@ -475,12 +474,6 @@ package com.android.org.conscrypt {
 
   public final class FileClientSessionCache {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.conscrypt.SSLClientSessionCache usingDirectory(java.io.File) throws java.io.IOException;
-  }
-
-  public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.conscrypt.ClientSessionContext engineGetClientSessionContext();
-    method public javax.net.ssl.SSLSocketFactory engineGetSocketFactory();
-    method public void engineInit(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], java.security.SecureRandom) throws java.security.KeyManagementException;
   }
 
   public final class OpenSSLProvider extends java.security.Provider {
