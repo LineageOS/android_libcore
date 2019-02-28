@@ -100,9 +100,9 @@ public final class Os {
      */
     public static void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { Libcore.os.connect(fd, address, port); }
 
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/connect.2.html">connect(2)</a>.
+     */
     public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
 
     /**
