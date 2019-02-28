@@ -503,15 +503,6 @@ package com.android.org.conscrypt {
   public interface SSLClientSessionCache {
   }
 
-  public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
-    method public final java.util.Enumeration<byte[]> getIds();
-    method public final javax.net.ssl.SSLSession getSession(byte[]);
-    method public final int getSessionCacheSize();
-    method public final int getSessionTimeout();
-    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
-    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
-  }
-
   public final class TrustManagerImpl extends javax.net.ssl.X509ExtendedTrustManager {
     ctor @dalvik.annotation.compat.UnsupportedAppUsage public TrustManagerImpl(java.security.KeyStore);
     ctor public TrustManagerImpl(java.security.KeyStore, com.android.org.conscrypt.CertPinManager, com.android.org.conscrypt.ConscryptCertStore);
