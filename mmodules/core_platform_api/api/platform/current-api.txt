@@ -1030,7 +1030,10 @@ package libcore.io {
     ctor @dalvik.annotation.compat.UnsupportedAppUsage protected ForwardingOs(libcore.io.Os);
     method @dalvik.annotation.compat.UnsupportedAppUsage public boolean access(String, int) throws android.system.ErrnoException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void remove(String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void rename(String, String) throws android.system.ErrnoException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public android.system.StructStat stat(String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void unlink(String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
