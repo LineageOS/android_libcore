@@ -182,10 +182,12 @@ public class ForwardingOs implements Os {
     public int recvfrom(FileDescriptor fd, ByteBuffer buffer, int flags, InetSocketAddress srcAddress) throws ErrnoException, SocketException { return os.recvfrom(fd, buffer, flags, srcAddress); }
     public int recvfrom(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, InetSocketAddress srcAddress) throws ErrnoException, SocketException { return os.recvfrom(fd, bytes, byteOffset, byteCount, flags, srcAddress); }
     @UnsupportedAppUsage
+    @libcore.api.CorePlatformApi
     public void remove(String path) throws ErrnoException { os.remove(path); }
     @UnsupportedAppUsage
     public void removexattr(String path, String name) throws ErrnoException { os.removexattr(path, name); }
     @UnsupportedAppUsage
+    @libcore.api.CorePlatformApi
     public void rename(String oldPath, String newPath) throws ErrnoException { os.rename(oldPath, newPath); }
     public long sendfile(FileDescriptor outFd, FileDescriptor inFd, Int64Ref offset, long byteCount) throws ErrnoException { return os.sendfile(outFd, inFd, offset, byteCount); }
     public int sendto(FileDescriptor fd, ByteBuffer buffer, int flags, InetAddress inetAddress, int port) throws ErrnoException, SocketException { return os.sendto(fd, buffer, flags, inetAddress, port); }
@@ -231,6 +233,7 @@ public class ForwardingOs implements Os {
     public int umask(int mask) { return os.umask(mask); }
     public StructUtsname uname() { return os.uname(); }
     @UnsupportedAppUsage
+    @libcore.api.CorePlatformApi
     public void unlink(String pathname) throws ErrnoException { os.unlink(pathname); }
     public void unsetenv(String name) throws ErrnoException { os.unsetenv(name); }
     public int waitpid(int pid, Int32Ref status, int options) throws ErrnoException { return os.waitpid(pid, status, options); }
