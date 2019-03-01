@@ -172,8 +172,9 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     public BaseDexClassLoader(ByteBuffer[] dexFiles, String librarySearchPath, ClassLoader parent) {
         super(parent);
-        this.pathList = new DexPathList(this, dexFiles, librarySearchPath);
         this.sharedLibraryLoaders = null;
+        this.pathList = new DexPathList(this, librarySearchPath);
+        this.pathList.initByteBufferDexPath(dexFiles);
     }
 
     @Override
