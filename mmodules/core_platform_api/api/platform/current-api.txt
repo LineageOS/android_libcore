@@ -90,7 +90,6 @@ package android.system {
   public final class Os {
     method public static android.system.StructCapUserData[] capget(android.system.StructCapUserHeader) throws android.system.ErrnoException;
     method public static void capset(android.system.StructCapUserHeader, android.system.StructCapUserData[]) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void connect(java.io.FileDescriptor, java.net.SocketAddress) throws android.system.ErrnoException, java.net.SocketException;
     method public static int fcntlInt(java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
     method public static int getpgid(int) throws android.system.ErrnoException;
     method public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
@@ -502,15 +501,6 @@ package com.android.org.conscrypt {
   }
 
   public interface SSLClientSessionCache {
-  }
-
-  public final class ServerSessionContext implements javax.net.ssl.SSLSessionContext {
-    method public final java.util.Enumeration<byte[]> getIds();
-    method public final javax.net.ssl.SSLSession getSession(byte[]);
-    method public final int getSessionCacheSize();
-    method public final int getSessionTimeout();
-    method public final void setSessionCacheSize(int) throws java.lang.IllegalArgumentException;
-    method public final void setSessionTimeout(int) throws java.lang.IllegalArgumentException;
   }
 
   public final class TrustManagerImpl extends javax.net.ssl.X509ExtendedTrustManager {
@@ -1040,7 +1030,10 @@ package libcore.io {
     ctor @dalvik.annotation.compat.UnsupportedAppUsage protected ForwardingOs(libcore.io.Os);
     method @dalvik.annotation.compat.UnsupportedAppUsage public boolean access(String, int) throws android.system.ErrnoException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void remove(String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void rename(String, String) throws android.system.ErrnoException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public android.system.StructStat stat(String) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void unlink(String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
