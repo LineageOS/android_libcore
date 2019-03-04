@@ -476,18 +476,6 @@ package libcore.api {
 
 }
 
-package libcore.io {
-
-  @libcore.api.IntraCoreApi public final class Libcore {
-    field @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.IntraCoreApi public static volatile libcore.io.Os os;
-  }
-
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public interface Os {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.IntraCoreApi public void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
-  }
-
-}
-
 package libcore.net {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract class NetworkSecurityPolicy {
