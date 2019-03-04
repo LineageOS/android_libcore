@@ -20,7 +20,6 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.util.Objects;
 
 /** @hide */
-@libcore.api.IntraCoreApi
 public final class Libcore {
     private Libcore() { }
 
@@ -37,7 +36,6 @@ public final class Libcore {
      * {@link #compareAndSetOs}.
      */
     @UnsupportedAppUsage
-    @libcore.api.IntraCoreApi
     public static volatile Os os = new BlockGuardOs(rawOs);
 
     public static Os getOs() {
