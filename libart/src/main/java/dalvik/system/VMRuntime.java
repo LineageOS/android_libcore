@@ -563,6 +563,13 @@ public final class VMRuntime {
     public native void updateProcessState(int state);
 
     /**
+     * Let the runtime know that the application startup is completed. This may affect behavior
+     * related to profiling and startup caches.
+     */
+    @libcore.api.CorePlatformApi
+    public native void notifyStartupCompleted();
+
+    /**
      * Fill in dex caches with classes, fields, and methods that are
      * already loaded. Typically used after Zygote preloading.
      */
