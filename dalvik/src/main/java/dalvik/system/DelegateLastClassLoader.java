@@ -22,6 +22,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
 
+import libcore.util.NonNull;
+import libcore.util.Nullable;
+
 /**
  * A {@code ClassLoader} implementation that implements a <b>delegate last</b> lookup policy.
  * For every class or resource this loader is requested to load, the following lookup order
@@ -88,14 +91,14 @@ public final class DelegateLastClassLoader extends PathClassLoader {
      *                {@code File.pathSeparator}, which defaults to {@code ":"} on Android.
      * @param librarySearchPath the list of directories containing native libraries, delimited
      *                          by {@code File.pathSeparator}; may be {@code null}.
-     * @param parent the parent class loader
+     * @param parent the parent class loader. May be {@code null} for the boot classloader.
      * @param delegateResourceLoading whether to delegate resource loading to the parent if
      *                                the resource is not found. This does not affect class
      *                                loading delegation.
      */
 
-    public DelegateLastClassLoader(String dexPath, String librarySearchPath, ClassLoader parent,
-            boolean delegateResourceLoading) {
+    public DelegateLastClassLoader(@NonNull String dexPath, @Nullable String librarySearchPath,
+            @Nullable ClassLoader parent, boolean delegateResourceLoading) {
         super(dexPath, librarySearchPath, parent);
         this.delegateResourceLoading = delegateResourceLoading;
     }
