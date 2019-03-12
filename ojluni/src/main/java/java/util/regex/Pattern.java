@@ -948,8 +948,9 @@ public final class Pattern
     @ReachabilitySensitive
     transient long address;
 
-    private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(
-            Pattern.class.getClassLoader(), getNativeFinalizer());
+    private static final NativeAllocationRegistry registry =
+            NativeAllocationRegistry.createMalloced(Pattern.class.getClassLoader(),
+            getNativeFinalizer());
     // END Android-changed: reimplement matching logic natively via ICU.
 
     /**

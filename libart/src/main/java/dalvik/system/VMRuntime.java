@@ -458,18 +458,27 @@ public final class VMRuntime {
      * watermark, it is determined that the application is registering native allocations at an
      * unusually high rate and a GC is performed inside of the function to prevent memory usage
      * from excessively increasing. Memory allocated via system malloc() should not be included
-     * in this count. If only malloced() memory is allocated, bytes should be zero.
-     * The argument must be the same as that later passed to registerNativeFree(), but may
-     * otherwise be approximate.
+     * in this count. The argument must be the same as that later passed to registerNativeFree(),
+     * but may otherwise be approximate.
      */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
+    public void registerNativeAllocation(long bytes) {
+        // TODO: Change the runtime to support passing the size as a long instead
+        // of an int. For now, we clamp the size to fit.
+        registerNativeAllocationInternal((int)Math.min(bytes, Integer.MAX_VALUE));
+    }
+
+    /**
+     * Backward compatibility version of registerNativeAllocation. We used to pass an int instead
+     * of a long. The RenderScript support library looks it up via reflection.
+     * @deprecated Use long argument instead.
+     */
+    @UnsupportedAppUsage
+    @Deprecated
+    @libcore.api.CorePlatformApi
     public void registerNativeAllocation(int bytes) {
-        if (bytes == 0) {
-            notifyNativeAllocation();
-        } else {
-            registerNativeAllocationInternal(bytes);
-        }
+        registerNativeAllocation((long) bytes);
     }
 
     private native void registerNativeAllocationInternal(int bytes);
@@ -479,12 +488,20 @@ public final class VMRuntime {
      */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
-    public void registerNativeFree(int bytes) {
-        if (bytes != 0) {
-            registerNativeFreeInternal(bytes);
-        }
+    public void registerNativeFree(long bytes) {
+        registerNativeFreeInternal((int)Math.min(bytes, Integer.MAX_VALUE));
     }
 
+    /**
+     * Backward compatibility version of registerNativeFree.
+     * @deprecated Use long argument instead.
+     */
+    @UnsupportedAppUsage
+    @Deprecated
+    @libcore.api.CorePlatformApi
+    public void registerNativeFree(int bytes) {
+        registerNativeFree((long) bytes);
+    }
     private native void registerNativeFreeInternal(int bytes);
 
     /**
@@ -496,7 +513,7 @@ public final class VMRuntime {
     /**
      * Report a native malloc()-only allocation to the GC.
      */
-    private void notifyNativeAllocation() {
+    public void notifyNativeAllocation() {
         // Minimize JNI calls by notifying once every notifyNativeInterval allocations.
         // The native code cannot do anything without calling mallinfo(), which is too
         // expensive to perform on every allocation. To avoid the JNI overhead on every
@@ -519,7 +536,7 @@ public final class VMRuntime {
      * allocations have occurred since the last call to notifyNativeAllocationsInternal().
      * Hints that we should check whether a GC is required.
      */
-    private native void notifyNativeAllocationsInternal();
+    public native void notifyNativeAllocationsInternal();
 
     /**
      * Wait for objects to be finalized.
