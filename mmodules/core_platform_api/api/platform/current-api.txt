@@ -749,8 +749,10 @@ package dalvik.system {
     method public void notifyStartupCompleted();
     method public void preloadDexCaches();
     method public static void registerAppInfo(String, String[]);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(int);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(long);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(long);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(int);
     method public static void registerSensitiveThread();
     method public void requestConcurrentGC();
     method public static void setDedupeHiddenApiWarnings(boolean);
@@ -1247,6 +1249,9 @@ package libcore.util {
   public class NativeAllocationRegistry {
     ctor public NativeAllocationRegistry(ClassLoader, long, long);
     method public static void applyFreeFunction(long, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long);
+    method public static libcore.util.NativeAllocationRegistry createNonmalloced(ClassLoader, long, long);
     method public Runnable registerNativeAllocation(Object, long);
   }
 
