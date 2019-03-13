@@ -149,8 +149,9 @@ public final class Matcher implements MatchResult {
      */
     private Runnable nativeFinalizer;
 
-    private static final NativeAllocationRegistry registry = new NativeAllocationRegistry(
-            Matcher.class.getClassLoader(), getNativeFinalizer());
+    private static final NativeAllocationRegistry registry =
+            NativeAllocationRegistry.createMalloced(Matcher.class.getClassLoader(),
+            getNativeFinalizer());
 
     /**
      * The index of the last position appended in a substitution.
