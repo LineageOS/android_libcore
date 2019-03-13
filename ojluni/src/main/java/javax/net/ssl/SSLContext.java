@@ -136,10 +136,16 @@ public class SSLContext {
         return defaultContext;
     }
 
+    // Android-changed: Additional text to strongly discouraged changing the default.
     /**
      * Sets the default SSL context. It will be returned by subsequent calls
      * to {@link #getDefault}. The default context must be immediately usable
      * and not require {@linkplain #init initialization}.
+     * <p>
+     * Developers are <em>strongly</em> discouraged from changing the default {@code SSLContext} as
+     * it is used as the Android default for secure communication by APIs like
+     * {@link SSLSocketFactory#getDefault()}, {@link SSLServerSocketFactory#getDefault()} and
+     * {@link HttpsURLConnection}.
      *
      * @param context the SSLContext
      * @throws  NullPointerException if context is null
