@@ -28,6 +28,7 @@ import java.util.List;
 public final class TimeZoneDataFiles {
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
     private static final String ANDROID_RUNTIME_ROOT_ENV = "ANDROID_RUNTIME_ROOT";
+    private static final String ANDROID_TZDATA_ROOT_ENV = "ANDROID_TZDATA_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
     private TimeZoneDataFiles() {}
@@ -65,7 +66,7 @@ public final class TimeZoneDataFiles {
     }
 
     public static String getTimeZoneModuleFile(String fileName) {
-        return "/apex/com.android.tzdata/etc/" + fileName;
+        return System.getenv(ANDROID_TZDATA_ROOT_ENV) + "/etc/" + fileName;
     }
 
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797

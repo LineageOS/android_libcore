@@ -1039,16 +1039,24 @@ struct ICURegistration {
 
   // Returns a string containing the expected path of the (optional) /apex tz module data file
   static std::string getTimeZoneModulePath() {
-    std::string apexPath = "/apex/com.android.tzdata/etc/icu/icu_tzdata.dat";
-    return apexPath;
+    const char* tzdataModulePathPrefix = getenv("ANDROID_TZDATA_ROOT");
+    if (tzdataModulePathPrefix == NULL) {
+      ALOGE("ANDROID_TZDATA_ROOT environment variable not set"); \
+      abort();
+    }
+
+    std::string tzdataModulePath;
+    tzdataModulePath = tzdataModulePathPrefix;
+    tzdataModulePath += "/etc/icu/icu_tzdata.dat";
+    return tzdataModulePath;
   }
 
   static std::string getRuntimeModulePath() {
-      const char* runtimeModulePathPrefix = getenv("ANDROID_RUNTIME_ROOT");
-      if (runtimeModulePathPrefix == NULL) {
-        ALOGE("ANDROID_RUNTIME_ROOT environment variable not set"); \
-        abort();
-      }
+    const char* runtimeModulePathPrefix = getenv("ANDROID_RUNTIME_ROOT");
+    if (runtimeModulePathPrefix == NULL) {
+      ALOGE("ANDROID_RUNTIME_ROOT environment variable not set"); \
+      abort();
+    }
 
     std::string runtimeModulePath;
     runtimeModulePath = runtimeModulePathPrefix;
