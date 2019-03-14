@@ -986,7 +986,15 @@ static void Linux_bind(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress
 }
 
 static void Linux_bindSocketAddress(
-        JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
+        JNIEnv* env, jobject thisObj, jobject javaFd, jobject javaSocketAddress) {
+    if (env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
+        // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
+        jobject javaInetAddress;
+        jint port;
+        javaInetSocketAddressToInetAddressAndPort(env, javaSocketAddress, javaInetAddress, port);
+        Linux_bind(env, thisObj, javaFd, javaInetAddress, port);
+        return;
+    }
     sockaddr_storage ss;
     socklen_t sa_len;
     if (!javaSocketAddressToSockaddr(env, javaSocketAddress, ss, sa_len)) {
@@ -1160,7 +1168,15 @@ static void Linux_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddr
 }
 
 static void Linux_connectSocketAddress(
-        JNIEnv* env, jobject, jobject javaFd, jobject javaSocketAddress) {
+        JNIEnv* env, jobject thisObj, jobject javaFd, jobject javaSocketAddress) {
+    if (env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
+        // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
+        jobject javaInetAddress;
+        jint port;
+        javaInetSocketAddressToInetAddressAndPort(env, javaSocketAddress, javaInetAddress, port);
+        Linux_connect(env, thisObj, javaFd, javaInetAddress, port);
+        return;
+    }
     sockaddr_storage ss;
     socklen_t sa_len;
     if (!javaSocketAddressToSockaddr(env, javaSocketAddress, ss, sa_len)) {
