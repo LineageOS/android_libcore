@@ -408,9 +408,7 @@ public class OsTest extends TestCase {
     SocketAddress addrIpv6 = new InetSocketAddress(InetAddress.getByName("::1"), 0);
     SocketAddress addrUnix = UnixSocketAddress.createAbstract("/abstract_name_unix_socket");
 
-    // TODO: fix and uncomment. Currently fails with EAFNOSUPPORT because
-    // Linux_bindSocketAddress uses NET_FAILURE_RETRY instead of NET_IPV4_RETRY.
-    // expectBindConnectSendtoSuccess(makeIpv4Socket(), "ipv4", addrIpv4);
+    expectBindConnectSendtoSuccess(makeIpv4Socket(), "ipv4", addrIpv4);
     expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EAFNOSUPPORT,
                                  makeIpv4Socket(), "ipv4", addrIpv6);
     expectBindConnectSendtoErrno(EAFNOSUPPORT, EAFNOSUPPORT, EAFNOSUPPORT,
