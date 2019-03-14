@@ -51,7 +51,7 @@ import java.util.Enumeration;
  * InetAddress group = InetAddress.getByName("228.5.6.7");
  * MulticastSocket s = new MulticastSocket(6789);
  * s.joinGroup(group);
- * byte[] bytes = msg.getBytes();
+ * byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
  * DatagramPacket hi = new DatagramPacket(bytes, bytes.length,
  *                             group, 6789);
  * s.send(hi);
