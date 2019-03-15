@@ -253,57 +253,6 @@ public class NativeAllocationRegistry {
         return result;
     }
 
-    /**
-     * Interface for custom native allocation allocators used by
-     * {@link #registerNativeAllocation(Object, Allocator) registerNativeAllocation(Object, Allocator)}.
-     */
-    public interface Allocator {
-        /**
-         * Allocate a native allocation and return its address.
-         */
-        long allocate();
-    }
-
-    /**
-     * Registers and allocates a new native allocation and associated Java
-     * object with the runtime.
-     * This can be used for registering large allocations where the underlying
-     * native allocation shouldn't be performed until it's clear there is
-     * enough space on the Java heap to register the allocation.
-     * <p>
-     * If the allocator returns null, the allocation is not registered and a
-     * null Runnable is returned.
-     *
-     * @param referent      Non-null java object to associate the native allocation with
-     * @param allocator     used to perform the underlying native allocation.
-     * @return runnable to explicitly free native allocation
-     * @throws IllegalArgumentException if referent is null.
-     * @throws OutOfMemoryError  if there is not enough space on the Java heap
-     *                           in which to register the allocation. In this
-     *                           case, the allocator will not be run.
-     */
-    public Runnable registerNativeAllocation(Object referent, Allocator allocator) {
-        if (referent == null) {
-            throw new IllegalArgumentException("referent is null");
-        }
-
-        // Create the cleaner before running the allocator so that
-        // VMRuntime.registerNativeFree is eventually called if the allocate
-        // method throws an exception.
-        CleanerThunk thunk = new CleanerThunk();
-        Cleaner cleaner = Cleaner.create(referent, thunk);
-        CleanerRunner result = new CleanerRunner(cleaner);
-        long nativePtr = allocator.allocate();
-        if (nativePtr == 0) {
-            cleaner.clean();
-            return null;
-        }
-        registerNativeAllocation(this.size);
-        thunk.setNativePtr(nativePtr);
-        Reference.reachabilityFence(referent);
-        return result;
-    }
-
     private class CleanerThunk implements Runnable {
         private long nativePtr;
 
