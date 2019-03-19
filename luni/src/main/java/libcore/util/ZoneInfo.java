@@ -86,7 +86,16 @@ public final class ZoneInfo extends TimeZone {
     // Proclaim serialization compatibility with pre-OpenJDK AOSP
     static final long serialVersionUID = -4598738130123921552L;
 
+    /**
+     * The (best guess) non-DST offset used "today". It is stored in milliseconds.
+     * See also {@link #mOffsets} which holds values relative to this value, albeit in seconds.
+     */
     private int mRawOffset;
+
+    /**
+     * The earliest non-DST offset for the zone. It is stored in milliseconds and is absolute, i.e.
+     * it is not relative to mRawOffset.
+     */
     private final int mEarliestRawOffset;
 
     /**
@@ -283,15 +292,16 @@ public final class ZoneInfo extends TimeZone {
         setID(name);
 
         // Find the latest daylight and standard offsets (if any).
-        int lastStd = -1;
-        int lastDst = -1;
-        for (int i = mTransitions.length - 1; (lastStd == -1 || lastDst == -1) && i >= 0; --i) {
-            int type = mTypes[i] & 0xff;
-            if (lastStd == -1 && mIsDsts[type] == 0) {
-                lastStd = i;
+        int lastStdTransitionIndex = -1;
+        int lastDstTransitionIndex = -1;
+        for (int i = mTransitions.length - 1;
+                (lastStdTransitionIndex == -1 || lastDstTransitionIndex == -1) && i >= 0; --i) {
+            int typeIndex = mTypes[i] & 0xff;
+            if (lastStdTransitionIndex == -1 && mIsDsts[typeIndex] == 0) {
+                lastStdTransitionIndex = i;
             }
-            if (lastDst == -1 && mIsDsts[type] != 0) {
-                lastDst = i;
+            if (lastDstTransitionIndex == -1 && mIsDsts[typeIndex] != 0) {
+                lastDstTransitionIndex = i;
             }
         }
 
@@ -300,19 +310,19 @@ public final class ZoneInfo extends TimeZone {
             // If there are no transitions then use the first GMT offset.
             mRawOffset = gmtOffsets[0];
         } else {
-            if (lastStd == -1) {
+            if (lastStdTransitionIndex == -1) {
                 throw new IllegalStateException( "ZoneInfo requires at least one non-DST "
                         + "transition to be provided for each timezone that has at least one "
                         + "transition but could not find one for '" + name + "'");
             }
-            mRawOffset = gmtOffsets[mTypes[lastStd] & 0xff];
+            mRawOffset = gmtOffsets[mTypes[lastStdTransitionIndex] & 0xff];
         }
 
-        if (lastDst != -1) {
+        if (lastDstTransitionIndex != -1) {
             // Check to see if the last DST transition is in the future or the past. If it is in
             // the past then we treat it as if it doesn't exist, at least for the purposes of
             // setting mDstSavings and mUseDst.
-            long lastDSTTransitionTime = mTransitions[lastDst];
+            long lastDSTTransitionTime = mTransitions[lastDstTransitionIndex];
 
             // Convert the current time in millis into seconds. Unlike other places that convert
             // time in milliseconds into seconds in order to compare with transition time this
@@ -328,11 +338,11 @@ public final class ZoneInfo extends TimeZone {
             // useDaylightTime at the start of 2009 but "false" at the end. This seems appropriate.
             if (lastDSTTransitionTime < currentUnixTimeSeconds) {
                 // The last DST transition is before now so treat it as if it doesn't exist.
-                lastDst = -1;
+                lastDstTransitionIndex = -1;
             }
         }
 
-        if (lastDst == -1) {
+        if (lastDstTransitionIndex == -1) {
             // There were no DST transitions or at least no future DST transitions so DST is not
             // used.
             mDstSavings = 0;
@@ -340,22 +350,31 @@ public final class ZoneInfo extends TimeZone {
         } else {
             // Use the latest transition's pair of offsets to compute the DST savings.
             // This isn't generally useful, but it's exposed by TimeZone.getDSTSavings.
-            int lastGmtOffset = gmtOffsets[mTypes[lastStd] & 0xff];
-            int lastDstOffset = gmtOffsets[mTypes[lastDst] & 0xff];
+            int lastGmtOffset = gmtOffsets[mTypes[lastStdTransitionIndex] & 0xff];
+            int lastDstOffset = gmtOffsets[mTypes[lastDstTransitionIndex] & 0xff];
             mDstSavings = (lastDstOffset - lastGmtOffset) * 1000;
             mUseDst = true;
         }
 
-        // Cache the oldest known raw offset, in case we're asked about times that predate our
-        // transition data.
-        int firstStd = -1;
-        for (int i = 0; i < mTransitions.length; ++i) {
-            if (mIsDsts[mTypes[i] & 0xff] == 0) {
-                firstStd = i;
+        // From the tzfile docs (Jan 2019):
+        // The localtime(3) function uses the first standard-time ttinfo structure
+        // in the file (or simply the first ttinfo structure in the absence of a
+        // standard-time structure) if either tzh_timecnt is zero or the time
+        // argument is less than the first transition time recorded in the file.
+        //
+        // Cache the raw offset associated with the first nonDst type, in case we're asked about
+        // times that predate our transition data. Android falls back to mRawOffset if there are
+        // only DST ttinfo structures (assumed rare).
+        int firstStdTypeIndex = -1;
+        for (int i = 0; i < mIsDsts.length; ++i) {
+            if (mIsDsts[i] == 0) {
+                firstStdTypeIndex = i;
                 break;
             }
         }
-        int earliestRawOffset = (firstStd != -1) ? gmtOffsets[mTypes[firstStd] & 0xff] : mRawOffset;
+
+        int earliestRawOffset = (firstStdTypeIndex != -1)
+                ? gmtOffsets[firstStdTypeIndex] : mRawOffset;
 
         // Rather than keep offsets from UTC, we use offsets from local time, so the raw offset
         // can be changed and automatically affect all the offsets.
@@ -753,8 +772,9 @@ public final class ZoneInfo extends TimeZone {
                     int offsetIndex = zoneInfo.findOffsetIndexForTimeInSeconds(timeSeconds);
                     if (offsetIndex == -1) {
                         // -1 means timeSeconds is "before the first recorded transition". The first
-                        // recorded transition is treated as a transition from non-DST and the raw
-                        // offset.
+                        // recorded transition is treated as a transition from non-DST and the
+                        // earliest known raw offset.
+                        offsetSeconds = zoneInfo.mEarliestRawOffset / 1000;
                         isDst = 0;
                     } else {
                         offsetSeconds += zoneInfo.mOffsets[offsetIndex];
