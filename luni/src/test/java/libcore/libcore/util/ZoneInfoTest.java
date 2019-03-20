@@ -315,24 +315,17 @@ public class ZoneInfoTest extends TestCase {
   }
 
   /**
-   * TimeZone APIs use long times in millis. Android uses TZif version 1 format data which
-   * uses 32-bit time values for transitions so it only gives accurate results for times in that
-   * range.
+   * TimeZone APIs use Java long times in millis.
    *
-   * <p>Newer versions of zic after 2014b introduce an explicit transition at the earliest
-   * representable time, which is Integer.MIN_VALUE for TZif version 1 files. Previously the type
-   * used was left implicit and readers were expected to use the first non-DST type in the file.
-   * This extra transition mostly went away again with zic 2018f.
-   *
-   * <p>Testing newer zic versions demonstrated that Android had been mishandling the lookup of
-   * offset for times before the first transition. The logic has been corrected. This test would
-   * fail on versions of Android <= P.
+   * <p>Android has historically mishandled the lookup of offset for times before Integer.MIN_VALUE
+   * seconds for various reasons. The logic has been corrected. This test would fail on versions of
+   * Android <= P.
    */
   public void testReadTimeZone_Bug118835133_extraFirstTransition() throws Exception {
-    // A time before the first representable time in a TZif version 1 file.
+    // A time before the first representable time in seconds with a java int.
     Instant before32BitTime = timeFromSeconds(Integer.MIN_VALUE).minusMillis(1);
 
-    // Times between the start of the 32-bit time range and the first "official" transition.
+    // Times around the 32-bit seconds minimum.
     Instant[] earlyTimes = {
             timeFromSeconds(Integer.MIN_VALUE),
             timeFromSeconds(Integer.MIN_VALUE).plusMillis(1),
@@ -358,8 +351,7 @@ public class ZoneInfoTest extends TestCase {
             { offsetToSeconds(type2Offset), 0 },
     };
 
-    // Creates a simulation of zic version <= 2014b or zic version >= 2018f where there is often
-    // no explicit transition at Integer.MIN_VALUE seconds in TZif version 1 data.
+    // Simulates a zone with a single transition.
     {
       long[][] transitions = {
               { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
@@ -375,11 +367,11 @@ public class ZoneInfoTest extends TestCase {
       assertOffsetAt(oldZoneInfo, type2Offset, afterFirstRealTransitionTimes);
     }
 
-    // Creates a simulation of zic version > 2014b and zic version < 2018f where there is usually an
-    // explicit transition at Integer.MIN_VALUE seconds for TZif version 1 data.
+    // Simulation a zone where there is an explicit transition at Integer.MIN_VALUE seconds. This
+    // used to be common when Android used 32-bit data from the TZif file.
     {
       long[][] transitions = {
-              { Integer.MIN_VALUE, 1 /* type 1 */ }, // The extra transition added by zic.
+              { Integer.MIN_VALUE, 1 /* type 1 */ },
               { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
       };
       ZoneInfo newZoneInfo = createZoneInfo(transitions, types, currentTime);
@@ -398,7 +390,7 @@ public class ZoneInfoTest extends TestCase {
 
   /**
    * Newer versions of zic after 2014b sometime introduce an explicit transition at
-   * Integer.MAX_VALUE.
+   * Integer.MAX_VALUE seconds.
    */
   public void testReadTimeZone_Bug118835133_extraLastTransition() throws Exception {
     // An arbitrary time to use as currentTime. Not important for this test.
@@ -419,8 +411,8 @@ public class ZoneInfoTest extends TestCase {
     };
     Duration expectedLateOffset = offsetFromSeconds(latestOffsetSeconds);
 
-    // Create a simulation of zic version <= 2014b where there is usually no explicit transition at
-    // Integer.MAX_VALUE seconds.
+    // Create a simulation of a zone where there is no explicit transition at Integer.MAX_VALUE
+    // seconds.
     {
       long[][] transitions = {
               { 1000, 0 },
@@ -430,8 +422,8 @@ public class ZoneInfoTest extends TestCase {
       assertOffsetAt(oldZoneInfo, expectedLateOffset, timesToCheck);
     }
 
-    // Create a simulation of zic version > 2014b where there is sometimes an explicit transition at
-    // Integer.MAX_VALUE seconds.
+    // Create a simulation of a zone where there is an explicit transition at Integer.MAX_VALUE
+    // seconds.
     {
       long[][] transitions = {
               { 1000, 0 },
@@ -500,7 +492,7 @@ public class ZoneInfoTest extends TestCase {
     assertNotNull(createZoneInfo(getName(), Instant.now(), builder.build()));
   }
 
-  public void testReadTimeZone_BadMagic() throws Exception {
+  public void testReadTimeZone_BadMagic() {
     ZoneInfoTestHelper.ZicDataBuilder builder =
             new ZoneInfoTestHelper.ZicDataBuilder()
                     .initializeToValid()
@@ -683,16 +675,12 @@ public class ZoneInfoTest extends TestCase {
     }
   }
 
-  private static Instant timeFromSeconds(int timeInSeconds) {
+  private static Instant timeFromSeconds(long timeInSeconds) {
     return Instant.ofEpochSecond(timeInSeconds);
   }
 
-  private static int timeToSeconds(Instant time) {
-    long seconds = time.getEpochSecond();
-    if (seconds < Integer.MIN_VALUE || seconds > Integer.MAX_VALUE) {
-      fail("Time out of seconds range: " + time);
-    }
-    return (int) seconds;
+  private static long timeToSeconds(Instant time) {
+    return time.getEpochSecond();
   }
 
   private static Duration offsetFromSeconds(int offsetSeconds) {
@@ -792,8 +780,8 @@ public class ZoneInfoTest extends TestCase {
     }
 
     @Override
-    public void readByteArray(byte[] dst, int dstOffset, int byteCount) {
-      buffer.get(dst, dstOffset, byteCount);
+    public void readByteArray(byte[] bytes, int arrayOffset, int byteCount) {
+      buffer.get(bytes, arrayOffset, byteCount);
     }
 
     @Override
@@ -806,16 +794,24 @@ public class ZoneInfoTest extends TestCase {
       int value = buffer.asIntBuffer().get();
       // Using a separate view does not update the position of this buffer so do it
       // explicitly.
-      skip(4);
+      skip(Integer.BYTES);
       return value;
     }
 
     @Override
-    public void readIntArray(int[] dst, int dstOffset, int intCount) {
-      buffer.asIntBuffer().get(dst, dstOffset, intCount);
+    public void readIntArray(int[] ints, int arrayOffset, int intCount) {
+      buffer.asIntBuffer().get(ints, arrayOffset, intCount);
       // Using a separate view does not update the position of this buffer so do it
       // explicitly.
-      skip(4 * intCount);
+      skip(Integer.BYTES * intCount);
+    }
+
+    @Override
+    public void readLongArray(long[] longs, int arrayOffset, int longCount) {
+      buffer.asLongBuffer().get(longs, arrayOffset, longCount);
+      // Using a separate view does not update the position of this buffer so do it
+      // explicitly.
+      skip(Long.BYTES * longCount);
     }
 
     @Override
@@ -823,7 +819,7 @@ public class ZoneInfoTest extends TestCase {
       short value = buffer.asShortBuffer().get();
       // Using a separate view does not update the position of this buffer so do it
       // explicitly.
-      skip(2);
+      skip(Short.BYTES);
       return value;
     }
   }
