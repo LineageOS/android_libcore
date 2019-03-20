@@ -463,11 +463,7 @@ public final class VMRuntime {
      */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
-    public void registerNativeAllocation(long bytes) {
-        // TODO: Change the runtime to support passing the size as a long instead
-        // of an int. For now, we clamp the size to fit.
-        registerNativeAllocationInternal((int)Math.min(bytes, Integer.MAX_VALUE));
-    }
+    public native void registerNativeAllocation(long bytes);
 
     /**
      * Backward compatibility version of registerNativeAllocation. We used to pass an int instead
@@ -481,16 +477,12 @@ public final class VMRuntime {
         registerNativeAllocation((long) bytes);
     }
 
-    private native void registerNativeAllocationInternal(int bytes);
-
     /**
      * Registers a native free by reducing the number of native bytes accounted for.
      */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
-    public void registerNativeFree(long bytes) {
-        registerNativeFreeInternal((int)Math.min(bytes, Integer.MAX_VALUE));
-    }
+    public native void registerNativeFree(long bytes);
 
     /**
      * Backward compatibility version of registerNativeFree.
@@ -502,7 +494,6 @@ public final class VMRuntime {
     public void registerNativeFree(int bytes) {
         registerNativeFree((long) bytes);
     }
-    private native void registerNativeFreeInternal(int bytes);
 
     /**
      * Return the number of native objects that are reported by a single call to
