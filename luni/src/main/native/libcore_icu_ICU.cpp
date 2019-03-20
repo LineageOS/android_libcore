@@ -1073,7 +1073,7 @@ void register_libcore_icu_ICU(JNIEnv* env) {
 }
 
 // De-init ICU, unloading the data files. Do the opposite of the above function.
-void unregister_libcore_icu_ICU(JNIEnv*) {
+void unregister_libcore_icu_ICU() {
   // Explicitly calling this is optional. Dlclose will take care of it as well.
   sIcuRegistration.reset();
 }
