@@ -102,15 +102,16 @@ public final class DexFile {
      * @param elements
      *            the temporary dex path list elements from DexPathList.makeElements
      */
-    DexFile(String fileName, ClassLoader loader, DexPathList.Element[] elements) throws IOException {
+    DexFile(String fileName, ClassLoader loader, DexPathList.Element[] elements)
+            throws IOException {
         mCookie = openDexFile(fileName, null, 0, loader, elements);
         mInternalCookie = mCookie;
         mFileName = fileName;
         //System.out.println("DEX FILE cookie is " + mCookie + " fileName=" + fileName);
     }
 
-    DexFile(ByteBuffer buf) throws IOException {
-        mCookie = openInMemoryDexFile(buf);
+    DexFile(ByteBuffer[] bufs) throws IOException {
+        mCookie = openInMemoryDexFiles(bufs);
         mInternalCookie = mCookie;
         mFileName = null;
     }
@@ -369,16 +370,23 @@ public final class DexFile {
                                  elements);
     }
 
-    private static Object openInMemoryDexFile(ByteBuffer buf) throws IOException {
-        if (buf.isDirect()) {
-            return createCookieWithDirectBuffer(buf, buf.position(), buf.limit());
-        } else {
-            return createCookieWithArray(buf.array(), buf.position(), buf.limit());
+    private static Object openInMemoryDexFiles(ByteBuffer[] bufs) throws IOException {
+        // Preprocess the ByteBuffers for openInMemoryDexFilesNative. We extract
+        // the backing array (non-direct buffers only) and start/end positions
+        // so that the native method does not have to call Java methods anymore.
+        byte[][] arrays = new byte[bufs.length][];
+        int[] starts = new int[bufs.length];
+        int[] ends = new int[bufs.length];
+        for (int i = 0; i < bufs.length; ++i) {
+            arrays[i] = bufs[i].isDirect() ? null : bufs[i].array();
+            starts[i] = bufs[i].position();
+            ends[i] = bufs[i].limit();
         }
+        return openInMemoryDexFilesNative(bufs, arrays, starts, ends);
     }
 
-    private static native Object createCookieWithDirectBuffer(ByteBuffer buf, int start, int end);
-    private static native Object createCookieWithArray(byte[] buf, int start, int end);
+    private static native Object openInMemoryDexFilesNative(ByteBuffer[] bufs, byte[][] arrays,
+            int[] starts, int[] ends);
 
     /*
      * Returns true if the dex file is backed by a valid oat file.
