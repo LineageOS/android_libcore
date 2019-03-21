@@ -24,11 +24,13 @@ import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import libcore.io.Streams;
 import junit.framework.TestCase;
 
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.InMemoryDexClassLoader;
+import dalvik.system.DexPathList;
 
 /**
  * Tests for the class {@link InMemoryDexClassLoader}.
@@ -422,6 +424,20 @@ public class InMemoryDexClassLoaderTest extends TestCase {
                 new ByteBuffer[] { readFileToByteBufferIndirect(dex1, paddingBefore) },
                 /* parent */ null);
         classLoader.loadClass("test.TestMethods");
+    }
+
+    /**
+     * DexPathList.makeInMemoryDexElements() is a legacy code path not used by
+     * InMemoryDexClassLoader anymore but heavily used by 3p apps. Test that it still works.
+     */
+    public void testMakeInMemoryDexElements() throws Exception {
+        ArrayList<IOException> exceptions = new ArrayList<>();
+        Object[] elements = DexPathList.makeInMemoryDexElements(
+                new ByteBuffer[] { readFileToByteBufferDirect(dex1),
+                                   readFileToByteBufferIndirect(dex2) },
+                exceptions);
+        assertEquals(2, elements.length);
+        assertTrue(exceptions.isEmpty());
     }
 
     private static File makeEmptyFile(File directory, String name) throws IOException {
