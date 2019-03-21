@@ -366,9 +366,8 @@ public class OsTest extends TestCase {
       try {
         // Expect that bind throws when any of its arguments are null.
         expectBindException(null, addr, ErrnoException.class, EBADF);
-        // TODO: fix JNI crash in javaInetSocketAddressToInetAddressAndPort and uncomment.
-        // expectBindException(socket, null, NullPointerException.class, null);
-        // expectBindException(null, null, NullPointerException.class, null);
+        expectBindException(socket, null, NullPointerException.class, null);
+        expectBindException(null, null, NullPointerException.class, null);
 
         // Expect bind to succeed.
         Libcore.os.bind(socket, addr);
@@ -389,15 +388,14 @@ public class OsTest extends TestCase {
         // succeed with a non-null address.
         byte[] packet = new byte[42];
         Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
-        // TODO: fix JNI crash in javaInetSocketAddressToInetAddressAndPort and uncomment.
-        // expectSendtoException(socket, null, ErrnoException.class, EDSTADDRREQ);
-        // expectSendtoException(null, null, ErrnoException.class, EBADF);
+        // UNIX and IP sockets return different errors for this operation, so we can't check errno.
+        expectSendtoException(socket, null, ErrnoException.class, null);
+        expectSendtoException(null, null, ErrnoException.class, EBADF);
 
         // Expect that connect throws when any of its arguments are null.
         expectConnectException(null, addr, ErrnoException.class, EBADF);
-        // TODO: fix JNI crash in javaInetSocketAddressToInetAddressAndPort and uncomment.
-        // expectConnectException(socket, null, NullPointerException.class, null);
-        // expectConnectException(null, null, NullPointerException.class, null);
+        expectConnectException(socket, null, NullPointerException.class, null);
+        expectConnectException(null, null, NullPointerException.class, null);
 
         // Expect connect to succeed.
         Libcore.os.connect(socket, addr);
@@ -405,8 +403,7 @@ public class OsTest extends TestCase {
 
         // Expect sendto to succeed both when given an explicit address and a null address.
         Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
-        // TODO: fix JNI crash in javaInetSocketAddressToInetAddressAndPort and uncomment.
-        // Libcore.os.sendto(socket, packet, 0, packet.length, 0, null);
+        Libcore.os.sendto(socket, packet, 0, packet.length, 0, null);
       } catch (SocketException | ErrnoException e) {
         fail("Expected success for " + msg + ", but got: " + e);
       }
