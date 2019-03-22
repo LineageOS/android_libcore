@@ -309,13 +309,67 @@ public class OsTest extends TestCase {
     Libcore.os.close(clientFd);
   }
 
+  interface ExceptionalRunnable {
+    public void run() throws Exception;
+  }
+
+  /**
+   * Expects that the given Runnable will throw an exception of the specified class. If the class is
+   * ErrnoException, and expectedErrno is non-null, also checks that the errno is equal to
+   * expectedErrno.
+   */
+  private static void expectException(ExceptionalRunnable r, Class<? extends Exception> exClass,
+        Integer expectedErrno, String msg) {
+    try {
+      r.run();
+      fail(msg + " did not throw exception");
+    } catch (Exception e) {
+      assertEquals(msg + " threw unexpected exception", exClass, e.getClass());
+
+      if (expectedErrno != null) {
+        if (e instanceof ErrnoException) {
+          assertEquals(msg + "threw ErrnoException with unexpected error number",
+              (int) expectedErrno, ((ErrnoException) e).errno);
+        } else {
+          fail("Can only pass expectedErrno when expecting ErrnoException");
+        }
+      }
+
+    }
+  }
+
+  private static void expectBindException(FileDescriptor socket, SocketAddress addr,
+      Class exClass, Integer expectedErrno) {
+    String msg = String.format("bind(%s, %s)", socket, addr);
+    expectException(() -> { Libcore.os.bind(socket, addr); }, exClass, expectedErrno, msg);
+  }
+
+  private static void expectConnectException(FileDescriptor socket, SocketAddress addr,
+      Class exClass, Integer expectedErrno) {
+    String msg = String.format("connect(%s, %s)", socket, addr);
+    expectException(() -> { Libcore.os.connect(socket, addr); }, exClass, expectedErrno, msg);
+  }
+
+  private static void expectSendtoException(FileDescriptor socket, SocketAddress addr,
+      Class exClass, Integer expectedErrno) {
+    String msg = String.format("sendto(%s, %s)", socket, addr);
+    byte[] packet = new byte[42];
+    expectException(() -> { Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr); },
+        exClass, expectedErrno, msg);
+  }
+
   private static void expectBindConnectSendtoSuccess(FileDescriptor socket, String socketDesc,
                                                      SocketAddress addr) {
     String msg = socketDesc + " socket to " + addr.toString();
 
     try {
-      // Expect bind to succeed.
       try {
+        // Expect that bind throws when any of its arguments are null.
+        expectBindException(null, addr, ErrnoException.class, EBADF);
+        expectBindException(socket, null, NullPointerException.class, null);
+        expectBindException(null, null, NullPointerException.class, null);
+
+        // Expect bind to succeed.
         Libcore.os.bind(socket, addr);
 
         // Find out which port we're actually bound to, and use that in subsequent connect() and
@@ -330,13 +384,26 @@ public class OsTest extends TestCase {
           addr = socknameISA;
         }
 
+        // Expect sendto with a null address to throw because the socket is not connected, but to
+        // succeed with a non-null address.
+        byte[] packet = new byte[42];
+        Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
+        // UNIX and IP sockets return different errors for this operation, so we can't check errno.
+        expectSendtoException(socket, null, ErrnoException.class, null);
+        expectSendtoException(null, null, ErrnoException.class, EBADF);
+
+        // Expect that connect throws when any of its arguments are null.
+        expectConnectException(null, addr, ErrnoException.class, EBADF);
+        expectConnectException(socket, null, NullPointerException.class, null);
+        expectConnectException(null, null, NullPointerException.class, null);
+
         // Expect connect to succeed.
         Libcore.os.connect(socket, addr);
         assertEquals(Libcore.os.getsockname(socket), Libcore.os.getpeername(socket));
 
-        // Expect sendto to succeed.
-        byte[] packet = new byte[42];
+        // Expect sendto to succeed both when given an explicit address and a null address.
         Libcore.os.sendto(socket, packet, 0, packet.length, 0, addr);
+        Libcore.os.sendto(socket, packet, 0, packet.length, 0, null);
       } catch (SocketException | ErrnoException e) {
         fail("Expected success for " + msg + ", but got: " + e);
       }
