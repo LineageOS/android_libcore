@@ -17,6 +17,11 @@
 package android.system;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+
+import libcore.io.Libcore;
+import libcore.util.NonNull;
+import libcore.util.Nullable;
+
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -24,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import libcore.io.Libcore;
 
 /**
  * Access to low-level system functionality. Most of these are system calls. Most users will want
@@ -57,7 +61,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/bind.2.html">bind(2)</a>.
      */
-    public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
+    public static void bind(@NonNull FileDescriptor fd, @NonNull SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
@@ -103,7 +107,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/connect.2.html">connect(2)</a>.
      */
-    public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
+    public static void connect(@NonNull FileDescriptor fd, @NonNull SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/dup.2.html">dup(2)</a>.
@@ -512,7 +516,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendto.2.html">sendto(2)</a>.
      */
-    public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
+    public static int sendto(@NonNull FileDescriptor fd, @NonNull byte[] bytes, int byteOffset, int byteCount, int flags, @Nullable SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setegid.2.html">setegid(2)</a>.
