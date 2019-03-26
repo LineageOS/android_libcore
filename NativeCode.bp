@@ -56,6 +56,7 @@ cc_library_shared {
         "dalvik/src/main/native/org_apache_harmony_dalvik_NativeTestTarget.cpp",
     ],
     shared_libs: [
+        "libandroidio",
         "libbase",
         "libcrypto",
         "libexpat",
@@ -76,6 +77,23 @@ cc_library_shared {
                 "-DANDROID_LINK_SHARED_ICU4C",
             ],
         },
+    },
+}
+
+cc_library_shared {
+    name: "libandroidio",
+    defaults: [
+        "core_native_default_flags",
+    ],
+    shared_libs: [
+        "liblog",
+    ],
+    srcs: [
+        ":libandroidio_srcs",
+    ],
+    stubs: {
+        symbol_file: "libandroidio.map.txt",
+        versions: ["1"],
     },
 }
 
@@ -101,9 +119,9 @@ cc_defaults {
     ],
 
     shared_libs: [
+        "libandroidio",
         "libcrypto",
         "libicuuc",
-        "libjavacore",
         "libnativehelper",
         "libz",
     ],
