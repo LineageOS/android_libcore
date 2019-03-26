@@ -315,6 +315,134 @@ public class ZoneInfoTest extends TestCase {
   }
 
   /**
+   * TimeZone APIs use long times in millis. Android uses TZif version 1 format data which
+   * uses 32-bit time values for transitions so it only gives accurate results for times in that
+   * range.
+   *
+   * <p>Newer versions of zic after 2014b introduce an explicit transition at the earliest
+   * representable time, which is Integer.MIN_VALUE for TZif version 1 files. Previously the type
+   * used was left implicit and readers were expected to use the first non-DST type in the file.
+   *
+   * <p>Testing newer zic versions demonstrated that Android had been mishandling the lookup of
+   * offset for times before the first transition. The logic has been corrected. This test would
+   * fail on versions of Android <= P.
+   */
+  public void testReadTimeZone_Bug118835133_extraFirstTransition() throws Exception {
+    // A time before the first representable time in a TZif version 1 file.
+    Instant before32BitTime = timeFromSeconds(Integer.MIN_VALUE).minusMillis(1);
+
+    // Times between the start of the 32-bit time range and the first "official" transition.
+    Instant[] earlyTimes = {
+            timeFromSeconds(Integer.MIN_VALUE),
+            timeFromSeconds(Integer.MIN_VALUE).plusMillis(1),
+    };
+
+    Instant firstRealTransitionTime = timeFromSeconds(1000);
+    Instant afterFirstRealTransitionTime = firstRealTransitionTime.plusSeconds(1);
+    Instant[] afterFirstRealTransitionTimes = {
+            firstRealTransitionTime,
+            afterFirstRealTransitionTime,
+    };
+
+    // A time to use as currentTime when building the TimeZone. Important for the getRawOffset()
+    // calculation.
+    Instant currentTime = afterFirstRealTransitionTime;
+
+    Duration type0Offset = offsetFromSeconds(0);
+    Duration type1Offset = offsetFromSeconds(1800);
+    Duration type2Offset = offsetFromSeconds(3600);
+    int[][] types = {
+            { offsetToSeconds(type0Offset), 0 }, // 1st type, used before first known transition.
+            { offsetToSeconds(type1Offset), 0 },
+            { offsetToSeconds(type2Offset), 0 },
+    };
+
+    // Creates a simulation of zic version <= 2014b where there is usually no explicit transition at
+    // Integer.MIN_VALUE seconds in TZif version 1 data.
+    {
+      int[][] transitions = {
+              { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
+      };
+      ZoneInfo oldZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertRawOffset(oldZoneInfo, type2Offset);
+
+      // We use the first non-DST type for times before the first transition.
+      assertOffsetAt(oldZoneInfo, type0Offset, before32BitTime);
+      assertOffsetAt(oldZoneInfo, type0Offset, earlyTimes);
+
+      // This is after the first transition, so type 2.
+      assertOffsetAt(oldZoneInfo, type2Offset, afterFirstRealTransitionTimes);
+    }
+
+    // Creates a simulation of zic version > 2014b where there is usually an explicit transition at
+    // Integer.MIN_VALUE seconds for TZif version 1 data.
+    {
+      int[][] transitions = {
+              { Integer.MIN_VALUE, 1 /* type 1 */ }, // The extra transition added by zic.
+              { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
+      };
+      ZoneInfo newZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertRawOffset(newZoneInfo, type2Offset);
+
+      // We use the first non-DST type for times before the first transition.
+      assertOffsetAt(newZoneInfo, type0Offset, before32BitTime);
+
+      // After the first transition, so type 1.
+      assertOffsetAt(newZoneInfo, type1Offset, earlyTimes);
+
+      // This is after the second transition, so type 2.
+      assertOffsetAt(newZoneInfo, type2Offset, afterFirstRealTransitionTimes);
+    }
+  }
+
+  /**
+   * Newer versions of zic after 2014b sometime introduce an explicit transition at
+   * Integer.MAX_VALUE.
+   */
+  public void testReadTimeZone_Bug118835133_extraLastTransition() throws Exception {
+    // An arbitrary time to use as currentTime. Not important for this test.
+    Instant currentTime = timeFromSeconds(4000);
+
+    // Offset before time 1000 should be consistent.
+    Instant[] timesToCheck = {
+            timeFromSeconds(2100), // arbitrary time > 2000
+            timeFromSeconds(Integer.MAX_VALUE).minusMillis(1),
+            timeFromSeconds(Integer.MAX_VALUE),
+            timeFromSeconds(Integer.MAX_VALUE).plusMillis(1),
+    };
+
+    int latestOffsetSeconds = 3600;
+    int[][] types = {
+            { 1800, 0 },
+            { latestOffsetSeconds, 0 },
+    };
+    Duration expectedLateOffset = offsetFromSeconds(latestOffsetSeconds);
+
+    // Create a simulation of zic version <= 2014b where there is usually no explicit transition at
+    // Integer.MAX_VALUE seconds.
+    {
+      int[][] transitions = {
+              { 1000, 0 },
+              { 2000, 1 },
+      };
+      ZoneInfo oldZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertOffsetAt(oldZoneInfo, expectedLateOffset, timesToCheck);
+    }
+
+    // Create a simulation of zic version > 2014b where there is sometimes an explicit transition at
+    // Integer.MAX_VALUE seconds.
+    {
+      int[][] transitions = {
+              { 1000, 0 },
+              { 2000, 1 },
+              { Integer.MAX_VALUE, 1}, // The extra transition.
+      };
+      ZoneInfo newZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertOffsetAt(newZoneInfo, expectedLateOffset, timesToCheck);
+    }
+  }
+
+  /**
    * Checks to make sure that it can handle up to 256 types.
    */
   public void testReadTimeZone_LotsOfTypes() throws Exception {
@@ -580,8 +708,24 @@ public class ZoneInfoTest extends TestCase {
     return Instant.ofEpochSecond(timeInSeconds);
   }
 
+  private static int timeToSeconds(Instant time) {
+    long seconds = time.getEpochSecond();
+    if (seconds < Integer.MIN_VALUE || seconds > Integer.MAX_VALUE) {
+      fail("Time out of seconds range: " + time);
+    }
+    return (int) seconds;
+  }
+
   private static Duration offsetFromSeconds(int offsetSeconds) {
     return Duration.ofSeconds(offsetSeconds);
+  }
+
+  private static int offsetToSeconds(Duration offset) {
+    long seconds = offset.getSeconds();
+    if (seconds < Integer.MIN_VALUE || seconds > Integer.MAX_VALUE) {
+      fail("Offset out of seconds range: " + offset);
+    }
+    return (int) seconds;
   }
 
   private ZoneInfo createZoneInfo(int[][] transitions, int[][] types)
