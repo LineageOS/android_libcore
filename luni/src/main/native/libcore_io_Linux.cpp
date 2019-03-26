@@ -1718,8 +1718,14 @@ static jobject Linux_inet_pton(JNIEnv* env, jobject, jint family, jstring javaNa
     }
     sockaddr_storage ss;
     memset(&ss, 0, sizeof(ss));
-    // sockaddr_in and sockaddr_in6 are at the same address, so we can use either here.
-    void* dst = &reinterpret_cast<sockaddr_in*>(&ss)->sin_addr;
+    void* dst;
+    if (family == AF_INET) {
+      dst = &reinterpret_cast<sockaddr_in*>(&ss)->sin_addr;
+    } else if (family == AF_INET6) {
+      dst = &reinterpret_cast<sockaddr_in6*>(&ss)->sin6_addr;
+    } else {
+      return NULL;
+    }
     if (inet_pton(family, name.c_str(), dst) != 1) {
         return NULL;
     }
