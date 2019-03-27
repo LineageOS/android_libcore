@@ -783,7 +783,7 @@ public final class ZoneInfo extends TimeZone {
                 }
 
                 // Perform arithmetic that might underflow before setting fields.
-                int wallTimeSeconds = checkedAdd(timeSeconds, offsetSeconds);
+                int wallTimeSeconds = checked32BitAdd(timeSeconds, offsetSeconds);
 
                 // Set fields.
                 calendar.setTimeInMillis(wallTimeSeconds * 1000L);
@@ -836,7 +836,7 @@ public final class ZoneInfo extends TimeZone {
             try {
                 final int wallTimeSeconds =  (int) longWallTimeSeconds;
                 final int rawOffsetSeconds = zoneInfo.mRawOffset / 1000;
-                final int rawTimeSeconds = checkedSubtract(wallTimeSeconds, rawOffsetSeconds);
+                final int rawTimeSeconds = checked32BitSubtract(wallTimeSeconds, rawOffsetSeconds);
 
                 if (zoneInfo.mTransitions.length == 0) {
                     // There is no transition information. There is just a raw offset for all time.
@@ -921,10 +921,11 @@ public final class ZoneInfo extends TimeZone {
                 int jOffsetSeconds = rawOffsetSeconds + offsetsToTry[j];
                 int targetIntervalOffsetSeconds = targetInterval.getTotalOffsetSeconds();
                 int adjustmentSeconds = targetIntervalOffsetSeconds - jOffsetSeconds;
-                int adjustedWallTimeSeconds = checkedAdd(oldWallTimeSeconds, adjustmentSeconds);
+                int adjustedWallTimeSeconds =
+                        checked32BitAdd(oldWallTimeSeconds, adjustmentSeconds);
                 if (targetInterval.containsWallTime(adjustedWallTimeSeconds)) {
                     // Perform any arithmetic that might overflow.
-                    int returnValue = checkedSubtract(adjustedWallTimeSeconds,
+                    int returnValue = checked32BitSubtract(adjustedWallTimeSeconds,
                             targetIntervalOffsetSeconds);
 
                     // Modify field state and return the result.
@@ -1058,8 +1059,8 @@ public final class ZoneInfo extends TimeZone {
                             // the result might be a DST or a non-DST answer for wall times that can
                             // exist in two OffsetIntervals.
                             int totalOffsetSeconds = offsetInterval.getTotalOffsetSeconds();
-                            int returnValue = checkedSubtract(wallTimeSeconds,
-                                    totalOffsetSeconds);
+                            int returnValue =
+                                    checked32BitSubtract(wallTimeSeconds, totalOffsetSeconds);
 
                             copyFieldsFromCalendar();
                             this.isDst = offsetInterval.getIsDst();
@@ -1246,16 +1247,19 @@ public final class ZoneInfo extends TimeZone {
      * Crucially this means that there was a "gap" after PST when PDT started, and an overlap when
      * PDT ended and PST began.
      *
-     * <p>For convenience all wall-time values are represented as the number of seconds since the
-     * beginning of the Unix epoch <em>in UTC</em>. To convert from a wall-time to the actual time
-     * in the offset it is necessary to <em>subtract</em> the {@code totalOffsetSeconds}.
+     * <p>Although wall-time means "local time", for convenience all wall-time values are stored in
+     * the number of seconds since the beginning of the Unix epoch to get that time <em>in UTC</em>.
+     * To convert from a wall-time to the actual UTC time it is necessary to <em>subtract</em> the
+     * {@code totalOffsetSeconds}.
      * For example: If the offset in PST is -07:00 hours, then:
      * timeInPstSeconds = wallTimeUtcSeconds - offsetSeconds
      * i.e. 13:00 UTC - (-07:00) = 20:00 UTC = 13:00 PST
      */
     static class OffsetInterval {
 
+        /** The time the interval starts in seconds since start of epoch, inclusive. */
         private final int startWallTimeSeconds;
+        /** The time the interval ends in seconds since start of epoch, exclusive. */
         private final int endWallTimeSeconds;
         private final int isDst;
         private final int totalOffsetSeconds;
@@ -1263,40 +1267,60 @@ public final class ZoneInfo extends TimeZone {
         /**
          * Creates an {@link OffsetInterval}.
          *
-         * <p>If {@code transitionIndex} is -1, the transition is synthesized to be a non-DST offset
-         * that runs from the beginning of time until the first transition in {@code timeZone} and
-         * has an offset of {@code timezone.mRawOffset}. If {@code transitionIndex} is the last
-         * transition that transition is considered to run until the end of representable time.
+         * <p>If {@code transitionIndex} is -1, where possible the transition is synthesized to run
+         * from the beginning of 32-bit time until the first transition in {@code timeZone} with
+         * offset information based on the first type defined. If {@code transitionIndex} is the
+         * last transition, that transition is considered to run until the end of 32-bit time.
          * Otherwise, the information is extracted from {@code timeZone.mTransitions},
-         * {@code timeZone.mOffsets} an {@code timeZone.mIsDsts}.
+         * {@code timeZone.mOffsets} and {@code timeZone.mIsDsts}.
+         *
+         * <p>This method can return null when:
+         * <ol>
+         * <li>the {@code transitionIndex} is outside the allowed range, i.e.
+         *   {@code transitionIndex < -1 || transitionIndex >= [the number of transitions]}.</li>
+         * <li>when calculations result in a zero-length interval. This is only expected to occur
+         *   when dealing with transitions close to (or exactly at) {@code Integer.MIN_VALUE} and
+         *   {@code Integer.MAX_VALUE} and where it's difficult to convert from UTC to local times.
+         *   </li>
+         * </ol>
          */
-        public static OffsetInterval create(ZoneInfo timeZone, int transitionIndex)
-                throws CheckedArithmeticException {
-
+        public static OffsetInterval create(ZoneInfo timeZone, int transitionIndex) {
             if (transitionIndex < -1 || transitionIndex >= timeZone.mTransitions.length) {
                 return null;
             }
 
-            int rawOffsetSeconds = timeZone.mRawOffset / 1000;
             if (transitionIndex == -1) {
-                int endWallTimeSeconds = checkedAdd(timeZone.mTransitions[0], rawOffsetSeconds);
-                return new OffsetInterval(Integer.MIN_VALUE, endWallTimeSeconds, 0 /* isDst */,
-                        rawOffsetSeconds);
+                int totalOffsetSeconds = timeZone.mEarliestRawOffset / 1000;
+                int isDst = 0;
+
+                int startWallTimeSeconds = Integer.MIN_VALUE;
+                int endWallTimeSeconds =
+                        saturated32BitAdd(timeZone.mTransitions[0], totalOffsetSeconds);
+                if (startWallTimeSeconds == endWallTimeSeconds) {
+                    // There's no point in returning an OffsetInterval that lasts 0 seconds.
+                    return null;
+                }
+                return new OffsetInterval(startWallTimeSeconds, endWallTimeSeconds, isDst,
+                        totalOffsetSeconds);
             }
 
+            int rawOffsetSeconds = timeZone.mRawOffset / 1000;
             int type = timeZone.mTypes[transitionIndex] & 0xff;
             int totalOffsetSeconds = timeZone.mOffsets[type] + rawOffsetSeconds;
             int endWallTimeSeconds;
             if (transitionIndex == timeZone.mTransitions.length - 1) {
-                // If this is the last transition, make up the end time.
                 endWallTimeSeconds = Integer.MAX_VALUE;
             } else {
-                endWallTimeSeconds = checkedAdd(timeZone.mTransitions[transitionIndex + 1],
-                        totalOffsetSeconds);
+                endWallTimeSeconds = saturated32BitAdd(
+                        timeZone.mTransitions[transitionIndex + 1], totalOffsetSeconds);
             }
             int isDst = timeZone.mIsDsts[type];
             int startWallTimeSeconds =
-                    checkedAdd(timeZone.mTransitions[transitionIndex], totalOffsetSeconds);
+                    saturated32BitAdd(timeZone.mTransitions[transitionIndex], totalOffsetSeconds);
+            if (startWallTimeSeconds == endWallTimeSeconds) {
+                // There's no point in returning an OffsetInterval that lasts 0 seconds.
+                return null;
+            }
             return new OffsetInterval(
                     startWallTimeSeconds, endWallTimeSeconds, isDst, totalOffsetSeconds);
         }
@@ -1337,11 +1361,11 @@ public final class ZoneInfo extends TimeZone {
     }
 
     /**
-     * Calculate (a + b).
+     * Calculate (a + b). The result must be in the Integer range otherwise an exception is thrown.
      *
      * @throws CheckedArithmeticException if overflow or underflow occurs
      */
-    private static int checkedAdd(long a, int b) throws CheckedArithmeticException {
+    private static int checked32BitAdd(long a, int b) throws CheckedArithmeticException {
         // Adapted from Guava IntMath.checkedAdd();
         long result = a + b;
         if (result != (int) result) {
@@ -1351,15 +1375,29 @@ public final class ZoneInfo extends TimeZone {
     }
 
     /**
-     * Calculate (a - b).
+     * Calculate (a - b). The result must be in the Integer range otherwise an exception is thrown.
      *
      * @throws CheckedArithmeticException if overflow or underflow occurs
      */
-    private static int checkedSubtract(int a, int b) throws CheckedArithmeticException {
+    private static int checked32BitSubtract(long a, int b) throws CheckedArithmeticException {
         // Adapted from Guava IntMath.checkedSubtract();
-        long result = (long) a - b;
+        long result = a - b;
         if (result != (int) result) {
             throw new CheckedArithmeticException();
+        }
+        return (int) result;
+    }
+
+    /**
+     * Calculate (a + b). If the result would overflow or underflow outside of the Integer range
+     * Integer.MAX_VALUE or Integer.MIN_VALUE will be returned, respectively.
+     */
+    private static int saturated32BitAdd(long a, int b) {
+        long result = a + b;
+        if (result > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        } else if (result < Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
         }
         return (int) result;
     }
