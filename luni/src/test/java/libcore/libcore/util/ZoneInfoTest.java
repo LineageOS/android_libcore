@@ -396,6 +396,53 @@ public class ZoneInfoTest extends TestCase {
   }
 
   /**
+   * Newer versions of zic after 2014b sometime introduce an explicit transition at
+   * Integer.MAX_VALUE.
+   */
+  public void testReadTimeZone_Bug118835133_extraLastTransition() throws Exception {
+    // An arbitrary time to use as currentTime. Not important for this test.
+    Instant currentTime = timeFromSeconds(4000);
+
+    // Offset before time 1000 should be consistent.
+    Instant[] timesToCheck = {
+            timeFromSeconds(2100), // arbitrary time > 2000
+            timeFromSeconds(Integer.MAX_VALUE).minusMillis(1),
+            timeFromSeconds(Integer.MAX_VALUE),
+            timeFromSeconds(Integer.MAX_VALUE).plusMillis(1),
+    };
+
+    int latestOffsetSeconds = 3600;
+    int[][] types = {
+            { 1800, 0 },
+            { latestOffsetSeconds, 0 },
+    };
+    Duration expectedLateOffset = offsetFromSeconds(latestOffsetSeconds);
+
+    // Create a simulation of zic version <= 2014b where there is usually no explicit transition at
+    // Integer.MAX_VALUE seconds.
+    {
+      int[][] transitions = {
+              { 1000, 0 },
+              { 2000, 1 },
+      };
+      ZoneInfo oldZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertOffsetAt(oldZoneInfo, expectedLateOffset, timesToCheck);
+    }
+
+    // Create a simulation of zic version > 2014b where there is sometimes an explicit transition at
+    // Integer.MAX_VALUE seconds.
+    {
+      int[][] transitions = {
+              { 1000, 0 },
+              { 2000, 1 },
+              { Integer.MAX_VALUE, 1}, // The extra transition.
+      };
+      ZoneInfo newZoneInfo = createZoneInfo(transitions, types, currentTime);
+      assertOffsetAt(newZoneInfo, expectedLateOffset, timesToCheck);
+    }
+  }
+
+  /**
    * Checks to make sure that it can handle up to 256 types.
    */
   public void testReadTimeZone_LotsOfTypes() throws Exception {
