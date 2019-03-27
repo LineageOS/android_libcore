@@ -1316,4 +1316,34 @@ public class OsTest extends TestCase {
     assertFalse(Os.compareAndSetDefault(otherOs, otherOs));
     assertSame(defaultOs, Os.getDefault());
   }
+
+  public void testInetPtonIpv4() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET, srcAddress);
+    assertEquals(srcAddress, inetAddress.getHostAddress());
+  }
+
+  public void testInetPtonIpv6() {
+    String srcAddress = "1123:4567:89ab:cdef:fedc:ba98:7654:3210";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET6, srcAddress);
+    assertEquals(srcAddress, inetAddress.getHostAddress());
+  }
+
+  public void testInetPtonInvalidFamily() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_UNIX, srcAddress);
+    assertNull(inetAddress);
+  }
+
+  public void testInetPtonWrongFamily() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET6, srcAddress);
+    assertNull(inetAddress);
+  }
+
+  public void testInetPtonInvalidData() {
+    String srcAddress = "10.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET, srcAddress);
+    assertNull(inetAddress);
+  }
 }
