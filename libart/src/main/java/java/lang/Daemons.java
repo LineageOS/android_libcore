@@ -38,9 +38,16 @@ import libcore.util.EmptyArray;
  */
 public final class Daemons {
     private static final int NANOS_PER_MILLI = 1000 * 1000;
-    private static final int NANOS_PER_SECOND = NANOS_PER_MILLI * 1000;
+
+    // This used to be final. IT IS NOW ONLY WRITTEN. We now update it when we look at the command
+    // line argument, for the benefit of mis-behaved apps that might read it.  SLATED FOR REMOVAL.
+    // There is no reason to use this: Finalizers should not rely on the value. If a finalizer takes
+    // appreciable time, the work should be done elsewhere.  Based on disassembly of Daemons.class,
+    // the value is effectively inlined, so changing the field never did have an effect.
+    // DO NOT USE. FOR ANYTHING. THIS WILL BE REMOVED SHORTLY.
     @UnsupportedAppUsage
-    private static final long MAX_FINALIZE_NANOS = 10L * NANOS_PER_SECOND;
+    private static long MAX_FINALIZE_NANOS = 10L * 1000 * NANOS_PER_MILLI;
+
     private static final Daemon[] DAEMONS = new Daemon[] {
             HeapTaskDaemon.INSTANCE,
             ReferenceQueueDaemon.INSTANCE,
@@ -301,6 +308,8 @@ public final class Daemons {
 
         private boolean needToWork = true;  // Only accessed in synchronized methods.
 
+        private long finalizerTimeoutMs = 0;  // Lazily initialized.
+
         FinalizerWatchdogDaemon() {
             super("FinalizerWatchdogDaemon");
         }
@@ -359,20 +368,19 @@ public final class Daemons {
         }
 
         /**
-         * Sleep for the given number of nanoseconds.
+         * Sleep for the given number of milliseconds.
          * @return false if we were interrupted.
          */
-        private boolean sleepFor(long durationNanos) {
-            long startNanos = System.nanoTime();
+        private boolean sleepForMillis(long durationMillis) {
+            long startMillis = System.currentTimeMillis();
             while (true) {
-                long elapsedNanos = System.nanoTime() - startNanos;
-                long sleepNanos = durationNanos - elapsedNanos;
-                long sleepMills = sleepNanos / NANOS_PER_MILLI;
-                if (sleepMills <= 0) {
+                long elapsedMillis = System.currentTimeMillis() - startMillis;
+                long sleepMillis = durationMillis - elapsedMillis;
+                if (sleepMillis <= 0) {
                     return true;
                 }
                 try {
-                    Thread.sleep(sleepMills);
+                    Thread.sleep(sleepMillis);
                 } catch (InterruptedException e) {
                     if (!isRunning()) {
                         return false;
@@ -388,19 +396,25 @@ public final class Daemons {
 
         /**
          * Return an object that took too long to finalize or return null.
-         * Wait MAX_FINALIZE_NANOS.  If the FinalizerDaemon took essentially the whole time
-         * processing a single reference, return that reference.  Otherwise return null.
+         * Wait VMRuntime.getFinalizerTimeoutMs.  If the FinalizerDaemon took essentially the
+         * whole time processing a single reference, return that reference.  Otherwise return
+         * null.  Only called from a single thread.
          */
         private Object waitForFinalization() {
+            if (finalizerTimeoutMs == 0) {
+                finalizerTimeoutMs = VMRuntime.getRuntime().getFinalizerTimeoutMs();
+                // Temporary app backward compatibility. Remove eventually.
+                MAX_FINALIZE_NANOS = NANOS_PER_MILLI * finalizerTimeoutMs;
+            }
             long startCount = FinalizerDaemon.INSTANCE.progressCounter.get();
             // Avoid remembering object being finalized, so as not to keep it alive.
-            if (!sleepFor(MAX_FINALIZE_NANOS)) {
+            if (!sleepForMillis(finalizerTimeoutMs)) {
                 // Don't report possibly spurious timeout if we are interrupted.
                 return null;
             }
             if (getNeedToWork() && FinalizerDaemon.INSTANCE.progressCounter.get() == startCount) {
                 // We assume that only remove() and doFinalize() may take time comparable to
-                // MAX_FINALIZE_NANOS.
+                // the finalizer timeout.
                 // We observed neither the effect of the gotoSleep() nor the increment preceding a
                 // later wakeUp. Any remove() call by the FinalizerDaemon during our sleep
                 // interval must have been followed by a wakeUp call before we checked needToWork.
@@ -408,14 +422,14 @@ public final class Daemons {
                 // been such a remove() call.
                 // The FinalizerDaemon must not have progressed (from either the beginning or the
                 // last progressCounter increment) to either the next increment or gotoSleep()
-                // call.  Thus we must have taken essentially the whole MAX_FINALIZE_NANOS in a
+                // call.  Thus we must have taken essentially the whole finalizerTimeoutMs in a
                 // single doFinalize() call.  Thus it's OK to time out.  finalizingObject was set
                 // just before the counter increment, which preceded the doFinalize call.  Thus we
                 // are guaranteed to get the correct finalizing value below, unless doFinalize()
                 // just finished as we were timing out, in which case we may get null or a later
                 // one.  In this last case, we are very likely to discard it below.
                 Object finalizing = FinalizerDaemon.INSTANCE.finalizingObject;
-                sleepFor(NANOS_PER_SECOND / 2);
+                sleepForMillis(500);
                 // Recheck to make it even less likely we report the wrong finalizing object in
                 // the case which a very slow finalization just finished as we were timing out.
                 if (getNeedToWork()
@@ -429,7 +443,7 @@ public final class Daemons {
         private static void finalizerTimedOut(Object object) {
             // The current object has exceeded the finalization deadline; abort!
             String message = object.getClass().getName() + ".finalize() timed out after "
-                    + (MAX_FINALIZE_NANOS / NANOS_PER_SECOND) + " seconds";
+                    + VMRuntime.getRuntime().getFinalizerTimeoutMs() / 1000 + " seconds";
             Exception syntheticException = new TimeoutException(message);
             // We use the stack from where finalize() was running to show where it was stuck.
             syntheticException.setStackTrace(FinalizerDaemon.INSTANCE.getStackTrace());
