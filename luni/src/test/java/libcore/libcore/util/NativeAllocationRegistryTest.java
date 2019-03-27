@@ -29,11 +29,10 @@ public class NativeAllocationRegistryTest extends TestCase {
     private ClassLoader classLoader = NativeAllocationRegistryTest.class.getClassLoader();
 
     private static class TestConfig {
-        public boolean useAllocator;
+        public boolean treatAsMalloced;
         public boolean shareRegistry;
 
-        public TestConfig(boolean useAllocator, boolean shareRegistry) {
-            this.useAllocator = useAllocator;
+        public TestConfig(boolean treatAsMalloced, boolean shareRegistry) {
             this.shareRegistry = shareRegistry;
         }
     }
@@ -66,57 +65,57 @@ public class NativeAllocationRegistryTest extends TestCase {
 
         final int nativeSize = size/2;
         int javaSize = size/2;
-        NativeAllocationRegistry registry = new NativeAllocationRegistry(
-                classLoader, getNativeFinalizer(), nativeSize);
+        NativeAllocationRegistry registry = null;
+        int numAllocationsToSimulate = 10 * expectedMaxNumAllocations;
 
         // Allocate more native allocations than will fit in memory. This should
         // not throw OutOfMemoryError because the few allocations we save
         // references to should easily fit.
-        for (int i = 0; i < expectedMaxNumAllocations * 10; i++) {
-            if (!config.shareRegistry) {
-                registry = new NativeAllocationRegistry(
-                    classLoader, getNativeFinalizer(), nativeSize);
+        for (int i = 0; i < numAllocationsToSimulate; i++) {
+            if (!config.shareRegistry || registry == null) {
+                if (config.treatAsMalloced) {
+                    registry = NativeAllocationRegistry.createMalloced(
+                            classLoader, getNativeFinalizer(), nativeSize);
+                } else {
+                    registry = NativeAllocationRegistry.createNonmalloced(
+                            classLoader, getNativeFinalizer(), nativeSize);
+                }
             }
 
             final Allocation alloc = new Allocation();
             alloc.javaAllocation = new byte[javaSize];
-            if (config.useAllocator) {
-                NativeAllocationRegistry.Allocator allocator
-                  = new NativeAllocationRegistry.Allocator() {
-                    public long allocate() {
-                        alloc.nativeAllocation = doNativeAllocation(nativeSize);
-                        return alloc.nativeAllocation;
-                    }
-                };
-                registry.registerNativeAllocation(alloc, allocator);
-            } else {
-                alloc.nativeAllocation = doNativeAllocation(nativeSize);
-                registry.registerNativeAllocation(alloc, alloc.nativeAllocation);
-            }
+            alloc.nativeAllocation = doNativeAllocation(nativeSize);
+            registry.registerNativeAllocation(alloc, alloc.nativeAllocation);
 
             saved[i%numSavedAllocations] = alloc;
         }
 
         // Verify most of the allocations have been freed.
+        // Since we use fairly large Java objects, this doesn't test the GC triggering
+        // effect; we do that elsewhere.
         long nativeBytes = getNumNativeBytesAllocated();
+        long nativeReachableBytes = numSavedAllocations * nativeSize;
         assertTrue("Excessive native bytes still allocated (" + nativeBytes + ")"
                 + " given max memory of (" + max + ")", nativeBytes < 2 * max);
+        assertTrue("Too few native bytes still allocated (" + nativeBytes + "); "
+                + nativeReachableBytes + " bytes are reachable",
+                nativeBytes >= nativeReachableBytes);
     }
 
-    public void testNativeAllocationAllocatorAndSharedRegistry() {
-        testNativeAllocation(new TestConfig(true, true));
+    public void testNativeAllocationNonmallocNoSharedRegistry() {
+        testNativeAllocation(new TestConfig(false, false));
     }
 
-    public void testNativeAllocationNoAllocatorAndSharedRegistry() {
+    public void testNativeAllocationNonmallocSharedRegistry() {
         testNativeAllocation(new TestConfig(false, true));
     }
 
-    public void testNativeAllocationAllocatorAndNoSharedRegistry() {
+    public void testNativeAllocationMallocNoSharedRegistry() {
         testNativeAllocation(new TestConfig(true, false));
     }
 
-    public void testNativeAllocationNoAllocatorAndNoSharedRegistry() {
-        testNativeAllocation(new TestConfig(false, false));
+    public void testNativeAllocationMallocSharedRegistry() {
+        testNativeAllocation(new TestConfig(true, true));
     }
 
     public void testBadSize() {
@@ -175,28 +174,6 @@ public class NativeAllocationRegistryTest extends TestCase {
                 registry.registerNativeAllocation(referent, 0);
             }
         });
-
-        // referent should not be null
-        assertThrowsIllegalArgumentException(new Runnable() {
-            public void run() {
-                registry.registerNativeAllocation(null,
-                        new NativeAllocationRegistry.Allocator() {
-                            public long allocate() {
-                                // The allocate function ought not to be called.
-                                fail("allocate function called");
-                                return dummyNativePtr;
-                            }
-                        });
-            }
-        });
-
-        // Allocation that returns null should have no effect.
-        assertNull(registry.registerNativeAllocation(referent,
-                    new NativeAllocationRegistry.Allocator() {
-                        public long allocate() {
-                            return 0;
-                        }
-                    }));
     }
 
     private static void assertThrowsIllegalArgumentException(Runnable runnable) {
