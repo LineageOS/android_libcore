@@ -16,27 +16,17 @@
 
 package android.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
-
 import libcore.util.NonNull;
 import libcore.util.Objects;
 
 /**
  * Corresponds to C's {@code struct timeval} from {@code sys/time.h}.
- *
- * @hide
  */
-@libcore.api.CorePlatformApi
-@libcore.api.IntraCoreApi
 public final class StructTimeval {
     /** Seconds. */
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public final long tv_sec;
 
     /** Microseconds. */
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public final long tv_usec;
 
     private StructTimeval(long tv_sec, long tv_usec) {
@@ -48,9 +38,6 @@ public final class StructTimeval {
         }
     }
 
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public static @NonNull StructTimeval fromMillis(long millis) {
         // tv_sec can be positive or negative. tv_usec can only be positive. Negative numbers are
         // represented by rounding down to the nearest whole second <= the one we need
@@ -64,13 +51,10 @@ public final class StructTimeval {
         return new StructTimeval(tv_sec, tv_usec);
     }
 
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public long toMillis() {
         return (tv_sec * 1000) + (tv_usec / 1000);
     }
 
-    @libcore.api.IntraCoreApi
     @Override
     public String toString() {
         return Objects.toString(this);

@@ -5,17 +5,6 @@ package android.system {
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
   }
 
-  public final class Os {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void setsockoptTimeval(@NonNull java.io.FileDescriptor, int, int, @NonNull android.system.StructTimeval) throws android.system.ErrnoException;
-  }
-
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class StructTimeval {
-    method @NonNull @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static android.system.StructTimeval fromMillis(long);
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public long toMillis();
-    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final long tv_sec;
-    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final long tv_usec;
-  }
-
 }
 
 package com.android.org.conscrypt {

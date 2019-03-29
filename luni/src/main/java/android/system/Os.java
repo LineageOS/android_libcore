@@ -270,10 +270,7 @@ public final class Os {
      * <p>Only for use with {@code option} values that return a {@code struct timeval} such as
      * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
      * options may throw an {@code IllegalArgumentException} or return junk values.
-     *
-     * @hide
      */
-    @libcore.api.CorePlatformApi
     public static @NonNull StructTimeval getsockoptTimeval(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
 
     /** @hide */
@@ -607,12 +604,7 @@ public final class Os {
      * <p>Only for use with {@code option} values that take a {@code struct timeval} such as
      * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
      * options is likely to cause incorrect behavior.
-     *
-     * @hide
      */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
     public static void setsockoptTimeval(@NonNull FileDescriptor fd, int level, int option, @NonNull StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
