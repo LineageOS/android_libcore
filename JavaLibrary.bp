@@ -467,6 +467,7 @@ java_test {
         "harmony-tests/src/test/java/**/*.java",
         "json/src/test/java/**/*.java",
         "luni/src/test/java/**/*.java",
+        "test-rules/src/test/java/**/*.java",
         "xml/src/test/java/**/*.java",
     ],
     exclude_srcs: [
