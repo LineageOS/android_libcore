@@ -6,11 +6,11 @@ package android.system {
   }
 
   public final class Os {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void setsockoptTimeval(java.io.FileDescriptor, int, int, android.system.StructTimeval) throws android.system.ErrnoException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void setsockoptTimeval(@NonNull java.io.FileDescriptor, int, int, @NonNull android.system.StructTimeval) throws android.system.ErrnoException;
   }
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class StructTimeval {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static android.system.StructTimeval fromMillis(long);
+    method @NonNull @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static android.system.StructTimeval fromMillis(long);
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public long toMillis();
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final long tv_sec;
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final long tv_usec;

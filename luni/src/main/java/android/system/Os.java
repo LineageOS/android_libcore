@@ -264,9 +264,17 @@ public final class Os {
     @libcore.api.CorePlatformApi
     public static StructLinger getsockoptLinger(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
 
-    /** @hide */
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">getsockopt(2)</a>.
+     *
+     * <p>Only for use with {@code option} values that return a {@code struct timeval} such as
+     * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
+     * options may throw an {@code IllegalArgumentException} or return junk values.
+     *
+     * @hide
+     */
     @libcore.api.CorePlatformApi
-    public static StructTimeval getsockoptTimeval(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
+    public static @NonNull StructTimeval getsockoptTimeval(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
 
     /** @hide */
     public static StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptUcred(fd, level, option); }
@@ -593,11 +601,19 @@ public final class Os {
     @libcore.api.CorePlatformApi
     public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
-    /** @hide */
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">setsockopt(2)</a>.
+     *
+     * <p>Only for use with {@code option} values that take a {@code struct timeval} such as
+     * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
+     * options is likely to cause incorrect behavior.
+     *
+     * @hide
+     */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
-    public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
+    public static void setsockoptTimeval(@NonNull FileDescriptor fd, int level, int option, @NonNull StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setuid.2.html">setuid(2)</a>.
