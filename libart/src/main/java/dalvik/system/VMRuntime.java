@@ -228,6 +228,13 @@ public final class VMRuntime {
     public native float getTargetHeapUtilization();
 
     /**
+     * Retrieves the finalizer timeout in milliseconds.
+     * Finalizers that fail to terminate in this amount of time cause the
+     * runtime to abort.
+     */
+    public native long getFinalizerTimeoutMs();
+
+    /**
      * Sets the current ideal heap utilization, represented as a number
      * between zero and one.  After a GC happens, the Dalvik heap may
      * be resized so that (size of live objects) / (size of heap) is
