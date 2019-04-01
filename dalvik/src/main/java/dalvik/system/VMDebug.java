@@ -585,4 +585,12 @@ public final class VMDebug {
      */
     @UnsupportedAppUsage
     public static native void allowHiddenApiReflectionFrom(Class<?> klass);
+
+    /**
+     * Sets the number of frames recorded for allocation tracking.
+     *
+     * @param stackDepth The number of frames captured for each stack trace.
+     */
+    @libcore.api.CorePlatformApi
+    public static native void setAllocTrackerStackDepth(int stackDepth);
 }
