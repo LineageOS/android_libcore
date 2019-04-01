@@ -1525,6 +1525,13 @@ static jobject Linux_getsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jin
         throwErrnoException(env, "getsockopt");
         return NULL;
     }
+    // If we didn't get the buffer size we expected then error. If other structures are the same
+    // size as timeval we might not detect an issue and could return junk.
+    if (size != sizeof(tv)) {
+        jniThrowExceptionFmt(env, "java/lang/IllegalArgumentException",
+                "getsockoptTimeval() unsupported with level %i and option %i", level, option);
+        return NULL;
+    }
     return makeStructTimeval(env, tv);
 }
 
@@ -2341,6 +2348,11 @@ static void Linux_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint le
 }
 
 static void Linux_setsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaTimeval) {
+    if (javaTimeval == nullptr) {
+        jniThrowNullPointerException(env, "null javaTimeval");
+        return;
+    }
+
     static jfieldID tvSecFid = env->GetFieldID(JniConstants::GetStructTimevalClass(env), "tv_sec", "J");
     static jfieldID tvUsecFid = env->GetFieldID(JniConstants::GetStructTimevalClass(env), "tv_usec", "J");
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
