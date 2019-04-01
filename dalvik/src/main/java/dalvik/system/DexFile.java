@@ -389,18 +389,6 @@ public final class DexFile {
             int[] starts, int[] ends);
 
     /*
-     * Initiates background verification of this DexFile. This is a sepearate down-call
-     * from openDexFile and openInMemoryDexFiles because it requires the class loader's
-     * DexPathList to have been initialized for its classes to be resolvable by ART.
-     * DexPathList will open the dex files first, finalize `dexElements` and then call this.
-     */
-    /*package*/ void verifyInBackground(ClassLoader classLoader) {
-        verifyInBackgroundNative(mCookie, classLoader);
-    }
-
-    private static native void verifyInBackgroundNative(Object mCookie, ClassLoader classLoader);
-
-    /*
      * Returns true if the dex file is backed by a valid oat file.
      */
     @UnsupportedAppUsage
