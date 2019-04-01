@@ -268,6 +268,11 @@ public final class DexPathList {
             Element[] null_elements = null;
             DexFile dex = new DexFile(dexFiles);
             dexElements = new Element[] { new Element(dex) };
+            // Spawn background thread to verify all classes and cache verification results.
+            // Must be called *after* `dexElements` has been initialized for ART to find
+            // its classes (the field is hardcoded in ART and dex files iterated over in
+            // the order of the array).
+            dex.verifyInBackground(definingContext);
         } catch (IOException suppressed) {
             System.logE("Unable to load dex files", suppressed);
             suppressedExceptions.add(suppressed);
