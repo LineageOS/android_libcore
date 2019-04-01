@@ -699,6 +699,7 @@ package dalvik.system {
     method @dalvik.annotation.optimization.FastNative public static long lastDebuggerActivity();
     method @dalvik.annotation.optimization.FastNative public static void printLoadedClasses(int);
     method public static void resetAllocCount(int);
+    method public static void setAllocTrackerStackDepth(int);
     method public static void startAllocCounting();
     method public static void startEmulatorTracing();
     method public static void startMethodTracing(String, int, int, boolean, int);
