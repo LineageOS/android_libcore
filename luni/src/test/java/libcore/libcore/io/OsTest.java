@@ -43,9 +43,9 @@ import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.SocketAddress;
 import java.net.SocketException;
-import java.net.SocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +55,6 @@ import junit.framework.TestCase;
 
 import libcore.io.BlockGuardOs;
 import libcore.io.ForwardingOs;
-import libcore.io.IoBridge;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
 import libcore.io.Os;
@@ -703,7 +702,8 @@ public class OsTest extends TestCase {
       final FileDescriptor serverFd = Libcore.os.socket(AF_INET, SOCK_DGRAM, 0);
       Libcore.os.bind(serverFd, InetAddress.getByName("127.0.0.1"), 0);
       // Set 4s timeout
-      IoBridge.setSocketOption(serverFd, SocketOptions.SO_TIMEOUT, new Integer(4000));
+      StructTimeval tv = StructTimeval.fromMillis(4000);
+      Libcore.os.setsockoptTimeval(serverFd, SOL_SOCKET, SO_RCVTIMEO, tv);
 
       final AtomicReference<Exception> killerThreadException = new AtomicReference<Exception>(null);
       final Thread killer = new Thread(new Runnable() {
@@ -959,6 +959,123 @@ public class OsTest extends TestCase {
     } finally {
       Libcore.os.close(fd);
     }
+  }
+
+  public void test_socket_sockoptTimeval_readWrite() throws Exception {
+    FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+    try {
+      StructTimeval v = Libcore.os.getsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO);
+      assertEquals(0, v.toMillis()); // system default value
+
+      StructTimeval newValue = StructTimeval.fromMillis(3000);
+      Libcore.os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, newValue);
+
+      StructTimeval actualValue = Libcore.os.getsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO);
+
+      // The kernel can round the requested value based on the HZ setting. We allow up to 10ms
+      // difference.
+      assertTrue("Returned incorrect timeout:" + actualValue,
+          Math.abs(newValue.toMillis() - actualValue.toMillis()) <= 10);
+      // No need to reset the value to 0, since we're throwing the socket away
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
+  public void test_socket_setSockoptTimeval_effective() throws Exception {
+    int timeoutValueMillis = 50;
+    int allowedTimeoutMillis = 500;
+
+    FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
+    try {
+      StructTimeval tv = StructTimeval.fromMillis(timeoutValueMillis);
+      Libcore.os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, tv);
+      Libcore.os.bind(fd, InetAddress.getByName("::1"), 0);
+
+      byte[] request = new byte[1];
+      long startTime = System.nanoTime();
+      expectException(() -> Libcore.os.read(fd, request, 0, request.length),
+          ErrnoException.class, EAGAIN, "Expected timeout");
+      long endTime = System.nanoTime();
+      assertTrue(Duration.ofNanos(endTime - startTime).toMillis() < allowedTimeoutMillis);
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
+  public void test_socket_setSockoptTimeval_nullFd() throws Exception {
+    StructTimeval tv = StructTimeval.fromMillis(500);
+    expectException(
+        () -> Libcore.os.setsockoptTimeval(null, SOL_SOCKET, SO_RCVTIMEO, tv),
+        ErrnoException.class, EBADF, "setsockoptTimeval(null, ...)");
+  }
+
+  public void test_socket_setSockoptTimeval_fileFd() throws Exception {
+    File testFile = createTempFile("test_socket_setSockoptTimeval_invalidFd", "");
+    try (FileInputStream fis = new FileInputStream(testFile)) {
+      final FileDescriptor fd = fis.getFD();
+
+      StructTimeval tv = StructTimeval.fromMillis(500);
+      expectException(
+          () -> Libcore.os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, tv),
+          ErrnoException.class, ENOTSOCK, "setsockoptTimeval(<file fd>, ...)");
+    }
+  }
+
+  public void test_socket_setSockoptTimeval_badFd() throws Exception {
+    StructTimeval tv = StructTimeval.fromMillis(500);
+    FileDescriptor invalidFd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+    Libcore.os.close(invalidFd);
+
+    expectException(
+        () -> Libcore.os.setsockoptTimeval(invalidFd, SOL_SOCKET, SO_RCVTIMEO, tv),
+        ErrnoException.class, EBADF, "setsockoptTimeval(<closed fd>, ...)");
+  }
+
+  public void test_socket_setSockoptTimeval_invalidLevel() throws Exception {
+    StructTimeval tv = StructTimeval.fromMillis(500);
+    FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+    try {
+      expectException(
+          () -> Libcore.os.setsockoptTimeval(fd, -1, SO_RCVTIMEO, tv),
+          ErrnoException.class, ENOPROTOOPT, "setsockoptTimeval(fd, <invalid level>, ...)");
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
+  public void test_socket_setSockoptTimeval_invalidOpt() throws Exception {
+    StructTimeval tv = StructTimeval.fromMillis(500);
+    FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+    try {
+      expectException(
+          () -> Libcore.os.setsockoptTimeval(fd, SOL_SOCKET, -1, tv),
+          ErrnoException.class, ENOPROTOOPT, "setsockoptTimeval(fd, <invalid level>, ...)");
+    } finally {
+      Libcore.os.close(fd);
+    }
+  }
+
+  public void test_socket_setSockoptTimeval_nullTimeVal() throws Exception {
+      FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+      try {
+        expectException(
+            () -> Libcore.os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, null),
+            NullPointerException.class, null, "setsockoptTimeval(..., null)");
+      } finally {
+          Libcore.os.close(fd);
+      }
+  }
+
+  public void test_socket_getSockoptTimeval_invalidOption() throws Exception {
+      FileDescriptor fd = Libcore.os.socket(AF_INET6, SOCK_STREAM, 0);
+      try {
+        expectException(
+            () -> Libcore.os.getsockoptTimeval(fd, SOL_SOCKET, SO_DEBUG),
+            IllegalArgumentException.class, null, "getsockoptTimeval(..., <non-timeval option>)");
+      } finally {
+          Libcore.os.close(fd);
+      }
   }
 
   public void test_if_nametoindex_if_indextoname() throws Exception {
@@ -1315,5 +1432,35 @@ public class OsTest extends TestCase {
     // current default != expect (both non-null)
     assertFalse(Os.compareAndSetDefault(otherOs, otherOs));
     assertSame(defaultOs, Os.getDefault());
+  }
+
+  public void testInetPtonIpv4() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET, srcAddress);
+    assertEquals(srcAddress, inetAddress.getHostAddress());
+  }
+
+  public void testInetPtonIpv6() {
+    String srcAddress = "1123:4567:89ab:cdef:fedc:ba98:7654:3210";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET6, srcAddress);
+    assertEquals(srcAddress, inetAddress.getHostAddress());
+  }
+
+  public void testInetPtonInvalidFamily() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_UNIX, srcAddress);
+    assertNull(inetAddress);
+  }
+
+  public void testInetPtonWrongFamily() {
+    String srcAddress = "127.0.0.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET6, srcAddress);
+    assertNull(inetAddress);
+  }
+
+  public void testInetPtonInvalidData() {
+    String srcAddress = "10.1";
+    InetAddress inetAddress = Libcore.rawOs.inet_pton(AF_INET, srcAddress);
+    assertNull(inetAddress);
   }
 }
