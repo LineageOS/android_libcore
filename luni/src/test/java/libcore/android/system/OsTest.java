@@ -313,8 +313,7 @@ public class OsTest extends TestCase {
 
     /**
      * Expects that the given Runnable will throw an exception of the specified class. If the class
-     * is
-     * ErrnoException, and expectedErrno is non-null, also checks that the errno is equal to
+     * is ErrnoException, and expectedErrno is non-null, also checks that the errno is equal to
      * expectedErrno.
      */
     private static void expectException(ExceptionalRunnable r, Class<? extends Exception> exClass,
@@ -377,8 +376,8 @@ public class OsTest extends TestCase {
                 // Expect bind to succeed.
                 Os.bind(socket, addr);
 
-                // Find out which port we're actually bound to, and use that in subsequent connect() and
-                // send() calls. We can't send to addr because that has a port of 0.
+                // Find out which port we're actually bound to, and use that in subsequent connect()
+                // and send() calls. We can't send to addr because that has a port of 0.
                 if (addr instanceof InetSocketAddress) {
                     InetSocketAddress addrISA = (InetSocketAddress) addr;
                     InetSocketAddress socknameISA = (InetSocketAddress) Os.getsockname(socket);
@@ -389,11 +388,12 @@ public class OsTest extends TestCase {
                     addr = socknameISA;
                 }
 
-                // Expect sendto with a null address to throw because the socket is not connected, but to
-                // succeed with a non-null address.
+                // Expect sendto with a null address to throw because the socket is not connected,
+                // but to succeed with a non-null address.
                 byte[] packet = new byte[42];
                 Os.sendto(socket, packet, 0, packet.length, 0, addr);
-                // UNIX and IP sockets return different errors for this operation, so we can't check errno.
+                // UNIX and IP sockets return different errors for this operation, so we can't check
+                // errno.
                 expectSendtoException(socket, null, ErrnoException.class, null);
                 expectSendtoException(null, null, ErrnoException.class, EBADF);
 
@@ -419,9 +419,7 @@ public class OsTest extends TestCase {
     }
 
     private static void expectBindConnectSendtoErrno(int bindErrno, int connectErrno,
-            int sendtoErrno,
-            FileDescriptor socket, String socketDesc,
-            SocketAddress addr) {
+            int sendtoErrno, FileDescriptor socket, String socketDesc, SocketAddress addr) {
         try {
 
             // Expect bind to fail with bindErrno.
@@ -684,8 +682,8 @@ public class OsTest extends TestCase {
 
     public void test_Ipv4Fallback() throws Exception {
         // This number of iterations gives a ~60% chance of creating the conditions that caused
-        // http://b/23088314 without making test times too long. On a hammerhead running MRZ37C using
-        // vogar, this test takes about 4s.
+        // http://b/23088314 without making test times too long. On a hammerhead running MRZ37C
+        // using vogar, this test takes about 4s.
         final int ITERATIONS = 10000;
         for (int i = 0; i < ITERATIONS; i++) {
             FileDescriptor mUdpSock = Os.socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
