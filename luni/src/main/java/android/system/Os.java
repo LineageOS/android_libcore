@@ -40,10 +40,18 @@ import java.nio.ByteBuffer;
 public final class Os {
     private Os() {}
 
+    // Ideally we'd just have the version that accepts SocketAddress but we're stuck with
+    // this one for legacy reasons. http://b/123568439
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/accept.2.html">accept(2)</a>.
      */
-    public static FileDescriptor accept(FileDescriptor fd, InetSocketAddress peerAddress) throws ErrnoException, SocketException { return Libcore.os.accept(fd, peerAddress); }
+    public static FileDescriptor accept(FileDescriptor fd, InetSocketAddress peerAddress) throws ErrnoException, SocketException { return accept(fd, (SocketAddress) peerAddress); }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/accept.2.html">accept(2)</a>.
+     * @hide
+     */
+    public static FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException { return Libcore.os.accept(fd, peerAddress); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/access.2.html">access(2)</a>.
