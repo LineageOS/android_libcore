@@ -110,8 +110,9 @@ public final class DexFile {
         //System.out.println("DEX FILE cookie is " + mCookie + " fileName=" + fileName);
     }
 
-    DexFile(ByteBuffer[] bufs) throws IOException {
-        mCookie = openInMemoryDexFiles(bufs);
+    DexFile(ByteBuffer[] bufs, ClassLoader loader, DexPathList.Element[] elements)
+            throws IOException {
+        mCookie = openInMemoryDexFiles(bufs, loader, elements);
         mInternalCookie = mCookie;
         mFileName = null;
     }
@@ -370,7 +371,8 @@ public final class DexFile {
                                  elements);
     }
 
-    private static Object openInMemoryDexFiles(ByteBuffer[] bufs) throws IOException {
+    private static Object openInMemoryDexFiles(ByteBuffer[] bufs, ClassLoader loader,
+            DexPathList.Element[] elements) throws IOException {
         // Preprocess the ByteBuffers for openInMemoryDexFilesNative. We extract
         // the backing array (non-direct buffers only) and start/end positions
         // so that the native method does not have to call Java methods anymore.
@@ -382,11 +384,11 @@ public final class DexFile {
             starts[i] = bufs[i].position();
             ends[i] = bufs[i].limit();
         }
-        return openInMemoryDexFilesNative(bufs, arrays, starts, ends);
+        return openInMemoryDexFilesNative(bufs, arrays, starts, ends, loader, elements);
     }
 
     private static native Object openInMemoryDexFilesNative(ByteBuffer[] bufs, byte[][] arrays,
-            int[] starts, int[] ends);
+            int[] starts, int[] ends, ClassLoader loader, DexPathList.Element[] elements);
 
     /*
      * Initiates background verification of this DexFile. This is a sepearate down-call
