@@ -1471,7 +1471,7 @@
   bug: 19764047,
   result: EXEC_FAILED,
   names: [
-    "libcore.libcore.io.OsTest#test_PacketSocketAddress"
+    "libcore.android.system.OsTest#test_PacketSocketAddress"
   ]
 },
 {
