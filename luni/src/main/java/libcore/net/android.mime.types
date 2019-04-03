@@ -90,4 +90,5 @@ text/x-c++src cpp!
 video/3gpp 3gpp!
 video/mpeg mpeg!
 video/quicktime mov!
+video/vnd.youtube.yt yt
 video/x-matroska mkv!
