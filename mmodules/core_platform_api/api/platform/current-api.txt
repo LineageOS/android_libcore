@@ -748,6 +748,7 @@ package dalvik.system {
     method public void setHiddenApiExemptions(String[]);
     method public static void setHiddenApiUsageLogger(dalvik.system.VMRuntime.HiddenApiUsageLogger);
     method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
+    method public static void setProcessDataDirectory(String);
     method public static void setProcessPackageName(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
     method public void setTargetSdkVersion(int);
