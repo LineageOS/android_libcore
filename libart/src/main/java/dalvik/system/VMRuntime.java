@@ -696,4 +696,10 @@ public final class VMRuntime {
      */
     @libcore.api.CorePlatformApi
     public static native void setProcessPackageName(String packageName);
+
+    /**
+     * Sets the full path to data directory of the app running in this process.
+     */
+    @libcore.api.CorePlatformApi
+    public static native void setProcessDataDirectory(String dataDir);
 }
