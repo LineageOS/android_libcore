@@ -90,8 +90,13 @@ public class MimeUtilsTest extends TestCase {
         assertEquals("video/ogg", MimeUtils.guessMimeTypeFromExtension("ogv"));
     }
 
-    public void test_70851634() {
-        assertEquals("application/vnd.youtube.yt", MimeUtils.guessMimeTypeFromExtension("yt"));
+    public void test_70851634_mimeTypeFromExtension() {
+        assertEquals("video/vnd.youtube.yt", MimeUtils.guessMimeTypeFromExtension("yt"));
+    }
+
+    public void test_70851634_extensionFromMimeType() {
+        assertEquals("yt", MimeUtils.guessExtensionFromMimeType("video/vnd.youtube.yt"));
+        assertEquals("yt", MimeUtils.guessExtensionFromMimeType("application/vnd.youtube.yt"));
     }
 
     public void test_112162449_audio() {
