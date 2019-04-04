@@ -1230,8 +1230,11 @@ package libcore.util {
     method public static byte[] decode(char[]) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[], boolean) throws java.lang.IllegalArgumentException;
     method public static char[] encode(byte[]);
+    method public static char[] encode(byte[], boolean);
     method public static char[] encode(byte[], int, int);
+    method public static String encodeToString(byte, boolean);
     method public static String encodeToString(byte[]);
+    method public static String encodeToString(byte[], boolean);
   }
 
   public class NativeAllocationRegistry {
