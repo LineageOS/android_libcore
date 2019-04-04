@@ -1798,9 +1798,14 @@ public class ObjectStreamClass implements Serializable {
             }
 
             // Android-changed: Clinit serialization workaround b/29064453
-            boolean checkSuperclass = !(VMRuntime.getRuntime().getTargetSdkVersion()
-                                       <= MAX_SDK_TARGET_FOR_CLINIT_UIDGEN_WORKAROUND);
-            if (hasStaticInitializer(cl, checkSuperclass)) {
+            // Prior to SDK 24 hasStaticInitializer() would return true if the superclass had a
+            // static initializer, that was contrary to the specification. In SDK 24 the default
+            // behavior was corrected but the old behavior was preserved for apps that targeted 23
+            // or below in order to maintain backwards compatibility.
+            boolean inheritStaticInitializer =
+                (VMRuntime.getRuntime().getTargetSdkVersion()
+                <= MAX_SDK_TARGET_FOR_CLINIT_UIDGEN_WORKAROUND);
+            if (hasStaticInitializer(cl, inheritStaticInitializer)) {
                 dout.writeUTF("<clinit>");
                 dout.writeInt(Modifier.STATIC);
                 dout.writeUTF("()V");
@@ -1880,10 +1885,14 @@ public class ObjectStreamClass implements Serializable {
     /**
      * Returns true if the given class defines a static initializer method,
      * false otherwise.
-     * if checkSuperclass is false, we use a buggy version (for compatibility reason) that
-     * will return true even if only the superclass has a static initializer method.
+     *
+     * @param inheritStaticInitializer if false then this method will return true iff the given
+     * class has its own static initializer, if true (used for backwards compatibility for apps
+     * that target SDK version <= {@link #MAX_SDK_TARGET_FOR_CLINIT_UIDGEN_WORKAROUND}) it will
+     * return true if the given class or any of its ancestor classes have a static initializer.
      */
-    private native static boolean hasStaticInitializer(Class<?> cl, boolean checkSuperclass);
+    private native static boolean hasStaticInitializer(
+        Class<?> cl, boolean inheritStaticInitializer);
     // END Android-changed: Clinit serialization workaround b/29064453
 
     /**

@@ -18,21 +18,25 @@
 package org.apache.harmony.regex.tests.java.util.regex;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import junit.framework.TestCase;
-
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.SwitchTargetSdkVersionRule;
+import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
 
-import dalvik.system.VMRuntime;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
 import static java.util.Arrays.asList;
 
-public class PatternTest extends TestCase {
+public class PatternTest extends TestCaseWithRules {
+    @Rule
+    public TestRule switchTargetSdkVersionRule = SwitchTargetSdkVersionRule.getInstance();
+
     String[] testPatterns = {
             "(a|b)*abb",
             "(1*2*3*4*)*567",
@@ -203,13 +207,12 @@ public class PatternTest extends TestCase {
         assertEquals(asList(""), asList("".split("", -1)));
     }
 
+    @TargetSdkVersion(28)
     public void testSplitOnEmptyPattern_api28() {
-        runWithTargetSdkVersion(28, () -> {
-            assertEquals(asList("", "t", "e", "s", "t"), asList("test".split("")));
-            assertEquals(asList(""), asList("".split("")));
-            assertEquals(asList(""), asList(Pattern.compile("").split("")));
-            assertEquals(asList(""), asList("".split("", -1)));
-        });
+        assertEquals(asList("", "t", "e", "s", "t"), asList("test".split("")));
+        assertEquals(asList(""), asList("".split("")));
+        assertEquals(asList(""), asList(Pattern.compile("").split("")));
+        assertEquals(asList(""), asList("".split("", -1)));
     }
 
     /**
@@ -229,30 +232,18 @@ public class PatternTest extends TestCase {
         assertEquals(asList("aar", "dvark"), asList("aardvark".split("(?=d)")));
     }
 
+    @TargetSdkVersion(28)
     public void testMatchBeginningOfInputSequence_api28() {
-        runWithTargetSdkVersion(28, () -> {
-            // Positive-width match at the beginning of the input.
-            assertEquals(asList("", "", "rdv", "rk"), asList("aardvark".split("a")));
-            assertEquals(asList("", "anana"), asList("banana".split("b")));
-            // Zero-width match at the beginning of the input
-            assertEquals(asList("", "a", "ardv", "ark"), asList("aardvark".split("(?=a)")));
-            assertEquals(asList("banana"), asList("banana".split("(?=b)")));
+        // Positive-width match at the beginning of the input.
+        assertEquals(asList("", "", "rdv", "rk"), asList("aardvark".split("a")));
+        assertEquals(asList("", "anana"), asList("banana".split("b")));
+        // Zero-width match at the beginning of the input
+        assertEquals(asList("", "a", "ardv", "ark"), asList("aardvark".split("(?=a)")));
+        assertEquals(asList("banana"), asList("banana".split("(?=b)")));
 
-            // For comparison, matches in the middle of the input never yield an empty substring:
-            assertEquals(asList("aar", "vark"), asList("aardvark".split("d")));
-            assertEquals(asList("aar", "dvark"), asList("aardvark".split("(?=d)")));
-        });
-    }
-
-    private static void runWithTargetSdkVersion(int targetSdkVersion, Runnable runnable) {
-        VMRuntime vmRuntime = VMRuntime.getRuntime();
-        int oldVersion = vmRuntime.getTargetSdkVersion();
-        vmRuntime.setTargetSdkVersion(targetSdkVersion);
-        try {
-            runnable.run();
-        } finally {
-            vmRuntime.setTargetSdkVersion(oldVersion);
-        }
+        // For comparison, matches in the middle of the input never yield an empty substring:
+        assertEquals(asList("aar", "vark"), asList("aardvark".split("d")));
+        assertEquals(asList("aar", "dvark"), asList("aardvark".split("(?=d)")));
     }
 
     public void testPattern() {

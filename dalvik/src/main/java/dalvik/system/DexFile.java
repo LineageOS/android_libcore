@@ -102,15 +102,17 @@ public final class DexFile {
      * @param elements
      *            the temporary dex path list elements from DexPathList.makeElements
      */
-    DexFile(String fileName, ClassLoader loader, DexPathList.Element[] elements) throws IOException {
+    DexFile(String fileName, ClassLoader loader, DexPathList.Element[] elements)
+            throws IOException {
         mCookie = openDexFile(fileName, null, 0, loader, elements);
         mInternalCookie = mCookie;
         mFileName = fileName;
         //System.out.println("DEX FILE cookie is " + mCookie + " fileName=" + fileName);
     }
 
-    DexFile(ByteBuffer buf) throws IOException {
-        mCookie = openInMemoryDexFile(buf);
+    DexFile(ByteBuffer[] bufs, ClassLoader loader, DexPathList.Element[] elements)
+            throws IOException {
+        mCookie = openInMemoryDexFiles(bufs, loader, elements);
         mInternalCookie = mCookie;
         mFileName = null;
     }
@@ -369,16 +371,40 @@ public final class DexFile {
                                  elements);
     }
 
-    private static Object openInMemoryDexFile(ByteBuffer buf) throws IOException {
-        if (buf.isDirect()) {
-            return createCookieWithDirectBuffer(buf, buf.position(), buf.limit());
-        } else {
-            return createCookieWithArray(buf.array(), buf.position(), buf.limit());
+    private static Object openInMemoryDexFiles(ByteBuffer[] bufs, ClassLoader loader,
+            DexPathList.Element[] elements) throws IOException {
+        // Preprocess the ByteBuffers for openInMemoryDexFilesNative. We extract
+        // the backing array (non-direct buffers only) and start/end positions
+        // so that the native method does not have to call Java methods anymore.
+        byte[][] arrays = new byte[bufs.length][];
+        int[] starts = new int[bufs.length];
+        int[] ends = new int[bufs.length];
+        for (int i = 0; i < bufs.length; ++i) {
+            arrays[i] = bufs[i].isDirect() ? null : bufs[i].array();
+            starts[i] = bufs[i].position();
+            ends[i] = bufs[i].limit();
         }
+        return openInMemoryDexFilesNative(bufs, arrays, starts, ends, loader, elements);
     }
 
-    private static native Object createCookieWithDirectBuffer(ByteBuffer buf, int start, int end);
-    private static native Object createCookieWithArray(byte[] buf, int start, int end);
+    private static native Object openInMemoryDexFilesNative(ByteBuffer[] bufs, byte[][] arrays,
+            int[] starts, int[] ends, ClassLoader loader, DexPathList.Element[] elements);
+
+    /*
+     * Initiates background verification of this DexFile. This is a sepearate down-call
+     * from openDexFile and openInMemoryDexFiles because it requires the class loader's
+     * DexPathList to have been initialized for its classes to be resolvable by ART.
+     * DexPathList will open the dex files first, finalize `dexElements` and then call this.
+     */
+    /*package*/ void verifyInBackground(ClassLoader classLoader, String classLoaderContext) {
+        verifyInBackgroundNative(mCookie, classLoader, classLoaderContext);
+    }
+
+    private static native void verifyInBackgroundNative(Object mCookie, ClassLoader classLoader,
+            String classLoaderContext);
+
+    /*package*/ static native String getClassLoaderContext(ClassLoader classLoader,
+            DexPathList.Element[] elements);
 
     /*
      * Returns true if the dex file is backed by a valid oat file.

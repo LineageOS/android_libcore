@@ -17,6 +17,11 @@
 package android.system;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
+
+import libcore.io.Libcore;
+import libcore.util.NonNull;
+import libcore.util.Nullable;
+
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -24,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import libcore.io.Libcore;
 
 /**
  * Access to low-level system functionality. Most of these are system calls. Most users will want
@@ -36,10 +40,18 @@ import libcore.io.Libcore;
 public final class Os {
     private Os() {}
 
+    // Ideally we'd just have the version that accepts SocketAddress but we're stuck with
+    // this one for legacy reasons. http://b/123568439
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/accept.2.html">accept(2)</a>.
      */
-    public static FileDescriptor accept(FileDescriptor fd, InetSocketAddress peerAddress) throws ErrnoException, SocketException { return Libcore.os.accept(fd, peerAddress); }
+    public static FileDescriptor accept(FileDescriptor fd, InetSocketAddress peerAddress) throws ErrnoException, SocketException { return accept(fd, (SocketAddress) peerAddress); }
+
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/accept.2.html">accept(2)</a>.
+     * @hide
+     */
+    public static FileDescriptor accept(FileDescriptor fd, SocketAddress peerAddress) throws ErrnoException, SocketException { return Libcore.os.accept(fd, peerAddress); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/access.2.html">access(2)</a>.
@@ -57,7 +69,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/bind.2.html">bind(2)</a>.
      */
-    public static void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
+    public static void bind(@NonNull FileDescriptor fd, @NonNull SocketAddress address) throws ErrnoException, SocketException { Libcore.os.bind(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
@@ -103,7 +115,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/connect.2.html">connect(2)</a>.
      */
-    public static void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
+    public static void connect(@NonNull FileDescriptor fd, @NonNull SocketAddress address) throws ErrnoException, SocketException { Libcore.os.connect(fd, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/dup.2.html">dup(2)</a>.
@@ -260,9 +272,14 @@ public final class Os {
     @libcore.api.CorePlatformApi
     public static StructLinger getsockoptLinger(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
 
-    /** @hide */
-    @libcore.api.CorePlatformApi
-    public static StructTimeval getsockoptTimeval(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">getsockopt(2)</a>.
+     *
+     * <p>Only for use with {@code option} values that return a {@code struct timeval} such as
+     * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
+     * options may throw an {@code IllegalArgumentException} or return junk values.
+     */
+    public static @NonNull StructTimeval getsockoptTimeval(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptTimeval(fd, level, option); }
 
     /** @hide */
     public static StructUcred getsockoptUcred(FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptUcred(fd, level, option); }
@@ -512,7 +529,7 @@ public final class Os {
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/sendto.2.html">sendto(2)</a>.
      */
-    public static int sendto(FileDescriptor fd, byte[] bytes, int byteOffset, int byteCount, int flags, SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
+    public static int sendto(@NonNull FileDescriptor fd, @NonNull byte[] bytes, int byteOffset, int byteCount, int flags, @Nullable SocketAddress address) throws ErrnoException, SocketException { return Libcore.os.sendto(fd, bytes, byteOffset, byteCount, flags, address); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setegid.2.html">setegid(2)</a>.
@@ -589,11 +606,14 @@ public final class Os {
     @libcore.api.CorePlatformApi
     public static void setsockoptLinger(FileDescriptor fd, int level, int option, StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
-    @libcore.api.IntraCoreApi
-    public static void setsockoptTimeval(FileDescriptor fd, int level, int option, StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/setsockopt.2.html">setsockopt(2)</a>.
+     *
+     * <p>Only for use with {@code option} values that take a {@code struct timeval} such as
+     * {@link OsConstants#SO_RCVTIMEO} and {@link OsConstants#SO_SNDTIMEO}. Use with other
+     * options is likely to cause incorrect behavior.
+     */
+    public static void setsockoptTimeval(@NonNull FileDescriptor fd, int level, int option, @NonNull StructTimeval value) throws ErrnoException { Libcore.os.setsockoptTimeval(fd, level, option, value); }
 
     /**
      * See <a href="http://man7.org/linux/man-pages/man2/setuid.2.html">setuid(2)</a>.

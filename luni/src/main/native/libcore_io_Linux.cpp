@@ -987,7 +987,8 @@ static void Linux_bind(JNIEnv* env, jobject, jobject javaFd, jobject javaAddress
 
 static void Linux_bindSocketAddress(
         JNIEnv* env, jobject thisObj, jobject javaFd, jobject javaSocketAddress) {
-    if (env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
+    if (javaSocketAddress != NULL &&
+            env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
         // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
         jobject javaInetAddress;
         jint port;
@@ -1169,7 +1170,8 @@ static void Linux_connect(JNIEnv* env, jobject, jobject javaFd, jobject javaAddr
 
 static void Linux_connectSocketAddress(
         JNIEnv* env, jobject thisObj, jobject javaFd, jobject javaSocketAddress) {
-    if (env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
+    if (javaSocketAddress != NULL &&
+            env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
         // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
         jobject javaInetAddress;
         jint port;
@@ -1523,6 +1525,13 @@ static jobject Linux_getsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jin
         throwErrnoException(env, "getsockopt");
         return NULL;
     }
+    // If we didn't get the buffer size we expected then error. If other structures are the same
+    // size as timeval we might not detect an issue and could return junk.
+    if (size != sizeof(tv)) {
+        jniThrowExceptionFmt(env, "java/lang/IllegalArgumentException",
+                "getsockoptTimeval() unsupported with level %i and option %i", level, option);
+        return NULL;
+    }
     return makeStructTimeval(env, tv);
 }
 
@@ -1716,8 +1725,14 @@ static jobject Linux_inet_pton(JNIEnv* env, jobject, jint family, jstring javaNa
     }
     sockaddr_storage ss;
     memset(&ss, 0, sizeof(ss));
-    // sockaddr_in and sockaddr_in6 are at the same address, so we can use either here.
-    void* dst = &reinterpret_cast<sockaddr_in*>(&ss)->sin_addr;
+    void* dst;
+    if (family == AF_INET) {
+      dst = &reinterpret_cast<sockaddr_in*>(&ss)->sin_addr;
+    } else if (family == AF_INET6) {
+      dst = &reinterpret_cast<sockaddr_in6*>(&ss)->sin6_addr;
+    } else {
+      return NULL;
+    }
     if (inet_pton(family, name.c_str(), dst) != 1) {
         return NULL;
     }
@@ -2187,7 +2202,8 @@ static jint Linux_sendtoBytes(JNIEnv* env, jobject, jobject javaFd, jobject java
 }
 
 static jint Linux_sendtoBytesSocketAddress(JNIEnv* env, jobject, jobject javaFd, jobject javaBytes, jint byteOffset, jint byteCount, jint flags, jobject javaSocketAddress) {
-    if (env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
+    if (javaSocketAddress != NULL &&
+            env->IsInstanceOf(javaSocketAddress, JniConstants::GetInetSocketAddressClass(env))) {
         // Use the InetAddress version so we get the benefit of NET_IPV4_FALLBACK.
         jobject javaInetAddress;
         jint port;
@@ -2203,11 +2219,19 @@ static jint Linux_sendtoBytesSocketAddress(JNIEnv* env, jobject, jobject javaFd,
 
     sockaddr_storage ss;
     socklen_t sa_len;
-    if (!javaSocketAddressToSockaddr(env, javaSocketAddress, ss, sa_len)) {
-        return -1;
+    const sockaddr* sa;
+
+    if (javaSocketAddress != NULL) {
+        if (!javaSocketAddressToSockaddr(env, javaSocketAddress, ss, sa_len)) {
+            return -1;
+        }
+
+        sa = reinterpret_cast<const sockaddr*>(&ss);
+    } else {
+        sa = NULL;
+        sa_len = 0;
     }
 
-    const sockaddr* sa = reinterpret_cast<const sockaddr*>(&ss);
     // We don't need the return value because we'll already have thrown.
     return NET_FAILURE_RETRY(env, ssize_t, sendto, javaFd, bytes.get() + byteOffset, byteCount, flags, sa, sa_len);
 }
@@ -2324,6 +2348,11 @@ static void Linux_setsockoptLinger(JNIEnv* env, jobject, jobject javaFd, jint le
 }
 
 static void Linux_setsockoptTimeval(JNIEnv* env, jobject, jobject javaFd, jint level, jint option, jobject javaTimeval) {
+    if (javaTimeval == nullptr) {
+        jniThrowNullPointerException(env, "null javaTimeval");
+        return;
+    }
+
     static jfieldID tvSecFid = env->GetFieldID(JniConstants::GetStructTimevalClass(env), "tv_sec", "J");
     static jfieldID tvUsecFid = env->GetFieldID(JniConstants::GetStructTimevalClass(env), "tv_usec", "J");
     int fd = jniGetFDFromFileDescriptor(env, javaFd);

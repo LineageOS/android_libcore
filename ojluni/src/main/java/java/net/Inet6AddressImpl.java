@@ -44,6 +44,7 @@ import static android.system.OsConstants.AF_UNSPEC;
 import static android.system.OsConstants.AI_ADDRCONFIG;
 import static android.system.OsConstants.EACCES;
 import static android.system.OsConstants.ECONNREFUSED;
+import static android.system.OsConstants.EPERM;
 import static android.system.OsConstants.NI_NAMEREQD;
 import static android.system.OsConstants.ICMP6_ECHO_REPLY;
 import static android.system.OsConstants.ICMP_ECHOREPLY;
@@ -144,7 +145,8 @@ class Inet6AddressImpl implements InetAddressImpl {
             // SecurityException to aid in debugging this common mistake.
             // http://code.google.com/p/android/issues/detail?id=15722
             if (gaiException.getCause() instanceof ErrnoException) {
-                if (((ErrnoException) gaiException.getCause()).errno == EACCES) {
+                int errno = ((ErrnoException) gaiException.getCause()).errno;
+                if (errno == EACCES || errno == EPERM) {
                     throw new SecurityException("Permission denied (missing INTERNET permission?)", gaiException);
                 }
             }

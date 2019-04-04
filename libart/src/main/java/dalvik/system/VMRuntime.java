@@ -228,6 +228,13 @@ public final class VMRuntime {
     public native float getTargetHeapUtilization();
 
     /**
+     * Retrieves the finalizer timeout in milliseconds.
+     * Finalizers that fail to terminate in this amount of time cause the
+     * runtime to abort.
+     */
+    public native long getFinalizerTimeoutMs();
+
+    /**
      * Sets the current ideal heap utilization, represented as a number
      * between zero and one.  After a GC happens, the Dalvik heap may
      * be resized so that (size of live objects) / (size of heap) is
@@ -689,4 +696,10 @@ public final class VMRuntime {
      */
     @libcore.api.CorePlatformApi
     public static native void setProcessPackageName(String packageName);
+
+    /**
+     * Sets the full path to data directory of the app running in this process.
+     */
+    @libcore.api.CorePlatformApi
+    public static native void setProcessDataDirectory(String dataDir);
 }
