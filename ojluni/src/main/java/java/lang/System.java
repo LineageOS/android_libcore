@@ -509,13 +509,9 @@ public final class System {
      * The byte[] specialized version of arraycopy().
      * Note: This method is required for runtime ART compiler optimizations.
      * Do not remove or change the signature.
-     * Note: Unlike the others, this variant is public due to a dependency we
-     * are working on removing. b/74103559
-     *
-     * @hide
      */
     @SuppressWarnings("unused")
-    public static void arraycopy(byte[] src, int srcPos, byte[] dst, int dstPos, int length) {
+    private static void arraycopy(byte[] src, int srcPos, byte[] dst, int dstPos, int length) {
         if (src == null) {
             throw new NullPointerException("src == null");
         }
