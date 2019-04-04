@@ -37,8 +37,9 @@ import libcore.timezone.ZoneInfoDB;
  * Our concrete TimeZone implementation, backed by zoneinfo data.
  *
  * <p>This reads time zone information from a binary file stored on the platform. The binary file
- * is essentially a single file containing compacted versions of all the tzfile (see
- * {@code man 5 tzfile} for details of the source) and an index by long name, e.g. Europe/London.
+ * is essentially a single file containing compacted versions of all the tzfiles produced by the
+ * zone info compiler (zic) tool (see {@code man 5 tzfile} for details of the format and
+ * {@code man 8 zic}) and an index by long name, e.g. Europe/London.
  *
  * <p>The compacted form is created by {@code external/icu/tools/ZoneCompactor.java} and is used
  * by both this and Bionic. {@link ZoneInfoDB} is responsible for mapping the binary file, and
@@ -307,6 +308,8 @@ public final class ZoneInfo extends TimeZone {
 
         // Use the latest non-daylight offset (if any) as the raw offset.
         if (mTransitions.length == 0) {
+            // This case is no longer expected to occur in the data used on Android after changes
+            // made in zic version 2014c. It is kept as a fallback.
             // If there are no transitions then use the first GMT offset.
             mRawOffset = gmtOffsets[0];
         } else {

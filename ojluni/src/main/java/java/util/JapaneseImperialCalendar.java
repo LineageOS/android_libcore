@@ -1574,14 +1574,17 @@ class JapaneseImperialCalendar extends Calendar {
             zoneOffsets = new int[2];
         }
         if (tzMask != (ZONE_OFFSET_MASK|DST_OFFSET_MASK)) {
-            // Android-changed: Android doesn't have sun.util.calendar.ZoneInfo.
+            // BEGIN Android-changed: Android doesn't have sun.util.calendar.ZoneInfo.
             // if (tz instanceof ZoneInfo) {
             //     zoneOffset = ((ZoneInfo)tz).getOffsets(time, zoneOffsets);
-            // } else {
+            if (tz instanceof libcore.util.ZoneInfo) {
+                zoneOffset = ((libcore.util.ZoneInfo)tz).getOffsetsByUtcTime(time, zoneOffsets);
+            // END Android-changed: Android doesn't have sun.util.calendar.ZoneInfo.
+            } else {
                 zoneOffset = tz.getOffset(time);
                 zoneOffsets[0] = tz.getRawOffset();
                 zoneOffsets[1] = zoneOffset - zoneOffsets[0];
-            // }
+            }
         }
         if (tzMask != 0) {
             if (isFieldSet(tzMask, ZONE_OFFSET)) {
