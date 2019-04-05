@@ -322,6 +322,7 @@ public class ZoneInfoTest extends TestCase {
    * <p>Newer versions of zic after 2014b introduce an explicit transition at the earliest
    * representable time, which is Integer.MIN_VALUE for TZif version 1 files. Previously the type
    * used was left implicit and readers were expected to use the first non-DST type in the file.
+   * This extra transition mostly went away again with zic 2018f.
    *
    * <p>Testing newer zic versions demonstrated that Android had been mishandling the lookup of
    * offset for times before the first transition. The logic has been corrected. This test would
@@ -357,8 +358,8 @@ public class ZoneInfoTest extends TestCase {
             { offsetToSeconds(type2Offset), 0 },
     };
 
-    // Creates a simulation of zic version <= 2014b where there is usually no explicit transition at
-    // Integer.MIN_VALUE seconds in TZif version 1 data.
+    // Creates a simulation of zic version <= 2014b or zic version >= 2018f where there is often
+    // no explicit transition at Integer.MIN_VALUE seconds in TZif version 1 data.
     {
       int[][] transitions = {
               { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
@@ -374,8 +375,8 @@ public class ZoneInfoTest extends TestCase {
       assertOffsetAt(oldZoneInfo, type2Offset, afterFirstRealTransitionTimes);
     }
 
-    // Creates a simulation of zic version > 2014b where there is usually an explicit transition at
-    // Integer.MIN_VALUE seconds for TZif version 1 data.
+    // Creates a simulation of zic version > 2014b and zic version < 2018f where there is usually an
+    // explicit transition at Integer.MIN_VALUE seconds for TZif version 1 data.
     {
       int[][] transitions = {
               { Integer.MIN_VALUE, 1 /* type 1 */ }, // The extra transition added by zic.
