@@ -36,6 +36,7 @@ import java.util.Set;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import libcore.libcore.util.SerializationTester;
+import libcore.net.InetAddressUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -312,8 +313,11 @@ public class InetAddressTest {
     public void test_getByName_invalid(String invalid) throws Exception {
         try {
             InetAddress.getByName(invalid);
-            fail("Invalid IP address incorrectly recognized as valid: "
-                + invalid);
+            String failMessage = "Invalid IP address incorrectly recognized as valid: " + invalid;
+            if (InetAddressUtils.parseNumericAddressNoThrowStripOptionalBrackets(invalid) == null) {
+                failMessage += " (it was probably unexpectedly resolved by this network's DNS)";
+            }
+            fail(failMessage);
         } catch (UnknownHostException expected) {
         }
 
