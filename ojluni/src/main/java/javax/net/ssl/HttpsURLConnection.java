@@ -188,7 +188,6 @@ class HttpsURLConnection extends HttpURLConnection
      */
     private static class NoPreloadHolder {
         public static HostnameVerifier defaultHostnameVerifier;
-        public static final Class<? extends HostnameVerifier> originalDefaultHostnameVerifierClass;
         static {
             try {
                 /**
@@ -200,7 +199,6 @@ class HttpsURLConnection extends HttpURLConnection
                 defaultHostnameVerifier = (HostnameVerifier)
                         Class.forName("com.android.okhttp.internal.tls.OkHostnameVerifier")
                         .getField("INSTANCE").get(null);
-                originalDefaultHostnameVerifierClass = defaultHostnameVerifier.getClass();
             } catch (Exception e) {
                 throw new AssertionError("Failed to obtain okhttp HostnameVerifier", e);
             }
@@ -210,7 +208,7 @@ class HttpsURLConnection extends HttpURLConnection
     /**
      * The <code>hostnameVerifier</code> for this object.
      */
-    protected HostnameVerifier hostnameVerifier;
+    protected HostnameVerifier hostnameVerifier = NoPreloadHolder.defaultHostnameVerifier;
     // END Android-changed: Use holder class idiom for a lazily-created OkHttp hostname verifier.
 
     // Android-changed: Modified the documentation to explain side effects / discourage method use.
@@ -329,15 +327,6 @@ class HttpsURLConnection extends HttpURLConnection
      * @see #setDefaultHostnameVerifier(HostnameVerifier)
      */
     public HostnameVerifier getHostnameVerifier() {
-        // Android-added: Use the default verifier if none is set.
-        // Note that this also has the side effect of *setting* (if unset)
-        // hostnameVerifier to be the default one. It's not clear why this
-        // was done (commit abd00f0eaa46f71f98e75a631c268c812d1ec7c1) but
-        // we're keeping this behavior for lack of a strong reason to do
-        // otherwise.
-        if (hostnameVerifier == null) {
-            hostnameVerifier = NoPreloadHolder.defaultHostnameVerifier;
-        }
         return hostnameVerifier;
     }
 
