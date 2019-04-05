@@ -24,6 +24,7 @@ import org.junit.runners.JUnit4;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import android.system.ErrnoException;
 import android.system.OsConstants;
 import android.system.StructAddrinfo;
 
@@ -58,19 +59,39 @@ public class BlockGuardOsTest {
 
     @Mock private Os mockOsDelegate;
     @Mock private BlockGuard.Policy mockThreadPolicy;
+    @Mock private BlockGuard.VmPolicy mockVmPolicy;
 
     private BlockGuard.Policy savedThreadPolicy;
+    private BlockGuard.VmPolicy savedVmPolicy;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         savedThreadPolicy = BlockGuard.getThreadPolicy();
+        savedVmPolicy = BlockGuard.getVmPolicy();
         BlockGuard.setThreadPolicy(mockThreadPolicy);
+        BlockGuard.setVmPolicy(mockVmPolicy);
     }
 
     @After
     public void tearDown() {
+        BlockGuard.setVmPolicy(savedVmPolicy);
         BlockGuard.setThreadPolicy(savedThreadPolicy);
+    }
+
+    @Test
+    public void test_blockguardOsIsNotifiedByDefault_rename() {
+        String oldPath = "BlockGuardOsTest/missing/old/path";
+        String newPath = "BlockGuardOsTest/missing/new/path";
+        try {
+            // We try not to be prescriptive about the exact default Os implementation.
+            // Whatever default Os is installed, we do expect BlockGuard to be called.
+            Os.getDefault().rename(oldPath, newPath);
+        } catch (ErrnoException ignored) {
+        }
+        verify(mockThreadPolicy).onWriteToDisk();
+        verify(mockVmPolicy).onPathAccess(oldPath);
+        verify(mockVmPolicy).onPathAccess(newPath);
     }
 
     @Test
