@@ -345,7 +345,7 @@ public final class URLConnectionTest extends TestCase {
         server.enqueue(new MockResponse().setResponseCode(404).setBody("A"));
         server.play();
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("A", readAscii(connection.getErrorStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(connection.getErrorStream()));
     }
 
     // Check that if we don't read to the end of a response, the next request on the
@@ -411,10 +411,10 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection1 = server.getUrl("/").openConnection();
-        assertEquals("ABC", readAscii(connection1.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("ABC", readAscii(connection1.getInputStream()));
         assertEquals(0, server.takeRequest().getSequenceNumber());
         URLConnection connection2 = server.getUrl("/").openConnection();
-        assertEquals("DEF", readAscii(connection2.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("DEF", readAscii(connection2.getInputStream()));
         assertEquals(1, server.takeRequest().getSequenceNumber());
     }
 
@@ -596,7 +596,7 @@ public final class URLConnectionTest extends TestCase {
 
         connection = (HttpsURLConnection) server.getUrl("/").openConnection();
         try {
-            readAscii(connection.getInputStream(), Integer.MAX_VALUE);
+            readAscii(connection.getInputStream());
             fail("without an SSL socket factory, the connection should fail");
         } catch (SSLException expected) {
         }
@@ -1211,7 +1211,7 @@ public final class URLConnectionTest extends TestCase {
             inputStream = new AuditInputStream(connection.getInputStream(), auditStream);
             connection.getHeaderFields();
             headerRead = true;
-            readAscii(inputStream, Integer.MAX_VALUE);
+            readAscii(inputStream);
             fail("Didn't expect to successfully read all of the data");
         } catch (IOException expected) {
         } finally {
@@ -1325,7 +1325,7 @@ public final class URLConnectionTest extends TestCase {
      * exhausted before {@code count} characters can be read, the remaining
      * characters are returned and the stream is closed.
      */
-    private String readAscii(InputStream in, int count) throws IOException {
+    private static String readAscii(InputStream in, int count) throws IOException {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < count; i++) {
             int value = in.read();
@@ -1336,6 +1336,10 @@ public final class URLConnectionTest extends TestCase {
             result.append((char) value);
         }
         return result.toString();
+    }
+
+    private static String readAscii(InputStream in) throws IOException {
+        return readAscii(in, Integer.MAX_VALUE);
     }
 
     public void testMarkAndResetWithContentLengthHeader() throws IOException {
@@ -1366,7 +1370,7 @@ public final class URLConnectionTest extends TestCase {
             fail();
         } catch (IOException expected) {
         }
-        assertEquals("FGHIJKLMNOPQRSTUVWXYZ", readAscii(in, Integer.MAX_VALUE));
+        assertEquals("FGHIJKLMNOPQRSTUVWXYZ", readAscii(in));
         assertContent("ABCDEFGHIJKLMNOPQRSTUVWXYZ", server.getUrl("/").openConnection());
     }
 
@@ -1403,7 +1407,7 @@ public final class URLConnectionTest extends TestCase {
 
         URLConnection connection = server.getUrl("/").openConnection();
         try {
-            readAscii(connection.getInputStream(), Integer.MAX_VALUE);
+            readAscii(connection.getInputStream());
             fail();
         } catch (IOException e) {
         }
@@ -1419,7 +1423,7 @@ public final class URLConnectionTest extends TestCase {
 
         URLConnection connection = server.getUrl("/").openConnection();
         try {
-            readAscii(connection.getInputStream(), Integer.MAX_VALUE);
+            readAscii(connection.getInputStream());
             fail();
         } catch (IOException e) {
         }
@@ -1437,7 +1441,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection = server.getUrl("/").openConnection();
-        assertEquals("ABCABCABC", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("ABCABCABC", readAscii(connection.getInputStream()));
         assertNull(connection.getContentEncoding());
         assertEquals(-1, connection.getContentLength());
 
@@ -1456,7 +1460,7 @@ public final class URLConnectionTest extends TestCase {
         URLConnection connection = server.getUrl("/").openConnection();
         connection.addRequestProperty("Accept-Encoding", "gzip");
         InputStream gunzippedIn = new GZIPInputStream(connection.getInputStream());
-        assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZ", readAscii(gunzippedIn, Integer.MAX_VALUE));
+        assertEquals("ABCDEFGHIJKLMNOPQRSTUVWXYZ", readAscii(gunzippedIn));
         assertEquals(bodyBytes.length, connection.getContentLength());
 
         RecordedRequest request = server.takeRequest();
@@ -1480,7 +1484,7 @@ public final class URLConnectionTest extends TestCase {
 
         URLConnection connection = server.getUrl("/").openConnection();
         connection.addRequestProperty("Accept-Encoding", "custom");
-        assertEquals("ABCDE", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("ABCDE", readAscii(connection.getInputStream()));
 
         RecordedRequest request = server.takeRequest();
         assertContains(request.getHeaders(), "Accept-Encoding: custom");
@@ -1505,11 +1509,11 @@ public final class URLConnectionTest extends TestCase {
         URLConnection connection = server.getUrl("/").openConnection();
         connection.addRequestProperty("Accept-Encoding", "gzip");
         InputStream gunzippedIn = new GZIPInputStream(connection.getInputStream());
-        assertEquals("one (gzipped)", readAscii(gunzippedIn, Integer.MAX_VALUE));
+        assertEquals("one (gzipped)", readAscii(gunzippedIn));
         assertEquals(0, server.takeRequest().getSequenceNumber());
 
         connection = server.getUrl("/").openConnection();
-        assertEquals("two (identity)", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("two (identity)", readAscii(connection.getInputStream()));
         assertEquals(1, server.takeRequest().getSequenceNumber());
     }
 
@@ -1530,7 +1534,7 @@ public final class URLConnectionTest extends TestCase {
         assertContent("", connection1);
 
         HttpURLConnection connection2 = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("A", readAscii(connection2.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(connection2.getInputStream()));
 
         assertEquals(0, server.takeRequest().getSequenceNumber());
         assertEquals(1, server.takeRequest().getSequenceNumber());
@@ -1666,7 +1670,7 @@ public final class URLConnectionTest extends TestCase {
         server.enqueue(new MockResponse().setBody("A"));
         server.play();
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("A", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(connection.getInputStream()));
         try {
             connection.setFixedLengthStreamingMode(1);
             fail();
@@ -1678,7 +1682,7 @@ public final class URLConnectionTest extends TestCase {
         server.enqueue(new MockResponse().setBody("A"));
         server.play();
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("A", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(connection.getInputStream()));
         try {
             connection.setChunkedStreamingMode(1);
             fail();
@@ -1738,7 +1742,7 @@ public final class URLConnectionTest extends TestCase {
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(requestBody);
         outputStream.close();
-        assertEquals("Success!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Success!", readAscii(connection.getInputStream()));
 
         RecordedRequest request = server.takeRequest();
         assertEquals("POST / HTTP/1.1", request.getRequestLine());
@@ -1774,7 +1778,7 @@ public final class URLConnectionTest extends TestCase {
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(requestBody);
         outputStream.close();
-        assertEquals("Successful auth!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Successful auth!", readAscii(connection.getInputStream()));
 
         // no authorization header for the first request...
         RecordedRequest request = server.takeRequest();
@@ -1806,7 +1810,7 @@ public final class URLConnectionTest extends TestCase {
         SimpleAuthenticator authenticator = new SimpleAuthenticator();
         Authenticator.setDefault(authenticator);
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("Successful auth!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Successful auth!", readAscii(connection.getInputStream()));
         assertEquals(Authenticator.RequestorType.SERVER, authenticator.requestorType);
         assertEquals(server.getPort(), authenticator.requestingPort);
         assertEquals(InetAddress.getByName(server.getHostName()), authenticator.requestingSite);
@@ -1844,7 +1848,7 @@ public final class URLConnectionTest extends TestCase {
         SimpleAuthenticator authenticator = new SimpleAuthenticator();
         Authenticator.setDefault(authenticator);
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("Successful auth!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Successful auth!", readAscii(connection.getInputStream()));
         assertEquals(Authenticator.RequestorType.SERVER, authenticator.requestorType);
         assertEquals(server.getPort(), authenticator.requestingPort);
         assertEquals(InetAddress.getByName(server.getHostName()), authenticator.requestingSite);
@@ -1867,7 +1871,7 @@ public final class URLConnectionTest extends TestCase {
         authenticator.expectedPrompt = "b";
         Authenticator.setDefault(authenticator);
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("Successful auth!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Successful auth!", readAscii(connection.getInputStream()));
 
         assertContainsNoneMatching(server.takeRequest().getHeaders(), "Authorization: .*");
         assertContains(server.takeRequest().getHeaders(),
@@ -1889,7 +1893,7 @@ public final class URLConnectionTest extends TestCase {
         authenticator.expectedPrompt = "b";
         Authenticator.setDefault(authenticator);
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("Successful auth!", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Successful auth!", readAscii(connection.getInputStream()));
 
         assertContainsNoneMatching(server.takeRequest().getHeaders(), "Authorization: .*");
         assertContains(server.takeRequest().getHeaders(),
@@ -1919,8 +1923,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection = server.getUrl("/").openConnection();
-        assertEquals("This is the new location!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This is the new location!", readAscii(connection.getInputStream()));
 
         RecordedRequest first = server.takeRequest();
         assertEquals("GET / HTTP/1.1", first.getRequestLine());
@@ -1943,8 +1946,7 @@ public final class URLConnectionTest extends TestCase {
 
         HttpsURLConnection connection = (HttpsURLConnection) server.getUrl("/").openConnection();
         connection.setSSLSocketFactory(testSSLContext.clientContext.getSocketFactory());
-        assertEquals("This is the new location!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This is the new location!", readAscii(connection.getInputStream()));
 
         RecordedRequest first = server.takeRequest();
         assertEquals("GET / HTTP/1.1", first.getRequestLine());
@@ -1964,8 +1966,7 @@ public final class URLConnectionTest extends TestCase {
 
         HttpsURLConnection connection = (HttpsURLConnection) server.getUrl("/").openConnection();
         connection.setSSLSocketFactory(testSSLContext.clientContext.getSocketFactory());
-        assertEquals("This page has moved!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This page has moved!", readAscii(connection.getInputStream()));
     }
 
     public void testNotRedirectedFromHttpToHttps() throws IOException, InterruptedException {
@@ -1976,8 +1977,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-        assertEquals("This page has moved!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This page has moved!", readAscii(connection.getInputStream()));
     }
 
     public void testRedirectToAnotherOriginServer() throws Exception {
@@ -1993,13 +1993,11 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection = server.getUrl("/").openConnection();
-        assertEquals("This is the 2nd server!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This is the 2nd server!", readAscii(connection.getInputStream()));
         assertEquals(server2.getUrl("/"), connection.getURL());
 
         // make sure the first server was careful to recycle the connection
-        assertEquals("This is the first server again!",
-                readAscii(server.getUrl("/").openStream(), Integer.MAX_VALUE));
+        assertEquals("This is the first server again!", readAscii(server.getUrl("/").openStream()));
 
         RecordedRequest first = server.takeRequest();
         assertContains(first.getHeaders(), "Host: " + hostName + ":" + server.getPort());
@@ -2065,7 +2063,7 @@ public final class URLConnectionTest extends TestCase {
 
         try {
             HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
-            assertEquals("Target", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+            assertEquals("Target", readAscii(connection.getInputStream()));
 
             // Inspect the redirect request to see what request was actually made.
             RecordedRequest actualRequest = server2.takeRequest();
@@ -2153,7 +2151,7 @@ public final class URLConnectionTest extends TestCase {
         OutputStream outputStream = connection.getOutputStream();
         outputStream.write(requestBody);
         outputStream.close();
-        assertEquals("Page 2", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("Page 2", readAscii(connection.getInputStream()));
         assertTrue(connection.getDoOutput());
 
         RecordedRequest page1 = server.takeRequest();
@@ -2174,8 +2172,7 @@ public final class URLConnectionTest extends TestCase {
 
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/foo").openConnection();
         // Fails on the RI, which gets "Proxy Response"
-        assertEquals("This page has moved!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This page has moved!", readAscii(connection.getInputStream()));
 
         RecordedRequest page1 = server.takeRequest();
         assertEquals("GET /foo HTTP/1.1", page1.getRequestLine());
@@ -2201,9 +2198,9 @@ public final class URLConnectionTest extends TestCase {
             server.play();
 
             URL url = server.getUrl("/");
-            assertEquals("ABC", readAscii(url.openStream(), Integer.MAX_VALUE));
-            assertEquals("DEF", readAscii(url.openStream(), Integer.MAX_VALUE));
-            assertEquals("GHI", readAscii(url.openStream(), Integer.MAX_VALUE));
+            assertEquals("ABC", readAscii(url.openStream()));
+            assertEquals("DEF", readAscii(url.openStream()));
+            assertEquals("GHI", readAscii(url.openStream()));
 
             assertEquals(Arrays.asList("verify " + hostName), hostnameVerifier.calls);
             assertEquals(Arrays.asList("checkServerTrusted ["
@@ -2372,8 +2369,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection = server.getUrl("/").openConnection();
-        assertEquals("This is the new location!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This is the new location!", readAscii(connection.getInputStream()));
 
         assertEquals(0, server.takeRequest().getSequenceNumber());
         assertEquals("When connection: close is used, each request should get its own connection",
@@ -2387,8 +2383,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
 
         URLConnection connection = server.getUrl("/").openConnection();
-        assertEquals("This body is not allowed!",
-                readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("This body is not allowed!", readAscii(connection.getInputStream()));
     }
 
     public void testSingleByteReadIsSigned() throws IOException {
@@ -2435,7 +2430,7 @@ public final class URLConnectionTest extends TestCase {
 
         OutputStream out = connection.getOutputStream();
         out.write(upload);
-        assertEquals("abc", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("abc", readAscii(connection.getInputStream()));
 
         out.flush(); // dubious but permitted
         try {
@@ -2472,7 +2467,7 @@ public final class URLConnectionTest extends TestCase {
         // Read timeout of a day, sure to cause the test to timeout and fail.
         connection.setReadTimeout(24 * 3600 * 1000);
         InputStream input = connection.getInputStream();
-        assertEquals("ABC", readAscii(input, Integer.MAX_VALUE));
+        assertEquals("ABC", readAscii(input));
         input.close();
         try {
             connection = server.getUrl("").openConnection();
@@ -2779,7 +2774,7 @@ public final class URLConnectionTest extends TestCase {
         server.play();
         HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
         InputStream in = (InputStream) connection.getContent();
-        assertEquals("A", readAscii(in, Integer.MAX_VALUE));
+        assertEquals("A", readAscii(in));
     }
 
     public void testGetContentOfType() throws Exception {
@@ -2863,7 +2858,7 @@ public final class URLConnectionTest extends TestCase {
         OutputStream out = connection.getOutputStream();
         out.write(new byte[] { 'A', 'B', 'C' });
         out.close();
-        assertEquals("A", readAscii(connection.getInputStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(connection.getInputStream()));
         RecordedRequest request = server.takeRequest();
         assertContains(request.getHeaders(), "Content-Length: 3");
     }
@@ -2901,7 +2896,7 @@ public final class URLConnectionTest extends TestCase {
         server.enqueue(new MockResponse().setBody("A"));
         server.play();
         URL url = new URL("http", server.getHostName(), server.getPort(), "?query");
-        assertEquals("A", readAscii(url.openConnection().getInputStream(), Integer.MAX_VALUE));
+        assertEquals("A", readAscii(url.openConnection().getInputStream()));
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /?query HTTP/1.1", request.getRequestLine());
     }
