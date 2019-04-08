@@ -1,12 +1,4 @@
 // Signature format: 2.0
-package android.system {
-
-  public final class ErrnoException extends java.lang.Exception {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public java.net.SocketException rethrowAsSocketException() throws java.net.SocketException;
-  }
-
-}
-
 package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
