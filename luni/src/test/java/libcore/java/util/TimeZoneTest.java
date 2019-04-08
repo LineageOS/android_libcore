@@ -374,10 +374,9 @@ public class TimeZoneTest extends TestCase {
         // zic <= 2014b produces data that suggests before -1633280400 seconds (Sun, 31 Mar 1918
         // 07:00:00 GMT) the offset was -18000000.
         // zic > 2014b produces data that suggests before Integer.MIN_VALUE seconds the offset was
-        // -17762000 and between Integer.MIN_VALUE and -1633280400 it was -18000000. Once Android
-        // moves to zic > 2014b the -18000000 can be removed. http://b/73719425
+        // -17762000 and between Integer.MIN_VALUE and -1633280400 it was -18000000.
         int actualOffset = tz.getOffset(lowerTimeMillis);
-        assertTrue(-18000000 == actualOffset || -17762000 == actualOffset);
+        assertEquals(-17762000, actualOffset);
 
         // Nov 30th 2039, no daylight savings as per current rules.
         assertFalse(tz.inDaylightTime(new Date(upperTimeMillis)));
