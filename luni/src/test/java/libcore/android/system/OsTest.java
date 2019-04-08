@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import junit.framework.TestCase;
 
 import libcore.io.IoUtils;
+import libcore.testing.io.TestIoUtils;
 
 import static android.system.OsConstants.*;
 
@@ -81,7 +82,7 @@ public class OsTest extends TestCase {
             int flags = Os.fcntlVoid(fis.getFD(), F_GETFD);
             assertTrue((flags & FD_CLOEXEC) != 0);
         } finally {
-            IoUtils.closeQuietly(fis);
+            TestIoUtils.closeQuietly(fis);
             f.delete();
         }
     }
@@ -1133,7 +1134,7 @@ public class OsTest extends TestCase {
     }
 
     public void test_readlink() throws Exception {
-        File path = new File(IoUtils.createTemporaryDirectory("test_readlink"), "symlink");
+        File path = new File(TestIoUtils.createTemporaryDirectory("test_readlink"), "symlink");
 
         // ext2 and ext4 have PAGE_SIZE limits on symlink targets.
         // If file encryption is enabled, there's extra overhead to store the
@@ -1251,7 +1252,7 @@ public class OsTest extends TestCase {
                 android.system.Os.sendfile(outFd, inFd, offset, maxBytes);
                 assertEquals(expectedEndOffset, offset == null ? null : offset.value);
             }
-            return IoUtils.readFileAsString(out.getPath());
+            return TestIoUtils.readFileAsString(out.getPath());
         } finally {
             out.delete();
         }
@@ -1307,7 +1308,7 @@ public class OsTest extends TestCase {
             assertEquals(5, offOut.value);
         }
 
-        assertEquals("oobar", IoUtils.readFileAsString(out.getPath()));
+        assertEquals("oobar", TestIoUtils.readFileAsString(out.getPath()));
 
         Os.close(pipe[0]);
         Os.close(pipe[1]);
