@@ -18,18 +18,12 @@ package libcore.libcore.io;
 
 import junit.framework.TestCase;
 
-import libcore.io.BlockGuardOs;
 import libcore.io.ForwardingOs;
 import libcore.io.Os;
 
 import org.mockito.Mockito;
 
 public class OsTest extends TestCase {
-
-    public void testGetDefault_instanceofBlockguardOs() {
-        Os os = Os.getDefault();
-        assertTrue(os.getClass().toString(), os instanceof BlockGuardOs);
-    }
 
     public void testCompareAndSetDefault_success() throws Exception {
         Os defaultOs = Os.getDefault();
