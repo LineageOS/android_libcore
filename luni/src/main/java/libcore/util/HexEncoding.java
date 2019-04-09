@@ -121,7 +121,8 @@ public class HexEncoding {
      * Throws an {@code IllegalArgumentException} if the input is malformed.
      */
     @libcore.api.CorePlatformApi
-    public static byte[] decode(String encoded, boolean allowSingleChar) throws IllegalArgumentException {
+    public static byte[] decode(String encoded, boolean allowSingleChar)
+            throws IllegalArgumentException {
         return decode(encoded.toCharArray(), allowSingleChar);
     }
 
@@ -144,25 +145,28 @@ public class HexEncoding {
      * Throws an {@code IllegalArgumentException} if the input is malformed.
      */
     @libcore.api.CorePlatformApi
-    public static byte[] decode(char[] encoded, boolean allowSingleChar) throws IllegalArgumentException {
-        int resultLengthBytes = (encoded.length + 1) / 2;
+    public static byte[] decode(char[] encoded, boolean allowSingleChar)
+            throws IllegalArgumentException {
+        int encodedLength = encoded.length;
+        int resultLengthBytes = (encodedLength + 1) / 2;
         byte[] result = new byte[resultLengthBytes];
 
         int resultOffset = 0;
         int i = 0;
         if (allowSingleChar) {
-            if ((encoded.length % 2) != 0) {
-                // Odd number of digits -- the first digit is the lower 4 bits of the first result byte.
+            if ((encodedLength % 2) != 0) {
+                // Odd number of digits -- the first digit is the lower 4 bits of the first result
+                // byte.
                 result[resultOffset++] = (byte) toDigit(encoded, i);
                 i++;
             }
         } else {
-            if ((encoded.length % 2) != 0) {
-                throw new IllegalArgumentException("Invalid input length: " + encoded.length);
+            if ((encodedLength % 2) != 0) {
+                throw new IllegalArgumentException("Invalid input length: " + encodedLength);
             }
         }
 
-        for (int len = encoded.length; i < len; i += 2) {
+        for (; i < encodedLength; i += 2) {
             result[resultOffset++] = (byte) ((toDigit(encoded, i) << 4) | toDigit(encoded, i + 1));
         }
 
@@ -182,7 +186,6 @@ public class HexEncoding {
             return 10 + (pseudoCodePoint - 'A');
         }
 
-        throw new IllegalArgumentException("Illegal char: " + str[offset] +
-                " at offset " + offset);
+        throw new IllegalArgumentException("Illegal char: " + str[offset] + " at offset " + offset);
     }
 }
