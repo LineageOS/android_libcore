@@ -1387,6 +1387,7 @@ filegroup {
     srcs: [
         "ojluni/src/main/java/java/nio/DirectByteBuffer.java",
         "ojluni/src/main/java/sun/misc/Cleaner.java",
+        "ojluni/src/main/java/sun/misc/Unsafe.java",
         "ojluni/src/main/java/sun/nio/ch/DirectBuffer.java",
         "ojluni/src/main/java/sun/security/jca/Providers.java",
         "ojluni/src/main/java/sun/security/pkcs/ContentInfo.java",
@@ -1451,7 +1452,6 @@ filegroup {
         "ojluni/src/main/java/sun/misc/Resource.java",
         "ojluni/src/main/java/sun/misc/SharedSecrets.java",
         "ojluni/src/main/java/sun/misc/URLClassPath.java",
-        "ojluni/src/main/java/sun/misc/Unsafe.java",
         "ojluni/src/main/java/sun/misc/Version.java",
         "ojluni/src/main/java/sun/misc/VM.java",
         "ojluni/src/main/java/sun/net/ApplicationProxy.java",
