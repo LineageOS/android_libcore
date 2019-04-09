@@ -19,6 +19,7 @@ package libcore.java.net;
 import com.google.mockwebserver.Dispatcher;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
+import com.google.mockwebserver.QueueDispatcher;
 import com.google.mockwebserver.RecordedRequest;
 import com.google.mockwebserver.SocketPolicy;
 
@@ -57,6 +58,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -88,6 +90,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import libcore.java.security.TestKeyStore;
 import libcore.javax.net.ssl.TestSSLContext;
+import libcore.testing.io.TestIoUtils;
 
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_END;
 import static com.google.mockwebserver.SocketPolicy.DISCONNECT_AT_START;
@@ -1126,6 +1129,105 @@ public final class URLConnectionTest extends TestCase {
         } catch (IOException expected) {
         }
     }
+
+    public void testDisconnectFromBackgroundThread_blockedRead_beforeHeader()
+            throws IOException {
+        QueueDispatcher dispatcher = new QueueDispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+                Thread.sleep(6000);
+                return super.dispatch(request);
+            }
+        };
+        server.setDispatcher(dispatcher);
+        server.enqueue(new MockResponse().setHeader("Key", "Value").setBody("Response body"));
+        checkDisconnectFromBackgroundThread_blockedRead(2000, null /* disconnectMillis */);
+    }
+
+    public void testDisconnectFromBackgroundThread_blockedRead_beforeBody()
+            throws IOException {
+        server.enqueue(new MockResponse().setHeader("Key", "Value")
+                .setBody("Response body").setBodyDelayTimeMs(6000));
+        checkDisconnectFromBackgroundThread_blockedRead(2000, "" /* disconnectMillis */);
+    }
+
+    /**
+     *
+     * @throws IOException
+     */
+    public void testDisconnectFromBackgroundThread_blockedRead_duringBody()
+            throws IOException {
+        server.enqueue(new MockResponse().setHeader("Key", "Value")
+                .setBody("Response body").throttleBody(3, 1333, TimeUnit.MILLISECONDS));
+        // After 2 sec, we should have read about 6 bytes (we sleep 1333msec after every 3 bytes).
+        checkDisconnectFromBackgroundThread_blockedRead(2000, "Respon");
+    }
+
+    /**
+     * Checks that {@link HttpURLConnection#disconnect() disconnecting} a blocked read
+     * from a background thread unblocks the reading thread quickly and that the headers/body
+     * read so far are as given.
+     *
+     * The disconnect happens after approximately {@code disconnectMillis} msec (between half
+     * and double that is tolerated), so the server must already be set up such that reading
+     * the headers and the entire request takes comfortably more than that, eg.
+     * {@code 3 * disconnectMillis}.
+     *
+     * @param disconnectMillis number of milliseconds until the connection should be
+     *        {@link HttpURLConnection#disconnect() disconnected} by a background thread.
+     * @param expectedResponseContent The part of the body that is expected to have been read by
+     *        the time the connection is disconnected, or null if not even the headers
+     *        are expected to have been read at the time.
+     * @throws IOException if one occurs unexpectedly while establishing the connection.
+     */
+    private void checkDisconnectFromBackgroundThread_blockedRead(
+            long disconnectMillis, String expectedResponseContent) throws IOException {
+        server.play();
+        HttpURLConnection connection = (HttpURLConnection) server.getUrl("/").openConnection();
+
+        Thread disconnectThread = new Thread("Disconnect after " + disconnectMillis + "msec") {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(disconnectMillis);
+                } catch (InterruptedException e) {
+                    // Even if an AssertionFailedError on this background thread doesn't
+                    // cause the test to fail directly, we'd still prematurely disconnect()
+                    // and that would (if significant) be detected further down by the
+                    // assertion on the number of elapsed milliseconds observed by the
+                    // main thread.
+                    fail("Unexpectedly interrupted: " + e);
+                }
+                connection.disconnect();
+            }
+        };
+
+        ByteArrayOutputStream auditStream = new ByteArrayOutputStream();
+        AuditInputStream inputStream = null;
+        boolean headerRead = false;
+        long start = System.currentTimeMillis();
+        disconnectThread.start();
+        try {
+            inputStream = new AuditInputStream(connection.getInputStream(), auditStream);
+            connection.getHeaderFields();
+            headerRead = true;
+            readAscii(inputStream, Integer.MAX_VALUE);
+            fail("Didn't expect to successfully read all of the data");
+        } catch (IOException expected) {
+        } finally {
+            TestIoUtils.closeQuietly(inputStream);
+        }
+        long elapsed = System.currentTimeMillis() - start;
+
+        assertTrue("Expected approx. " + disconnectMillis + " msec elapsed, got " + elapsed,
+                disconnectMillis / 2 <= elapsed && elapsed <= 2 * disconnectMillis);
+        String readBody = new String(auditStream.toByteArray(), StandardCharsets.UTF_8);
+
+        String actualResponse = headerRead ? readBody : null;
+        assertEquals("Headers read: " + headerRead + "; read response body: " +  readBody,
+                expectedResponseContent, actualResponse);
+    }
+
 
     // http://b/33763156
     public void testDisconnectDuringConnect_getInputStream() throws IOException {
