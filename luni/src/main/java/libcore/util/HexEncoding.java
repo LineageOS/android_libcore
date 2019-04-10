@@ -120,6 +120,7 @@ public class HexEncoding {
      *
      * Throws an {@code IllegalArgumentException} if the input is malformed.
      */
+    @libcore.api.CorePlatformApi
     public static byte[] decode(String encoded, boolean allowSingleChar) throws IllegalArgumentException {
         return decode(encoded.toCharArray(), allowSingleChar);
     }
