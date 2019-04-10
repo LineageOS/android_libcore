@@ -658,6 +658,13 @@ java_library {
     },
     no_standard_libs: true,
     system_modules: "none",
+
+    dist: {
+        targets: [
+            "sdk",
+            "win_sdk",
+        ],
+    },
 }
 
 // Target for validating nullability annotations for correctness and
