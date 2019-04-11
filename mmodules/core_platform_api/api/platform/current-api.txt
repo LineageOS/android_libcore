@@ -1223,6 +1223,7 @@ package libcore.util {
 
   public class HexEncoding {
     method public static byte[] decode(String) throws java.lang.IllegalArgumentException;
+    method public static byte[] decode(String, boolean) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[]) throws java.lang.IllegalArgumentException;
     method public static byte[] decode(char[], boolean) throws java.lang.IllegalArgumentException;
     method public static char[] encode(byte[]);
