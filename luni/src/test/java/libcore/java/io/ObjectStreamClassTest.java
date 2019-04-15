@@ -16,6 +16,7 @@
 package libcore.java.io;
 
 import java.io.ObjectStreamClass;
+import java.io.ObjectStreamClass.DefaultSUIDCompatibilityListener;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @RunWith(JUnitParamsRunner.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -99,8 +101,6 @@ public class ObjectStreamClassTest {
         // The default SUID for the InheritStaticInitializer should be affected by the b/29064453
         // patch and so should differ between version <= 23 and version > 23.
         { InheritStaticInitializer.class, 4188245044387716731L, 992629205079295334L },
-
-
     };
   }
 
@@ -108,27 +108,46 @@ public class ObjectStreamClassTest {
   @Test
   public void computeDefaultSUID_current(Class<?> clazz, long suid,
       @SuppressWarnings("unused") long suid23) {
-    checkSerialVersionUID(suid, clazz);
+    checkSerialVersionUID(suid, clazz, false);
   }
 
   @Parameters(method = "defaultSUIDs")
   @Test
   @TargetSdkVersion(23)
-  public void computeDefaultSUID_targetSdkVersion_23(Class<?> clazz,
-      @SuppressWarnings("unused") long suid, long suid23) {
-    checkSerialVersionUID(suid23, clazz);
+  public void computeDefaultSUID_targetSdkVersion_23(Class<?> clazz, long suid, long suid23) {
+    // If the suid and suid23 hashes are different then a warning is expected to be logged.
+    boolean expectedWarning = suid23 != suid;
+    checkSerialVersionUID(suid23, clazz, expectedWarning);
   }
 
-  private static void checkSerialVersionUID(long expectedSUID, Class<?> clazz) {
-    // Use reflection to access the private static computeDefaultSUID method.
+  private static void checkSerialVersionUID(
+      long expectedSUID, Class<?> clazz, boolean expectedWarning) {
+    // Use reflection to call the private static computeDefaultSUID method directly to avoid the
+    // caching performed by ObjectStreamClass.lookup(Class).
     long defaultSUID;
+    DefaultSUIDCompatibilityListener savedListener
+        = ObjectStreamClass.suidCompatibilityListener;
     try {
+      ObjectStreamClass.suidCompatibilityListener = (c, hash) -> {
+        // Delegate to the existing listener so that the warning is logged.
+        savedListener.warnDefaultSUIDTargetVersionDependent(clazz, hash);
+        if (expectedWarning) {
+          assertEquals(clazz, c);
+          assertEquals(expectedSUID, hash);
+        } else {
+          fail("Unexpected warning for " + c + " with defaultSUID " + hash);
+        }
+      };
+
       Method computeDefaultSUIDMethod =
           ObjectStreamClass.class.getDeclaredMethod("computeDefaultSUID", Class.class);
       computeDefaultSUIDMethod.setAccessible(true);
+
       defaultSUID = (Long) computeDefaultSUIDMethod.invoke(null, clazz);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       throw new IllegalStateException(e);
+    } finally {
+      ObjectStreamClass.suidCompatibilityListener = savedListener;
     }
     assertEquals(expectedSUID, defaultSUID);
   }
