@@ -1,0 +1,9 @@
+filegroup {
+    name: "libcore-expectations-knownfailures",
+    srcs: ["knownfailures.txt"],
+}
+
+filegroup {
+    name: "libcore-expectations-virtualdeviceknownfailures",
+    srcs: ["virtualdeviceknownfailures.txt"],
+}
