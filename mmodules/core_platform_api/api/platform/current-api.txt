@@ -1367,6 +1367,18 @@ package sun.misc {
     method public static sun.misc.Cleaner create(Object, Runnable);
   }
 
+  public final class Unsafe {
+    method public int arrayBaseOffset(Class);
+    method @dalvik.annotation.optimization.FastNative public byte getByte(Object, long);
+    method @dalvik.annotation.optimization.FastNative public byte getByte(long);
+    method @dalvik.annotation.optimization.FastNative public long getLong(Object, long);
+    method @dalvik.annotation.optimization.FastNative public long getLong(long);
+    method public static sun.misc.Unsafe getUnsafe();
+    method public long objectFieldOffset(java.lang.reflect.Field);
+    method @dalvik.annotation.optimization.FastNative public void putByte(Object, long, byte);
+    method @dalvik.annotation.optimization.FastNative public void putByte(long, byte);
+  }
+
 }
 
 package sun.security.jca {
