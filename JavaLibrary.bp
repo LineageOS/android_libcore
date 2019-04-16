@@ -702,3 +702,14 @@ java_library_host {
     name: "timezone-host",
     srcs: [":timezone_host_files"],
 }
+
+// The source files that contain the UnsupportedAppUsage annotation and its dependencies.
+filegroup {
+    name: "unsupportedappusage_annotation_files",
+    srcs: [
+        "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
+        "dalvik/src/main/java/dalvik/system/VersionCodes.java",
+        "luni/src/main/java/libcore/api/CorePlatformApi.java",
+        "luni/src/main/java/libcore/api/IntraCoreApi.java",
+    ],
+}
