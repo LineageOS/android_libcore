@@ -138,4 +138,12 @@ public class LocaleDataTest extends junit.framework.TestCase {
     LocaleData haw = LocaleData.get(new Locale("haw"));
     assertFalse(haw.shortDateFormat.isEmpty());
   }
+
+    /**
+     * Regression test for b/129070579: LocaleData.get() would throw a RuntimeException when the
+     * default locale was set to an unknown/invalid locale.
+     */
+  public void testInvalidLocale() {
+    LocaleData.get(new Locale("abc"));
+  }
 }
