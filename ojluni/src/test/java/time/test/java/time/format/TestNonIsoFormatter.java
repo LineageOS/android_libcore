@@ -149,9 +149,8 @@ public class TestNonIsoFormatter {
             { JAPANESE, "Meiji 123", "Heisei 2" },
             // Android-changed: Eras names have been changed in CLDR data.
             // { JAPANESE, "Showa 65", "Heisei 2" }
-            // { JAPANESE, "Heisei 32", "NewEra 2" }, // NewEra
             { JAPANESE, "Shōwa 65", "Heisei 2" },
-            { JAPANESE, "Heisei 32", "Qqqq 2" }, // NewEra
+            { JAPANESE, "Heisei 32", "Reiwa 2" },
         };
     }
 
