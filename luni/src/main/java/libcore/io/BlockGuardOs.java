@@ -121,14 +121,29 @@ public class BlockGuardOs extends ForwardingOs {
         return linger.isOn() && linger.l_linger > 0;
     }
 
-    @Override public void connect(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException {
-        BlockGuard.getThreadPolicy().onNetwork();
+    private static boolean isUdpSocket(FileDescriptor fd) throws ErrnoException {
+        return Libcore.os.getsockoptInt(fd, SOL_SOCKET, SO_PROTOCOL) == IPPROTO_UDP;
+    }
+
+    @Override public void connect(FileDescriptor fd, InetAddress address, int port)
+            throws ErrnoException, SocketException {
+        boolean skipGuard = false;
+        try {
+            skipGuard = isUdpSocket(fd);
+        } catch (ErrnoException ignored) {
+        }
+        if (!skipGuard) BlockGuard.getThreadPolicy().onNetwork();
         super.connect(fd, address, port);
     }
 
     @Override public void connect(FileDescriptor fd, SocketAddress address) throws ErrnoException,
             SocketException {
-        BlockGuard.getThreadPolicy().onNetwork();
+        boolean skipGuard = false;
+        try {
+            skipGuard = isUdpSocket(fd);
+        } catch (ErrnoException ignored) {
+        }
+        if (!skipGuard) BlockGuard.getThreadPolicy().onNetwork();
         super.connect(fd, address);
     }
 
