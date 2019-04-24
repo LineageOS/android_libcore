@@ -783,13 +783,13 @@ public class StringTest extends TestCase {
     }
 
     /**
-     * Regression test for b/129070579: String.format() would throw a RuntimeException when the
-     * default locale was set to an unknown/invalid locale.
+     * Check that String.format() does not throw when the default locale is invalid.
+     * http://b/129070579
      */
     public void testFormat_invalidLocale() {
         Locale defaultLocale = Locale.getDefault();
         try {
-            Locale.setDefault(new Locale("abc"));
+            Locale.setDefault(new Locale("invalidLocale"));
             String.format("%s", "");
         } finally {
             Locale.setDefault(defaultLocale);
