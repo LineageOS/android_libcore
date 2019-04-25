@@ -255,14 +255,20 @@ java_library {
         // Device files put in /system.
         "tzdata",
         "tz_version",
-        // Files used to simulate the /system and runtime APEX dir
-        // structure on host.
-        "tzdata_host",
-        "tzdata_host_runtime_apex",
-        "tzlookup.xml_host_runtime_apex",
-        "tz_version_host",
-        "tz_version_host_runtime_apex",
     ],
+    target: {
+        hostdex: {
+            required: [
+                // Files used to simulate the /system and runtime APEX dir
+                // structure on host.
+                "tzdata_host",
+                "tzdata_host_runtime_apex",
+                "tzlookup.xml_host_runtime_apex",
+                "tz_version_host",
+                "tz_version_host_runtime_apex",
+            ],
+        },
+    },
 }
 
 // Provided solely to contribute information about which hidden parts of the
