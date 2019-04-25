@@ -176,7 +176,7 @@ public class TCKJapaneseChronology {
     @DataProvider(name="createByEra")
     Object[][] data_createByEra() {
         return new Object[][] {
-                {JapaneseEra.of(3), 2020 - YDIFF_REIWA, 2, 29, 60, LocalDate.of(2020, 2, 29)}, // NEWERA
+                {JapaneseEra.of(3), 2020 - YDIFF_REIWA, 2, 29, 60, LocalDate.of(2020, 2, 29)},
                 {JapaneseEra.HEISEI, 1996 - YDIFF_HEISEI, 2, 29, 60, LocalDate.of(1996, 2, 29)},
                 {JapaneseEra.HEISEI, 2000 - YDIFF_HEISEI, 2, 29, 60, LocalDate.of(2000, 2, 29)},
                 {JapaneseEra.MEIJI, 1874 - YDIFF_MEIJI, 2, 28, 59, LocalDate.of(1874, 2, 28)},
