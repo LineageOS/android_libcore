@@ -39,7 +39,7 @@ public class ZoneInfoTest extends TestCase {
    * Checks that a {@link ZoneInfo} cannot be created without any types.
    */
   public void testMakeTimeZone_NoTypes() throws Exception {
-    int[][] transitions = {};
+    long[][] transitions = {};
     int[][] types = {};
     try {
       createZoneInfo(transitions, types);
@@ -52,7 +52,7 @@ public class ZoneInfoTest extends TestCase {
    * Checks that a {@link ZoneInfo} can be created with one type and no transitions.
    */
   public void testMakeTimeZone_OneType_NoTransitions() throws Exception {
-    int[][] transitions = {};
+    long[][] transitions = {};
     int[][] types = {
         { 4800, 0 }
     };
@@ -78,7 +78,7 @@ public class ZoneInfoTest extends TestCase {
    * Checks that a {@link ZoneInfo} can be created with one non-DST transition.
    */
   public void testReadTimeZone_OneNonDstTransition() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { 0, 0 }
     };
     int[][] types = {
@@ -102,7 +102,7 @@ public class ZoneInfoTest extends TestCase {
    * Checks that a {@link ZoneInfo} cannot be created with one DST but no non-DSTs transitions.
    */
   public void testReadTimeZone_OneDstTransition() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { 0, 0 }
     };
     int[][] types = {
@@ -120,7 +120,7 @@ public class ZoneInfoTest extends TestCase {
    * around the boundary of negative transitions.
    */
   public void testReadTimeZone_NegativeTransition() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { -2000, 0 },
         { -5, 1 },
         { 0, 2 },
@@ -157,7 +157,7 @@ public class ZoneInfoTest extends TestCase {
    * around the boundary of positive transitions.
    */
   public void testReadTimeZone_PositiveTransition() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { 0, 0 },
         { 5, 1 },
         { 2000, 2 },
@@ -195,7 +195,7 @@ public class ZoneInfoTest extends TestCase {
    * transitions where the transition times are negative is not affected by rounding issues.
    */
   public void testReadTimeZone_HasFutureDST_NoPastDST_NegativeTransitions() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { -2000, 0 },
         { -500, 1 },
         { -100, 2 },
@@ -228,7 +228,7 @@ public class ZoneInfoTest extends TestCase {
    * transitions where the transition times are positive is not affected by rounding issues.
    */
   public void testReadTimeZone_HasFutureDST_NoPastDST_PositiveTransitions() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { 4000, 0 },
         { 5500, 1 },
         { 6000, 2 },
@@ -261,7 +261,7 @@ public class ZoneInfoTest extends TestCase {
    * transitions where the transition times are negative is not affected by rounding issues.
    */
   public void testReadTimeZone_HasPastDST_NoFutureDST_NegativeTransitions() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { -5000, 0 },
         { -2000, 1 },
         { -500, 0 },
@@ -290,7 +290,7 @@ public class ZoneInfoTest extends TestCase {
    * transitions where the transition times are positive is not affected by rounding issues.
    */
   public void testReadTimeZone_HasPastDST_NoFutureDST_PositiveTransitions() throws Exception {
-    int[][] transitions = {
+    long[][] transitions = {
         { 1000, 0 },
         { 4000, 1 },
         { 5500, 0 },
@@ -361,7 +361,7 @@ public class ZoneInfoTest extends TestCase {
     // Creates a simulation of zic version <= 2014b or zic version >= 2018f where there is often
     // no explicit transition at Integer.MIN_VALUE seconds in TZif version 1 data.
     {
-      int[][] transitions = {
+      long[][] transitions = {
               { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
       };
       ZoneInfo oldZoneInfo = createZoneInfo(transitions, types, currentTime);
@@ -378,7 +378,7 @@ public class ZoneInfoTest extends TestCase {
     // Creates a simulation of zic version > 2014b and zic version < 2018f where there is usually an
     // explicit transition at Integer.MIN_VALUE seconds for TZif version 1 data.
     {
-      int[][] transitions = {
+      long[][] transitions = {
               { Integer.MIN_VALUE, 1 /* type 1 */ }, // The extra transition added by zic.
               { timeToSeconds(firstRealTransitionTime), 2 /* type 2 */ },
       };
@@ -422,7 +422,7 @@ public class ZoneInfoTest extends TestCase {
     // Create a simulation of zic version <= 2014b where there is usually no explicit transition at
     // Integer.MAX_VALUE seconds.
     {
-      int[][] transitions = {
+      long[][] transitions = {
               { 1000, 0 },
               { 2000, 1 },
       };
@@ -433,7 +433,7 @@ public class ZoneInfoTest extends TestCase {
     // Create a simulation of zic version > 2014b where there is sometimes an explicit transition at
     // Integer.MAX_VALUE seconds.
     {
-      int[][] transitions = {
+      long[][] transitions = {
               { 1000, 0 },
               { 2000, 1 },
               { Integer.MAX_VALUE, 1}, // The extra transition.
@@ -444,12 +444,14 @@ public class ZoneInfoTest extends TestCase {
   }
 
   /**
-   * Checks to make sure that it can handle up to 256 types.
+   * Checks to make sure that ZoneInfo can handle up to 256 types.
    */
-  public void testReadTimeZone_LotsOfTypes() throws Exception {
-    int[][] transitions = {
+  public void testReadTimeZone_MaxTypeCount() throws Exception {
+    long[][] transitions = {
         { -2000, 255 },
     };
+    // Create 256 types, each with zero offset and without DST except the last, which is offset by
+    // one hour but also without DST.
     int[][] types = new int[256][];
     Arrays.fill(types, new int[2]);
     types[255] = new int[] { 3600, 0 };
@@ -491,14 +493,14 @@ public class ZoneInfoTest extends TestCase {
     }
   }
 
-  public void testReadTimeZone_valid() throws Exception {
+  public void testReadTimeZone_Valid() throws Exception {
     ZoneInfoTestHelper.ZicDataBuilder builder =
             new ZoneInfoTestHelper.ZicDataBuilder()
                     .initializeToValid();
     assertNotNull(createZoneInfo(getName(), Instant.now(), builder.build()));
   }
 
-  public void testReadTimeZone_badMagic() throws Exception {
+  public void testReadTimeZone_BadMagic() throws Exception {
     ZoneInfoTestHelper.ZicDataBuilder builder =
             new ZoneInfoTestHelper.ZicDataBuilder()
                     .initializeToValid()
@@ -512,11 +514,15 @@ public class ZoneInfoTest extends TestCase {
   /**
    * Checks to make sure that ZoneInfo rejects more than 256 types.
    */
-  public void testReadTimeZone_TooManyTypes() throws Exception {
+  public void testReadTimeZone_TooManyTypes() {
+    int typeCount = 257; // Max types allowed is 256
+    int transitionCount = 5;
+    long[][] transitions = createTransitions(transitionCount, typeCount);
+    int[][] types = createTypes(typeCount);
     ZoneInfoTestHelper.ZicDataBuilder builder =
             new ZoneInfoTestHelper.ZicDataBuilder()
                     .initializeToValid()
-                    .setTypeCountOverride(257);
+                    .setTransitionsAndTypes(transitions, types);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), Instant.now(), bytes);
@@ -528,11 +534,15 @@ public class ZoneInfoTest extends TestCase {
   /**
    * Checks to make sure that ZoneInfo rejects more than 2000 transitions.
    */
-  public void testReadTimeZone_TooManyTransitions() throws Exception {
+  public void testReadTimeZone_TooManyTransitions() {
+    int typeCount = 5;
+    int transitionCount = 2001; // Max transitions allowed is 2000.
+    long[][] transitions = createTransitions(transitionCount, typeCount);
+    int[][] types = createTypes(typeCount);
     ZoneInfoTestHelper.ZicDataBuilder builder =
             new ZoneInfoTestHelper.ZicDataBuilder()
                     .initializeToValid()
-                    .setTransitionCountOverride(2001);
+                    .setTransitionsAndTypes(transitions, types);
     byte[] bytes = builder.build();
     try {
       createZoneInfo(getName(), Instant.now(), bytes);
@@ -541,40 +551,8 @@ public class ZoneInfoTest extends TestCase {
     }
   }
 
-  /**
-   * Checks to make sure that ZoneInfo rejects a negative type count.
-   */
-  public void testReadTimeZone_NegativeTypes() throws Exception {
-    ZoneInfoTestHelper.ZicDataBuilder builder =
-            new ZoneInfoTestHelper.ZicDataBuilder()
-                    .initializeToValid()
-                    .setTypeCountOverride(-1);
-    byte[] bytes = builder.build();
-    try {
-      createZoneInfo(getName(), Instant.now(), bytes);
-      fail();
-    } catch (IOException expected) {
-    }
-  }
-
-  /**
-   * Checks to make sure that ZoneInfo rejects a negative transition count.
-   */
-  public void testReadTimeZone_NegativeTransitions() throws Exception {
-    ZoneInfoTestHelper.ZicDataBuilder builder =
-            new ZoneInfoTestHelper.ZicDataBuilder()
-                    .initializeToValid()
-                    .setTransitionCountOverride(-1);
-    byte[] bytes = builder.build();
-    try {
-      createZoneInfo(getName(), Instant.now(), bytes);
-      fail();
-    } catch (IOException expected) {
-    }
-  }
-
-  public void testReadTimeZone_TransitionsNotSorted() throws Exception {
-    int[][] transitions = {
+  public void testReadTimeZone_TransitionsNotSorted() {
+    long[][] transitions = {
             { 1000, 0 },
             { 3000, 1 }, // Out of transition order.
             { 2000, 0 },
@@ -597,8 +575,8 @@ public class ZoneInfoTest extends TestCase {
     }
   }
 
-  public void testReadTimeZone_InvalidTypeIndex() throws Exception {
-    int[][] transitions = {
+  public void testReadTimeZone_InvalidTypeIndex() {
+    long[][] transitions = {
             { 1000, 0 },
             { 2000, 2 }, // Invalid type index - only 0 and 1 defined below.
             { 3000, 0 },
@@ -621,8 +599,8 @@ public class ZoneInfoTest extends TestCase {
     }
   }
 
-  public void testReadTimeZone_InvalidIsDst() throws Exception {
-    int[][] transitions = {
+  public void testReadTimeZone_InvalidIsDst() {
+    long[][] transitions = {
             { 1000, 0 },
             { 2000, 1 },
             { 3000, 0 },
@@ -664,7 +642,7 @@ public class ZoneInfoTest extends TestCase {
       zoneInfoRead = (ZoneInfo) object;
     }
 
-    int[][] transitions = {
+    long[][] transitions = {
         { -5000, 0 },
         { -2000, 1 },
         { -500, 0 },
@@ -729,17 +707,17 @@ public class ZoneInfoTest extends TestCase {
     return (int) seconds;
   }
 
-  private ZoneInfo createZoneInfo(int[][] transitions, int[][] types)
+  private ZoneInfo createZoneInfo(long[][] transitions, int[][] types)
       throws Exception {
     return createZoneInfo(getName(), transitions, types, Instant.now());
   }
 
-  private ZoneInfo createZoneInfo(int[][] transitions, int[][] types, Instant currentTime)
+  private ZoneInfo createZoneInfo(long[][] transitions, int[][] types, Instant currentTime)
           throws Exception {
     return createZoneInfo(getName(), transitions, types, currentTime);
   }
 
-  private ZoneInfo createZoneInfo(String name, int[][] transitions, int[][] types,
+  private ZoneInfo createZoneInfo(String name, long[][] transitions, int[][] types,
           Instant currentTime) throws Exception {
 
     ZoneInfoTestHelper.ZicDataBuilder builder =
@@ -748,11 +726,43 @@ public class ZoneInfoTest extends TestCase {
     return createZoneInfo(name, currentTime, builder.build());
   }
 
-  private ZoneInfo createZoneInfo(String name, Instant currentTime, byte[] bytes)
+  private static ZoneInfo createZoneInfo(String name, Instant currentTime, byte[] bytes)
           throws IOException {
     ByteBufferIterator bufferIterator = new ByteBufferIterator(ByteBuffer.wrap(bytes));
     return ZoneInfo.readTimeZone(
             "TimeZone for '" + name + "'", bufferIterator, currentTime.toEpochMilli());
+  }
+
+  /**
+   * Creates {@code typeCount} "types" for use with
+   * {@link ZoneInfoTestHelper.ZicDataBuilder#setTypes(int[][])} and related methods. Each type is
+   * given an arbitrary offset and "isDst" value.
+   */
+  private static int[][] createTypes(int typeCount) {
+    int[][] types = new int[typeCount][2];
+    for (int i = 0; i < typeCount; i++) {
+      // [0] holds the offset from UTC in seconds.
+      types[i][0] = typeCount;
+      // [1] holds isDst: 0 == STD, 1 == DST
+      types[i][1] = typeCount % 2;
+    }
+    return types;
+  }
+
+  /**
+   * Creates {@code transitionCount} "transition pairs" for use with
+   * {@link ZoneInfoTestHelper.ZicDataBuilder#setTransitions(long[][])} and related methods. Each
+   * transition is given an arbitrary (but increasing) time referencing an arbitrary type.
+   */
+  private static long[][] createTransitions(int transitionCount, int typeCount) {
+    long[][] transitions = new long[transitionCount][2];
+    for (int i = 0; i < transitionCount; i++) {
+      // [0] holds the transition time.
+      transitions[i][0] = (i * 3600) + 100;
+      // [1] holds the type index to use. Must be > 0 and < typeCount to be valid.
+      transitions[i][1] = i % typeCount;
+    }
+    return transitions;
   }
 
   /**
