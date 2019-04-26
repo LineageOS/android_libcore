@@ -1078,6 +1078,17 @@ package libcore.net {
     method public static java.net.InetAddress parseNumericAddress(String);
   }
 
+  public abstract class MimeMap {
+    method public static boolean compareAndSetDefault(@NonNull libcore.net.MimeMap, @NonNull libcore.net.MimeMap);
+    method @NonNull public static libcore.net.MimeMap getDefault();
+    method @Nullable protected abstract String guessExtensionFromLowerCaseMimeType(@NonNull String);
+    method @Nullable public final String guessExtensionFromMimeType(@Nullable String);
+    method @Nullable public final String guessMimeTypeFromExtension(@Nullable String);
+    method @Nullable protected abstract String guessMimeTypeFromLowerCaseExtension(@NonNull String);
+    method public final boolean hasExtension(@Nullable String);
+    method public final boolean hasMimeType(@Nullable String);
+  }
+
   public final class MimeUtils {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessExtensionFromMimeType(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessMimeTypeFromExtension(String);
