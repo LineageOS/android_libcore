@@ -41,7 +41,6 @@ public final class TimeZoneDataFiles {
      * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
      * </li>
      * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
-     * <li>[3] - the location of the file in the /system partition (should exist).</li>
      * </ul>
      */
     // VisibleForTesting
@@ -50,7 +49,6 @@ public final class TimeZoneDataFiles {
                 getDataTimeZoneFile(fileName),
                 getTimeZoneModuleTzFile(fileName),
                 getRuntimeModuleTzFile(fileName),
-                getSystemTzFile(fileName)
         };
     }
 
