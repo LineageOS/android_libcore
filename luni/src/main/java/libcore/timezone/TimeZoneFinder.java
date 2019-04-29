@@ -48,7 +48,8 @@ import libcore.timezone.CountryTimeZones.TimeZoneMapping;
 @libcore.api.CorePlatformApi
 public final class TimeZoneFinder {
 
-    private static final String TZLOOKUP_FILE_NAME = "tzlookup.xml";
+    // VisibleForTesting
+    public static final String TZLOOKUP_FILE_NAME = "tzlookup.xml";
 
     // Root element. e.g. <timezones ianaversion="2017b">
     private static final String TIMEZONES_ELEMENT = "timezones";

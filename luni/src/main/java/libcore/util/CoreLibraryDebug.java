@@ -59,31 +59,31 @@ public class CoreLibraryDebug {
         // Time zone module tz data set.
         {
             String tzDataModulePrefix = debugKeyPrefix + "tzdata_module_";
-            String versionFileName = TimeZoneDataFiles.getTimeZoneModuleFile(
-                    "tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFileName, tzDataModulePrefix, debugInfo);
+            String versionFile =
+                    TimeZoneDataFiles.getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+            addTzDataSetVersionDebugInfo(versionFile, tzDataModulePrefix, debugInfo);
         }
 
         // Runtime module tz data set.
         {
             String runtimeModulePrefix = debugKeyPrefix + "runtime_module_";
-            String versionFileName = TimeZoneDataFiles.getRuntimeModuleFile(
-                    "tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFileName, runtimeModulePrefix, debugInfo);
+            String versionFile =
+                    TimeZoneDataFiles.getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+            addTzDataSetVersionDebugInfo(versionFile, runtimeModulePrefix, debugInfo);
         }
 
         // /system tz data set.
         {
             String systemDirPrefix = debugKeyPrefix + "system_";
-            String versionFileName =
-                    TimeZoneDataFiles.getSystemTimeZoneFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFileName, systemDirPrefix, debugInfo);
+            String versionFile =
+                    TimeZoneDataFiles.getSystemTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+            addTzDataSetVersionDebugInfo(versionFile, systemDirPrefix, debugInfo);
         }
     }
 
-    private static void addTzDataSetVersionDebugInfo(String tzDataSetVersionFileName,
+    private static void addTzDataSetVersionDebugInfo(String tzDataSetVersionFile,
             String debugKeyPrefix, DebugInfo debugInfo) {
-        File file = new File(tzDataSetVersionFileName);
+        File file = new File(tzDataSetVersionFile);
         String statusKey = debugKeyPrefix + "status";
         if (file.exists()) {
             try {
