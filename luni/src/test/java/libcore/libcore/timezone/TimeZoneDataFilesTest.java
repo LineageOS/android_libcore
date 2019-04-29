@@ -39,7 +39,7 @@ public class TimeZoneDataFilesTest {
     @Test
     public void getTimeZoneFilePaths() {
         String[] paths = TimeZoneDataFiles.getTimeZoneFilePaths("foo");
-        assertEquals(4, paths.length);
+        assertEquals(3, paths.length);
 
         assertTrue(paths[0].contains("/misc/zoneinfo/current/"));
         assertTrue(paths[0].endsWith("/foo"));
@@ -49,9 +49,6 @@ public class TimeZoneDataFilesTest {
 
         assertTrue(paths[2].startsWith(System.getenv(ANDROID_RUNTIME_ROOT_ENV)));
         assertTrue(paths[2].endsWith("/foo"));
-
-        assertTrue(paths[3].contains("/usr/share/zoneinfo/"));
-        assertTrue(paths[3].endsWith("/foo"));
     }
 
     // http://b/34867424
