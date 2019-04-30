@@ -112,6 +112,21 @@ import org.testng.annotations.Test;
 @Test
 public class TCKJapaneseChronology {
 
+    // Android-added: Add a static field to indicate if the device supports the new Japanese era.
+    /**
+     * Indicates if the device support newer Japenese Era than Heisei. Old Android releases can
+     * optionally support new Japanese Era, e.g. Reiwa, and Android test suites, e.g. CTS, can use
+     * this flag to alter the expected result. This flag can be placed in other classes, but
+     * TCKJapaneseChronology is picked arbitrarily.
+     */
+    public static final boolean IS_HEISEI_LATEST;
+    static {
+        List<Era> japaneseEras = JapaneseChronology.INSTANCE.eras();
+        IS_HEISEI_LATEST =
+            japaneseEras.get(japaneseEras.size()-1).getValue() <= JapaneseEra.HEISEI.getValue();
+    }
+
+
     // Year differences from Gregorian years.
     private static final int YDIFF_REIWA = 2018;
     private static final int YDIFF_HEISEI = 1988;
@@ -176,7 +191,10 @@ public class TCKJapaneseChronology {
     @DataProvider(name="createByEra")
     Object[][] data_createByEra() {
         return new Object[][] {
-                {JapaneseEra.of(3), 2020 - YDIFF_REIWA, 2, 29, 60, LocalDate.of(2020, 2, 29)}, // NEWERA
+                // Android-changed: Old Android releases can optionally support the new Japanese era.
+                IS_HEISEI_LATEST
+                    ? new Object[] {JapaneseEra.HEISEI, 2020 - YDIFF_HEISEI, 2, 29, 60, LocalDate.of(2020, 2, 29)}
+                    : new Object[] {JapaneseEra.of(3), 2020 - YDIFF_REIWA, 2, 29, 60, LocalDate.of(2020, 2, 29)}, // NEWERA
                 {JapaneseEra.HEISEI, 1996 - YDIFF_HEISEI, 2, 29, 60, LocalDate.of(1996, 2, 29)},
                 {JapaneseEra.HEISEI, 2000 - YDIFF_HEISEI, 2, 29, 60, LocalDate.of(2000, 2, 29)},
                 {JapaneseEra.MEIJI, 1874 - YDIFF_MEIJI, 2, 28, 59, LocalDate.of(1874, 2, 28)},
@@ -369,8 +387,13 @@ public class TCKJapaneseChronology {
     @DataProvider(name="prolepticYear")
     Object[][] data_prolepticYear() {
         return new Object[][] {
-                {3, JapaneseEra.of(3), 1, 1 + YDIFF_REIWA, false},
-                {3, JapaneseEra.of(3), 102, 102 + YDIFF_REIWA, true},
+                // Android-changed: Old Android releases can optionally support the new Japanese era.
+                IS_HEISEI_LATEST
+                    ? new Object[] {2, JapaneseEra.HEISEI, 1, 1 + YDIFF_HEISEI, false}
+                    : new Object[] {3, JapaneseEra.of(3), 1, 1 + YDIFF_REIWA, false},
+                IS_HEISEI_LATEST
+                    ? new Object[] {2, JapaneseEra.HEISEI, 102, 102 + YDIFF_HEISEI, false}
+                    : new Object[] {3, JapaneseEra.of(3), 102, 102 + YDIFF_REIWA, true},
 
                 {2, JapaneseEra.HEISEI, 1, 1 + YDIFF_HEISEI, false},
                 {2, JapaneseEra.HEISEI, 4, 4 + YDIFF_HEISEI, true},
@@ -550,12 +573,21 @@ public class TCKJapaneseChronology {
     //-----------------------------------------------------------------------
     @DataProvider(name="japaneseEras")
     Object[][] data_japanseseEras() {
+        // Android-changed: Old Android releases can optionally support the new Japanese era.
+        if (!IS_HEISEI_LATEST) {
+            return new Object[][] {
+                { JapaneseEra.MEIJI, -1, "Meiji"},
+                { JapaneseEra.TAISHO, 0, "Taisho"},
+                { JapaneseEra.SHOWA, 1, "Showa"},
+                { JapaneseEra.HEISEI, 2, "Heisei"},
+                { JapaneseEra.of(3), 3, "Reiwa"},
+            };
+        }
         return new Object[][] {
             { JapaneseEra.MEIJI, -1, "Meiji"},
             { JapaneseEra.TAISHO, 0, "Taisho"},
             { JapaneseEra.SHOWA, 1, "Showa"},
             { JapaneseEra.HEISEI, 2, "Heisei"},
-            { JapaneseEra.of(3), 3, "Reiwa"},
         };
     }
 
@@ -691,7 +723,10 @@ public class TCKJapaneseChronology {
             {JapaneseChronology.INSTANCE.date(1989,  1,  7), "Japanese Showa 64-01-07"},
             {JapaneseChronology.INSTANCE.date(1989,  1,  8), "Japanese Heisei 1-01-08"},
             {JapaneseChronology.INSTANCE.date(2012, 12,  6), "Japanese Heisei 24-12-06"},
-            {JapaneseChronology.INSTANCE.date(2020,  1,  6), "Japanese Reiwa 2-01-06"},
+            // Android-changed: Old Android releases can optionally support the new Japanese era.
+            IS_HEISEI_LATEST
+                ? new Object[] {JapaneseChronology.INSTANCE.date(2020,  1,  6), "Japanese Heisei 32-01-06"}
+                : new Object[] {JapaneseChronology.INSTANCE.date(2020,  1,  6), "Japanese Reiwa 2-01-06"},
         };
     }
 

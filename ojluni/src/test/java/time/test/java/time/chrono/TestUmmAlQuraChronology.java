@@ -33,6 +33,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
+import static tck.java.time.chrono.TCKJapaneseChronology.IS_HEISEI_LATEST;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -776,9 +777,10 @@ public class TestUmmAlQuraChronology {
             {HijrahDate.of(1434,5,1), "Japanese Heisei 25-03-13"},
             {HijrahDate.of(1436,1,1), "Japanese Heisei 26-10-25"},
             {HijrahDate.of(1440,8,25), "Japanese Heisei 31-04-30"},
-            {HijrahDate.of(1440,8,26), "Japanese Reiwa 1-05-01"},
-            {HijrahDate.of(1500,6,12), "Japanese Reiwa 59-05-05"},
-            {HijrahDate.of(1550,3,11), "Japanese Reiwa 107-08-11"},
+            // Android-changed: Old Android releases can optionally support the new Japanese era.
+            {HijrahDate.of(1440,8,26), IS_HEISEI_LATEST ? "Japanese Heisei 31-05-01" : "Japanese Reiwa 1-05-01"},
+            {HijrahDate.of(1500,6,12), IS_HEISEI_LATEST ? "Japanese Heisei 89-05-05" : "Japanese Reiwa 59-05-05"},
+            {HijrahDate.of(1550,3,11), IS_HEISEI_LATEST ? "Japanese Heisei 137-08-11" : "Japanese Reiwa 107-08-11"},
         };
     }
 
