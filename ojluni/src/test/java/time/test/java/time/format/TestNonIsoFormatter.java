@@ -30,6 +30,7 @@
 package test.java.time.format;
 
 import static org.testng.Assert.assertEquals;
+import static tck.java.time.chrono.TCKJapaneseChronology.IS_HEISEI_LATEST;
 
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
@@ -150,7 +151,8 @@ public class TestNonIsoFormatter {
             // Android-changed: Eras names have been changed in CLDR data.
             // { JAPANESE, "Showa 65", "Heisei 2" }
             { JAPANESE, "Shōwa 65", "Heisei 2" },
-            { JAPANESE, "Heisei 32", "Reiwa 2" },
+            // Android-changed: Old Android releases can optionally support the new Japanese era.
+            { JAPANESE, "Heisei 32", IS_HEISEI_LATEST ? "Heisei 32" : "Reiwa 2" },
         };
     }
 
