@@ -251,11 +251,6 @@ java_library {
         ],
     },
 
-    required: [
-        // Device files put in /system.
-        "tzdata",
-        "tz_version",
-    ],
     target: {
         hostdex: {
             required: [

@@ -42,15 +42,13 @@ public final class TimeZoneDataFiles {
      * </li>
      * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
      * </ul>
-     * <li>[3] - the location of the file in the /system partition (should exist).</li>
      */
     // VisibleForTesting
     public static String[] getTimeZoneFilePaths(String fileName) {
         return new String[] {
                 getDataTimeZoneFile(fileName),
-                getTimeZoneModuleFile("tz/" + fileName),
-                getRuntimeModuleFile("tz/" + fileName),
-                getSystemTimeZoneFile(fileName)
+                getTimeZoneModuleTzFile(fileName),
+                getRuntimeModuleTzFile(fileName),
         };
     }
 
@@ -65,6 +63,15 @@ public final class TimeZoneDataFiles {
         return getDataTimeZoneRootDir() + "current/" + fileName;
     }
 
+    public static String getTimeZoneModuleTzFile(String fileName) {
+        return getTimeZoneModuleFile("tz/" + fileName);
+    }
+
+    public static String getTimeZoneModuleIcuFile(String fileName) {
+        return getTimeZoneModuleFile("icu/" + fileName);
+    }
+
+    // VisibleForTesting
     public static String getTimeZoneModuleFile(String fileName) {
         return System.getenv(ANDROID_TZDATA_ROOT_ENV) + "/etc/" + fileName;
     }
@@ -72,14 +79,22 @@ public final class TimeZoneDataFiles {
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
     @libcore.api.CorePlatformApi
     public static String getRuntimeModuleTzVersionFile() {
-        return getRuntimeModuleFile("tz/" + TzDataSetVersion.DEFAULT_FILE_NAME);
+        return getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
     }
 
-    public static String getRuntimeModuleFile(String fileName) {
+    public static String getRuntimeModuleTzFile(String fileName) {
+        return getRuntimeModuleFile("tz/" + fileName);
+    }
+
+    public static String getRuntimeModuleIcuFile(String fileName) {
+        return getRuntimeModuleFile("icu/" + fileName);
+    }
+
+    private static String getRuntimeModuleFile(String fileName) {
         return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
     }
 
-    public static String getSystemTimeZoneFile(String fileName) {
+    public static String getSystemTzFile(String fileName) {
         return getEnvironmentPath(ANDROID_ROOT_ENV, "/usr/share/zoneinfo/" + fileName);
     }
 
@@ -100,17 +115,14 @@ public final class TimeZoneDataFiles {
 
         // ICU should then look for a mounted time zone module file in /apex. This is used for
         // (optional) time zone data that can be updated with an APEX file.
-        String timeZoneModuleIcuDataPath = getTimeZoneModuleFile("icu/");
-        if (timeZoneModuleIcuDataPath != null) {
-            paths.add(timeZoneModuleIcuDataPath);
-        }
+        String timeZoneModuleIcuDataPath = getTimeZoneModuleIcuFile("");
+        paths.add(timeZoneModuleIcuDataPath);
 
         // ICU should always look in the runtime module path as this is where most of the data
         // can be found.
-        String runtimeModuleIcuDataPath = getRuntimeModuleFile("icu/");
-        if (runtimeModuleIcuDataPath != null) {
-            paths.add(runtimeModuleIcuDataPath);
-        }
+        String runtimeModuleIcuDataPath = getRuntimeModuleIcuFile("");
+        paths.add(runtimeModuleIcuDataPath);
+
         return String.join(":", paths);
     }
 
