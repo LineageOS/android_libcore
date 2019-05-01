@@ -1343,23 +1343,6 @@
     "com.android.org.apache.harmony.sql.tests.java.sql.DataTruncationTest#testGetTransferSize",
     "com.android.org.apache.harmony.sql.tests.java.sql.DataTruncationTest#testDataTruncationintbooleanbooleanintint",
     "com.android.org.apache.harmony.sql.tests.java.sql.DateTest#test_valueOf_IllegalArgumentException",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testDeregisterDriver",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetConnectionString",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetConnectionStringProperties",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetConnectionStringStringString",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetDriver",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetDrivers",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetLogStream",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetLogWriter",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testGetLoginTimeout",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testPrintln",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testRegisterDriver",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testSetLogStream",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testSetLogWriter",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#testSetLoginTimeout",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#test_getConnection_LStringLProperties",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#test_initClass",
-    "com.android.org.apache.harmony.sql.tests.java.sql.DriverManagerTest#test_registerDriver_MultiTimes",
     "com.android.org.apache.harmony.sql.tests.java.sql.TimestampTest#testCompareToDate",
     "com.android.org.apache.harmony.sql.tests.java.sql.TimestampTest#testOverridingTimestamp"
   ]
@@ -1808,14 +1791,6 @@
   result: EXEC_FAILED,
   names: [
       "com.android.org.apache.harmony.luni.tests.java.net.URLClassLoaderTest"
-  ]
-},
-{
-  description: "Unable to execute Support_AvailTest",
-  result: EXEC_FAILED,
-  bug: 28535603,
-  names: [
-      "com.android.org.apache.harmony.luni.tests.internal.process.SystemProcessTest#test_interrupt"
   ]
 },
 {
