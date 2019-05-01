@@ -769,6 +769,7 @@ package dalvik.system {
   public class VersionCodes {
     field public static final int O = 26; // 0x1a
     field public static final int P = 28; // 0x1c
+    field public static final int Q = 29; // 0x1d
   }
 
   public final class ZygoteHooks {
