@@ -26,6 +26,7 @@ import libcore.util.Nullable;
  * Maps from MIME types to file extensions and back.
  * @hide
  */
+@libcore.api.CorePlatformApi
 public abstract class MimeMap {
     private static AtomicReference<MimeMap> defaultHolder = new AtomicReference<>(
             MimeMapImpl.parseFromResources("mime.types", "android.mime.types"));
@@ -33,6 +34,7 @@ public abstract class MimeMap {
     /**
      * @return The system's current default {@link MimeMap}.
      */
+    @libcore.api.CorePlatformApi
     public static @NonNull MimeMap getDefault() {
         return defaultHolder.get();
     }
@@ -45,6 +47,7 @@ public abstract class MimeMap {
      * @param update the new default {@link MimeMap} to set; must not be null.
      * @return whether the update was successful.
      */
+    @libcore.api.CorePlatformApi
     public static boolean compareAndSetDefault(@NonNull MimeMap expect, @NonNull MimeMap update) {
         Objects.requireNonNull(expect);
         Objects.requireNonNull(update);
@@ -58,6 +61,7 @@ public abstract class MimeMap {
      * @return Whether a MIME type has been registered for the given case insensitive file
      *         extension.
      */
+    @libcore.api.CorePlatformApi
     public final boolean hasExtension(@Nullable String extension) {
         return guessMimeTypeFromExtension(extension) != null;
     }
@@ -72,6 +76,7 @@ public abstract class MimeMap {
      * @return The lower-case MIME type registered for the given case insensitive file extension,
      *         or null if there is none.
      */
+    @libcore.api.CorePlatformApi
     public final @Nullable String guessMimeTypeFromExtension(@Nullable String extension) {
         if (isNullOrEmpty(extension)) {
             return null;
@@ -88,6 +93,7 @@ public abstract class MimeMap {
      * @param extension A non-null, non-empty, lowercase file extension.
      * @return The MIME type registered for the given file extension, or null if there is none.
      */
+    @libcore.api.CorePlatformApi
     protected abstract @Nullable String guessMimeTypeFromLowerCaseExtension(
             @NonNull String extension);
 
@@ -96,6 +102,7 @@ public abstract class MimeMap {
      * @return Whether the given case insensitive MIME type is
      *         {@link #guessMimeTypeFromExtension(String) mapped} to a file extension.
      */
+    @libcore.api.CorePlatformApi
     public final boolean hasMimeType(@Nullable String mimeType) {
         return guessExtensionFromMimeType(mimeType) != null;
     }
@@ -108,6 +115,7 @@ public abstract class MimeMap {
      * @return The lower-case file extension (without the leading "." that has been registered for
      *         the given case insensitive MIME type, or null if there is none.
      */
+    @libcore.api.CorePlatformApi
     public final @Nullable String guessExtensionFromMimeType(@Nullable String mimeType) {
         if (isNullOrEmpty(mimeType)) {
             return null;
@@ -125,6 +133,7 @@ public abstract class MimeMap {
      * @return The file extension (without the leading ".") for the given mimeType, or null if
      *         there is none.
      */
+    @libcore.api.CorePlatformApi
     protected abstract @Nullable String guessExtensionFromLowerCaseMimeType(
             @NonNull String mimeType);
 
