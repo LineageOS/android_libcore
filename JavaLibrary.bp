@@ -149,6 +149,15 @@ java_library {
 // See core-all-system-modules for more details.
 java_library {
     name: "core-all",
+    visibility: [
+        "//external/apache-harmony:__subpackages__",
+        "//external/apache-xml",
+        "//external/bouncycastle",
+        "//external/conscrypt",
+        "//external/icu/android_icu4j",
+        "//external/okhttp",
+        "//libcore/mmodules/intracoreapi",
+    ],
     defaults: ["libcore_java_defaults"],
 
     srcs: [
@@ -189,6 +198,10 @@ java_system_modules {
 // Contains the parts of core library associated with OpenJDK.
 java_library {
     name: "core-oj",
+    visibility: [
+        "//art/build/apex",
+        "//external/wycheproof",
+    ],
     defaults: ["libcore_java_defaults"],
     installable: true,
     hostdex: true,
@@ -229,6 +242,11 @@ java_library {
 // various internal libcore.* packages.
 java_library {
     name: "core-libart",
+    visibility: [
+        "//art/build/apex",
+        "//external/robolectric-shadows",
+        "//external/wycheproof",
+    ],
     defaults: ["libcore_java_defaults"],
     installable: true,
     hostdex: true,
@@ -270,6 +288,8 @@ java_library {
 // core-oj API are used by apps.
 java_library {
     name: "core-oj-hiddenapi",
+    // Do not allow this to be accessed from outside this directory.
+    visibility: ["//visibility:private"],
     defaults: ["libcore_java_defaults"],
     compile_dex: true,
 
@@ -318,7 +338,6 @@ java_library {
     },
     notice: "ojluni/NOTICE",
 }
-
 
 java_defaults {
     name: "core_lambda_stubs_defaults",
@@ -605,6 +624,7 @@ droiddoc_exported_dir {
     name: "ojluni-annotated-sdk-stubs",
     path: "ojluni/annotations/sdk",
 }
+
 droiddoc_exported_dir {
     name: "ojluni-annotated-nullability-stubs",
     path: "ojluni/annotations/sdk/nullability",
