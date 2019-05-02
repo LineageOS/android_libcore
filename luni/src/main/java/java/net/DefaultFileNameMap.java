@@ -16,17 +16,16 @@
 
 package java.net;
 
-import java.util.Locale;
-import libcore.net.MimeUtils;
+import libcore.net.MimeMap;
 
 /**
- * Implements {@link FileNameMap} in terms of {@link libcore.net.MimeUtils}.
+ * Implements {@link FileNameMap} in terms of {@link libcore.net.MimeMap}.
  */
 class DefaultFileNameMap implements FileNameMap {
     public String getContentTypeFor(String filename) {
         if (filename.endsWith("/")) {
             // a directory, return html
-            return MimeUtils.guessMimeTypeFromExtension("html");
+            return MimeMap.getDefault().guessMimeTypeFromExtension("html");
         }
         int lastCharInExtension = filename.lastIndexOf('#');
         if (lastCharInExtension < 0) {
@@ -37,6 +36,6 @@ class DefaultFileNameMap implements FileNameMap {
         if (firstCharInExtension > filename.lastIndexOf('/')) {
             ext = filename.substring(firstCharInExtension, lastCharInExtension);
         }
-        return MimeUtils.guessMimeTypeFromExtension(ext);
+        return MimeMap.getDefault().guessMimeTypeFromExtension(ext);
     }
 }
