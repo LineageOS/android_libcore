@@ -164,6 +164,7 @@ java_library {
         ":core_oj_java_files",
         ":core_libart_java_files",
         ":openjdk_lambda_stub_files",
+        ":openjdk_generated_annotation_stub_files",
     ],
 
     no_standard_libs: true,
@@ -379,6 +380,29 @@ java_library {
     srcs: [
         ":openjdk_lambda_stub_files",
     ],
+}
+
+
+// Creates a jar that exists to satisfy javac when compiling source code that
+// contains @Generated annotations, which are produced by some code generation
+// tools (notably dagger) but aren't part of the Android API.
+// See http://b/123891440.
+java_library {
+    name: "core-generated-annotation-stubs",
+    defaults: ["libcore_java_defaults"],
+    srcs: [
+        ":openjdk_generated_annotation_stub_files",
+    ],
+    hostdex: true,
+    no_standard_libs: true,
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
+    },
+    notice: "ojluni/NOTICE",
+    installable: false,
+    include_srcs: true,
 }
 
 // A system modules definition containing the implementations for the various
