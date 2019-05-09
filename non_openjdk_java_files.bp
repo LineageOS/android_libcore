@@ -198,6 +198,7 @@ filegroup {
         "luni/src/main/java/libcore/util/Nullable.java",
         "luni/src/main/java/libcore/util/SneakyThrow.java",
         "luni/src/main/java/libcore/util/XmlObjectFactory.java",
+        "luni/src/main/java/libcore/util/TimeZoneFinder.java",
         "luni/src/main/java/libcore/util/ZoneInfo.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/NativeTestTarget.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/ddmc/Chunk.java",
