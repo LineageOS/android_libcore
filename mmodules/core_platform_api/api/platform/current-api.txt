@@ -1331,6 +1331,11 @@ package libcore.util {
     method public static void sneakyThrow(Throwable);
   }
 
+  public final class TimeZoneFinder {
+    method public static libcore.util.TimeZoneFinder getInstance();
+    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(String);
+  }
+
   public class XmlObjectFactory {
     method public static org.xml.sax.XMLReader newXMLReader();
     method public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
