@@ -108,6 +108,10 @@ class MimeMapImpl extends MimeMap {
                     // to an extension.
 
                     if (extension.endsWith("!")) {
+                        if (i != 1) {
+                            throw new IllegalArgumentException(mimeType + ": override " +
+                                    extension + " must be listed first.");
+                        }
                         extension = extension.substring(0, extension.length() - 1);
 
                         // Overriding MIME definition wins
