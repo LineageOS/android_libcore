@@ -529,6 +529,7 @@ java_test {
     ],
 
     java_resources: [
+        ":annotations-test",
         ":filesystemstest",
         ":parameter-metadata-test",
     ],
