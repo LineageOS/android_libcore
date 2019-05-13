@@ -1374,6 +1374,18 @@ filegroup {
     ],
 }
 
+// Stubs needed to satisfy javac when compiling source code that contains
+// @Generated annotations, which are produced by some code generation tools.
+// TODO: Remove this source file, this target, and all its dependencies, if
+// the code generation tools (notably dagger) can be fixed.
+// See http://b/123891440.
+filegroup {
+    name: "openjdk_generated_annotation_stub_files",
+    srcs: [
+        "ojluni/src/generated-annotation/java/javax/annotation/processing/Generated.java",
+    ],
+}
+
 // Classes which are exposed in the intra-core or core-platform APIs but not in
 // the public APIs. Unless they are annotated, these classes and all their
 // members will be exposed in all such APIs. To avoid patching the main ojluni
@@ -1798,6 +1810,7 @@ filegroup {
         ":openjdk_mmodule_extra_files",
         ":openjdk_internal_files",
         ":openjdk_lambda_stub_files",
+        ":openjdk_generated_annotation_stub_files",
     ],
 }
 
