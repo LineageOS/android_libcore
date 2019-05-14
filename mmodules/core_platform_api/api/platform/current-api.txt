@@ -1166,13 +1166,6 @@ package libcore.net {
     method public final boolean hasMimeType(@Nullable String);
   }
 
-  public final class MimeUtils {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessExtensionFromMimeType(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessMimeTypeFromExtension(String);
-    method public static boolean hasExtension(String);
-    method public static boolean hasMimeType(String);
-  }
-
   public abstract class NetworkSecurityPolicy {
     ctor public NetworkSecurityPolicy();
     method public static libcore.net.NetworkSecurityPolicy getInstance();
