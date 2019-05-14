@@ -397,6 +397,7 @@ package dalvik.annotation.compat {
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String expectedSignature() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String implicitMember() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String publicAlternatives() default "";
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract long trackingBug() default 0;
   }
 

@@ -612,6 +612,7 @@ package dalvik.annotation.compat {
     method public abstract String expectedSignature() default "";
     method public abstract String implicitMember() default "";
     method public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method public abstract String publicAlternatives() default "";
     method public abstract long trackingBug() default 0;
   }
 
