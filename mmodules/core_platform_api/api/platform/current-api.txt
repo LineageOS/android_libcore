@@ -612,6 +612,7 @@ package dalvik.annotation.compat {
     method public abstract String expectedSignature() default "";
     method public abstract String implicitMember() default "";
     method public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
+    method public abstract String publicAlternatives() default "";
     method public abstract long trackingBug() default 0;
   }
 
@@ -1164,13 +1165,6 @@ package libcore.net {
     method @Nullable protected abstract String guessMimeTypeFromLowerCaseExtension(@NonNull String);
     method public final boolean hasExtension(@Nullable String);
     method public final boolean hasMimeType(@Nullable String);
-  }
-
-  public final class MimeUtils {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessExtensionFromMimeType(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String guessMimeTypeFromExtension(String);
-    method public static boolean hasExtension(String);
-    method public static boolean hasMimeType(String);
   }
 
   public abstract class NetworkSecurityPolicy {
