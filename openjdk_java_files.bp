@@ -1363,6 +1363,7 @@ filegroup {
         "ojluni/src/lambda/java/java/lang/invoke/SerializedLambda.java",
     ],
 }
+
 filegroup {
     name: "openjdk_lambda_duplicate_stub_files",
     srcs: [
@@ -1828,7 +1829,7 @@ droidstubs {
     srcs: [":openjdk_javadoc_files"],
     installable: false,
     no_framework_libs: true,
-    args: "--exclude-documentation-from-stubs"
+    args: "--exclude-documentation-from-stubs",
 }
 
 // Generates stub files for the classes exposed in the intra-core or
@@ -1843,7 +1844,7 @@ droidstubs {
     ],
     installable: false,
     no_framework_libs: true,
-    args: "--exclude-documentation-from-stubs "
-        + "--hide-annotation libcore.api.Hide ",
+    args: "--exclude-documentation-from-stubs " +
+        "--hide-annotation libcore.api.Hide ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 }
