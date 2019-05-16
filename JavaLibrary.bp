@@ -124,8 +124,8 @@ java_defaults {
     dxflags: ["--core-library"],
     errorprone: {
         javacflags: [
-            "-Xep:MissingOverride:OFF",  // Ignore missing @Override.
-            "-Xep:ConstantOverflow:WARN",  // Known constant overflow in SplittableRandom
+            "-Xep:MissingOverride:OFF", // Ignore missing @Override.
+            "-Xep:ConstantOverflow:WARN", // Known constant overflow in SplittableRandom
         ],
     },
 }
@@ -381,7 +381,6 @@ java_library {
         ":openjdk_lambda_stub_files",
     ],
 }
-
 
 // Creates a jar that exists to satisfy javac when compiling source code that
 // contains @Generated annotations, which are produced by some code generation
@@ -682,8 +681,8 @@ droidstubs {
     java_version: "1.9",
     installable: false,
     no_framework_libs: true,
-    args: " --exclude-annotations "
-        + "--hide-annotation libcore.api.Hide",
+    args: " --exclude-annotations " +
+        "--hide-annotation libcore.api.Hide",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 }
 
