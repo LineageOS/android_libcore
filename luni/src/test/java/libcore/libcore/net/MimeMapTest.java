@@ -248,6 +248,11 @@ public class MimeMapTest {
         assertMimeTypeFromExtension("audio/mpeg", "m4r");
     }
 
+    @Test public void defaultMap_wifiConfig_xml() {
+        assertExtensionFromMimeType("xml", "application/x-wifi-config");
+        assertMimeTypeFromExtension("text/xml", "xml");
+    }
+
     // http://b/122734564
     @Test public void defaultMap_NonLowercaseMimeType() {
         // A mixed-case mimeType that appears in mime.types; we expect guessMimeTypeFromExtension()

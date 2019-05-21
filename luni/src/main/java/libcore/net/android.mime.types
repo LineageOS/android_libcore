@@ -110,6 +110,10 @@
 ?video/vnd.youtube.yt yt
 ?video/x-webex wrf
 
+# Optional additions that should not override any previous mapping.
+
+?application/x-wifi-config ?xml
+
 # Special cases where Android has a strong opinion about mappings, so we
 # define them very last and make them override in both directions (no "?").
 #
