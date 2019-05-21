@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,12 +28,15 @@ package test.java.time.chrono;
 import java.time.*;
 import java.time.chrono.*;
 import java.time.temporal.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+import static tck.java.time.chrono.TCKJapaneseChronology.IS_HEISEI_LATEST;
 
 /**
  * Tests for the Japanese chronology
@@ -45,7 +48,8 @@ public class TestJapaneseChronology {
 
     @DataProvider(name="transitions")
     Object[][] transitionData() {
-        return new Object[][] {
+        // Android-changed: Old Android releases can optionally support the new Japanese era.
+        List<Object[]> data = Arrays.asList(new Object[][] {
             // Japanese era, yearOfEra, month, dayOfMonth, gregorianYear
             { JapaneseEra.MEIJI,      6,  1,  1, 1873 },
             // Meiji-Taisho transition isn't accurate. 1912-07-30 is the last day of Meiji
@@ -58,12 +62,20 @@ public class TestJapaneseChronology {
             { JapaneseEra.SHOWA,      1, 12, 25, 1926 },
             { JapaneseEra.SHOWA,     64,  1,  7, 1989 },
             { JapaneseEra.HEISEI,     1,  1,  8, 1989 },
-        };
+        });
+        if (IS_HEISEI_LATEST) {
+            data.addAll(Arrays.asList(new Object[][] {
+                { JapaneseEra.HEISEI,    31,  4, 30, 2019 },
+                { JapaneseEra.of(3),      1,  5,  1, 2019 },
+            }));
+        }
+        return data.toArray(new Object[data.size()][]);
     }
 
     @DataProvider(name="day_year_data")
     Object[][] dayYearData() {
-        return new Object[][] {
+        // Android-changed: Old Android releases can optionally support the new Japanese era.
+        List<Object[]> data = Arrays.asList(new Object[][] {
             // Japanese era, yearOfEra, dayOfYear, month, dayOfMonth
             { JapaneseEra.MEIJI,  45,  211,  7, 29 },
             { JapaneseEra.TAISHO,  1,    1,  7, 30 },
@@ -74,15 +86,25 @@ public class TestJapaneseChronology {
             { JapaneseEra.SHOWA,  64,    7,  1,  7 },
             { JapaneseEra.HEISEI,  1,    1,  1,  8 },
             { JapaneseEra.HEISEI,  2,    8,  1,  8 },
-        };
+        });
+        if (IS_HEISEI_LATEST) {
+            data.addAll(Arrays.asList(new Object[][] {
+                { JapaneseEra.HEISEI, 31,  120,  4, 30 },
+                { JapaneseEra.of(3),   1,    1,  5,  1 },
+            }));
+        }
+        return data.toArray(new Object[data.size()][]);
     }
 
     @DataProvider(name="range_data")
     Object[][] rangeData() {
+        // Android-changed: Old Android releases can optionally support the new Japanese era.
+        int maxEra = IS_HEISEI_LATEST ? 2 : 3;
+        int yearOfLatestEra = IS_HEISEI_LATEST ? 1989 : 2019;
         return new Object[][] {
             // field, minSmallest, minLargest, maxSmallest, maxLargest
-            { ChronoField.ERA,         -1, -1, 2, 2},
-            { ChronoField.YEAR_OF_ERA, 1, 1, 15, 999999999-1989 }, // depends on the current era
+            { ChronoField.ERA,         -1, -1, maxEra, maxEra},
+            { ChronoField.YEAR_OF_ERA, 1, 1, 15, 999999999-yearOfLatestEra}, // depends on the current era
             { ChronoField.DAY_OF_YEAR, 1, 1, 7, 366},
             { ChronoField.YEAR, 1873, 1873, 999999999, 999999999},
         };
@@ -105,7 +127,9 @@ public class TestJapaneseChronology {
             { JapaneseEra.SHOWA,     65,  1,  1 },
             { JapaneseEra.HEISEI,     1,  1,  7 },
             { JapaneseEra.HEISEI,     1,  2, 29 },
-            { JapaneseEra.HEISEI, Year.MAX_VALUE,  12, 31 },
+            { JapaneseEra.HEISEI,    31,  5,  1 },
+            { JapaneseEra.of(3),      1,  4, 30 },
+            { JapaneseEra.of(3), Year.MAX_VALUE,  12, 31 },
         };
     }
 
@@ -124,7 +148,10 @@ public class TestJapaneseChronology {
             { JapaneseEra.SHOWA,     65 },
             { JapaneseEra.HEISEI,    -1 },
             { JapaneseEra.HEISEI,     0 },
-            { JapaneseEra.HEISEI, Year.MAX_VALUE },
+            { JapaneseEra.HEISEI,    32 },
+            { JapaneseEra.of(3),     -1 },
+            { JapaneseEra.of(3),      0 },
+            { JapaneseEra.of(3), Year.MAX_VALUE },
         };
     }
 
@@ -141,6 +168,22 @@ public class TestJapaneseChronology {
             { JapaneseEra.SHOWA,  64,   8 },
             { JapaneseEra.HEISEI,  1, 360 },
             { JapaneseEra.HEISEI,  2, 366 },
+            { JapaneseEra.HEISEI, 31, 121 },
+            { JapaneseEra.of(3),   1, 246 },
+            { JapaneseEra.of(3),   2, 367 },
+        };
+    }
+
+    @DataProvider
+    Object[][] eraNameData() {
+        return new Object[][] {
+            // Japanese era, name, exception
+            { "Meiji",  JapaneseEra.MEIJI,      null },
+            { "Taisho", JapaneseEra.TAISHO,     null },
+            { "Showa",  JapaneseEra.SHOWA,      null },
+            { "Heisei", JapaneseEra.HEISEI,     null },
+            { "Reiwa", JapaneseEra.of(3),       null },
+            { "NewEra", null,                   IllegalArgumentException.class},
         };
     }
 
@@ -191,5 +234,14 @@ public class TestJapaneseChronology {
     public void test_invalidDayYear(JapaneseEra era, int yearOfEra, int dayOfYear) {
         JapaneseDate date = JAPANESE.dateYearDay(era, yearOfEra, dayOfYear);
         System.out.printf("No DateTimeException with era=%s, year=%d, dayOfYear=%d%n", era, yearOfEra, dayOfYear);
+    }
+
+    @Test(dataProvider="eraNameData")
+    public void test_eraName(String eraName, JapaneseEra era, Class expectedEx) {
+        try {
+            assertEquals(JapaneseEra.valueOf(eraName), era);
+        } catch (Exception ex) {
+            assertTrue(expectedEx.isInstance(ex));
+        }
     }
 }
