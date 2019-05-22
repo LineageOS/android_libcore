@@ -287,6 +287,24 @@ java_library {
 
 // Provided solely to contribute information about which hidden parts of the
 // core-oj API are used by apps.
+//
+// The build system determines that this library provides hiddenapi information
+// for the core-oj bootjar because its name is of the form <x>-hiddenapi, where
+// <x> is the name of a boot jar. That triggers the generation of a flags.csv
+// file which encapsulates information extracted from the UnsupportedAppUsage
+// annotations in the dex. The information from that file is then encoded into
+// the core-oj file.
+//
+// Usually, e.g. for core-libart, the UnsupportedAppUsage annotations are
+// added to the source that is compiled directly into the bootjar and the build
+// system extracts the information about UnsupportedAppUsage directly from
+// there.
+//
+// This approach of having separate annotated source and a separate build
+// target was taken for ojluni to avoid having to maintain local patches in the
+// ojluni source for UnsupportedAppUsage annotations as that would make it more
+// difficult to pull down changes from upstream.
+//
 java_library {
     name: "core-oj-hiddenapi",
     // Do not allow this to be accessed from outside this directory.
