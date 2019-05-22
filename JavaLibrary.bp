@@ -490,32 +490,6 @@ java_test {
     system_modules: "core-all-system-modules",
 }
 
-// Builds a library just containing files from luni/src/test/filesystems
-// for use in tests.
-java_library {
-    name: "filesystemstest",
-    compile_dex: true,
-    srcs: ["luni/src/test/filesystems/src/**/*.java"],
-    java_resource_dirs: ["luni/src/test/filesystems/resources"],
-    no_framework_libs: true,
-    errorprone: {
-        javacflags: ["-Xep:MissingOverride:OFF"],
-    },
-}
-
-// Builds a library just containing files from luni/src/test/parameter_metadata
-// for use in tests.
-java_library {
-    name: "parameter-metadata-test",
-    compile_dex: true,
-    srcs: ["luni/src/test/parameter_metadata/src/**/*.java"],
-    no_framework_libs: true,
-    javacflags: ["-parameters"],
-    errorprone: {
-        javacflags: ["-Xep:MissingOverride:OFF"],
-    },
-}
-
 // Builds the core-tests library.
 java_test {
     name: "core-tests",
