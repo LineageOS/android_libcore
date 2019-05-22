@@ -202,6 +202,7 @@ java_library {
     visibility: [
         "//art/build/apex",
         "//external/wycheproof",
+        "//libcore/benchmarks",
     ],
     defaults: ["libcore_java_defaults"],
     installable: true,
@@ -247,6 +248,7 @@ java_library {
         "//art/build/apex",
         "//external/robolectric-shadows",
         "//external/wycheproof",
+        "//libcore/benchmarks",
     ],
     defaults: ["libcore_java_defaults"],
     installable: true,
