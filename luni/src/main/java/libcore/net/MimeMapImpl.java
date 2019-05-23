@@ -19,7 +19,9 @@ package libcore.net;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -74,6 +76,35 @@ class MimeMapImpl extends MimeMap {
         return new MimeMapImpl(mimeTypeToExtension, extensionToMimeType);
     }
 
+    /**
+     * An element of a *mime.types file: A MIME type or an extension, with an optional
+     * prefix of "?" (if not overriding an earlier value).
+     */
+    private static class Element {
+        public final boolean keepExisting;
+        public final String s;
+
+        public Element(boolean keepExisting, String value) {
+            this.keepExisting = keepExisting;
+            this.s = toLowerCase(value);
+            if (value.isEmpty()) {
+                throw new IllegalArgumentException();
+            }
+        }
+
+        public String toString() {
+            return keepExisting ? ("?" + s) : s;
+        }
+    }
+
+    private static String maybePut(Map<String, String> map, Element keyElement, String value) {
+        if (keyElement.keepExisting) {
+            return map.putIfAbsent(keyElement.s, value);
+        } else {
+            return map.put(keyElement.s, value);
+        }
+    }
+
     private static void parseTypes(Map<String, String> mimeTypeToExtension,
             Map<String, String> extensionToMimeType, String resource) {
         try (BufferedReader r = new BufferedReader(
@@ -85,46 +116,46 @@ class MimeMapImpl extends MimeMap {
                     line = line.substring(0, commentPos);
                 }
                 line = line.trim();
-                if (line.equals("")) {
+                // The first time a MIME type is encountered it is mapped to the first extension
+                // listed in its line. The first time an extension is encountered it is mapped
+                // to the MIME type.
+                //
+                // When encountering a previously seen MIME type or extension, then by default
+                // the later ones override earlier mappings (put() semantics); however if a MIME
+                // type or extension is prefixed with '?' then any earlier mapping _from_ that
+                // MIME type / extension is kept (putIfAbsent() semantics).
+                final String[] split = splitPattern.split(line);
+                if (split.length <= 1) {
+                    // Need mimeType + at least one extension to make a mapping.
+                    // "mime.types" files may also contain lines with just a mimeType without
+                    // an extension but we skip them as they provide no mapping info.
                     continue;
                 }
-
-                final String[] split = splitPattern.split(line);
-                final String mimeType = toLowerCase(split[0]);
-                if (isNullOrEmpty(mimeType)) {
-                    throw new IllegalArgumentException(
-                            "Invalid mimeType " + mimeType + " in: " + line);
+                List<Element> lineElements = new ArrayList<>(split.length);
+                for (String s : split) {
+                    boolean keepExisting = s.startsWith("?");
+                    if (keepExisting) {
+                        s = s.substring(1);
+                    }
+                    if (s.isEmpty()) {
+                        throw new IllegalArgumentException("Invalid entry in '" + line + "'");
+                    }
+                    lineElements.add(new Element(keepExisting, s));
                 }
-                for (int i = 1; i < split.length; i++) {
-                    String extension = toLowerCase(split[i]);
-                    if (isNullOrEmpty(extension)) {
-                        throw new IllegalArgumentException(
-                                "Invalid extension " + extension + " in: " + line);
-                    }
 
-                    // Normally the first MIME type definition wins, and the
-                    // last extension definition wins. However, a file can
-                    // override a MIME type definition by adding the "!" suffix
-                    // to an extension.
+                // MIME type -> first extension (one mapping)
+                // This will override any earlier mapping from this MIME type to another
+                // extension, unless this MIME type was prefixed with '?'.
+                Element mimeElement = lineElements.get(0);
+                List<Element> extensionElements = lineElements.subList(1, lineElements.size());
+                String firstExtension = extensionElements.get(0).s;
+                maybePut(mimeTypeToExtension, mimeElement, firstExtension);
 
-                    if (extension.endsWith("!")) {
-                        if (i != 1) {
-                            throw new IllegalArgumentException(mimeType + ": override " +
-                                    extension + " must be listed first.");
-                        }
-                        extension = extension.substring(0, extension.length() - 1);
-
-                        // Overriding MIME definition wins
-                        mimeTypeToExtension.put(mimeType, extension);
-                    } else {
-                        // First MIME definition wins
-                        if (!mimeTypeToExtension.containsKey(mimeType)) {
-                            mimeTypeToExtension.put(mimeType, extension);
-                        }
-                    }
-
-                    // Last extension definition wins
-                    extensionToMimeType.put(extension, mimeType);
+                // extension -> MIME type (one or more mappings).
+                // This will override any earlier mapping from this extension to another
+                // MIME type, unless this extension was prefixed with '?'.
+                for (Element extensionElement : extensionElements) {
+                    maybePut(extensionToMimeType, extensionElement, mimeElement.s);
                 }
             }
         } catch (IOException e) {
