@@ -278,18 +278,6 @@ public class DecimalFormatTest extends junit.framework.TestCase {
         fail();
       } catch (NullPointerException expected) {
       }
-
-      // Test the prefix/suffix setter does not throw with null string input when target sdk = 29.
-      int originalTargetSdk = VMRuntime.getRuntime().getTargetSdkVersion();
-      VMRuntime.getRuntime().setTargetSdkVersion(29);
-      try {
-        df.setPositivePrefix(null);
-        df.setNegativePrefix(null);
-        df.setPositiveSuffix(null);
-        df.setNegativeSuffix(null);
-      } finally {
-        VMRuntime.getRuntime().setTargetSdkVersion(originalTargetSdk);
-      }
     }
 
     // Confirm the fraction digits do not change when the currency is changed.
