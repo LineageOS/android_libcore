@@ -40,7 +40,6 @@
 package java.text;
 
 import android.icu.impl.number.DecimalFormatProperties.ParseMode;
-import dalvik.system.VMRuntime;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -148,9 +147,6 @@ import android.icu.math.MathContext;
  * <code>DecimalFormat</code> will behave as if no negative subpattern was
  * specified.)  Another example is that the decimal separator and thousands
  * separator should be distinct characters, or parsing will be impossible.
- *
- * <p> After API level 29, a null string is not allowed for prefix/suffix setters, e.g.
- * <code>setPositivePrefix(String)</code>
  *
  * <p>The grouping separator is commonly used for thousands, but in some
  * countries it separates ten-thousands. The grouping size is a constant number
@@ -2688,20 +2684,15 @@ public class DecimalFormat extends NumberFormat {
      * @param newValue the new positive prefix
      */
     public void setPositivePrefix (String newValue) {
-        // BEGIN Android-changed: Use ICU. Android doesn't support null prefix after API 29.
-        // DecimalFormat object with null prefix is in invalid state.
-        // After API 29, it throws NullPointerException.
+        // BEGIN Android-changed: Use ICU.
         /*
         positivePrefix = newValue;
         posPrefixPattern = null;
         positivePrefixFieldPositions = null;
         fastPathCheckNeeded = true;
         */
-        if (newValue == null && VMRuntime.getRuntime().getTargetSdkVersion() > 29) {
-            throw new NullPointerException();
-        }
-        icuDecimalFormat.setPositivePrefixLibcore(newValue);
-        // END Android-changed: Use ICU. Android doesn't support null prefix after API 29.
+        icuDecimalFormat.setPositivePrefix(newValue);
+        // END Android-changed: Use ICU.
     }
 
     // BEGIN Android-removed: private helper getPositivePrefixFieldPositions().
@@ -2746,19 +2737,14 @@ public class DecimalFormat extends NumberFormat {
      * @param newValue the new negative prefix
      */
     public void setNegativePrefix (String newValue) {
-        // BEGIN Android-changed: Use ICU. Android doesn't support null prefix after API 29.
-        // DecimalFormat object with null prefix is in invalid state.
-        // After API 29, it throws NullPointerException.
+        // BEGIN Android-changed: Use ICU.
         /*
         negativePrefix = newValue;
         negPrefixPattern = null;
         fastPathCheckNeeded = true;
         */
-        if (newValue == null && VMRuntime.getRuntime().getTargetSdkVersion() > 29) {
-            throw new NullPointerException();
-        }
-        icuDecimalFormat.setNegativePrefixLibcore(newValue);
-        // END Android-changed: Use ICU. Android doesn't support null prefix after API 29.
+        icuDecimalFormat.setNegativePrefix(newValue);
+        // END Android-changed: Use ICU.
     }
 
     // BEGIN Android-removed: private helper getNegativePrefixFieldPositions().
@@ -2803,19 +2789,14 @@ public class DecimalFormat extends NumberFormat {
      * @param newValue the new positive suffix
      */
     public void setPositiveSuffix (String newValue) {
-        // BEGIN Android-changed: Use ICU. Android doesn't support null suffix after API 29.
-        // DecimalFormat object with null suffix is in invalid state.
-        // After API 29, it throws NullPointerException.
+        // BEGIN Android-changed: Use ICU.
         /*
         positiveSuffix = newValue;
         posSuffixPattern = null;
         fastPathCheckNeeded = true;
         */
-        if (newValue == null && VMRuntime.getRuntime().getTargetSdkVersion() > 29) {
-            throw new NullPointerException();
-        }
-        icuDecimalFormat.setPositiveSuffixLibcore(newValue);
-        // END Android-changed: Use ICU. Android doesn't support null prefix after API 29.
+        icuDecimalFormat.setPositiveSuffix(newValue);
+        // END Android-changed: Use ICU.
     }
 
     // BEGIN Android-removed: private helper getPositiveSuffixFieldPositions().
@@ -2860,19 +2841,14 @@ public class DecimalFormat extends NumberFormat {
      * @param newValue the new negative suffix
      */
     public void setNegativeSuffix (String newValue) {
-        // BEGIN Android-changed: Use ICU. Android doesn't support null suffix after API 29.
-        // DecimalFormat object with null suffix is in invalid state.
-        // After API 29, it throws NullPointerException.
+        // BEGIN Android-changed: Use ICU.
         /*
         negativeSuffix = newValue;
         negSuffixPattern = null;
         fastPathCheckNeeded = true;
          */
-        if (newValue == null && VMRuntime.getRuntime().getTargetSdkVersion() > 29) {
-            throw new NullPointerException();
-        }
-        icuDecimalFormat.setNegativeSuffixLibcore(newValue);
-        // END Android-changed: Use ICU. Android doesn't support null prefix after API 29.
+        icuDecimalFormat.setNegativeSuffix(newValue);
+        // END Android-changed: Use ICU.
     }
 
     // BEGIN Android-removed: private helper getNegativeSuffixFieldPositions().
