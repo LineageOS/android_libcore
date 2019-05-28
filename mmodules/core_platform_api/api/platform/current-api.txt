@@ -22,25 +22,6 @@ package android.icu.text {
     field public static final int RFC3920_RESOURCEPREP = 8; // 0x8
   }
 
-  public class StringPrepParseException extends java.text.ParseException {
-    ctor public StringPrepParseException(String, int);
-    ctor public StringPrepParseException(String, int, String, int);
-    ctor public StringPrepParseException(String, int, String, int, int);
-    method public int getError();
-    field public static final int ACE_PREFIX_ERROR = 6; // 0x6
-    field public static final int BUFFER_OVERFLOW_ERROR = 9; // 0x9
-    field public static final int CHECK_BIDI_ERROR = 4; // 0x4
-    field public static final int DOMAIN_NAME_TOO_LONG_ERROR = 11; // 0xb
-    field public static final int ILLEGAL_CHAR_FOUND = 1; // 0x1
-    field public static final int INVALID_CHAR_FOUND = 0; // 0x0
-    field public static final int LABEL_TOO_LONG_ERROR = 8; // 0x8
-    field public static final int PROHIBITED_ERROR = 2; // 0x2
-    field public static final int STD3_ASCII_RULES_ERROR = 5; // 0x5
-    field public static final int UNASSIGNED_ERROR = 3; // 0x3
-    field public static final int VERIFICATION_ERROR = 7; // 0x7
-    field public static final int ZERO_LENGTH_LABEL = 10; // 0xa
-  }
-
 }
 
 package android.icu.util {
