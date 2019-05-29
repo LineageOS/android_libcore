@@ -20,11 +20,10 @@ java_test {
         "core-tests-support",
     ],
     no_standard_libs: true,
-    system_modules: "none",
+    system_modules: "core-all-system-modules",
     libs: [
         "caliper-api-target",
-        "core-oj",
-        "core-libart",
+        "core-all",
         "android.test.base",
     ],
 }
