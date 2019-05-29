@@ -764,16 +764,20 @@ public final class Matcher implements MatchResult {
                 escape = true;
             } else if (c == '$' && !escape) {
                 dollar = true;
-            } else if (c >= '0' && c <= '9' && dollar) {
-                buffer.append(group(c - '0'));
+            } else if (c >= '0' && c <= '9' && dollar && !escapeNamedGroup) {
+                String groupValue = group(c - '0');
+                if (groupValue != null) {
+                    buffer.append(groupValue);
+                }
                 dollar = false;
             } else if (c == '{' && dollar) {
                 escapeNamedGroup = true;
                 escapeNamedGroupStart = i;
             } else if (c == '}' && dollar && escapeNamedGroup) {
-                String namedGroupName =
-                    s.substring(escapeNamedGroupStart + 1, i);
-                buffer.append(group(namedGroupName));
+                String groupValue = group(s.substring(escapeNamedGroupStart + 1, i));
+                if (groupValue != null) {
+                    buffer.append(groupValue);
+                }
                 dollar = false;
                 escapeNamedGroup = false;
             } else if (c != '}' && dollar && escapeNamedGroup) {
