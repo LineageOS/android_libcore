@@ -145,20 +145,25 @@ java_library {
     system_modules: "none",
 }
 
+// Visibility of core-all* build modules; we restrict visibility of core-all deliberately to
+// a small set of build modules that the core library team control. See core-all-system-modules
+// for more details.
+core_all_visibility = [
+    "//external/apache-harmony:__subpackages__",
+    "//external/apache-xml",
+    "//external/bouncycastle",
+    "//external/conscrypt",
+    "//external/icu/android_icu4j",
+    "//external/okhttp",
+    "//libcore/benchmarks",
+    "//libcore/mmodules/intracoreapi",
+]
+
 // A target used to bootstrap compilation for the core library.
 // See core-all-system-modules for more details.
 java_library {
     name: "core-all",
-    visibility: [
-        "//external/apache-harmony:__subpackages__",
-        "//external/apache-xml",
-        "//external/bouncycastle",
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-        "//external/okhttp",
-        "//libcore/benchmarks",
-        "//libcore/mmodules/intracoreapi",
-    ],
+    visibility: core_all_visibility,
     defaults: ["libcore_java_defaults"],
 
     srcs: [
@@ -194,6 +199,7 @@ java_library {
 // example to build core library tests, see "core-system-modules" instead.
 java_system_modules {
     name: "core-all-system-modules",
+    visibility: core_all_visibility,
     libs: ["core-all"],
 }
 
