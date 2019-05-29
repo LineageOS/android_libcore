@@ -156,6 +156,7 @@ java_library {
         "//external/conscrypt",
         "//external/icu/android_icu4j",
         "//external/okhttp",
+        "//libcore/benchmarks",
         "//libcore/mmodules/intracoreapi",
     ],
     defaults: ["libcore_java_defaults"],
