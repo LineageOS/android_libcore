@@ -145,10 +145,10 @@ java_library {
     system_modules: "none",
 }
 
-// Common attributes for core-all-* targets.
-java_defaults {
-    name: "core-all-defaults",
-    defaults: ["libcore_java_defaults"],
+// A target used to bootstrap compilation for the core library.
+// See core-all-system-modules for more details.
+java_library {
+    name: "core-all",
     visibility: [
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
@@ -159,13 +159,7 @@ java_defaults {
         "//libcore/benchmarks",
         "//libcore/mmodules/intracoreapi",
     ],
-}
-
-// A target used to bootstrap compilation for the core library.
-// See core-all-system-modules for more details.
-java_library {
-    name: "core-all",
-    defaults: ["core-all-defaults"],
+    defaults: ["libcore_java_defaults"],
 
     srcs: [
         ":core_oj_java_files",
@@ -200,7 +194,6 @@ java_library {
 // example to build core library tests, see "core-system-modules" instead.
 java_system_modules {
     name: "core-all-system-modules",
-    defaults: ["core-all-defaults"],
     libs: ["core-all"],
 }
 
