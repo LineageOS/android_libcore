@@ -25,6 +25,7 @@
 {
   description: "multicast not supported in virtual device testing infra",
   names: ["org.apache.harmony.tests.java.net.MulticastSocketTest#test_joinGroupLjava_net_InetAddress_IPv4",
+          "org.apache.harmony.tests.java.net.MulticastSocketTest#test_joinGroupLjava_net_InetAddress_IPv6",
           "org.apache.harmony.tests.java.net.MulticastSocketTest#test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv4_nullInterface",
           "org.apache.harmony.tests.java.net.MulticastSocketTest#test_joinGroupLjava_net_SocketAddressLjava_net_NetworkInterface_IPv6_nullInterface",
           "org.apache.harmony.tests.java.net.MulticastSocketTest#test_leaveGroupLjava_net_InetAddress_IPv4",
