@@ -64,8 +64,8 @@ public final class NioUtils {
      * Helps bridge between io and nio.
      */
     public static FileChannel newFileChannel(Closeable ioObject, FileDescriptor fd, int mode) {
-        boolean readable = (mode & (O_RDONLY | O_RDWR | O_SYNC)) != 0;
-        boolean writable = (mode & (O_WRONLY | O_RDWR | O_SYNC)) != 0;
+        boolean readable = (mode & O_ACCMODE) != O_WRONLY;
+        boolean writable = (mode & O_ACCMODE) != O_RDONLY;
         boolean append = (mode & O_APPEND) != 0;
         return FileChannelImpl.open(fd, null, readable, writable, append, ioObject);
     }
