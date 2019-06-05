@@ -256,6 +256,7 @@ java_library {
         "//external/robolectric-shadows",
         "//external/wycheproof",
         "//libcore/benchmarks",
+        "//frameworks/layoutlib",
     ],
     defaults: ["libcore_java_defaults"],
     installable: true,
