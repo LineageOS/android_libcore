@@ -714,6 +714,22 @@ java_library {
     },
 }
 
+// Used when compiling higher-level code against core.current.stubs.
+java_system_modules {
+    name: "core-current-stubs-system-modules",
+    libs: [
+        "core.current.stubs",
+        // This one is not on device but it's needed when javac compiles code
+        // containing lambdas.
+        "core-lambda-stubs-for-system-modules",
+        // This one is not on device but it's needed when javac compiles code
+        // containing @Generated annotations produced by some code generation
+        // tools.
+        // See http://b/123891440.
+        "core-generated-annotation-stubs",
+    ],
+}
+
 // Target for validating nullability annotations for correctness and
 // completeness. To check that there are no nullability errors:
 //   make core-current-stubs-nullability-validation
