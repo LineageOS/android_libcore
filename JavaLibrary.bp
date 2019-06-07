@@ -134,17 +134,6 @@ java_defaults {
 // Build for the target (device).
 //
 
-// Rule generating resource lib for android_icu4j.
-// In the downstream branch master-icu-dev, the resource files are generated.
-// This rule can't be moved external/icu because soong enforces that no_standard_libs:true can only
-// be used in libcore/ or development/
-java_library {
-    name: "android_icu4j_resources_lib",
-    java_resources: [":android_icu4j_resources"],
-    no_standard_libs: true,
-    system_modules: "none",
-}
-
 // Visibility of core-all* build modules; we restrict visibility of core-all deliberately to
 // a small set of build modules that the core library team control. See core-all-system-modules
 // for more details.
