@@ -162,7 +162,7 @@ java_library {
         ":openjdk_generated_annotation_stub_files",
     ],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     system_modules: "none",
     openjdk9: {
         srcs: ["luni/src/module/java/module-info.java"],
@@ -207,7 +207,7 @@ java_library {
     srcs: [":core_oj_java_files"],
     java_resource_dirs: core_resource_dirs,
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -255,7 +255,7 @@ java_library {
     static_libs: ["android_icu4j_resources_lib"],
     java_version: "1.9",
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -317,7 +317,7 @@ java_library {
 
     srcs: [":openjdk_hiddenapi_javadoc_files"],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -336,7 +336,7 @@ java_library {
     name: "core-oj-testdex",
     installable: true,
     static_libs: ["core-oj"],
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
@@ -351,7 +351,7 @@ java_library {
     name: "core-libart-testdex",
     installable: true,
     static_libs: ["core-libart"],
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
@@ -366,7 +366,7 @@ java_defaults {
     defaults: ["libcore_java_defaults"],
     hostdex: true,
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -414,7 +414,7 @@ java_library {
         ":openjdk_generated_annotation_stub_files",
     ],
     hostdex: true,
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -461,7 +461,7 @@ java_library_static {
     ],
     static_libs: ["junit"],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
 }
@@ -485,7 +485,7 @@ java_library_static {
 java_test {
     name: "jsr166-tests",
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: [
         "core-all",
         "junit",
@@ -528,7 +528,7 @@ java_test {
         ":parameter-metadata-test",
     ],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: [
         "core-all",
         "okhttp",
@@ -575,7 +575,7 @@ java_test {
         "ojluni/src/test/resources",
     ],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: [
         "core-all",
         "okhttp",
@@ -627,7 +627,7 @@ java_test {
         "ojluni/src/test/dist",
     ],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: [
         "core-all",
         "bouncycastle",
@@ -696,7 +696,7 @@ java_library {
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
-    no_standard_libs: true,
+    sdk_version: "none",
     system_modules: "none",
 
     dist: {

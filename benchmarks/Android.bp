@@ -19,7 +19,7 @@ java_test {
         "mockwebserver",
         "core-tests-support",
     ],
-    no_standard_libs: true,
+    sdk_version: "none",
     system_modules: "core-all-system-modules",
     libs: [
         "caliper-api-target",
