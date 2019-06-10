@@ -64,14 +64,6 @@ public class CoreLibraryDebug {
             addTzDataSetVersionDebugInfo(versionFile, tzDataModulePrefix, debugInfo);
         }
 
-        // Runtime module tz data set.
-        {
-            String runtimeModulePrefix = debugKeyPrefix + "runtime_module_";
-            String versionFile =
-                    TimeZoneDataFiles.getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-            addTzDataSetVersionDebugInfo(versionFile, runtimeModulePrefix, debugInfo);
-        }
-
         // /system tz data set.
         {
             String systemDirPrefix = debugKeyPrefix + "system_";
