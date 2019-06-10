@@ -226,22 +226,15 @@ public class TimeZoneIntegrationTest {
      */
     @Test
     public void testTzDataSetVersions() throws Exception {
+        // The time zone data module is required.
         String timeZoneModuleVersionFile =
                 TimeZoneDataFiles.getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-        // We currently treat the time zone APEX as optional in code. Its is also not present on ART
-        // host environments.
-        if (fileExists(timeZoneModuleVersionFile)) {
-            assertTzDataSetVersionIsCompatible(timeZoneModuleVersionFile);
-        }
+        assertTzDataSetVersionIsCompatible(timeZoneModuleVersionFile);
 
-        String runtimeModuleVersionFile =
-                TimeZoneDataFiles.getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-        assertTzDataSetVersionIsCompatible(runtimeModuleVersionFile);
-
-        // Check getRuntimeModuleTzVersionFile() is doing the right thing.
-        // getRuntimeModuleTzVersionFile() should go away when its one user, RulesManagerService,
+        // Check getTimeZoneModuleTzVersionFile() is doing the right thing.
+        // getTimeZoneModuleTzVersionFile() should go away when its one user, RulesManagerService,
         // is removed from the platform code. http://b/123398797
-        assertEquals(TimeZoneDataFiles.getRuntimeModuleTzVersionFile(), runtimeModuleVersionFile);
+        assertEquals(TimeZoneDataFiles.getTimeZoneModuleTzVersionFile(), timeZoneModuleVersionFile);
 
         // TODO: Remove this once the /system copy of time zone files have gone away. See also
         // testTimeZoneDebugInfo().
@@ -286,17 +279,6 @@ public class TimeZoneIntegrationTest {
             dataModuleFiles.forEach(TimeZoneIntegrationTest::assertFileDoesNotExist);
             assertFileDoesNotExist(icuOverlayFile);
         }
-
-        // Every device should have a runtime module copy of time zone data since we expect every
-        // device to have a runtime module. This is the base copy of time zone data that can be
-        // updated when we update the runtime module. Host ART should match device.
-        assertEquals("OK", getDebugStringValue(debugInfo,
-                "core_library.timezone.source.runtime_module_status"));
-        assertFileExists(
-                TimeZoneDataFiles.getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME));
-        List<String> runtimeModuleTzFiles =
-                createModuleTzFiles(TimeZoneDataFiles::getRuntimeModuleTzFile);
-        runtimeModuleTzFiles.forEach(TimeZoneIntegrationTest::assertFileExists);
 
         String icuDatFileName = "icudt" + VersionInfo.ICU_VERSION.getMajor() + "l.dat";
         String runtimeModuleIcuData = TimeZoneDataFiles.getRuntimeModuleIcuFile(icuDatFileName);

@@ -38,9 +38,7 @@ public final class TimeZoneDataFiles {
      * should be tried. See {@link #generateIcuDataPath()} for ICU files instead.
      * <ul>
      * <li>[0] - the location of the file in the /data partition (may not exist).</li>
-     * <li>[1] - the location of the file from the time zone module under /apex (may not exist).
-     * </li>
-     * <li>[2] - the location of the file from the runtime module under /apex (should exist).</li>
+     * <li>[1] - the location of the file from the time zone module under /apex (must exist).</li>
      * </ul>
      */
     // VisibleForTesting
@@ -48,7 +46,6 @@ public final class TimeZoneDataFiles {
         return new String[] {
                 getDataTimeZoneFile(fileName),
                 getTimeZoneModuleTzFile(fileName),
-                getRuntimeModuleTzFile(fileName),
         };
     }
 
@@ -71,19 +68,15 @@ public final class TimeZoneDataFiles {
         return getTimeZoneModuleFile("icu/" + fileName);
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
+    public static String getTimeZoneModuleTzVersionFile() {
+        return getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+    }
+
     // VisibleForTesting
     public static String getTimeZoneModuleFile(String fileName) {
         return System.getenv(ANDROID_TZDATA_ROOT_ENV) + "/etc/" + fileName;
-    }
-
-    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
-    @libcore.api.CorePlatformApi
-    public static String getRuntimeModuleTzVersionFile() {
-        return getRuntimeModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
-    }
-
-    public static String getRuntimeModuleTzFile(String fileName) {
-        return getRuntimeModuleFile("tz/" + fileName);
     }
 
     public static String getRuntimeModuleIcuFile(String fileName) {
