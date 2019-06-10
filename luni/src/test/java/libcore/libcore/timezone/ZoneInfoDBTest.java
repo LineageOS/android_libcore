@@ -31,7 +31,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
 
   // The base tzdata file, always present on a device.
   private static final String TZDATA_FILE =
-          TimeZoneDataFiles.getRuntimeModuleTzFile(ZoneInfoDB.TZDATA_FILE_NAME);
+          TimeZoneDataFiles.getTimeZoneModuleTzFile(ZoneInfoDB.TZDATA_FILE_NAME);
 
   // An empty override file should fall back to the default file.
   public void testLoadTzDataWithFallback_emptyOverrideFile() throws Exception {
