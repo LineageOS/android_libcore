@@ -1201,7 +1201,7 @@ package libcore.timezone {
   public final class TimeZoneDataFiles {
     method public static String getDataTimeZoneFile(String);
     method public static String getDataTimeZoneRootDir();
-    method public static String getRuntimeModuleTzVersionFile();
+    method public static String getTimeZoneModuleTzVersionFile();
   }
 
   public final class TimeZoneFinder {
