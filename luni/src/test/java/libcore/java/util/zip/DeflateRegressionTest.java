@@ -17,10 +17,13 @@
 package libcore.java.util.zip;
 
 import com.google.archivepatcher.shared.DefaultDeflateCompatibilityWindow;
+import com.google.archivepatcher.shared.JreDeflateParameters;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.util.Map;
 
 /**
  * A regression test for Deflate and the underlying native libraries. If any of these tests fail
@@ -36,6 +39,12 @@ public class DeflateRegressionTest {
      */
     @Test
     public void deterministicOutput() throws Exception {
-        assertTrue(new DefaultDeflateCompatibilityWindow().isCompatible());
+        DefaultDeflateCompatibilityWindow compatibilityWindow
+                = new DefaultDeflateCompatibilityWindow();
+        if (!compatibilityWindow.isCompatible()) {
+            Map<JreDeflateParameters, String>
+                    incompatibleValues = compatibilityWindow.getIncompatibleValues();
+            fail("Incompatible values found: " + incompatibleValues);
+        }
     }
 }
