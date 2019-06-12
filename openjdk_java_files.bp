@@ -1828,7 +1828,7 @@ droidstubs {
     name: "openjdk-sdk-stubs-no-javadoc",
     srcs: [":openjdk_javadoc_files"],
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     args: "--exclude-documentation-from-stubs",
 }
 
@@ -1843,7 +1843,7 @@ droidstubs {
         ":openjdk_mmodule_extra_files",
     ],
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     args: "--exclude-documentation-from-stubs " +
         "--hide-annotation libcore.api.Hide ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],

@@ -472,7 +472,7 @@ java_library_static {
     hostdex: true,
     srcs: ["support/src/test/java/**/*.java"],
 
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     libs: ["junit"],
     static_libs: [
         "bouncycastle-unbundled",
@@ -675,7 +675,7 @@ droidstubs {
     srcs: [":core_api_files"],
     java_version: "1.9",
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     args: " --exclude-annotations " +
         "--hide-annotation libcore.api.Hide",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
@@ -734,7 +734,7 @@ droidstubs {
     name: "core-current-stubs-nullability-validation",
     srcs: [":core_api_files"],
     installable: false,
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     annotations_enabled: true,
     args: "--hide-annotation libcore.api.Hide " +
         "--validate-nullability-from-merged-stubs ",
