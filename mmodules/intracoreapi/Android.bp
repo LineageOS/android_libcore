@@ -21,7 +21,7 @@
 droidstubs {
     name: "core-intra-stubs",
     srcs: [":core_api_files"],
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
 
     installable: false,
@@ -51,7 +51,7 @@ java_library {
     name: "core.intra.stubs",
     srcs: [":core-intra-stubs"],
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
@@ -84,7 +84,7 @@ java_library {
 
     installable: false,
 
-    no_standard_libs: true,
+    sdk_version: "none",
     libs: ["core.intra.stubs"],
     system_modules: "core-intra-stubs-system-modules",
     java_version: "1.9",
