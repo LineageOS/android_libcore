@@ -1,8 +1,8 @@
-
 Debian is the upstream for this mapping file:
 https://salsa.debian.org/debian/mime-support
 
-Last updated as of commit d4bbcca4ba04582ad1d253d82fc139bb23841a43.
+Last updated to version debian/3.61 (commit
+d4bbcca4ba04582ad1d253d82fc139bb23841a43).
 
 Copyright: public-domain
 License: ad-hoc
