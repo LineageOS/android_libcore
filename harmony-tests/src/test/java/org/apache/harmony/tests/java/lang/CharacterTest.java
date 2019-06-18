@@ -1101,16 +1101,16 @@ public class CharacterTest extends TestCase {
         assertTrue(Character.isJavaIdentifierStart(0x01BB));
         assertTrue(Character.isJavaIdentifierStart(0x2F888));
 
-        assertTrue(Character.isJavaIdentifierPart(0x0024));
-        assertTrue(Character.isJavaIdentifierPart(0xFFE6));
+        assertTrue(Character.isJavaIdentifierStart(0x0024));
+        assertTrue(Character.isJavaIdentifierStart(0xFFE6));
 
-        assertTrue(Character.isJavaIdentifierPart(0x005F));
-        assertTrue(Character.isJavaIdentifierPart(0xFF3F));
+        assertTrue(Character.isJavaIdentifierStart(0x005F));
+        assertTrue(Character.isJavaIdentifierStart(0xFF3F));
 
-        assertTrue(Character.isJavaIdentifierPart(0x2160));
-        assertTrue(Character.isJavaIdentifierPart(0x1034A));
+        assertTrue(Character.isJavaIdentifierStart(0x2160));
+        assertTrue(Character.isJavaIdentifierStart(0x1034A));
 
-        assertFalse(Character.isJavaIdentifierPart(0x110000));
+        assertFalse(Character.isJavaIdentifierStart(0x110000));
     }
 
     /**
