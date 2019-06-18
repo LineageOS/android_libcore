@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SHA=$1
+BPFMT=$1
+SHA=$2
 
 FIX=
 for file in $(git show --name-only --pretty=format: $SHA | grep -E "\.bp$"); do
-  if [[ -n "$(bpfmt -d <(git show $SHA:$file))" ]]; then
+  if [[ -n "$(${BPFMT} -d <(git show $SHA:$file))" ]]; then
     FIX="$FIX $file"
   fi
 done
@@ -27,6 +28,6 @@ if [[ -n "$FIX" ]]; then
   # Remove leading space.
   FIX=$(echo $FIX)
   echo -e "\e[1m\e[31mSome .bp files are incorrectly formatted, run the following commands to fix them:\e[0m"
-  echo -e "\e[1m\e[31m    bpfmt -w $FIX\e[0m"
+  echo -e "\e[1m\e[31m    ${BPFMT} -w $FIX\e[0m"
   exit 1
 fi
