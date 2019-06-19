@@ -24,6 +24,6 @@ java_library {
     ],
     compile_dex: true,
     srcs: ["src/**/*.java"],
-    no_framework_libs: true,
+    sdk_version: "core_platform",
     dxflags: ["--intermediate"],
 }

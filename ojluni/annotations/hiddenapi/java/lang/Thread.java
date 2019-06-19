@@ -429,7 +429,9 @@ public class Thread implements java.lang.Runnable {
 
     long threadLocalRandomSeed;
 
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(publicAlternatives = "Please update to a current version of the "
+        + "{@code Streamsupport} library; older versions of {@code Streamsupport} do not "
+        + "support current versions of Android.")
     java.lang.ThreadLocal.ThreadLocalMap threadLocals;
 
     private java.lang.Thread threadQ;
