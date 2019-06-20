@@ -116,6 +116,7 @@ package android.system {
   public final class OsConstants {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_INDEX(int);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_MASK(int);
+    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ARPHRD_LOOPBACK;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ENONET;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int EUSERS;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int MAP_POPULATE;
@@ -135,7 +136,7 @@ package android.system {
   }
 
   public final class PacketSocketAddress extends java.net.SocketAddress {
-    ctor public PacketSocketAddress(short, int, byte[]);
+    ctor public PacketSocketAddress(int, int, byte[]);
   }
 
   public final class StructCapUserData {
