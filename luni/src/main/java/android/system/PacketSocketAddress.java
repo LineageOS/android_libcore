@@ -30,23 +30,23 @@ import java.net.SocketAddress;
 @libcore.api.CorePlatformApi
 public final class PacketSocketAddress extends SocketAddress {
     /** Protocol. An Ethernet protocol type, e.g., {@code ETH_P_IPV6}. */
-    public short sll_protocol;
+    public final short sll_protocol;
 
     /** Interface index. */
-    public int sll_ifindex;
+    public final int sll_ifindex;
 
     /** ARP hardware type. One of the {@code ARPHRD_*} constants. */
-    public short sll_hatype;
+    public final short sll_hatype;
 
     /** Packet type. One of the {@code PACKET_*} constants, such as {@code PACKET_OTHERHOST}. */
-    public byte sll_pkttype;
+    public final byte sll_pkttype;
 
     /** Hardware address. */
-    public byte[] sll_addr;
+    public final byte[] sll_addr;
 
-    /** Constructs a new PacketSocketAddress. */
-    public PacketSocketAddress(short sll_protocol, int sll_ifindex,
-            short sll_hatype, byte sll_pkttype, byte[] sll_addr) {
+    /** Constructs a new PacketSocketAddress. Used from native code. */
+    public PacketSocketAddress(short sll_protocol, int sll_ifindex, short sll_hatype,
+            byte sll_pkttype, byte[] sll_addr) {
         this.sll_protocol = sll_protocol;
         this.sll_ifindex = sll_ifindex;
         this.sll_hatype = sll_hatype;
@@ -54,17 +54,38 @@ public final class PacketSocketAddress extends SocketAddress {
         this.sll_addr = sll_addr;
     }
 
-    /** Constructs a new PacketSocketAddress suitable for binding to. */
-    @UnsupportedAppUsage
+    /** Constructs a new PacketSocketAddress with all the "in" parameters. */
     @libcore.api.CorePlatformApi
-    public PacketSocketAddress(short sll_protocol, int sll_ifindex) {
-        this(sll_protocol, sll_ifindex, (short) 0, (byte) 0, null);
+    public PacketSocketAddress(short sll_protocol, int sll_ifindex, byte[] sll_addr) {
+        this.sll_protocol = sll_protocol;
+        this.sll_ifindex = sll_ifindex;
+        this.sll_hatype = (short) 0;
+        this.sll_pkttype = (byte) 0;
+        this.sll_addr = sll_addr;
     }
 
-    /** Constructs a new PacketSocketAddress suitable for sending to. */
+    /** Legacy constructor. Kept for @UnsupportedAppUsage only. */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    public PacketSocketAddress(short sll_protocol, int sll_ifindex) {
+        this.sll_protocol = sll_protocol;
+        this.sll_ifindex = sll_ifindex;
+        this.sll_hatype = (short) 0;
+        this.sll_pkttype = (byte) 0;
+        this.sll_addr = null;
+    }
+
+    /** Legacy constructor. Kept for @UnsupportedAppUsage only. */
+    @UnsupportedAppUsage
     public PacketSocketAddress(int sll_ifindex, byte[] sll_addr) {
-        this((short) 0, sll_ifindex, (short) 0, (byte) 0, sll_addr);
+        this.sll_protocol = (short) 0;
+        this.sll_ifindex = sll_ifindex;
+        this.sll_hatype = (short) 0;
+        this.sll_pkttype = (byte) 0;
+        this.sll_addr = sll_addr;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toString(this);
     }
 }
