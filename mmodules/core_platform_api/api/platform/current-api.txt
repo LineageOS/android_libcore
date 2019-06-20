@@ -105,8 +105,7 @@ package android.system {
   }
 
   public final class PacketSocketAddress extends java.net.SocketAddress {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(short, int);
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public PacketSocketAddress(int, byte[]);
+    ctor public PacketSocketAddress(short, int, byte[]);
   }
 
   public final class StructCapUserData {
