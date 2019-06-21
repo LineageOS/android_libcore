@@ -2,7 +2,6 @@ filegroup {
     name: "luni_native_srcs",
     srcs: [
         "ExecStrings.cpp",
-        "IcuRegistration.cpp",
         "IcuUtilities.cpp",
         "JniConstants.cpp",
         "JniException.cpp",
