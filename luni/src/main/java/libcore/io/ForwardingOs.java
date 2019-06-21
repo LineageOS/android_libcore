@@ -23,7 +23,6 @@ import android.system.Int64Ref;
 import android.system.StructAddrinfo;
 import android.system.StructCapUserData;
 import android.system.StructCapUserHeader;
-import android.system.StructFlock;
 import android.system.StructGroupReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
@@ -101,7 +100,6 @@ public class ForwardingOs implements Os {
     public void execve(String filename, String[] argv, String[] envp) throws ErrnoException { os.execve(filename, argv, envp); }
     public void fchmod(FileDescriptor fd, int mode) throws ErrnoException { os.fchmod(fd, mode); }
     public void fchown(FileDescriptor fd, int uid, int gid) throws ErrnoException { os.fchown(fd, uid, gid); }
-    public int fcntlFlock(FileDescriptor fd, int cmd, StructFlock arg) throws ErrnoException, InterruptedIOException { return os.fcntlFlock(fd, cmd, arg); }
     public int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return os.fcntlInt(fd, cmd, arg); }
     public int fcntlVoid(FileDescriptor fd, int cmd) throws ErrnoException { return os.fcntlVoid(fd, cmd); }
     public void fdatasync(FileDescriptor fd) throws ErrnoException { os.fdatasync(fd); }

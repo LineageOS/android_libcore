@@ -189,7 +189,6 @@ public class BlockGuardOsTest {
                 "dup(java.io.FileDescriptor)",
                 "dup2(java.io.FileDescriptor,int)",
                 "environ()",
-                "fcntlFlock(java.io.FileDescriptor,int,android.system.StructFlock)",
                 "fcntlInt(java.io.FileDescriptor,int,int)",
                 "fcntlVoid(java.io.FileDescriptor,int)",
                 "gai_strerror(int)",
