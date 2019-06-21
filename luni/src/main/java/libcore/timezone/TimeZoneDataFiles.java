@@ -98,6 +98,9 @@ public final class TimeZoneDataFiles {
     public static String generateIcuDataPath() {
         List<String> paths = new ArrayList<>(3);
 
+        // Note: This logic below should match the logic in IcuRegistration.cpp in external/icu/
+        // to ensure consistent behavior between ICU4C and ICU4J.
+
         // ICU should first look in ANDROID_DATA. This is used for (optional) time zone data
         // delivered by APK (https://source.android.com/devices/tech/config/timezone-rules)
         String dataIcuDataPath =
