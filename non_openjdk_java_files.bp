@@ -3,6 +3,7 @@ filegroup {
     srcs: [
         "luni/src/main/java/android/system/ErrnoException.java",
         "luni/src/main/java/android/system/GaiException.java",
+        "luni/src/main/java/android/system/IcmpHeaders.java",
         "luni/src/main/java/android/system/Int32Ref.java",
         "luni/src/main/java/android/system/Int64Ref.java",
         "luni/src/main/java/android/system/NetlinkSocketAddress.java",
@@ -14,7 +15,6 @@ filegroup {
         "luni/src/main/java/android/system/StructCapUserHeader.java",
         "luni/src/main/java/android/system/StructFlock.java",
         "luni/src/main/java/android/system/StructGroupReq.java",
-        "luni/src/main/java/android/system/StructIcmpHdr.java",
         "luni/src/main/java/android/system/StructIfaddrs.java",
         "luni/src/main/java/android/system/StructLinger.java",
         "luni/src/main/java/android/system/StructPasswd.java",
