@@ -12,7 +12,6 @@ filegroup {
         "luni/src/main/java/android/system/StructAddrinfo.java",
         "luni/src/main/java/android/system/StructCapUserData.java",
         "luni/src/main/java/android/system/StructCapUserHeader.java",
-        "luni/src/main/java/android/system/StructFlock.java",
         "luni/src/main/java/android/system/StructGroupReq.java",
         "luni/src/main/java/android/system/StructIcmpHdr.java",
         "luni/src/main/java/android/system/StructIfaddrs.java",

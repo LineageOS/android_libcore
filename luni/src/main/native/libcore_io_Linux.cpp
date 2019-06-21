@@ -1242,32 +1242,6 @@ static void Linux_fchown(JNIEnv* env, jobject, jobject javaFd, jint uid, jint gi
     throwIfMinusOne(env, "fchown", TEMP_FAILURE_RETRY(fchown(fd, uid, gid)));
 }
 
-static jint Linux_fcntlFlock(JNIEnv* env, jobject, jobject javaFd, jint cmd, jobject javaFlock) {
-    static jfieldID typeFid = env->GetFieldID(JniConstants::GetStructFlockClass(env), "l_type", "S");
-    static jfieldID whenceFid = env->GetFieldID(JniConstants::GetStructFlockClass(env), "l_whence", "S");
-    static jfieldID startFid = env->GetFieldID(JniConstants::GetStructFlockClass(env), "l_start", "J");
-    static jfieldID lenFid = env->GetFieldID(JniConstants::GetStructFlockClass(env), "l_len", "J");
-    static jfieldID pidFid = env->GetFieldID(JniConstants::GetStructFlockClass(env), "l_pid", "I");
-
-    struct flock64 lock;
-    memset(&lock, 0, sizeof(lock));
-    lock.l_type = env->GetShortField(javaFlock, typeFid);
-    lock.l_whence = env->GetShortField(javaFlock, whenceFid);
-    lock.l_start = env->GetLongField(javaFlock, startFid);
-    lock.l_len = env->GetLongField(javaFlock, lenFid);
-    lock.l_pid = env->GetIntField(javaFlock, pidFid);
-
-    int rc = IO_FAILURE_RETRY(env, int, fcntl, javaFd, cmd, &lock);
-    if (rc != -1) {
-        env->SetShortField(javaFlock, typeFid, lock.l_type);
-        env->SetShortField(javaFlock, whenceFid, lock.l_whence);
-        env->SetLongField(javaFlock, startFid, lock.l_start);
-        env->SetLongField(javaFlock, lenFid, lock.l_len);
-        env->SetIntField(javaFlock, pidFid, lock.l_pid);
-    }
-    return rc;
-}
-
 static jint Linux_fcntlInt(JNIEnv* env, jobject, jobject javaFd, jint cmd, jint arg) {
     int fd = jniGetFDFromFileDescriptor(env, javaFd);
     return throwIfMinusOne(env, "fcntl", TEMP_FAILURE_RETRY(fcntl(fd, cmd, arg)));
@@ -2603,7 +2577,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, execve, "(Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)V"),
     NATIVE_METHOD(Linux, fchmod, "(Ljava/io/FileDescriptor;I)V"),
     NATIVE_METHOD(Linux, fchown, "(Ljava/io/FileDescriptor;II)V"),
-    NATIVE_METHOD(Linux, fcntlFlock, "(Ljava/io/FileDescriptor;ILandroid/system/StructFlock;)I"),
     NATIVE_METHOD(Linux, fcntlInt, "(Ljava/io/FileDescriptor;II)I"),
     NATIVE_METHOD(Linux, fcntlVoid, "(Ljava/io/FileDescriptor;I)I"),
     NATIVE_METHOD(Linux, fdatasync, "(Ljava/io/FileDescriptor;)V"),
