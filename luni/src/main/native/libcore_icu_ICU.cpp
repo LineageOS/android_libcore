@@ -30,6 +30,7 @@
 #include <memory>
 #include <vector>
 
+#include <androidicuinit/IcuRegistration.h>
 #include <log/log.h>
 #include <nativehelper/JNIHelp.h>
 #include <nativehelper/ScopedLocalRef.h>
@@ -37,7 +38,6 @@
 #include <nativehelper/jni_macros.h>
 #include <nativehelper/toStringArray.h>
 
-#include "IcuRegistration.h"
 #include "IcuUtilities.h"
 #include "JniConstants.h"
 #include "JniException.h"
@@ -846,7 +846,7 @@ static JNINativeMethod gMethods[] = {
 
 // Init ICU, configuring it and loading the data files.
 void register_libcore_icu_ICU(JNIEnv* env) {
-  libcore::IcuRegistration::Register();
+  androidicuinit::IcuRegistration::Register();
 
   jniRegisterNativeMethods(env, "libcore/icu/ICU", gMethods, NELEM(gMethods));
 }
@@ -856,5 +856,5 @@ void unregister_libcore_icu_ICU() {
   // Skip unregistering JNI methods explicitly, class unloading takes care of
   // it.
 
-  libcore::IcuRegistration::Deregister();
+  androidicuinit::IcuRegistration::Deregister();
 }
