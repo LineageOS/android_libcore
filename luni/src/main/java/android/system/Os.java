@@ -153,9 +153,6 @@ public final class Os {
     public static void fchown(FileDescriptor fd, int uid, int gid) throws ErrnoException { Libcore.os.fchown(fd, uid, gid); }
 
     /** @hide */
-    public static int fcntlFlock(FileDescriptor fd, int cmd, StructFlock arg) throws ErrnoException, InterruptedIOException { return Libcore.os.fcntlFlock(fd, cmd, arg); }
-
-    /** @hide */
     @libcore.api.CorePlatformApi
     public static int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
 

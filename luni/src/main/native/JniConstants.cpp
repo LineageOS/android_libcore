@@ -64,7 +64,6 @@ jclass packetSocketAddressClass;
 jclass patternSyntaxExceptionClass;
 jclass stringClass;
 jclass structAddrinfoClass;
-jclass structFlockClass;
 jclass structGroupReqClass;
 jclass structIfaddrsClass;
 jclass structLingerClass;
@@ -112,7 +111,6 @@ void EnsureJniConstantsInitialized(JNIEnv* env) {
     patternSyntaxExceptionClass = findClass(env, "java/util/regex/PatternSyntaxException");
     stringClass = findClass(env, "java/lang/String");
     structAddrinfoClass = findClass(env, "android/system/StructAddrinfo");
-    structFlockClass = findClass(env, "android/system/StructFlock");
     structGroupReqClass = findClass(env, "android/system/StructGroupReq");
     structIfaddrsClass = findClass(env, "android/system/StructIfaddrs");
     structLingerClass = findClass(env, "android/system/StructLinger");
@@ -238,11 +236,6 @@ jclass JniConstants::GetStringClass(JNIEnv* env) {
 jclass JniConstants::GetStructAddrinfoClass(JNIEnv* env) {
     EnsureJniConstantsInitialized(env);
     return structAddrinfoClass;
-}
-
-jclass JniConstants::GetStructFlockClass(JNIEnv* env) {
-    EnsureJniConstantsInitialized(env);
-    return structFlockClass;
 }
 
 jclass JniConstants::GetStructGroupReqClass(JNIEnv* env) {
