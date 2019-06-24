@@ -35,7 +35,7 @@ public final class UnixSocketAddress extends SocketAddress {
     // 1) pathname: 0 < sun_path.length <= NAMED_PATH_LENGTH, sun_path[0] != 0.
     // 2) unnamed: sun_path = [].
     // 3) abstract: 0 < sun_path.length <= NAMED_PATH_LENGTH, sun_path[0] == 0.
-    private byte[] sun_path;
+    private final byte[] sun_path;
 
     /** This constructor is also used from JNI. */
     private UnixSocketAddress(byte[] sun_path) {
