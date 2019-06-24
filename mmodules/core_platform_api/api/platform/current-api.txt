@@ -1,4 +1,34 @@
 // Signature format: 2.0
+package android.compat {
+
+  public final class Compatibility {
+    method public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
+    method public static void reportChange(@android.compat.annotation.ChangeId long);
+    method public static void setCallbacks(android.compat.Compatibility.Callbacks);
+  }
+
+  public static class Compatibility.Callbacks {
+    ctor protected Compatibility.Callbacks();
+    method protected boolean isChangeEnabled(long);
+    method protected void reportChange(long);
+  }
+
+}
+
+package android.compat.annotation {
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) public @interface ChangeId {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface Disabled {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface EnabledAfter {
+    method public abstract int targetSdkVersion();
+  }
+
+}
+
 package android.icu.impl {
 
   public class CalendarAstronomer {

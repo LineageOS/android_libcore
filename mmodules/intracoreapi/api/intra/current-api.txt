@@ -1,4 +1,27 @@
 // Signature format: 2.0
+package android.compat {
+
+  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class Compatibility {
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void reportChange(@android.compat.annotation.ChangeId long);
+  }
+
+}
+
+package android.compat.annotation {
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface ChangeId {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface Disabled {
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface EnabledAfter {
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract int targetSdkVersion();
+  }
+
+}
+
 package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
