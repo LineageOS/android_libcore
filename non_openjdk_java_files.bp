@@ -1,6 +1,10 @@
 filegroup {
     name: "non_openjdk_javadoc_files",
     srcs: [
+        "luni/src/main/java/android/compat/annotation/ChangeId.java",
+        "luni/src/main/java/android/compat/annotation/Disabled.java",
+        "luni/src/main/java/android/compat/annotation/EnabledAfter.java",
+        "luni/src/main/java/android/compat/Compatibility.java",
         "luni/src/main/java/android/system/ErrnoException.java",
         "luni/src/main/java/android/system/GaiException.java",
         "luni/src/main/java/android/system/IcmpHeaders.java",
