@@ -19,22 +19,26 @@ package android.system;
 import static android.system.OsConstants.ICMP6_ECHO_REQUEST;
 import static android.system.OsConstants.ICMP_ECHO;
 
+import java.io.FileDescriptor;
+import java.net.SocketAddress;
+
 /**
- * Corresponds to C's {@code struct icmphdr} from linux/icmp.h and {@code struct icmp6hdr} from
- * linux/icmpv6.h
+ * A utility class that can create ICMP header bytes corresponding to C's {@code struct icmphdr}
+ * from linux/icmp.h and {@code struct icmp6hdr} from linux/icmpv6.h. The bytes can be passed to
+ * methods like {@link Os#sendto(FileDescriptor, byte[], int, int, int, SocketAddress)}.
  *
  * @hide
  */
-public final class StructIcmpHdr {
-    private byte[] packet;
+public final class IcmpHeaders {
 
-    private StructIcmpHdr() {
-        packet =  new byte[8];
-    }
+    private IcmpHeaders() {}
 
-    /*
-     * Echo or Echo Reply Message
+    /**
+     * Creates the header bytes for an {@link OsConstants#ICMP_ECHO} or
+     * {@link OsConstants#ICMP6_ECHO_REQUEST} message. Code, checksum and identifier are left as
+     * zeros.
      *
+     * <pre>
      * 0                   1                   2                   3
      * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -42,21 +46,16 @@ public final class StructIcmpHdr {
      * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      * |           Identifier          |        Sequence Number        |
      * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     * |     Data ...
-     * +-+-+-+-+-
+     * </pre>
      */
-    public static StructIcmpHdr IcmpEchoHdr(boolean ipv4, int seq) {
-        StructIcmpHdr hdr = new StructIcmpHdr();
-        hdr.packet[0] = ipv4 ? (byte) ICMP_ECHO : (byte) ICMP6_ECHO_REQUEST;
+    public static byte[] createIcmpEchoHdr(boolean ipv4, int seq) {
+        byte[] bytes = new byte[8];
+        bytes[0] = ipv4 ? (byte) ICMP_ECHO : (byte) ICMP6_ECHO_REQUEST;
         // packet[1]: Code is always zero.
         // packet[2,3]: Checksum is computed by kernel.
         // packet[4,5]: ID (= port) inserted by kernel.
-        hdr.packet[6] = (byte) (seq >> 8);
-        hdr.packet[7] = (byte) seq;
-        return hdr;
-    }
-
-    public byte[] getBytes() {
-        return packet.clone();
+        bytes[6] = (byte) (seq >> 8);
+        bytes[7] = (byte) seq;
+        return bytes;
     }
 }
