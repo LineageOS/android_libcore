@@ -1312,12 +1312,6 @@
   ]
 },
 {
-  description: "Known failure in MathTest 1^NAN should be NAN",
-  bug: 11669804,
-  result: EXEC_FAILED,
-  name: "org.apache.harmony.tests.java.lang.MathTest#test_powDD"
-},
-{
   description: "Known failures in URLTest and URLDecoderTest",
   bug: 11686814,
   names: [
