@@ -491,6 +491,14 @@ java_test {
     system_modules: "core-all-system-modules",
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 9 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-9-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java9LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java9language"],
+}
+
 // Builds the core-tests library.
 java_test {
     name: "core-tests",
