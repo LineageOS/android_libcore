@@ -248,6 +248,10 @@ public class MimeMapTest {
         assertMimeTypeFromExtension("audio/mpeg", "m4r");
     }
 
+    @Test public void defaultMap_136096979_ota() {
+        assertMimeTypeFromExtension("application/vnd.android.ota", "ota");
+    }
+
     @Test public void defaultMap_wifiConfig_xml() {
         assertExtensionFromMimeType("xml", "application/x-wifi-config");
         assertMimeTypeFromExtension("text/xml", "xml");
