@@ -551,14 +551,18 @@ public class OsTest extends TestCase {
         Os.close(nlSocket);
     }
 
+    // This test is excluded from CTS via the knownfailures.txt because it requires extra
+    // permissions not available in CTS. To run it you have to use an -eng build and use a tool like
+    // vogar that runs the Android runtime as a privileged user.
     public void test_PacketSocketAddress() throws Exception {
         NetworkInterface lo = NetworkInterface.getByName("lo");
         FileDescriptor fd = Os.socket(AF_PACKET, SOCK_DGRAM, ETH_P_IPV6);
-        PacketSocketAddress addr = new PacketSocketAddress((short) ETH_P_IPV6, lo.getIndex());
+        PacketSocketAddress addr =
+                new PacketSocketAddress(ETH_P_IPV6, lo.getIndex(), null /* sll_addr */);
         Os.bind(fd, addr);
 
         PacketSocketAddress bound = (PacketSocketAddress) Os.getsockname(fd);
-        assertEquals((short) ETH_P_IPV6, bound.sll_protocol);  // ETH_P_IPV6 is an int.
+        assertEquals(ETH_P_IPV6, bound.sll_protocol);
         assertEquals(lo.getIndex(), bound.sll_ifindex);
         assertEquals(ARPHRD_LOOPBACK, bound.sll_hatype);
         assertEquals(0, bound.sll_pkttype);
@@ -569,6 +573,57 @@ public class OsTest extends TestCase {
         for (int i = 0; i < 6; i++) {
             assertEquals(0, bound.sll_addr[i]);
         }
+
+        // The following checks that the packet socket address was constructed correctly in a form
+        // that the kernel understands. If the address is correct, the bind should result in a
+        // socket that is listening only for IPv6 packets, and only on loopback.
+
+        // Send an IPv4 packet on loopback.
+        // We send ourselves an IPv4 packet first. If we don't receive it, that (with high
+        // probability) ensures that the packet socket does not see IPv4 packets.
+        try (DatagramSocket s = new DatagramSocket()) {
+            byte[] packet = new byte[64];
+            s.send(new DatagramPacket(packet, 0, packet.length, Inet4Address.LOOPBACK,
+                    53 /* arbitrary port */));
+        }
+
+        // Send an IPv6 packet on loopback.
+        // Sending ourselves an IPv6 packet should cause the socket to receive a packet.
+        // The idea is that if the code gets sll_protocol wrong, then the packet socket will receive
+        // no packets and the test will fail.
+        try (DatagramSocket s = new DatagramSocket()) {
+            byte[] packet = new byte[64];
+            s.send(new DatagramPacket(packet, 0, packet.length, Inet6Address.LOOPBACK,
+                    53 /* arbitrary port */));
+        }
+
+        // Check that the socket associated with fd has received an IPv6 packet, not necessarily the
+        // UDP one we sent above. IPv6 packets always begin with the nibble 6. If we get anything
+        // else it means we're catching non-IPv6 or non-loopback packets unexpectedly. Since the
+        // socket is not discriminating it may catch packets unrelated to this test from things
+        // happening on the device at the same time, so we can't assert too much about the received
+        // packet, i.e. no length / content check.
+        {
+            byte[] receivedPacket = new byte[4096];
+            Os.read(fd, receivedPacket, 0, receivedPacket.length);
+            assertEquals(6, (receivedPacket[0] & 0xf0) >> 4);
+
+            byte[] sourceAddress = getIPv6AddressBytesAtOffset(receivedPacket, 8);
+            assertArrayEquals(Inet6Address.LOOPBACK.getAddress(), sourceAddress);
+
+            byte[] destAddress = getIPv6AddressBytesAtOffset(receivedPacket, 24);
+            assertArrayEquals(Inet6Address.LOOPBACK.getAddress(), destAddress);
+        }
+
+        Os.close(fd);
+    }
+
+    private static byte[] getIPv6AddressBytesAtOffset(byte[] packet, int offsetIndex) {
+        byte[] address = new byte[16];
+        for (int i = 0; i < 16; i++) {
+            address[i] = packet[i + offsetIndex];
+        }
+        return address;
     }
 
     public void test_byteBufferPositions_sendto_recvfrom_af_inet() throws Exception {
