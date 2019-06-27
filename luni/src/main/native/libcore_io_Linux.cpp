@@ -418,7 +418,7 @@ static jobject makeSocketAddress(JNIEnv* env, const sockaddr_storage& ss, const 
     } else if (ss.ss_family == AF_PACKET) {
         const struct sockaddr_ll* sll = reinterpret_cast<const struct sockaddr_ll*>(&ss);
         static jmethodID ctor = env->GetMethodID(JniConstants::GetPacketSocketAddressClass(env),
-                "<init>", "(SISB[B)V");
+                "<init>", "(IIII[B)V");
         if (ctor == NULL) {
             return NULL;
         }
@@ -429,10 +429,10 @@ static jobject makeSocketAddress(JNIEnv* env, const sockaddr_storage& ss, const 
         env->SetByteArrayRegion(byteArray.get(), 0, sll->sll_halen,
                 reinterpret_cast<const jbyte*>(sll->sll_addr));
         jobject packetSocketAddress = env->NewObject(JniConstants::GetPacketSocketAddressClass(env), ctor,
-                static_cast<jshort>(ntohs(sll->sll_protocol)),
+                static_cast<jint>(ntohs(sll->sll_protocol)),
                 static_cast<jint>(sll->sll_ifindex),
-                static_cast<jshort>(sll->sll_hatype),
-                static_cast<jbyte>(sll->sll_pkttype),
+                static_cast<jint>(sll->sll_hatype),
+                static_cast<jint>(sll->sll_pkttype),
                 byteArray.get());
         return packetSocketAddress;
     }
@@ -686,22 +686,22 @@ static bool javaUnixSocketAddressToSockaddr(
 static bool javaPacketSocketAddressToSockaddr(
         JNIEnv* env, jobject javaSocketAddress, sockaddr_storage& ss, socklen_t& sa_len) {
     static jfieldID protocolFid = env->GetFieldID(
-            JniConstants::GetPacketSocketAddressClass(env), "sll_protocol", "S");
+            JniConstants::GetPacketSocketAddressClass(env), "sll_protocol", "I");
     static jfieldID ifindexFid = env->GetFieldID(
             JniConstants::GetPacketSocketAddressClass(env), "sll_ifindex", "I");
     static jfieldID hatypeFid = env->GetFieldID(
-            JniConstants::GetPacketSocketAddressClass(env), "sll_hatype", "S");
+            JniConstants::GetPacketSocketAddressClass(env), "sll_hatype", "I");
     static jfieldID pkttypeFid = env->GetFieldID(
-            JniConstants::GetPacketSocketAddressClass(env), "sll_pkttype", "B");
+            JniConstants::GetPacketSocketAddressClass(env), "sll_pkttype", "I");
     static jfieldID addrFid = env->GetFieldID(
             JniConstants::GetPacketSocketAddressClass(env), "sll_addr", "[B");
 
     sockaddr_ll *sll = reinterpret_cast<sockaddr_ll *>(&ss);
     sll->sll_family = AF_PACKET;
-    sll->sll_protocol = htons(env->GetShortField(javaSocketAddress, protocolFid));
+    sll->sll_protocol = htons(env->GetIntField(javaSocketAddress, protocolFid));
     sll->sll_ifindex = env->GetIntField(javaSocketAddress, ifindexFid);
-    sll->sll_hatype = env->GetShortField(javaSocketAddress, hatypeFid);
-    sll->sll_pkttype = env->GetByteField(javaSocketAddress, pkttypeFid);
+    sll->sll_hatype = env->GetIntField(javaSocketAddress, hatypeFid);
+    sll->sll_pkttype = env->GetIntField(javaSocketAddress, pkttypeFid);
 
     jbyteArray sllAddr = (jbyteArray) env->GetObjectField(javaSocketAddress, addrFid);
     if (sllAddr == NULL) {

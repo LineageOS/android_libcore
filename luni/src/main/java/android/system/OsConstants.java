@@ -130,6 +130,7 @@ public final class OsConstants {
     public static final int ARPHRD_ETHER = placeholder();
     /** @hide */
     @UnsupportedAppUsage
+    @libcore.api.CorePlatformApi
     public static final int ARPHRD_LOOPBACK = placeholder();
     public static final int CAP_AUDIT_CONTROL = placeholder();
     public static final int CAP_AUDIT_WRITE = placeholder();
