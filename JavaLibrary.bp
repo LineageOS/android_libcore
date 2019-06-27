@@ -145,6 +145,7 @@ core_all_visibility = [
     "//external/icu/android_icu4j",
     "//external/okhttp",
     "//libcore/benchmarks",
+    "//libcore/luni/src/test/java9language",
     "//libcore/mmodules/intracoreapi",
 ]
 
@@ -535,6 +536,7 @@ java_test {
 
     static_libs: [
         "archive-patcher",
+        "core-java-9-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
