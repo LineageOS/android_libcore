@@ -833,7 +833,7 @@ package dalvik.system {
     method public static void setProcessDataDirectory(String);
     method public static void setProcessPackageName(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
-    method public void setTargetSdkVersion(int);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=0, publicAlternatives="Use the {@code targetSdkVersion}" + " attribute in the {@code uses-sdk} manifest tag instead.") public void setTargetSdkVersion(int);
     method public void startJitCompilation();
     method public void updateProcessState(int);
     method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
