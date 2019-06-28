@@ -29,24 +29,29 @@ import java.net.SocketAddress;
  */
 @libcore.api.CorePlatformApi
 public final class PacketSocketAddress extends SocketAddress {
-    /** Protocol. An Ethernet protocol type, e.g., {@code ETH_P_IPV6}. */
-    public final short sll_protocol;
+    /** Protocol. An Ethernet protocol type, e.g., {@link OsConstants#ETH_P_IPV6}. */
+    public final int sll_protocol;
 
     /** Interface index. */
     public final int sll_ifindex;
 
-    /** ARP hardware type. One of the {@code ARPHRD_*} constants. */
-    public final short sll_hatype;
+    /**
+     * ARP hardware type. One of the {@code ARPHRD_*} constants, such as
+     * {@link OsConstants#ARPHRD_ETHER}.
+     */
+    public final int sll_hatype;
 
-    /** Packet type. One of the {@code PACKET_*} constants, such as {@code PACKET_OTHERHOST}. */
-    public final byte sll_pkttype;
+    /**
+     * Packet type.
+     */
+    public final int sll_pkttype;
 
     /** Hardware address. */
     public final byte[] sll_addr;
 
     /** Constructs a new PacketSocketAddress. Used from native code. */
-    public PacketSocketAddress(short sll_protocol, int sll_ifindex, short sll_hatype,
-            byte sll_pkttype, byte[] sll_addr) {
+    public PacketSocketAddress(int sll_protocol, int sll_ifindex, int sll_hatype, int sll_pkttype,
+            byte[] sll_addr) {
         this.sll_protocol = sll_protocol;
         this.sll_ifindex = sll_ifindex;
         this.sll_hatype = sll_hatype;
@@ -56,11 +61,11 @@ public final class PacketSocketAddress extends SocketAddress {
 
     /** Constructs a new PacketSocketAddress with all the "in" parameters. */
     @libcore.api.CorePlatformApi
-    public PacketSocketAddress(short sll_protocol, int sll_ifindex, byte[] sll_addr) {
+    public PacketSocketAddress(int sll_protocol, int sll_ifindex, byte[] sll_addr) {
         this.sll_protocol = sll_protocol;
         this.sll_ifindex = sll_ifindex;
-        this.sll_hatype = (short) 0;
-        this.sll_pkttype = (byte) 0;
+        this.sll_hatype = 0;
+        this.sll_pkttype = 0;
         this.sll_addr = sll_addr;
     }
 
@@ -69,18 +74,18 @@ public final class PacketSocketAddress extends SocketAddress {
     public PacketSocketAddress(short sll_protocol, int sll_ifindex) {
         this.sll_protocol = sll_protocol;
         this.sll_ifindex = sll_ifindex;
-        this.sll_hatype = (short) 0;
-        this.sll_pkttype = (byte) 0;
+        this.sll_hatype = 0;
+        this.sll_pkttype = 0;
         this.sll_addr = null;
     }
 
     /** Legacy constructor. Kept for @UnsupportedAppUsage only. */
     @UnsupportedAppUsage
     public PacketSocketAddress(int sll_ifindex, byte[] sll_addr) {
-        this.sll_protocol = (short) 0;
+        this.sll_protocol = 0;
         this.sll_ifindex = sll_ifindex;
-        this.sll_hatype = (short) 0;
-        this.sll_pkttype = (byte) 0;
+        this.sll_hatype = 0;
+        this.sll_pkttype = 0;
         this.sll_addr = sll_addr;
     }
 
