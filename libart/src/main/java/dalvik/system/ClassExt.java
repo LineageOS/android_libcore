@@ -27,6 +27,19 @@ package dalvik.system;
  */
 public final class ClassExt {
     /**
+     * A Pointer-sized-array of instance jfieldIDs in the same order as the ifields_ array.
+     * The jfieldID is associated with the ArtField at the corresonding index in the ifields_ array.
+     */
+    private Object instanceJfieldIDs;
+
+    /**
+     * A Pointer-sized-array of jmethodIDS in the same order as the methods_
+     * array. The jmethodID is associated with the ArtField at the corresonding
+     * index in the methods_ array.
+     */
+    private Object jmethodIDs;
+
+    /**
      * An array of all obsolete DexCache objects that are needed for obsolete methods.
      *
      * These entries are associated with the obsolete ArtMethod pointers at the same indexes in the
@@ -63,12 +76,28 @@ public final class ClassExt {
     private Object originalDexFile;
 
     /**
+     * A Pointer-sized-array of static jfieldIDs in the same order as the sfields_ array.
+     * The jfieldID is associated with the ArtField at the corresonding index in the sfields_ array.
+     */
+    private Object staticJfieldIDs;
+
+    /**
      * If class verify fails, we must return same error on subsequent tries. We may store either
      * the class of the error, or an actual instance of Throwable here.
      *
      * This field is a logical part of the 'Class' type.
      */
     private Object verifyError;
+
+    /**
+     * ClassDef index of the related class in the pre-redefine dex file. Set together with
+     * {@code preRedefineDexFilePtr}.
+     *
+     * Needed in order to preserve access to dex-level hiddenapi flags after JVMTI redefine.
+     *
+     * This field is a logical part of the 'Class' type.
+     */
+    private int preRedefineClassDefIndex;
 
     /**
      * If set, native pointer to the initial, pre-redefine, dex file associated with the related
@@ -84,16 +113,6 @@ public final class ClassExt {
      * This field is a logical part of the 'Class' type.
      */
     private long preRedefineDexFilePtr;
-
-    /**
-     * ClassDef index of the related class in the pre-redefine dex file. Set together with
-     * {@code preRedefineDexFilePtr}.
-     *
-     * Needed in order to preserve access to dex-level hiddenapi flags after JVMTI redefine.
-     *
-     * This field is a logical part of the 'Class' type.
-     */
-    private int preRedefineClassDefIndex;
 
     /**
     * Private constructor.
