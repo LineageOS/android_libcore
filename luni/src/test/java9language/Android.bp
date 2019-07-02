@@ -41,11 +41,13 @@ filegroup {
     srcs: ["rewrite-test-for-jarjar.sed"],
     visibility: ["//visibility:private"],
 }
+
 filegroup {
     name: "core-java-9-language-features-test-src",
     srcs: ["java/libcore/internal/Java9LanguageFeaturesTest.java"],
     visibility: ["//visibility:private"],
 }
+
 genrule {
     name: "core-gen-test-repackaged-java-9-language-features",
     srcs: [
@@ -71,7 +73,7 @@ java_library {
     ],
     static_libs: [
         "core-java-9-language-features-repackaged-for-test",
-	"junit",
+        "junit",
     ],
     system_modules: "core-all-system-modules",
     visibility: ["//libcore"],
