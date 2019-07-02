@@ -684,12 +684,12 @@ package dalvik.system {
 
   public final class CloseGuard {
     method @dalvik.annotation.compat.UnsupportedAppUsage public void close();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.CloseGuard get();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public static dalvik.system.CloseGuard get();
     method public static dalvik.system.CloseGuard.Reporter getReporter();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void open(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void open(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void setEnabled(boolean);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void setReporter(dalvik.system.CloseGuard.Reporter);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void warnIfOpen();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void warnIfOpen();
   }
 
   public static interface CloseGuard.Reporter {
