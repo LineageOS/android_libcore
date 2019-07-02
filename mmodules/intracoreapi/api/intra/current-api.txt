@@ -442,9 +442,9 @@ package dalvik.system {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class CloseGuard {
     method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void close();
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
   }
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class VersionCodes {

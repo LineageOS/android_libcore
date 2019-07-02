@@ -138,7 +138,7 @@ public final class CloseGuard {
      * Returns a CloseGuard instance. {@code #open(String)} can be used to set
      * up the instance to warn on failure to close.
      */
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(trackingBug=111170242)
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public static CloseGuard get() {
@@ -220,7 +220,7 @@ public final class CloseGuard {
      * @param closer non-null name of explicit termination method. Printed by warnIfOpen.
      * @throws NullPointerException if closer is null.
      */
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(trackingBug=111170242)
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void open(String closer) {
@@ -270,7 +270,7 @@ public final class CloseGuard {
      * the allocation to the current reporter. If it was not enabled, it just
      * directly logs a brief message.
      */
-    @UnsupportedAppUsage
+    @UnsupportedAppUsage(trackingBug=111170242)
     @libcore.api.CorePlatformApi
     @libcore.api.IntraCoreApi
     public void warnIfOpen() {
