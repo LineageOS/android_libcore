@@ -376,6 +376,22 @@ package com.android.org.bouncycastle.crypto {
 
 }
 
+package com.android.org.bouncycastle.crypto.digests {
+
+  public abstract class GeneralDigest {
+    method public void finish();
+    method protected abstract void processBlock();
+    method public void update(byte[], int, int);
+  }
+
+  public class SHA1Digest extends com.android.org.bouncycastle.crypto.digests.GeneralDigest {
+    ctor public SHA1Digest();
+    method public int doFinal(byte[], int);
+    method protected void processBlock();
+  }
+
+}
+
 package com.android.org.bouncycastle.crypto.generators {
 
   public class OpenSSLPBEParametersGenerator extends com.android.org.bouncycastle.crypto.PBEParametersGenerator {
