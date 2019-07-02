@@ -23,19 +23,23 @@ import libcore.net.MimeMap;
  */
 class DefaultFileNameMap implements FileNameMap {
     public String getContentTypeFor(String filename) {
-        if (filename.endsWith("/")) {
-            // a directory, return html
-            return MimeMap.getDefault().guessMimeTypeFromExtension("html");
-        }
-        int lastCharInExtension = filename.lastIndexOf('#');
-        if (lastCharInExtension < 0) {
-            lastCharInExtension = filename.length();
-        }
-        int firstCharInExtension = filename.lastIndexOf('.') + 1;
-        String ext = "";
-        if (firstCharInExtension > filename.lastIndexOf('/')) {
-            ext = filename.substring(firstCharInExtension, lastCharInExtension);
-        }
+        String ext = extensionOf(filename);
         return MimeMap.getDefault().guessMimeTypeFromExtension(ext);
+    }
+
+    private static String extensionOf(String filename) {
+        int fragmentIndex = filename.indexOf('#');
+        if (fragmentIndex >= 0) {
+            filename = filename.substring(0, fragmentIndex);
+        }
+        if (filename.endsWith("/")) { // a directory
+            return "html";
+        }
+        int slashIndex = filename.lastIndexOf('/');
+        if (slashIndex >= 0) {
+            filename = filename.substring(slashIndex);
+        }
+        int dotIndex = filename.lastIndexOf('.');
+        return (dotIndex >= 0) ? filename.substring(dotIndex + 1) : "";
     }
 }
