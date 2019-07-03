@@ -18,6 +18,9 @@
 // class loader by libcore.java.nio.file.FileSystemsTest.
 java_library {
     name: "filesystemstest",
+    visibility: [
+        "//libcore",
+    ],
     compile_dex: true,
     srcs: ["src/**/*.java"],
     java_resource_dirs: ["resources"],
