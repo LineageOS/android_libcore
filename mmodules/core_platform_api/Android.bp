@@ -45,6 +45,11 @@ droidstubs {
     },
 }
 
+// Ideally this should be a restricted whitelist but there are hundreds of modules that depend on
+// this.
+// TODO(http://b/134561230) - limit the number of dependents on this.
+core_platform_visibility = ["//visibility:public"]
+
 // A library containing the {public SDK + core platform} API stubs for the core jars.
 //
 // Although this stubs library is primarily used by the Java compiler / build to indicate
@@ -53,6 +58,7 @@ droidstubs {
 // accessibility. b/119068555
 java_library {
     name: "core.platform.api.stubs",
+    visibility: core_platform_visibility,
     srcs: [":core-platform-api-stubs"],
     hostdex: true,
     compile_dex: true,
@@ -65,6 +71,7 @@ java_library {
 // Used when compiling higher-level code against core.platform.api.stubs.
 java_system_modules {
     name: "core-platform-api-stubs-system-modules",
+    visibility: core_platform_visibility,
     libs: [
         "core.platform.api.stubs",
         // This one is not on device but it's needed when javac compiles code
