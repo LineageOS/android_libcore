@@ -17,7 +17,6 @@
 // Use jarjar to repackage Java9LanguageFeatures, to be used in tests below.
 java_library {
     name: "core-java-9-language-features-repackaged-for-test",
-    defaults: ["libcore_java_defaults"],
     hostdex: true,
 
     srcs: [":core-java-9-language-features-source"],
@@ -41,11 +40,13 @@ filegroup {
     srcs: ["rewrite-test-for-jarjar.sed"],
     visibility: ["//visibility:private"],
 }
+
 filegroup {
     name: "core-java-9-language-features-test-src",
     srcs: ["java/libcore/internal/Java9LanguageFeaturesTest.java"],
     visibility: ["//visibility:private"],
 }
+
 genrule {
     name: "core-gen-test-repackaged-java-9-language-features",
     srcs: [
@@ -59,7 +60,6 @@ genrule {
 
 java_library {
     name: "core-java-9-language-tests",
-    defaults: ["libcore_java_defaults"],
     hostdex: true,
     srcs: [
         "java/**/*.java",
@@ -71,7 +71,7 @@ java_library {
     ],
     static_libs: [
         "core-java-9-language-features-repackaged-for-test",
-	"junit",
+        "junit",
     ],
     system_modules: "core-all-system-modules",
     visibility: ["//libcore"],

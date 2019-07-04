@@ -47,6 +47,9 @@ cc_defaults {
 
 cc_library_shared {
     name: "libjavacore",
+    visibility: [
+        "//art/build/apex",
+    ],
     defaults: [
         "core_native_default_flags",
         "core_native_default_libs",
@@ -83,6 +86,9 @@ cc_library_shared {
 
 cc_library_shared {
     name: "libandroidio",
+    visibility: [
+        "//art/build/apex",
+    ],
     defaults: [
         "core_native_default_flags",
     ],
@@ -155,6 +161,9 @@ cc_defaults {
 
 cc_library_shared {
     name: "libopenjdk",
+    visibility: [
+        "//art/build/apex",
+    ],
     defaults: ["libopenjdk_native_defaults"],
     shared_libs: [
         "libopenjdkjvm",
@@ -164,6 +173,9 @@ cc_library_shared {
 // Debug version of libopenjdk. Depends on libopenjdkjvmd.
 cc_library_shared {
     name: "libopenjdkd",
+    visibility: [
+        "//art/build/apex",
+    ],
     defaults: ["libopenjdk_native_defaults"],
     shared_libs: [
         "libopenjdkjvmd",
@@ -173,6 +185,9 @@ cc_library_shared {
 // Test JNI library.
 cc_library_shared {
     name: "libjavacoretests",
+    visibility: [
+        "//cts/tests/libcore/luni",
+    ],
     defaults: ["core_native_default_flags"],
     host_supported: true,
 
