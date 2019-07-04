@@ -1719,14 +1719,6 @@
   ]
 },
 {
-  description: "The ResourceBundle code under test is probably not used much on Android and needs a lot of attention.",
-  modes: [device],
-  bug: 13747957,
-  names: [
-      "org.apache.harmony.tests.java.util.ControlTest#test_needsReload_LStringLLocaleLStringLClassLoaderResourceBundleJ"
-  ]
-},
-{
   description: "Fails in CTS, passes in CoreTestRunner.",
   result: EXEC_FAILED,
   modes: [device],
