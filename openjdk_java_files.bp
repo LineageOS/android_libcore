@@ -1806,6 +1806,9 @@ filegroup {
 // All classes, whether exposed in any API or not.
 filegroup {
     name: "openjdk_java_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         ":openjdk_javadoc_files",
         ":openjdk_mmodule_extra_files",
