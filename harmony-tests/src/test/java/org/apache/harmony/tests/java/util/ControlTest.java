@@ -460,8 +460,7 @@ public class ControlTest extends TestCase {
         String CLASS = "java.class";
         String PROPERTIES = "java.properties";
         Locale frFR = new Locale("fr", "FR");
-        ClassLoader systemLoader = ClassLoader.getSystemClassLoader();
-        ClassLoader URLLoader = systemLoader;
+        ClassLoader URLLoader = this.getClass().getClassLoader();
         ResourceBundle bundle = null;
         long time = 0L;
         final URL srcFile = URLLoader.getResource(control.toResourceName(
@@ -490,12 +489,9 @@ public class ControlTest extends TestCase {
             // long long ago
             assertTrue(control.needsReload(propertiesNameCopy, frFR,
                     PROPERTIES, URLLoader, bundle, 2006L));
-            // other loader
-            assertFalse(control.needsReload(propertiesNameCopy, frFR,
-                    PROPERTIES, systemLoader, bundle, time));
             // other bundle
             ResourceBundle otherBundle = control.newBundle(propertiesName,
-                    Locale.ROOT, PROPERTIES, systemLoader, false);
+                    Locale.ROOT, PROPERTIES, URLLoader, false);
             assertEquals("parent", otherBundle.getString("property"));
             assertTrue(control.needsReload(propertiesNameCopy, frFR,
                     PROPERTIES, URLLoader, otherBundle, time));
@@ -514,10 +510,10 @@ public class ControlTest extends TestCase {
         }
 
         // 2. format = "java.class"
-        bundle = control.newBundle(className, frFR, CLASS, systemLoader, false);
+        bundle = control.newBundle(className, frFR, CLASS, URLLoader, false);
         time = System.currentTimeMillis();
         assertEquals("frFRValue3", bundle.getString("parent3"));
-        assertFalse(control.needsReload(className, frFR, CLASS, systemLoader,
+        assertFalse(control.needsReload(className, frFR, CLASS, URLLoader,
                 bundle, time));
         // exceptions
         control.needsReload(propertiesName, frFR, PROPERTIES, URLLoader,
