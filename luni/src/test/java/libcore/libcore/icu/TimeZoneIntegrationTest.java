@@ -281,8 +281,8 @@ public class TimeZoneIntegrationTest {
         }
 
         String icuDatFileName = "icudt" + VersionInfo.ICU_VERSION.getMajor() + "l.dat";
-        String runtimeModuleIcuData = TimeZoneDataFiles.getRuntimeModuleIcuFile(icuDatFileName);
-        assertFileExists(runtimeModuleIcuData);
+        String i18nModuleIcuData = TimeZoneDataFiles.getI18nModuleIcuFile(icuDatFileName);
+        assertFileExists(i18nModuleIcuData);
 
         // Devices currently have a subset of the time zone files in /system. These are going away
         // but we test them while they exist. Host ART should match device.
@@ -300,7 +300,7 @@ public class TimeZoneIntegrationTest {
         // exists we can say it should resolve (realpath) to the same file as the runtime module.
         String systemIcuData = TimeZoneDataFiles.getSystemIcuFile(icuDatFileName);
         if (new File(systemIcuData).exists()) {
-            assertEquals(Os.realpath(runtimeModuleIcuData), Os.realpath(systemIcuData));
+            assertEquals(Os.realpath(i18nModuleIcuData), Os.realpath(systemIcuData));
         }
     }
 

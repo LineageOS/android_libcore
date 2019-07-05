@@ -27,7 +27,7 @@ import java.util.List;
 @libcore.api.CorePlatformApi
 public final class TimeZoneDataFiles {
     private static final String ANDROID_ROOT_ENV = "ANDROID_ROOT";
-    private static final String ANDROID_RUNTIME_ROOT_ENV = "ANDROID_RUNTIME_ROOT";
+    private static final String ANDROID_I18N_ROOT_ENV = "ANDROID_I18N_ROOT";
     private static final String ANDROID_TZDATA_ROOT_ENV = "ANDROID_TZDATA_ROOT";
     private static final String ANDROID_DATA_ENV = "ANDROID_DATA";
 
@@ -79,12 +79,12 @@ public final class TimeZoneDataFiles {
         return System.getenv(ANDROID_TZDATA_ROOT_ENV) + "/etc/" + fileName;
     }
 
-    public static String getRuntimeModuleIcuFile(String fileName) {
-        return getRuntimeModuleFile("icu/" + fileName);
+    public static String getI18nModuleIcuFile(String fileName) {
+        return getI18nModuleFile("icu/" + fileName);
     }
 
-    private static String getRuntimeModuleFile(String fileName) {
-        return System.getenv(ANDROID_RUNTIME_ROOT_ENV) + "/etc/" + fileName;
+    private static String getI18nModuleFile(String fileName) {
+        return System.getenv(ANDROID_I18N_ROOT_ENV) + "/etc/" + fileName;
     }
 
     public static String getSystemTzFile(String fileName) {
@@ -114,10 +114,10 @@ public final class TimeZoneDataFiles {
         String timeZoneModuleIcuDataPath = getTimeZoneModuleIcuFile("");
         paths.add(timeZoneModuleIcuDataPath);
 
-        // ICU should always look in the runtime module path as this is where most of the data
+        // ICU should always look in the i18n module path as this is where most of the data
         // can be found.
-        String runtimeModuleIcuDataPath = getRuntimeModuleIcuFile("");
-        paths.add(runtimeModuleIcuDataPath);
+        String i18nModuleIcuDataPath = getI18nModuleIcuFile("");
+        paths.add(i18nModuleIcuDataPath);
 
         return String.join(":", paths);
     }
