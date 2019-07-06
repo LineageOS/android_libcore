@@ -297,6 +297,9 @@ filegroup {
 
 filegroup {
     name: "non_openjdk_java_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         "luni/src/main/java/java/net/AddressCache.java",
         "luni/src/main/java/libcore/icu/CollationKeyICU.java",

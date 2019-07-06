@@ -53,6 +53,9 @@ core_resource_dirs = [
 // The source files that go into core-oj.
 filegroup {
     name: "core_oj_java_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     srcs: [":openjdk_java_files"],
 }
 
@@ -66,6 +69,9 @@ filegroup {
 // The source files that go into core-libart.
 filegroup {
     name: "core_libart_java_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     srcs: [
         ":non_openjdk_java_files",
         ":android_icu4j_src_files",
@@ -87,6 +93,9 @@ filegroup {
 // files for inclusion in the public SDK docs.
 filegroup {
     name: "core_public_api_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         ":core_oj_api_files",
         ":core_libart_api_files",
@@ -104,6 +113,9 @@ filegroup {
 // in openjdk_java_files.bp for more details.
 filegroup {
     name: "core_api_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
     srcs: [
         ":apache-xml_api_files",
         ":bouncycastle_java_files",
@@ -144,9 +156,7 @@ core_all_visibility = [
     "//external/conscrypt",
     "//external/icu/android_icu4j",
     "//external/okhttp",
-    "//libcore/benchmarks",
-    "//libcore/luni/src/test/java9language",
-    "//libcore/mmodules/intracoreapi",
+    "//libcore:__subpackages__",
 ]
 
 // A target used to bootstrap compilation for the core library.
@@ -383,6 +393,7 @@ java_defaults {
 // are also in the public SDK API from API level 26 onwards.
 java_library {
     name: "core-lambda-stubs",
+    visibility: ["//visibility:public"],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
         ":openjdk_lambda_stub_files",
@@ -395,6 +406,9 @@ java_library {
 // (since API level 26).
 java_library {
     name: "core-lambda-stubs-for-system-modules",
+    visibility: [
+        "//libcore/mmodules/core_platform_api",
+    ],
     defaults: ["core_lambda_stubs_defaults"],
     srcs: [
         ":openjdk_lambda_stub_files",
@@ -407,6 +421,9 @@ java_library {
 // See http://b/123891440.
 java_library {
     name: "core-generated-annotation-stubs",
+    visibility: [
+        "//libcore/mmodules/core_platform_api",
+    ],
     defaults: ["libcore_java_defaults"],
     srcs: [
         ":openjdk_generated_annotation_stub_files",
@@ -436,6 +453,7 @@ java_library {
 // Java lambdas.
 java_system_modules {
     name: "core-system-modules",
+    visibility: ["//visibility:public"],
     libs: [
         "core-oj",
         "core-libart",
@@ -452,6 +470,9 @@ java_system_modules {
 // Builds libcore test rules
 java_library_static {
     name: "core-test-rules",
+    visibility: [
+        "//frameworks/base/location/tests/locationtests",
+    ],
     hostdex: true,
     srcs: [
         "dalvik/test-rules/src/main/**/*.java",
@@ -467,6 +488,17 @@ java_library_static {
 // Builds the core-tests-support library used by various tests.
 java_library_static {
     name: "core-tests-support",
+    visibility: [
+        "//cts/apps/CtsVerifier",
+        "//cts/tests/tests/keystore",
+        "//cts/tests/tests/net",
+        "//cts/tests/tests/net/api23Test",
+        "//external/apache-harmony",
+        "//frameworks/base/core/tests/coretests",
+        "//libcore/benchmarks",
+        "//packages/apps/KeyChain/tests",
+        "//system/timezone/distro/core",
+    ],
     hostdex: true,
     srcs: ["support/src/test/java/**/*.java"],
 
@@ -482,6 +514,9 @@ java_library_static {
 // Builds the jsr166-tests library.
 java_test {
     name: "jsr166-tests",
+    visibility: [
+        "//cts/tests/libcore/jsr166",
+    ],
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
     sdk_version: "none",
     libs: [
@@ -502,6 +537,9 @@ filegroup {
 // Builds the core-tests library.
 java_test {
     name: "core-tests",
+    visibility: [
+        "//cts/tests/libcore/luni",
+    ],
     defaults: ["libcore_java_defaults"],
     hostdex: true,
     srcs: [
@@ -613,6 +651,9 @@ java_test {
 // Like core-ojtests but smaller.
 java_test {
     name: "core-ojtests-public",
+    visibility: [
+        "//cts/tests/libcore/ojluni",
+    ],
     defaults: ["libcore_java_defaults"],
     srcs: [
         "ojluni/src/test/java/**/*.java",
@@ -648,6 +689,9 @@ java_test {
 // available to metalava. Used for nullability annotations in OpenJDK source.
 droiddoc_exported_dir {
     name: "ojluni-annotated-sdk-stubs",
+    visibility: [
+        "//frameworks/base",
+    ],
     path: "ojluni/annotations/sdk",
 }
 
@@ -657,10 +701,14 @@ droiddoc_exported_dir {
 }
 
 // Exports annotated stubs source files in ojluni/annotations/mmodules to make
-// them available to metalava. Used for core platform API and intra-code API
+// them available to metalava. Used for core platform API and intra-core API
 // annotations in OpenJDK source.
 droiddoc_exported_dir {
     name: "ojluni-annotated-mmodule-stubs",
+    visibility: [
+        "//libcore/mmodules/core_platform_api",
+        "//libcore/mmodules/intracoreapi",
+    ],
     path: "ojluni/annotations/mmodule",
 }
 
@@ -668,6 +716,9 @@ droiddoc_exported_dir {
 // source code and so should not cause an error or warning.
 filegroup {
     name: "known-oj-tags",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         "known_oj_tags.txt",
     ],
@@ -694,6 +745,7 @@ droidstubs {
 // Don't use this directly, use "sdk_version: core_current".
 java_library {
     name: "core.current.stubs",
+    visibility: ["//visibility:public"],
     srcs: [":core-current-stubs-gen"],
     errorprone: {
         javacflags: [
@@ -717,6 +769,7 @@ java_library {
 // Used when compiling higher-level code against core.current.stubs.
 java_system_modules {
     name: "core-current-stubs-system-modules",
+    visibility: ["//visibility:public"],
     libs: [
         "core.current.stubs",
         // This one is not on device but it's needed when javac compiles code
@@ -763,12 +816,18 @@ droidstubs {
 // time zone data.
 java_library_host {
     name: "timezone-host",
+    visibility: [
+        "//system/timezone/distro/core",
+    ],
     srcs: [":timezone_host_files"],
 }
 
 // The source files that contain the UnsupportedAppUsage annotation and its dependencies.
 filegroup {
     name: "unsupportedappusage_annotation_files",
+    visibility: [
+        "//frameworks/base",
+    ],
     srcs: [
         "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
         "dalvik/src/main/java/dalvik/system/VersionCodes.java",

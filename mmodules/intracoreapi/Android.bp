@@ -49,6 +49,9 @@ droidstubs {
 // core jars.
 java_library {
     name: "core.intra.stubs",
+    visibility: [
+        "//external/conscrypt",
+    ],
     srcs: [":core-intra-stubs"],
 
     sdk_version: "none",
@@ -62,6 +65,9 @@ java_library {
 // Used when compiling against core.intra.stubs.
 java_system_modules {
     name: "core-intra-stubs-system-modules",
+    visibility: [
+        "//external/conscrypt",
+    ],
     libs: ["core.intra.stubs"],
 }
 
