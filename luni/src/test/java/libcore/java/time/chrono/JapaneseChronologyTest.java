@@ -16,6 +16,8 @@
 package libcore.java.time.chrono;
 
 import org.junit.Test;
+import android.icu.util.JapaneseCalendar;
+import java.util.List;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,6 +25,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
+import java.time.chrono.Era;
 import java.time.chrono.JapaneseChronology;
 import java.time.chrono.JapaneseDate;
 import java.time.chrono.JapaneseEra;
@@ -109,5 +112,15 @@ public class JapaneseChronologyTest {
         assertEquals(false, date.isSupported(ChronoField.SECOND_OF_MINUTE));
         assertEquals(true, date.isSupported(ChronoField.YEAR));
         assertEquals(true, date.isSupported(ChronoField.YEAR_OF_ERA));
+    }
+
+    @Test
+    public void test_eras_isLatestEraConsistency() {
+        List<Era> japaneseEras = JapaneseChronology.INSTANCE.eras();
+        boolean isHeiseiLatestInJavaTime =
+            japaneseEras.get(japaneseEras.size()-1).getValue() <= JapaneseEra.HEISEI.getValue();
+        boolean isHeiseiLatestInIcu = JapaneseCalendar.CURRENT_ERA == JapaneseCalendar.HEISEI;
+        assertEquals("java.time and ICU4J are not consistent in the latest japanese era",
+            isHeiseiLatestInJavaTime, isHeiseiLatestInIcu);
     }
 }
