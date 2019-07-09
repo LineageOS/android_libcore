@@ -857,12 +857,26 @@ public final class URLConnectionTest extends TestCase {
         assertNull(request.getHeader("If-None-Match"));
     }
 
+    public void testGetFileNameMap_null() {
+        assertThrowsNpe(() -> URLConnection.getFileNameMap().getContentTypeFor(null));
+        assertThrowsNpe(() -> URLConnection.guessContentTypeFromName(null));
+    }
+
+    private static void assertThrowsNpe(Runnable runnable) {
+        try {
+            runnable.run();
+            fail();
+        } catch (NullPointerException expected) {
+        }
+    }
+
     /**
      * Checks that paths ending in '/' (directory listings) are identified as HTML.
      */
     public void testGetFileNameMap_directory() {
         checkFileNameMap("text/html", "/directory/path/");
         checkFileNameMap("text/html", "http://example.com/path/");
+        checkFileNameMap("text/html", "http://example.com/path/#fragment");
     }
 
     public void testGetFileNameMap_simple() {
@@ -871,12 +885,30 @@ public final class URLConnectionTest extends TestCase {
     }
 
     /**
-     * Checks that the *last* dot is considered for determining a file extension.
+     * Checks cases where there's a '.' in the fragment, path or as an earlier path
+     * of a file name (only the last '.' that is part of the filename should count).
      */
-    public void testGetFileNameMap_multipleDots() {
+    public void testGetFileNameMap_dotsInOtherPlaces() {
+        // '.' in path
         checkFileNameMap("text/html", "example.com/foo.txt/bar.html");
         checkFileNameMap("text/plain", "example.com/foo.html/bar.txt");
+        checkFileNameMap(null, "/path.txt/noextensionfound");
+
+        // '.' earlier in filename
         checkFileNameMap("text/plain", "example.html.txt");
+
+        // '.' in fragment
+        checkFileNameMap(null, "/path/noextensionfound#fragment.html");
+
+        // multiple additional dots that shouldn't count
+        checkFileNameMap("text/plain", "/path.html/foo/../readme.html.txt#fragment.html");
+    }
+
+    public void testGetFileNameMap_multipleHashCharacters() {
+        // Based on RFC 3986, URLs can only contain a single '#' but android.net.Uri
+        // considers the fragment to start after the first, rather than the last, '#'.
+        // We check that FileNameMap cuts off after the first '#', consistent with Uri.
+        checkFileNameMap(null, "/path/noextensionfound#frag.txt#ment.html");
     }
 
     /**
