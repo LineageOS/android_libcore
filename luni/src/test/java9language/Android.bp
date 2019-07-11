@@ -43,7 +43,7 @@ filegroup {
 
 filegroup {
     name: "core-java-9-language-features-test-src",
-    srcs: ["java/libcore/internal/Java9LanguageFeaturesTest.java"],
+    srcs: ["java/libcore/libcore/internal/Java9LanguageFeaturesTest.java"],
     visibility: ["//visibility:private"],
 }
 
