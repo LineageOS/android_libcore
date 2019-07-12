@@ -1141,7 +1141,6 @@ package libcore.io {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(AutoCloseable);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.io.FileDescriptor);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.net.Socket);
-    method @Deprecated public static java.io.File createTemporaryDirectory(String);
     method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFileAsByteArray(String) throws java.io.IOException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String readFileAsString(String) throws java.io.IOException;
