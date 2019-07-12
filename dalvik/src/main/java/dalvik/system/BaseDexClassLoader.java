@@ -330,7 +330,14 @@ public class BaseDexClassLoader extends ClassLoader {
     }
 
     @Override public String toString() {
-        return getClass().getName() + "[" + pathList + "]";
+        String sharedLibs = "";
+        if (sharedLibraryLoaders != null) {
+            for (Object obj : sharedLibraryLoaders) {
+                sharedLibs += obj + ",";
+            }
+        }
+        return getClass().getName() + "[" + pathList + "; parent=(" + getParent()
+                + "), shared-libs=(" + sharedLibs + ")]";
     }
 
     /**
