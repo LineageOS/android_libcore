@@ -111,8 +111,8 @@ cc_defaults {
         "core_native_default_libs",
     ],
     srcs: [":libopenjdk_native_srcs"],
-    include_dirs: [
-        "libcore/luni/src/main/native",
+    local_include_dirs: [
+        "luni/src/main/native",
     ],
     cflags: [
         // TODO(narayan): Prune down this list of exclusions once the underlying
@@ -235,8 +235,3 @@ cc_benchmark {
 
     shared_libs: ["libnativehelper"],
 }
-
-subdirs = [
-    "luni/src/main/native",
-    "ojluni/src/main/native",
-]
