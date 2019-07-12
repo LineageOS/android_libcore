@@ -257,23 +257,6 @@ public final class IoUtils {
     }
 
     /**
-     * Creates a unique new temporary directory under "java.io.tmpdir".
-     *
-     * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
-     */
-    @libcore.api.CorePlatformApi
-    @Deprecated
-    public static File createTemporaryDirectory(String prefix) {
-        while (true) {
-            String candidateName = prefix + Math.randomIntInternal();
-            File result = new File(System.getProperty("java.io.tmpdir"), candidateName);
-            if (result.mkdir()) {
-                return result;
-            }
-        }
-    }
-
-    /**
      * Do not use. This is for System.loadLibrary use only.
      *
      * Checks whether {@code path} can be opened read-only. Similar to File.exists, but doesn't
