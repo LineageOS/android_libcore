@@ -46,9 +46,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @see     java.io.FileOutputStream
  * @since   JDK1.0
  */
-// Android-changed: Removed parent reference counting. Creator is responsible for closing
-// the file descriptor.
 public final class FileDescriptor {
+    // Android-changed: Removed parent reference counting. Creator is responsible for closing
+    // the file descriptor.
 
     // Android-changed: Renamed fd to descriptor to avoid issues with JNI/reflection
     // fetching the descriptor value.
@@ -206,10 +206,10 @@ public final class FileDescriptor {
     }
     // END Android-added: Methods to enable ownership enforcement of Unix file descriptors.
 
+    // Android-added: Needed for framework to test if it's a socket
     /**
      * @hide internal use only
      */
-    // Android-added: Needed for framework to test if it's a socket
     public boolean isSocket$() {
         return isSocket(descriptor);
     }
