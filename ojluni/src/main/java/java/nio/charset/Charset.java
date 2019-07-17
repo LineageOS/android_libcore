@@ -52,6 +52,7 @@ import sun.nio.cs.ThreadLocalCoders;
 import sun.security.action.GetPropertyAction;
 
 
+// Android-changed: Docs to say UTF-8 is always the platform default charset.
 /**
  * A named mapping between sequences of sixteen-bit Unicode <a
  * href="../../lang/Character.html#unicode">code units</a> and sequences of
@@ -318,8 +319,8 @@ public abstract class Charset
         }
     }
 
-    /* The standard set of charsets */
     // Android-removed: We use ICU's list of standard charsets.
+    /* The standard set of charsets */
     // private static CharsetProvider standardProvider = new StandardCharsets();
 
     // Cache of the most-recently-returned charsets,
@@ -566,7 +567,7 @@ public abstract class Charset
         throw new UnsupportedCharsetException(charsetName);
     }
 
-
+    // BEGIN Android-added: forNameUEE(String) method.
     /**
      * Equivalent to {@code forName} but only throws {@code UnsupportedEncodingException},
      * which is all pre-nio code claims to throw.
@@ -582,7 +583,7 @@ public abstract class Charset
             throw ex;
         }
     }
-
+    // END Android-added: forNameUEE(String) method.
 
     // Fold charsets from the given iterator into the given map, ignoring
     // charsets whose names already have entries in the map.
