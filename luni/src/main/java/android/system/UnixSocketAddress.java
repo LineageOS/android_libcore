@@ -35,6 +35,7 @@ public final class UnixSocketAddress extends SocketAddress {
     // 1) pathname: 0 < sun_path.length <= NAMED_PATH_LENGTH, sun_path[0] != 0.
     // 2) unnamed: sun_path = [].
     // 3) abstract: 0 < sun_path.length <= NAMED_PATH_LENGTH, sun_path[0] == 0.
+    // Note that the array referenced by this field can be modified from JNI (libcore_io_Linux.cpp).
     private final byte[] sun_path;
 
     /** This constructor is also used from JNI. */
@@ -56,6 +57,9 @@ public final class UnixSocketAddress extends SocketAddress {
 
     /**
      * Creates a named, abstract AF_UNIX socket address.
+     *
+     * @throws NullPointerException if {@code name} is null
+     * @throws IllegalArgumentException if {@code name} is invalid, e.g. too long
      */
     public static UnixSocketAddress createAbstract(String name) {
         byte[] nameBytes = name.getBytes(StandardCharsets.UTF_8);
@@ -67,6 +71,9 @@ public final class UnixSocketAddress extends SocketAddress {
 
     /**
      * Creates a named, filesystem AF_UNIX socket address.
+     *
+     * @throws NullPointerException if {@code name} is null
+     * @throws IllegalArgumentException if {@code name} is invalid, e.g. too long
      */
     @libcore.api.CorePlatformApi
     public static UnixSocketAddress createFileSystem(String pathName) {
