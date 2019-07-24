@@ -69,6 +69,17 @@ import java.util.regex.Pattern;
  */
 public class CompareUpstreams {
 
+    /**
+     * Whether to compare against snapshots based on (a) the output of {@link CopyUpstreamFiles},
+     * as opposed to (b) directly against checked-out upstream source {@link Repository}s.
+     *
+     * Because the snapshots are currently kept on x20 which is slow to access, (b) run much
+     * faster (a few seconds vs. 30 minutes), but it requires the checked-out and compiled
+     * upstream repositories to exist which is not the case for everyone / not easily achievable
+     * (OpenJDK 8 requires an old C++ compiler to build).
+     */
+    public static final boolean COMPARE_AGAINST_UPSTREAM_SNAPSHOT = true;
+
     private final StandardRepositories standardRepositories;
 
     public CompareUpstreams(StandardRepositories standardRepositories) {
@@ -153,6 +164,11 @@ public class CompareUpstreams {
         }
         headers.add("diff");
         printTsv(out, headers);
+
+        Path snapshotRoot = COMPARE_AGAINST_UPSTREAM_SNAPSHOT
+                ? Util.pathFromEnvOrThrow("OJLUNI_UPSTREAMS")
+                : null;
+
         for (Path relPath : relPaths) {
             Repository expectedUpstream = standardRepositories.referenceUpstreamAsOfAndroidP(
                 relPath);
@@ -167,7 +183,15 @@ public class CompareUpstreams {
             List<String> comparisons = new ArrayList<>(upstreams.size());
             for (Repository upstream : upstreams) {
                 final String comparison;
-                Path upstreamFile = upstream.absolutePath(relPath);
+                final Path upstreamFile;
+                if (COMPARE_AGAINST_UPSTREAM_SNAPSHOT) {
+                    Path maybePath = snapshotRoot
+                            .resolve(upstream.name())
+                            .resolve(relPath);
+                    upstreamFile = maybePath.toFile().exists() ? maybePath : null;
+                } else {
+                    upstreamFile = upstream.absolutePath(relPath);
+                }
                 if (upstreamFile == null) {
                     comparison = "missing";
                 } else {
