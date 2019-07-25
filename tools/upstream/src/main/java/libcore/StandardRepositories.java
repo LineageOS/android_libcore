@@ -76,17 +76,9 @@ public class StandardRepositories {
     }
 
     public static StandardRepositories fromEnv() {
-        Path androidBuildTop = Paths.get(getEnvOrThrow("ANDROID_BUILD_TOP"));
-        Path upstreamRoot = Paths.get(getEnvOrThrow("OPENJDK_HOME"));
+        Path androidBuildTop = Util.pathFromEnvOrThrow("ANDROID_BUILD_TOP");
+        Path upstreamRoot = Util.pathFromEnvOrThrow("OPENJDK_HOME");
         return new StandardRepositories(androidBuildTop, upstreamRoot);
-    }
-
-    private static String getEnvOrThrow(String name) {
-        String result = System.getenv(name);
-        if (result == null) {
-            throw new IllegalStateException("Environment variable undefined: " + name);
-        }
-        return result;
     }
 
     private static final Set<String> juFilesFromJsr166 = Collections.unmodifiableSet(
