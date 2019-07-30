@@ -1,0 +1,13 @@
+{
+  "presubmit": [
+    // TODO(b/130283485): Remove this once the example has served its purpose.
+    {
+      "name": "CtsLibcoreTestCases",
+      "options": [
+        {
+          "include-annotation": "libcore.testing.categories.Example"
+        }
+      ]
+    }
+  ]
+}
