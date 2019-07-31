@@ -22,9 +22,11 @@ import java.util.List;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.SwitchTargetSdkVersionRule;
 import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
+import libcore.testing.categories.Example;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
+@Example
 public final class PackageTest extends TestCaseWithRules {
 
     @Rule
