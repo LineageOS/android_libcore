@@ -45,9 +45,35 @@ build = [
 ]
 
 // The Java files and their associated resources.
-core_resource_dirs = [
-    "luni/src/main/java",
-    "ojluni/src/main/resources/",
+filegroup {
+    name: "core-luni-resources",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
+    path: "luni/src/main/java/",
+    srcs: [
+        "luni/src/main/java/libcore/net/mime.types",
+        "luni/src/main/java/libcore/net/android.mime.types",
+        "luni/src/main/java/libcore/net/mime.types.README",
+        "luni/src/main/java/java/util/logging/logging.properties",
+        "luni/src/main/java/java/security/security.properties",
+    ],
+}
+
+filegroup {
+    name: "core-ojluni-resources",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
+    path: "ojluni/src/main/resources/",
+    srcs: [
+        "ojluni/src/main/resources/**/*",
+    ],
+}
+
+core_resources = [
+    ":core-luni-resources",
+    ":core-ojluni-resources",
 ]
 
 // The source files that go into core-oj.
@@ -180,7 +206,7 @@ java_library {
         javacflags: ["--patch-module=java.base=."],
     },
 
-    java_resource_dirs: core_resource_dirs,
+    java_resources: core_resources,
     static_libs: ["android_icu4j_resources_lib"],
     java_version: "1.9",
 
@@ -216,7 +242,7 @@ java_library {
     hostdex: true,
 
     srcs: [":core_oj_java_files"],
-    java_resource_dirs: core_resource_dirs,
+    java_resources: core_resources,
 
     sdk_version: "none",
     libs: ["core-all"],
