@@ -510,6 +510,7 @@ public final class StandardNames {
             provide("Cipher", "AES/ECB/PKCS5PADDING");
             provide("Cipher", "AES/ECB/PKCS7PADDING");
             provide("Cipher", "AES/GCM/NOPADDING");
+            provide("Cipher", "AES/GCM-SIV/NOPADDING");
             provide("Cipher", "AES/OFB/NOPADDING");
             provide("Cipher", "AES/OFB/PKCS5PADDING");
             provide("Cipher", "AES/OFB/PKCS7PADDING");
@@ -520,6 +521,7 @@ public final class StandardNames {
             provide("Cipher", "AES_128/ECB/PKCS5PADDING");
             provide("Cipher", "AES_128/ECB/PKCS7PADDING");
             provide("Cipher", "AES_128/GCM/NOPADDING");
+            provide("Cipher", "AES_128/GCM-SIV/NOPADDING");
             provide("Cipher", "AES_256/CBC/NOPADDING");
             provide("Cipher", "AES_256/CBC/PKCS5PADDING");
             provide("Cipher", "AES_256/CBC/PKCS7PADDING");
@@ -527,6 +529,7 @@ public final class StandardNames {
             provide("Cipher", "AES_256/ECB/PKCS5PADDING");
             provide("Cipher", "AES_256/ECB/PKCS7PADDING");
             provide("Cipher", "AES_256/GCM/NOPADDING");
+            provide("Cipher", "AES_256/GCM-SIV/NOPADDING");
             provide("Cipher", "DESEDE/CBC/NOPADDING");
             provide("Cipher", "DESEDE/CBC/PKCS5PADDING");
             provide("Cipher", "DESEDE/CBC/PKCS7PADDING");
