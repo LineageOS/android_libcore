@@ -29,7 +29,7 @@ import libcore.util.Nullable;
 @libcore.api.CorePlatformApi
 public abstract class MimeMap {
     private static AtomicReference<MimeMap> defaultHolder = new AtomicReference<>(
-            MimeMapImpl.parseFromResources("mime.types", "android.mime.types"));
+            MimeMapImpl.parseFromResources("/mime.types", "android.mime.types"));
 
     /**
      * @return The system's current default {@link MimeMap}.
