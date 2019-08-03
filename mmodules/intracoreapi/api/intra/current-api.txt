@@ -103,133 +103,79 @@ package com.android.org.conscrypt {
     ctor @libcore.api.IntraCoreApi public OAEPParameters();
   }
 
+  @libcore.api.IntraCoreApi public abstract class OpenSSLAeadCipher extends com.android.org.conscrypt.OpenSSLCipher {
+  }
+
+  @libcore.api.IntraCoreApi public abstract class OpenSSLAeadCipherAES extends com.android.org.conscrypt.OpenSSLAeadCipher {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM extends com.android.org.conscrypt.OpenSSLAeadCipherAES {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM.AES_128 extends com.android.org.conscrypt.OpenSSLAeadCipherAES.GCM {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM.AES_128();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM.AES_256 extends com.android.org.conscrypt.OpenSSLAeadCipherAES.GCM {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM.AES_256();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM_SIV extends com.android.org.conscrypt.OpenSSLAeadCipherAES {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM_SIV();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM_SIV.AES_128 extends com.android.org.conscrypt.OpenSSLAeadCipherAES.GCM_SIV {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM_SIV.AES_128();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLAeadCipherAES.GCM_SIV.AES_256 extends com.android.org.conscrypt.OpenSSLAeadCipherAES.GCM_SIV {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherAES.GCM_SIV.AES_256();
+  }
+
+  @libcore.api.IntraCoreApi public class OpenSSLAeadCipherChaCha20 extends com.android.org.conscrypt.OpenSSLAeadCipher {
+    ctor @libcore.api.IntraCoreApi public OpenSSLAeadCipherChaCha20();
+  }
+
   @libcore.api.IntraCoreApi public abstract class OpenSSLCipher extends javax.crypto.CipherSpi {
-  }
-
-  @libcore.api.IntraCoreApi public abstract static class OpenSSLCipher.EVP_AEAD extends com.android.org.conscrypt.OpenSSLCipher {
-  }
-
-  @libcore.api.IntraCoreApi public abstract static class OpenSSLCipher.EVP_AEAD.AES extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_AEAD.AES.GCM extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_AEAD.AES.GCM();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_AEAD.AES.GCM.AES_128 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES.GCM {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_AEAD.AES.GCM.AES_128();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_AEAD.AES.GCM.AES_256 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD.AES.GCM {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_AEAD.AES.GCM.AES_256();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_AEAD.ChaCha20 extends com.android.org.conscrypt.OpenSSLCipher.EVP_AEAD {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_AEAD.ChaCha20();
-  }
-
-  @libcore.api.IntraCoreApi public abstract static class OpenSSLCipher.EVP_CIPHER extends com.android.org.conscrypt.OpenSSLCipher {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES.CBC.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES.CBC.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.CTR extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES.CTR();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES.ECB.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES.ECB.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128 {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_128.CBC.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_128.CBC.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128 {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_128.ECB.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_128.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_128.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_128.ECB.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256 {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_256.CBC.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_256.CBC.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256 {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_256.ECB.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.AES_256.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.AES_256.ECB {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.AES_256.ECB.PKCS5Padding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.ARC4 extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.ARC4();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.DESEDE extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE {
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.NoPadding();
-  }
-
-  @libcore.api.IntraCoreApi public static class OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLCipher.EVP_CIPHER.DESEDE.CBC {
-    ctor @libcore.api.IntraCoreApi public OpenSSLCipher.EVP_CIPHER.DESEDE.CBC.PKCS5Padding();
   }
 
   @libcore.api.IntraCoreApi public class OpenSSLCipherChaCha20 extends com.android.org.conscrypt.OpenSSLCipher {
     ctor @libcore.api.IntraCoreApi public OpenSSLCipherChaCha20();
+  }
+
+  @libcore.api.IntraCoreApi public abstract class OpenSSLCipherRSA extends javax.crypto.CipherSpi {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLCipherRSA.OAEP extends com.android.org.conscrypt.OpenSSLCipherRSA {
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.OAEP.SHA1 extends com.android.org.conscrypt.OpenSSLCipherRSA.OAEP {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.OAEP.SHA1();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.OAEP.SHA224 extends com.android.org.conscrypt.OpenSSLCipherRSA.OAEP {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.OAEP.SHA224();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.OAEP.SHA256 extends com.android.org.conscrypt.OpenSSLCipherRSA.OAEP {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.OAEP.SHA256();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.OAEP.SHA384 extends com.android.org.conscrypt.OpenSSLCipherRSA.OAEP {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.OAEP.SHA384();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.OAEP.SHA512 extends com.android.org.conscrypt.OpenSSLCipherRSA.OAEP {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.OAEP.SHA512();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.PKCS1 extends com.android.org.conscrypt.OpenSSLCipherRSA {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.PKCS1();
+  }
+
+  @libcore.api.IntraCoreApi public static final class OpenSSLCipherRSA.Raw extends com.android.org.conscrypt.OpenSSLCipherRSA {
+    ctor @libcore.api.IntraCoreApi public OpenSSLCipherRSA.Raw();
   }
 
   @libcore.api.IntraCoreApi public abstract class OpenSSLContextImpl extends javax.net.ssl.SSLContextSpi {
@@ -261,6 +207,109 @@ package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public final class OpenSSLECKeyPairGenerator extends java.security.KeyPairGenerator {
     ctor @libcore.api.IntraCoreApi public OpenSSLECKeyPairGenerator();
+  }
+
+  @libcore.api.IntraCoreApi public abstract class OpenSSLEvpCipher extends com.android.org.conscrypt.OpenSSLCipher {
+  }
+
+  @libcore.api.IntraCoreApi public abstract class OpenSSLEvpCipherAES extends com.android.org.conscrypt.OpenSSLEvpCipher {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES extends com.android.org.conscrypt.OpenSSLEvpCipherAES {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.CBC extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES.CBC.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES.CBC.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.CTR extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES.CTR();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.ECB extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES.ECB.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES.ECB.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128 extends com.android.org.conscrypt.OpenSSLEvpCipherAES {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.CBC extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128 {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_128.CBC.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_128.CBC.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.ECB extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128 {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_128.ECB.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_128.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_128.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_128.ECB.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256 extends com.android.org.conscrypt.OpenSSLEvpCipherAES {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.CBC extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256 {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_256.CBC.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_256.CBC.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.ECB extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256 {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.ECB.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_256.ECB.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherAES.AES_256.ECB.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherAES.AES_256.ECB {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherAES.AES_256.ECB.PKCS5Padding();
+  }
+
+  @libcore.api.IntraCoreApi public class OpenSSLEvpCipherARC4 extends com.android.org.conscrypt.OpenSSLEvpCipher {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherARC4();
+  }
+
+  @libcore.api.IntraCoreApi public abstract class OpenSSLEvpCipherDESEDE extends com.android.org.conscrypt.OpenSSLEvpCipher {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherDESEDE.CBC extends com.android.org.conscrypt.OpenSSLEvpCipherDESEDE {
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherDESEDE.CBC.NoPadding extends com.android.org.conscrypt.OpenSSLEvpCipherDESEDE.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherDESEDE.CBC.NoPadding();
+  }
+
+  @libcore.api.IntraCoreApi public static class OpenSSLEvpCipherDESEDE.CBC.PKCS5Padding extends com.android.org.conscrypt.OpenSSLEvpCipherDESEDE.CBC {
+    ctor @libcore.api.IntraCoreApi public OpenSSLEvpCipherDESEDE.CBC.PKCS5Padding();
   }
 
   @libcore.api.IntraCoreApi public abstract class OpenSSLMac extends javax.crypto.MacSpi {
