@@ -99,7 +99,6 @@ filegroup {
     ],
     srcs: [
         ":non_openjdk_java_files",
-        ":android_icu4j_src_files",
     ],
 }
 
@@ -109,7 +108,6 @@ filegroup {
     name: "core_libart_api_files",
     srcs: [
         ":non_openjdk_javadoc_files",
-        ":android_icu4j_src_files",
     ],
 }
 
@@ -122,6 +120,7 @@ filegroup {
         "//frameworks/base",
     ],
     srcs: [
+        ":android_icu4j_src_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
         ":conscrypt_public_api_files",
@@ -142,6 +141,7 @@ filegroup {
         "//libcore:__subpackages__",
     ],
     srcs: [
+        ":android_icu4j_src_files",
         ":apache-xml_api_files",
         ":bouncycastle_java_files",
         ":conscrypt_java_files",
@@ -192,6 +192,7 @@ java_library {
     defaults: ["libcore_java_defaults"],
 
     srcs: [
+        ":android_icu4j_src_files",
         ":core_oj_java_files",
         ":core_libart_java_files",
         ":openjdk_lambda_stub_files",
@@ -225,7 +226,7 @@ platform_compat_config {
 // core-libart as well as the lambda stubs needed to compile Java lambda code.
 // It does not contain other parts of core library like conscrypt, bouncycastle,
 // etc. This system_modules definition is used to bootstrap compilation for
-// other parts of the core library like core-oj, core-libart, conscrypt,
+// other parts of the core library like core-oj, core-libart, core-icu4j, conscrypt,
 // bouncycastle, etc.
 //
 // If you want to compile against the entire core library implementation, for
@@ -280,8 +281,8 @@ java_library {
 }
 
 // Contains parts of core library not associated with OpenJDK. Contains not
-// just java.*, javax.* code but also android.icu.*, android.system.* and
-// various internal libcore.* packages.
+// just java.*, javax.* code but also android.system.* and various internal
+// libcore.* packages.
 java_library {
     name: "core-libart",
     visibility: [
@@ -296,7 +297,6 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
-    static_libs: ["android_icu4j_resources_lib"],
     java_version: "1.9",
 
     sdk_version: "none",
@@ -326,6 +326,28 @@ java_library {
                 "tz_version_host_tzdata_apex",
             ],
         },
+    },
+}
+
+java_library {
+    name: "core-icu4j",
+    visibility: [
+        "//art/build/apex",
+        "//external/robolectric-shadows",
+        "//frameworks/layoutlib",
+    ],
+    defaults: ["libcore_java_defaults"],
+    installable: true,
+    hostdex: true,
+
+    srcs: [":android_icu4j_src_files"],
+    static_libs: ["android_icu4j_resources_lib"],
+
+    sdk_version: "none",
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    openjdk9: {
+        javacflags: ["--patch-module=java.base=."],
     },
 }
 
@@ -367,7 +389,7 @@ java_library {
 }
 
 //
-// Guaranteed unstripped versions of core-oj and core-libart.
+// Guaranteed unstripped versions of core-icu4j, core-oj and core-libart.
 //
 // The build system may or may not strip the core-oj and core-libart jars,
 // but these will not be stripped. See b/24535627.
@@ -400,6 +422,19 @@ java_library {
         enabled: false,
     },
     notice: "ojluni/NOTICE",
+}
+
+java_library {
+    name: "core-icu4j-testdex",
+    installable: true,
+    static_libs: ["core-icu4j"],
+    sdk_version: "none",
+    libs: ["core-all"],
+    system_modules: "core-all-system-modules",
+    dxflags: ["--core-library"],
+    dex_preopt: {
+        enabled: false,
+    },
 }
 
 java_defaults {
@@ -490,6 +525,7 @@ java_system_modules {
     libs: [
         "core-oj",
         "core-libart",
+        "core-icu4j",
         "bouncycastle",
         "conscrypt",
         "okhttp",
