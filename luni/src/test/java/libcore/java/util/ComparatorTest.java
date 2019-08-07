@@ -16,6 +16,7 @@
 
 package libcore.java.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -83,10 +84,11 @@ public final class ComparatorTest extends TestCase {
     }
 
     public void testReverseOrder() {
-        List<Item> itemsList = Arrays.asList(orderedItems);
+        // Make a copy that we can reverse. http://b/139015474
+        List<Item> itemsList = new ArrayList<>(Arrays.asList(orderedItems));
         Collections.reverse(itemsList);
         Comparator<Item> comparator = Comparator.reverseOrder();
-        checkComparison(comparator, (Item[]) itemsList.toArray());
+        checkComparison(comparator, itemsList.toArray(new Item[0]));
     }
 
     public void testReverse() {
