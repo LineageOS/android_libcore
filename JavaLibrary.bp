@@ -210,6 +210,14 @@ java_library {
     java_version: "1.9",
 
     installable: false,
+
+    plugins: ["compat-changeid-annotation-processor"],
+}
+
+platform_compat_config {
+    name: "libcore-platform-compat-config",
+    prefix: "libcore",
+    src: ":core-all",
 }
 
 // A system modules definition for use by core library targets only. It only
