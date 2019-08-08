@@ -815,6 +815,7 @@ package dalvik.system {
 
   public final class VMRuntime {
     method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public long addressOf(Object);
+    method public static void bootCompleted();
     method public void clampGrowthLimit();
     method @dalvik.annotation.compat.UnsupportedAppUsage public void clearGrowthLimit();
     method public static boolean didPruneDalvikCache();
