@@ -652,6 +652,12 @@ public final class VMRuntime {
     public static native boolean hasBootImageSpaces();
 
     /**
+     * Used to notify the runtime that boot completed.
+     */
+    @libcore.api.CorePlatformApi
+    public static native void bootCompleted();
+
+    /**
      * Returns the instruction set of the current runtime.
      */
     @UnsupportedAppUsage
