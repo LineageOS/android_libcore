@@ -53,6 +53,7 @@ public final class VMRuntime {
         ABI_TO_INSTRUCTION_SET_MAP.put("x86", "x86");
         ABI_TO_INSTRUCTION_SET_MAP.put("x86_64", "x86_64");
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a", "arm64");
+        ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a-hwasan", "arm64");
     }
 
     /**
