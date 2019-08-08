@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -20,9 +20,17 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+
+/*
+ *
+ * @test
+ * @bug 8206120
+ */
+
 package test.java.time.format;
 
 import static org.testng.Assert.assertEquals;
+import static tck.java.time.chrono.TCKJapaneseChronology.IS_HEISEI_LATEST;
 
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
@@ -37,6 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
+import java.time.format.ResolverStyle;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
@@ -134,6 +143,19 @@ public class TestNonIsoFormatter {
         };
     }
 
+    @DataProvider(name="lenient_eraYear")
+    Object[][] lenientEraYear() {
+        return new Object[][] {
+            // Chronology, lenient era/year, strict era/year
+            { JAPANESE, "Meiji 123", "Heisei 2" },
+            // Android-changed: Eras names have been changed in CLDR data.
+            // { JAPANESE, "Showa 65", "Heisei 2" }
+            { JAPANESE, "Shōwa 65", "Heisei 2" },
+            // Android-changed: Old Android releases can optionally support the new Japanese era.
+            { JAPANESE, "Heisei 32", IS_HEISEI_LATEST ? "Heisei 32" : "Reiwa 2" },
+        };
+    }
+
     @Test(dataProvider="format_data")
     public void test_formatLocalizedDate(Chronology chrono, Locale formatLocale, Locale numberingLocale,
                                          ChronoLocalDate date, String expected) {
@@ -171,5 +193,16 @@ public class TestNonIsoFormatter {
         TemporalAccessor ta = dtf.parse(text);
         Chronology cal = ta.query(TemporalQueries.chronology());
         assertEquals(cal, chrono);
+    }
+
+    @Test(dataProvider="lenient_eraYear")
+    public void test_lenientEraYear(Chronology chrono, String lenient, String strict) {
+        String mdStr = "-01-01";
+        DateTimeFormatter dtf = new DateTimeFormatterBuilder()
+            .appendPattern("GGGG y-M-d")
+            .toFormatter()
+            .withChronology(chrono);
+        DateTimeFormatter dtfLenient = dtf.withResolverStyle(ResolverStyle.LENIENT);
+        assertEquals(LocalDate.parse(lenient+mdStr, dtfLenient), LocalDate.parse(strict+mdStr, dtf));
     }
 }

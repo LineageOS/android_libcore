@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -59,6 +59,7 @@ package tck.java.time.chrono;
 import static java.time.temporal.ChronoField.ERA;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static tck.java.time.chrono.TCKJapaneseChronology.IS_HEISEI_LATEST;
 
 import java.time.chrono.Era;
 import java.time.chrono.JapaneseChronology;
@@ -76,6 +77,16 @@ public class TCKJapaneseEra {
 
     @DataProvider(name = "JapaneseEras")
     Object[][] data_of_eras() {
+        // Android-changed: Old Android releases can optionally support the new Japanese era.
+        if (!IS_HEISEI_LATEST) {
+            return new Object[][] {
+                        {JapaneseEra.of(3), "Reiwa", 3},
+                        {JapaneseEra.HEISEI, "Heisei", 2},
+                        {JapaneseEra.SHOWA, "Showa", 1},
+                        {JapaneseEra.TAISHO, "Taisho", 0},
+                        {JapaneseEra.MEIJI, "Meiji", -1},
+            };
+        }
         return new Object[][] {
                     {JapaneseEra.HEISEI, "Heisei", 2},
                     {JapaneseEra.SHOWA, "Showa", 1},
