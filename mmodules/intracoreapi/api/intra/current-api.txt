@@ -22,6 +22,156 @@ package android.compat.annotation {
 
 }
 
+package android.icu.impl {
+
+  @libcore.api.IntraCoreApi public abstract class CacheValue<V> {
+    method @libcore.api.IntraCoreApi public static void setStrength(android.icu.impl.CacheValue.Strength);
+  }
+
+  @libcore.api.IntraCoreApi public enum CacheValue.Strength {
+    enum_constant @libcore.api.IntraCoreApi public static final android.icu.impl.CacheValue.Strength SOFT;
+    enum_constant @libcore.api.IntraCoreApi public static final android.icu.impl.CacheValue.Strength STRONG;
+  }
+
+  @libcore.api.IntraCoreApi public final class ICUData {
+    field @libcore.api.IntraCoreApi public static final String ICU_BASE_NAME = "android/icu/impl/data/icudt64b";
+  }
+
+  @libcore.api.IntraCoreApi public class ICUResourceBundle extends android.icu.util.UResourceBundle {
+    method @libcore.api.IntraCoreApi public String getStringWithFallback(String) throws java.util.MissingResourceException;
+    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.IntraCoreApi public android.icu.impl.ICUResourceBundle getWithFallback(String) throws java.util.MissingResourceException;
+  }
+
+  @libcore.api.IntraCoreApi public class JavaTimeZone extends android.icu.util.TimeZone {
+    ctor @libcore.api.IntraCoreApi public JavaTimeZone(java.util.TimeZone, String);
+  }
+
+  @libcore.api.IntraCoreApi public final class ZoneMeta {
+    method @libcore.api.IntraCoreApi public static String getCanonicalCLDRID(String);
+  }
+
+}
+
+package android.icu.impl.number {
+
+  @libcore.api.IntraCoreApi public class DecimalFormatProperties implements java.lang.Cloneable java.io.Serializable {
+  }
+
+  @libcore.api.IntraCoreApi public enum DecimalFormatProperties.ParseMode {
+    enum_constant @libcore.api.IntraCoreApi public static final android.icu.impl.number.DecimalFormatProperties.ParseMode COMPATIBILITY;
+  }
+
+}
+
+package android.icu.text {
+
+  public class DateFormatSymbols implements java.lang.Cloneable java.io.Serializable {
+    ctor @Deprecated @libcore.api.IntraCoreApi public DateFormatSymbols(android.icu.util.ULocale, String);
+    method @libcore.api.IntraCoreApi public String[] getNarrowEras();
+  }
+
+  public class DateTimePatternGenerator implements java.lang.Cloneable android.icu.util.Freezable<android.icu.text.DateTimePatternGenerator> {
+    method @Deprecated @libcore.api.IntraCoreApi public static android.icu.text.DateTimePatternGenerator getFrozenInstance(android.icu.util.ULocale);
+  }
+
+  public class DecimalFormat extends android.icu.text.NumberFormat {
+    method @libcore.api.IntraCoreApi public void setParseStrictMode(android.icu.impl.number.DecimalFormatProperties.ParseMode);
+  }
+
+  public abstract class IDNA {
+    method @Deprecated @libcore.api.IntraCoreApi public static StringBuffer convertIDNToASCII(String, int) throws android.icu.text.StringPrepParseException;
+    method @Deprecated @libcore.api.IntraCoreApi public static StringBuffer convertIDNToUnicode(String, int) throws android.icu.text.StringPrepParseException;
+  }
+
+  public final class Normalizer implements java.lang.Cloneable {
+    method @Deprecated @libcore.api.IntraCoreApi public static boolean isNormalized(String, android.icu.text.Normalizer.Mode, int);
+    method @Deprecated @libcore.api.IntraCoreApi public static String normalize(String, android.icu.text.Normalizer.Mode);
+    field @Deprecated @libcore.api.IntraCoreApi public static final android.icu.text.Normalizer.Mode NFC;
+    field @Deprecated @libcore.api.IntraCoreApi public static final android.icu.text.Normalizer.Mode NFD;
+    field @Deprecated @libcore.api.IntraCoreApi public static final android.icu.text.Normalizer.Mode NFKC;
+    field @Deprecated @libcore.api.IntraCoreApi public static final android.icu.text.Normalizer.Mode NFKD;
+  }
+
+  @Deprecated @libcore.api.IntraCoreApi public abstract static class Normalizer.Mode {
+  }
+
+  public abstract class TimeZoneNames implements java.io.Serializable {
+    method @libcore.api.IntraCoreApi public java.util.Collection<android.icu.text.TimeZoneNames.MatchInfo> find(CharSequence, int, java.util.EnumSet<android.icu.text.TimeZoneNames.NameType>);
+    method @Deprecated @libcore.api.IntraCoreApi public void getDisplayNames(String, android.icu.text.TimeZoneNames.NameType[], long, String[], int);
+  }
+
+  @libcore.api.IntraCoreApi public static class TimeZoneNames.MatchInfo {
+    method @libcore.api.IntraCoreApi public int matchLength();
+    method @libcore.api.IntraCoreApi public String mzID();
+    method @libcore.api.IntraCoreApi public android.icu.text.TimeZoneNames.NameType nameType();
+    method @libcore.api.IntraCoreApi public String tzID();
+  }
+
+}
+
+package android.icu.util {
+
+  @libcore.api.IntraCoreApi public class AnnualTimeZoneRule extends android.icu.util.TimeZoneRule {
+    method @libcore.api.IntraCoreApi public int getEndYear();
+    method @libcore.api.IntraCoreApi public android.icu.util.DateTimeRule getRule();
+    field @libcore.api.IntraCoreApi public static final int MAX_YEAR = 2147483647; // 0x7fffffff
+  }
+
+  @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public abstract class BasicTimeZone extends android.icu.util.TimeZone {
+    method @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public abstract android.icu.util.TimeZoneTransition getNextTransition(long, boolean);
+    method @libcore.api.IntraCoreApi public abstract android.icu.util.TimeZoneRule[] getTimeZoneRules();
+  }
+
+  public abstract class Calendar implements java.lang.Cloneable java.lang.Comparable<android.icu.util.Calendar> java.io.Serializable {
+    method @libcore.api.IntraCoreApi public static String getDateTimeFormatString(android.icu.util.ULocale, String, int, int);
+  }
+
+  @libcore.api.IntraCoreApi public class DateTimeRule implements java.io.Serializable {
+    method @libcore.api.IntraCoreApi public int getDateRuleType();
+    method @libcore.api.IntraCoreApi public int getRuleDayOfMonth();
+    method @libcore.api.IntraCoreApi public int getRuleDayOfWeek();
+    method @libcore.api.IntraCoreApi public int getRuleMillisInDay();
+    method @libcore.api.IntraCoreApi public int getRuleMonth();
+    method @libcore.api.IntraCoreApi public int getTimeRuleType();
+    field @libcore.api.IntraCoreApi public static final int DOM = 0; // 0x0
+    field @libcore.api.IntraCoreApi public static final int DOW = 1; // 0x1
+    field @libcore.api.IntraCoreApi public static final int DOW_GEQ_DOM = 2; // 0x2
+    field @libcore.api.IntraCoreApi public static final int DOW_LEQ_DOM = 3; // 0x3
+    field @libcore.api.IntraCoreApi public static final int STANDARD_TIME = 1; // 0x1
+    field @libcore.api.IntraCoreApi public static final int UTC_TIME = 2; // 0x2
+    field @libcore.api.IntraCoreApi public static final int WALL_TIME = 0; // 0x0
+  }
+
+  @libcore.api.IntraCoreApi public class InitialTimeZoneRule extends android.icu.util.TimeZoneRule {
+  }
+
+  public abstract class TimeZone implements java.lang.Cloneable android.icu.util.Freezable<android.icu.util.TimeZone> java.io.Serializable {
+    method @Deprecated @libcore.api.IntraCoreApi public static void setICUDefault(android.icu.util.TimeZone);
+  }
+
+  @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public abstract class TimeZoneRule implements java.io.Serializable {
+    method @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public int getDSTSavings();
+    method @libcore.api.IntraCoreApi public int getRawOffset();
+  }
+
+  @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public class TimeZoneTransition {
+    method @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public android.icu.util.TimeZoneRule getFrom();
+    method @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public long getTime();
+    method @libcore.api.IntraCoreApi @libcore.api.CorePlatformApi public android.icu.util.TimeZoneRule getTo();
+  }
+
+  public final class ULocale implements java.lang.Comparable<android.icu.util.ULocale> java.io.Serializable {
+    method @Deprecated @libcore.api.IntraCoreApi public static String getRegionForSupplementalData(android.icu.util.ULocale, boolean);
+  }
+
+  @libcore.api.IntraCoreApi public abstract class UResourceBundle extends java.util.ResourceBundle {
+    ctor @libcore.api.IntraCoreApi public UResourceBundle();
+    method @libcore.api.IntraCoreApi public static android.icu.util.UResourceBundle getBundleInstance(String, java.util.Locale);
+    method @libcore.api.IntraCoreApi public String[] getStringArray();
+  }
+
+}
+
 package com.android.org.conscrypt {
 
   @libcore.api.IntraCoreApi public class DESEDESecretKeyFactory extends javax.crypto.SecretKeyFactorySpi {
