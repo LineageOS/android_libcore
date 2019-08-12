@@ -71,13 +71,14 @@ java_system_modules {
     libs: ["core.intra.stubs"],
 }
 
-// A rule that checks we can build core-libart and core-oj using only the source
-// for core-libart and core-oj and the APIs in core-intra-stubs. This proves we
-// don't actually depend on things from (for example) conscrypt we haven't added
-// to the intra-core API.
+// A rule that checks we can build core-icu4j, core-libart and core-oj using only
+// the source for core-libart and core-oj and the APIs in core-intra-stubs.
+// This proves we don't actually depend on things from (for example) conscrypt we
+// haven't added to the intra-core API.
 java_library {
     name: "core-libart-oj.depscheck",
     srcs: [
+        ":android_icu4j_src_files",
         ":core_libart_java_files",
         ":core_oj_java_files",
     ],
