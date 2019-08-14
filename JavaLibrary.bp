@@ -344,8 +344,8 @@ java_library {
     static_libs: ["android_icu4j_resources_lib"],
 
     sdk_version: "none",
-    libs: ["core-all"],
-    system_modules: "core-all-system-modules",
+    libs: ["core.intra.stubs"],
+    system_modules: "core-intra-stubs-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
