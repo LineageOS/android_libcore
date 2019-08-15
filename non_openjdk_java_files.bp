@@ -194,6 +194,7 @@ filegroup {
         "luni/src/main/java/libcore/util/CoreLibraryDebug.java",
         "luni/src/main/java/libcore/util/DebugInfo.java",
         "luni/src/main/java/libcore/util/EmptyArray.java",
+        "luni/src/main/java/libcore/util/FP16.java",
         "luni/src/main/java/libcore/util/HexEncoding.java",
         "luni/src/main/java/libcore/util/NativeAllocationRegistry.java",
         "luni/src/main/java/libcore/util/NonNull.java",
