@@ -329,6 +329,8 @@ java_library {
     },
 }
 
+// A separated core library that contains ICU4J because ICU4J will be in a different APEX module,
+// not in Runtime module.
 java_library {
     name: "core-icu4j",
     visibility: [
@@ -341,11 +343,14 @@ java_library {
     hostdex: true,
 
     srcs: [":android_icu4j_src_files"],
-    static_libs: ["android_icu4j_resources_lib"],
+    libs: ["libcore-unsupportedappusage-annotation"],
+    static_libs: ["android_icu4j_resources_lib_sdk_core_current"],
 
-    sdk_version: "none",
-    libs: ["core.intra.stubs"],
-    system_modules: "core-intra-stubs-system-modules",
+    // We use core_current when compiling core-icu4j but we could depend on core.intra.stubs
+    // (a superset of core_current) instead if there were internal APIs we wanted to use from ICU4J.
+    // It is important that core-icu4j is restricted to only use APIs that core-libart and core-oj
+    // consider stable since they are in a different APEX module that can be updated independently.
+    sdk_version: "core_current",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
@@ -889,6 +894,18 @@ java_library_host {
         "//system/timezone/distro/core",
     ],
     srcs: [":timezone_host_files"],
+}
+
+// A library that contains annotations not retented in runtime and inline-able constants
+// that should not introduce any runtime dependency for compiling core libraries, e.g. core-icu4j,
+java_library {
+    name: "libcore-unsupportedappusage-annotation",
+    srcs: [
+        ":unsupportedappusage_annotation_files",
+    ],
+
+    installable: false,
+    sdk_version: "core_current",
 }
 
 // The source files that contain the UnsupportedAppUsage annotation and its dependencies.
