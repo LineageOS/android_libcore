@@ -178,8 +178,15 @@ package com.android.org.conscrypt {
     ctor @libcore.api.IntraCoreApi public DESEDESecretKeyFactory();
   }
 
-  @libcore.api.IntraCoreApi public final class DefaultSSLContextImpl extends com.android.org.conscrypt.OpenSSLContextImpl {
-    ctor @libcore.api.IntraCoreApi public DefaultSSLContextImpl() throws java.security.GeneralSecurityException, java.io.IOException;
+  @libcore.api.IntraCoreApi public class DefaultSSLContextImpl extends com.android.org.conscrypt.OpenSSLContextImpl {
+  }
+
+  @libcore.api.IntraCoreApi public static final class DefaultSSLContextImpl.TLSv12 extends com.android.org.conscrypt.DefaultSSLContextImpl {
+    ctor @libcore.api.IntraCoreApi public DefaultSSLContextImpl.TLSv12() throws java.security.GeneralSecurityException, java.io.IOException;
+  }
+
+  @libcore.api.IntraCoreApi public static final class DefaultSSLContextImpl.TLSv13 extends com.android.org.conscrypt.DefaultSSLContextImpl {
+    ctor @libcore.api.IntraCoreApi public DefaultSSLContextImpl.TLSv13() throws java.security.GeneralSecurityException, java.io.IOException;
   }
 
   @libcore.api.IntraCoreApi public class ECParameters extends java.security.AlgorithmParametersSpi {
