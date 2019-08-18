@@ -45,10 +45,11 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
+import libcore.testing.categories.Example;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
-
+@Example
 public class SocketTest extends TestCaseWithRules {
     @Rule
     public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
