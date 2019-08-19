@@ -158,7 +158,7 @@ class MimeMapImpl extends MimeMap {
                     maybePut(extensionToMimeType, extensionElement, mimeElement.s);
                 }
             }
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException e) {
             throw new RuntimeException("Failed to parse " + resource, e);
         }
     }
