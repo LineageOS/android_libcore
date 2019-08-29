@@ -52,6 +52,7 @@ filegroup {
     ],
     path: "luni/src/main/java/",
     srcs: [
+        "luni/src/main/java/libcore/net/android.mime.types",
         "luni/src/main/java/java/util/logging/logging.properties",
         "luni/src/main/java/java/security/security.properties",
     ],
@@ -71,6 +72,7 @@ filegroup {
 core_resources = [
     ":core-luni-resources",
     ":core-ojluni-resources",
+    ":debian.mime.types",
 ]
 
 // The source files that go into core-oj.
