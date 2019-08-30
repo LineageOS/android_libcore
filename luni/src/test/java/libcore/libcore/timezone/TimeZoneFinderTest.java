@@ -515,7 +515,7 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         assertNull(finder.lookupTimeZoneIdsByCountry("gb"));
-        assertNull(finder.lookupTimeZonesByCountry("gb"));
+        assertNull(finder.lookupTimeZonesByCountry("gb", 0 /* whenMillis */));
     }
 
     @Test
@@ -580,15 +580,15 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
 
-        List<TimeZone> gbList = finder.lookupTimeZonesByCountry("gb");
+        List<TimeZone> gbList = finder.lookupTimeZonesByCountry("gb", 0 /* whenMillis */);
         assertEquals(1, gbList.size());
         assertImmutableList(gbList);
         assertImmutableTimeZone(gbList.get(0));
 
         // Check country code normalization works too.
-        assertEquals(1, finder.lookupTimeZonesByCountry("GB").size());
+        assertEquals(1, finder.lookupTimeZonesByCountry("GB", 0 /* whenMillis */).size());
 
-        assertNull(finder.lookupTimeZonesByCountry("unknown"));
+        assertNull(finder.lookupTimeZonesByCountry("unknown", 0 /* whenMillis */));
     }
 
     @Test
