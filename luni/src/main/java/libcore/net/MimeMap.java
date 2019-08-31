@@ -16,10 +16,9 @@
 
 package libcore.net;
 
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import libcore.util.NonNull;
 import libcore.util.Nullable;
 
@@ -29,63 +28,30 @@ import libcore.util.Nullable;
  */
 @libcore.api.CorePlatformApi
 public abstract class MimeMap {
-    private static volatile MimeMap defaultInstance = new DefaultImpl();
-
-    /**
-     * A basic implementation of MimeMap used if a new default isn't explicitly
-     * {@link MimeMap#setDefault(MimeMap) installed}. Hard-codes enough mappings
-     * to satisfy libcore tests. Android framework code is expected to replace
-     * this implementation during runtime initialization.
-     */
-    private static class DefaultImpl extends MimeMap {
-        private final Map<String, String> mimeToExt = new HashMap<>();
-        private final Map<String, String> extToMime = new HashMap<>();
-
-        private DefaultImpl() {
-            put("application/pdf", "pdf");
-            put("image/jpeg", "jpg");
-            put("image/x-ms-bmp", "bmp");
-            put("text/html", "htm", "html");
-            put("text/plain", "text", "txt");
-            put("text/x-java", "java");
-        }
-
-        private void put(String mime, String... exts) {
-            mimeToExt.put(mime, exts[0]);
-            for (String ext : exts) {
-                extToMime.put(ext, mime);
-            }
-        }
-
-        @Override
-        protected @Nullable String guessMimeTypeFromLowerCaseExtension(@NonNull String extension) {
-            return extToMime.get(extension);
-        }
-
-        @Override
-        protected @Nullable String guessExtensionFromLowerCaseMimeType(@NonNull String mimeType) {
-            return mimeToExt.get(mimeType);
-        }
-    }
-
-    @libcore.api.CorePlatformApi
-    protected MimeMap() {
-    }
+    private static AtomicReference<MimeMap> defaultHolder = new AtomicReference<>(
+            MimeMapImpl.parseFromResources("/mime.types", "android.mime.types"));
 
     /**
      * @return The system's current default {@link MimeMap}.
      */
     @libcore.api.CorePlatformApi
     public static @NonNull MimeMap getDefault() {
-        return defaultInstance;
+        return defaultHolder.get();
     }
 
     /**
-     * Sets the system's default {@link MimeMap} to be {@code mimeMap}.
+     * Atomically sets the system's default {@link MimeMap} to be {@code update} if the
+     * current value {@code == expect}.
+     *
+     * @param expect the expected current default {@link MimeMap}; must not be null.
+     * @param update the new default {@link MimeMap} to set; must not be null.
+     * @return whether the update was successful.
      */
     @libcore.api.CorePlatformApi
-    public static void setDefault(@NonNull MimeMap mimeMap) {
-        defaultInstance = Objects.requireNonNull(mimeMap);
+    public static boolean compareAndSetDefault(@NonNull MimeMap expect, @NonNull MimeMap update) {
+        Objects.requireNonNull(expect);
+        Objects.requireNonNull(update);
+        return defaultHolder.compareAndSet(expect, update);
     }
 
     /**
@@ -174,13 +140,11 @@ public abstract class MimeMap {
     /**
      * Returns the canonical (lowercase) form of the given extension or MIME type.
      */
-    @libcore.api.CorePlatformApi
-    public static @NonNull String toLowerCase(@NonNull String s) {
+    static @NonNull String toLowerCase(@NonNull String s) {
         return s.toLowerCase(Locale.ROOT);
     }
 
-    @libcore.api.CorePlatformApi
-    public static boolean isNullOrEmpty(@Nullable String s) {
+    static boolean isNullOrEmpty(@Nullable String s) {
         return s == null || s.isEmpty();
     }
 
