@@ -496,6 +496,25 @@ java_library_static {
     system_modules: "core-all-system-modules",
 }
 
+// Builds platform_compat test rules
+java_library_static {
+    name: "platform_compat-test-rules",
+    visibility: ["//visibility:public"],
+    srcs: [
+        "luni/src/main/java/android/compat/**/*.java",
+        "test-rules/src/platform_compat/**/*.java",
+        "luni/src/main/java/libcore/api/CorePlatformApi.java",
+        "luni/src/main/java/libcore/api/IntraCoreApi.java",
+
+    ],
+    static_libs: [
+        "junit",
+        "guava",
+        "android-support-test",
+    ],
+    platform_apis: true,
+}
+
 // Builds the core-tests-support library used by various tests.
 java_library_static {
     name: "core-tests-support",

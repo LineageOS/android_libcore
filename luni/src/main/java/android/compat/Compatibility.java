@@ -21,6 +21,11 @@ import android.compat.annotation.ChangeId;
 import libcore.api.CorePlatformApi;
 import libcore.api.IntraCoreApi;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+
 /**
  * Internal APIs for logging and gating compatibility changes.
  *
@@ -78,7 +83,28 @@ public final class Compatibility {
 
     @CorePlatformApi
     public static void setCallbacks(Callbacks callbacks) {
-        sCallbacks = callbacks;
+        sCallbacks = Objects.requireNonNull(callbacks);
+    }
+
+    @CorePlatformApi
+    public static void setOverrides(ChangeConfig overrides) {
+        // Setting overrides twice in a row does not need to be supported because
+        // this method is only for enabling/disabling changes for the duration of
+        // a single test.
+        // In production, the app is restarted when changes get enabled or disabled,
+        // and the ChangeConfig is then set exactly once on that app process.
+        if (sCallbacks instanceof OverrideCallbacks) {
+            throw new IllegalStateException("setOverrides has already been called!");
+        }
+        sCallbacks = new OverrideCallbacks(sCallbacks, overrides);
+    }
+
+    @CorePlatformApi
+    public static void clearOverrides() {
+        if (!(sCallbacks instanceof OverrideCallbacks)) {
+            throw new IllegalStateException("No overrides set");
+        }
+        sCallbacks = ((OverrideCallbacks) sCallbacks).delegate;
     }
 
     /**
@@ -95,15 +121,111 @@ public final class Compatibility {
         }
         @CorePlatformApi
         protected void reportChange(long changeId) {
-            System.logW(String.format(
+            throw new IllegalStateException(String.format(
                     "No Compatibility callbacks set! Reporting change %d", changeId));
         }
         @CorePlatformApi
         protected boolean isChangeEnabled(long changeId) {
-            System.logW(String.format(
+            throw new IllegalStateException(String.format(
                     "No Compatibility callbacks set! Querying change %d", changeId));
-            return true;
         }
     }
 
+    @CorePlatformApi
+    @IntraCoreApi
+    public static final class ChangeConfig {
+        private final Set<Long> enabled;
+        private final Set<Long> disabled;
+
+        public ChangeConfig(Set<Long> enabled, Set<Long> disabled) {
+            this.enabled = Objects.requireNonNull(enabled);
+            this.disabled = Objects.requireNonNull(disabled);
+            if (enabled.contains(null)) {
+                throw new NullPointerException();
+            }
+            if (disabled.contains(null)) {
+                throw new NullPointerException();
+            }
+            Set<Long> intersection = new HashSet<>(enabled);
+            intersection.retainAll(disabled);
+            if (!intersection.isEmpty()) {
+                throw new IllegalArgumentException("Cannot have changes " + intersection
+                        + " enabled and disabled!");
+            }
+        }
+
+        private static long[] toLongArray(Set<Long> values) {
+            long[] result = new long[values.size()];
+            int idx = 0;
+            for (Long value: values) {
+                result[idx++] = value;
+            }
+            return result;
+        }
+
+        public long[] forceEnabledChangesArray() {
+            return toLongArray(enabled);
+        }
+
+        public long[] forceDisabledChangesArray() {
+            return toLongArray(disabled);
+        }
+
+        public Set<Long> forceEnabledSet() {
+            return Collections.unmodifiableSet(enabled);
+        }
+
+        public Set<Long> forceDisabledSet() {
+            return Collections.unmodifiableSet(disabled);
+        }
+
+        public boolean isForceEnabled(long changeId) {
+            return enabled.contains(changeId);
+        }
+
+        public boolean isForceDisabled(long changeId) {
+            return disabled.contains(changeId);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof ChangeConfig)) {
+                return false;
+            }
+            ChangeConfig that = (ChangeConfig) o;
+            return enabled.equals(that.enabled) &&
+                    disabled.equals(that.disabled);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(enabled, disabled);
+        }
+
+        @Override
+        public String toString() {
+            return "ChangeConfig{enabled=" + enabled + ", disabled=" + disabled + '}';
+        }
+    }
+
+    private static class OverrideCallbacks extends Callbacks {
+        private final Callbacks delegate;
+        private final ChangeConfig changeConfig;
+
+        private OverrideCallbacks(Callbacks delegate, ChangeConfig changeConfig) {
+            this.delegate = Objects.requireNonNull(delegate);
+            this.changeConfig = Objects.requireNonNull(changeConfig);
+        }
+        @Override
+        protected boolean isChangeEnabled(long changeId) {
+           if (changeConfig.isForceEnabled(changeId)) {
+               return true;
+           }
+           if (changeConfig.isForceDisabled(changeId)) {
+               return false;
+           }
+           return delegate.isChangeEnabled(changeId);
+        }
+    }
 }
