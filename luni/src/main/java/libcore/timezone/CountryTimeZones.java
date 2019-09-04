@@ -88,21 +88,21 @@ public final class CountryTimeZones {
         /**
          * Returns a {@link TimeZone} object for this mapping, or {@code null} if the ID is unknown.
          */
-        TimeZone getTimeZone() {
+        @libcore.api.CorePlatformApi
+        public TimeZone getTimeZone() {
             synchronized (this) {
                 if (timeZone == null) {
                     TimeZone tz = TimeZone.getFrozenTimeZone(timeZoneId);
                     timeZone = tz;
+                    if (TimeZone.UNKNOWN_ZONE_ID.equals(timeZone.getID())) {
+                        // This shouldn't happen given the validation that takes place in
+                        // createValidatedCountryTimeZones().
+                        System.logW("Skipping invalid zone in TimeZoneMapping: " + timeZoneId);
+                    }
                 }
             }
 
-            if (TimeZone.UNKNOWN_ZONE_ID.equals(timeZone.getID())) {
-                // This shouldn't happen given the validation that takes place in
-                // createValidatedCountryTimeZones().
-                System.logW("Skipping invalid zone: " + timeZoneId);
-                return null;
-            }
-            return timeZone;
+            return TimeZone.UNKNOWN_ZONE_ID.equals(timeZone.getID()) ? null : timeZone;
         }
 
         /**
@@ -171,8 +171,11 @@ public final class CountryTimeZones {
     private final List<TimeZoneMapping> timeZoneMappings;
     private final boolean everUsesUtc;
 
-    // Memoized frozen ICU TimeZone object for the default.
-    private TimeZone icuDefaultTimeZone;
+    /**
+     * Memoized frozen ICU TimeZone object for the default. Can be {@link TimeZone#UNKNOWN_ZONE} if
+     * the {@link #defaultTimeZoneId} is missing or unrecognized.
+     */
+    private TimeZone defaultTimeZone;
 
     private CountryTimeZones(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
             List<TimeZoneMapping> timeZoneMappings) {
@@ -236,24 +239,22 @@ public final class CountryTimeZones {
     }
 
     /**
-     * Returns the default time zone ID for the country. Can return null in cases when no data is
+     * Returns the default time zone for the country. Can return null in cases when no data is
      * available or the time zone ID provided to
      * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
      */
+    @libcore.api.CorePlatformApi
     public synchronized TimeZone getDefaultTimeZone() {
-        if (icuDefaultTimeZone == null) {
-            TimeZone defaultTimeZone;
+        if (defaultTimeZone == null) {
+            TimeZone timeZone;
             if (defaultTimeZoneId == null) {
-                defaultTimeZone = null;
+                timeZone = TimeZone.UNKNOWN_ZONE;
             } else {
-                defaultTimeZone = TimeZone.getFrozenTimeZone(defaultTimeZoneId);
-                if (TimeZone.UNKNOWN_ZONE_ID.equals(defaultTimeZone.getID())) {
-                    defaultTimeZone = null;
-                }
+                timeZone = TimeZone.getFrozenTimeZone(defaultTimeZoneId);
             }
-            icuDefaultTimeZone = defaultTimeZone;
+            this.defaultTimeZone = timeZone;
         }
-        return icuDefaultTimeZone;
+        return TimeZone.UNKNOWN_ZONE_ID.equals(defaultTimeZone.getID()) ? null : defaultTimeZone;
     }
 
     /**
@@ -344,48 +345,6 @@ public final class CountryTimeZones {
             }
         }
         return false;
-    }
-
-    /**
-     * Returns {@code true} if the default time zone for the country is either the only zone used or
-     * if it has the same offsets as all other zones used by the country <em>at the specified time
-     * </em> making the default equivalent to all other zones used by the country <em>at that time
-     * </em>.
-     */
-    @libcore.api.CorePlatformApi
-    public boolean isDefaultOkForCountryTimeZoneDetection(long whenMillis) {
-        List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
-        if (timeZoneMappings.isEmpty()) {
-            // Should never happen unless there's been an error loading the data.
-            return false;
-        } else if (timeZoneMappings.size() == 1) {
-            // The default is the only zone so it's a good candidate.
-            return true;
-        } else {
-            TimeZone countryDefault = getDefaultTimeZone();
-            if (countryDefault == null) {
-                return false;
-            }
-
-            int countryDefaultOffset = countryDefault.getOffset(whenMillis);
-            for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
-                if (timeZoneMapping.timeZoneId.equals(defaultTimeZoneId)) {
-                    continue;
-                }
-
-                TimeZone timeZone = timeZoneMapping.getTimeZone();
-                if (timeZone == null) {
-                    continue;
-                }
-
-                int candidateOffset = timeZone.getOffset(whenMillis);
-                if (countryDefaultOffset != candidateOffset) {
-                    // Multiple different offsets means the default should not be used.
-                    return false;
-                }
-            }
-            return true;
-        }
     }
 
     /**
