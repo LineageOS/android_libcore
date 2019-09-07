@@ -76,10 +76,44 @@ public final class CountryTimeZones {
         @libcore.api.CorePlatformApi
         public final Long notUsedAfter;
 
+        /** Memoized TimeZone object for {@link #timeZoneId}. */
+        private TimeZone timeZone;
+
         TimeZoneMapping(String timeZoneId, boolean showInPicker, Long notUsedAfter) {
-            this.timeZoneId = timeZoneId;
+            this.timeZoneId = Objects.requireNonNull(timeZoneId);
             this.showInPicker = showInPicker;
             this.notUsedAfter = notUsedAfter;
+        }
+
+        /**
+         * Returns a {@link TimeZone} object for this mapping, or {@code null} if the ID is unknown.
+         */
+        TimeZone getTimeZone() {
+            synchronized (this) {
+                if (timeZone == null) {
+                    TimeZone tz = TimeZone.getFrozenTimeZone(timeZoneId);
+                    timeZone = tz;
+                }
+            }
+
+            if (TimeZone.UNKNOWN_ZONE_ID.equals(timeZone.getID())) {
+                // This shouldn't happen given the validation that takes place in
+                // createValidatedCountryTimeZones().
+                System.logW("Skipping invalid zone: " + timeZoneId);
+                return null;
+            }
+            return timeZone;
+        }
+
+        /**
+         * Returns {@code true} if the mapping is "effective" after {@code whenMillis}, i.e.
+         * it is distinct from other "effective" times zones used in the country at/after that
+         * time. This uses the {@link #notUsedAfter} metadata which ensures there is one time
+         * zone remaining when there are multiple candidate zones with the same rules. The one
+         * kept is based on country specific factors like population covered.
+         */
+        boolean isEffectiveAt(long whenMillis) {
+            return notUsedAfter == null || whenMillis <= notUsedAfter;
         }
 
         // VisibleForTesting
@@ -121,7 +155,7 @@ public final class CountryTimeZones {
          * Returns {@code true} if one of the supplied {@link TimeZoneMapping} objects is for the
          * specified time zone ID.
          */
-        public static boolean containsTimeZoneId(
+        static boolean containsTimeZoneId(
                 List<TimeZoneMapping> timeZoneMappings, String timeZoneId) {
             for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
                 if (timeZoneMapping.timeZoneId.equals(timeZoneId)) {
@@ -139,8 +173,6 @@ public final class CountryTimeZones {
 
     // Memoized frozen ICU TimeZone object for the default.
     private TimeZone icuDefaultTimeZone;
-    // Memoized frozen ICU TimeZone objects for the timeZoneIds.
-    private List<TimeZone> icuTimeZones;
 
     private CountryTimeZones(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
             List<TimeZoneMapping> timeZoneMappings) {
@@ -214,7 +246,10 @@ public final class CountryTimeZones {
             if (defaultTimeZoneId == null) {
                 defaultTimeZone = null;
             } else {
-                defaultTimeZone = getValidFrozenTimeZoneOrNull(defaultTimeZoneId);
+                defaultTimeZone = TimeZone.getFrozenTimeZone(defaultTimeZoneId);
+                if (TimeZone.UNKNOWN_ZONE_ID.equals(defaultTimeZone.getID())) {
+                    defaultTimeZone = null;
+                }
             }
             icuDefaultTimeZone = defaultTimeZone;
         }
@@ -239,6 +274,24 @@ public final class CountryTimeZones {
     @libcore.api.CorePlatformApi
     public List<TimeZoneMapping> getTimeZoneMappings() {
         return timeZoneMappings;
+    }
+
+    /**
+     * Returns an immutable, ordered list of time zone mappings for the country in an undefined but
+     * "priority" order, filtered so that only "effective" time zone IDs are returned. An
+     * "effective" time zone is one that differs from another time zone used in the country after
+     * {@code whenMillis}. The list can be empty if there were no zones configured or the configured
+     * zone IDs were not recognized.
+     */
+    @libcore.api.CorePlatformApi
+    public List<TimeZoneMapping> getEffectiveTimeZoneMappingsAt(long whenMillis) {
+        ArrayList<TimeZoneMapping> filteredList = new ArrayList<>(timeZoneMappings.size());
+        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
+            if (timeZoneMapping.isEffectiveAt(whenMillis)) {
+                filteredList.add(timeZoneMapping);
+            }
+        }
+        return Collections.unmodifiableList(filteredList);
     }
 
     @Override
@@ -275,35 +328,6 @@ public final class CountryTimeZones {
     }
 
     /**
-     * Returns an ordered list of time zones for the country in an undefined but "priority"
-     * order for a country. The list can be empty if there were no zones configured or the
-     * configured zone IDs were not recognized.
-     */
-    public synchronized List<TimeZone> getIcuTimeZones() {
-        if (icuTimeZones == null) {
-            ArrayList<TimeZone> mutableList = new ArrayList<>(timeZoneMappings.size());
-            for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
-                String timeZoneId = timeZoneMapping.timeZoneId;
-                TimeZone timeZone;
-                if (timeZoneId.equals(defaultTimeZoneId)) {
-                    timeZone = getDefaultTimeZone();
-                } else {
-                    timeZone = getValidFrozenTimeZoneOrNull(timeZoneId);
-                }
-                // This shouldn't happen given the validation that takes place in
-                // createValidatedCountryTimeZones().
-                if (timeZone == null) {
-                    System.logW("Skipping invalid zone: " + timeZoneId);
-                    continue;
-                }
-                mutableList.add(timeZone);
-            }
-            icuTimeZones = Collections.unmodifiableList(mutableList);
-        }
-        return icuTimeZones;
-    }
-
-    /**
      * Returns true if the country has at least one zone that is the same as UTC at the given time.
      */
     @libcore.api.CorePlatformApi
@@ -313,8 +337,9 @@ public final class CountryTimeZones {
             return false;
         }
 
-        for (TimeZone zone : getIcuTimeZones()) {
-            if (zone.getOffset(whenMillis) == 0) {
+        for (TimeZoneMapping timeZoneMapping : getEffectiveTimeZoneMappingsAt(whenMillis)) {
+            TimeZone timeZone = timeZoneMapping.getTimeZone();
+            if (timeZone != null && timeZone.getOffset(whenMillis) == 0) {
                 return true;
             }
         }
@@ -329,6 +354,7 @@ public final class CountryTimeZones {
      */
     @libcore.api.CorePlatformApi
     public boolean isDefaultOkForCountryTimeZoneDetection(long whenMillis) {
+        List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
         if (timeZoneMappings.isEmpty()) {
             // Should never happen unless there's been an error loading the data.
             return false;
@@ -342,13 +368,17 @@ public final class CountryTimeZones {
             }
 
             int countryDefaultOffset = countryDefault.getOffset(whenMillis);
-            List<TimeZone> candidates = getIcuTimeZones();
-            for (TimeZone candidate : candidates) {
-                if (candidate == countryDefault) {
+            for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
+                if (timeZoneMapping.timeZoneId.equals(defaultTimeZoneId)) {
                     continue;
                 }
 
-                int candidateOffset = candidate.getOffset(whenMillis);
+                TimeZone timeZone = timeZoneMapping.getTimeZone();
+                if (timeZone == null) {
+                    continue;
+                }
+
+                int candidateOffset = timeZone.getOffset(whenMillis);
                 if (countryDefaultOffset != candidateOffset) {
                     // Multiple different offsets means the default should not be used.
                     return false;
@@ -373,17 +403,17 @@ public final class CountryTimeZones {
     @Deprecated
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
+        List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
         if (timeZoneMappings == null || timeZoneMappings.isEmpty()) {
             return null;
         }
 
-        List<TimeZone> candidates = getIcuTimeZones();
-
         TimeZone firstMatch = null;
         boolean biasMatched = false;
         boolean oneMatch = true;
-        for (TimeZone match : candidates) {
-            if (!offsetMatchesAtTime(match, offsetMillis, isDst, whenMillis)) {
+        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
+            TimeZone match = timeZoneMapping.getTimeZone();
+            if (match == null || !offsetMatchesAtTime(match, offsetMillis, isDst, whenMillis)) {
                 continue;
             }
 
@@ -427,7 +457,8 @@ public final class CountryTimeZones {
     /**
      * Returns a time zone for the country, if there is one, that has the desired properties. If
      * there are multiple matches and the {@code bias} is one of them then it is returned, otherwise
-     * an arbitrary match is returned based on the {@link #getTimeZoneMappings()} ordering.
+     * an arbitrary match is returned based on the {@link #getEffectiveTimeZoneMappingsAt(long)}
+     * ordering.
      *
      * @param offsetMillis the offset from UTC at {@code whenMillis}
      * @param dstOffsetMillis the part of {@code offsetMillis} contributed by DST, {@code null}
@@ -437,17 +468,18 @@ public final class CountryTimeZones {
      */
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, Integer dstOffsetMillis,
             long whenMillis, TimeZone bias) {
+        List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
         if (timeZoneMappings == null || timeZoneMappings.isEmpty()) {
             return null;
         }
 
-        List<TimeZone> candidates = getIcuTimeZones();
-
         TimeZone firstMatch = null;
         boolean biasMatched = false;
         boolean oneMatch = true;
-        for (TimeZone match : candidates) {
-            if (!offsetMatchesAtTime(match, offsetMillis, dstOffsetMillis, whenMillis)) {
+        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
+            TimeZone match = timeZoneMapping.getTimeZone();
+            if (match == null ||
+                    !offsetMatchesAtTime(match, offsetMillis, dstOffsetMillis, whenMillis)) {
                 continue;
             }
 
@@ -486,14 +518,6 @@ public final class CountryTimeZones {
             }
         }
         return offsetMillis == (offsets[0] + offsets[1]);
-    }
-
-    private static TimeZone getValidFrozenTimeZoneOrNull(String timeZoneId) {
-        TimeZone timeZone = TimeZone.getFrozenTimeZone(timeZoneId);
-        if (timeZone.getID().equals(TimeZone.UNKNOWN_ZONE_ID)) {
-            return null;
-        }
-        return timeZone;
     }
 
     private static String normalizeCountryIso(String countryIso) {
