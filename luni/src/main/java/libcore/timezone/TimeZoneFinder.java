@@ -231,7 +231,7 @@ public final class TimeZoneFinder {
 
     /**
      * Returns an immutable list of frozen ICU time zones known to have been used in the specified
-     * country. See {@link lookupTimeZonesByCountry(String, long)} for an alternative that returns
+     * country. See {@link #lookupTimeZonesByCountry(String, long)} for an alternative that returns
      * time zones for a given point in time.
      * If the country code is not recognized or there is an error during lookup this can return
      * null. The TimeZones returned will never contain {@link TimeZone#UNKNOWN_ZONE}. This method

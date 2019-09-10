@@ -312,8 +312,7 @@ public final class CountryTimeZones {
         if (!countryIso.equals(that.countryIso)) {
             return false;
         }
-        if (defaultTimeZoneId != null ? !defaultTimeZoneId.equals(that.defaultTimeZoneId)
-                : that.defaultTimeZoneId != null) {
+        if (!Objects.equals(defaultTimeZoneId, that.defaultTimeZoneId)) {
             return false;
         }
         return timeZoneMappings.equals(that.timeZoneMappings);
@@ -363,7 +362,7 @@ public final class CountryTimeZones {
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
             TimeZone bias) {
         List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
-        if (timeZoneMappings == null || timeZoneMappings.isEmpty()) {
+        if (timeZoneMappings.isEmpty()) {
             return null;
         }
 
@@ -428,7 +427,7 @@ public final class CountryTimeZones {
     public OffsetResult lookupByOffsetWithBias(int offsetMillis, Integer dstOffsetMillis,
             long whenMillis, TimeZone bias) {
         List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
-        if (timeZoneMappings == null || timeZoneMappings.isEmpty()) {
+        if (timeZoneMappings.isEmpty()) {
             return null;
         }
 
