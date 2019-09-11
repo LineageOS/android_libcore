@@ -1224,7 +1224,7 @@ package libcore.timezone {
     method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
     method public boolean hasUtcZone(long);
     method public boolean isForCountryCode(String);
-    method @Deprecated public libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, boolean, long, android.icu.util.TimeZone);
+    method public libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(int, Boolean, Integer, long, android.icu.util.TimeZone);
   }
 
   public static final class CountryTimeZones.OffsetResult {

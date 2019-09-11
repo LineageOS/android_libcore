@@ -209,8 +209,8 @@ public final class TimeZoneFinder {
         if (countryTimeZones == null) {
             return null;
         }
-        CountryTimeZones.OffsetResult offsetResult =
-                countryTimeZones.lookupByOffsetWithBias(offsetMillis, isDst, whenMillis, bias);
+        CountryTimeZones.OffsetResult offsetResult = countryTimeZones.lookupByOffsetWithBias(
+                offsetMillis, isDst, null /* dstOffsetMillis */, whenMillis, bias);
         return offsetResult != null ? offsetResult.mTimeZone : null;
     }
 

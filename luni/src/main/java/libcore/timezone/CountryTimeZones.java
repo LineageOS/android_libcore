@@ -347,85 +347,23 @@ public final class CountryTimeZones {
     }
 
     /**
-     * Returns a time zone for the country, if there is one, that has the desired properties. If
-     * there are multiple matches and the {@code bias} is one of them then it is returned, otherwise
-     * an arbitrary match is returned based on the {@link #getTimeZoneMappings()} ordering.
-     *
-     * @param offsetMillis the offset from UTC at {@code whenMillis}
-     * @param isDst whether the zone is in DST
-     * @param whenMillis the UTC time to match against
-     * @param bias the time zone to prefer, can be null
-     * @deprecated Use {@link #lookupByOffsetWithBias(int, Integer, long, TimeZone)} instead
-     */
-    @libcore.api.CorePlatformApi
-    @Deprecated
-    public OffsetResult lookupByOffsetWithBias(int offsetMillis, boolean isDst, long whenMillis,
-            TimeZone bias) {
-        List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
-        if (timeZoneMappings.isEmpty()) {
-            return null;
-        }
-
-        TimeZone firstMatch = null;
-        boolean biasMatched = false;
-        boolean oneMatch = true;
-        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
-            TimeZone match = timeZoneMapping.getTimeZone();
-            if (match == null || !offsetMatchesAtTime(match, offsetMillis, isDst, whenMillis)) {
-                continue;
-            }
-
-            if (firstMatch == null) {
-                firstMatch = match;
-            } else {
-                oneMatch = false;
-            }
-            if (bias != null && match.getID().equals(bias.getID())) {
-                biasMatched = true;
-            }
-            if (firstMatch != null && !oneMatch && (bias == null || biasMatched)) {
-                break;
-            }
-        }
-        if (firstMatch == null) {
-            return null;
-        }
-
-        TimeZone toReturn = biasMatched ? bias : firstMatch;
-        return new OffsetResult(toReturn, oneMatch);
-    }
-
-    /**
-     * Returns {@code true} if the specified offset, DST state and time would be valid in the
-     * timeZone.
-     */
-    private static boolean offsetMatchesAtTime(TimeZone timeZone, int offsetMillis, boolean isDst,
-            long whenMillis) {
-        int[] offsets = new int[2];
-        timeZone.getOffset(whenMillis, false /* local */, offsets);
-
-        // offsets[1] == 0 when the zone is not in DST.
-        boolean zoneIsDst = offsets[1] != 0;
-        if (isDst != zoneIsDst) {
-            return false;
-        }
-        return offsetMillis == (offsets[0] + offsets[1]);
-    }
-
-    /**
-     * Returns a time zone for the country, if there is one, that has the desired properties. If
+     * Returns a time zone for the country, if there is one, that matches the desired properties. If
      * there are multiple matches and the {@code bias} is one of them then it is returned, otherwise
      * an arbitrary match is returned based on the {@link #getEffectiveTimeZoneMappingsAt(long)}
      * ordering.
      *
-     * @param offsetMillis the offset from UTC at {@code whenMillis}
-     * @param dstOffsetMillis the part of {@code offsetMillis} contributed by DST, {@code null}
-     *                        means unknown
+     * @param totalOffsetMillis the offset from UTC at {@code whenMillis}
+     * @param isDst the Daylight Savings Time state at {@code whenMillis}. {@code true} means DST,
+     *     {@code false} means not DST, {@code null} means unknown
+     * @param dstOffsetMillis the part of {@code totalOffsetMillis} contributed by DST, only used if
+     *     {@code isDst} is {@code true}. The value can be {@code null} if the DST offset is
+     *     unknown
      * @param whenMillis the UTC time to match against
-     * @param bias the time zone to prefer, can be null
+     * @param bias the time zone to prefer, can be {@code null}
      */
-    public OffsetResult lookupByOffsetWithBias(int offsetMillis, Integer dstOffsetMillis,
-            long whenMillis, TimeZone bias) {
+    @libcore.api.CorePlatformApi
+    public OffsetResult lookupByOffsetWithBias(int totalOffsetMillis, Boolean isDst,
+            Integer dstOffsetMillis, long whenMillis, TimeZone bias) {
         List<TimeZoneMapping> timeZoneMappings = getEffectiveTimeZoneMappingsAt(whenMillis);
         if (timeZoneMappings.isEmpty()) {
             return null;
@@ -436,8 +374,8 @@ public final class CountryTimeZones {
         boolean oneMatch = true;
         for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
             TimeZone match = timeZoneMapping.getTimeZone();
-            if (match == null ||
-                    !offsetMatchesAtTime(match, offsetMillis, dstOffsetMillis, whenMillis)) {
+            if (match == null || !offsetMatchesAtTime(match, totalOffsetMillis, isDst,
+                    dstOffsetMillis, whenMillis)) {
                 continue;
             }
 
@@ -462,20 +400,34 @@ public final class CountryTimeZones {
     }
 
     /**
-     * Returns {@code true} if the specified offset, DST and time would be valid in the
-     * timeZone.
+     * Returns {@code true} if the specified {@code totalOffset}, {@code isDst},
+     * {@code dstOffsetMillis} would be valid in the {@code timeZone} at time {@code whenMillis}.
+     * {@code totalOffetMillis} is always matched.
+     * If {@code isDst} is {@code null} this means the DST state is unknown, so
+     * {@code dstOffsetMillis} is ignored.
+     * If {@code isDst} is {@code false}, {@code dstOffsetMillis} is ignored.
+     * If {@code isDst} is {@code true}, the DST state is considered. When considering DST state
+     * {@code dstOffsetMillis} can be {@code null} if it is unknown but when {@code dstOffsetMillis}
+     * is known then it is also matched.
      */
-    private static boolean offsetMatchesAtTime(TimeZone timeZone, int offsetMillis,
-            Integer dstOffsetMillis, long whenMillis) {
+    private static boolean offsetMatchesAtTime(TimeZone timeZone, int totalOffsetMillis,
+            Boolean isDst, Integer dstOffsetMillis, long whenMillis) {
         int[] offsets = new int[2];
         timeZone.getOffset(whenMillis, false /* local */, offsets);
 
-        if (dstOffsetMillis != null) {
-            if (dstOffsetMillis.intValue() != offsets[1]) {
-                return false;
-            }
+        if (totalOffsetMillis != (offsets[0] + offsets[1])) {
+            return false;
         }
-        return offsetMillis == (offsets[0] + offsets[1]);
+
+        if (isDst == null) {
+            return true;
+        } else if (!isDst) {
+            return offsets[1] == 0;
+        } else {
+            // isDst
+            return (dstOffsetMillis == null && offsets[1] != 0)
+                    || (dstOffsetMillis != null && dstOffsetMillis == offsets[1]);
+        }
     }
 
     private static String normalizeCountryIso(String countryIso) {
