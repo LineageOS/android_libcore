@@ -537,27 +537,6 @@ public class TimeZoneFinderTest {
     }
 
     @Test
-    public void lookupTimeZonesByCountry_structuresAreImmutable() throws Exception {
-        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
-                + "  <countryzones>\n"
-                + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
-                + "      <id>Europe/London</id>\n"
-                + "    </country>\n"
-                + "  </countryzones>\n"
-                + "</timezones>\n");
-
-        List<TimeZone> gbList = finder.lookupTimeZonesByCountry("gb", 0 /* whenMillis */);
-        assertEquals(1, gbList.size());
-        assertImmutableList(gbList);
-        assertImmutableTimeZone(gbList.get(0));
-
-        // Check country code normalization works too.
-        assertEquals(1, finder.lookupTimeZonesByCountry("GB", 0 /* whenMillis */).size());
-
-        assertNull(finder.lookupTimeZonesByCountry("unknown", 0 /* whenMillis */));
-    }
-
-    @Test
     public void lookupCountryTimeZones_caseInsensitive() throws Exception {
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"

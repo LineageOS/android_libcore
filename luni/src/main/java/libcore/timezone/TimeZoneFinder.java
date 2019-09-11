@@ -192,48 +192,6 @@ public final class TimeZoneFinder {
     }
 
     /**
-     * Returns an immutable list of frozen ICU time zones known to have been used in the specified
-     * country. See {@link #lookupTimeZonesByCountry(String, long)} for an alternative that returns
-     * time zones for a given point in time.
-     * If the country code is not recognized or there is an error during lookup this can return
-     * null. The TimeZones returned will never contain {@link TimeZone#UNKNOWN_ZONE}. This method
-     * can return an empty list in a case when the underlying data files reference only unknown
-     * zone IDs.
-     */
-    @libcore.api.CorePlatformApi
-    public List<TimeZone> lookupTimeZonesByCountry(String countryIso) {
-        long timeMillis = Long.MIN_VALUE;
-        return lookupTimeZonesByCountry(countryIso, timeMillis);
-    }
-
-    /**
-     * Returns an immutable list of frozen ICU time zones known to be "effective" in the specified
-     * country at a given point in time. An "effective" time zone is one that differs from other
-     * time zones used in the country after {@code whenMillis}.
-     * If the country code is not recognized or there is an error during lookup this can return
-     * null. The TimeZones returned will never contain {@link TimeZone#UNKNOWN_ZONE}. This method
-     * can return an empty list in a case when the underlying data files reference only unknown
-     * zone IDs.
-     */
-    @libcore.api.CorePlatformApi
-    public List<TimeZone> lookupTimeZonesByCountry(String countryIso, long whenMillis) {
-        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
-        if (countryTimeZones == null) {
-            return null;
-        }
-        List<TimeZoneMapping> timeZoneMappings =
-                countryTimeZones.getEffectiveTimeZoneMappingsAt(whenMillis);
-        ArrayList<TimeZone> timeZones = new ArrayList<>(timeZoneMappings.size());
-        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
-            TimeZone timeZone = timeZoneMapping.getTimeZone();
-            if (timeZone != null) {
-                timeZones.add(timeZone);
-            }
-        }
-        return Collections.unmodifiableList(timeZones);
-    }
-
-    /**
      * Returns a {@link CountryTimeZones} object associated with the specified country code.
      * Caching is handled as needed. If the country code is not recognized or there is an error
      * during lookup this method can return null.
