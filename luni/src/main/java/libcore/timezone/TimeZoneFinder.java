@@ -192,44 +192,6 @@ public final class TimeZoneFinder {
     }
 
     /**
-     * Returns a frozen ICU time zone that has / would have had the specified offset and DST value
-     * at the specified moment in the specified country.
-     *
-     * <p>In order to be considered a configured zone must match the supplied offset information.
-     *
-     * <p>Matches are considered in a well-defined order. If multiple zones match and one of them
-     * also matches the (optional) bias parameter then the bias time zone will be returned.
-     * Otherwise the first match found is returned.
-     */
-    @libcore.api.CorePlatformApi
-    public TimeZone lookupTimeZoneByCountryAndOffset(
-            String countryIso, int offsetMillis, boolean isDst, long whenMillis, TimeZone bias) {
-
-        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
-        if (countryTimeZones == null) {
-            return null;
-        }
-        CountryTimeZones.OffsetResult offsetResult = countryTimeZones.lookupByOffsetWithBias(
-                offsetMillis, isDst, null /* dstOffsetMillis */, whenMillis, bias);
-        return offsetResult != null ? offsetResult.mTimeZone : null;
-    }
-
-    /**
-     * Returns a "default" time zone ID known to be used in the specified country. This is
-     * the time zone ID that can be used if only the country code is known and can be presumed to be
-     * the "best" choice in the absence of other information. For countries with more than one zone
-     * the time zone will not be correct for everybody.
-     *
-     * <p>If the country code is not recognized or there is an error during lookup this can return
-     * null.
-     */
-    @libcore.api.CorePlatformApi
-    public String lookupDefaultTimeZoneIdByCountry(String countryIso) {
-        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
-        return countryTimeZones == null ? null : countryTimeZones.getDefaultTimeZoneId();
-    }
-
-    /**
      * Returns an immutable list of frozen ICU time zones known to have been used in the specified
      * country. See {@link #lookupTimeZonesByCountry(String, long)} for an alternative that returns
      * time zones for a given point in time.
@@ -269,21 +231,6 @@ public final class TimeZoneFinder {
             }
         }
         return Collections.unmodifiableList(timeZones);
-    }
-
-    /**
-     * Returns an immutable list of time zone IDs known to be used in the specified country.
-     * If the country code is not recognized or there is an error during lookup this can return
-     * null. The IDs returned will all be valid for use with
-     * {@link java.util.TimeZone#getTimeZone(String)} and
-     * {@link android.icu.util.TimeZone#getTimeZone(String)}. This method can return an empty list
-     * in a case when the underlying data files reference only unknown zone IDs.
-     */
-    @libcore.api.CorePlatformApi
-    public List<String> lookupTimeZoneIdsByCountry(String countryIso) {
-        CountryTimeZones countryTimeZones = lookupCountryTimeZones(countryIso);
-        return countryTimeZones == null
-                ? null : extractTimeZoneIds(countryTimeZones.getTimeZoneMappings());
     }
 
     /**
@@ -806,14 +753,6 @@ public final class TimeZoneFinder {
         static ReaderSupplier forString(String xml) {
             return () -> new StringReader(xml);
         }
-    }
-
-    private static List<String> extractTimeZoneIds(List<TimeZoneMapping> timeZoneMappings) {
-        List<String> zoneIds = new ArrayList<>(timeZoneMappings.size());
-        for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {
-            zoneIds.add(timeZoneMapping.timeZoneId);
-        }
-        return Collections.unmodifiableList(zoneIds);
     }
 
     static String normalizeCountryIso(String countryIso) {
