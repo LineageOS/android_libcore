@@ -1345,6 +1345,7 @@ filegroup {
         "ojluni/src/main/java/javax/sql/StatementEventListener.java",
         "ojluni/src/main/java/sun/reflect/CallerSensitive.java",
     ],
+    path: "ojluni/src/main/java",
 }
 
 // Stubs needed to satisfy javac's dependencies when compiling lambda code. These are
