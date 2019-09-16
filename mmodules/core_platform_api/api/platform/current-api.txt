@@ -1258,8 +1258,6 @@ package libcore.timezone {
     method public String getIanaVersion();
     method public static libcore.timezone.TimeZoneFinder getInstance();
     method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
-    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(String);
-    method public java.util.List<android.icu.util.TimeZone> lookupTimeZonesByCountry(String, long);
     method public void validate() throws java.io.IOException;
   }
 
