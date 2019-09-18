@@ -415,6 +415,12 @@ package com.android.org.bouncycastle.crypto.digests {
     method public void update(byte[], int, int);
   }
 
+  public class MD4Digest extends com.android.org.bouncycastle.crypto.digests.GeneralDigest {
+    ctor public MD4Digest();
+    method public int doFinal(byte[], int);
+    method protected void processBlock();
+  }
+
   public class SHA1Digest extends com.android.org.bouncycastle.crypto.digests.GeneralDigest {
     ctor public SHA1Digest();
     method public int doFinal(byte[], int);
