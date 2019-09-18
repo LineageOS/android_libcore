@@ -40,6 +40,15 @@ public final class ClassExt {
     private Object jmethodIDs;
 
     /**
+     * If the class has undergone structural redefinition, the now obsolete class object.
+     *
+     * Needed to ensure that the class isn't unloaded before its jit code is. Normally this is
+     * handled by the classloader but since the class is now obsolete it's no longer held live
+     * there and instead we must do so manually. This class should not be used for anything.
+     */
+    private Class<?> obsoleteClass;
+
+    /**
      * An array of all obsolete DexCache objects that are needed for obsolete methods.
      *
      * These entries are associated with the obsolete ArtMethod pointers at the same indexes in the
@@ -90,16 +99,6 @@ public final class ClassExt {
     private Object verifyError;
 
     /**
-     * ClassDef index of the related class in the pre-redefine dex file. Set together with
-     * {@code preRedefineDexFilePtr}.
-     *
-     * Needed in order to preserve access to dex-level hiddenapi flags after JVMTI redefine.
-     *
-     * This field is a logical part of the 'Class' type.
-     */
-    private int preRedefineClassDefIndex;
-
-    /**
      * If set, native pointer to the initial, pre-redefine, dex file associated with the related
      * class. This is different from the {@code originalDexFile} which is the pre-retransform dex
      * file, i.e. could contain the bytes of the dex file provided during redefine.
@@ -113,6 +112,17 @@ public final class ClassExt {
      * This field is a logical part of the 'Class' type.
      */
     private long preRedefineDexFilePtr;
+
+    /**
+     * ClassDef index of the related class in the pre-redefine dex file. Set together with
+     * {@code preRedefineDexFilePtr}.
+     *
+     * Needed in order to preserve access to dex-level hiddenapi flags after JVMTI redefine.
+     *
+     * This field is a logical part of the 'Class' type.
+     */
+    private int preRedefineClassDefIndex;
+
 
     /**
     * Private constructor.
