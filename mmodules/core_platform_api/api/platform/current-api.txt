@@ -574,21 +574,21 @@ package com.android.org.conscrypt {
     method public void addHandshakeCompletedListener(javax.net.ssl.HandshakeCompletedListener);
     method public final void connect(java.net.SocketAddress) throws java.io.IOException;
     method public final void connect(java.net.SocketAddress, int) throws java.io.IOException;
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final byte[] getAlpnSelectedProtocol();
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.system.VersionCodes.Q, publicAlternatives="Use {@link javax.net.ssl.SSLSocket#getApplicationProtocol()}.") public final byte[] getAlpnSelectedProtocol();
     method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final byte[] getNpnSelectedProtocol();
     method public final int getPort();
     method public final int getSoTimeout() throws java.net.SocketException;
     method public void removeHandshakeCompletedListener(javax.net.ssl.HandshakeCompletedListener);
     method public final void sendUrgentData(int) throws java.io.IOException;
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final void setAlpnProtocols(byte[]);
+    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.system.VersionCodes.Q, publicAlternatives="Use {@link javax.net.ssl.SSLParameters#setApplicationProtocols(java.lang.String[])}.") public final void setAlpnProtocols(byte[]);
     method @dalvik.annotation.compat.UnsupportedAppUsage public abstract void setChannelIdPrivateKey(java.security.PrivateKey);
     method @dalvik.annotation.compat.UnsupportedAppUsage public void setHandshakeTimeout(int) throws java.net.SocketException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setHostname(String);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.system.VersionCodes.Q, publicAlternatives="Use {@link javax.net.ssl.SSLParameters#setServerNames}.") public void setHostname(String);
     method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public final void setNpnProtocols(byte[]);
     method public final void setOOBInline(boolean) throws java.net.SocketException;
     method public final void setSoTimeout(int) throws java.net.SocketException;
     method @dalvik.annotation.compat.UnsupportedAppUsage public void setSoWriteTimeout(int) throws java.net.SocketException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public abstract void setUseSessionTickets(boolean);
+    method @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.system.VersionCodes.Q, publicAlternatives="Use {@link android.net.ssl.SSLSockets#setUseSessionTickets}.") public abstract void setUseSessionTickets(boolean);
   }
 
   public interface SSLClientSessionCache {
