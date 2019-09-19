@@ -803,13 +803,12 @@ filegroup {
 // Only for use by core.current.stubs target below.
 droidstubs {
     name: "core-current-stubs-gen",
-    srcs: [":core_api_files"],
+    srcs: [
+        ":core_public_api_files",
+    ],
     java_version: "1.9",
     installable: false,
     sdk_version: "none",
-    args: " --exclude-annotations " +
-        "--hide-annotation libcore.api.Hide",
-    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
 }
 
 // A stubs target containing the parts of the public SDK API provided by the
