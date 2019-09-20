@@ -252,7 +252,6 @@ java_library {
     java_resources: core_resources,
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
@@ -299,7 +298,6 @@ java_library {
     java_version: "1.9",
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
@@ -385,7 +383,6 @@ java_library {
     srcs: [":openjdk_hiddenapi_javadoc_files"],
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
@@ -404,7 +401,6 @@ java_library {
     installable: true,
     static_libs: ["core-oj"],
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
     dex_preopt: {
@@ -419,7 +415,6 @@ java_library {
     installable: true,
     static_libs: ["core-libart"],
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
     dex_preopt: {
@@ -433,7 +428,6 @@ java_library {
     installable: true,
     static_libs: ["core-icu4j"],
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     dxflags: ["--core-library"],
     dex_preopt: {
@@ -447,7 +441,6 @@ java_defaults {
     hostdex: true,
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
@@ -502,7 +495,6 @@ java_library {
     ],
     hostdex: true,
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
@@ -554,7 +546,6 @@ java_library_static {
     static_libs: ["junit"],
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
 }
 
@@ -592,11 +583,10 @@ java_test {
     ],
     srcs: ["jsr166-tests/src/test/java/**/*.java"],
     sdk_version: "none",
+    system_modules: "core-all-system-modules",
     libs: [
-        "core-all",
         "junit",
     ],
-    system_modules: "core-all-system-modules",
 }
 
 // A filegroup that provides access to a source file for a toolchain test that
@@ -646,12 +636,11 @@ java_test {
     ],
 
     sdk_version: "none",
+    system_modules: "core-all-system-modules",
     libs: [
-        "core-all",
         "okhttp",
         "bouncycastle",
     ],
-    system_modules: "core-all-system-modules",
 
     static_libs: [
         "archive-patcher",
@@ -694,12 +683,11 @@ java_test {
     ],
 
     sdk_version: "none",
+    system_modules: "core-all-system-modules",
     libs: [
-        "core-all",
         "okhttp",
         "bouncycastle",
     ],
-    system_modules: "core-all-system-modules",
 
     static_libs: ["testng"],
 
@@ -749,13 +737,12 @@ java_test {
     ],
 
     sdk_version: "none",
+    system_modules: "core-all-system-modules",
     libs: [
-        "core-all",
         "bouncycastle",
         "okhttp",
         "testng",
     ],
-    system_modules: "core-all-system-modules",
 }
 
 // Exports annotated stubs source files in ojluni/annotations/sdk to make them

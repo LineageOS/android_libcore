@@ -68,7 +68,6 @@ java_system_modules {
     name: "core-intra-stubs-system-modules",
     visibility: [
         "//external/conscrypt",
-        "//libcore",
     ],
     libs: ["core.intra.stubs"],
 }
