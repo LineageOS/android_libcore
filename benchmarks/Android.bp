@@ -23,7 +23,6 @@ java_test {
     system_modules: "core-all-system-modules",
     libs: [
         "caliper-api-target",
-        "core-all",
         "android.test.base",
     ],
 }
