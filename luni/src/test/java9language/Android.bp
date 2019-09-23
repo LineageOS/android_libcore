@@ -24,7 +24,6 @@ java_library {
     java_version: "1.9",
 
     sdk_version: "none",
-    libs: ["core-all"],
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
 
@@ -66,13 +65,10 @@ java_library {
         ":core-gen-test-repackaged-java-9-language-features",
     ],
     sdk_version: "none",
-    libs: [
-        "core-all",
-    ],
+    system_modules: "core-all-system-modules",
     static_libs: [
         "core-java-9-language-features-repackaged-for-test",
         "junit",
     ],
-    system_modules: "core-all-system-modules",
     visibility: ["//libcore"],
 }
