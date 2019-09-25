@@ -19,8 +19,8 @@
 // The Android core library provides low-level APIs for use by the rest of the
 // Android software stack. It is made up of various parts, some of which can be
 // found in libcore/ and other parts that can be found in various external/
-// directories. See the "core-system-modules" definition for the parts.
-
+// directories.
+//
 // libcore has some sub-directories that follow a common structure:
 // e.g. dalvik, dom, harmony-tests, json, jsr166-tests, luni, libart, ojluni,
 // support, xml, xmlpull.
@@ -227,9 +227,6 @@ platform_compat_config {
 // etc. This system_modules definition is used to bootstrap compilation for
 // other parts of the core library like core-oj, core-libart, core-icu4j, conscrypt,
 // bouncycastle, etc.
-//
-// If you want to compile against the entire core library implementation, for
-// example to build core library tests, see "core-system-modules" instead.
 java_system_modules {
     name: "core-all-system-modules",
     visibility: core_all_visibility,
@@ -504,34 +501,6 @@ java_library {
     notice: "ojluni/NOTICE",
     installable: false,
     include_srcs: true,
-}
-
-// A system modules definition containing the implementations for the various
-// parts that make up the core library.
-//
-// This system module is intended for use by tests that may need access to
-// core library internals. It should not be generally used; most of the
-// platform build should build against API stubs instead. See
-// "core-platform-api-stubs-system-modules", which is the default used by the
-// Android build.
-//
-// This module also includes lambda stubs for compiling source containing
-// Java lambdas.
-java_system_modules {
-    name: "core-system-modules",
-    visibility: ["//visibility:public"],
-    libs: [
-        "core-oj",
-        "core-libart",
-        "core-icu4j",
-        "bouncycastle",
-        "conscrypt",
-        "okhttp",
-        "apache-xml",
-        // This one is not on device but it's needed when javac compiles code
-        // containing lambdas.
-        "core-lambda-stubs-for-system-modules",
-    ],
 }
 
 // Builds libcore test rules
