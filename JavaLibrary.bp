@@ -221,7 +221,6 @@ java_system_modules {
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
         "//external/bouncycastle",
-        "//external/conscrypt",
         "//external/icu/android_icu4j",
         "//external/okhttp",
         "//libcore:__subpackages__",
