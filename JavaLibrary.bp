@@ -536,6 +536,7 @@ java_system_modules {
 java_library_static {
     name: "core-test-rules",
     visibility: [
+        "//external/conscrypt",
         "//frameworks/base/location/tests/locationtests",
     ],
     hostdex: true,
