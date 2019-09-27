@@ -350,9 +350,6 @@ java_library {
     // since it is in a different APEX module that can be updated independently.
     sdk_version: "none",
     system_modules: "art-module-public-api-stubs-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
 }
 
 // Provided solely to contribute information about which hidden parts of the
@@ -865,10 +862,7 @@ java_library {
         javacflags: ["--patch-module=java.base=."],
     },
     sdk_version: "none",
-    system_modules: "none",
-    libs: [
-        "art.module.public.api.stubs",
-    ],
+    system_modules: "art-module-public-api-stubs-system-modules",
 }
 
 // Generates stubs for the parts of the public SDK API provided by the i18n module.
@@ -900,10 +894,7 @@ java_library {
         javacflags: ["--patch-module=java.base=."],
     },
     sdk_version: "none",
-    system_modules: "none",
-    libs: [
-        "art.module.public.api.stubs",
-    ],
+    system_modules: "art-module-public-api-stubs-system-modules",
 }
 
 // A stubs target containing the parts of the public SDK API provided by the
