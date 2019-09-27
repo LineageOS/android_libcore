@@ -827,9 +827,6 @@ java_library {
             "-Xep:MissingOverride:OFF",
         ],
     },
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
     sdk_version: "none",
     system_modules: "art-module-public-api-stubs-system-modules",
 }
@@ -859,9 +856,6 @@ java_library {
             "-Xep:MissingOverride:OFF",
         ],
     },
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
     sdk_version: "none",
     system_modules: "art-module-public-api-stubs-system-modules",
 }
@@ -878,9 +872,6 @@ java_library {
         "conscrypt.module.public.api.stubs",
         "i18n.module.public.api.stubs",
     ],
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
     sdk_version: "none",
     system_modules: "none",
 
