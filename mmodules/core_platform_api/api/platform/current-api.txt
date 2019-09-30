@@ -1203,7 +1203,7 @@ package libcore.net {
   }
 
   public abstract class MimeMap {
-    method public static boolean compareAndSetDefault(@NonNull libcore.net.MimeMap, @NonNull libcore.net.MimeMap);
+    ctor protected MimeMap();
     method @NonNull public static libcore.net.MimeMap getDefault();
     method @Nullable protected abstract String guessExtensionFromLowerCaseMimeType(@NonNull String);
     method @Nullable public final String guessExtensionFromMimeType(@Nullable String);
@@ -1211,6 +1211,9 @@ package libcore.net {
     method @Nullable protected abstract String guessMimeTypeFromLowerCaseExtension(@NonNull String);
     method public final boolean hasExtension(@Nullable String);
     method public final boolean hasMimeType(@Nullable String);
+    method public static boolean isNullOrEmpty(@Nullable String);
+    method public static void setDefault(@NonNull libcore.net.MimeMap);
+    method @NonNull public static String toLowerCase(@NonNull String);
   }
 
   public abstract class NetworkSecurityPolicy {
