@@ -1202,18 +1202,20 @@ package libcore.net {
     method public static java.net.InetAddress parseNumericAddress(String);
   }
 
-  public abstract class MimeMap {
-    ctor protected MimeMap();
+  public final class MimeMap {
+    method public libcore.net.MimeMap.Builder buildUpon();
+    method public static libcore.net.MimeMap.Builder builder();
     method @NonNull public static libcore.net.MimeMap getDefault();
-    method @Nullable protected abstract String guessExtensionFromLowerCaseMimeType(@NonNull String);
-    method @Nullable public final String guessExtensionFromMimeType(@Nullable String);
-    method @Nullable public final String guessMimeTypeFromExtension(@Nullable String);
-    method @Nullable protected abstract String guessMimeTypeFromLowerCaseExtension(@NonNull String);
-    method public final boolean hasExtension(@Nullable String);
-    method public final boolean hasMimeType(@Nullable String);
-    method public static boolean isNullOrEmpty(@Nullable String);
+    method @Nullable public String guessExtensionFromMimeType(@Nullable String);
+    method @Nullable public String guessMimeTypeFromExtension(@Nullable String);
+    method public boolean hasExtension(@Nullable String);
+    method public boolean hasMimeType(@Nullable String);
     method public static void setDefault(@NonNull libcore.net.MimeMap);
-    method @NonNull public static String toLowerCase(@NonNull String);
+  }
+
+  public static final class MimeMap.Builder {
+    method public libcore.net.MimeMap build();
+    method public libcore.net.MimeMap.Builder put(@NonNull String, @NonNull java.util.List<java.lang.String>);
   }
 
   public abstract class NetworkSecurityPolicy {
