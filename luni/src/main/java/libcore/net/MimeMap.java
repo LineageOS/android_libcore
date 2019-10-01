@@ -16,42 +16,81 @@
 
 package libcore.net;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicReference;
+import libcore.api.CorePlatformApi;
 import libcore.util.NonNull;
 import libcore.util.Nullable;
 
 /**
  * Maps from MIME types to file extensions and back.
+ *
  * @hide
  */
 @libcore.api.CorePlatformApi
-public abstract class MimeMap {
-    private static AtomicReference<MimeMap> defaultHolder = new AtomicReference<>(
-            MimeMapImpl.parseFromResources("/mime.types", "android.mime.types"));
+public final class MimeMap {
+
+    @CorePlatformApi
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @CorePlatformApi
+    public Builder buildUpon() {
+        return new Builder(mimeToExt, extToMime);
+    }
+
+    // Contain only lowercase, valid keys/values.
+    private final Map<String, String> mimeToExt;
+    private final Map<String, String> extToMime;
+
+    /**
+     * A basic implementation of MimeMap used if a new default isn't explicitly
+     * {@link MimeMap#setDefault(MimeMap) installed}. Hard-codes enough mappings
+     * to satisfy libcore tests. Android framework code is expected to replace
+     * this implementation during runtime initialization.
+     */
+    private static volatile MimeMap defaultInstance = builder()
+            .put("application/pdf", "pdf")
+            .put("image/jpeg", "jpg")
+            .put("image/x-ms-bmp", "bmp")
+            .put("text/html", Arrays.asList("htm", "html"))
+            .put("text/plain", Arrays.asList("text", "txt"))
+            .put("text/x-java", "java")
+            .build();
+
+    private MimeMap(Map<String, String> mimeToExt, Map<String, String> extToMime) {
+        this.mimeToExt = Objects.requireNonNull(mimeToExt);
+        this.extToMime = Objects.requireNonNull(extToMime);
+        for (Map.Entry<String, String> entry : this.mimeToExt.entrySet()) {
+            checkValidMimeType(entry.getKey());
+            checkValidExtension(entry.getValue());
+        }
+        for (Map.Entry<String, String> entry : this.extToMime.entrySet()) {
+            checkValidExtension(entry.getKey());
+            checkValidMimeType(entry.getValue());
+        }
+    }
 
     /**
      * @return The system's current default {@link MimeMap}.
      */
     @libcore.api.CorePlatformApi
     public static @NonNull MimeMap getDefault() {
-        return defaultHolder.get();
+        return defaultInstance;
     }
 
     /**
-     * Atomically sets the system's default {@link MimeMap} to be {@code update} if the
-     * current value {@code == expect}.
-     *
-     * @param expect the expected current default {@link MimeMap}; must not be null.
-     * @param update the new default {@link MimeMap} to set; must not be null.
-     * @return whether the update was successful.
+     * Sets the system's default {@link MimeMap} to be {@code mimeMap}.
      */
     @libcore.api.CorePlatformApi
-    public static boolean compareAndSetDefault(@NonNull MimeMap expect, @NonNull MimeMap update) {
-        Objects.requireNonNull(expect);
-        Objects.requireNonNull(update);
-        return defaultHolder.compareAndSet(expect, update);
+    public static void setDefault(@NonNull MimeMap mimeMap) {
+        defaultInstance = Objects.requireNonNull(mimeMap);
     }
 
     /**
@@ -67,10 +106,8 @@ public abstract class MimeMap {
     }
 
     /**
-     * Returns the MIME type for the given case insensitive file extension.
-     * If {@code extension} is {@code null} or {@code ""}, then this method always returns
-     * {@code null}. Otherwise, it delegates to
-     * {@link #guessMimeTypeFromLowerCaseExtension(String)}.
+     * Returns the MIME type for the given case insensitive file extension, or null
+     * if the extension isn't mapped to any.
      *
      * @param extension A file extension without the leading '.'
      * @return The lower-case MIME type registered for the given case insensitive file extension,
@@ -78,24 +115,12 @@ public abstract class MimeMap {
      */
     @libcore.api.CorePlatformApi
     public final @Nullable String guessMimeTypeFromExtension(@Nullable String extension) {
-        if (isNullOrEmpty(extension)) {
+        if (extension == null) {
             return null;
         }
         extension = toLowerCase(extension);
-        String result = guessMimeTypeFromLowerCaseExtension(extension);
-        if (result != null) {
-            result = toLowerCase(result);
-        }
-        return result;
+        return extToMime.get(extension);
     }
-
-    /**
-     * @param extension A non-null, non-empty, lowercase file extension.
-     * @return The MIME type registered for the given file extension, or null if there is none.
-     */
-    @libcore.api.CorePlatformApi
-    protected abstract @Nullable String guessMimeTypeFromLowerCaseExtension(
-            @NonNull String extension);
 
     /**
      * @param mimeType A MIME type (i.e. {@code "text/plain")
@@ -117,35 +142,198 @@ public abstract class MimeMap {
      */
     @libcore.api.CorePlatformApi
     public final @Nullable String guessExtensionFromMimeType(@Nullable String mimeType) {
-        if (isNullOrEmpty(mimeType)) {
+        if (mimeType == null) {
             return null;
         }
         mimeType = toLowerCase(mimeType);
-        String result = guessExtensionFromLowerCaseMimeType(mimeType);
-        if (result != null) {
-            result = toLowerCase(result);
-        }
-        return result;
+        return mimeToExt.get(mimeType);
     }
-
-    /**
-     * @param mimeType A non-null, non-empty, lowercase file extension.
-     * @return The file extension (without the leading ".") for the given mimeType, or null if
-     *         there is none.
-     */
-    @libcore.api.CorePlatformApi
-    protected abstract @Nullable String guessExtensionFromLowerCaseMimeType(
-            @NonNull String mimeType);
 
     /**
      * Returns the canonical (lowercase) form of the given extension or MIME type.
      */
-    static @NonNull String toLowerCase(@NonNull String s) {
+    private static @NonNull String toLowerCase(@NonNull String s) {
         return s.toLowerCase(Locale.ROOT);
     }
 
-    static boolean isNullOrEmpty(@Nullable String s) {
-        return s == null || s.isEmpty();
+    private volatile int hashCode = 0;
+
+    @Override
+    public int hashCode() {
+        if (hashCode == 0) { // potentially uninitialized
+            hashCode = mimeToExt.hashCode() + 31 * extToMime.hashCode();
+        }
+        return hashCode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof MimeMap)) {
+            return false;
+        }
+        MimeMap that = (MimeMap) obj;
+        if (hashCode() != that.hashCode()) {
+            return false;
+        }
+        return mimeToExt.equals(that.mimeToExt) && extToMime.equals(that.extToMime);
+    }
+
+    @Override
+    public String toString() {
+        return "MimeMap[" + mimeToExt + ", " + extToMime + "]";
+    }
+
+    /**
+     * @hide
+     */
+    @libcore.api.CorePlatformApi
+    public static final class Builder {
+        private final Map<String, String> mimeToExt;
+        private final Map<String, String> extToMime;
+
+        /**
+         * Constructs a Builder that starts with an empty mapping.
+         */
+        Builder() {
+            this.mimeToExt = new HashMap<>();
+            this.extToMime = new HashMap<>();
+        }
+
+        /**
+         * Constructs a Builder that starts with the given mapping.
+         * @param mimeToExt
+         * @param extToMime
+         */
+        Builder(Map<String, String> mimeToExt, Map<String, String> extToMime) {
+            this.mimeToExt = new HashMap<>(mimeToExt);
+            this.extToMime = new HashMap<>(extToMime);
+        }
+
+        /**
+         * An element of a *mime.types file: A MIME type or an extension, with an optional
+         * prefix of "?" (if not overriding an earlier value).
+         */
+        static class Element {
+            final String s;
+            final boolean keepExisting;
+
+            public Element(String s) {
+                if (s.startsWith("?")) {
+                    this.keepExisting = true;
+                    this.s = lowercaseValidOrThrow(s.substring(1));
+                } else {
+                    this.keepExisting = false;
+                    this.s = lowercaseValidOrThrow(s);
+                }
+            }
+
+            private static String lowercaseValidOrThrow(String s) {
+                String result = toLowerCase(s);
+                if (!isValidMimeTypeOrExtension(result)) {
+                    throw new IllegalArgumentException("Invalid: " + s);
+                }
+                return result;
+            }
+        }
+
+        private static String maybePut(Map<String, String> map, Element keyElement, String value) {
+            if (keyElement.keepExisting) {
+                return map.putIfAbsent(keyElement.s, value);
+            } else {
+                return map.put(keyElement.s, value);
+            }
+        }
+
+        /**
+         * Puts the mapping {@quote mimeType -> first extension}, and also the mappings
+         * {@quote extension -> mimeType} for each given extension.
+         *
+         * The values passed to this function are carry an optional  prefix of {@quote "?"}
+         * which is stripped off in any case before any such key/value is added to a mapping.
+         * The prefix {@quote "?"} controls whether the mapping <i>from></i> the corresponding
+         * value is added via {@link Map#putIfAbsent} semantics ({@quote "?"}
+         * present) vs. {@link Map#put} semantics ({@quote "?" absent}),
+         *
+         * For example, {@code put("text/html", "?htm", "html")} would add the following
+         * mappings:
+         * <ol>
+         *   <li>MIME type "text/html" -> extension "htm", overwriting any earlier mapping
+         *       from MIME type "text/html" that might already have existed.</li>
+         *   <li>extension "htm" -> MIME type "text/html", but only if no earlier mapping
+         *       for extension "htm" existed.</li>
+         *   <li>extension "html" -> MIME type "text/html", overwriting any earlier mapping
+         *       from extension "html" that might already have existed.</li>
+         * </ol>
+         * {@code put("?text/html", "?htm", "html")} would have the same effect except
+         * that an earlier mapping from MIME type {@code "text/html"} would not be
+         * overwritten.
+         *
+         * @param mimeSpec A MIME type carrying an optional prefix of {@code "?"}. If present,
+         *                 the {@code "?"} is stripped off and mapping for the resulting MIME
+         *                 type is only added to the map if no mapping had yet existed for that
+         *                 type.
+         * @param extensionSpecs The extensions from which to add mappings back to
+         *                 the {@code "?"} is stripped off and mapping for the resulting extension
+         *                 is only added to the map if no mapping had yet existed for that
+         *                 extension.
+         *                 If {@code extensionSpecs} is empty, then calling this method has no
+         *                 effect on the mapping that is being constructed.
+         * @throws IllegalArgumentException if {@code mimeSpec} or any of the {@code extensionSpecs}
+         *                 are invalid (null, empty, contain ' ', or '?' after an initial '?' has
+         *                 been stripped off).
+         * @return This builder.
+         */
+        @CorePlatformApi
+        public Builder put(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs) {
+            Element mimeElement = new Element(mimeSpec); // validate mimeSpec unconditionally
+            if (extensionSpecs.isEmpty()) {
+                return this;
+            }
+            Element firstExtensionElement = new Element(extensionSpecs.get(0));
+            maybePut(mimeToExt, mimeElement, firstExtensionElement.s);
+            maybePut(extToMime, firstExtensionElement, mimeElement.s);
+            for (String spec : extensionSpecs.subList(1, extensionSpecs.size())) {
+                Element element = new Element(spec);
+                maybePut(extToMime, element, mimeElement.s);
+            }
+            return this;
+        }
+
+        /**
+         * Convenience method.
+         *
+         * @hide
+         */
+        public Builder put(@NonNull String mimeSpec, @NonNull String extensionSpec) {
+            return put(mimeSpec, Collections.singletonList(extensionSpec));
+        }
+
+        @CorePlatformApi
+        public MimeMap build() {
+            return new MimeMap(mimeToExt, extToMime);
+        }
+
+        @Override
+        public String toString() {
+            return "MimeMap.Builder[" + mimeToExt + ", " + extToMime + "]";
+        }
+    }
+
+    static boolean isValidMimeTypeOrExtension(String s) {
+        return s != null && !s.isEmpty() && !s.contains("?") && !s.contains(" ")
+                && s.equals(toLowerCase(s));
+    }
+
+    static void checkValidMimeType(String s) {
+        if (!isValidMimeTypeOrExtension(s)) {
+            throw new IllegalArgumentException("Invalid MIME type: " + s);
+        }
+    }
+
+    static void checkValidExtension(String s) {
+        if (!isValidMimeTypeOrExtension(s)) {
+            throw new IllegalArgumentException("Invalid extension: " + s);
+        }
     }
 
 }
