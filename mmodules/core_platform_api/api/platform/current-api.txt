@@ -1205,11 +1205,13 @@ package libcore.net {
   public final class MimeMap {
     method public libcore.net.MimeMap.Builder buildUpon();
     method public static libcore.net.MimeMap.Builder builder();
+    method @NonNull public java.util.Set<java.lang.String> extensions();
     method @NonNull public static libcore.net.MimeMap getDefault();
     method @Nullable public String guessExtensionFromMimeType(@Nullable String);
     method @Nullable public String guessMimeTypeFromExtension(@Nullable String);
     method public boolean hasExtension(@Nullable String);
     method public boolean hasMimeType(@Nullable String);
+    method @NonNull public java.util.Set<java.lang.String> mimeTypes();
     method public static void setDefault(@NonNull libcore.net.MimeMap);
   }
 
