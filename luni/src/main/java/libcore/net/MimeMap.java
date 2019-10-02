@@ -235,37 +235,42 @@ public final class MimeMap {
         }
 
         /**
-         * An element of a *mime.types file: A MIME type or an extension, with an optional
-         * prefix of "?" (if not overriding an earlier value).
+         * An element of a *mime.types file.
          */
         static class Element {
-            final String s;
+            final String mimeOrExt;
             final boolean keepExisting;
 
-            public Element(String s) {
-                if (s.startsWith("?")) {
+            /**
+             * @param spec A MIME type or an extension, with an optional
+             *        prefix of "?" (if not overriding an earlier value).
+             * @param isMimeSpec whether this Element denotes a MIME type (as opposed to an
+             *        extension).
+             */
+            private Element(String spec, boolean isMimeSpec) {
+                if (spec.startsWith("?")) {
                     this.keepExisting = true;
-                    this.s = lowercaseValidOrThrow(s.substring(1));
+                    this.mimeOrExt = toLowerCase(spec.substring(1));
                 } else {
                     this.keepExisting = false;
-                    this.s = lowercaseValidOrThrow(s);
+                    this.mimeOrExt = toLowerCase(spec);
+                }
+                if (isMimeSpec) {
+                    checkValidMimeType(mimeOrExt);
+                } else {
+                    checkValidExtension(mimeOrExt);
                 }
             }
 
-            private static String lowercaseValidOrThrow(String s) {
-                String result = toLowerCase(s);
-                if (!isValidMimeTypeOrExtension(result)) {
-                    throw new IllegalArgumentException("Invalid: " + s);
-                }
-                return result;
-            }
+            public static Element ofMimeSpec(String s) { return new Element(s, true); }
+            public static Element ofExtensionSpec(String s) { return new Element(s, false); }
         }
 
         private static String maybePut(Map<String, String> map, Element keyElement, String value) {
             if (keyElement.keepExisting) {
-                return map.putIfAbsent(keyElement.s, value);
+                return map.putIfAbsent(keyElement.mimeOrExt, value);
             } else {
-                return map.put(keyElement.s, value);
+                return map.put(keyElement.mimeOrExt, value);
             }
         }
 
@@ -311,16 +316,16 @@ public final class MimeMap {
         @CorePlatformApi
         public Builder put(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs)
         {
-            Element mimeElement = new Element(mimeSpec); // validate mimeSpec unconditionally
+            Element mimeElement = Element.ofMimeSpec(mimeSpec); // validate mimeSpec unconditionally
             if (extensionSpecs.isEmpty()) {
                 return this;
             }
-            Element firstExtensionElement = new Element(extensionSpecs.get(0));
-            maybePut(mimeToExt, mimeElement, firstExtensionElement.s);
-            maybePut(extToMime, firstExtensionElement, mimeElement.s);
+            Element firstExtensionElement = Element.ofExtensionSpec(extensionSpecs.get(0));
+            maybePut(mimeToExt, mimeElement, firstExtensionElement.mimeOrExt);
+            maybePut(extToMime, firstExtensionElement, mimeElement.mimeOrExt);
             for (String spec : extensionSpecs.subList(1, extensionSpecs.size())) {
-                Element element = new Element(spec);
-                maybePut(extToMime, element, mimeElement.s);
+                Element element = Element.ofExtensionSpec(spec);
+                maybePut(extToMime, element, mimeElement.mimeOrExt);
             }
             return this;
         }
@@ -345,19 +350,19 @@ public final class MimeMap {
         }
     }
 
-    static boolean isValidMimeTypeOrExtension(String s) {
+    private static boolean isValidMimeTypeOrExtension(String s) {
         return s != null && !s.isEmpty() && !s.contains("?") && !s.contains(" ")
                 && s.equals(toLowerCase(s));
     }
 
     static void checkValidMimeType(String s) {
-        if (!isValidMimeTypeOrExtension(s)) {
+        if (!isValidMimeTypeOrExtension(s) || !s.contains("/")) {
             throw new IllegalArgumentException("Invalid MIME type: " + s);
         }
     }
 
     static void checkValidExtension(String s) {
-        if (!isValidMimeTypeOrExtension(s)) {
+        if (!isValidMimeTypeOrExtension(s) || s.contains("/")) {
             throw new IllegalArgumentException("Invalid extension: " + s);
         }
     }
