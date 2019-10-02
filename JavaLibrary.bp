@@ -169,24 +169,11 @@ java_defaults {
 // Build for the target (device).
 //
 
-// Visibility of core-all* build modules; we restrict visibility of core-all deliberately to
-// a small set of build modules that the core library team control. See core-all-system-modules
-// for more details.
-core_all_visibility = [
-    "//external/apache-harmony:__subpackages__",
-    "//external/apache-xml",
-    "//external/bouncycastle",
-    "//external/conscrypt",
-    "//external/icu/android_icu4j",
-    "//external/okhttp",
-    "//libcore:__subpackages__",
-]
-
 // A target used to bootstrap compilation for the core library.
+//
 // See core-all-system-modules for more details.
 java_library {
     name: "core-all",
-    visibility: core_all_visibility,
     defaults: ["libcore_java_defaults"],
 
     srcs: [
@@ -227,7 +214,19 @@ platform_compat_config {
 // bouncycastle, etc.
 java_system_modules {
     name: "core-all-system-modules",
-    visibility: core_all_visibility,
+
+    // Visibility is deliberately restricted to a small set of build modules that
+    // the core library team control.
+    visibility: [
+        "//external/apache-harmony:__subpackages__",
+        "//external/apache-xml",
+        "//external/bouncycastle",
+        "//external/conscrypt",
+        "//external/icu/android_icu4j",
+        "//external/okhttp",
+        "//libcore:__subpackages__",
+    ],
+
     libs: ["core-all"],
 }
 
