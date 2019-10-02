@@ -235,7 +235,6 @@ java_system_modules {
     visibility: [
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
-        "//external/icu/android_icu4j",
         "//external/okhttp",
         "//libcore:__subpackages__",
     ],
