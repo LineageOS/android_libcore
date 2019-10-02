@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import libcore.api.CorePlatformApi;
 import libcore.util.NonNull;
 import libcore.util.Nullable;
@@ -147,6 +148,30 @@ public final class MimeMap {
         }
         mimeType = toLowerCase(mimeType);
         return mimeToExt.get(mimeType);
+    }
+
+    /**
+     * Returns the set of MIME types that this {@link MimeMap}
+     * {@link #hasMimeType(String) maps to some extension}. Note that the
+     * reverse mapping might not exist.
+     *
+     * @hide
+     */
+    @libcore.api.CorePlatformApi
+    public @NonNull Set<String> mimeTypes() {
+        return Collections.unmodifiableSet(mimeToExt.keySet());
+    }
+
+    /**
+     * Returns the set of extensions that this {@link MimeMap}
+     * {@link #hasExtension(String) maps to some MIME type}. Note that the
+     * reverse mapping might not exist.
+     *
+     * @hide
+     */
+    @libcore.api.CorePlatformApi
+    public @NonNull Set<String> extensions() {
+        return Collections.unmodifiableSet(extToMime.keySet());
     }
 
     /**
@@ -284,7 +309,8 @@ public final class MimeMap {
          * @return This builder.
          */
         @CorePlatformApi
-        public Builder put(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs) {
+        public Builder put(@NonNull String mimeSpec, @NonNull List<@NonNull String> extensionSpecs)
+        {
             Element mimeElement = new Element(mimeSpec); // validate mimeSpec unconditionally
             if (extensionSpecs.isEmpty()) {
                 return this;
