@@ -192,7 +192,10 @@ java_library {
     defaults: ["libcore_java_defaults"],
 
     srcs: [
-        ":android_icu4j_src_files",
+        // Use the source code for the I18N module intra core API as using the
+        // compiled version does not work due to limitations in either soong or the javac
+        // toolchain. See http://b/142056316 for more details.
+        ":i18n-module-intra-core-api-stubs-source",
         ":core_oj_java_files",
         ":core_libart_java_files",
         ":openjdk_lambda_stub_files",
