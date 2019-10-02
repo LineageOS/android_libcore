@@ -235,7 +235,6 @@ java_system_modules {
     visibility: [
         "//external/apache-harmony:__subpackages__",
         "//external/apache-xml",
-        "//external/bouncycastle",
         "//external/icu/android_icu4j",
         "//external/okhttp",
         "//libcore:__subpackages__",
@@ -761,6 +760,9 @@ java_library {
 }
 
 // Used when compiling higher-level code against art.module.public.api.stubs.
+//
+// This is only intended for use within core libraries and must not be used
+// from outside.
 java_system_modules {
     name: "art-module-public-api-stubs-system-modules",
     visibility: [
@@ -778,6 +780,11 @@ java_system_modules {
         // tools.
         // See http://b/123891440.
         "core-generated-annotation-stubs",
+
+        // Ensure that core libraries that depend on the public API can access
+        // the UnsupportedAppUsage, CorePlatformApi and IntraCoreApi
+        // annotations.
+        "libcore-unsupportedappusage-annotation",
     ],
 }
 
@@ -864,15 +871,16 @@ java_library_host {
 // that should not introduce any runtime dependency for compiling core libraries, e.g. core-icu4j,
 java_library {
     name: "libcore-unsupportedappusage-annotation",
-    visibility: [
-        "//external/icu/android_icu4j",
-    ],
     srcs: [
         ":unsupportedappusage_annotation_files",
     ],
 
     installable: false,
-    sdk_version: "core_current",
+    sdk_version: "none",
+    system_modules: "none",
+    libs: [
+        "art.module.public.api.stubs",
+    ],
 }
 
 // The source files that contain the UnsupportedAppUsage annotation and its dependencies.
