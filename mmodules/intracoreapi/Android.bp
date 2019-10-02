@@ -22,7 +22,6 @@ droidstubs {
     name: "core-intra-stubs",
     srcs: [":core_api_files"],
     sdk_version: "none",
-    libs: ["core-all"],
 
     installable: false,
     args: "--hide-annotation libcore.api.Hide " +
@@ -52,8 +51,7 @@ java_library {
     srcs: [":core-intra-stubs"],
 
     sdk_version: "none",
-    libs: ["core-all"],
-    system_modules: "core-all-system-modules",
+    system_modules: "none",
     openjdk9: {
         javacflags: ["--patch-module=java.base=."],
     },
