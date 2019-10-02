@@ -23,7 +23,10 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import libcore.net.MimeMap;
 
 import static org.junit.Assert.assertEquals;
@@ -265,6 +268,46 @@ public class MimeMapTest {
         );
     }
 
+    @Test public void extensions() {
+        assertEquals(Collections.emptySet(), emptyMap.extensions());
+        mimeMap = MimeMap.builder()
+                .put("text/plain", Arrays.asList("txt", "text"))
+                .put("audi/mpeg", "m4a")
+                .put("application/msword", "doc")
+                .put("text/plain", "tx")
+                .build();
+        Set<String> extensions = new HashSet<>(Arrays.asList(
+                "txt", "text", "m4a", "doc", "tx"));
+        assertEquals(extensions, mimeMap.extensions());
+        // Check that the extensions() view is unmodifiable
+        try {
+            mimeMap.extensions().add("ext");
+            fail();
+        } catch (UnsupportedOperationException expected) {
+        }
+    }
+
+    @Test public void mimeTypes() {
+        assertEquals(Collections.emptySet(), emptyMap.mimeTypes());
+        mimeMap = MimeMap.builder()
+                .put("text/plain", Arrays.asList("txt", "text"))
+                .put("audio/mpeg", "m4a")
+                .put("application/msword", "doc")
+                .put("text/plain", "tx")
+                .build();
+        Set<String> mimeTypes = new HashSet<>(Arrays.asList(
+                "text/plain",
+                "audio/mpeg",
+                "application/msword"));
+        assertEquals(mimeTypes, mimeMap.mimeTypes());
+        // Check that the mimeTypes() view is unmodifiable
+        try {
+            mimeMap.mimeTypes().add("foo/bar");
+            fail();
+        } catch (UnsupportedOperationException expected) {
+        }
+    }
+
     /**
      * Tests invalid put() invocations that have '?' in additional/invalid places.
      */
@@ -278,7 +321,8 @@ public class MimeMapTest {
     }
 
     private static void assertPutThrowsNpe(String mime, String... exts) {
-        assertThrowsNpe(() -> MimeMap.builder().put(mime, Arrays.asList(exts)));    }
+        assertThrowsNpe(() -> MimeMap.builder().put(mime, Arrays.asList(exts)));
+    }
 
     private static void assertPutThrowsIae(final String mime, final String... exts) {
         assertThrowsIae(() -> MimeMap.builder().put(mime, Arrays.asList(exts)));
