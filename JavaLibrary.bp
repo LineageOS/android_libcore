@@ -125,24 +125,39 @@ filegroup {
     ],
 }
 
-// The set of files for the core library that have been marked up with @hide and
-// API-related annotations. Note that this includes the intra-core and
-// core-platform APIs as well as the public APIs.
-//
-// Some source files in :core_oj_api_files and :openjdk_mmodule_extra_files are
-// annotated by applying annotations to the .annotated.java stubs files in
-// ojluni/annotated/mmodules and rather than in the original source. See the comments
-// in openjdk_java_files.bp for more details.
+// The set of files for the core library that contribute to one or more API
+// surfaces. This includes files that are in the public API as well as those
+// that are not but which have been marked up with @hide plus one or more of
+// the API defining annotations.
 filegroup {
     name: "core_api_files",
     visibility: [
         "//libcore:__subpackages__",
     ],
     srcs: [
+        ":art_module_api_files",
         ":android_icu4j_src_files",
+        ":conscrypt_java_files",
+    ],
+}
+
+// The set of files for the ART module that contribute to one or more API
+// surfaces. This includes files that are in the public API as well as those
+// that are not but which have been marked up with @hide plus one or more of
+// the API defining annotations.
+//
+// Some source files in :core_oj_api_files and :openjdk_mmodule_extra_files are
+// annotated by applying annotations to the .annotated.java stubs files in
+// ojluni/annotated/mmodules and rather than in the original source. See the comments
+// in openjdk_java_files.bp for more details.
+filegroup {
+    name: "art_module_api_files",
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
+    srcs: [
         ":apache-xml_api_files",
         ":bouncycastle_java_files",
-        ":conscrypt_java_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
         ":okhttp_api_files",
