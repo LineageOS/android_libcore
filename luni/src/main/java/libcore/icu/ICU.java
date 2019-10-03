@@ -266,32 +266,8 @@ public final class ICU {
     return availableLocalesCache.clone();
   }
 
-  public static Locale[] getAvailableBreakIteratorLocales() {
-    return localesFromStrings(getAvailableBreakIteratorLocalesNative());
-  }
-
-  public static Locale[] getAvailableCalendarLocales() {
-    return localesFromStrings(getAvailableCalendarLocalesNative());
-  }
-
   public static Locale[] getAvailableCollatorLocales() {
     return localesFromStrings(getAvailableCollatorLocalesNative());
-  }
-
-  public static Locale[] getAvailableDateFormatLocales() {
-    return localesFromStrings(getAvailableDateFormatLocalesNative());
-  }
-
-  public static Locale[] getAvailableDateFormatSymbolsLocales() {
-    return getAvailableDateFormatLocales();
-  }
-
-  public static Locale[] getAvailableDecimalFormatSymbolsLocales() {
-    return getAvailableNumberFormatLocales();
-  }
-
-  public static Locale[] getAvailableNumberFormatLocales() {
-    return localesFromStrings(getAvailableNumberFormatLocalesNative());
   }
 
   @UnsupportedAppUsage
@@ -399,24 +375,10 @@ public final class ICU {
 
   // --- Native methods accessing ICU's database.
 
-  private static native String[] getAvailableBreakIteratorLocalesNative();
-  private static native String[] getAvailableCalendarLocalesNative();
   private static native String[] getAvailableCollatorLocalesNative();
-  private static native String[] getAvailableDateFormatLocalesNative();
   private static native String[] getAvailableLocalesNative();
-  private static native String[] getAvailableNumberFormatLocalesNative();
 
-  public static native String[] getAvailableCurrencyCodes();
   public static native String getCurrencyCode(String countryCode);
-
-  public static String getCurrencyDisplayName(Locale locale, String currencyCode) {
-    return getCurrencyDisplayName(locale.toLanguageTag(), currencyCode);
-  }
-
-  private static native String getCurrencyDisplayName(String languageTag, String currencyCode);
-
-  public static native int getCurrencyFractionDigits(String currencyCode);
-  public static native int getCurrencyNumericCode(String currencyCode);
 
   public static String getCurrencySymbol(Locale locale, String currencyCode) {
     return getCurrencySymbol(locale.toLanguageTag(), currencyCode);

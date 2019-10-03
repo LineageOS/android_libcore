@@ -33,6 +33,7 @@
 #include "IcuUtilities.h"
 #include "JniConstants.h"
 #include "JniException.h"
+#include "ustrenum.h"
 #include "unicode/ucnv.h"
 #include "unicode/ucnv_cb.h"
 #include "unicode/uniset.h"
