@@ -169,24 +169,11 @@ java_defaults {
 // Build for the target (device).
 //
 
-// Visibility of core-all* build modules; we restrict visibility of core-all deliberately to
-// a small set of build modules that the core library team control. See core-all-system-modules
-// for more details.
-core_all_visibility = [
-    "//external/apache-harmony:__subpackages__",
-    "//external/apache-xml",
-    "//external/bouncycastle",
-    "//external/conscrypt",
-    "//external/icu/android_icu4j",
-    "//external/okhttp",
-    "//libcore:__subpackages__",
-]
-
 // A target used to bootstrap compilation for the core library.
+//
 // See core-all-system-modules for more details.
 java_library {
     name: "core-all",
-    visibility: core_all_visibility,
     defaults: ["libcore_java_defaults"],
 
     srcs: [
@@ -227,7 +214,18 @@ platform_compat_config {
 // bouncycastle, etc.
 java_system_modules {
     name: "core-all-system-modules",
-    visibility: core_all_visibility,
+
+    // Visibility is deliberately restricted to a small set of build modules that
+    // the core library team control.
+    visibility: [
+        "//external/apache-harmony:__subpackages__",
+        "//external/apache-xml",
+        "//external/bouncycastle",
+        "//external/icu/android_icu4j",
+        "//external/okhttp",
+        "//libcore:__subpackages__",
+    ],
+
     libs: ["core-all"],
 }
 
@@ -731,6 +729,7 @@ droidstubs {
 java_library {
     name: "art.module.public.api.stubs",
     visibility: [
+        "//external/conscrypt",
         "//external/icu/android_icu4j",
     ],
     srcs: [":art-module-public-api-stubs-gen"],
@@ -750,6 +749,7 @@ java_library {
 java_system_modules {
     name: "art-module-public-api-stubs-system-modules",
     visibility: [
+        "//external/conscrypt",
         "//external/icu/android_icu4j",
         "//external/wycheproof",
     ],
@@ -764,35 +764,6 @@ java_system_modules {
         // See http://b/123891440.
         "core-generated-annotation-stubs",
     ],
-}
-
-// Generates stubs for the parts of the public SDK API provided by the conscrypt module.
-//
-// Only for use by conscrypt.module.public.api.stubs target below.
-droidstubs {
-    name: "conscrypt-module-public-api-stubs-gen",
-    srcs: [
-        ":conscrypt_public_api_files",
-    ],
-    java_version: "1.9",
-    installable: false,
-    sdk_version: "none",
-    libs: [
-        "art.module.public.api.stubs",
-    ],
-}
-
-// A stubs target containing the parts of the public SDK API provided by the conscrypt module.
-java_library {
-    name: "conscrypt.module.public.api.stubs",
-    srcs: [":conscrypt-module-public-api-stubs-gen"],
-    errorprone: {
-        javacflags: [
-            "-Xep:MissingOverride:OFF",
-        ],
-    },
-    sdk_version: "none",
-    system_modules: "art-module-public-api-stubs-system-modules",
 }
 
 // A stubs target containing the parts of the public SDK API provided by the
