@@ -20,8 +20,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.icu.util.TimeZone;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
@@ -58,10 +56,12 @@ public final class TimeZoneFinder {
     // Country zones section. e.g. <countryzones>
     private static final String COUNTRY_ZONES_ELEMENT = "countryzones";
 
-    // Country data. e.g. <country code="gb" default="Europe/London" everutc="y">
+    // Country data. e.g.
+    // <country code="gb" default="Europe/London" defaultBoost="y" everutc="y">
     private static final String COUNTRY_ELEMENT = "country";
     private static final String COUNTRY_CODE_ATTRIBUTE = "code";
     private static final String DEFAULT_TIME_ZONE_ID_ATTRIBUTE = "default";
+    private static final String DEFAULT_TIME_ZONE_BOOST_ATTRIBUTE = "defaultBoost";
     private static final String EVER_USES_UTC_ATTRIBUTE = "everutc";
 
     // Country -> Time zone mapping. e.g. <id>ZoneId</id>, <id picker="n">ZoneId</id>,
@@ -230,9 +230,9 @@ public final class TimeZoneFinder {
 
     /**
      * Processes the XML, applying the {@link TimeZonesProcessor} to the &lt;countryzones&gt;
-     * element. Processing can terminate early if the
-     * {@link TimeZonesProcessor#processCountryZones(String, String, boolean, List, String)} returns
-     * {@link TimeZonesProcessor#HALT} or it throws an exception.
+     * element. Processing can terminate early if the {@link TimeZonesProcessor#processCountryZones(
+     * String, String, boolean, boolean, List, String)} returns {@link TimeZonesProcessor#HALT} or
+     * it throws an exception.
      */
     private void processXml(TimeZonesProcessor processor)
             throws XmlPullParserException, IOException {
@@ -254,7 +254,7 @@ public final class TimeZoneFinder {
              *       ...
              *       <id>America/Los_Angeles</id>
              *     </country>
-             *     <country code="gb" default="Europe/London">
+             *     <country code="gb" default="Europe/London" defaultBoost="y">
              *       <id>Europe/London</id>
              *     </country>
              *   </countryzones>
@@ -308,12 +308,17 @@ public final class TimeZoneFinder {
                     throw new XmlPullParserException(
                             "Unable to find country code: " + parser.getPositionDescription());
                 }
+
                 String defaultTimeZoneId = parser.getAttributeValue(
                         null /* namespace */, DEFAULT_TIME_ZONE_ID_ATTRIBUTE);
                 if (defaultTimeZoneId == null || defaultTimeZoneId.isEmpty()) {
                     throw new XmlPullParserException("Unable to find default time zone ID: "
                             + parser.getPositionDescription());
                 }
+
+                boolean defaultTimeZoneBoost = parseBooleanAttribute(parser,
+                        DEFAULT_TIME_ZONE_BOOST_ATTRIBUTE, false);
+
                 Boolean everUsesUtc = parseBooleanAttribute(
                         parser, EVER_USES_UTC_ATTRIBUTE, null /* defaultValue */);
                 if (everUsesUtc == null) {
@@ -325,8 +330,8 @@ public final class TimeZoneFinder {
 
                 String debugInfo = parser.getPositionDescription();
                 List<TimeZoneMapping> timeZoneMappings = parseTimeZoneMappings(parser);
-                boolean result = processor.processCountryZones(code, defaultTimeZoneId, everUsesUtc,
-                        timeZoneMappings, debugInfo);
+                boolean result = processor.processCountryZones(code, defaultTimeZoneId,
+                        defaultTimeZoneBoost, everUsesUtc, timeZoneMappings, debugInfo);
                 if (result == TimeZonesProcessor.HALT) {
                     return TimeZonesProcessor.HALT;
                 }
@@ -568,7 +573,8 @@ public final class TimeZoneFinder {
          * <p>The default implementation returns {@link #CONTINUE}.
          */
         default boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
+                boolean defaultTimeZoneBoost, boolean everUsesUtc,
+                List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
             return CONTINUE;
         }
@@ -588,7 +594,8 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
+                boolean defaultTimeZoneBoost, boolean everUsesUtc,
+                List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
             if (!normalizeCountryIso(countryIso).equals(countryIso)) {
                 throw new XmlPullParserException("Country code: " + countryIso
@@ -641,11 +648,13 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo)
+                boolean defaultTimeZoneBoost, boolean everUsesUtc,
+                List<TimeZoneMapping> timeZoneMappings, String debugInfo)
                 throws XmlPullParserException {
 
             CountryTimeZones countryTimeZones = CountryTimeZones.createValidated(
-                    countryIso, defaultTimeZoneId, everUsesUtc, timeZoneMappings, debugInfo);
+                    countryIso, defaultTimeZoneId, defaultTimeZoneBoost, everUsesUtc,
+                    timeZoneMappings, debugInfo);
             countryTimeZonesList.add(countryTimeZones);
             return CONTINUE;
         }
@@ -671,13 +680,15 @@ public final class TimeZoneFinder {
 
         @Override
         public boolean processCountryZones(String countryIso, String defaultTimeZoneId,
-                boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo) {
+                boolean defaultTimeZoneBoost, boolean everUsesUtc,
+                List<TimeZoneMapping> timeZoneMappings, String debugInfo) {
             countryIso = normalizeCountryIso(countryIso);
             if (!countryCodeToMatch.equals(countryIso)) {
                 return CONTINUE;
             }
             validatedCountryTimeZones = CountryTimeZones.createValidated(countryIso,
-                    defaultTimeZoneId, everUsesUtc, timeZoneMappings, debugInfo);
+                    defaultTimeZoneId, defaultTimeZoneBoost, everUsesUtc, timeZoneMappings,
+                    debugInfo);
 
             return HALT;
         }

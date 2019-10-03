@@ -38,7 +38,7 @@ public final class CountryTimeZones {
      * @hide
      */
     @libcore.api.CorePlatformApi
-    public final static class OffsetResult {
+    public static final class OffsetResult {
 
         /** A zone that matches the supplied criteria. See also {@link #mOneMatch}. */
         @libcore.api.CorePlatformApi
@@ -68,7 +68,7 @@ public final class CountryTimeZones {
      * @hide
      */
     @libcore.api.CorePlatformApi
-    public final static class TimeZoneMapping {
+    public static final class TimeZoneMapping {
         @libcore.api.CorePlatformApi
         public final String timeZoneId;
         @libcore.api.CorePlatformApi
@@ -168,6 +168,11 @@ public final class CountryTimeZones {
 
     private final String countryIso;
     private final String defaultTimeZoneId;
+    /**
+     * {@code true} indicates the default time zone for a country is a good choice if a time zone
+     * cannot be determined by other means.
+     */
+    private final boolean defaultTimeZoneBoost;
     private final List<TimeZoneMapping> timeZoneMappings;
     private final boolean everUsesUtc;
 
@@ -177,10 +182,12 @@ public final class CountryTimeZones {
      */
     private TimeZone defaultTimeZone;
 
-    private CountryTimeZones(String countryIso, String defaultTimeZoneId, boolean everUsesUtc,
+    private CountryTimeZones(String countryIso, String defaultTimeZoneId,
+            boolean defaultTimeZoneBoost, boolean everUsesUtc,
             List<TimeZoneMapping> timeZoneMappings) {
         this.countryIso = java.util.Objects.requireNonNull(countryIso);
         this.defaultTimeZoneId = defaultTimeZoneId;
+        this.defaultTimeZoneBoost = defaultTimeZoneBoost;
         this.everUsesUtc = everUsesUtc;
         // Create a defensive copy of the mapping list.
         this.timeZoneMappings = Collections.unmodifiableList(new ArrayList<>(timeZoneMappings));
@@ -190,7 +197,8 @@ public final class CountryTimeZones {
      * Creates a {@link CountryTimeZones} object containing only known time zone IDs.
      */
     public static CountryTimeZones createValidated(String countryIso, String defaultTimeZoneId,
-            boolean everUsesUtc, List<TimeZoneMapping> timeZoneMappings, String debugInfo) {
+            boolean defaultTimeZoneBoost, boolean everUsesUtc,
+            List<TimeZoneMapping> timeZoneMappings, String debugInfo) {
 
         // We rely on ZoneInfoDB to tell us what the known valid time zone IDs are. ICU may
         // recognize more but we want to be sure that zone IDs can be used with java.util as well as
@@ -219,7 +227,8 @@ public final class CountryTimeZones {
 
         String normalizedCountryIso = normalizeCountryIso(countryIso);
         return new CountryTimeZones(
-                normalizedCountryIso, defaultTimeZoneId, everUsesUtc, validCountryTimeZoneMappings);
+                normalizedCountryIso, defaultTimeZoneId, defaultTimeZoneBoost, everUsesUtc,
+                validCountryTimeZoneMappings);
     }
 
     /**
@@ -241,7 +250,7 @@ public final class CountryTimeZones {
     /**
      * Returns the default time zone for the country. Can return null in cases when no data is
      * available or the time zone ID provided to
-     * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
+     * {@link #createValidated(String, String, boolean, boolean, List, String)} was not recognized.
      */
     @libcore.api.CorePlatformApi
     public synchronized TimeZone getDefaultTimeZone() {
@@ -260,11 +269,20 @@ public final class CountryTimeZones {
     /**
      * Returns the default time zone ID for the country. Can return null in cases when no data is
      * available or the time zone ID provided to
-     * {@link #createValidated(String, String, boolean, List, String)} was not recognized.
+     * {@link #createValidated(String, String, boolean, boolean, List, String)} was not recognized.
      */
     @libcore.api.CorePlatformApi
     public String getDefaultTimeZoneId() {
         return defaultTimeZoneId;
+    }
+
+    /**
+     * Qualifier for a country's default time zone. {@code true} indicates whether the default
+     * would be a good choice <em>generally</em> when there's no other information available.
+     */
+    @libcore.api.CorePlatformApi
+    public boolean getDefaultTimeZoneBoost() {
+        return defaultTimeZoneBoost;
     }
 
     /**
@@ -303,28 +321,19 @@ public final class CountryTimeZones {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
         CountryTimeZones that = (CountryTimeZones) o;
-
-        if (everUsesUtc != that.everUsesUtc) {
-            return false;
-        }
-        if (!countryIso.equals(that.countryIso)) {
-            return false;
-        }
-        if (!Objects.equals(defaultTimeZoneId, that.defaultTimeZoneId)) {
-            return false;
-        }
-        return timeZoneMappings.equals(that.timeZoneMappings);
+        return defaultTimeZoneBoost == that.defaultTimeZoneBoost
+                && everUsesUtc == that.everUsesUtc
+                && countryIso.equals(that.countryIso)
+                && Objects.equals(defaultTimeZoneId, that.defaultTimeZoneId)
+                && timeZoneMappings.equals(that.timeZoneMappings);
     }
 
     @Override
     public int hashCode() {
-        int result = countryIso.hashCode();
-        result = 31 * result + (defaultTimeZoneId != null ? defaultTimeZoneId.hashCode() : 0);
-        result = 31 * result + timeZoneMappings.hashCode();
-        result = 31 * result + (everUsesUtc ? 1 : 0);
-        return result;
+        return Objects.hash(
+                countryIso, defaultTimeZoneId, defaultTimeZoneBoost, timeZoneMappings,
+                everUsesUtc);
     }
 
     /**

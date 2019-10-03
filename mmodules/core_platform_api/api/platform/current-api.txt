@@ -1245,6 +1245,7 @@ package libcore.timezone {
   public final class CountryTimeZones {
     method public String getCountryIso();
     method public android.icu.util.TimeZone getDefaultTimeZone();
+    method public boolean getDefaultTimeZoneBoost();
     method public String getDefaultTimeZoneId();
     method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getEffectiveTimeZoneMappingsAt(long);
     method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
