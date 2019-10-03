@@ -16,10 +16,10 @@
 
 package java.net;
 
-import libcore.net.MimeMap;
+import libcore.content.type.MimeMap;
 
 /**
- * Implements {@link FileNameMap} in terms of {@link libcore.net.MimeMap}.
+ * Implements {@link FileNameMap} in terms of {@link MimeMap}.
  */
 class DefaultFileNameMap implements FileNameMap {
     public String getContentTypeFor(String filename) {
