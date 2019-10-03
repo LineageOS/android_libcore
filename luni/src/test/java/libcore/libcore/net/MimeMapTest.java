@@ -53,14 +53,14 @@ public class MimeMapTest {
         mimeMap = null;
     }
 
-    @Test public void invalidExtension() {
+    @Test public void lookup_invalidExtension() {
         assertNull(mimeMap.guessMimeTypeFromExtension(null));
         assertNull(mimeMap.guessMimeTypeFromExtension(""));
         assertFalse(mimeMap.hasExtension(null));
         assertFalse(mimeMap.hasExtension(""));
     }
 
-    @Test public void invalidMimeType() {
+    @Test public void lookup_invalidMimeType() {
         assertNull(mimeMap.guessExtensionFromMimeType(null));
         assertNull(mimeMap.guessExtensionFromMimeType(""));
         assertFalse(mimeMap.hasMimeType(null));
@@ -205,19 +205,19 @@ public class MimeMapTest {
         // null or "" are not allowed for either MIME type or extension
         assertPutThrowsNpe(null, "ext");
         assertPutThrowsIae("", "ext");
-        assertPutThrowsNpe("mime", null);
-        assertPutThrowsIae("mime", "");
+        assertPutThrowsNpe("mime/type", null);
+        assertPutThrowsIae("mime/type", "");
 
-        assertPutThrowsNpe("mime", "ext", null);
-        assertPutThrowsIae("mime", "ext", "");
+        assertPutThrowsNpe("mime/type", "ext", null);
+        assertPutThrowsIae("mime/type", "ext", "");
     }
 
     @Test public void put_String_String_nullOrEmpty() {
         assertThrowsNpe(() -> MimeMap.builder().put(null, "ext"));
         assertThrowsIae(() -> MimeMap.builder().put("", "ext"));
 
-        assertThrowsNpe(() -> MimeMap.builder().put("mime", (String) null));
-        assertThrowsIae(() -> MimeMap.builder().put("mime", ""));
+        assertThrowsNpe(() -> MimeMap.builder().put("mime/type", (String) null));
+        assertThrowsIae(() -> MimeMap.builder().put("mime/type", ""));
     }
 
     /**
@@ -311,13 +311,24 @@ public class MimeMapTest {
     /**
      * Tests invalid put() invocations that have '?' in additional/invalid places.
      */
-    @Test public void put_additionalQuestionMarks() {
+    @Test public void put_invalid_additionalQuestionMarks() {
         // Potentially we could tolerate additional ? as a prefix in future, but right now we don't.
         assertPutThrowsIae("??text/plain", "txt");
         assertPutThrowsIae("text/p?lain", "txt");
         assertPutThrowsIae("text/plain", "txt", "t?ext");
         assertPutThrowsIae("text/plain", "??txt");
         assertPutThrowsIae("text/plain", "t?xt");
+    }
+
+    /** Checks that MIME types must have a '/', while extensions must not. */
+    @Test public void put_invalid_slash() {
+        assertPutThrowsIae("mime/type", "invalid/ext");
+        assertPutThrowsIae("invalidmime", "ext");
+
+        // During lookups, wrong arguments return null rather than throwing.
+        mimeMap = MimeMap.builder().put("mime/type", "ext").build();
+        assertNull(mimeMap.guessExtensionFromMimeType("ext")); // ext is no mime type
+        assertNull(mimeMap.guessMimeTypeFromExtension("mime/type")); // mime/type is no extension
     }
 
     private static void assertPutThrowsNpe(String mime, String... exts) {
