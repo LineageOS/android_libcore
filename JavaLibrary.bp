@@ -833,8 +833,8 @@ java_system_modules {
 //   m art-module-public-api-stubs-nullability-validation
 // To check that there are only the expected nullability warnings:
 //   m art-module-public-api-stubs-nullability-validation-check-nullability-warnings
-// To update the the list of known expected nullability warnings:
-//   m art-module-public-api-stubs-nullability-validation-update-nullability-warnings
+// (If that check fails, it will provide instructions on how to proceed,
+// including the command to run to update the expected warnings file.)
 droidstubs {
     name: "art-module-public-api-stubs-nullability-validation",
     srcs: [":art_module_api_files"],
