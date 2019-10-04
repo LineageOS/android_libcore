@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.net;
+package libcore.content.type;
 
 import java.util.Arrays;
 import java.util.Collections;
