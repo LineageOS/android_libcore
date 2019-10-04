@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -89,6 +90,53 @@ public class MimeMapTest {
 
         assertNull(mimeMap.guessMimeTypeFromExtension("absent"));
         assertFalse(mimeMap.hasExtension("absent"));
+    }
+
+    @Test public void getDefault_returnsSameInstance() {
+        assertSame(MimeMap.getDefault(), MimeMap.getDefault());
+    }
+
+    @Test public void getDefault_afterSetDefault() {
+        MimeMap originalDefault = MimeMap.getDefault();
+        try {
+            MimeMap mimeMap = MimeMap.builder().put("mime/type", "ext").build();
+            MimeMap.setDefault(mimeMap);
+            assertSame(mimeMap, MimeMap.getDefault());
+        } finally {
+            MimeMap.setDefault(originalDefault);
+        }
+        assertSame(originalDefault, MimeMap.getDefault());
+    }
+
+    @Test public void getDefault_afterSetDefaultSupplier() {
+        MimeMap originalDefault = MimeMap.getDefault();
+        try {
+            // Constructs a new instance every time it is called
+            MimeMap.setDefaultSupplier(() -> MimeMap.builder().put("mime/sup", "sup").build());
+            // Same instance is returned both times
+            assertSame(MimeMap.getDefault(), MimeMap.getDefault());
+            // Check that the supplier is in effect
+            assertTrue(originalDefault != MimeMap.getDefault());
+            assertEquals("mime/sup", MimeMap.getDefault().guessMimeTypeFromExtension("sup"));
+        } finally {
+            MimeMap.setDefault(originalDefault);
+        }
+        assertSame(originalDefault, MimeMap.getDefault());
+    }
+
+    @Test public void setDefaultSupplier_returningNull() {
+        MimeMap originalDefault = MimeMap.getDefault();
+        try {
+            // A Supplier that returns null is invalid, but we only notice during getDefault().
+            MimeMap.setDefaultSupplier(() -> null);
+            try {
+                MimeMap.getDefault();
+                fail();
+            } catch (NullPointerException expected) {
+            }
+        } finally {
+            MimeMap.setDefault(originalDefault);
+        }
     }
 
     @Test public void setDefault() {
