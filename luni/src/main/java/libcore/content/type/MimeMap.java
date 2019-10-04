@@ -24,6 +24,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import libcore.api.CorePlatformApi;
 import libcore.util.NonNull;
 import libcore.util.Nullable;
@@ -56,14 +57,15 @@ public final class MimeMap {
      * to satisfy libcore tests. Android framework code is expected to replace
      * this implementation during runtime initialization.
      */
-    private static volatile MimeMap defaultInstance = builder()
+    private static volatile Supplier<@NonNull MimeMap> instanceSupplier = new InstanceSupplier<>(
+            builder()
             .put("application/pdf", "pdf")
             .put("image/jpeg", "jpg")
             .put("image/x-ms-bmp", "bmp")
             .put("text/html", Arrays.asList("htm", "html"))
             .put("text/plain", Arrays.asList("text", "txt"))
             .put("text/x-java", "java")
-            .build();
+            .build());
 
     private MimeMap(Map<String, String> mimeToExt, Map<String, String> extToMime) {
         this.mimeToExt = Objects.requireNonNull(mimeToExt);
@@ -83,15 +85,32 @@ public final class MimeMap {
      */
     @libcore.api.CorePlatformApi
     public static @NonNull MimeMap getDefault() {
-        return defaultInstance;
+        return Objects.requireNonNull(instanceSupplier.get());
     }
 
     /**
      * Sets the system's default {@link MimeMap} to be {@code mimeMap}.
+     *
+     * @hide
+     */
+    public static void setDefault(@NonNull MimeMap mimeMap) {
+        instanceSupplier = new InstanceSupplier<>(Objects.requireNonNull(mimeMap));
+    }
+
+    /**
+     * An alternative to {@link #setDefault(MimeMap)} that allows the {@link MimeMap}
+     * instance to be constructed lazily the first time it is {@link #getDefault()
+     * requested}, rather than eagerly at the time this method is called.
+     *
+     * Specifically, {@code mimeMapSupplier.get()} will only be invoked the first time
+     * {@link #getDefault()} is called; that {@link MimeMap} instance is memoized such
+     * that subsequent calls to {@link #getDefault()} without an intervening call to
+     * {@link #setDefaultSupplier(Supplier)} or {@link #setDefault(MimeMap)} will
+     * return that same instance without consulting {@code mimeMapSupplier} a second time.
      */
     @libcore.api.CorePlatformApi
-    public static void setDefault(@NonNull MimeMap mimeMap) {
-        defaultInstance = Objects.requireNonNull(mimeMap);
+    public static void setDefaultSupplier(@NonNull Supplier<@NonNull MimeMap> mimeMapSupplier) {
+        instanceSupplier = new MemoizingSupplier<>(Objects.requireNonNull(mimeMapSupplier));
     }
 
     /**
@@ -367,4 +386,40 @@ public final class MimeMap {
         }
     }
 
+    private static final class InstanceSupplier<T> implements Supplier<T> {
+        private final T instance;
+
+        public InstanceSupplier(T instance) {
+            this.instance = instance;
+        }
+
+        @Override
+        public T get() {
+            return instance;
+        }
+    }
+
+    private static final class MemoizingSupplier<T> implements Supplier<T> {
+        private volatile Supplier<T> mDelegate;
+        private volatile T mInstance;
+        private volatile boolean mInitialized = false;
+
+        public MemoizingSupplier(Supplier<T> delegate) {
+            this.mDelegate = delegate;
+        }
+
+        @Override
+        public T get() {
+            if (!mInitialized) {
+                synchronized (this) {
+                    if (!mInitialized) {
+                        mInstance = mDelegate.get();
+                        mDelegate = null;
+                        mInitialized = true;
+                    }
+                }
+            }
+            return mInstance;
+        }
+    }
 }
