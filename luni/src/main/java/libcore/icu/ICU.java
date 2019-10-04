@@ -380,12 +380,6 @@ public final class ICU {
 
   public static native String getCurrencyCode(String countryCode);
 
-  public static String getCurrencySymbol(Locale locale, String currencyCode) {
-    return getCurrencySymbol(locale.toLanguageTag(), currencyCode);
-  }
-
-  private static native String getCurrencySymbol(String languageTag, String currencyCode);
-
   public static String getDisplayCountry(Locale targetLocale, Locale locale) {
     return getDisplayCountryNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
   }
