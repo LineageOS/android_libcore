@@ -1087,7 +1087,7 @@ package libcore.content.type {
     method public boolean hasExtension(@Nullable String);
     method public boolean hasMimeType(@Nullable String);
     method @NonNull public java.util.Set<java.lang.String> mimeTypes();
-    method public static void setDefault(@NonNull libcore.content.type.MimeMap);
+    method public static void setDefaultSupplier(@NonNull java.util.function.Supplier<libcore.content.type.MimeMap>);
   }
 
   public static final class MimeMap.Builder {
