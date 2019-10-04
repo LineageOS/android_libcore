@@ -31,6 +31,7 @@ import libcore.util.BasicLruCache;
  * Makes ICU data accessible to Java.
  * @hide
  */
+@libcore.api.IntraCoreApi
 @libcore.api.CorePlatformApi
 public final class ICU {
 
@@ -363,6 +364,7 @@ public final class ICU {
   /**
    * Returns the icu4c version in use, such as "50.1.1".
    */
+  @libcore.api.IntraCoreApi
   public static native String getIcuVersion();
 
   /**
