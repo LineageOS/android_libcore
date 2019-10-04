@@ -10,9 +10,6 @@
           "include-filter": "org.apache.harmony.tests.java.net"
         }
       ]
-    },
-    {
-      "name": "CtsMimeMapTestCases"
     }
   ]
 }

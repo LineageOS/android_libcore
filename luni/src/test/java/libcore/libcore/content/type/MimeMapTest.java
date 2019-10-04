@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.libcore.net;
+package libcore.libcore.content.type;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import libcore.net.MimeMap;
+import libcore.content.type.MimeMap;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
