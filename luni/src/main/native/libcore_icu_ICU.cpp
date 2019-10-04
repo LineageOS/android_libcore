@@ -113,25 +113,6 @@ static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
   return env->NewStringUTF(icuLocale.locale().getScript());
 }
 
-static jint ICU_getCurrencyFractionDigits(JNIEnv* env, jclass, jstring javaCurrencyCode) {
-  ScopedJavaUnicodeString currencyCode(env, javaCurrencyCode);
-  if (!currencyCode.valid()) {
-    return 0;
-  }
-  icu::UnicodeString icuCurrencyCode(currencyCode.unicodeString());
-  UErrorCode status = U_ZERO_ERROR;
-  return ucurr_getDefaultFractionDigits(icuCurrencyCode.getTerminatedBuffer(), &status);
-}
-
-static jint ICU_getCurrencyNumericCode(JNIEnv* env, jclass, jstring javaCurrencyCode) {
-  ScopedJavaUnicodeString currencyCode(env, javaCurrencyCode);
-  if (!currencyCode.valid()) {
-    return 0;
-  }
-  icu::UnicodeString icuCurrencyCode(currencyCode.unicodeString());
-  return ucurr_getNumericCode(icuCurrencyCode.getTerminatedBuffer());
-}
-
 // TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
 static jstring ICU_getCurrencyCode(JNIEnv* env, jclass, jstring javaCountryCode) {
     UErrorCode status = U_ZERO_ERROR;
@@ -205,10 +186,6 @@ static jstring getCurrencyName(JNIEnv* env, jstring javaLanguageTag, jstring jav
     }
   }
   return (charCount == 0) ? NULL : jniCreateString(env, chars, charCount);
-}
-
-static jstring ICU_getCurrencyDisplayName(JNIEnv* env, jclass, jstring javaLanguageTag, jstring javaCurrencyCode) {
-  return getCurrencyName(env, javaLanguageTag, javaCurrencyCode, UCURR_LONG_NAME);
 }
 
 static jstring ICU_getCurrencySymbol(JNIEnv* env, jclass, jstring javaLanguageTag, jstring javaCurrencyCode) {
@@ -303,24 +280,8 @@ static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, uloc_countAvailable, uloc_getAvailable);
 }
 
-static jobjectArray ICU_getAvailableBreakIteratorLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, ubrk_countAvailable, ubrk_getAvailable);
-}
-
-static jobjectArray ICU_getAvailableCalendarLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, ucal_countAvailable, ucal_getAvailable);
-}
-
 static jobjectArray ICU_getAvailableCollatorLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, ucol_countAvailable, ucol_getAvailable);
-}
-
-static jobjectArray ICU_getAvailableDateFormatLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, udat_countAvailable, udat_getAvailable);
-}
-
-static jobjectArray ICU_getAvailableNumberFormatLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, unum_countAvailable, unum_getAvailable);
 }
 
 static bool setIntegerField(JNIEnv* env, jobject obj, const char* fieldName, int value) {
@@ -759,12 +720,6 @@ static jstring ICU_getTZDataVersion(JNIEnv* env, jclass) {
   return env->NewStringUTF(version);
 }
 
-static jobjectArray ICU_getAvailableCurrencyCodes(JNIEnv* env, jclass) {
-  UErrorCode status = U_ZERO_ERROR;
-  icu::UStringEnumeration e(ucurr_openISOCurrencies(UCURR_COMMON|UCURR_NON_DEPRECATED, &status));
-  return fromStringEnumeration(env, status, "ucurr_openISOCurrencies", &e);
-}
-
 static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
   ScopedIcuLocale icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -806,19 +761,11 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, addLikelySubtags, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableBreakIteratorLocalesNative, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableCalendarLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableCollatorLocalesNative, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableCurrencyCodes, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableDateFormatLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableNumberFormatLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCldrVersion, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getCurrencyDisplayName, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getCurrencyFractionDigits, "(Ljava/lang/String;)I"),
-    NATIVE_METHOD(ICU, getCurrencyNumericCode, "(Ljava/lang/String;)I"),
     NATIVE_METHOD(ICU, getCurrencySymbol, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDefaultLocale, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDisplayCountryNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
