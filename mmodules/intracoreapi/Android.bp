@@ -80,55 +80,6 @@ java_system_modules {
     libs: ["art.module.intra.core.api.stubs"],
 }
 
-// Generates stub source files for the intra-core API of the Conscrypt module.
-// i.e. every class/member that is either in the public API or annotated with
-// @IntraCoreApi.
-//
-// The API specification .txt files managed by this only contain the additional
-// classes/members that are in the intra-core API but which are not the public API.
-droidstubs {
-    name: "conscrypt-module-intra-core-api-stubs-source",
-    srcs: [
-        ":conscrypt_java_files",
-    ],
-    sdk_version: "none",
-    libs: [
-        "art.module.intra.core.api.stubs",
-    ],
-
-    installable: false,
-    args: "--hide-annotation libcore.api.Hide " +
-        "--show-single-annotation libcore.api.IntraCoreApi " +
-        "--skip-annotation-instance-methods=false ",
-
-    api_filename: "api.txt",
-    removed_api_filename: "removed.txt",
-    previous_api: "previous.txt",
-    check_api: {
-        current: {
-            api_file: "api/conscrypt-module/intra/current-api.txt",
-            removed_api_file: "api/conscrypt-module/intra/current-removed.txt",
-        },
-        last_released: {
-            api_file: "api/conscrypt-module/intra/last-api.txt",
-            removed_api_file: "api/conscrypt-module/intra/last-removed.txt",
-        },
-    },
-}
-
-// A library containing the intra-core API stubs of the Conscrypt module.
-//
-// Intra-core APIs are only intended for the use of other core library modules.
-java_library {
-    name: "conscrypt.module.intra.core.api.stubs",
-    srcs: [
-        ":conscrypt-module-intra-core-api-stubs-source",
-    ],
-
-    sdk_version: "none",
-    system_modules: "art-module-intra-core-api-stubs-system-modules",
-}
-
 // A library containing the intra-core API stubs for the core jars.
 //
 // Deprecated.
