@@ -12,15 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Build rules for the APIs that the various core libraries can depend on from
-// each other: public SDK APIs and "intra-core" APIs. Intra-core APIs are not
-// for use by other parts of the Android software stack.
-
-// Generates stub source files for the {public SDK + intra-core} API
-// of the core jars.
+// Generates stub source files for the intra-core API of the ART module.
+// i.e. every class/member that is either in the public API or annotated with
+// @IntraCoreApi.
+//
+// The API specification .txt files managed by this only contain the additional
+// classes/members that are in the intra-core API but which are not in the public
+// API.
 droidstubs {
-    name: "core-intra-stubs",
-    srcs: [":core_api_files"],
+    name: "art-module-intra-core-api-stubs-source",
+    srcs: [
+        ":art_module_api_files",
+    ],
     sdk_version: "none",
 
     installable: false,
@@ -44,11 +47,20 @@ droidstubs {
     },
 }
 
-// A library containing the {public SDK + intra-core} API stubs for the
-// core jars.
+// A library containing the intra-core API stubs of the ART module.
+//
+// Intra-core APIs are only intended for the use of other core library modules.
 java_library {
-    name: "core.intra.stubs",
-    srcs: [":core-intra-stubs"],
+    name: "art.module.intra.core.api.stubs",
+    visibility: [
+        "//external/conscrypt",
+        "//external/icu/android_icu4j",
+    ],
+    srcs: [
+        ":art-module-intra-core-api-stubs-source",
+        ":openjdk_lambda_stub_files",
+        ":openjdk_generated_annotation_stub_files",
+    ],
 
     sdk_version: "none",
     system_modules: "none",
@@ -57,39 +69,41 @@ java_library {
     },
 }
 
+// Used when compiling against art.module.intra.core.api.stubs.
+java_system_modules {
+    name: "art-module-intra-core-api-stubs-system-modules",
+    visibility: [
+        "//external/bouncycastle",
+        "//external/conscrypt",
+        "//external/icu/android_icu4j",
+    ],
+    libs: ["art.module.intra.core.api.stubs"],
+}
+
+// A library containing the intra-core API stubs for the core jars.
+//
+// Deprecated.
+java_library {
+    name: "core.intra.stubs",
+
+    sdk_version: "none",
+    system_modules: "none",
+    static_libs: [
+        "art.module.intra.core.api.stubs",
+        "conscrypt.module.intra.core.api.stubs",
+        "i18n.module.intra.core.api.stubs",
+    ],
+}
+
 // Used when compiling against core.intra.stubs.
+//
+// Deprecated. Use the art-module-intra-core-api-stubs-system-modules instead
+// plus, if necessary, one of more of the other module specific intra-core API
+// libraries.
 java_system_modules {
     name: "core-intra-stubs-system-modules",
     visibility: [
         "//external/conscrypt",
     ],
     libs: ["core.intra.stubs"],
-}
-
-// A rule that checks we can build core-libart and core-oj using only
-// the source for core-libart and core-oj and the APIs in core-intra-stubs.
-// This proves we don't actually depend on things from (for example) conscrypt and icu4j
-// we haven't added to the intra-core API.
-java_library {
-    name: "core-libart-oj.depscheck",
-    srcs: [
-        ":core_libart_java_files",
-        ":core_oj_java_files",
-    ],
-    errorprone: {
-        javacflags: [
-            "-Xep:MissingOverride:OFF", // Ignore missing @Override.
-            "-Xep:ConstantOverflow:WARN", // Known constant overflow in SplittableRandom
-        ],
-    },
-
-    installable: false,
-
-    sdk_version: "none",
-    libs: ["core.intra.stubs"],
-    system_modules: "core-intra-stubs-system-modules",
-    java_version: "1.9",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
 }
