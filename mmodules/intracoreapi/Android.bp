@@ -80,31 +80,3 @@ java_system_modules {
     ],
     libs: ["art.module.intra.core.api.stubs"],
 }
-
-// A library containing the intra-core API stubs for the core jars.
-//
-// Deprecated.
-java_library {
-    name: "core.intra.stubs",
-
-    sdk_version: "none",
-    system_modules: "none",
-    static_libs: [
-        "art.module.intra.core.api.stubs",
-        "conscrypt.module.intra.core.api.stubs",
-        "i18n.module.intra.core.api.stubs",
-    ],
-}
-
-// Used when compiling against core.intra.stubs.
-//
-// Deprecated. Use the art-module-intra-core-api-stubs-system-modules instead
-// plus, if necessary, one of more of the other module specific intra-core API
-// libraries.
-java_system_modules {
-    name: "core-intra-stubs-system-modules",
-    visibility: [
-        "//external/conscrypt",
-    ],
-    libs: ["core.intra.stubs"],
-}
