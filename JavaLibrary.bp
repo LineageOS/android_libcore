@@ -869,6 +869,15 @@ java_library_host {
     srcs: [":timezone_host_files"],
 }
 
+// A special set of system modules for building the following library for use
+// in the art-module-public-api-system-modules.
+java_system_modules {
+    name: "api-annotations-system-modules",
+    libs: [
+        "art.module.public.api.stubs",
+    ],
+}
+
 // A library that contains annotations not retented in runtime and inline-able constants
 // that should not introduce any runtime dependency for compiling core libraries, e.g. core-icu4j,
 java_library {
@@ -879,10 +888,8 @@ java_library {
 
     installable: false,
     sdk_version: "none",
-    system_modules: "none",
-    libs: [
-        "art.module.public.api.stubs",
-    ],
+    system_modules: "api-annotations-system-modules",
+    patch_module: "java.base",
 }
 
 // The source files that contain the UnsupportedAppUsage annotation and its dependencies.
