@@ -96,18 +96,6 @@ public class MimeMapTest {
         assertSame(MimeMap.getDefault(), MimeMap.getDefault());
     }
 
-    @Test public void getDefault_afterSetDefault() {
-        MimeMap originalDefault = MimeMap.getDefault();
-        try {
-            MimeMap mimeMap = MimeMap.builder().put("mime/type", "ext").build();
-            MimeMap.setDefault(mimeMap);
-            assertSame(mimeMap, MimeMap.getDefault());
-        } finally {
-            MimeMap.setDefault(originalDefault);
-        }
-        assertSame(originalDefault, MimeMap.getDefault());
-    }
-
     @Test public void getDefault_afterSetDefaultSupplier() {
         MimeMap originalDefault = MimeMap.getDefault();
         try {
@@ -119,7 +107,7 @@ public class MimeMapTest {
             assertTrue(originalDefault != MimeMap.getDefault());
             assertEquals("mime/sup", MimeMap.getDefault().guessMimeTypeFromExtension("sup"));
         } finally {
-            MimeMap.setDefault(originalDefault);
+            MimeMap.setDefaultSupplier(() -> originalDefault);
         }
         assertSame(originalDefault, MimeMap.getDefault());
     }
@@ -135,28 +123,7 @@ public class MimeMapTest {
             } catch (NullPointerException expected) {
             }
         } finally {
-            MimeMap.setDefault(originalDefault);
-        }
-    }
-
-    @Test public void setDefault() {
-        MimeMap defaultMimeMap = MimeMap.getDefault();
-        MimeMap otherMimeMap = MimeMap.builder().put("text/plain", "txt").build();
-        MimeMap.setDefault(otherMimeMap);
-        try {
-            assertEquals(otherMimeMap, MimeMap.getDefault());
-        } finally {
-            MimeMap.setDefault(defaultMimeMap);
-        }
-    }
-
-    @Test public void setDefault_null() {
-        MimeMap defaultMimeMap = MimeMap.getDefault();
-        try {
-            MimeMap.setDefault(null);
-            fail();
-        } catch (NullPointerException expected) {
-            assertEquals(defaultMimeMap, MimeMap.getDefault());
+            MimeMap.setDefaultSupplier(() -> originalDefault);
         }
     }
 
