@@ -53,9 +53,9 @@ public final class MimeMap {
 
     /**
      * A basic implementation of MimeMap used if a new default isn't explicitly
-     * {@link MimeMap#setDefault(MimeMap) installed}. Hard-codes enough mappings
-     * to satisfy libcore tests. Android framework code is expected to replace
-     * this implementation during runtime initialization.
+     * {@link MimeMap#setDefaultSupplier(Supplier) installed}. Hard-codes enough
+     * mappings to satisfy libcore tests. Android framework code is expected to
+     * replace this implementation during runtime initialization.
      */
     private static volatile MemoizingSupplier<@NonNull MimeMap> instanceSupplier =
             new MemoizingSupplier<>(
