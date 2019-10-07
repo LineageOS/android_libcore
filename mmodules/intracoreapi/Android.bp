@@ -55,6 +55,7 @@ java_library {
     visibility: [
         "//external/conscrypt",
         "//external/icu/android_icu4j",
+        "//libcore/mmodules/core_platform_api",
     ],
     srcs: [
         ":art-module-intra-core-api-stubs-source",
