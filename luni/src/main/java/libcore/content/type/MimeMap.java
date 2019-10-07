@@ -57,15 +57,16 @@ public final class MimeMap {
      * to satisfy libcore tests. Android framework code is expected to replace
      * this implementation during runtime initialization.
      */
-    private static volatile Supplier<@NonNull MimeMap> instanceSupplier = new InstanceSupplier<>(
-            builder()
-            .put("application/pdf", "pdf")
-            .put("image/jpeg", "jpg")
-            .put("image/x-ms-bmp", "bmp")
-            .put("text/html", Arrays.asList("htm", "html"))
-            .put("text/plain", Arrays.asList("text", "txt"))
-            .put("text/x-java", "java")
-            .build());
+    private static volatile MemoizingSupplier<@NonNull MimeMap> instanceSupplier =
+            new MemoizingSupplier<>(
+                    () -> builder()
+                            .put("application/pdf", "pdf")
+                            .put("image/jpeg", "jpg")
+                            .put("image/x-ms-bmp", "bmp")
+                            .put("text/html", Arrays.asList("htm", "html"))
+                            .put("text/plain", Arrays.asList("text", "txt"))
+                            .put("text/x-java", "java")
+                            .build());
 
     private MimeMap(Map<String, String> mimeToExt, Map<String, String> extToMime) {
         this.mimeToExt = Objects.requireNonNull(mimeToExt);
@@ -89,24 +90,15 @@ public final class MimeMap {
     }
 
     /**
-     * Sets the system's default {@link MimeMap} to be {@code mimeMap}.
+     * Sets the {@link Supplier} of the {@link #getDefault() default MimeMap
+     * instance} to be used from now on.
      *
-     * @hide
-     */
-    public static void setDefault(@NonNull MimeMap mimeMap) {
-        instanceSupplier = new InstanceSupplier<>(Objects.requireNonNull(mimeMap));
-    }
-
-    /**
-     * An alternative to {@link #setDefault(MimeMap)} that allows the {@link MimeMap}
-     * instance to be constructed lazily the first time it is {@link #getDefault()
-     * requested}, rather than eagerly at the time this method is called.
-     *
-     * Specifically, {@code mimeMapSupplier.get()} will only be invoked the first time
-     * {@link #getDefault()} is called; that {@link MimeMap} instance is memoized such
-     * that subsequent calls to {@link #getDefault()} without an intervening call to
-     * {@link #setDefaultSupplier(Supplier)} or {@link #setDefault(MimeMap)} will
-     * return that same instance without consulting {@code mimeMapSupplier} a second time.
+     * {@code mimeMapSupplier.get()} will be invoked only the first time that
+     * {@link #getDefault()} is called after this method call; that
+     * {@link MimeMap} instance is memoized such that subsequent calls to
+     * {@link #getDefault()} without an intervening call to
+     * {@link #setDefaultSupplier(Supplier)} will return that same instance
+     * without consulting {@code mimeMapSupplier} a second time.
      */
     @libcore.api.CorePlatformApi
     public static void setDefaultSupplier(@NonNull Supplier<@NonNull MimeMap> mimeMapSupplier) {
@@ -383,19 +375,6 @@ public final class MimeMap {
     static void checkValidExtension(String s) {
         if (!isValidMimeTypeOrExtension(s) || s.contains("/")) {
             throw new IllegalArgumentException("Invalid extension: " + s);
-        }
-    }
-
-    private static final class InstanceSupplier<T> implements Supplier<T> {
-        private final T instance;
-
-        public InstanceSupplier(T instance) {
-            this.instance = instance;
-        }
-
-        @Override
-        public T get() {
-            return instance;
         }
     }
 
