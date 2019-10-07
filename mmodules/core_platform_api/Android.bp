@@ -12,16 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Build rules for the APIs that various core libraries provide to other parts
-// of the Android software stack: these include the public SDK APIs plus some
-// "core platform APIs" that only the Android software stack can use.
-
-// Generates stub source files for the {public SDK + core platform} API of the
-// core jars.
+// Generates stub source files for the core platform API of the ART module.
+// i.e. every class/member that is either in the public API or annotated with
+// @CorePlatformApi.
+//
+// The API specification .txt files managed by this only contain the additional
+// classes/members that are in the intra-core API but which are not in the public
+// API.
 droidstubs {
-    name: "core-platform-api-stubs",
-    srcs: [":core_api_files"],
+    name: "art-module-platform-api-stubs-source",
+    srcs: [
+        ":art_module_api_files",
+    ],
     sdk_version: "none",
+    libs: [
+        // Needed to break the cycle in the platform api caused by
+        // b/141747409.
+        "i18n.module.intra.core.api.stubs",
+    ],
 
     installable: false,
     args: "--hide-annotation libcore.api.Hide " +
@@ -45,12 +53,152 @@ droidstubs {
     },
 }
 
+// A special set of system modules that is needed to break the cycle in the
+// platform api caused by b/141747409.
+java_system_modules {
+    name: "break-cycle-in-core-platform-system-modules",
+    libs: [
+        "art.module.intra.core.api.stubs",
+        "i18n.module.intra.core.api.stubs",
+    ],
+}
+
+// A library containing the core platform API stubs of the ART module.
+//
+// Core platform APIs are only intended for use of other parts of the platform, not the
+// core library modules.
+java_library {
+    name: "art.module.platform.api.stubs",
+    srcs: [
+        ":art-module-platform-api-stubs-source",
+    ],
+    hostdex: true,
+
+    sdk_version: "none",
+    system_modules: "break-cycle-in-core-platform-system-modules",
+    patch_module: "java.base",
+}
+
+// Used when compiling higher-level code against core.platform.api.stubs.
+java_system_modules {
+    name: "art-module-platform-api-stubs-system-modules",
+    libs: [
+        "art.module.platform.api.stubs",
+    ],
+}
+
+// Generates stub source files for the core platform API of the Conscrypt module.
+// i.e. every class/member that is either in the public API or annotated with
+// @CorePlatformApi.
+//
+// The API specification .txt files managed by this only contain the additional
+// classes/members that are in the intra-core API but which are not in the public
+// API.
+droidstubs {
+    name: "conscrypt-module-platform-api-stubs-source",
+    srcs: [
+        ":conscrypt_java_files",
+    ],
+    sdk_version: "none",
+    libs: [
+        "art.module.platform.api.stubs",
+    ],
+
+    installable: false,
+    args: "--hide-annotation libcore.api.Hide " +
+        "--show-single-annotation libcore.api.CorePlatformApi " +
+        "--skip-annotation-instance-methods=false ",
+
+    api_filename: "api.txt",
+    removed_api_filename: "removed.txt",
+    previous_api: "previous.txt",
+
+    check_api: {
+        current: {
+            api_file: "api/conscrypt-module/platform/current-api.txt",
+            removed_api_file: "api/conscrypt-module/platform/current-removed.txt",
+        },
+        last_released: {
+            api_file: "api/conscrypt-module/platform/last-api.txt",
+            removed_api_file: "api/conscrypt-module/platform/last-removed.txt",
+        },
+    },
+}
+
+// A library containing the core platform API stubs of the Conscrypt module.
+//
+// Core platform APIs are only intended for use of other parts of the platform, not the
+// core library modules.
+java_library {
+    name: "conscrypt.module.platform.api.stubs",
+    srcs: [
+        ":conscrypt-module-platform-api-stubs-source",
+    ],
+    hostdex: true,
+
+    sdk_version: "none",
+    system_modules: "art-module-platform-api-stubs-system-modules",
+}
+
+// Generates stub source files for the core platform API of the I18N module.
+// i.e. every class/member that is either in the public API or annotated with
+// @CorePlatformApi.
+//
+// The API specification .txt files managed by this only contain the additional
+// classes/members that are in the intra-core API but which are not in the public
+// API.
+droidstubs {
+    name: "i18n-module-platform-api-stubs-source",
+    srcs: [
+        ":android_icu4j_src_files",
+    ],
+    sdk_version: "none",
+    libs: [
+        "art.module.platform.api.stubs",
+    ],
+
+    installable: false,
+    args: "--hide-annotation libcore.api.Hide " +
+        "--show-single-annotation libcore.api.CorePlatformApi " +
+        "--skip-annotation-instance-methods=false ",
+
+    api_filename: "api.txt",
+    removed_api_filename: "removed.txt",
+    previous_api: "previous.txt",
+
+    check_api: {
+        current: {
+            api_file: "api/i18n-module/platform/current-api.txt",
+            removed_api_file: "api/i18n-module/platform/current-removed.txt",
+        },
+        last_released: {
+            api_file: "api/i18n-module/platform/last-api.txt",
+            removed_api_file: "api/i18n-module/platform/last-removed.txt",
+        },
+    },
+}
+
+// A library containing the core platform API stubs of the I18N module.
+//
+// Core platform APIs are only intended for use of other parts of the platform, not the
+// core library modules.
+java_library {
+    name: "i18n.module.platform.api.stubs",
+    srcs: [
+        ":i18n-module-platform-api-stubs-source",
+    ],
+    hostdex: true,
+
+    sdk_version: "none",
+    system_modules: "art-module-platform-api-stubs-system-modules",
+}
+
 // Ideally this should be a restricted whitelist but there are hundreds of modules that depend on
 // this.
 // TODO(http://b/134561230) - limit the number of dependents on this.
 core_platform_visibility = ["//visibility:public"]
 
-// A library containing the {public SDK + core platform} API stubs for the core jars.
+// A library containing the core platform API stubs for the core libraries.
 //
 // Although this stubs library is primarily used by the Java compiler / build to indicate
 // the core platform API surface area, compile_dex: true is used so that the Core Platform
@@ -59,12 +207,16 @@ core_platform_visibility = ["//visibility:public"]
 java_library {
     name: "core.platform.api.stubs",
     visibility: core_platform_visibility,
-    srcs: [":core-platform-api-stubs"],
     hostdex: true,
     compile_dex: true,
 
     sdk_version: "none",
     system_modules: "none",
+    static_libs: [
+        "art.module.platform.api.stubs",
+        "conscrypt.module.platform.api.stubs",
+        "i18n.module.platform.api.stubs",
+    ],
     patch_module: "java.base",
 }
 
