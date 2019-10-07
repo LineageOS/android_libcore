@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import libcore.content.type.MimeMap;
@@ -67,7 +68,7 @@ public class MimeMapTest {
         assertFalse(mimeMap.hasMimeType(""));
     }
 
-    @Test public void caseNormalization() {
+    @Test public void caseNormalization_key() {
         mimeMap = MimeMap.builder()
                 .put("application/msWord", Arrays.asList("Doc"))
                 .build();
@@ -79,6 +80,27 @@ public class MimeMapTest {
         assertTrue(mimeMap.hasExtension("doc"));
         assertTrue(mimeMap.hasExtension("DOC"));
         assertTrue(mimeMap.hasExtension("dOc"));
+    }
+
+    @Test public void caseNormalization_value() {
+        // Default map
+        for (String extension : mimeMap.extensions()) {
+            assertLowerCase(mimeMap.guessMimeTypeFromExtension(extension));
+        }
+        for (String mimeType : mimeMap.mimeTypes()) {
+            assertLowerCase(mimeMap.guessExtensionFromMimeType(mimeType));
+        }
+
+        // Known keys for a custom map
+        mimeMap = MimeMap.builder()
+                .put("application/msWord", Arrays.asList("Doc"))
+                .build();
+        assertEquals("doc", mimeMap.guessExtensionFromMimeType("Application/mSWord"));
+        assertEquals("application/msword", mimeMap.guessMimeTypeFromExtension("DoC"));
+    }
+
+    private static void assertLowerCase(String s) {
+        assertEquals(s.toLowerCase(Locale.ROOT), s);
     }
 
     @Test public void unmapped() {
