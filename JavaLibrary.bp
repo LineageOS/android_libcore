@@ -194,7 +194,6 @@ java_library {
     },
 
     java_resources: core_resources,
-    static_libs: ["android_icu4j_resources_lib"],
     java_version: "1.9",
 
     installable: false,
