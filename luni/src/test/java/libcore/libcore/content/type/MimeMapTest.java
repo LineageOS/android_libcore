@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import libcore.content.type.MimeMap;
@@ -67,7 +68,7 @@ public class MimeMapTest {
         assertFalse(mimeMap.hasMimeType(""));
     }
 
-    @Test public void caseNormalization() {
+    @Test public void caseNormalization_key() {
         mimeMap = MimeMap.builder()
                 .put("application/msWord", Arrays.asList("Doc"))
                 .build();
@@ -79,6 +80,27 @@ public class MimeMapTest {
         assertTrue(mimeMap.hasExtension("doc"));
         assertTrue(mimeMap.hasExtension("DOC"));
         assertTrue(mimeMap.hasExtension("dOc"));
+    }
+
+    @Test public void caseNormalization_value() {
+        // Default map
+        for (String extension : mimeMap.extensions()) {
+            assertLowerCase(mimeMap.guessMimeTypeFromExtension(extension));
+        }
+        for (String mimeType : mimeMap.mimeTypes()) {
+            assertLowerCase(mimeMap.guessExtensionFromMimeType(mimeType));
+        }
+
+        // Known keys for a custom map
+        mimeMap = MimeMap.builder()
+                .put("application/msWord", Arrays.asList("Doc"))
+                .build();
+        assertEquals("doc", mimeMap.guessExtensionFromMimeType("Application/mSWord"));
+        assertEquals("application/msword", mimeMap.guessMimeTypeFromExtension("DoC"));
+    }
+
+    private static void assertLowerCase(String s) {
+        assertEquals(s.toLowerCase(Locale.ROOT), s);
     }
 
     @Test public void unmapped() {
@@ -96,18 +118,6 @@ public class MimeMapTest {
         assertSame(MimeMap.getDefault(), MimeMap.getDefault());
     }
 
-    @Test public void getDefault_afterSetDefault() {
-        MimeMap originalDefault = MimeMap.getDefault();
-        try {
-            MimeMap mimeMap = MimeMap.builder().put("mime/type", "ext").build();
-            MimeMap.setDefault(mimeMap);
-            assertSame(mimeMap, MimeMap.getDefault());
-        } finally {
-            MimeMap.setDefault(originalDefault);
-        }
-        assertSame(originalDefault, MimeMap.getDefault());
-    }
-
     @Test public void getDefault_afterSetDefaultSupplier() {
         MimeMap originalDefault = MimeMap.getDefault();
         try {
@@ -119,7 +129,7 @@ public class MimeMapTest {
             assertTrue(originalDefault != MimeMap.getDefault());
             assertEquals("mime/sup", MimeMap.getDefault().guessMimeTypeFromExtension("sup"));
         } finally {
-            MimeMap.setDefault(originalDefault);
+            MimeMap.setDefaultSupplier(() -> originalDefault);
         }
         assertSame(originalDefault, MimeMap.getDefault());
     }
@@ -135,28 +145,7 @@ public class MimeMapTest {
             } catch (NullPointerException expected) {
             }
         } finally {
-            MimeMap.setDefault(originalDefault);
-        }
-    }
-
-    @Test public void setDefault() {
-        MimeMap defaultMimeMap = MimeMap.getDefault();
-        MimeMap otherMimeMap = MimeMap.builder().put("text/plain", "txt").build();
-        MimeMap.setDefault(otherMimeMap);
-        try {
-            assertEquals(otherMimeMap, MimeMap.getDefault());
-        } finally {
-            MimeMap.setDefault(defaultMimeMap);
-        }
-    }
-
-    @Test public void setDefault_null() {
-        MimeMap defaultMimeMap = MimeMap.getDefault();
-        try {
-            MimeMap.setDefault(null);
-            fail();
-        } catch (NullPointerException expected) {
-            assertEquals(defaultMimeMap, MimeMap.getDefault());
+            MimeMap.setDefaultSupplier(() -> originalDefault);
         }
     }
 
