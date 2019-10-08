@@ -89,6 +89,7 @@ java_system_modules {
     visibility: [
         "//external/conscrypt",
         "//external/icu/android_icu4j",
+        "//external/wycheproof",
     ],
     libs: [
         "art.module.platform.api.stubs",
