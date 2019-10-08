@@ -125,22 +125,6 @@ filegroup {
     ],
 }
 
-// The set of files for the core library that contribute to one or more API
-// surfaces. This includes files that are in the public API as well as those
-// that are not but which have been marked up with @hide plus one or more of
-// the API defining annotations.
-filegroup {
-    name: "core_api_files",
-    visibility: [
-        "//libcore:__subpackages__",
-    ],
-    srcs: [
-        ":art_module_api_files",
-        ":android_icu4j_src_files",
-        ":conscrypt_java_files",
-    ],
-}
-
 // The set of files for the ART module that contribute to one or more API
 // surfaces. This includes files that are in the public API as well as those
 // that are not but which have been marked up with @hide plus one or more of
