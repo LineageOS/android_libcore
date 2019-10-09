@@ -362,18 +362,22 @@ public final class MimeMap {
     }
 
     private static boolean isValidMimeTypeOrExtension(String s) {
-        return s != null && !s.isEmpty() && !s.contains("?") && !s.contains(" ")
+        return s != null
+                && !s.isEmpty()
+                && s.indexOf('?') < 0
+                && s.indexOf(' ') < 0
+                && s.indexOf('\t') < 0
                 && s.equals(toLowerCase(s));
     }
 
     static void checkValidMimeType(String s) {
-        if (!isValidMimeTypeOrExtension(s) || !s.contains("/")) {
+        if (!isValidMimeTypeOrExtension(s) || s.indexOf('/') < 0) {
             throw new IllegalArgumentException("Invalid MIME type: " + s);
         }
     }
 
     static void checkValidExtension(String s) {
-        if (!isValidMimeTypeOrExtension(s) || s.contains("/")) {
+        if (!isValidMimeTypeOrExtension(s) || s.indexOf('/') >= 0) {
             throw new IllegalArgumentException("Invalid extension: " + s);
         }
     }
