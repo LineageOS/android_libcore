@@ -209,9 +209,9 @@ java_library {
 
     sdk_version: "none",
     system_modules: "none",
+    patch_module: "java.base",
     openjdk9: {
         srcs: ["luni/src/module/java/module-info.java"],
-        javacflags: ["--patch-module=java.base=."],
     },
 
     java_resources: core_resources,
@@ -266,9 +266,7 @@ java_library {
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
 
     jacoco: {
         exclude_filter: [
@@ -312,9 +310,7 @@ java_library {
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
 
     jacoco: {
         exclude_filter: [
@@ -370,9 +366,7 @@ java_library {
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
 }
 
 //
@@ -416,9 +410,7 @@ java_defaults {
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
 
     notice: "ojluni/NOTICE",
 
@@ -470,9 +462,7 @@ java_library {
     hostdex: true,
     sdk_version: "none",
     system_modules: "core-all-system-modules",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
     notice: "ojluni/NOTICE",
     installable: false,
     include_srcs: true,
@@ -644,7 +634,7 @@ java_test {
     // code if it's declared to also be in java.base at
     // compile time.
     //
-    // For now, we use --patch-module to put all sources
+    // For now, we use patch_module to put all sources
     // and dependencies from this make target into java.base;
     // other source directories in this make target are in
     // packages not from java.base; if this becomes a problem
@@ -758,9 +748,7 @@ java_library {
             "-Xep:MissingOverride:OFF",
         ],
     },
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
     sdk_version: "none",
     system_modules: "none",
 }
