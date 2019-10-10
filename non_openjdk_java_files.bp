@@ -25,7 +25,6 @@ filegroup {
         "dalvik/src/main/java/dalvik/annotation/TestTargetClass.java",
         "dalvik/src/main/java/dalvik/annotation/Throws.java",
         "dalvik/src/main/java/dalvik/annotation/codegen/CovariantReturnType.java",
-        "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/CriticalNative.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/DeadReferenceSafe.java",
         "dalvik/src/main/java/dalvik/annotation/optimization/FastNative.java",
@@ -51,13 +50,13 @@ filegroup {
         "dalvik/src/main/java/dalvik/system/SocketTagger.java",
         "dalvik/src/main/java/dalvik/system/TemporaryDirectory.java",
         "dalvik/src/main/java/dalvik/system/VMDebug.java",
-        "dalvik/src/main/java/dalvik/system/VersionCodes.java",
         "dalvik/src/main/java/dalvik/system/ZygoteHooks.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/NativeTestTarget.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/ddmc/Chunk.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/ddmc/ChunkHandler.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/ddmc/DdmServer.java",
         "dalvik/src/main/java/org/apache/harmony/dalvik/ddmc/DdmVmInternal.java",
+        ":hidden_api_surface_annotation_files",
     ],
     path: "dalvik/src/main",
     visibility: ["//visibility:private"],
@@ -96,6 +95,36 @@ filegroup {
     ],
     path: "libart/src/main",
     visibility: ["//visibility:private"],
+}
+
+// The set of annotations used for defining visible (i.e. not hidden) API
+// surfaces.
+filegroup {
+    name: "visible_api_surface_annotation_files",
+    srcs: [
+        "luni/src/main/java/libcore/api/CorePlatformApi.java",
+        "luni/src/main/java/libcore/api/Hide.java",
+        "luni/src/main/java/libcore/api/IntraCoreApi.java",
+    ],
+}
+
+// The set of annotations used for defining the hidden API surface.
+filegroup {
+    name: "hidden_api_surface_annotation_files",
+    srcs: [
+        "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
+        "dalvik/src/main/java/dalvik/system/VersionCodes.java",
+    ],
+}
+
+// The set of annotations used for defining all API surfaces, including hidden
+// APIs.
+filegroup {
+    name: "api_surface_annotation_files",
+    srcs: [
+        ":hidden_api_surface_annotation_files",
+        ":visible_api_surface_annotation_files",
+    ],
 }
 
 filegroup {
@@ -209,9 +238,6 @@ filegroup {
         "luni/src/main/java/javax/xml/xpath/XPathFunctionException.java",
         "luni/src/main/java/javax/xml/xpath/XPathFunctionResolver.java",
         "luni/src/main/java/javax/xml/xpath/XPathVariableResolver.java",
-        "luni/src/main/java/libcore/api/CorePlatformApi.java",
-        "luni/src/main/java/libcore/api/Hide.java",
-        "luni/src/main/java/libcore/api/IntraCoreApi.java",
         "luni/src/main/java/libcore/content/type/MimeMap.java",
         "luni/src/main/java/libcore/icu/DateIntervalFormat.java",
         "luni/src/main/java/libcore/icu/ICU.java",
@@ -323,6 +349,7 @@ filegroup {
         "luni/src/main/java/org/xml/sax/helpers/XMLFilterImpl.java",
         "luni/src/main/java/org/xml/sax/helpers/XMLReaderAdapter.java",
         "luni/src/main/java/org/xml/sax/helpers/XMLReaderFactory.java",
+        ":visible_api_surface_annotation_files",
     ],
     path: "luni/src/main",
     visibility: ["//visibility:private"],

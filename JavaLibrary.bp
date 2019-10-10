@@ -790,7 +790,7 @@ java_system_modules {
         // Ensure that core libraries that depend on the public API can access
         // the UnsupportedAppUsage, CorePlatformApi and IntraCoreApi
         // annotations.
-        "libcore-unsupportedappusage-annotation",
+        "art.module.api.annotations.for.system.modules",
     ],
 }
 
@@ -882,12 +882,15 @@ java_system_modules {
     ],
 }
 
-// A library that contains annotations not retented in runtime and inline-able constants
-// that should not introduce any runtime dependency for compiling core libraries, e.g. core-icu4j,
+// A library that contains annotations that define API surfaces (core
+// platform, intra core and the hidden API) along with some supporting
+// constants. The annotations are source only and do not introduce any runtime
+// dependencies. Specially built for use in system modules definitions to
+// avoid introducing compile time cycles.
 java_library {
-    name: "libcore-unsupportedappusage-annotation",
+    name: "art.module.api.annotations.for.system.modules",
     srcs: [
-        ":unsupportedappusage_annotation_files",
+        ":api_surface_annotation_files",
     ],
 
     installable: false,
@@ -896,16 +899,16 @@ java_library {
     patch_module: "java.base",
 }
 
-// The source files that contain the UnsupportedAppUsage annotation and its dependencies.
-filegroup {
-    name: "unsupportedappusage_annotation_files",
+// Create a library containing the api surface annotations, built against
+// core_current for use by the annotation processor in frameworks/base.
+java_library {
+    name: "art.module.api.annotations",
     visibility: [
         "//frameworks/base",
     ],
+    host_supported: true,
     srcs: [
-        "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
-        "dalvik/src/main/java/dalvik/system/VersionCodes.java",
-        "luni/src/main/java/libcore/api/CorePlatformApi.java",
-        "luni/src/main/java/libcore/api/IntraCoreApi.java",
+        ":api_surface_annotation_files",
     ],
+    sdk_version: "core_current",
 }
