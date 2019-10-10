@@ -65,9 +65,7 @@ java_library {
 
     sdk_version: "none",
     system_modules: "none",
-    openjdk9: {
-        javacflags: ["--patch-module=java.base=."],
-    },
+    patch_module: "java.base",
 }
 
 // Used when compiling against art.module.intra.core.api.stubs.
