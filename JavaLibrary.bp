@@ -818,9 +818,6 @@ droidstubs {
     annotations_enabled: true,
 
     merge_annotations_dirs: [
-        // TODO(http://b/111116803): Remove once annotations can be supplied in
-        // the ojluni-annotated-sdk-stubs files.
-        "metalava-manual",
         "ojluni-annotated-sdk-stubs",
     ],
 }
@@ -932,9 +929,6 @@ droidstubs {
         "--validate-nullability-from-merged-stubs ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
     merge_annotations_dirs: [
-        // TODO(http://b/111116803): Remove once annotations can be supplied in
-        // the ojluni-annotated-nullability-stubs files.
-        "metalava-manual",
         // N.B. Stubs in this filegroup will be validated:
         "ojluni-annotated-nullability-stubs",
     ],
