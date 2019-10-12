@@ -20,8 +20,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import android.icu.util.TimeZone;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
@@ -40,6 +38,7 @@ import libcore.timezone.TimeZoneFinder;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TimeZoneFinderTest {
@@ -81,8 +80,8 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n";
         CountryTimeZones expectedCountryTimeZones1 = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
 
         String validXml2 = "<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -92,8 +91,8 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n";
         CountryTimeZones expectedCountryTimeZones2 = CountryTimeZones.createValidated(
-                "gb", "Europe/Paris", false /* everUsesUtc */, timeZoneMappings("Europe/Paris"),
-                "test");
+                "gb", "Europe/Paris", false /* defaultTimeZoneBoost */, false /* everUsesUtc */,
+                timeZoneMappings("Europe/Paris"), "test");
 
         String invalidXml = "<foo></foo>\n";
         checkValidateThrowsParserException(invalidXml);
@@ -158,8 +157,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedComments() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
 
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -186,8 +185,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedElementsIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
 
         String unexpectedElement = "<unexpected-element>\n<a /></unexpected-element>\n";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
@@ -243,7 +242,7 @@ public class TimeZoneFinderTest {
         assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */,
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
                 timeZoneMappings("Europe/London", "Europe/Paris"), "test");
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -260,8 +259,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unexpectedTextIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
 
         String unexpectedText = "unexpected-text";
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
@@ -295,7 +294,7 @@ public class TimeZoneFinderTest {
         assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
 
         expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */,
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
                 timeZoneMappings("Europe/London", "Europe/Paris"), "test");
         finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
@@ -353,8 +352,8 @@ public class TimeZoneFinderTest {
     @Test
     public void xmlParsing_unknownTimeZoneIdIgnored() throws Exception {
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
         TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
                 + "  <countryzones>\n"
                 + "    <country code=\"gb\" default=\"Europe/London\" everutc=\"y\">\n"
@@ -408,6 +407,32 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_badCountryDefaultBoost() throws Exception {
+        checkValidateThrowsParserException("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" defaultBoost=\"nope\""
+                + "everutc=\"y\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+    }
+
+    @Test
+    public void xmlParsing_countryDefaultBoost() throws Exception {
+        TimeZoneFinder finder = validate("<timezones ianaversion=\"2017b\">\n"
+                + "  <countryzones>\n"
+                + "    <country code=\"gb\" default=\"Europe/London\" defaultBoost=\"y\""
+                + "everutc=\"y\">\n"
+                + "      <id>Europe/London</id>\n"
+                + "    </country>\n"
+                + "  </countryzones>\n"
+                + "</timezones>\n");
+        CountryTimeZones countryTimeZones = finder.lookupCountryTimeZones("gb");
+        assertTrue(countryTimeZones.getDefaultTimeZoneBoost());
     }
 
     @Test
@@ -497,10 +522,10 @@ public class TimeZoneFinderTest {
                 + "    </country>\n"
                 + "  </countryzones>\n"
                 + "</timezones>\n");
-        CountryTimeZones expectedGb = CountryTimeZones.createValidated("gb", "Europe/London", true,
-                timeZoneMappings("Europe/London"), "test");
-        CountryTimeZones expectedFr = CountryTimeZones.createValidated("fr", "Europe/Paris", true,
-                timeZoneMappings("Europe/Paris"), "test");
+        CountryTimeZones expectedGb = CountryTimeZones.createValidated("gb", "Europe/London",
+                false /* defaultTimeZoneBoost */, true, timeZoneMappings("Europe/London"), "test");
+        CountryTimeZones expectedFr = CountryTimeZones.createValidated("fr", "Europe/Paris",
+                false /* defaultTimeZoneBoost */, true, timeZoneMappings("Europe/Paris"), "test");
         CountryZonesFinder countryZonesFinder = timeZoneFinder.getCountryZonesFinder();
         assertEquals(list("gb", "fr"), countryZonesFinder.lookupAllCountryIsoCodes());
         assertEquals(expectedGb, countryZonesFinder.lookupCountryTimeZones("gb"));
@@ -546,8 +571,8 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         CountryTimeZones expectedCountryTimeZones = CountryTimeZones.createValidated(
-                "gb", "Europe/London", true /* everUsesUtc */, timeZoneMappings("Europe/London"),
-                "test");
+                "gb", "Europe/London", false /* defaultTimeZoneBoost */, true /* everUsesUtc */,
+                timeZoneMappings("Europe/London"), "test");
 
         assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("gb"));
         assertEquals(expectedCountryTimeZones, finder.lookupCountryTimeZones("GB"));
@@ -588,22 +613,6 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         assertEquals(expectedIanaVersion, finder.getIanaVersion());
-    }
-
-    private static void assertImmutableTimeZone(TimeZone timeZone) {
-        try {
-            timeZone.setRawOffset(1000);
-            fail();
-        } catch (UnsupportedOperationException expected) {
-        }
-    }
-
-    private static <X> void assertImmutableList(List<X> list) {
-        try {
-            list.add(null);
-            fail();
-        } catch (UnsupportedOperationException expected) {
-        }
     }
 
     private static void checkValidateThrowsParserException(String xml) {

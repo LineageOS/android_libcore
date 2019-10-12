@@ -6,6 +6,16 @@ package android.compat {
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void reportChange(@android.compat.annotation.ChangeId long);
   }
 
+  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final class Compatibility.ChangeConfig {
+    ctor public Compatibility.ChangeConfig(java.util.Set<java.lang.Long>, java.util.Set<java.lang.Long>);
+    method public long[] forceDisabledChangesArray();
+    method public java.util.Set<java.lang.Long> forceDisabledSet();
+    method public long[] forceEnabledChangesArray();
+    method public java.util.Set<java.lang.Long> forceEnabledSet();
+    method public boolean isForceDisabled(long);
+    method public boolean isForceEnabled(long);
+  }
+
 }
 
 package android.compat.annotation {
