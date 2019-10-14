@@ -25,6 +25,7 @@ droidstubs {
         ":art_module_api_files",
     ],
     sdk_version: "none",
+    system_modules: "none",
     libs: [
         // Needed to break the cycle in the platform api caused by
         // b/141747409.
@@ -69,10 +70,6 @@ java_system_modules {
 // core library modules.
 java_library {
     name: "art.module.platform.api.stubs",
-    visibility: [
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
-    ],
     srcs: [
         ":art-module-platform-api-stubs-source",
     ],

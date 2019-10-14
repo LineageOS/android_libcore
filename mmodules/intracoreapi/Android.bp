@@ -25,6 +25,7 @@ droidstubs {
         ":art_module_api_files",
     ],
     sdk_version: "none",
+    system_modules: "none",
 
     installable: false,
     args: "--hide-annotation libcore.api.Hide " +
@@ -53,8 +54,6 @@ droidstubs {
 java_library {
     name: "art.module.intra.core.api.stubs",
     visibility: [
-        "//external/conscrypt",
-        "//external/icu/android_icu4j",
         "//libcore/mmodules/core_platform_api",
     ],
     srcs: [
