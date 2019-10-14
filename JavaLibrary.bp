@@ -503,6 +503,8 @@ java_library_static {
         "android-support-test",
     ],
     platform_apis: true,
+    // This builds classes that are in the java.base Java module:
+    patch_module: "java.base",
 }
 
 // Builds the core-tests-support library used by various tests.
