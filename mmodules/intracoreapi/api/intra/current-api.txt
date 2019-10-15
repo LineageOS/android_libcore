@@ -48,6 +48,13 @@ package dalvik.annotation.compat {
 
 }
 
+package dalvik.annotation.optimization {
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.METHOD}) @libcore.api.IntraCoreApi public @interface ReachabilitySensitive {
+  }
+
+}
+
 package dalvik.system {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class BlockGuard {
@@ -119,6 +126,11 @@ package libcore.net {
 }
 
 package libcore.util {
+
+  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class NativeAllocationRegistry {
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long);
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public Runnable registerNativeAllocation(Object, long);
+  }
 
   @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE) @java.lang.annotation.Target({java.lang.annotation.ElementType.TYPE_USE}) @libcore.api.IntraCoreApi public @interface NonNull {
   }

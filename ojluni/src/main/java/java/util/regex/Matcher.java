@@ -26,8 +26,7 @@
 
 package java.util.regex;
 
-import dalvik.annotation.optimization.ReachabilitySensitive;
-import libcore.util.NativeAllocationRegistry;
+import com.android.icu.util.regex.NativeMatcher;
 
 /**
  * An engine that performs match operations on a {@linkplain java.lang.CharSequence
@@ -109,10 +108,6 @@ public final class Matcher implements MatchResult {
     /**
      * The Pattern object that created this Matcher.
      */
-    // Patterns also contain cleanup code and a ReachabilitySensitive field.
-    // This ensures that "this" and pattern remain reachable while we're using pattern.address
-    // directly.
-    @ReachabilitySensitive
     private Pattern parentPattern;
 
     /**
@@ -137,21 +132,7 @@ public final class Matcher implements MatchResult {
      */
     private boolean matchFound;
 
-    /**
-     * The address of the native peer.
-     * Uses of this must be manually synchronized to avoid native crashes.
-     */
-    @ReachabilitySensitive
-    private long address;
-
-    /**
-     * If non-null, a Runnable that can be used to explicitly deallocate address.
-     */
-    private Runnable nativeFinalizer;
-
-    private static final NativeAllocationRegistry registry =
-            NativeAllocationRegistry.createMalloced(Matcher.class.getClassLoader(),
-            getNativeFinalizer());
+    private NativeMatcher nativeMatcher;
 
     /**
      * The index of the last position appended in a substitution.
@@ -230,13 +211,8 @@ public final class Matcher implements MatchResult {
         parentPattern = newPattern;
 
         synchronized (this) {
-            if (nativeFinalizer != null) {
-                nativeFinalizer.run();
-                address = 0; // In case openImpl throws.
-                nativeFinalizer = null;
-            }
-            address = openImpl(parentPattern.address);
-            nativeFinalizer = registry.registerNativeAllocation(this, address);
+            nativeMatcher = null; // In case NativeMatcher.create throws.
+            nativeMatcher = NativeMatcher.create(parentPattern.nativePattern);
         }
 
         if (text != null) {
@@ -533,7 +509,7 @@ public final class Matcher implements MatchResult {
      */
     public int groupCount() {
         synchronized (this) {
-            return groupCountImpl(address);
+            return nativeMatcher.groupCount();
         }
     }
 
@@ -548,7 +524,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean matches() {
         synchronized (this) {
-            matchFound = matchesImpl(address, groups);
+            matchFound = nativeMatcher.matches(groups);
         }
         return matchFound;
     }
@@ -570,7 +546,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean find() {
         synchronized (this) {
-            matchFound = findNextImpl(address, groups);
+            matchFound = nativeMatcher.findNext(groups);
         }
         return matchFound;
     }
@@ -600,7 +576,7 @@ public final class Matcher implements MatchResult {
             throw new IndexOutOfBoundsException("Illegal start index");
         reset();
         synchronized (this) {
-            matchFound = findImpl(address, start, groups);
+            matchFound = nativeMatcher.find(start, groups);
         }
         return matchFound;
     }
@@ -621,7 +597,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean lookingAt() {
         synchronized (this) {
-            matchFound = lookingAtImpl(address, groups);
+            matchFound = nativeMatcher.lookingAt(groups);
         }
         return matchFound;
     }
@@ -1023,7 +999,7 @@ public final class Matcher implements MatchResult {
     public Matcher useTransparentBounds(boolean b) {
         synchronized (this) {
             transparentBounds = b;
-            useTransparentBoundsImpl(address, b);
+            nativeMatcher.useTransparentBounds(b);
         }
         return this;
     }
@@ -1072,7 +1048,7 @@ public final class Matcher implements MatchResult {
     public Matcher useAnchoringBounds(boolean b) {
         synchronized (this) {
             anchoringBounds = b;
-            useAnchoringBoundsImpl(address, b);
+            nativeMatcher.useAnchoringBounds(b);
         }
         return this;
     }
@@ -1112,7 +1088,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean hitEnd() {
         synchronized (this) {
-            return hitEndImpl(address);
+            return nativeMatcher.hitEnd();
         }
     }
 
@@ -1132,7 +1108,7 @@ public final class Matcher implements MatchResult {
      */
     public boolean requireEnd() {
         synchronized (this) {
-            return requireEndImpl(address);
+            return nativeMatcher.requireEnd();
         }
     }
 
@@ -1195,9 +1171,9 @@ public final class Matcher implements MatchResult {
 
     private void resetForInput() {
         synchronized (this) {
-            setInputImpl(address, text, from, to);
-            useAnchoringBoundsImpl(address, anchoringBounds);
-            useTransparentBoundsImpl(address, transparentBounds);
+            nativeMatcher.setInput(text, from, to);
+            nativeMatcher.useAnchoringBounds(anchoringBounds);
+            nativeMatcher.useTransparentBounds(transparentBounds);
         }
     }
 
@@ -1216,27 +1192,13 @@ public final class Matcher implements MatchResult {
 
     private int getMatchedGroupIndex(String name) {
         ensureMatch();
-        int result = getMatchedGroupIndex0(parentPattern.address, name);
+        int result = nativeMatcher.getMatchedGroupIndex(name);
         if (result < 0) {
             throw new IllegalArgumentException("No capturing group in the pattern " +
                                                "with the name " + name);
         }
         return result;
     }
-
-    private static native int getMatchedGroupIndex0(long patternAddr, String name);
-    private static native boolean findImpl(long addr, int startIndex, int[] offsets);
-    private static native boolean findNextImpl(long addr, int[] offsets);
-    private static native long getNativeFinalizer();
-    private static native int groupCountImpl(long addr);
-    private static native boolean hitEndImpl(long addr);
-    private static native boolean lookingAtImpl(long addr, int[] offsets);
-    private static native boolean matchesImpl(long addr, int[] offsets);
-    private static native long openImpl(long patternAddr);
-    private static native boolean requireEndImpl(long addr);
-    private static native void setInputImpl(long addr, String s, int start, int end);
-    private static native void useAnchoringBoundsImpl(long addr, boolean value);
-    private static native void useTransparentBoundsImpl(long addr, boolean value);
 
     /**
      * A trivial match result implementation that's based on an array of integers
