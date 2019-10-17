@@ -86,17 +86,12 @@ public class CompatChangeRule implements TestRule {
         if (disableCompatChanges != null) {
             disabled.addAll(Longs.asList(disableCompatChanges.value()));
         }
-        ArraySet<Long> intersection = new ArraySet<>(enabled);
-        intersection.retainAll(disabled);
-        if (!intersection.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Changes " + intersection + " are both enabled and disabled.");
-        }
-        if (enabled.isEmpty() && disabled.isEmpty()) {
-            throw new IllegalStateException("Added a CompatChangeRule without specifying any "
+        ChangeConfig config = new ChangeConfig(enabled, disabled);
+        if (config.isEmpty()) {
+            throw new IllegalArgumentException("Added a CompatChangeRule without specifying any "
                 + "@EnableCompatChanges or @DisableCompatChanges !");
         }
-        return new CompatChangeStatement(statement, new ChangeConfig(enabled, disabled));
+        return new CompatChangeStatement(statement, config);
     }
 
     private static class CompatChangeStatement extends Statement {
