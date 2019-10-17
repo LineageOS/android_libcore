@@ -154,6 +154,10 @@ public final class Compatibility {
             }
         }
 
+        public boolean isEmpty() {
+            return enabled.isEmpty() && disabled.isEmpty();
+        }
+
         private static long[] toLongArray(Set<Long> values) {
             long[] result = new long[values.size()];
             int idx = 0;
