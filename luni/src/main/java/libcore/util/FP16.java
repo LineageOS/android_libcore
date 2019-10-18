@@ -633,23 +633,35 @@ public class FP16 {
                 } else {
                     // The fp32 value is a normalized float less than MIN_NORMAL,
                     // we convert to a denorm fp16
-                    m = (m | 0x800000) >> (1 - e);
-                    if ((m & 0x1000) != 0) m += 0x2000;
-                    outM = m >> 13;
+                    m = m | 0x800000;
+                    int shift = 14 - e;
+                    outM = m >> shift;
+
+                    int lowm = m & ((1 << shift) - 1);
+                    int hway = 1 << (shift - 1);
+                    // if above halfway or exactly halfway and outM is odd
+                    if (lowm + (outM & 1) > hway){
+                        // Round to nearest even
+                        // Can overflow into exponent bit, which surprisingly is OK.
+                        // This increment relies on the +outM in the return statement below
+                        outM++;
+                    }
                 }
             } else {
                 outE = e;
                 outM = m >> 13;
-                if ((m & 0x1000) != 0) {
-                    // Round to nearest "0.5" up
-                    int out = (outE << EXPONENT_SHIFT) | outM;
-                    out++;
-                    return (short) (out | (s << SIGN_SHIFT));
+                // if above halfway or exactly halfway and outM is odd
+                if ((m & 0x1fff) + (outM & 0x1) > 0x1000) {
+                    // Round to nearest even
+                    // Can overflow into exponent bit, which surprisingly is OK.
+                    // This increment relies on the +outM in the return statement below
+                    outM++;
                 }
             }
         }
-
-        return (short) ((s << SIGN_SHIFT) | (outE << EXPONENT_SHIFT) | outM);
+        // The outM is added here as the +1 increments for outM above can
+        // cause an overflow in the exponent bit which is OK.
+        return (short) ((s << SIGN_SHIFT) | (outE << EXPONENT_SHIFT) + outM);
     }
 
     /**
