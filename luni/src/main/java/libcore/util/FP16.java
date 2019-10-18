@@ -626,7 +626,7 @@ public class FP16 {
         } else {
             e = e - FP32_EXPONENT_BIAS + EXPONENT_BIAS;
             if (e >= 0x1f) { // Overflow
-                outE = 0x31;
+                outE = 0x1f;
             } else if (e <= 0) { // Underflow
                 if (e < -10) {
                     // The absolute fp32 value is less than MIN_VALUE, flush to +/-0
