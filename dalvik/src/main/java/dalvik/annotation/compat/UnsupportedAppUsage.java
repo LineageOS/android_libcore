@@ -74,14 +74,9 @@ public @interface UnsupportedAppUsage {
      * <p>Possible values are:
      * <ul>
      *     <li>
-     *         {@link VersionCodes#O} - in which case the API is available up to and including the
-     *         O release and all intermediate releases between O and P. Or in other words the API
-     *         is blacklisted (unavailable) from P onwards.
-     *     </li>
-     *     <li>
-     *         {@link VersionCodes#P} - in which case the API is available up to and including the
-     *         P release and all intermediate releases between P and Q. Or in other words the API
-     *         is blacklisted (unavailable) from Q onwards.
+     *         An API level like {@link VersionCodes#O} - in which case the API is available up to
+     *         and including the specified release. Or, in other words, the API is blacklisted
+     *         (unavailable) from the next API level from the one specified.
      *     </li>
      *     <li>
      *         absent (default value) - All apps can access this API, but doing so may result in
