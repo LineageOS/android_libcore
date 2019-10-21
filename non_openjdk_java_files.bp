@@ -405,8 +405,6 @@ filegroup {
         "luni/src/main/java/libcore/reflect/WildcardTypeImpl.java",
         "luni/src/main/java/libcore/util/CharsetUtils.java",
         "luni/src/main/java/libcore/util/CollectionUtils.java",
-        "luni/src/main/java/libcore/util/NonNull.java",
-        "luni/src/main/java/libcore/util/Nullable.java",
         "luni/src/main/java/libcore/util/NullFromTypeParam.java",
         "luni/src/main/java/libcore/util/Objects.java",
         "luni/src/main/java/org/apache/harmony/xml/ExpatAttributes.java",
