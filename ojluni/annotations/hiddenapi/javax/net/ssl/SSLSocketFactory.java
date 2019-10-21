@@ -27,7 +27,7 @@
 package javax.net.ssl;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
-import dalvik.system.VersionCodes;
+import dalvik.annotation.compat.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public abstract class SSLSocketFactory extends javax.net.SocketFactory {
