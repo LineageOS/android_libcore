@@ -917,5 +917,7 @@ java_library {
     srcs: [
         ":api_surface_annotation_files",
     ],
+    java_version: "1.9",
+    patch_module: "java.base",
     sdk_version: "core_current",
 }
