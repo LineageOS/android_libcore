@@ -27,7 +27,7 @@
 package java.lang;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
-import dalvik.system.VersionCodes;
+import dalvik.annotation.compat.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Integer extends java.lang.Number

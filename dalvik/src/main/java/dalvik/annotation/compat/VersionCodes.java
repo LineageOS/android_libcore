@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dalvik.system;
+package dalvik.annotation.compat;
 
 import libcore.api.CorePlatformApi;
 import libcore.api.IntraCoreApi;

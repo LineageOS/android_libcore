@@ -47,6 +47,12 @@ package dalvik.annotation.compat {
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
   }
 
+  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class VersionCodes {
+    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
+    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
+    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int Q = 29; // 0x1d
+  }
+
 }
 
 package dalvik.annotation.optimization {
@@ -71,12 +77,6 @@ package dalvik.system {
     method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
     method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
     method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
-  }
-
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class VersionCodes {
-    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
-    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
-    field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int Q = 29; // 0x1d
   }
 
 }
