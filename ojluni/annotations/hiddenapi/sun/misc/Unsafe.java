@@ -26,7 +26,7 @@
 package sun.misc;
 
 import dalvik.annotation.compat.UnsupportedAppUsage;
-import dalvik.system.VersionCodes;
+import dalvik.annotation.compat.VersionCodes;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Unsafe {
