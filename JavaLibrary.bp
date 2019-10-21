@@ -746,7 +746,7 @@ filegroup {
 //
 // Only for use by art.module.public.api.stubs target below.
 droidstubs {
-    name: "art-module-public-api-stubs-gen",
+    name: "art-module-public-api-stubs-source",
     srcs: [
         ":core_oj_api_files",
         ":core_libart_api_files",
@@ -760,7 +760,7 @@ droidstubs {
 // A stubs target containing the parts of the public SDK API provided by the ART module.
 java_library {
     name: "art.module.public.api.stubs",
-    srcs: [":art-module-public-api-stubs-gen"],
+    srcs: [":art-module-public-api-stubs-source"],
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",
