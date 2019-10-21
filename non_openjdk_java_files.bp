@@ -113,7 +113,7 @@ filegroup {
     name: "hidden_api_surface_annotation_files",
     srcs: [
         "dalvik/src/main/java/dalvik/annotation/compat/UnsupportedAppUsage.java",
-        "dalvik/src/main/java/dalvik/system/VersionCodes.java",
+        "dalvik/src/main/java/dalvik/annotation/compat/VersionCodes.java",
     ],
 }
 
