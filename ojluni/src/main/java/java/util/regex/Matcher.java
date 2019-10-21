@@ -208,12 +208,12 @@ public final class Matcher implements MatchResult {
     public Matcher usePattern(Pattern newPattern) {
         if (newPattern == null)
             throw new IllegalArgumentException("Pattern cannot be null");
-        parentPattern = newPattern;
 
         synchronized (this) {
-            nativeMatcher = null; // In case NativeMatcher.create throws.
-            nativeMatcher = NativeMatcher.create(parentPattern.nativePattern);
+            // may throw
+            nativeMatcher = NativeMatcher.create(newPattern.nativePattern);
         }
+        parentPattern = newPattern;
 
         if (text != null) {
             resetForInput();
