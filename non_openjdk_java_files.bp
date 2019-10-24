@@ -179,7 +179,6 @@ filegroup {
         "luni/src/main/java/java/nio/charset/CharsetDecoderICU.java",
         "luni/src/main/java/java/nio/charset/CharsetEncoderICU.java",
         "luni/src/main/java/java/nio/charset/CharsetICU.java",
-        "luni/src/main/java/java/nio/charset/ModifiedUtf8.java",
         "luni/src/main/java/javax/xml/XMLConstants.java",
         "luni/src/main/java/javax/xml/datatype/DatatypeConfigurationException.java",
         "luni/src/main/java/javax/xml/datatype/DatatypeConstants.java",
