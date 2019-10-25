@@ -20,6 +20,7 @@ import dalvik.annotation.compat.UnsupportedAppUsage;
 
 /** @hide */
 @libcore.api.CorePlatformApi
+@libcore.api.IntraCoreApi
 public final class EmptyArray {
     private EmptyArray() {}
 
@@ -27,7 +28,9 @@ public final class EmptyArray {
     public static final boolean[] BOOLEAN = new boolean[0];
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public static final byte[] BYTE = new byte[0];
+    @libcore.api.IntraCoreApi
     public static final char[] CHAR = new char[0];
     public static final double[] DOUBLE = new double[0];
     @libcore.api.CorePlatformApi
