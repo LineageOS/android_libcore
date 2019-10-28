@@ -144,13 +144,7 @@ package libcore.net {
 
 package libcore.util {
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class EmptyArray {
-    field @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final byte[] BYTE;
-    field @libcore.api.IntraCoreApi public static final char[] CHAR;
-  }
-
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class NativeAllocationRegistry {
-    ctor @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public NativeAllocationRegistry(ClassLoader, long, long);
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long);
     method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public Runnable registerNativeAllocation(Object, long);
   }
