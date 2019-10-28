@@ -192,6 +192,7 @@ public class NativeAllocationRegistry {
      * @param mallocAllocation the native object is primarily allocated via malloc.
      */
     @libcore.api.CorePlatformApi
+    @libcore.api.IntraCoreApi
     public NativeAllocationRegistry(ClassLoader classLoader, long freeFunction, long size) {
         this(classLoader, freeFunction, size, size == 0);
     }

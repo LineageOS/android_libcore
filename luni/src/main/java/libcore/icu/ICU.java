@@ -364,17 +364,6 @@ public final class ICU {
 
   // --- Errors.
 
-  // Just the subset of error codes needed by CharsetDecoderICU/CharsetEncoderICU.
-  public static final int U_ZERO_ERROR = 0;
-  public static final int U_INVALID_CHAR_FOUND = 10;
-  public static final int U_TRUNCATED_CHAR_FOUND = 11;
-  public static final int U_ILLEGAL_CHAR_FOUND = 12;
-  public static final int U_BUFFER_OVERFLOW_ERROR = 15;
-
-  public static boolean U_FAILURE(int error) {
-    return error > U_ZERO_ERROR;
-  }
-
   // --- Native methods accessing ICU's database.
 
   private static native String[] getAvailableCollatorLocalesNative();

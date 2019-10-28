@@ -45,7 +45,6 @@ static bool g_constants_valid = false;
 
 // Constants
 jclass booleanClass;
-jclass charsetICUClass;
 jclass doubleClass;
 jclass errnoExceptionClass;
 jclass fileDescriptorClass;
@@ -91,7 +90,6 @@ void EnsureJniConstantsInitialized(JNIEnv* env) {
     }
 
     booleanClass = findClass(env, "java/lang/Boolean");
-    charsetICUClass = findClass(env, "java/nio/charset/CharsetICU");
     doubleClass = findClass(env, "java/lang/Double");
     errnoExceptionClass = findClass(env, "android/system/ErrnoException");
     fileDescriptorClass = findClass(env, "java/io/FileDescriptor");
@@ -148,11 +146,6 @@ void JniConstants::Invalidate() {
 jclass JniConstants::GetBooleanClass(JNIEnv* env) {
     EnsureJniConstantsInitialized(env);
     return booleanClass;
-}
-
-jclass JniConstants::GetCharsetICUClass(JNIEnv* env) {
-    EnsureJniConstantsInitialized(env);
-    return charsetICUClass;
 }
 
 jclass JniConstants::GetDoubleClass(JNIEnv* env) {
