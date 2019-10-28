@@ -30,7 +30,6 @@ struct JniConstants {
     static void Invalidate();
 
     static jclass GetBooleanClass(JNIEnv* env);
-    static jclass GetCharsetICUClass(JNIEnv* env);
     static jclass GetDoubleClass(JNIEnv* env);
     static jclass GetErrnoExceptionClass(JNIEnv* env);
     static jclass GetFileDescriptorClass(JNIEnv* env);
