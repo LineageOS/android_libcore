@@ -341,11 +341,6 @@ static jint NativeConverter_getMaxBytesPerChar(JNIEnv*, jclass, jlong address) {
     return (cnv != NULL) ? ucnv_getMaxCharSize(cnv) : -1;
 }
 
-static jint NativeConverter_getMinBytesPerChar(JNIEnv*, jclass, jlong address) {
-    UConverter* cnv = toUConverter(address);
-    return (cnv != NULL) ? ucnv_getMinCharSize(cnv) : -1;
-}
-
 static jfloat NativeConverter_getAveBytesPerChar(JNIEnv*, jclass, jlong address) {
     UConverter* cnv = toUConverter(address);
     return (cnv != NULL) ? ((ucnv_getMaxCharSize(cnv) + ucnv_getMinCharSize(cnv)) / 2.0) : -1;
@@ -686,7 +681,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(NativeConverter, getAveBytesPerChar, "(J)F"),
     NATIVE_METHOD(NativeConverter, getAveCharsPerByte, "(J)F"),
     NATIVE_METHOD(NativeConverter, getMaxBytesPerChar, "(J)I"),
-    NATIVE_METHOD(NativeConverter, getMinBytesPerChar, "(J)I"),
     NATIVE_METHOD(NativeConverter, getSubstitutionBytes, "(J)[B"),
     NATIVE_METHOD(NativeConverter, openConverter, "(Ljava/lang/String;)J"),
     NATIVE_METHOD(NativeConverter, resetByteToChar, "(J)V"),

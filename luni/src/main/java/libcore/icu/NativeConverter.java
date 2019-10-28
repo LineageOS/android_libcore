@@ -39,7 +39,6 @@ public final class NativeConverter {
     public static native byte[] getSubstitutionBytes(long converterHandle);
 
     public static native int getMaxBytesPerChar(long converterHandle);
-    public static native int getMinBytesPerChar(long converterHandle);
     public static native float getAveBytesPerChar(long converterHandle);
     public static native float getAveCharsPerByte(long converterHandle);
 
