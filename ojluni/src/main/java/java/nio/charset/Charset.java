@@ -27,12 +27,11 @@
 package java.nio.charset;
 
 import java.io.UnsupportedEncodingException;
-import libcore.icu.NativeConverter;
+import com.android.icu.charset.NativeConverter;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.spi.CharsetProvider;
 import java.security.AccessController;
-import java.security.AccessControlException;
 import java.security.PrivilegedAction;
 import java.util.AbstractMap;
 import java.util.Collections;
@@ -686,6 +685,7 @@ public abstract class Charset
      * @throws IllegalCharsetNameException
      *         If the canonical name or any of the aliases are illegal
      */
+    @libcore.api.IntraCoreApi
     protected Charset(String canonicalName, String[] aliases) {
         checkName(canonicalName);
         String[] as = (aliases == null) ? new String[0] : aliases;
