@@ -89,6 +89,22 @@ package java.net {
 
 }
 
+package java.nio.charset {
+
+  public abstract class Charset implements java.lang.Comparable<java.nio.charset.Charset> {
+    ctor @libcore.api.IntraCoreApi protected Charset(String, String[]);
+  }
+
+  public abstract class CharsetDecoder {
+    ctor protected CharsetDecoder(java.nio.charset.Charset, float, float);
+  }
+
+  public abstract class CharsetEncoder {
+    ctor protected CharsetEncoder(java.nio.charset.Charset, float, float, byte[], boolean);
+  }
+
+}
+
 package java.security.spec {
 
   public class ECParameterSpec implements java.security.spec.AlgorithmParameterSpec {
