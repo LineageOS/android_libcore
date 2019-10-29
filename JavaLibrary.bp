@@ -123,7 +123,6 @@ filegroup {
         ":android_icu4j_src_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
-        ":conscrypt_public_api_files",
     ],
 }
 
@@ -142,8 +141,12 @@ genrule {
     tools: [
         "merge_zips",
     ],
+    srcs: [
+        ":conscrypt-module-public-api-stubs-source",
+    ],
     out: ["core-current-stubs-source.srcjar"],
-    cmd: "$(location merge_zips) $(out)",
+    cmd: "$(location merge_zips) $(out)" +
+        " $(location :conscrypt-module-public-api-stubs-source)",
 }
 
 // The set of files for the ART module that contribute to one or more API
