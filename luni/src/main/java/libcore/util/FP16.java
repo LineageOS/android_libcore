@@ -249,6 +249,12 @@ public class FP16 {
             result += (1 << (abs - 1));
             result &= ~mask;
         }
+        if (isNaN((short) result)) {
+            // if result is NaN mask with qNaN
+            // (i.e. mask the most significant mantissa bit with 1)
+            // to comply with hardware implementations (ARM64, Intel, etc).
+            result |= NaN;
+        }
 
         return (short) result;
     }
