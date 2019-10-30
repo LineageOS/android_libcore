@@ -120,7 +120,7 @@ filegroup {
         "//frameworks/base",
     ],
     srcs: [
-        ":android_icu4j_src_files",
+        ":android_icu4j_public_api_files",
         ":core_oj_api_files",
         ":core_libart_api_files",
     ],
