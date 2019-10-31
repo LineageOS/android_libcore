@@ -237,16 +237,16 @@ public class FP16 {
     @libcore.api.CorePlatformApi
     public static short rint(short h) {
         int bits = h & 0xffff;
-        int e = bits & EXPONENT_SIGNIFICAND_MASK;
+        int abs = bits & EXPONENT_SIGNIFICAND_MASK;
         int result = bits;
 
-        if (e < 0x3c00) {
+        if (abs < 0x3c00) {
             result &= SIGN_MASK;
-            result |= (0x3c00 & (e >= 0x3800 ? 0xffff : 0x0));
-        } else if (e < 0x6400) {
-            e = 25 - (e >> 10);
-            int mask = (1 << e) - 1;
-            result += (1 << (e - 1));
+            result |= (0x3c00 & (abs >= 0x3800 ? 0xffff : 0x0));
+        } else if (abs < 0x6400) {
+            abs = 25 - (abs >> 10);
+            int mask = (1 << abs) - 1;
+            result += (1 << (abs - 1));
             result &= ~mask;
         }
 
@@ -272,15 +272,15 @@ public class FP16 {
     @libcore.api.CorePlatformApi
     public static short ceil(short h) {
         int bits = h & 0xffff;
-        int e = bits & EXPONENT_SIGNIFICAND_MASK;
+        int abs = bits & EXPONENT_SIGNIFICAND_MASK;
         int result = bits;
 
-        if (e < 0x3c00) {
+        if (abs < 0x3c00) {
             result &= SIGN_MASK;
-            result |= 0x3c00 & -(~(bits >> 15) & (e != 0 ? 1 : 0));
-        } else if (e < 0x6400) {
-            e = 25 - (e >> 10);
-            int mask = (1 << e) - 1;
+            result |= 0x3c00 & -(~(bits >> 15) & (abs != 0 ? 1 : 0));
+        } else if (abs < 0x6400) {
+            abs = 25 - (abs >> 10);
+            int mask = (1 << abs) - 1;
             result += mask & ((bits >> 15) - 1);
             result &= ~mask;
         }
@@ -307,15 +307,15 @@ public class FP16 {
     @libcore.api.CorePlatformApi
     public static short floor(short h) {
         int bits = h & 0xffff;
-        int e = bits & EXPONENT_SIGNIFICAND_MASK;
+        int abs = bits & EXPONENT_SIGNIFICAND_MASK;
         int result = bits;
 
-        if (e < 0x3c00) {
+        if (abs < 0x3c00) {
             result &= SIGN_MASK;
             result |= 0x3c00 & (bits > 0x8000 ? 0xffff : 0x0);
-        } else if (e < 0x6400) {
-            e = 25 - (e >> 10);
-            int mask = (1 << e) - 1;
+        } else if (abs < 0x6400) {
+            abs = 25 - (abs >> 10);
+            int mask = (1 << abs) - 1;
             result += mask & -(bits >> 15);
             result &= ~mask;
         }
@@ -346,14 +346,14 @@ public class FP16 {
     @libcore.api.CorePlatformApi
     public static short trunc(short h) {
         int bits = h & 0xffff;
-        int e = bits & EXPONENT_SIGNIFICAND_MASK;
+        int abs = bits & EXPONENT_SIGNIFICAND_MASK;
         int result = bits;
 
-        if (e < 0x3c00) {
+        if (abs < 0x3c00) {
             result &= SIGN_MASK;
-        } else if (e < 0x6400) {
-            e = 25 - (e >> 10);
-            int mask = (1 << e) - 1;
+        } else if (abs < 0x6400) {
+            abs = 25 - (abs >> 10);
+            int mask = (1 << abs) - 1;
             result &= ~mask;
         }
 
