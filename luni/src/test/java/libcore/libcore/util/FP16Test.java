@@ -200,6 +200,11 @@ public class FP16Test extends TestCase {
         assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.7f))), 0.0f);
         assertEquals(124.0f, toFloat(FP16.floor(toHalf(124.2f))), 0.0f);
         assertEquals(-125.0f, toFloat(FP16.floor(toHalf(-124.2f))), 0.0f);
+        // floor for NaN values
+        assertEquals((short) 0x7e01, FP16.floor((short) 0x7c01));
+        assertEquals((short) 0x7f00, FP16.floor((short) 0x7d00));
+        assertEquals((short) 0xfe01, FP16.floor((short) 0xfc01));
+        assertEquals((short) 0xff00, FP16.floor((short) 0xfd00));
     }
 
     public void testRint() {
