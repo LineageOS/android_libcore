@@ -136,8 +136,9 @@ public final class ZygoteHooks {
      */
     @libcore.api.CorePlatformApi
     public static void postForkCommon() {
-        Daemons.startPostZygoteFork();
+        // Notify the runtime before creating new threads.
         nativePostZygoteFork();
+        Daemons.startPostZygoteFork();
     }
 
 
