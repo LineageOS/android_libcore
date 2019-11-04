@@ -2,8 +2,8 @@
 package android.compat {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class Compatibility {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void reportChange(@android.compat.annotation.ChangeId long);
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static boolean isChangeEnabled(long);
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static void reportChange(long);
   }
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final class Compatibility.ChangeConfig {
@@ -15,20 +15,6 @@ package android.compat {
     method public boolean isEmpty();
     method public boolean isForceDisabled(long);
     method public boolean isForceEnabled(long);
-  }
-
-}
-
-package android.compat.annotation {
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface ChangeId {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface Disabled {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface EnabledAfter {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract int targetSdkVersion();
   }
 
 }

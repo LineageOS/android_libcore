@@ -208,6 +208,7 @@ java_library {
         ":core_libart_java_files",
         ":openjdk_lambda_stub_files",
         ":openjdk_generated_annotation_stub_files",
+        ":app-compat-annotations-source",
     ],
 
     sdk_version: "none",
@@ -498,12 +499,12 @@ java_library_static {
         "test-rules/src/platform_compat/**/*.java",
         "luni/src/main/java/libcore/api/CorePlatformApi.java",
         "luni/src/main/java/libcore/api/IntraCoreApi.java",
-
     ],
     static_libs: [
         "junit",
         "guava",
         "android-support-test",
+        "app-compat-annotations",
     ],
     platform_apis: true,
     // This builds classes that are in the java.base Java module:
