@@ -121,6 +121,8 @@ filegroup {
     ],
     srcs: [
         ":android_icu4j_public_api_files",
+        ":core_oj_api_files",
+        ":core_libart_api_files",
     ],
 }
 
@@ -140,12 +142,10 @@ genrule {
         "merge_zips",
     ],
     srcs: [
-        ":art-module-public-api-stubs-source",
         ":conscrypt-module-public-api-stubs-source",
     ],
     out: ["core-current-stubs-source.srcjar"],
     cmd: "$(location merge_zips) $(out)" +
-        " $(location :art-module-public-api-stubs-source)" +
         " $(location :conscrypt-module-public-api-stubs-source)",
 }
 
@@ -807,13 +807,6 @@ droidstubs {
     installable: false,
     sdk_version: "none",
     system_modules: "java-current-stubs-system-modules",
-    libs: [
-        // Provide access to I18N constants that are used to initialize
-        // constants in the public API. i.e. to allow the value of the
-        // java.text.CollectionElementIterator.NULLORDER to be initialized from
-        // android.icu.text.CollationElementIterator.NULLORDER.
-        "i18n.module.intra.core.api.stubs",
-    ],
 
     create_doc_stubs: true,
 
