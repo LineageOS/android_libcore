@@ -124,7 +124,7 @@ public class TimeZoneFinderTest {
         assertNull(invalidThenValid.getIanaVersion());
         assertNull(invalidThenValid.lookupCountryTimeZones("gb"));
 
-        // This is not a normal case: It would imply a define shipped without a file in /system!
+        // This is not a normal case: It would imply a device shipped without a file anywhere!
         TimeZoneFinder missingFiles =
                 TimeZoneFinder.createInstanceWithFallback(missingFile, missingFile);
         assertNull(missingFiles.getIanaVersion());
