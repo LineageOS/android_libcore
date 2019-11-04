@@ -22,6 +22,8 @@ import android.icu.text.TimeZoneNames;
 import android.icu.util.VersionInfo;
 import android.system.Os;
 
+import com.android.icu.util.Icu4cMetadata;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import libcore.icu.ICU;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.TimeZoneFinder;
 import libcore.timezone.TzDataSetVersion;
@@ -182,7 +183,7 @@ public class TimeZoneIntegrationTest {
      */
     @Test
     public void testTimeZoneDataVersion() {
-        String icu4cTzVersion = ICU.getTZDataVersion();
+        String icu4cTzVersion = Icu4cMetadata.getTzdbVersion();
 
         String zoneInfoTzVersion = ZoneInfoDB.getInstance().getVersion();
         assertEquals(icu4cTzVersion, zoneInfoTzVersion);
