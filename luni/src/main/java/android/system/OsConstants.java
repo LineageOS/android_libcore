@@ -359,6 +359,7 @@ public final class OsConstants {
     @libcore.api.CorePlatformApi
     public static final int _LINUX_CAPABILITY_VERSION_3 = placeholder();
     public static final int MAP_FIXED = placeholder();
+    public static final int MAP_ANONYMOUS = placeholder();
     /** @hide */
     @UnsupportedAppUsage
     @libcore.api.CorePlatformApi
