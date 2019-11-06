@@ -603,12 +603,8 @@ public final class DexPathList {
                 return path;
             }
         }
-        // Don't give up even if we failed to find the library in the native lib paths.
-        // The underlying dynamic linker might be able to find the lib in one of the linker
-        // namespaces associated with the current linker namespace. In order to give the
-        // dynamic linker a chance, proceed to load the library with its soname, which
-        // is the fileName.
-        return fileName;
+
+        return null;
     }
 
     /**
