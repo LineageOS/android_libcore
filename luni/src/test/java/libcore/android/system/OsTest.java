@@ -1470,4 +1470,15 @@ public class OsTest extends TestCase {
         InetAddress inetAddress = Os.inet_pton(AF_INET, srcAddress);
         assertNull(inetAddress);
     }
+
+    /**
+     * Verifies the {@link OsConstants#MAP_ANONYMOUS}.
+     */
+    public void testMapAnonymous() throws Exception {
+        final long size = 4096;
+        final long address = Os.mmap(0, size, PROT_READ,
+                MAP_PRIVATE | MAP_ANONYMOUS, new FileDescriptor(), 0);
+        assertTrue(address > 0);
+        Os.munmap(address, size);
+    }
 }

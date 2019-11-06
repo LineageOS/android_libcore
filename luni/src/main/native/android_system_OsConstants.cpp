@@ -351,6 +351,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "_LINUX_CAPABILITY_VERSION_3", _LINUX_CAPABILITY_VERSION_3);
 #endif
     initConstant(env, c, "MAP_FIXED", MAP_FIXED);
+    initConstant(env, c, "MAP_ANONYMOUS", MAP_ANONYMOUS);
     initConstant(env, c, "MAP_POPULATE", MAP_POPULATE);
     initConstant(env, c, "MAP_PRIVATE", MAP_PRIVATE);
     initConstant(env, c, "MAP_SHARED", MAP_SHARED);
