@@ -508,7 +508,6 @@ java_library_static {
     platform_apis: true,
     // This builds classes that are in the java.base Java module:
     patch_module: "java.base",
-    hostdex: true,
 }
 
 // Builds the core-tests-support library used by various tests.
@@ -614,7 +613,6 @@ java_test {
         "mockito-target",
         "mockwebserver",
         "nist-pkix-tests",
-        "platform_compat-test-rules",
         "slf4j-jdk14",
         "sqlite-jdbc",
         "tzdata-testing",
