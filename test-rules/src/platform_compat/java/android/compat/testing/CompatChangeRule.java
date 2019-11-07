@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package android.compat;
+package android.compat.testing;
 
 import android.app.Instrumentation;
+import android.compat.Compatibility;
 import android.compat.Compatibility.Callbacks;
 import android.compat.Compatibility.ChangeConfig;
 import android.content.Context;
@@ -40,7 +41,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import com.google.common.primitives.Longs;
-
 
 /**
  * Allows tests to specify the which change to disable.
@@ -72,6 +72,34 @@ import com.google.common.primitives.Longs;
  * </pre>
  */
 public class CompatChangeRule implements TestRule {
+
+    /**
+     * Enum for representing the environment on which the test will run.
+     */
+    public enum TestType {
+        /**
+         * Test will run on device side, typically using {@link AndroidJUnit} runner.
+         */
+        DEVICE_SIDE,
+        /**
+         * Test will run host side, typically using {@link JUnit} runner.
+         */
+        HOST_SIDE
+    }
+
+    private TestType testType;
+
+    public CompatChangeRule(TestType testType) {
+        this.testType = testType;
+    }
+
+    /**
+     * By default, assume it's a {@link TestType#DEVICE_SIDE} test.
+     */
+    public CompatChangeRule() {
+        this(TestType.DEVICE_SIDE);
+    }
+
     @Override
     public Statement apply(final Statement statement, Description description) {
         Set<Long> enabled = new HashSet<>();
@@ -89,16 +117,22 @@ public class CompatChangeRule implements TestRule {
         ChangeConfig config = new ChangeConfig(enabled, disabled);
         if (config.isEmpty()) {
             throw new IllegalArgumentException("Added a CompatChangeRule without specifying any "
-                + "@EnableCompatChanges or @DisableCompatChanges !");
+                    + "@EnableCompatChanges or @DisableCompatChanges !");
         }
-        return new CompatChangeStatement(statement, config);
+        if (testType == TestType.HOST_SIDE) {
+            return new HostCompatChangeStatement(statement, config);
+        } else if (testType == TestType.DEVICE_SIDE) {
+            return new DeviceCompatChangeStatement(statement, config);
+        } else {
+            throw new IllegalStateException("Unimplemented test type " + testType);
+        }
     }
 
-    private static class CompatChangeStatement extends Statement {
+    private static class DeviceCompatChangeStatement extends Statement {
         private final Statement testStatement;
         private final ChangeConfig config;
 
-        private CompatChangeStatement(Statement testStatement, ChangeConfig config) {
+        private DeviceCompatChangeStatement(Statement testStatement, ChangeConfig config) {
             this.testStatement = testStatement;
             this.config = config;
         }
@@ -120,8 +154,28 @@ public class CompatChangeRule implements TestRule {
                 } finally {
                     platformCompat.clearOverrides(packageName);
                 }
-            } catch(RemoteException e) {
+            } catch (RemoteException e) {
                 throw new RuntimeException("Could not call IPlatformCompat binder method!", e);
+            } finally {
+                Compatibility.clearOverrides();
+            }
+        }
+    }
+
+    private static class HostCompatChangeStatement extends Statement {
+        private final Statement testStatement;
+        private final ChangeConfig config;
+
+        private HostCompatChangeStatement(Statement testStatement, ChangeConfig config) {
+            this.testStatement = testStatement;
+            this.config = config;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            Compatibility.setOverrides(config);
+            try {
+                testStatement.evaluate();
             } finally {
                 Compatibility.clearOverrides();
             }
