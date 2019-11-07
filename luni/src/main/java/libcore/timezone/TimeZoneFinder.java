@@ -16,28 +16,31 @@
 
 package libcore.timezone;
 
+import static libcore.timezone.XmlUtils.checkOnEndTag;
+import static libcore.timezone.XmlUtils.consumeText;
+import static libcore.timezone.XmlUtils.consumeUntilEndTag;
+import static libcore.timezone.XmlUtils.findNextStartTagOrEndTagNoRecurse;
+import static libcore.timezone.XmlUtils.findNextStartTagOrThrowNoRecurse;
+import static libcore.timezone.XmlUtils.normalizeCountryIso;
+import static libcore.timezone.XmlUtils.parseBooleanAttribute;
+import static libcore.timezone.XmlUtils.parseLongAttribute;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import libcore.timezone.CountryTimeZones.TimeZoneMapping;
+import libcore.timezone.XmlUtils.ReaderSupplier;
 
 /**
  * A class that can find matching time zones by loading data from the tzlookup.xml file.
@@ -73,9 +76,6 @@ public final class TimeZoneFinder {
     private static final String ZONE_ID_ELEMENT = "id";
     private static final String ZONE_SHOW_IN_PICKER_ATTRIBUTE = "picker";
     private static final String ZONE_NOT_USED_AFTER_ATTRIBUTE = "notafter";
-
-    private static final String TRUE_ATTRIBUTE_VALUE = "y";
-    private static final String FALSE_ATTRIBUTE_VALUE = "n";
 
     private static TimeZoneFinder instance;
 
@@ -261,7 +261,7 @@ public final class TimeZoneFinder {
              * </timezones>
              */
 
-            findRequiredStartTag(parser, TIMEZONES_ELEMENT);
+            findNextStartTagOrThrowNoRecurse(parser, TIMEZONES_ELEMENT);
 
             // We do not require the ianaversion attribute be present. It is metadata that helps
             // with versioning but is not required.
@@ -273,7 +273,7 @@ public final class TimeZoneFinder {
 
             // There is only one expected sub-element <countryzones> in the format currently, skip
             // over anything before it.
-            findRequiredStartTag(parser, COUNTRY_ZONES_ELEMENT);
+            findNextStartTagOrThrowNoRecurse(parser, COUNTRY_ZONES_ELEMENT);
 
             if (processCountryZones(parser, processor) == TimeZonesProcessor.HALT) {
                 return;
@@ -298,43 +298,39 @@ public final class TimeZoneFinder {
             TimeZonesProcessor processor) throws IOException, XmlPullParserException {
 
         // Skip over any unexpected elements and process <country> elements.
-        while (findOptionalStartTag(parser, COUNTRY_ELEMENT)) {
-            if (processor == null) {
-                consumeUntilEndTag(parser, COUNTRY_ELEMENT);
-            } else {
-                String code = parser.getAttributeValue(
-                        null /* namespace */, COUNTRY_CODE_ATTRIBUTE);
-                if (code == null || code.isEmpty()) {
-                    throw new XmlPullParserException(
-                            "Unable to find country code: " + parser.getPositionDescription());
-                }
+        while (findNextStartTagOrEndTagNoRecurse(parser, COUNTRY_ELEMENT)) {
+            String code = parser.getAttributeValue(
+                    null /* namespace */, COUNTRY_CODE_ATTRIBUTE);
+            if (code == null || code.isEmpty()) {
+                throw new XmlPullParserException(
+                        "Unable to find country code: " + parser.getPositionDescription());
+            }
 
-                String defaultTimeZoneId = parser.getAttributeValue(
-                        null /* namespace */, DEFAULT_TIME_ZONE_ID_ATTRIBUTE);
-                if (defaultTimeZoneId == null || defaultTimeZoneId.isEmpty()) {
-                    throw new XmlPullParserException("Unable to find default time zone ID: "
-                            + parser.getPositionDescription());
-                }
+            String defaultTimeZoneId = parser.getAttributeValue(
+                    null /* namespace */, DEFAULT_TIME_ZONE_ID_ATTRIBUTE);
+            if (defaultTimeZoneId == null || defaultTimeZoneId.isEmpty()) {
+                throw new XmlPullParserException("Unable to find default time zone ID: "
+                        + parser.getPositionDescription());
+            }
 
-                boolean defaultTimeZoneBoost = parseBooleanAttribute(parser,
-                        DEFAULT_TIME_ZONE_BOOST_ATTRIBUTE, false);
+            boolean defaultTimeZoneBoost = parseBooleanAttribute(parser,
+                    DEFAULT_TIME_ZONE_BOOST_ATTRIBUTE, false);
 
-                Boolean everUsesUtc = parseBooleanAttribute(
-                        parser, EVER_USES_UTC_ATTRIBUTE, null /* defaultValue */);
-                if (everUsesUtc == null) {
-                    // There is no valid default: we require this to be specified.
-                    throw new XmlPullParserException(
-                            "Unable to find UTC hint attribute (" + EVER_USES_UTC_ATTRIBUTE + "): "
-                            + parser.getPositionDescription());
-                }
+            Boolean everUsesUtc = parseBooleanAttribute(
+                    parser, EVER_USES_UTC_ATTRIBUTE, null /* defaultValue */);
+            if (everUsesUtc == null) {
+                // There is no valid default: we require this to be specified.
+                throw new XmlPullParserException(
+                        "Unable to find UTC hint attribute (" + EVER_USES_UTC_ATTRIBUTE + "): "
+                        + parser.getPositionDescription());
+            }
 
-                String debugInfo = parser.getPositionDescription();
-                List<TimeZoneMapping> timeZoneMappings = parseTimeZoneMappings(parser);
-                boolean result = processor.processCountryZones(code, defaultTimeZoneId,
-                        defaultTimeZoneBoost, everUsesUtc, timeZoneMappings, debugInfo);
-                if (result == TimeZonesProcessor.HALT) {
-                    return TimeZonesProcessor.HALT;
-                }
+            String debugInfo = parser.getPositionDescription();
+            List<TimeZoneMapping> timeZoneMappings = parseTimeZoneMappings(parser);
+            boolean result = processor.processCountryZones(code, defaultTimeZoneId,
+                    defaultTimeZoneBoost, everUsesUtc, timeZoneMappings, debugInfo);
+            if (result == TimeZonesProcessor.HALT) {
+                return TimeZonesProcessor.HALT;
             }
 
             // Make sure we are on the </country> element.
@@ -349,7 +345,7 @@ public final class TimeZoneFinder {
         List<TimeZoneMapping> timeZoneMappings = new ArrayList<>();
 
         // Skip over any unexpected elements and process <id> elements.
-        while (findOptionalStartTag(parser, ZONE_ID_ELEMENT)) {
+        while (findNextStartTagOrEndTagNoRecurse(parser, ZONE_ID_ELEMENT)) {
             // The picker attribute is optional and defaulted to true.
             boolean showInPicker = parseBooleanAttribute(
                     parser, ZONE_SHOW_IN_PICKER_ATTRIBUTE, true /* defaultValue */);
@@ -373,177 +369,6 @@ public final class TimeZoneFinder {
 
         // The list is made unmodifiable to avoid callers changing it.
         return Collections.unmodifiableList(timeZoneMappings);
-    }
-
-    /**
-     * Parses an attribute value, which must be either {@code null} or a valid signed long value.
-     * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
-     * attribute is present but not a valid long value then an XmlPullParserException is thrown.
-     */
-    private static Long parseLongAttribute(XmlPullParser parser, String attributeName,
-            Long defaultValue) throws XmlPullParserException {
-        String attributeValueString = parser.getAttributeValue(null /* namespace */, attributeName);
-        if (attributeValueString == null) {
-            return defaultValue;
-        }
-        try {
-            return Long.parseLong(attributeValueString);
-        } catch (NumberFormatException e) {
-            throw new XmlPullParserException("Attribute \"" + attributeName
-                    + "\" is not a long value: " + parser.getPositionDescription());
-        }
-    }
-
-    /**
-     * Parses an attribute value, which must be either {@code null}, {@code "y"} or {@code "n"}.
-     * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
-     * attribute is present but not "y" or "n" then an XmlPullParserException is thrown.
-     */
-    private static Boolean parseBooleanAttribute(XmlPullParser parser,
-            String attributeName, Boolean defaultValue) throws XmlPullParserException {
-        String attributeValueString = parser.getAttributeValue(null /* namespace */, attributeName);
-        if (attributeValueString == null) {
-            return defaultValue;
-        }
-        boolean isTrue = TRUE_ATTRIBUTE_VALUE.equals(attributeValueString);
-        if (!(isTrue || FALSE_ATTRIBUTE_VALUE.equals(attributeValueString))) {
-            throw new XmlPullParserException("Attribute \"" + attributeName
-                    + "\" is not \"y\" or \"n\": " + parser.getPositionDescription());
-        }
-        return isTrue;
-    }
-
-    private static void findRequiredStartTag(XmlPullParser parser, String elementName)
-            throws IOException, XmlPullParserException {
-        findStartTag(parser, elementName, true /* elementRequired */);
-    }
-
-    /** Called when on a START_TAG. When returning false, it leaves the parser on the END_TAG. */
-    private static boolean findOptionalStartTag(XmlPullParser parser, String elementName)
-            throws IOException, XmlPullParserException {
-        return findStartTag(parser, elementName, false /* elementRequired */);
-    }
-
-    /**
-     * Find a START_TAG with the specified name without decreasing the depth, or increasing the
-     * depth by more than one. More deeply nested elements and text are skipped, even START_TAGs
-     * with matching names. Returns when the START_TAG is found or the next (non-nested) END_TAG is
-     * encountered. The return can take the form of an exception or a false if the START_TAG is not
-     * found. True is returned when it is.
-     */
-    private static boolean findStartTag(
-            XmlPullParser parser, String elementName, boolean elementRequired)
-            throws IOException, XmlPullParserException {
-
-        int type;
-        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
-            switch (type) {
-                case XmlPullParser.START_TAG:
-                    String currentElementName = parser.getName();
-                    if (elementName.equals(currentElementName)) {
-                        return true;
-                    }
-
-                    // It was not the START_TAG we were looking for. Consume until the end.
-                    parser.next();
-                    consumeUntilEndTag(parser, currentElementName);
-                    break;
-                case XmlPullParser.END_TAG:
-                    if (elementRequired) {
-                        throw new XmlPullParserException(
-                                "No child element found with name " + elementName);
-                    }
-                    return false;
-                default:
-                    // Ignore.
-                    break;
-            }
-        }
-        throw new XmlPullParserException("Unexpected end of document while looking for "
-                + elementName);
-    }
-
-    /**
-     * Consume the remaining contents of an element and move to the END_TAG. Used when processing
-     * within an element can stop. The parser must be pointing at either the END_TAG we are looking
-     * for, a TEXT, or a START_TAG nested within the element to be consumed.
-     */
-    private static void consumeUntilEndTag(XmlPullParser parser, String elementName)
-            throws IOException, XmlPullParserException {
-
-        if (parser.getEventType() == XmlPullParser.END_TAG
-                && elementName.equals(parser.getName())) {
-            // Early return - we are already there.
-            return;
-        }
-
-        // Keep track of the required depth in case there are nested elements to be consumed.
-        // Both the name and the depth must match our expectation to complete.
-
-        int requiredDepth = parser.getDepth();
-        // A TEXT tag would be at the same depth as the END_TAG we are looking for.
-        if (parser.getEventType() == XmlPullParser.START_TAG) {
-            // A START_TAG would have incremented the depth, so we're looking for an END_TAG one
-            // higher than the current tag.
-            requiredDepth--;
-        }
-
-        while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
-            int type = parser.next();
-
-            int currentDepth = parser.getDepth();
-            if (currentDepth < requiredDepth) {
-                throw new XmlPullParserException(
-                        "Unexpected depth while looking for end tag: "
-                                + parser.getPositionDescription());
-            } else if (currentDepth == requiredDepth) {
-                if (type == XmlPullParser.END_TAG) {
-                    if (elementName.equals(parser.getName())) {
-                        return;
-                    }
-                    throw new XmlPullParserException(
-                            "Unexpected eng tag: " + parser.getPositionDescription());
-                }
-            }
-            // Everything else is either a type we are not interested in or is too deep and so is
-            // ignored.
-        }
-        throw new XmlPullParserException("Unexpected end of document");
-    }
-
-    /**
-     * Reads the text inside the current element. Should be called when the parser is currently
-     * on the START_TAG before the TEXT. The parser will be positioned on the END_TAG after this
-     * call when it completes successfully.
-     */
-    private static String consumeText(XmlPullParser parser)
-            throws IOException, XmlPullParserException {
-
-        int type = parser.next();
-        String text;
-        if (type == XmlPullParser.TEXT) {
-            text = parser.getText();
-        } else {
-            throw new XmlPullParserException("Text not found. Found type=" + type
-                    + " at " + parser.getPositionDescription());
-        }
-
-        type = parser.next();
-        if (type != XmlPullParser.END_TAG) {
-            throw new XmlPullParserException(
-                    "Unexpected nested tag or end of document when expecting text: type=" + type
-                            + " at " + parser.getPositionDescription());
-        }
-        return text;
-    }
-
-    private static void checkOnEndTag(XmlPullParser parser, String elementName)
-            throws XmlPullParserException {
-        if (!(parser.getEventType() == XmlPullParser.END_TAG
-                && parser.getName().equals(elementName))) {
-            throw new XmlPullParserException(
-                    "Unexpected tag encountered: " + parser.getPositionDescription());
-        }
     }
 
     /**
@@ -701,32 +526,4 @@ public final class TimeZoneFinder {
         }
     }
 
-    /**
-     * A source of Readers that can be used repeatedly.
-     */
-    private interface ReaderSupplier {
-        /** Returns a Reader. Throws an IOException if the Reader cannot be created. */
-        Reader get() throws IOException;
-
-        static ReaderSupplier forFile(String fileName, Charset charSet) throws IOException {
-            Path file = Paths.get(fileName);
-            if (!Files.exists(file)) {
-                throw new FileNotFoundException(fileName + " does not exist");
-            }
-            if (!Files.isRegularFile(file) && Files.isReadable(file)) {
-                throw new IOException(fileName + " must be a regular readable file.");
-            }
-            return () -> Files.newBufferedReader(file, charSet);
-        }
-
-        static ReaderSupplier forString(String xml) {
-            return () -> new StringReader(xml);
-        }
-    }
-
-    static String normalizeCountryIso(String countryIso) {
-        // Lowercase ASCII is normalized for the purposes of the input files and the code in this
-        // class and related classes.
-        return countryIso.toLowerCase(Locale.US);
-    }
 }
