@@ -242,11 +242,13 @@ public class FP16 {
 
         if (abs < 0x3c00) {
             result &= SIGN_MASK;
-            result |= (0x3c00 & (abs >= 0x3800 ? 0xffff : 0x0));
+            if (abs > 0x3800){
+                result |= 0x3c00;
+            }
         } else if (abs < 0x6400) {
-            abs = 25 - (abs >> 10);
-            int mask = (1 << abs) - 1;
-            result += (1 << (abs - 1));
+            int exp = 25 - (abs >> 10);
+            int mask = (1 << exp) - 1;
+            result += ((1 << (exp - 1)) - (~(abs >> exp) & 1));
             result &= ~mask;
         }
         if (isNaN((short) result)) {
