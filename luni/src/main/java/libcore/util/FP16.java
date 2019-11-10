@@ -242,12 +242,20 @@ public class FP16 {
 
         if (abs < 0x3c00) {
             result &= SIGN_MASK;
-            result |= (0x3c00 & (abs >= 0x3800 ? 0xffff : 0x0));
+            if (abs > 0x3800){
+                result |= 0x3c00;
+            }
         } else if (abs < 0x6400) {
-            abs = 25 - (abs >> 10);
-            int mask = (1 << abs) - 1;
-            result += (1 << (abs - 1));
+            int exp = 25 - (abs >> 10);
+            int mask = (1 << exp) - 1;
+            result += ((1 << (exp - 1)) - (~(abs >> exp) & 1));
             result &= ~mask;
+        }
+        if (isNaN((short) result)) {
+            // if result is NaN mask with qNaN
+            // (i.e. mask the most significant mantissa bit with 1)
+            // to comply with hardware implementations (ARM64, Intel, etc).
+            result |= NaN;
         }
 
         return (short) result;
@@ -283,6 +291,12 @@ public class FP16 {
             int mask = (1 << abs) - 1;
             result += mask & ((bits >> 15) - 1);
             result &= ~mask;
+        }
+        if (isNaN((short) result)) {
+            // if result is NaN mask with qNaN
+            // (i.e. mask the most significant mantissa bit with 1)
+            // to comply with hardware implementations (ARM64, Intel, etc).
+            result |= NaN;
         }
 
         return (short) result;

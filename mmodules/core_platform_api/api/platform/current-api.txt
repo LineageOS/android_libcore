@@ -1140,6 +1140,23 @@ package libcore.timezone {
     method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(String);
   }
 
+  public final class TelephonyLookup {
+    method public static libcore.timezone.TelephonyLookup createInstance(String) throws java.io.IOException;
+    method public static libcore.timezone.TelephonyLookup getInstance();
+    method public libcore.timezone.TelephonyNetworkFinder getTelephonyNetworkFinder();
+    method public void validate() throws java.io.IOException;
+  }
+
+  public class TelephonyNetwork {
+    method public String getCountryIsoCode();
+    method public int getMcc();
+    method public int getMnc();
+  }
+
+  public class TelephonyNetworkFinder {
+    method public libcore.timezone.TelephonyNetwork findNetworkByMccMnc(int, int);
+  }
+
   public final class TimeZoneDataFiles {
     method public static String getDataTimeZoneFile(String);
     method public static String getDataTimeZoneRootDir();

@@ -167,6 +167,13 @@ public class FP16Test extends TestCase {
         assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.7f))), 0.0f);
         assertEquals(125.0f, toFloat(FP16.ceil(toHalf(124.2f))), 0.0f);
         assertEquals(-124.0f, toFloat(FP16.ceil(toHalf(-124.2f))), 0.0f);
+        // ceil for NaN values
+        // These tests check whether the current ceil implementation achieves
+        // bit level compatibility with the hardware implementation (ARM64)
+        assertEquals((short) 0x7e01, FP16.ceil((short) 0x7c01));
+        assertEquals((short) 0x7f00, FP16.ceil((short) 0x7d00));
+        assertEquals((short) 0xfe01, FP16.ceil((short) 0xfc01));
+        assertEquals((short) 0xff00, FP16.ceil((short) 0xfd00));
     }
 
     public void testEquals() {
@@ -221,12 +228,23 @@ public class FP16Test extends TestCase {
         assertEquals(NEGATIVE_ZERO, FP16.rint(toHalf(-0.2f)));
         assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.7f))), 0.0f);
         assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.7f))), 0.0f);
-        assertEquals(1.0f, toFloat(FP16.rint(toHalf(0.5f))), 0.0f);
-        assertEquals(-1.0f, toFloat(FP16.rint(toHalf(-0.5f))), 0.0f);
+        assertEquals(0.0f, toFloat(FP16.rint(toHalf(0.5f))), 0.0f);
+        assertEquals(-0.0f, toFloat(FP16.rint(toHalf(-0.5f))), 0.0f);
+        assertEquals(2.0f, toFloat(FP16.rint(toHalf(1.5f))), 0.0f);
+        assertEquals(-2.0f, toFloat(FP16.rint(toHalf(-1.5f))), 0.0f);
+        assertEquals(1022.0f, toFloat(FP16.rint(toHalf(1022.5f))), 0.0f);
+        assertEquals(-1022.0f, toFloat(FP16.rint(toHalf(-1022.5f))), 0.0f);
         assertEquals(125.0f, toFloat(FP16.rint(toHalf(124.7f))), 0.0f);
         assertEquals(-125.0f, toFloat(FP16.rint(toHalf(-124.7f))), 0.0f);
         assertEquals(124.0f, toFloat(FP16.rint(toHalf(124.2f))), 0.0f);
         assertEquals(-124.0f, toFloat(FP16.rint(toHalf(-124.2f))), 0.0f);
+        // round for NaN values
+        // These tests check whether the current rint implementation achieves
+        // bit level compatibility with the hardware implementation (ARM64)
+        assertEquals((short) 0x7e01, FP16.rint((short) 0x7c01));
+        assertEquals((short) 0x7f00, FP16.rint((short) 0x7d00));
+        assertEquals((short) 0xfe01, FP16.rint((short) 0xfc01));
+        assertEquals((short) 0xff00, FP16.rint((short) 0xfd00));
     }
 
     public void testTrunc() {
