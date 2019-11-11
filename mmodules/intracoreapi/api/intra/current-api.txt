@@ -124,14 +124,6 @@ package libcore.api {
 
 }
 
-package libcore.icu {
-
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class ICU {
-    method @libcore.api.IntraCoreApi public static String getIcuVersion();
-  }
-
-}
-
 package libcore.net {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract class NetworkSecurityPolicy {
