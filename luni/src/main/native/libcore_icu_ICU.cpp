@@ -54,7 +54,6 @@
 #include "unicode/locid.h"
 #include "unicode/numfmt.h"
 #include "unicode/strenum.h"
-#include "unicode/timezone.h"
 #include "unicode/ubrk.h"
 #include "unicode/ucal.h"
 #include "unicode/ucasemap.h"
@@ -62,7 +61,6 @@
 #include "unicode/ucurr.h"
 #include "unicode/udat.h"
 #include "unicode/uloc.h"
-#include "unicode/ulocdata.h"
 #include "unicode/ures.h"
 #include "unicode/ustring.h"
 #include "ureslocs.h"
@@ -682,40 +680,6 @@ static jstring ICU_toUpperCase(JNIEnv* env, jclass, jstring javaString, jstring 
   return s == original ? javaString : jniCreateString(env, s.getBuffer(), s.length());
 }
 
-static jstring versionString(JNIEnv* env, const UVersionInfo& version) {
-    char versionString[U_MAX_VERSION_STRING_LENGTH];
-    u_versionToString(const_cast<UVersionInfo&>(version), &versionString[0]);
-    return env->NewStringUTF(versionString);
-}
-
-static jstring ICU_getCldrVersion(JNIEnv* env, jclass) {
-  UErrorCode status = U_ZERO_ERROR;
-  UVersionInfo cldrVersion;
-  ulocdata_getCLDRVersion(cldrVersion, &status);
-  return versionString(env, cldrVersion);
-}
-
-static jstring ICU_getIcuVersion(JNIEnv* env, jclass) {
-    UVersionInfo icuVersion;
-    u_getVersion(icuVersion);
-    return versionString(env, icuVersion);
-}
-
-static jstring ICU_getUnicodeVersion(JNIEnv* env, jclass) {
-    UVersionInfo unicodeVersion;
-    u_getUnicodeVersion(unicodeVersion);
-    return versionString(env, unicodeVersion);
-}
-
-static jstring ICU_getTZDataVersion(JNIEnv* env, jclass) {
-  UErrorCode status = U_ZERO_ERROR;
-  const char* version = icu::TimeZone::getTZDataVersion(status);
-  if (maybeThrowIcuException(env, "icu::TimeZone::getTZDataVersion", status)) {
-    return NULL;
-  }
-  return env->NewStringUTF(version);
-}
-
 static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
   ScopedIcuLocale icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -760,7 +724,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getAvailableCollatorLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getCldrVersion, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDefaultLocale, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDisplayCountryNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
@@ -771,10 +734,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getISO3Language, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISOCountriesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISOLanguagesNative, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getIcuVersion, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getScript, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getTZDataVersion, "()Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getUnicodeVersion, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, initLocaleDataNative, "(Ljava/lang/String;Llibcore/icu/LocaleData;)Z"),
     NATIVE_METHOD(ICU, setDefaultLocale, "(Ljava/lang/String;)V"),
     NATIVE_METHOD(ICU, toLowerCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
