@@ -31,7 +31,6 @@ import libcore.util.BasicLruCache;
  * Makes ICU data accessible to Java.
  * @hide
  */
-@libcore.api.IntraCoreApi
 @libcore.api.CorePlatformApi
 public final class ICU {
 
@@ -332,22 +331,6 @@ public final class ICU {
     return result;
   }
 
-  /**
-   * Returns the version of the CLDR data in use, such as "22.1.1".
-   */
-  public static native String getCldrVersion();
-
-  /**
-   * Returns the icu4c version in use, such as "50.1.1".
-   */
-  @libcore.api.IntraCoreApi
-  public static native String getIcuVersion();
-
-  /**
-   * Returns the Unicode version our ICU supports, such as "6.2".
-   */
-  public static native String getUnicodeVersion();
-
   // --- Case mapping.
 
   public static String toLowerCase(String s, Locale locale) {
@@ -434,8 +417,4 @@ public final class ICU {
    * Returns a locale name, not a BCP-47 language tag. e.g. en_US not en-US.
    */
   public static native String getDefaultLocale();
-
-  /** Returns the TZData version as reported by ICU4C. */
-  @libcore.api.CorePlatformApi
-  public static native String getTZDataVersion();
 }

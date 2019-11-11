@@ -970,7 +970,6 @@ package libcore.icu {
     method @dalvik.annotation.compat.UnsupportedAppUsage public static java.util.Locale addLikelySubtags(java.util.Locale);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static String getBestDateTimePattern(String, java.util.Locale);
     method @dalvik.annotation.compat.UnsupportedAppUsage public static char[] getDateFormatOrder(String);
-    method public static String getTZDataVersion();
   }
 
   public final class LocaleData {
