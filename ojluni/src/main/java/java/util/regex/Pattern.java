@@ -26,7 +26,7 @@
 
 package java.util.regex;
 
-import com.android.icu.util.regex.NativePattern;
+import com.android.icu.util.regex.PatternNative;
 import dalvik.system.VMRuntime;
 
 import java.util.Iterator;
@@ -943,7 +943,7 @@ public final class Pattern
     // BEGIN Android-changed: reimplement matching logic natively via ICU.
     // We only need some tie-ins to native memory, instead of a large number
     // of fields on the .java side.
-    /* package */ transient NativePattern nativePattern;
+    /* package */ transient PatternNative nativePattern;
     // END Android-changed: reimplement matching logic natively via ICU.
 
     /**
@@ -1423,7 +1423,7 @@ public final class Pattern
         // These are the flags natively supported by ICU.
         // They even have the same value in native code.
         int icuFlags = flags & (CASE_INSENSITIVE | COMMENTS | MULTILINE | DOTALL | UNIX_LINES);
-        nativePattern = NativePattern.create(icuPattern, icuFlags);
+        nativePattern = PatternNative.create(icuPattern, icuFlags);
     }
     // END Android-changed: reimplement matching logic natively via ICU.
 
