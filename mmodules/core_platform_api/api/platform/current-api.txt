@@ -3,8 +3,8 @@ package android.compat {
 
   public final class Compatibility {
     method public static void clearOverrides();
-    method public static boolean isChangeEnabled(@android.compat.annotation.ChangeId long);
-    method public static void reportChange(@android.compat.annotation.ChangeId long);
+    method public static boolean isChangeEnabled(long);
+    method public static void reportChange(long);
     method public static void setCallbacks(android.compat.Compatibility.Callbacks);
     method public static void setOverrides(android.compat.Compatibility.ChangeConfig);
   }
@@ -24,20 +24,6 @@ package android.compat {
     method public boolean isEmpty();
     method public boolean isForceDisabled(long);
     method public boolean isForceEnabled(long);
-  }
-
-}
-
-package android.compat.annotation {
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.PARAMETER}) public @interface ChangeId {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface Disabled {
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD}) public @interface EnabledAfter {
-    method public abstract int targetSdkVersion();
   }
 
 }
