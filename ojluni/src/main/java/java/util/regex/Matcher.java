@@ -26,7 +26,7 @@
 
 package java.util.regex;
 
-import com.android.icu.util.regex.NativeMatcher;
+import com.android.icu.util.regex.MatcherNative;
 
 /**
  * An engine that performs match operations on a {@linkplain java.lang.CharSequence
@@ -132,7 +132,7 @@ public final class Matcher implements MatchResult {
      */
     private boolean matchFound;
 
-    private NativeMatcher nativeMatcher;
+    private MatcherNative nativeMatcher;
 
     /**
      * The index of the last position appended in a substitution.
@@ -211,7 +211,7 @@ public final class Matcher implements MatchResult {
 
         synchronized (this) {
             // may throw
-            nativeMatcher = NativeMatcher.create(newPattern.nativePattern);
+            nativeMatcher = MatcherNative.create(newPattern.nativePattern);
         }
         parentPattern = newPattern;
 
