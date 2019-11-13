@@ -791,6 +791,21 @@ java_system_modules {
     ],
 }
 
+// http://b/129765390 Rewrite links to "platform" or "technotes" folders
+// which are siblings (and thus outside of) {@docRoot}.
+//
+// We have to escape \ as \\ and $ as $$ here because they get resolved by
+// different layers of the build tooling. The arguments are wrapped in '' so
+// that the shell doesn't add yet another level of escaping.
+rewrite_openjdk_doc_args = "--replace-documentation " +
+    // packages whose descendants to apply replacement to (all packages from
+    // libcore/ojluni/src/main/java that contribute to documentation).
+    "com.sun:java:javax:jdk.net:sun " +
+    // regex of the string to replace
+    "'(<a\\s+href\\s?=[\\*\\s]*\")(?:(?:\\{@docRoot\\}/\\.\\./)|(?:(?:\\.\\./)+))((?:platform|technotes).+)\">' " +
+    // replacement (with $1, $2 backreferences to the regex groups)
+    "'$$1https://docs.oracle.com/javase/8/docs/$$2\">' "
+
 // Generates stubs for the parts of the public SDK API provided by the ART module.
 //
 // Only for use by art.module.public.api.stubs target below.
@@ -811,6 +826,8 @@ droidstubs {
         // android.icu.text.CollationElementIterator.NULLORDER.
         "i18n.module.intra.core.api.stubs",
     ],
+
+    args: rewrite_openjdk_doc_args,
 
     create_doc_stubs: true,
 
