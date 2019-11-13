@@ -284,7 +284,7 @@ public class FP16Test extends TestCase {
     }
 
     public void testLessEquals() {
-        assertTrue(FP16.less(NEGATIVE_INFINITY, POSITIVE_INFINITY));
+        assertTrue(FP16.lessEquals(NEGATIVE_INFINITY, POSITIVE_INFINITY));
         assertTrue(FP16.lessEquals(MAX_VALUE, POSITIVE_INFINITY));
         assertFalse(FP16.lessEquals(POSITIVE_INFINITY, MAX_VALUE));
         assertFalse(FP16.lessEquals(LOWEST_VALUE, NEGATIVE_INFINITY));
@@ -299,7 +299,7 @@ public class FP16Test extends TestCase {
         assertFalse(FP16.lessEquals(toHalf(12.4f), toHalf(12.3f)));
         assertFalse(FP16.lessEquals(toHalf(-12.3f), toHalf(-12.4f)));
         assertTrue(FP16.lessEquals(toHalf(-12.4f), toHalf(-12.3f)));
-        assertTrue(FP16.less(MIN_VALUE, (short) 0x3ff));
+        assertTrue(FP16.lessEquals(MIN_VALUE, (short) 0x3ff));
         assertTrue(FP16.lessEquals(NEGATIVE_INFINITY, NEGATIVE_INFINITY));
         assertTrue(FP16.lessEquals(POSITIVE_INFINITY, POSITIVE_INFINITY));
         assertTrue(FP16.lessEquals(toHalf(12.12356f), toHalf(12.12356f)));
@@ -341,11 +341,11 @@ public class FP16Test extends TestCase {
         assertFalse(FP16.greaterEquals(toHalf(12.3f), toHalf(12.4f)));
         assertFalse(FP16.greaterEquals(toHalf(-12.4f), toHalf(-12.3f)));
         assertTrue(FP16.greaterEquals(toHalf(-12.3f), toHalf(-12.4f)));
-        assertTrue(FP16.greater((short) 0x3ff, MIN_VALUE));
-        assertTrue(FP16.lessEquals(NEGATIVE_INFINITY, NEGATIVE_INFINITY));
-        assertTrue(FP16.lessEquals(POSITIVE_INFINITY, POSITIVE_INFINITY));
-        assertTrue(FP16.lessEquals(toHalf(12.12356f), toHalf(12.12356f)));
-        assertTrue(FP16.lessEquals(toHalf(-12.12356f), toHalf(-12.12356f)));
+        assertTrue(FP16.greaterEquals((short) 0x3ff, MIN_VALUE));
+        assertTrue(FP16.greaterEquals(NEGATIVE_INFINITY, NEGATIVE_INFINITY));
+        assertTrue(FP16.greaterEquals(POSITIVE_INFINITY, POSITIVE_INFINITY));
+        assertTrue(FP16.greaterEquals(toHalf(12.12356f), toHalf(12.12356f)));
+        assertTrue(FP16.greaterEquals(toHalf(-12.12356f), toHalf(-12.12356f)));
     }
 
     public void testMin() {
