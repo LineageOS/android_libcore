@@ -354,30 +354,6 @@ public final class ICU {
 
   public static native String getCurrencyCode(String countryCode);
 
-  public static String getDisplayCountry(Locale targetLocale, Locale locale) {
-    return getDisplayCountryNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayCountryNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayLanguage(Locale targetLocale, Locale locale) {
-    return getDisplayLanguageNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayLanguageNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayVariant(Locale targetLocale, Locale locale) {
-    return getDisplayVariantNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayVariantNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayScript(Locale targetLocale, Locale locale) {
-    return getDisplayScriptNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayScriptNative(String targetLanguageTag, String languageTag);
-
   public static native String getISO3Country(String languageTag);
 
   public static native String getISO3Language(String languageTag);
