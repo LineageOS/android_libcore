@@ -347,16 +347,19 @@ public final class ICU {
   @UnsupportedAppUsage
   @Deprecated
   public static Locale addLikelySubtags(Locale locale) {
-      return Locale.forLanguageTag(addLikelySubtags(locale.toLanguageTag()).replace('_', '-'));
+      return ULocale.addLikelySubtags(ULocale.forLocale(locale)).toLocale();
   }
 
   /**
+   * @return ICU localeID
    * @deprecated Use {@link android.icu.util.ULocale#addLikelySubtags(ULocale)} instead.
    * The method is only kept for @UnsupportedAppUsage.
    */
   @UnsupportedAppUsage
   @Deprecated
-  public static native String addLikelySubtags(String locale);
+  public static String addLikelySubtags(String locale) {
+      return ULocale.addLikelySubtags(new ULocale(locale)).getName();
+  }
 
   /**
    * @deprecated use {@link java.util.Locale#getScript()} instead. This has been kept
