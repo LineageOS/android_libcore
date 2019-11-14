@@ -203,11 +203,11 @@ static jstring ICU_getISO3Language(JNIEnv* env, jclass, jstring javaLanguageTag)
 }
 
 static jobjectArray ICU_getISOCountriesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOCountries());
+    return toStringArray(env, uloc_getISOCountries());
 }
 
 static jobjectArray ICU_getISOLanguagesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOLanguages());
+    return toStringArray(env, uloc_getISOLanguages());
 }
 
 static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
