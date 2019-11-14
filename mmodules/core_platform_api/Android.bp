@@ -33,7 +33,8 @@ droidstubs {
     ],
 
     installable: false,
-    args: "--hide-annotation libcore.api.Hide " +
+    args: "--hide HiddenSuperclass " +
+        "--hide-annotation libcore.api.Hide " +
         "--show-single-annotation libcore.api.CorePlatformApi " +
         "--skip-annotation-instance-methods=false ",
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
