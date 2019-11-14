@@ -1148,12 +1148,12 @@ package libcore.timezone {
 
   public class TelephonyNetwork {
     method public String getCountryIsoCode();
-    method public int getMcc();
-    method public int getMnc();
+    method public String getMcc();
+    method public String getMnc();
   }
 
   public class TelephonyNetworkFinder {
-    method public libcore.timezone.TelephonyNetwork findNetworkByMccMnc(int, int);
+    method public libcore.timezone.TelephonyNetwork findNetworkByMccMnc(String, String);
   }
 
   public final class TimeZoneDataFiles {

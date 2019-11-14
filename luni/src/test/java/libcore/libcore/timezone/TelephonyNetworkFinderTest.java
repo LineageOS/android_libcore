@@ -31,12 +31,14 @@ public class TelephonyNetworkFinderTest {
 
     @Test
     public void testCreateAndLookups() {
-        TelephonyNetwork network = TelephonyNetwork.create(123, 456, "gb");
+        TelephonyNetwork network = TelephonyNetwork.create("123", "456", "gb");
         List<TelephonyNetwork> networkList = list(network);
         TelephonyNetworkFinder finder = TelephonyNetworkFinder.create(networkList);
-        assertEquals(network, finder.findNetworkByMccMnc(123, 456));
-        assertNull(finder.findNetworkByMccMnc(456, 123));
-        assertNull(finder.findNetworkByMccMnc(111, 222));
+        assertEquals(network, finder.findNetworkByMccMnc("123", "456"));
+        assertNull(finder.findNetworkByMccMnc("XXX", "XXX"));
+        assertNull(finder.findNetworkByMccMnc("123", "XXX"));
+        assertNull(finder.findNetworkByMccMnc("456", "123"));
+        assertNull(finder.findNetworkByMccMnc("111", "222"));
         assertEquals(networkList, finder.getAll());
     }
 
