@@ -215,10 +215,6 @@ static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, uloc_countAvailable, uloc_getAvailable);
 }
 
-static jobjectArray ICU_getAvailableCollatorLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, ucol_countAvailable, ucol_getAvailable);
-}
-
 static bool setIntegerField(JNIEnv* env, jobject obj, const char* fieldName, int value) {
     ScopedLocalRef<jobject> integerValue(env, integerValueOf(env, value));
     if (integerValue.get() == NULL) return false;
@@ -632,7 +628,6 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, addLikelySubtags, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableCollatorLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
