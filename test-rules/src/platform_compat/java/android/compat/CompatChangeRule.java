@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package libcore.junit.util.compat;
+package android.compat;
 
-import android.compat.Compatibility;
+import android.app.Instrumentation;
 import android.compat.Compatibility.Callbacks;
 import android.compat.Compatibility.ChangeConfig;
+import android.content.Context;
+import android.os.RemoteException;
+import android.os.ServiceManager;
+import android.support.test.InstrumentationRegistry;
+import android.util.ArraySet;
+
+import com.android.internal.compat.CompatibilityChangeConfig;
+import com.android.internal.compat.IPlatformCompat;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -29,8 +37,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import com.google.common.primitives.Longs;
+
 
 /**
  * Allows tests to specify the which change to disable.
@@ -40,7 +50,7 @@ import com.google.common.primitives.Longs;
  *
  * <pre>
  * &#64;Rule
- * public TestRule compatChangeRule = new CoreCompatChangeRule();
+ * public TestRule compatChangeRule = new CompatChangeRule();
  * </pre>
  *
  * <p>Each test method that needs to disable a specific change needs to be annotated
@@ -61,8 +71,7 @@ import com.google.common.primitives.Longs;
  *
  * </pre>
  */
-public class CoreCompatChangeRule implements TestRule {
-
+public class CompatChangeRule implements TestRule {
     @Override
     public Statement apply(final Statement statement, Description description) {
         Set<Long> enabled = new HashSet<>();
@@ -80,13 +89,9 @@ public class CoreCompatChangeRule implements TestRule {
         ChangeConfig config = new ChangeConfig(enabled, disabled);
         if (config.isEmpty()) {
             throw new IllegalArgumentException("Added a CompatChangeRule without specifying any "
-                    + "@EnableCompatChanges or @DisableCompatChanges !");
+                + "@EnableCompatChanges or @DisableCompatChanges !");
         }
-        return createStatementForConfig(statement, config);
-    }
-
-    protected Statement createStatementForConfig(final Statement statement, ChangeConfig config) {
-            return new CompatChangeStatement(statement, config);
+        return new CompatChangeStatement(statement, config);
     }
 
     private static class CompatChangeStatement extends Statement {
@@ -100,9 +105,23 @@ public class CoreCompatChangeRule implements TestRule {
 
         @Override
         public void evaluate() throws Throwable {
+            Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+            String packageName = instrumentation.getTargetContext().getPackageName();
+            IPlatformCompat platformCompat = IPlatformCompat.Stub
+                .asInterface(ServiceManager.getService(Context.PLATFORM_COMPAT_SERVICE));
+            if (platformCompat == null) {
+                throw new IllegalStateException("Could not get IPlatformCompat service!");
+            }
             Compatibility.setOverrides(config);
             try {
-                testStatement.evaluate();
+                platformCompat.setOverrides(new CompatibilityChangeConfig(config), packageName);
+                try {
+                    testStatement.evaluate();
+                } finally {
+                    platformCompat.clearOverrides(packageName);
+                }
+            } catch(RemoteException e) {
+                throw new RuntimeException("Could not call IPlatformCompat binder method!", e);
             } finally {
                 Compatibility.clearOverrides();
             }
