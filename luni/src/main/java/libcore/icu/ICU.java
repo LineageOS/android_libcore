@@ -331,20 +331,6 @@ public final class ICU {
     return result;
   }
 
-  // --- Case mapping.
-
-  public static String toLowerCase(String s, Locale locale) {
-    return toLowerCase(s, locale.toLanguageTag());
-  }
-
-  private static native String toLowerCase(String s, String languageTag);
-
-  public static String toUpperCase(String s, Locale locale) {
-    return toUpperCase(s, locale.toLanguageTag());
-  }
-
-  private static native String toUpperCase(String s, String languageTag);
-
   // --- Errors.
 
   // --- Native methods accessing ICU's database.
