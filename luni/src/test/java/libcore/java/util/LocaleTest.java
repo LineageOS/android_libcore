@@ -22,6 +22,7 @@ import static java.util.Locale.FilteringMode.IGNORE_EXTENDED_RANGES;
 import static java.util.Locale.FilteringMode.MAP_EXTENDED_RANGES;
 import static java.util.Locale.FilteringMode.REJECT_EXTENDED_RANGES;
 
+import android.icu.util.ULocale;
 import java.io.ObjectInputStream;
 import java.text.BreakIterator;
 import java.text.Collator;
@@ -30,13 +31,17 @@ import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Locale.LanguageRange;
 import java.util.MissingResourceException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LocaleTest extends junit.framework.TestCase {
 
@@ -231,6 +236,19 @@ public class LocaleTest extends junit.framework.TestCase {
         assertOnce(newLocale, DateFormatSymbols.getAvailableLocales());
         assertOnce(newLocale, NumberFormat.getAvailableLocales());
         assertOnce(newLocale, Locale.getAvailableLocales());
+    }
+
+    public void testGetAvailableLocales_icuConsistency() {
+        Locale[] javaLocales = Locale.getAvailableLocales();
+        ULocale[] icuLocales = ULocale.getAvailableLocales();
+        Set<Locale> javaSet = new HashSet<>(Arrays.asList(javaLocales));
+        Set<Locale> icuSet = Arrays.stream(icuLocales)
+            .map(uLocale -> uLocale.toLocale())
+            .collect(Collectors.toSet());
+        assertEquals(javaSet, icuSet);
+        // Assert no duplicated entries
+        assertEquals(javaLocales.length, javaSet.size());
+        assertEquals(icuLocales.length, icuSet.size());
     }
 
     private static void assertOnce(Locale element, Locale[] array) {
