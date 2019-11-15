@@ -492,10 +492,8 @@ java_library_static {
 
 // Builds platform_compat test rules
 java_library_static {
-    name: "core-compat-test-rules",
-    visibility: [
-        "//frameworks/base/tests/PlatformCompatGating/test-rules",
-    ],
+    name: "platform_compat-test-rules",
+    visibility: ["//visibility:public"],
     srcs: [
         "luni/src/main/java/android/compat/**/*.java",
         "test-rules/src/platform_compat/**/*.java",
@@ -505,13 +503,12 @@ java_library_static {
     static_libs: [
         "junit",
         "guava",
+        "android-support-test",
         "app-compat-annotations",
     ],
-    sdk_version: "none",
-    system_modules: "core-all-system-modules",
+    platform_apis: true,
     // This builds classes that are in the java.base Java module:
     patch_module: "java.base",
-    hostdex: true,
 }
 
 // Builds the core-tests-support library used by various tests.
@@ -609,7 +606,6 @@ java_test {
 
     static_libs: [
         "archive-patcher",
-        "core-compat-test-rules",
         "core-java-9-language-tests",
         "core-test-rules",
         "core-tests-support",
