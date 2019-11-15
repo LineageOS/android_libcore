@@ -186,19 +186,19 @@ static jstring getCurrencyName(JNIEnv* env, jstring javaLanguageTag, jstring jav
 }
 
 static jstring ICU_getISO3Country(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getISO3Country());
+  return env->NewStringUTF(uloc_getISO3Country(icuLocale.locale()));
 }
 
 static jstring ICU_getISO3Language(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getISO3Language());
+  return env->NewStringUTF(uloc_getISO3Language(icuLocale.locale()));
 }
 
 static jobjectArray ICU_getISOCountriesNative(JNIEnv* env, jclass) {
