@@ -590,36 +590,6 @@ static jboolean ICU_initLocaleDataNative(JNIEnv* env, jclass, jstring javaLangua
     return JNI_TRUE;
 }
 
-static jstring ICU_toLowerCase(JNIEnv* env, jclass, jstring javaString, jstring javaLanguageTag) {
-  ScopedJavaUnicodeString scopedString(env, javaString);
-  if (!scopedString.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  icu::UnicodeString& s(scopedString.unicodeString());
-  icu::UnicodeString original(s);
-  s.toLower(icuLocale.locale());
-  return s == original ? javaString : jniCreateString(env, s.getBuffer(), s.length());
-}
-
-static jstring ICU_toUpperCase(JNIEnv* env, jclass, jstring javaString, jstring javaLanguageTag) {
-  ScopedJavaUnicodeString scopedString(env, javaString);
-  if (!scopedString.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  icu::UnicodeString& s(scopedString.unicodeString());
-  icu::UnicodeString original(s);
-  s.toUpper(icuLocale.locale());
-  return s == original ? javaString : jniCreateString(env, s.getBuffer(), s.length());
-}
-
 static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
   ScopedIcuLocale icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -673,8 +643,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getScript, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, initLocaleDataNative, "(Ljava/lang/String;Llibcore/icu/LocaleData;)Z"),
     NATIVE_METHOD(ICU, setDefaultLocale, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(ICU, toLowerCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, toUpperCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
 };
 
 //
