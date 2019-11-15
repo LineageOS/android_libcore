@@ -220,4 +220,25 @@ public class ICUTest extends junit.framework.TestCase {
     assertTrue(c.compare("AF", "af") < 0);
   }
 
+  public void testSetDefault() {
+      String current = ICU.getDefaultLocale();
+
+      try {
+        assertGetDefault("", "");
+        assertGetDefault("und", "");
+        assertGetDefault("en-US", "en_US");
+        assertGetDefault("uz-CYRL-UZ", "uz_Cyrl_UZ");
+        assertGetDefault("ca-ES-PREEURO", "ca_ES_PREEURO");
+        assertGetDefault("es-ES-PREEURO-u-ca-japanese", "es_ES_PREEURO@calendar=japanese");
+        assertGetDefault("es-ES-PREEURO-u-ca-Japanese", "es_ES_PREEURO@calendar=japanese");
+      } finally {
+          ICU.setDefaultLocale(current);
+      }
+  }
+
+  private static void assertGetDefault(String inputLangaugeTag, String expectedLanguageTag) {
+    ICU.setDefaultLocale(inputLangaugeTag);
+    assertEquals(expectedLanguageTag, ICU.getDefaultLocale());
+  }
+
 }
