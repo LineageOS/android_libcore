@@ -71,7 +71,7 @@ public class TelephonyNetworkFinder {
     }
 
     @libcore.api.CorePlatformApi
-    public TelephonyNetwork findNetworkByMccMnc(int mcc, int mnc) {
+    public TelephonyNetwork findNetworkByMccMnc(String mcc, String mnc) {
         return networksMap.get(new MccMnc(mcc, mnc));
     }
 
