@@ -38,25 +38,6 @@ class XmlUtils {
     private XmlUtils() {}
 
     /**
-     * Parses an attribute value, which must be either {@code null} or a valid signed integer value.
-     * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
-     * attribute is present but not a valid integer value then an XmlPullParserException is thrown.
-     */
-    static Integer parseIntegerAttribute(XmlPullParser parser, String attributeName,
-            Integer defaultValue) throws XmlPullParserException {
-        String attributeValueString = parser.getAttributeValue(null /* namespace */, attributeName);
-        if (attributeValueString == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(attributeValueString);
-        } catch (NumberFormatException e) {
-            throw new XmlPullParserException("Attribute \"" + attributeName
-                    + "\" is not an int value: " + parser.getPositionDescription());
-        }
-    }
-
-    /**
      * Parses an attribute value, which must be either {@code null} or a valid signed long value.
      * If the attribute value is {@code null} then {@code defaultValue} is returned. If the
      * attribute is present but not a valid long value then an XmlPullParserException is thrown.

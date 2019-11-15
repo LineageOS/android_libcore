@@ -21,7 +21,6 @@ import static libcore.timezone.XmlUtils.consumeUntilEndTag;
 import static libcore.timezone.XmlUtils.findNextStartTagOrEndTagNoRecurse;
 import static libcore.timezone.XmlUtils.findNextStartTagOrThrowNoRecurse;
 import static libcore.timezone.XmlUtils.normalizeCountryIso;
-import static libcore.timezone.XmlUtils.parseIntegerAttribute;
 
 import libcore.timezone.TelephonyNetwork.MccMnc;
 import libcore.timezone.XmlUtils.ReaderSupplier;
@@ -213,13 +212,15 @@ public final class TelephonyLookup {
 
         // Skip over any unexpected elements and process <network> elements.
         while (findNextStartTagOrEndTagNoRecurse(parser, NETWORK_ELEMENT)) {
-            Integer mcc = parseIntegerAttribute(parser, MOBILE_COUNTRY_CODE_ATTRIBUTE, null);
+            String mcc = parser.getAttributeValue(
+                    null /* namespace */, MOBILE_COUNTRY_CODE_ATTRIBUTE);
             if (mcc == null) {
                 throw new XmlPullParserException(
                         "Unable to find mcc: " + parser.getPositionDescription());
             }
 
-            Integer mnc = parseIntegerAttribute(parser, MOBILE_NETWORK_CODE_ATTRIBUTE, null);
+            String mnc = parser.getAttributeValue(
+                    null /* namespace */, MOBILE_NETWORK_CODE_ATTRIBUTE);
             if (mnc == null) {
                 throw new XmlPullParserException(
                         "Unable to find mnc: " + parser.getPositionDescription());
@@ -253,7 +254,7 @@ public final class TelephonyLookup {
         /**
          * Process network data. Problems with the data are reported as an exception.
          */
-        void processNetwork(int mcc, int mnc, String countryIso, String debugInfo)
+        void processNetwork(String mcc, String mnc, String countryIso, String debugInfo)
                 throws XmlPullParserException;
     }
 
@@ -267,18 +268,39 @@ public final class TelephonyLookup {
         private final Set<MccMnc> knownMccMncs = new HashSet<>();
 
         @Override
-        public void processNetwork(int mcc, int mnc, String countryIso, String debugInfo)
+        public void processNetwork(String mcc, String mnc, String countryIso, String debugInfo)
                 throws XmlPullParserException {
+            if (mcc == null || mcc.length() != 3 || !isAsciiNumeric(mcc)) {
+                throw new XmlPullParserException(
+                        "MCC is not valid: mcc=" + mcc + " at " + debugInfo);
+            }
+
+            if (mnc == null || !(mnc.length() == 2 || mnc.length() == 3) || !isAsciiNumeric(mnc)) {
+                throw new XmlPullParserException(
+                        "MNC is not valid: mnc=" + mnc + " at " + debugInfo);
+            }
+
             if (!normalizeCountryIso(countryIso).equals(countryIso)) {
                 throw new XmlPullParserException("Country code: " + countryIso
                         + " is not normalized at " + debugInfo);
             }
+
             MccMnc mccMnc = new MccMnc(mcc, mnc);
             if (knownMccMncs.contains(mccMnc)) {
                 throw new XmlPullParserException("Second entry for MCC + MNC: " + mccMnc
                         + " at " + debugInfo);
             }
             knownMccMncs.add(mccMnc);
+        }
+
+        private static boolean isAsciiNumeric(String string) {
+            for (int i = 0; i < string.length(); i++) {
+                char character = string.charAt(i);
+                if (character < '0' || character > '9') {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
@@ -290,7 +312,7 @@ public final class TelephonyLookup {
         private List<TelephonyNetwork> networksList = new ArrayList<>(10 /* default */);
 
         @Override
-        public void processNetwork(int mcc, int mnc, String countryIso, String debugInfo)
+        public void processNetwork(String mcc, String mnc, String countryIso, String debugInfo)
                 throws XmlPullParserException {
             TelephonyNetwork network = TelephonyNetwork.create(mcc, mnc, countryIso);
             networksList.add(network);
