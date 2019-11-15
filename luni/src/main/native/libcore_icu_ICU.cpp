@@ -94,11 +94,20 @@ class ScopedResourceBundle {
 };
 
 static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
-  ScopedIcuLocale icuLocale(env, javaLocaleName);
+  ScopedIcuULoc icuLocale(env, javaLocaleName);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getScript());
+  // Normal script part is 4-char long. Being conservative for allocation size
+  // because if the locale contains script part, it should not be longer than the locale itself.
+  int32_t capacity = std::max(ULOC_SCRIPT_CAPACITY, icuLocale.locale_length() + 1);
+  std::unique_ptr<char[]> buffer(new char(capacity));
+  UErrorCode status = U_ZERO_ERROR;
+  uloc_getScript(icuLocale.locale(), buffer.get(), capacity, &status);
+  if (U_FAILURE(status)) {
+    return NULL;
+  }
+  return env->NewStringUTF(buffer.get());
 }
 
 // TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
