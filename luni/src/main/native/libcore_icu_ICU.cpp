@@ -42,6 +42,7 @@
 #include "JniConstants.h"
 #include "JniException.h"
 #include "ScopedIcuLocale.h"
+#include "ScopedIcuULoc.h"
 #include "ScopedJavaUnicodeString.h"
 #include "unicode/brkiter.h"
 #include "unicode/calendar.h"
@@ -203,11 +204,11 @@ static jstring ICU_getISO3Language(JNIEnv* env, jclass, jstring javaLanguageTag)
 }
 
 static jobjectArray ICU_getISOCountriesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOCountries());
+    return toStringArray(env, uloc_getISOCountries());
 }
 
 static jobjectArray ICU_getISOLanguagesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOLanguages());
+    return toStringArray(env, uloc_getISOLanguages());
 }
 
 static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
@@ -615,18 +616,18 @@ static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring jav
 }
 
 static void ICU_setDefaultLocale(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return;
   }
 
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale::setDefault(icuLocale.locale(), status);
-  maybeThrowIcuException(env, "Locale::setDefault", status);
+  uloc_setDefault(icuLocale.locale(), &status);
+  maybeThrowIcuException(env, "uloc_setDefault", status);
 }
 
 static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
-  return env->NewStringUTF(icu::Locale::getDefault().getName());
+  return env->NewStringUTF(uloc_getDefault());
 }
 
 static JNINativeMethod gMethods[] = {
