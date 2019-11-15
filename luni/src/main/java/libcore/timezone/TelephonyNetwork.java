@@ -35,10 +35,10 @@ public class TelephonyNetwork {
      * @hide
      */
     public static final class MccMnc {
-        final int mcc;
-        final int mnc;
+        final String mcc;
+        final String mnc;
 
-        public MccMnc(int mcc, int mnc) {
+        public MccMnc(String mcc, String mnc) {
             this.mcc = mcc;
             this.mnc = mnc;
         }
@@ -52,8 +52,8 @@ public class TelephonyNetwork {
                 return false;
             }
             MccMnc mccMnc = (MccMnc) o;
-            return mcc == mccMnc.mcc
-                    && mnc == mccMnc.mnc;
+            return Objects.equals(mcc, mccMnc.mcc)
+                    && Objects.equals(mnc, mccMnc.mnc);
         }
 
         @Override
@@ -73,7 +73,7 @@ public class TelephonyNetwork {
     private final MccMnc mccMnc;
     private final String countryIsoCode;
 
-    public static TelephonyNetwork create(int mcc, int mnc, String countryIsoCode) {
+    public static TelephonyNetwork create(String mcc, String mnc, String countryIsoCode) {
         String normalizedCountryIso = normalizeCountryIso(countryIsoCode);
         return new TelephonyNetwork(new MccMnc(mcc, mnc), normalizedCountryIso);
     }
@@ -88,12 +88,12 @@ public class TelephonyNetwork {
     }
 
     @libcore.api.CorePlatformApi
-    public int getMcc() {
+    public String getMcc() {
         return mccMnc.mcc;
     }
 
     @libcore.api.CorePlatformApi
-    public int getMnc() {
+    public String getMnc() {
         return mccMnc.mnc;
     }
 
