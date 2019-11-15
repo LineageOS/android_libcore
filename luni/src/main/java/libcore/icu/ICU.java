@@ -266,10 +266,6 @@ public final class ICU {
     return availableLocalesCache.clone();
   }
 
-  public static Locale[] getAvailableCollatorLocales() {
-    return localesFromStrings(getAvailableCollatorLocalesNative());
-  }
-
   @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static String getBestDateTimePattern(String skeleton, Locale locale) {
@@ -335,7 +331,6 @@ public final class ICU {
 
   // --- Native methods accessing ICU's database.
 
-  private static native String[] getAvailableCollatorLocalesNative();
   private static native String[] getAvailableLocalesNative();
 
   public static native String getCurrencyCode(String countryCode);
