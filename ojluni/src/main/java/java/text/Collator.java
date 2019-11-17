@@ -399,7 +399,7 @@ public abstract class Collator
      */
     public static synchronized Locale[] getAvailableLocales() {
         // Android-changed: Removed reference to CollatorProvider. Switched to ICU.
-        return ICU.getAvailableCollatorLocales();
+        return android.icu.text.Collator.getAvailableLocales();
     }
 
     // BEGIN Android-added: conversion method for decompositionMode constants.

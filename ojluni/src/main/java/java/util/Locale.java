@@ -41,6 +41,7 @@
 
 package java.util;
 
+import com.android.icu.util.LocaleNative;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -1874,9 +1875,9 @@ public final class Locale implements Cloneable, Serializable {
 
         // TODO: We need a new hack or a complete fix for http://b/8049507 --- We would
         // cover the frameworks' tracks when they were using "tl" instead of "fil".
-        String result = ICU.getDisplayLanguage(this, locale);
+        String result = LocaleNative.getDisplayLanguage(this, locale);
         if (result == null) { // TODO: do we need to do this, or does ICU do it for us?
-            result = ICU.getDisplayLanguage(this, Locale.getDefault());
+            result = LocaleNative.getDisplayLanguage(this, Locale.getDefault());
         }
         return result;
     }
@@ -1949,9 +1950,9 @@ public final class Locale implements Cloneable, Serializable {
             return "";
         }
 
-        String result = ICU.getDisplayScript(this, inLocale);
+        String result = LocaleNative.getDisplayScript(this, inLocale);
         if (result == null) { // TODO: do we need to do this, or does ICU do it for us?
-            result = ICU.getDisplayScript(this, Locale.getDefault(Category.DISPLAY));
+            result = LocaleNative.getDisplayScript(this, Locale.getDefault(Category.DISPLAY));
         }
 
         return result;
@@ -2043,9 +2044,9 @@ public final class Locale implements Cloneable, Serializable {
             return countryCode;
         }
 
-        String result = ICU.getDisplayCountry(this, locale);
+        String result = LocaleNative.getDisplayCountry(this, locale);
         if (result == null) { // TODO: do we need to do this, or does ICU do it for us?
-            result = ICU.getDisplayCountry(this, Locale.getDefault());
+            result = LocaleNative.getDisplayCountry(this, Locale.getDefault());
         }
         return result;
     }
@@ -2154,9 +2155,9 @@ public final class Locale implements Cloneable, Serializable {
             return variantCode;
         }
 
-        String result = ICU.getDisplayVariant(this, inLocale);
+        String result = LocaleNative.getDisplayVariant(this, inLocale);
         if (result == null) { // TODO: do we need to do this, or does ICU do it for us?
-            result = ICU.getDisplayVariant(this, Locale.getDefault());
+            result = LocaleNative.getDisplayVariant(this, Locale.getDefault());
         }
 
         // The "old style" locale constructors allow us to pass in variants that aren't

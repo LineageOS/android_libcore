@@ -77,7 +77,7 @@ public class TelephonyLookupTest {
                 + "  </networks>\n"
                 + "</telephony_lookup>\n";
         TelephonyNetwork expectedTelephonyNetwork1 =
-                TelephonyNetwork.create(123, 456, "gb");
+                TelephonyNetwork.create("123", "456", "gb");
 
         String validXml2 = "<telephony_lookup>\n"
                 + "  <networks>\n"
@@ -85,7 +85,7 @@ public class TelephonyLookupTest {
                 + "  </networks>\n"
                 + "</telephony_lookup>\n";
         TelephonyNetwork expectedTelephonyNetwork2 =
-                TelephonyNetwork.create(234, 567, "fr");
+                TelephonyNetwork.create("234", "567", "fr");
 
         String invalidXml = "<foo></foo>\n";
         checkValidateThrowsParserException(invalidXml);
@@ -163,7 +163,7 @@ public class TelephonyLookupTest {
     @Test
     public void xmlParsing_unexpectedComments() throws Exception {
         TelephonyNetwork expectedTelephonyNetwork =
-                TelephonyNetwork.create(123, 456, "gb");
+                TelephonyNetwork.create("123", "456", "gb");
 
         TelephonyLookup telephonyLookup = validate("<telephony_lookup>\n"
                 + "  <networks>\n"
@@ -177,7 +177,7 @@ public class TelephonyLookupTest {
     @Test
     public void xmlParsing_unexpectedElementsIgnored() throws Exception {
         TelephonyNetwork expectedTelephonyNetwork =
-                TelephonyNetwork.create(123, 456, "gb");
+                TelephonyNetwork.create("123", "456", "gb");
         List<TelephonyNetwork> expectedNetworks = list(expectedTelephonyNetwork);
 
         String unexpectedElement = "<unexpected-element>\n<a /></unexpected-element>\n";
@@ -205,7 +205,7 @@ public class TelephonyLookupTest {
         assertEquals(expectedNetworks, telephonyLookup.getTelephonyNetworkFinder().getAll());
 
         expectedNetworks = list(expectedTelephonyNetwork,
-                TelephonyNetwork.create(234, 567, "fr"));
+                TelephonyNetwork.create("234", "567", "fr"));
         telephonyLookup = validate("<telephony_lookup>\n"
                 + "  <networks>\n"
                 + "    <network mcc=\"123\" mnc=\"456\" country=\"gb\"/>\n"
@@ -219,7 +219,7 @@ public class TelephonyLookupTest {
     @Test
     public void xmlParsing_unexpectedTextIgnored() throws Exception {
         TelephonyNetwork expectedTelephonyNetwork =
-                TelephonyNetwork.create(123, 456, "gb");
+                TelephonyNetwork.create("123", "456", "gb");
         List<TelephonyNetwork> expectedNetworks = list(expectedTelephonyNetwork);
 
         String unexpectedText = "unexpected-text";
@@ -292,12 +292,12 @@ public class TelephonyLookupTest {
                 + "</telephony_lookup>\n");
 
         TelephonyNetworkFinder telephonyNetworkFinder = telephonyLookup.getTelephonyNetworkFinder();
-        TelephonyNetwork expectedNetwork1 = TelephonyNetwork.create(123, 456, "gb");
-        TelephonyNetwork expectedNetwork2 = TelephonyNetwork.create(234, 567, "fr");
+        TelephonyNetwork expectedNetwork1 = TelephonyNetwork.create("123", "456", "gb");
+        TelephonyNetwork expectedNetwork2 = TelephonyNetwork.create("234", "567", "fr");
         assertEquals(list(expectedNetwork1, expectedNetwork2), telephonyNetworkFinder.getAll());
-        assertEquals(expectedNetwork1, telephonyNetworkFinder.findNetworkByMccMnc(123, 456));
-        assertEquals(expectedNetwork2, telephonyNetworkFinder.findNetworkByMccMnc(234, 567));
-        assertNull(telephonyNetworkFinder.findNetworkByMccMnc(999, 999));
+        assertEquals(expectedNetwork1, telephonyNetworkFinder.findNetworkByMccMnc("123", "456"));
+        assertEquals(expectedNetwork2, telephonyNetworkFinder.findNetworkByMccMnc("234", "567"));
+        assertNull(telephonyNetworkFinder.findNetworkByMccMnc("999", "999"));
     }
 
     @Test

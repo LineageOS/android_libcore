@@ -266,10 +266,6 @@ public final class ICU {
     return availableLocalesCache.clone();
   }
 
-  public static Locale[] getAvailableCollatorLocales() {
-    return localesFromStrings(getAvailableCollatorLocalesNative());
-  }
-
   @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
   public static String getBestDateTimePattern(String skeleton, Locale locale) {
@@ -331,52 +327,13 @@ public final class ICU {
     return result;
   }
 
-  // --- Case mapping.
-
-  public static String toLowerCase(String s, Locale locale) {
-    return toLowerCase(s, locale.toLanguageTag());
-  }
-
-  private static native String toLowerCase(String s, String languageTag);
-
-  public static String toUpperCase(String s, Locale locale) {
-    return toUpperCase(s, locale.toLanguageTag());
-  }
-
-  private static native String toUpperCase(String s, String languageTag);
-
   // --- Errors.
 
   // --- Native methods accessing ICU's database.
 
-  private static native String[] getAvailableCollatorLocalesNative();
   private static native String[] getAvailableLocalesNative();
 
   public static native String getCurrencyCode(String countryCode);
-
-  public static String getDisplayCountry(Locale targetLocale, Locale locale) {
-    return getDisplayCountryNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayCountryNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayLanguage(Locale targetLocale, Locale locale) {
-    return getDisplayLanguageNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayLanguageNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayVariant(Locale targetLocale, Locale locale) {
-    return getDisplayVariantNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayVariantNative(String targetLanguageTag, String languageTag);
-
-  public static String getDisplayScript(Locale targetLocale, Locale locale) {
-    return getDisplayScriptNative(targetLocale.toLanguageTag(), locale.toLanguageTag());
-  }
-
-  private static native String getDisplayScriptNative(String targetLanguageTag, String languageTag);
 
   public static native String getISO3Country(String languageTag);
 

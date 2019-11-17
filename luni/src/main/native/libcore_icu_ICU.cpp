@@ -42,6 +42,7 @@
 #include "JniConstants.h"
 #include "JniException.h"
 #include "ScopedIcuLocale.h"
+#include "ScopedIcuULoc.h"
 #include "ScopedJavaUnicodeString.h"
 #include "unicode/brkiter.h"
 #include "unicode/calendar.h"
@@ -186,66 +187,6 @@ static jstring getCurrencyName(JNIEnv* env, jstring javaLanguageTag, jstring jav
   return (charCount == 0) ? NULL : jniCreateString(env, chars, charCount);
 }
 
-static jstring ICU_getDisplayCountryNative(JNIEnv* env, jclass, jstring javaTargetLanguageTag, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuTargetLocale(env, javaTargetLanguageTag);
-  if (!icuTargetLocale.valid()) {
-    return NULL;
-  }
-
-  icu::UnicodeString str;
-  icuTargetLocale.locale().getDisplayCountry(icuLocale.locale(), str);
-  return jniCreateString(env, str.getBuffer(), str.length());
-}
-
-static jstring ICU_getDisplayLanguageNative(JNIEnv* env, jclass, jstring javaTargetLanguageTag, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuTargetLocale(env, javaTargetLanguageTag);
-  if (!icuTargetLocale.valid()) {
-    return NULL;
-  }
-
-  icu::UnicodeString str;
-  icuTargetLocale.locale().getDisplayLanguage(icuLocale.locale(), str);
-  return jniCreateString(env, str.getBuffer(), str.length());
-}
-
-static jstring ICU_getDisplayScriptNative(JNIEnv* env, jclass, jstring javaTargetLanguageTag, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuTargetLocale(env, javaTargetLanguageTag);
-  if (!icuTargetLocale.valid()) {
-    return NULL;
-  }
-
-  icu::UnicodeString str;
-  icuTargetLocale.locale().getDisplayScript(icuLocale.locale(), str);
-  return jniCreateString(env, str.getBuffer(), str.length());
-}
-
-static jstring ICU_getDisplayVariantNative(JNIEnv* env, jclass, jstring javaTargetLanguageTag, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuTargetLocale(env, javaTargetLanguageTag);
-  if (!icuTargetLocale.valid()) {
-    return NULL;
-  }
-
-  icu::UnicodeString str;
-  icuTargetLocale.locale().getDisplayVariant(icuLocale.locale(), str);
-  return jniCreateString(env, str.getBuffer(), str.length());
-}
-
 static jstring ICU_getISO3Country(JNIEnv* env, jclass, jstring javaLanguageTag) {
   ScopedIcuLocale icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -263,19 +204,15 @@ static jstring ICU_getISO3Language(JNIEnv* env, jclass, jstring javaLanguageTag)
 }
 
 static jobjectArray ICU_getISOCountriesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOCountries());
+    return toStringArray(env, uloc_getISOCountries());
 }
 
 static jobjectArray ICU_getISOLanguagesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, icu::Locale::getISOLanguages());
+    return toStringArray(env, uloc_getISOLanguages());
 }
 
 static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, uloc_countAvailable, uloc_getAvailable);
-}
-
-static jobjectArray ICU_getAvailableCollatorLocalesNative(JNIEnv* env, jclass) {
-    return toStringArray(env, ucol_countAvailable, ucol_getAvailable);
 }
 
 static bool setIntegerField(JNIEnv* env, jobject obj, const char* fieldName, int value) {
@@ -650,36 +587,6 @@ static jboolean ICU_initLocaleDataNative(JNIEnv* env, jclass, jstring javaLangua
     return JNI_TRUE;
 }
 
-static jstring ICU_toLowerCase(JNIEnv* env, jclass, jstring javaString, jstring javaLanguageTag) {
-  ScopedJavaUnicodeString scopedString(env, javaString);
-  if (!scopedString.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  icu::UnicodeString& s(scopedString.unicodeString());
-  icu::UnicodeString original(s);
-  s.toLower(icuLocale.locale());
-  return s == original ? javaString : jniCreateString(env, s.getBuffer(), s.length());
-}
-
-static jstring ICU_toUpperCase(JNIEnv* env, jclass, jstring javaString, jstring javaLanguageTag) {
-  ScopedJavaUnicodeString scopedString(env, javaString);
-  if (!scopedString.valid()) {
-    return NULL;
-  }
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-  icu::UnicodeString& s(scopedString.unicodeString());
-  icu::UnicodeString original(s);
-  s.toUpper(icuLocale.locale());
-  return s == original ? javaString : jniCreateString(env, s.getBuffer(), s.length());
-}
-
 static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
   ScopedIcuLocale icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -705,31 +612,26 @@ static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring jav
 }
 
 static void ICU_setDefaultLocale(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return;
   }
 
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale::setDefault(icuLocale.locale(), status);
-  maybeThrowIcuException(env, "Locale::setDefault", status);
+  uloc_setDefault(icuLocale.locale(), &status);
+  maybeThrowIcuException(env, "uloc_setDefault", status);
 }
 
 static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
-  return env->NewStringUTF(icu::Locale::getDefault().getName());
+  return env->NewStringUTF(uloc_getDefault());
 }
 
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, addLikelySubtags, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getAvailableCollatorLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDefaultLocale, "()Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getDisplayCountryNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getDisplayLanguageNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getDisplayScriptNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getDisplayVariantNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Country, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Language, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISOCountriesNative, "()[Ljava/lang/String;"),
@@ -737,8 +639,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getScript, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, initLocaleDataNative, "(Ljava/lang/String;Llibcore/icu/LocaleData;)Z"),
     NATIVE_METHOD(ICU, setDefaultLocale, "(Ljava/lang/String;)V"),
-    NATIVE_METHOD(ICU, toLowerCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, toUpperCase, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
 };
 
 //
