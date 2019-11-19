@@ -108,19 +108,20 @@ public class CompatChangeRule implements TestRule {
             Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
             String packageName = instrumentation.getTargetContext().getPackageName();
             IPlatformCompat platformCompat = IPlatformCompat.Stub
-                .asInterface(ServiceManager.getService(Context.PLATFORM_COMPAT_SERVICE));
+                    .asInterface(ServiceManager.getService(Context.PLATFORM_COMPAT_SERVICE));
             if (platformCompat == null) {
                 throw new IllegalStateException("Could not get IPlatformCompat service!");
             }
             Compatibility.setOverrides(config);
             try {
-                platformCompat.setOverrides(new CompatibilityChangeConfig(config), packageName);
+                platformCompat.setOverridesForTest(new CompatibilityChangeConfig(config),
+                        packageName);
                 try {
                     testStatement.evaluate();
                 } finally {
                     platformCompat.clearOverrides(packageName);
                 }
-            } catch(RemoteException e) {
+            } catch (RemoteException e) {
                 throw new RuntimeException("Could not call IPlatformCompat binder method!", e);
             } finally {
                 Compatibility.clearOverrides();
