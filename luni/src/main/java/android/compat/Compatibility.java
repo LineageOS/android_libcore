@@ -121,13 +121,14 @@ public final class Compatibility {
         }
         @CorePlatformApi
         protected void reportChange(long changeId) {
-            throw new IllegalStateException(String.format(
+            System.logW(String.format(
                     "No Compatibility callbacks set! Reporting change %d", changeId));
         }
         @CorePlatformApi
         protected boolean isChangeEnabled(long changeId) {
-            throw new IllegalStateException(String.format(
+            System.logW(String.format(
                     "No Compatibility callbacks set! Querying change %d", changeId));
+            return true;
         }
     }
 
