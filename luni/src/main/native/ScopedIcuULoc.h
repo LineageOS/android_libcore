@@ -82,6 +82,10 @@ class ScopedIcuULoc {
     return mLocale.c_str();
   }
 
+  int32_t locale_length() const {
+    return mLocale.length();
+  }
+
  private:
   bool isValid;
   std::string mLocale;
