@@ -93,23 +93,21 @@ class ScopedResourceBundle {
   DISALLOW_COPY_AND_ASSIGN(ScopedResourceBundle);
 };
 
-static jstring ICU_addLikelySubtags(JNIEnv* env, jclass, jstring javaLocaleName) {
-    UErrorCode status = U_ZERO_ERROR;
-    ScopedUtfChars localeID(env, javaLocaleName);
-    char maximizedLocaleID[ULOC_FULLNAME_CAPACITY];
-    uloc_addLikelySubtags(localeID.c_str(), maximizedLocaleID, sizeof(maximizedLocaleID), &status);
-    if (U_FAILURE(status)) {
-        return javaLocaleName;
-    }
-    return env->NewStringUTF(maximizedLocaleID);
-}
-
 static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
-  ScopedIcuLocale icuLocale(env, javaLocaleName);
+  ScopedIcuULoc icuLocale(env, javaLocaleName);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getScript());
+  // Normal script part is 4-char long. Being conservative for allocation size
+  // because if the locale contains script part, it should not be longer than the locale itself.
+  int32_t capacity = std::max(ULOC_SCRIPT_CAPACITY, icuLocale.locale_length() + 1);
+  std::unique_ptr<char[]> buffer(new char(capacity));
+  UErrorCode status = U_ZERO_ERROR;
+  uloc_getScript(icuLocale.locale(), buffer.get(), capacity, &status);
+  if (U_FAILURE(status)) {
+    return NULL;
+  }
+  return env->NewStringUTF(buffer.get());
 }
 
 // TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
@@ -627,7 +625,6 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 }
 
 static JNINativeMethod gMethods[] = {
-    NATIVE_METHOD(ICU, addLikelySubtags, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
