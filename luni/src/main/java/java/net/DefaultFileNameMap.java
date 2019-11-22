@@ -40,6 +40,14 @@ class DefaultFileNameMap implements FileNameMap {
             filename = filename.substring(slashIndex);
         }
         int dotIndex = filename.lastIndexOf('.');
-        return (dotIndex >= 0) ? filename.substring(dotIndex + 1) : "";
+        if (dotIndex >= 0) {
+            return filename.substring(dotIndex + 1);
+        } else if (slashIndex < 0) {
+            // Backwards compatibility: A String with no '.' or '/' is considered
+            // as a candidate extension. http://b/144977800
+            return filename;
+        } else {
+            return "";
+        }
     }
 }
