@@ -16,16 +16,15 @@
 
 package libcore.java.net;
 
+import com.android.okhttp.AndroidShimResponseCache;
+import com.android.okhttp.internal.Platform;
+import com.android.okhttp.internal.tls.TrustRootIndex;
 import com.google.mockwebserver.Dispatcher;
 import com.google.mockwebserver.MockResponse;
 import com.google.mockwebserver.MockWebServer;
 import com.google.mockwebserver.QueueDispatcher;
 import com.google.mockwebserver.RecordedRequest;
 import com.google.mockwebserver.SocketPolicy;
-
-import com.android.okhttp.AndroidShimResponseCache;
-import com.android.okhttp.internal.Platform;
-import com.android.okhttp.internal.tls.TrustRootIndex;
 
 import org.junit.After;
 import org.junit.Before;
@@ -90,6 +89,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import libcore.content.type.MimeMap;
 import libcore.java.security.TestKeyStore;
 import libcore.javax.net.ssl.TestSSLContext;
 import libcore.testing.io.TestIoUtils;
@@ -891,6 +891,29 @@ public final class URLConnectionTest {
     @Test public void getFileNameMap_simple() {
         checkFileNameMap("text/plain", "example.txt");
         checkFileNameMap("text/plain", "example.com/file.txt");
+    }
+
+    @Test public void getFileNameMap_compositeExtension() {
+        checkFileNameMap("text/plain", "example.html.txt"); // html.txt isn't known, but txt is
+        checkFileNameMap("application/x-font-pcf", "filename.pcf.Z"); // pcf.Z is known
+    }
+
+    @Test public void getFileNameMap_compositeExtension_customMimeMap() {
+        MimeMap testMimeMap = MimeMap.builder()
+                .put("text/html", "html")
+                .put("application/gzip", "gz")
+                .put("application/tar+gzip", "tar.gz")
+                .build();
+        MimeMap defaultMimeMap = MimeMap.getDefault();
+        MimeMap.setDefaultSupplier(() -> testMimeMap);
+        try {
+            checkFileNameMap("application/gzip", "filename.gz");
+            checkFileNameMap("application/gzip", "filename.foobar.gz");
+            checkFileNameMap("application/gzip", "filename.html.gz");
+            checkFileNameMap("application/tar+gzip", "filename.tar.gz"); // tar.gz is found
+        } finally {
+            MimeMap.setDefaultSupplier(() -> defaultMimeMap);
+        }
     }
 
     /**

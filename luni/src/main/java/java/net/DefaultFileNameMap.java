@@ -22,32 +22,34 @@ import libcore.content.type.MimeMap;
  * Implements {@link FileNameMap} in terms of {@link MimeMap}.
  */
 class DefaultFileNameMap implements FileNameMap {
-    public String getContentTypeFor(String filename) {
-        String ext = extensionOf(filename);
-        return MimeMap.getDefault().guessMimeTypeFromExtension(ext);
-    }
 
-    private static String extensionOf(String filename) {
+    public String getContentTypeFor(String filename) {
         int fragmentIndex = filename.indexOf('#');
         if (fragmentIndex >= 0) {
             filename = filename.substring(0, fragmentIndex);
         }
         if (filename.endsWith("/")) { // a directory
-            return "html";
+            return "text/html";
         }
+
         int slashIndex = filename.lastIndexOf('/');
         if (slashIndex >= 0) {
             filename = filename.substring(slashIndex);
         }
-        int dotIndex = filename.lastIndexOf('.');
-        if (dotIndex >= 0) {
-            return filename.substring(dotIndex + 1);
-        } else if (slashIndex < 0) {
-            // Backwards compatibility: A String with no '.' or '/' is considered
-            // as a candidate extension. http://b/144977800
-            return filename;
-        } else {
-            return "";
-        }
+
+        MimeMap mimeMap = MimeMap.getDefault();
+        int dotIndex = -1;
+        do {
+            String ext = filename.substring(dotIndex + 1);
+            String result = mimeMap.guessMimeTypeFromExtension(ext);
+            if ((result != null) &&
+                    // Compat behavior: If there's a '/', then extension must not be the
+                    // whole string. http://b/144977800
+                    (slashIndex < 0 || dotIndex >= 0)) {
+                return result;
+            }
+            dotIndex = filename.indexOf('.', dotIndex + 1);
+        } while (dotIndex >= 0);
+        return null;
     }
 }
