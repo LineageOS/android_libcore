@@ -894,6 +894,19 @@ public final class URLConnectionTest {
     }
 
     /**
+     * Checks that as long as there are no '.' or '/', a file name that matches
+     * a known extension is interpreted as that extension, as if it was preceded by ".".
+     */
+    @Test public void getFileNameMap_plainExtension() {
+        checkFileNameMap("text/plain", "txt");
+        checkFileNameMap("text/plain", "txt#fragment");
+        checkFileNameMap(null, "example.com/txt");
+        checkFileNameMap(null, "example.com/txt#fragment");
+        checkFileNameMap(null, "example/txt");
+        checkFileNameMap(null, "http://example/txt#fragment");
+    }
+
+    /**
      * Checks cases where there's a '.' in the fragment, path or as an earlier path
      * of a file name (only the last '.' that is part of the filename should count).
      */
