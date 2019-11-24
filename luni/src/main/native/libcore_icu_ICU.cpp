@@ -34,6 +34,7 @@
 #include <log/log.h>
 #include <nativehelper/JNIHelp.h>
 #include <nativehelper/ScopedLocalRef.h>
+#include <nativehelper/ScopedStringChars.h>
 #include <nativehelper/ScopedUtfChars.h>
 #include <nativehelper/jni_macros.h>
 #include <nativehelper/toStringArray.h>
@@ -45,12 +46,12 @@
 #include "ScopedIcuULoc.h"
 #include "ScopedJavaUnicodeString.h"
 #include "unicode/brkiter.h"
+#include "unicode/char16ptr.h"
 #include "unicode/calendar.h"
 #include "unicode/datefmt.h"
 #include "unicode/dcfmtsym.h"
 #include "unicode/decimfmt.h"
 #include "unicode/dtfmtsym.h"
-#include "unicode/dtptngen.h"
 #include "unicode/gregocal.h"
 #include "unicode/locid.h"
 #include "unicode/numfmt.h"
@@ -61,6 +62,7 @@
 #include "unicode/ucol.h"
 #include "unicode/ucurr.h"
 #include "unicode/udat.h"
+#include "unicode/udatpg.h"
 #include "unicode/uloc.h"
 #include "unicode/ures.h"
 #include "unicode/ustring.h"
@@ -93,23 +95,21 @@ class ScopedResourceBundle {
   DISALLOW_COPY_AND_ASSIGN(ScopedResourceBundle);
 };
 
-static jstring ICU_addLikelySubtags(JNIEnv* env, jclass, jstring javaLocaleName) {
-    UErrorCode status = U_ZERO_ERROR;
-    ScopedUtfChars localeID(env, javaLocaleName);
-    char maximizedLocaleID[ULOC_FULLNAME_CAPACITY];
-    uloc_addLikelySubtags(localeID.c_str(), maximizedLocaleID, sizeof(maximizedLocaleID), &status);
-    if (U_FAILURE(status)) {
-        return javaLocaleName;
-    }
-    return env->NewStringUTF(maximizedLocaleID);
-}
-
 static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
-  ScopedIcuLocale icuLocale(env, javaLocaleName);
+  ScopedIcuULoc icuLocale(env, javaLocaleName);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getScript());
+  // Normal script part is 4-char long. Being conservative for allocation size
+  // because if the locale contains script part, it should not be longer than the locale itself.
+  int32_t capacity = std::max(ULOC_SCRIPT_CAPACITY, icuLocale.locale_length() + 1);
+  std::unique_ptr<char[]> buffer(new char(capacity));
+  UErrorCode status = U_ZERO_ERROR;
+  uloc_getScript(icuLocale.locale(), buffer.get(), capacity, &status);
+  if (U_FAILURE(status)) {
+    return NULL;
+  }
+  return env->NewStringUTF(buffer.get());
 }
 
 // TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
@@ -188,19 +188,19 @@ static jstring getCurrencyName(JNIEnv* env, jstring javaLanguageTag, jstring jav
 }
 
 static jstring ICU_getISO3Country(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getISO3Country());
+  return env->NewStringUTF(uloc_getISO3Country(icuLocale.locale()));
 }
 
 static jstring ICU_getISO3Language(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return NULL;
   }
-  return env->NewStringUTF(icuLocale.locale().getISO3Language());
+  return env->NewStringUTF(uloc_getISO3Language(icuLocale.locale()));
 }
 
 static jobjectArray ICU_getISOCountriesNative(JNIEnv* env, jclass) {
@@ -588,27 +588,52 @@ static jboolean ICU_initLocaleDataNative(JNIEnv* env, jclass, jstring javaLangua
 }
 
 static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
-  ScopedIcuLocale icuLocale(env, javaLanguageTag);
+  ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
     return NULL;
   }
 
   UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<icu::DateTimePatternGenerator> generator(icu::DateTimePatternGenerator::createInstance(icuLocale.locale(), status));
-  if (maybeThrowIcuException(env, "DateTimePatternGenerator::createInstance", status)) {
+  std::unique_ptr<UDateTimePatternGenerator, decltype(&udatpg_close)> generator(
+    udatpg_open(icuLocale.locale(), &status), &udatpg_close);
+  if (maybeThrowIcuException(env, "udatpg_open", status)) {
     return NULL;
   }
 
-  ScopedJavaUnicodeString skeletonHolder(env, javaSkeleton);
-  if (!skeletonHolder.valid()) {
-    return NULL;
+  const ScopedStringChars skeletonHolder(env, javaSkeleton);
+  // Convert jchar* to UChar* with the inline-able utility provided by char16ptr.h
+  // which prevents certain compiler optimization than reinterpret_cast.
+  icu::ConstChar16Ptr skeletonPtr(skeletonHolder.get());
+  const UChar* skeleton = icu::toUCharPtr(skeletonPtr.get());
+
+  int32_t patternLength;
+  // Try with fixed-size buffer. 128 chars should be enough for most patterns.
+  // If the buffer is not sufficient, run the below case of U_BUFFER_OVERFLOW_ERROR.
+  #define PATTERN_BUFFER_SIZE 128
+  {
+    UChar buffer[PATTERN_BUFFER_SIZE];
+    status = U_ZERO_ERROR;
+    patternLength = udatpg_getBestPattern(generator.get(), skeleton,
+      skeletonHolder.size(), buffer, PATTERN_BUFFER_SIZE, &status);
+    if (U_SUCCESS(status)) {
+      return jniCreateString(env, buffer, patternLength);
+    } else if (status != U_BUFFER_OVERFLOW_ERROR) {
+      maybeThrowIcuException(env, "udatpg_getBestPattern", status);
+      return NULL;
+    }
   }
-  icu::UnicodeString result(generator->getBestPattern(skeletonHolder.unicodeString(), status));
-  if (maybeThrowIcuException(env, "DateTimePatternGenerator::getBestPattern", status)) {
+  #undef PATTERN_BUFFER_SIZE
+
+  // Case U_BUFFER_OVERFLOW_ERROR
+  std::unique_ptr<UChar[]> buffer(new UChar[patternLength+1]);
+  status = U_ZERO_ERROR;
+  patternLength = udatpg_getBestPattern(generator.get(), skeleton,
+      skeletonHolder.size(), buffer.get(), patternLength+1, &status);
+  if (maybeThrowIcuException(env, "udatpg_getBestPattern", status)) {
     return NULL;
   }
 
-  return jniCreateString(env, result.getBuffer(), result.length());
+  return jniCreateString(env, buffer.get(), patternLength);
 }
 
 static void ICU_setDefaultLocale(JNIEnv* env, jclass, jstring javaLanguageTag) {
@@ -627,7 +652,6 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 }
 
 static JNINativeMethod gMethods[] = {
-    NATIVE_METHOD(ICU, addLikelySubtags, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
