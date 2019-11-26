@@ -658,6 +658,14 @@ public final class VMRuntime {
     public static native void bootCompleted();
 
     /**
+     * Used to notify the runtime to reset Jit counters. This is done for the boot image
+     * profiling configuration to avoid samples during class preloading. This helps avoid
+     * the regression from disabling class profiling.
+     */
+    @libcore.api.CorePlatformApi
+    public static native void resetJitCounters();
+
+    /**
      * Returns the instruction set of the current runtime.
      */
     @UnsupportedAppUsage
