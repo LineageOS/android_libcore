@@ -717,6 +717,7 @@ package dalvik.system {
     method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(int);
     method public static void registerSensitiveThread();
     method public void requestConcurrentGC();
+    method public static void resetJitCounters();
     method public static void setDedupeHiddenApiWarnings(boolean);
     method public void setHiddenApiAccessLogSamplingRate(int);
     method public void setHiddenApiExemptions(String[]);
