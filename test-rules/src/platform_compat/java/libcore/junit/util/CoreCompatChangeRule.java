@@ -79,10 +79,10 @@ public class CoreCompatChangeRule implements TestRule {
         }
         ChangeConfig config = new ChangeConfig(enabled, disabled);
         if (config.isEmpty()) {
-            throw new IllegalArgumentException("Added a CompatChangeRule without specifying any "
-                    + "@EnableCompatChanges or @DisableCompatChanges !");
+            return statement;
+        } else {
+            return createStatementForConfig(statement, config);
         }
-        return createStatementForConfig(statement, config);
     }
 
     protected Statement createStatementForConfig(final Statement statement, ChangeConfig config) {
