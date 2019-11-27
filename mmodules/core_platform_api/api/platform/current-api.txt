@@ -1212,11 +1212,11 @@ package libcore.util {
 
   public final class EmptyArray {
     field public static final boolean[] BOOLEAN;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final byte[] BYTE;
+    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new byte[0]} instead.") public static final byte[] BYTE;
     field public static final float[] FLOAT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int[] INT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final long[] LONG;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final Object[] OBJECT;
+    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new int[0]} instead.") public static final int[] INT;
+    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new long[0]} instead.") public static final long[] LONG;
+    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new Object[0]} instead.") public static final Object[] OBJECT;
     field public static final String[] STRING;
   }
 
