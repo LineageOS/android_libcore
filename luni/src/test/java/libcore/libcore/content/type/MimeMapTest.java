@@ -241,7 +241,7 @@ public class MimeMapTest {
         // null or "" are not allowed for either MIME type or extension
         assertPutThrowsNpe(null, "ext");
         assertPutThrowsIae("", "ext");
-        assertPutThrowsNpe("mime/type", null);
+        assertPutThrowsNpe("mime/type", (String) null);
         assertPutThrowsIae("mime/type", "");
 
         assertPutThrowsNpe("mime/type", "ext", null);
