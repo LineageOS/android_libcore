@@ -1269,9 +1269,6 @@ public class OldSocketTest extends OldSocketTestCase {
         }
     }
 
-    @DisableResourceLeakageDetection(
-            why = "Strange threading behavior causes resource leak",
-            bug = "31820278")
     public void test_connectLjava_net_SocketAddressI_setSOTimeout() throws Exception {
         final AtomicReference<Exception> exceptionRef = new AtomicReference<>();
 
@@ -1298,6 +1295,9 @@ public class OldSocketTest extends OldSocketTestCase {
 
         // Now try to set options while we are connecting
         try (final Socket theSocket = new Socket()) {
+            // Force SocketImpl creation to prevent race between connect() and setSoTimeout()
+            // creating it. b/144258500
+            theSocket.getSoTimeout();
             final SocketConnector connector
                 = new SocketConnector(5000, theSocket, UNREACHABLE_ADDRESS);
             connector.start();
