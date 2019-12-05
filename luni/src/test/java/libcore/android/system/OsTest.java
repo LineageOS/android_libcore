@@ -1481,4 +1481,72 @@ public class OsTest extends TestCase {
         assertTrue(address > 0);
         Os.munmap(address, size);
     }
+
+    public void testMemfdCreate() throws Exception {
+        FileDescriptor fd = null;
+        try {
+            fd = Os.memfd_create("test_memfd", 0);
+            assertNotNull(fd);
+            assertTrue(fd.valid());
+
+            StructStat stat = Os.fstat(fd);
+            assertEquals(0, stat.st_size);
+
+            final byte[] expected = new byte[] {1, 2, 3, 4};
+            Os.write(fd, expected, 0, expected.length);
+            stat = Os.fstat(fd);
+            assertEquals(expected.length, stat.st_size);
+
+            byte[] actual = new byte[expected.length];
+            // should be seekable
+            Os.lseek(fd, 0, SEEK_SET);
+            Os.read(fd, actual, 0, actual.length);
+            assertArrayEquals(expected, actual);
+        } finally {
+            if (fd != null) {
+                Os.close(fd);
+                fd = null;
+            }
+        }
+    }
+
+    public void testMemfdCreateFlags() throws Exception {
+        FileDescriptor fd = null;
+
+        // test that MFD_CLOEXEC is obeyed
+        try {
+            fd = Os.memfd_create("test_memfd", 0);
+            assertNotNull(fd);
+            assertTrue(fd.valid());
+            int flags = Os.fcntlVoid(fd, F_GETFD);
+            assertTrue("Expected flags to not include " + FD_CLOEXEC + ", actual value: " + flags,
+                    0 == (flags & FD_CLOEXEC));
+        } finally {
+            if (fd != null) {
+                Os.close(fd);
+                fd = null;
+            }
+        }
+        try {
+            fd = Os.memfd_create("test_memfd", MFD_CLOEXEC);
+            assertNotNull(fd);
+            assertTrue(fd.valid());
+            int flags = Os.fcntlVoid(fd, F_GETFD);
+            assertTrue("Expected flags to include " + FD_CLOEXEC + ", actual value: " + flags,
+                    0 != (flags & FD_CLOEXEC));
+        } finally {
+            if (fd != null) {
+                Os.close(fd);
+                fd = null;
+            }
+        }
+    }
+
+    public void testMemfdCreateErrno() throws Exception {
+        expectException(() -> Os.memfd_create(null, 0), NullPointerException.class, null,
+                "memfd_create(null, 0)");
+
+        expectException(() -> Os.memfd_create("test_memfd", 0xffff), ErrnoException.class, EINVAL,
+                "memfd_create(\"test_memfd\", 0xffff)");
+    }
 }
