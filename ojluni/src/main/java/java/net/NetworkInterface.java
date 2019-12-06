@@ -62,10 +62,12 @@ import static android.system.OsConstants.*;
  */
 public final class NetworkInterface {
     // BEGIN Android-added: Return anonymized device address to non-system processes.
-    // The following change-id gates whether calls to {@link getHardwareAddress()} made by non-
-    // system processes return the actual MAC address (pre-change behavior), or an anonymized MAC
-    // address (post-change behavior).
-    // This allows us to assess the impact of the eventual enforcement through SELinux.
+    /**
+     * Gates whether calls to {@link getHardwareAddress()} made by non-system processes
+     * to return the actual MAC address (pre-change behavior) or an anonymized MAC address
+     * (post-change behavior). Future versions of Android will enforce the post-change
+     * behavior through SELinux.
+     */
     @ChangeId
     static final long ANONYMIZED_DEVICE_ADDRESS_CHANGE_ID = 141455849L;
     // This is used instead of the own device MAC.
