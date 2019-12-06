@@ -68,7 +68,6 @@ package android.system {
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ENONET;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int EUSERS;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int MAP_POPULATE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int NETLINK_NETFILTER;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int O_DIRECT;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT;
     field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT_RAISE;
