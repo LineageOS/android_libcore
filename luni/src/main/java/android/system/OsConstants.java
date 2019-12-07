@@ -384,9 +384,6 @@ public final class OsConstants {
     public static final int MS_ASYNC = placeholder();
     public static final int MS_INVALIDATE = placeholder();
     public static final int MS_SYNC = placeholder();
-    /** @hide */
-    @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public static final int NETLINK_NETFILTER = placeholder();
     public static final int NETLINK_ROUTE = placeholder();
     /**
