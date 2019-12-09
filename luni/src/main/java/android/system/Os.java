@@ -362,6 +362,11 @@ public final class Os {
     public static StructStat lstat(String path) throws ErrnoException { return Libcore.os.lstat(path); }
 
     /**
+     * See <a href="http://man7.org/linux/man-pages/man2/memfd_create.2.html">memfd_create(2)</a>.
+     */
+    public static @NonNull FileDescriptor memfd_create(@NonNull String name, int flags) throws ErrnoException { return Libcore.os.memfd_create(name, flags); }
+
+    /**
      * See <a href="http://man7.org/linux/man-pages/man2/mincore.2.html">mincore(2)</a>.
      */
     public static void mincore(long address, long byteCount, byte[] vector) throws ErrnoException { Libcore.os.mincore(address, byteCount, vector); }

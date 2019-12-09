@@ -1837,6 +1837,21 @@ static jobject Linux_lstat(JNIEnv* env, jobject, jstring javaPath) {
     return doStat(env, javaPath, true);
 }
 
+static jobject Linux_memfd_create(JNIEnv* env, jobject, jstring javaName, jint flags) {
+#if defined(__BIONIC__)
+    ScopedUtfChars name(env, javaName);
+    if (name.c_str() == NULL) {
+        return NULL;
+    }
+
+    int fd = throwIfMinusOne(env, "memfd_create", memfd_create(name.c_str(), flags));
+    return fd != -1 ? jniCreateFileDescriptor(env, fd) : NULL;
+#else
+    UNUSED(env, javaName, flags);
+    return NULL;
+#endif
+}
+
 static void Linux_mincore(JNIEnv* env, jobject, jlong address, jlong byteCount, jbyteArray javaVector) {
     ScopedByteArrayRW vector(env, javaVector);
     if (vector.get() == NULL) {
@@ -2623,6 +2638,7 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, listxattr, "(Ljava/lang/String;)[Ljava/lang/String;"),
     NATIVE_METHOD(Linux, lseek, "(Ljava/io/FileDescriptor;JI)J"),
     NATIVE_METHOD(Linux, lstat, "(Ljava/lang/String;)Landroid/system/StructStat;"),
+    NATIVE_METHOD(Linux, memfd_create, "(Ljava/lang/String;I)Ljava/io/FileDescriptor;"),
     NATIVE_METHOD(Linux, mincore, "(JJ[B)V"),
     NATIVE_METHOD(Linux, mkdir, "(Ljava/lang/String;I)V"),
     NATIVE_METHOD(Linux, mkfifo, "(Ljava/lang/String;I)V"),

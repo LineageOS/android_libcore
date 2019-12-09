@@ -150,6 +150,7 @@ public class ForwardingOs implements Os {
     public long lseek(FileDescriptor fd, long offset, int whence) throws ErrnoException { return os.lseek(fd, offset, whence); }
     @UnsupportedAppUsage
     public StructStat lstat(String path) throws ErrnoException { return os.lstat(path); }
+    public FileDescriptor memfd_create(String name, int flags) throws ErrnoException { return os.memfd_create(name, flags); }
     public void mincore(long address, long byteCount, byte[] vector) throws ErrnoException { os.mincore(address, byteCount, vector); }
     @UnsupportedAppUsage
     public void mkdir(String path, int mode) throws ErrnoException { os.mkdir(path, mode); }
