@@ -123,6 +123,7 @@ public interface Os {
     public String[] listxattr(String path) throws ErrnoException;
     public long lseek(FileDescriptor fd, long offset, int whence) throws ErrnoException;
     public StructStat lstat(String path) throws ErrnoException;
+    public FileDescriptor memfd_create(String name, int flags) throws ErrnoException;
     public void mincore(long address, long byteCount, byte[] vector) throws ErrnoException;
     public void mkdir(String path, int mode) throws ErrnoException;
     public void mkfifo(String path, int mode) throws ErrnoException;
