@@ -59,6 +59,47 @@ public class FilterOutputStreamTest extends TestCase {
     }
 
     /**
+     * java.io.FilterOutputStream#close_flushthrows()
+     */
+    public void test_close_flushthrows() throws IOException {
+        class FakeOutputStream extends OutputStream {
+
+            public int closedCount;
+
+            @Override
+            public void close()  throws IOException {
+                super.close();
+                closedCount++;
+            }
+
+            @Override
+            public void flush() throws IOException {
+                super.flush();
+                throw new IOException("FakeOutputStream#flush() mocked exception");
+            }
+
+            @Override
+            public void write(int b) throws IOException {
+            }
+        }
+
+        FakeOutputStream fos = new FakeOutputStream();
+        os = new FilterOutputStream(fos);
+        os.write(42);
+
+        try {
+            os.close();
+        }
+        catch (IOException e) {
+        }
+        assertEquals("Underlying stream's close() called even if flush() throws", 1,
+                fos.closedCount);
+
+        os.close();
+        assertEquals("Underlying stream's close() called exactly once", 1, fos.closedCount);
+    }
+
+    /**
      * java.io.FilterOutputStream#flush()
      */
     public void test_flush() throws IOException {
