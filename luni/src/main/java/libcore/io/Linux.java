@@ -121,6 +121,7 @@ public final class Linux implements Os {
     public native String[] listxattr(String path) throws ErrnoException;
     public native long lseek(FileDescriptor fd, long offset, int whence) throws ErrnoException;
     public native StructStat lstat(String path) throws ErrnoException;
+    public native FileDescriptor memfd_create(String name, int flags) throws ErrnoException;
     public native void mincore(long address, long byteCount, byte[] vector) throws ErrnoException;
     public native void mkdir(String path, int mode) throws ErrnoException;
     public native void mkfifo(String path, int mode) throws ErrnoException;

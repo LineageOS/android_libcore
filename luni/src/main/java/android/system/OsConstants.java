@@ -374,6 +374,7 @@ public final class OsConstants {
     public static final int MCAST_UNBLOCK_SOURCE = placeholder();
     public static final int MCL_CURRENT = placeholder();
     public static final int MCL_FUTURE = placeholder();
+    public static final int MFD_CLOEXEC = placeholder();
     public static final int MSG_CTRUNC = placeholder();
     public static final int MSG_DONTROUTE = placeholder();
     public static final int MSG_EOR = placeholder();
