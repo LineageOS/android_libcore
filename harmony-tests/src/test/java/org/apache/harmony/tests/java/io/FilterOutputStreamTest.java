@@ -17,13 +17,15 @@
 
 package org.apache.harmony.tests.java.io;
 
+import junit.framework.TestCase;
+
+import org.mockito.Mockito;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import junit.framework.TestCase;
 
 public class FilterOutputStreamTest extends TestCase {
 
@@ -59,44 +61,26 @@ public class FilterOutputStreamTest extends TestCase {
     }
 
     /**
-     * java.io.FilterOutputStream#close_flushthrows()
+     * java.io.FilterOutputStream#close()
      */
-    public void test_close_flushthrows() throws IOException {
-        class FakeOutputStream extends OutputStream {
-
-            public int closedCount;
-
-            @Override
-            public void close()  throws IOException {
-                super.close();
-                closedCount++;
-            }
-
-            @Override
-            public void flush() throws IOException {
-                super.flush();
-                throw new IOException("FakeOutputStream#flush() mocked exception");
-            }
-
-            @Override
-            public void write(int b) throws IOException {
-            }
-        }
-
-        FakeOutputStream fos = new FakeOutputStream();
-        os = new FilterOutputStream(fos);
-        os.write(42);
-
+    public void test_doubleClose() throws IOException {
+        OutputStream outputStream = Mockito.mock(OutputStream.class);
+        IOException testException = new IOException("test exception");
+        Mockito.doThrow(testException).when(outputStream).flush();
+        FilterOutputStream filterOutputStream = new FilterOutputStream(outputStream);
+        // FilterOutputStream.close() flushes and closes the underlying stream.
         try {
-            os.close();
+            filterOutputStream.close();
+            fail();
+        } catch (IOException expected) {
+            assertEquals(testException, expected);
         }
-        catch (IOException e) {
-        }
-        assertEquals("Underlying stream's close() called even if flush() throws", 1,
-                fos.closedCount);
-
-        os.close();
-        assertEquals("Underlying stream's close() called exactly once", 1, fos.closedCount);
+        Mockito.verify(outputStream, Mockito.times(1)).flush();
+        Mockito.verify(outputStream, Mockito.times(1)).close();
+        // A second close() does not delegate to the already-closed underlying stream again.
+        filterOutputStream.close();
+        Mockito.verify(outputStream, Mockito.times(1)).flush();
+        Mockito.verify(outputStream, Mockito.times(1)).close();
     }
 
     /**
