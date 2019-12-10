@@ -2597,15 +2597,24 @@ return invoker;
         MethodType oldType = target.type();
         if (oldType == newType) return target;
         if (oldType.explicitCastEquivalentToAsType(newType)) {
-            return target.asFixedArity().asType(newType);
+            if (Transformers.Transformer.class.isAssignableFrom(target.getClass())) {
+                // The StackFrameReader and StackFrameWriter used to perform transforms on
+                // EmulatedStackFrames (in Transformers.java) do not how to perform asType()
+                // conversions, but we know here that an explicit cast transform is the same as
+                // having called asType() on the method handle.
+                return new Transformers.ExplicitCastArguments(target.asFixedArity(), newType);
+            } else {
+                // Runtime will perform asType() conversion during invocation.
+                return target.asFixedArity().asType(newType);
+            }
         }
-
         return new Transformers.ExplicitCastArguments(target, newType);
     }
 
     private static void explicitCastArgumentsChecks(MethodHandle target, MethodType newType) {
         if (target.type().parameterCount() != newType.parameterCount()) {
-            throw new WrongMethodTypeException("cannot explicitly cast " + target + " to " + newType);
+            throw new WrongMethodTypeException("cannot explicitly cast " + target +
+                                               " to " + newType);
         }
     }
 
