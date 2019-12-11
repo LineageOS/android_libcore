@@ -16,11 +16,12 @@
 
 package libcore.icu;
 
+import android.compat.annotation.UnsupportedAppUsage;
 import android.icu.impl.ICUData;
 import android.icu.impl.ICUResourceBundle;
 import android.icu.text.NumberingSystem;
 import android.icu.util.UResourceBundle;
-import dalvik.annotation.compat.UnsupportedAppUsage;
+
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
