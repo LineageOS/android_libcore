@@ -26,7 +26,7 @@
 
 package java.lang.reflect;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class Field extends java.lang.reflect.AccessibleObject

@@ -16,18 +16,18 @@
 
 package java.nio;
 
+import android.compat.annotation.UnsupportedAppUsage;
+
 import java.io.Closeable;
 import java.io.FileDescriptor;
-import java.io.IOException;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
-import java.util.Set;
 
-import static android.system.OsConstants.*;
-import dalvik.annotation.compat.UnsupportedAppUsage;
-import sun.misc.Cleaner;
-import sun.nio.ch.DirectBuffer;
 import sun.nio.ch.FileChannelImpl;
+
+import static android.system.OsConstants.O_ACCMODE;
+import static android.system.OsConstants.O_APPEND;
+import static android.system.OsConstants.O_RDONLY;
+import static android.system.OsConstants.O_WRONLY;
 
 /**
  * @hide internal use only

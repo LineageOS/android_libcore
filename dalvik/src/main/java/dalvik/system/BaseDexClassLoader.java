@@ -16,7 +16,7 @@
 
 package dalvik.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;

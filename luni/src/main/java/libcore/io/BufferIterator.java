@@ -16,7 +16,7 @@
 
 package libcore.io;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 
 /**
  * Iterates over big- or little-endian bytes. See {@link MemoryMappedFile#bigEndianIterator} and
