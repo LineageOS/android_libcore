@@ -52,18 +52,18 @@ package dalvik.annotation.optimization {
 package dalvik.system {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class BlockGuard {
-    method @NonNull @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.BlockGuard.Policy getThreadPolicy();
+    method @NonNull @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.BlockGuard.Policy getThreadPolicy();
   }
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static interface BlockGuard.Policy {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.IntraCoreApi public void onNetwork();
+    method @libcore.api.IntraCoreApi public void onNetwork();
   }
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class CloseGuard {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void close();
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void close();
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
+    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
   }
 
 }
