@@ -35,7 +35,7 @@ import android.system.StructTimeval;
 import android.system.StructUcred;
 import android.system.StructUtsname;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;

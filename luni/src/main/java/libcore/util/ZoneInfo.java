@@ -22,7 +22,8 @@
  */
 package libcore.util;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Arrays;
