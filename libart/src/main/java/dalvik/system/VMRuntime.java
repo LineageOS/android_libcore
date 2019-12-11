@@ -16,13 +16,15 @@
 
 package dalvik.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
-import dalvik.annotation.optimization.FastNative;
+import android.compat.annotation.UnsupportedAppUsage;
+
 import java.lang.ref.FinalizerReference;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+
+import dalvik.annotation.optimization.FastNative;
 
 /**
  * Provides an interface to VM-global, Dalvik-specific features.

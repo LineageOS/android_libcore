@@ -16,9 +16,10 @@
 
 package dalvik.system;
 
+import android.compat.annotation.UnsupportedAppUsage;
 import android.system.ErrnoException;
 import android.system.StructStat;
-import dalvik.annotation.compat.UnsupportedAppUsage;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -16,11 +16,7 @@
 
 package android.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
-
-import libcore.io.Libcore;
-import libcore.util.NonNull;
-import libcore.util.Nullable;
+import android.compat.annotation.UnsupportedAppUsage;
 
 import java.io.FileDescriptor;
 import java.io.InterruptedIOException;
@@ -29,6 +25,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import libcore.io.Libcore;
+import libcore.util.NonNull;
+import libcore.util.Nullable;
 
 /**
  * Access to low-level system functionality. Most of these are system calls. Most users will want

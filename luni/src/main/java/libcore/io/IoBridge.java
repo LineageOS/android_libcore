@@ -16,6 +16,7 @@
 
 package libcore.io;
 
+import android.compat.annotation.UnsupportedAppUsage;
 import android.system.ErrnoException;
 import android.system.Int32Ref;
 import android.system.StructGroupReq;
@@ -23,9 +24,6 @@ import android.system.StructLinger;
 import android.system.StructPollfd;
 import android.system.StructTimeval;
 
-import libcore.util.ArrayUtils;
-
-import dalvik.annotation.compat.UnsupportedAppUsage;
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -46,6 +44,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
+import libcore.util.ArrayUtils;
 
 import static android.system.OsConstants.*;
 

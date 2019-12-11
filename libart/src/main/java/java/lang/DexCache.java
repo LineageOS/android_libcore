@@ -32,7 +32,7 @@
 
 package java.lang;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 import dalvik.annotation.optimization.FastNative;
 
 /**

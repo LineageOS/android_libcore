@@ -16,7 +16,7 @@
 
 package dalvik.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 
 /**
  * CloseGuard is a mechanism for flagging implicit finalizer cleanup of
