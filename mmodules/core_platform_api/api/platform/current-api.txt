@@ -32,11 +32,11 @@ package android.system {
 
   public class Int32Ref {
     ctor public Int32Ref(int);
-    field @dalvik.annotation.compat.UnsupportedAppUsage public int value;
+    field public int value;
   }
 
   public final class NetlinkSocketAddress extends java.net.SocketAddress {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public NetlinkSocketAddress(int, int);
+    ctor public NetlinkSocketAddress(int, int);
     method public int getGroupsMask();
     method public int getPortId();
   }
@@ -55,31 +55,31 @@ package android.system {
     method public static void setpgid(int, int) throws android.system.ErrnoException;
     method public static void setregid(int, int) throws android.system.ErrnoException;
     method public static void setreuid(int, int) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setsockoptIfreq(java.io.FileDescriptor, int, int, String) throws android.system.ErrnoException;
+    method public static void setsockoptIfreq(java.io.FileDescriptor, int, int, String) throws android.system.ErrnoException;
     method public static void setsockoptLinger(java.io.FileDescriptor, int, int, android.system.StructLinger) throws android.system.ErrnoException;
     method public static long splice(java.io.FileDescriptor, android.system.Int64Ref, java.io.FileDescriptor, android.system.Int64Ref, long, int) throws android.system.ErrnoException;
     method public static void unlink(String) throws android.system.ErrnoException;
   }
 
   public final class OsConstants {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_INDEX(int);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static int CAP_TO_MASK(int);
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ARPHRD_LOOPBACK;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int ENONET;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int EUSERS;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int MAP_POPULATE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int O_DIRECT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int PR_CAP_AMBIENT_RAISE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int RLIMIT_NOFILE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int RTMGRP_IPV4_IFADDR;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int SPLICE_F_MORE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int SPLICE_F_MOVE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int TIOCOUTQ;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int UDP_ENCAP;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int UDP_ENCAP_ESPINUDP;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int XATTR_CREATE;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final int _LINUX_CAPABILITY_VERSION_3;
+    method public static int CAP_TO_INDEX(int);
+    method public static int CAP_TO_MASK(int);
+    field public static final int ARPHRD_LOOPBACK;
+    field public static final int ENONET;
+    field public static final int EUSERS;
+    field public static final int MAP_POPULATE;
+    field public static final int O_DIRECT;
+    field public static final int PR_CAP_AMBIENT;
+    field public static final int PR_CAP_AMBIENT_RAISE;
+    field public static final int RLIMIT_NOFILE;
+    field public static final int RTMGRP_IPV4_IFADDR;
+    field public static final int SPLICE_F_MORE;
+    field public static final int SPLICE_F_MOVE;
+    field public static final int TIOCOUTQ;
+    field public static final int UDP_ENCAP;
+    field public static final int UDP_ENCAP_ESPINUDP;
+    field public static final int XATTR_CREATE;
+    field public static final int _LINUX_CAPABILITY_VERSION_3;
   }
 
   public final class PacketSocketAddress extends java.net.SocketAddress {
@@ -542,9 +542,9 @@ package dalvik.system {
   }
 
   public class BaseDexClassLoader extends java.lang.ClassLoader {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void addDexPath(String);
+    method public void addDexPath(String);
     method public void addNativePath(java.util.Collection<java.lang.String>);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public String getLdLibraryPath();
+    method public String getLdLibraryPath();
     method public static void setReporter(dalvik.system.BaseDexClassLoader.Reporter);
   }
 
@@ -553,17 +553,17 @@ package dalvik.system {
   }
 
   public final class BlockGuard {
-    method @NonNull @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.BlockGuard.Policy getThreadPolicy();
+    method @NonNull public static dalvik.system.BlockGuard.Policy getThreadPolicy();
     method @NonNull public static dalvik.system.BlockGuard.VmPolicy getVmPolicy();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setThreadPolicy(@NonNull dalvik.system.BlockGuard.Policy);
+    method public static void setThreadPolicy(@NonNull dalvik.system.BlockGuard.Policy);
     method public static void setVmPolicy(@NonNull dalvik.system.BlockGuard.VmPolicy);
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final dalvik.system.BlockGuard.Policy LAX_POLICY;
+    field public static final dalvik.system.BlockGuard.Policy LAX_POLICY;
     field public static final dalvik.system.BlockGuard.VmPolicy LAX_VM_POLICY;
   }
 
   public static interface BlockGuard.Policy {
     method public int getPolicyMask();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void onReadFromDisk();
+    method public void onReadFromDisk();
     method public void onUnbufferedIO();
     method public void onWriteToDisk();
   }
@@ -573,17 +573,17 @@ package dalvik.system {
   }
 
   public final class CloseGuard {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void close();
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public static dalvik.system.CloseGuard get();
+    method public void close();
+    method public static dalvik.system.CloseGuard get();
     method public static dalvik.system.CloseGuard.Reporter getReporter();
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void open(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setEnabled(boolean);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setReporter(dalvik.system.CloseGuard.Reporter);
-    method @dalvik.annotation.compat.UnsupportedAppUsage(trackingBug=111170242) public void warnIfOpen();
+    method public void open(String);
+    method public static void setEnabled(boolean);
+    method public static void setReporter(dalvik.system.CloseGuard.Reporter);
+    method public void warnIfOpen();
   }
 
   public static interface CloseGuard.Reporter {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void report(String, Throwable);
+    method public void report(String, Throwable);
   }
 
   public interface DalvikLogHandler {
@@ -633,13 +633,13 @@ package dalvik.system {
 
   public abstract class SocketTagger {
     ctor public SocketTagger();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.SocketTagger get();
+    method public static dalvik.system.SocketTagger get();
     method public static void set(dalvik.system.SocketTagger);
     method public abstract void tag(java.io.FileDescriptor) throws java.net.SocketException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public final void tag(java.net.Socket) throws java.net.SocketException;
+    method public final void tag(java.net.Socket) throws java.net.SocketException;
     method public final void tag(java.net.DatagramSocket) throws java.net.SocketException;
     method public abstract void untag(java.io.FileDescriptor) throws java.net.SocketException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public final void untag(java.net.Socket) throws java.net.SocketException;
+    method public final void untag(java.net.Socket) throws java.net.SocketException;
     method public final void untag(java.net.DatagramSocket) throws java.net.SocketException;
   }
 
@@ -651,14 +651,14 @@ package dalvik.system {
     method public static void dumpHprofData(String) throws java.io.IOException;
     method public static void dumpHprofData(String, java.io.FileDescriptor) throws java.io.IOException;
     method public static void dumpHprofDataDdms();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void dumpReferenceTables();
+    method public static void dumpReferenceTables();
     method public static int getAllocCount(int);
     method @dalvik.annotation.optimization.FastNative public static int getLoadedClassCount();
     method public static int getMethodTracingMode();
     method public static String getRuntimeStat(String);
     method public static java.util.Map<java.lang.String,java.lang.String> getRuntimeStats();
     method public static String[] getVmFeatureList();
-    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public static boolean isDebuggerConnected();
+    method @dalvik.annotation.optimization.FastNative public static boolean isDebuggerConnected();
     method @dalvik.annotation.optimization.FastNative public static boolean isDebuggingEnabled();
     method @dalvik.annotation.optimization.FastNative public static long lastDebuggerActivity();
     method @dalvik.annotation.optimization.FastNative public static void printLoadedClasses(int);
@@ -688,33 +688,33 @@ package dalvik.system {
   }
 
   public final class VMRuntime {
-    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public long addressOf(Object);
+    method @dalvik.annotation.optimization.FastNative public long addressOf(Object);
     method public static void bootCompleted();
     method public void clampGrowthLimit();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void clearGrowthLimit();
+    method public void clearGrowthLimit();
     method public static boolean didPruneDalvikCache();
     method public void disableJitCompilation();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getCurrentInstructionSet();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getInstructionSet(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static dalvik.system.VMRuntime getRuntime();
+    method public static String getCurrentInstructionSet();
+    method public static String getInstructionSet(String);
+    method public static dalvik.system.VMRuntime getRuntime();
     method public float getTargetHeapUtilization();
     method public int getTargetSdkVersion();
     method @dalvik.annotation.optimization.FastNative public static boolean hasBootImageSpaces();
-    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public boolean is64Bit();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static boolean is64BitAbi(String);
+    method @dalvik.annotation.optimization.FastNative public boolean is64Bit();
+    method public static boolean is64BitAbi(String);
     method public static boolean is64BitInstructionSet(String);
     method public static boolean isBootClassPathOnDisk(String);
     method @dalvik.annotation.optimization.FastNative public boolean isCheckJniEnabled();
     method @dalvik.annotation.optimization.FastNative public boolean isNativeDebuggable();
-    method @dalvik.annotation.compat.UnsupportedAppUsage @dalvik.annotation.optimization.FastNative public Object newNonMovableArray(Class<?>, int);
+    method @dalvik.annotation.optimization.FastNative public Object newNonMovableArray(Class<?>, int);
     method @dalvik.annotation.optimization.FastNative public Object newUnpaddedArray(Class<?>, int);
     method public void notifyStartupCompleted();
     method public void preloadDexCaches();
     method public static void registerAppInfo(String, String[]);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(long);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeAllocation(int);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(long);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void registerNativeFree(int);
+    method public void registerNativeAllocation(long);
+    method @Deprecated public void registerNativeAllocation(int);
+    method public void registerNativeFree(long);
+    method @Deprecated public void registerNativeFree(int);
     method public static void registerSensitiveThread();
     method public void requestConcurrentGC();
     method public static void resetJitCounters();
@@ -725,12 +725,12 @@ package dalvik.system {
     method public static void setNonSdkApiUsageConsumer(java.util.function.Consumer<java.lang.String>);
     method public static void setProcessDataDirectory(String);
     method public static void setProcessPackageName(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public float setTargetHeapUtilization(float);
-    method @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=0, publicAlternatives="Use the {@code targetSdkVersion}" + " attribute in the {@code uses-sdk} manifest tag instead.") public void setTargetSdkVersion(int);
+    method public float setTargetHeapUtilization(float);
+    method public void setTargetSdkVersion(int);
     method public void startJitCompilation();
     method public void updateProcessState(int);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public String vmInstructionSet();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public String vmLibrary();
+    method public String vmInstructionSet();
+    method public String vmLibrary();
     field public static final int SDK_VERSION_CUR_DEVELOPMENT = 10000; // 0x2710
   }
 
@@ -857,9 +857,9 @@ package java.nio {
   }
 
   public final class NioUtils {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void freeDirectBuffer(java.nio.ByteBuffer);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] unsafeArray(java.nio.ByteBuffer);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static int unsafeArrayOffset(java.nio.ByteBuffer);
+    method public static void freeDirectBuffer(java.nio.ByteBuffer);
+    method public static byte[] unsafeArray(java.nio.ByteBuffer);
+    method public static int unsafeArrayOffset(java.nio.ByteBuffer);
   }
 
 }
@@ -950,40 +950,40 @@ package libcore.content.type {
 package libcore.icu {
 
   public final class DateIntervalFormat {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String formatDateRange(long, long, int, String);
+    method public static String formatDateRange(long, long, int, String);
   }
 
   public final class ICU {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String getBestDateTimePattern(String, java.util.Locale);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static char[] getDateFormatOrder(String);
+    method public static String getBestDateTimePattern(String, java.util.Locale);
+    method public static char[] getDateFormatOrder(String);
   }
 
   public final class LocaleData {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static libcore.icu.LocaleData get(java.util.Locale);
+    method public static libcore.icu.LocaleData get(java.util.Locale);
     method public String getDateFormat(int);
     field public String[] amPm;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public Integer firstDayOfWeek;
+    field public Integer firstDayOfWeek;
     field public String[] longMonthNames;
     field public String[] longStandAloneMonthNames;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] longStandAloneWeekdayNames;
+    field public String[] longStandAloneWeekdayNames;
     field public String[] longWeekdayNames;
     field public String narrowAm;
     field public String narrowPm;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortMonthNames;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortStandAloneMonthNames;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String[] shortStandAloneWeekdayNames;
+    field public String[] shortMonthNames;
+    field public String[] shortStandAloneMonthNames;
+    field public String[] shortStandAloneWeekdayNames;
     field public String[] shortWeekdayNames;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String timeFormat_Hm;
+    field public String timeFormat_Hm;
     field public String timeFormat_Hms;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String timeFormat_hm;
+    field public String timeFormat_hm;
     field public String timeFormat_hms;
     field public String[] tinyMonthNames;
     field public String[] tinyStandAloneMonthNames;
     field public String[] tinyStandAloneWeekdayNames;
     field public String[] tinyWeekdayNames;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public String today;
+    field public String today;
     field public String yesterday;
-    field @dalvik.annotation.compat.UnsupportedAppUsage public char zeroDigit;
+    field public char zeroDigit;
   }
 
   public final class RelativeDateTimeFormatter {
@@ -1005,13 +1005,13 @@ package libcore.internal {
 package libcore.io {
 
   public class ForwardingOs implements libcore.io.Os {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage protected ForwardingOs(libcore.io.Os);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public boolean access(String, int) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void remove(String) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void rename(String, String) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public android.system.StructStat stat(String) throws android.system.ErrnoException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void unlink(String) throws android.system.ErrnoException;
+    ctor protected ForwardingOs(libcore.io.Os);
+    method public boolean access(String, int) throws android.system.ErrnoException;
+    method public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
+    method public void remove(String) throws android.system.ErrnoException;
+    method public void rename(String, String) throws android.system.ErrnoException;
+    method public android.system.StructStat stat(String) throws android.system.ErrnoException;
+    method public void unlink(String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
@@ -1028,13 +1028,13 @@ package libcore.io {
   public final class IoUtils {
     method public static int acquireRawFd(@NonNull java.io.FileDescriptor);
     method public static void close(java.io.FileDescriptor) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(AutoCloseable);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.io.FileDescriptor);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void closeQuietly(java.net.Socket);
+    method public static void closeQuietly(AutoCloseable);
+    method public static void closeQuietly(java.io.FileDescriptor);
+    method public static void closeQuietly(java.net.Socket);
     method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFileAsByteArray(String) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static String readFileAsString(String) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
+    method public static byte[] readFileAsByteArray(String) throws java.io.IOException;
+    method public static String readFileAsString(String) throws java.io.IOException;
+    method public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
     method public static void setFdOwner(@NonNull java.io.FileDescriptor, @NonNull Object);
   }
 
@@ -1053,14 +1053,14 @@ package libcore.io {
   }
 
   public final class Streams {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
+    method public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
+    method public static void readFully(java.io.InputStream, byte[]) throws java.io.IOException;
+    method public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
     method public static String readFully(java.io.Reader) throws java.io.IOException;
     method public static byte[] readFullyNoClose(java.io.InputStream) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static int readSingleByte(java.io.InputStream) throws java.io.IOException;
+    method public static int readSingleByte(java.io.InputStream) throws java.io.IOException;
     method public static long skipByReading(java.io.InputStream, long) throws java.io.IOException;
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void writeSingleByte(java.io.OutputStream, int) throws java.io.IOException;
+    method public static void writeSingleByte(java.io.OutputStream, int) throws java.io.IOException;
   }
 
 }
@@ -1076,7 +1076,7 @@ package libcore.net {
     ctor public NetworkSecurityPolicy();
     method public static libcore.net.NetworkSecurityPolicy getInstance();
     method public abstract boolean isCertificateTransparencyVerificationRequired(String);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public abstract boolean isCleartextTrafficPermitted();
+    method public abstract boolean isCleartextTrafficPermitted();
     method public abstract boolean isCleartextTrafficPermitted(String);
     method public static void setInstance(libcore.net.NetworkSecurityPolicy);
   }
@@ -1086,7 +1086,7 @@ package libcore.net {
 package libcore.net.event {
 
   public class NetworkEventDispatcher {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static libcore.net.event.NetworkEventDispatcher getInstance();
+    method public static libcore.net.event.NetworkEventDispatcher getInstance();
     method public void onNetworkConfigurationChanged();
   }
 
@@ -1212,11 +1212,11 @@ package libcore.util {
 
   public final class EmptyArray {
     field public static final boolean[] BOOLEAN;
-    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new byte[0]} instead.") public static final byte[] BYTE;
+    field public static final byte[] BYTE;
     field public static final float[] FLOAT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new int[0]} instead.") public static final int[] INT;
-    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new long[0]} instead.") public static final long[] LONG;
-    field @dalvik.annotation.compat.UnsupportedAppUsage(maxTargetSdk=dalvik.annotation.compat.VersionCodes.Q, publicAlternatives="Use {@code new Object[0]} instead.") public static final Object[] OBJECT;
+    field public static final int[] INT;
+    field public static final long[] LONG;
+    field public static final Object[] OBJECT;
     field public static final String[] STRING;
   }
 
@@ -1354,7 +1354,7 @@ package org.apache.harmony.dalvik.ddmc {
 
   public class Chunk {
     ctor public Chunk(int, byte[], int, int);
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public Chunk(int, java.nio.ByteBuffer);
+    ctor public Chunk(int, java.nio.ByteBuffer);
     field public int type;
   }
 
@@ -1369,21 +1369,21 @@ package org.apache.harmony.dalvik.ddmc {
     method public static void putString(java.nio.ByteBuffer, String);
     method public static int type(String);
     method public static java.nio.ByteBuffer wrapChunk(org.apache.harmony.dalvik.ddmc.Chunk);
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final java.nio.ByteOrder CHUNK_ORDER;
+    field public static final java.nio.ByteOrder CHUNK_ORDER;
   }
 
   public class DdmServer {
     method public static void registerHandler(int, org.apache.harmony.dalvik.ddmc.ChunkHandler);
     method public static void registrationComplete();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    method public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
   }
 
   public class DdmVmInternal {
     method public static void enableRecentAllocations(boolean);
     method @dalvik.annotation.optimization.FastNative public static boolean getRecentAllocationStatus();
     method @dalvik.annotation.optimization.FastNative public static byte[] getRecentAllocations();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static StackTraceElement[] getStackTraceById(int);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static byte[] getThreadStats();
+    method public static StackTraceElement[] getStackTraceById(int);
+    method public static byte[] getThreadStats();
     method @dalvik.annotation.optimization.FastNative public static boolean heapInfoNotify(int);
     method public static boolean heapSegmentNotify(int, int, boolean);
     method public static void threadNotify(boolean);
@@ -1394,7 +1394,7 @@ package org.apache.harmony.dalvik.ddmc {
 package org.json {
 
   public class JSONObject {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Set<java.lang.String> keySet();
+    method public java.util.Set<java.lang.String> keySet();
   }
 
 }

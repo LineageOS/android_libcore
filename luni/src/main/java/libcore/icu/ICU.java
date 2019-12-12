@@ -16,8 +16,9 @@
 
 package libcore.icu;
 
+import android.compat.annotation.UnsupportedAppUsage;
 import android.icu.util.ULocale;
-import dalvik.annotation.compat.UnsupportedAppUsage;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;

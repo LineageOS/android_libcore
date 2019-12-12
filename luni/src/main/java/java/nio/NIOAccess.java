@@ -16,7 +16,7 @@
 
 package java.nio;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 
 /**
  * This class is used via JNI by code in frameworks/base/.

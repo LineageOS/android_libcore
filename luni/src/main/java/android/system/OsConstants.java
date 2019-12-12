@@ -16,7 +16,7 @@
 
 package android.system;
 
-import dalvik.annotation.compat.UnsupportedAppUsage;
+import android.compat.annotation.UnsupportedAppUsage;
 
 /**
  * Constants and helper functions for use with {@link Os}.
