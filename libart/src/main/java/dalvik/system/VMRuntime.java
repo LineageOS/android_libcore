@@ -151,6 +151,8 @@ public final class VMRuntime {
     // Allocations since last call to native layer. See notifyNativeAllocation().
     private final AtomicInteger allocationCount = new AtomicInteger(0);
 
+    private long[] disabledCompatChanges = new long[0];
+
     /**
      * Prevents this class from being instantiated.
      */
@@ -283,6 +285,18 @@ public final class VMRuntime {
         setTargetSdkVersionNative(this.targetSdkVersion);
     }
 
+
+    /**
+     * Sets the disabled compat changes. Should only be called before the
+     * app starts to run, because it may change the VM's behavior in
+     * dangerous ways. Defaults to empty.
+     */
+    @libcore.api.CorePlatformApi
+    public synchronized void setDisabledCompatChanges(long[] disabledCompatChanges) {
+        this.disabledCompatChanges = disabledCompatChanges;
+        setDisabledCompatChangesNative(this.disabledCompatChanges);
+    }
+
     /**
      * Gets the target SDK version. See {@link #setTargetSdkVersion} for
      * special values.
@@ -293,6 +307,7 @@ public final class VMRuntime {
     }
 
     private native void setTargetSdkVersionNative(int targetSdkVersion);
+    private native void setDisabledCompatChangesNative(long[] disabledCompatChanges);
 
     /**
      * This method exists for binary compatibility.  It was part of a

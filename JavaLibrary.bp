@@ -478,6 +478,7 @@ java_library_static {
     visibility: [
         "//external/conscrypt",
         "//frameworks/base/location/tests/locationtests",
+        "//frameworks/base/core/tests/coretests",
     ],
     hostdex: true,
     srcs: [
