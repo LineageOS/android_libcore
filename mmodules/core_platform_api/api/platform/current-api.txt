@@ -161,18 +161,18 @@ package com.android.org.bouncycastle.asn1 {
   }
 
   public class ASN1EncodableVector {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1EncodableVector();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void add(com.android.org.bouncycastle.asn1.ASN1Encodable);
+    ctor public ASN1EncodableVector();
+    method public void add(com.android.org.bouncycastle.asn1.ASN1Encodable);
   }
 
   public class ASN1InputStream extends java.io.FilterInputStream {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1InputStream(java.io.InputStream);
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1InputStream(byte[]);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.bouncycastle.asn1.ASN1Primitive readObject() throws java.io.IOException;
+    ctor public ASN1InputStream(java.io.InputStream);
+    ctor public ASN1InputStream(byte[]);
+    method public com.android.org.bouncycastle.asn1.ASN1Primitive readObject() throws java.io.IOException;
   }
 
   public class ASN1Integer extends com.android.org.bouncycastle.asn1.ASN1Primitive {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public ASN1Integer(java.math.BigInteger);
+    ctor public ASN1Integer(java.math.BigInteger);
   }
 
   public abstract class ASN1Null extends com.android.org.bouncycastle.asn1.ASN1Primitive {
@@ -209,24 +209,24 @@ package com.android.org.bouncycastle.asn1 {
   }
 
   public class DERBitString extends com.android.org.bouncycastle.asn1.ASN1BitString {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERBitString(byte[]);
+    ctor public DERBitString(byte[]);
   }
 
   @Deprecated public class DERInteger extends com.android.org.bouncycastle.asn1.ASN1Integer {
-    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public DERInteger(long);
+    ctor @Deprecated public DERInteger(long);
   }
 
   public class DERNull extends com.android.org.bouncycastle.asn1.ASN1Null {
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
+    field public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
   }
 
   public class DEROctetString extends com.android.org.bouncycastle.asn1.ASN1OctetString {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DEROctetString(byte[]);
+    ctor public DEROctetString(byte[]);
   }
 
   public class DERSequence extends com.android.org.bouncycastle.asn1.ASN1Sequence {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERSequence();
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public DERSequence(com.android.org.bouncycastle.asn1.ASN1EncodableVector);
+    ctor public DERSequence();
+    ctor public DERSequence(com.android.org.bouncycastle.asn1.ASN1EncodableVector);
   }
 
   public class DERTaggedObject extends com.android.org.bouncycastle.asn1.ASN1TaggedObject {
@@ -243,7 +243,7 @@ package com.android.org.bouncycastle.asn1 {
 package com.android.org.bouncycastle.asn1.pkcs {
 
   public interface PKCSObjectIdentifiers {
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha256WithRSAEncryption;
+    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha256WithRSAEncryption;
     field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier sha512WithRSAEncryption;
   }
 
@@ -274,8 +274,8 @@ package com.android.org.bouncycastle.asn1.x500.style {
 package com.android.org.bouncycastle.asn1.x509 {
 
   public class AlgorithmIdentifier extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier);
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier, com.android.org.bouncycastle.asn1.ASN1Encodable);
+    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier);
+    ctor public AlgorithmIdentifier(com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier, com.android.org.bouncycastle.asn1.ASN1Encodable);
     method public com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier getAlgorithm();
   }
 
@@ -285,7 +285,7 @@ package com.android.org.bouncycastle.asn1.x509 {
   }
 
   public class Certificate extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.bouncycastle.asn1.x509.Certificate getInstance(Object);
+    method public static com.android.org.bouncycastle.asn1.x509.Certificate getInstance(Object);
   }
 
   public class GeneralName extends com.android.org.bouncycastle.asn1.ASN1Object {
@@ -298,35 +298,35 @@ package com.android.org.bouncycastle.asn1.x509 {
   }
 
   public class SubjectPublicKeyInfo extends com.android.org.bouncycastle.asn1.ASN1Object {
-    method @dalvik.annotation.compat.UnsupportedAppUsage public static com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo getInstance(Object);
+    method public static com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo getInstance(Object);
   }
 
   public class TBSCertificate extends com.android.org.bouncycastle.asn1.ASN1Object {
   }
 
   public class Time extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public Time(java.util.Date);
+    ctor public Time(java.util.Date);
   }
 
   public class V3TBSCertificateGenerator {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public V3TBSCertificateGenerator();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public com.android.org.bouncycastle.asn1.x509.TBSCertificate generateTBSCertificate();
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setEndDate(com.android.org.bouncycastle.asn1.x509.Time);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setIssuer(com.android.org.bouncycastle.asn1.x509.X509Name);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSerialNumber(com.android.org.bouncycastle.asn1.ASN1Integer);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSignature(com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setStartDate(com.android.org.bouncycastle.asn1.x509.Time);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSubject(com.android.org.bouncycastle.asn1.x509.X509Name);
-    method @dalvik.annotation.compat.UnsupportedAppUsage public void setSubjectPublicKeyInfo(com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo);
+    ctor public V3TBSCertificateGenerator();
+    method public com.android.org.bouncycastle.asn1.x509.TBSCertificate generateTBSCertificate();
+    method public void setEndDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method @Deprecated public void setIssuer(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method public void setSerialNumber(com.android.org.bouncycastle.asn1.ASN1Integer);
+    method public void setSignature(com.android.org.bouncycastle.asn1.x509.AlgorithmIdentifier);
+    method public void setStartDate(com.android.org.bouncycastle.asn1.x509.Time);
+    method @Deprecated public void setSubject(com.android.org.bouncycastle.asn1.x509.X509Name);
+    method public void setSubjectPublicKeyInfo(com.android.org.bouncycastle.asn1.x509.SubjectPublicKeyInfo);
   }
 
   @Deprecated public class X509Name extends com.android.org.bouncycastle.asn1.ASN1Object {
-    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509Name(String);
+    ctor @Deprecated public X509Name(String);
     method @Deprecated public static com.android.org.bouncycastle.asn1.x509.X509Name getInstance(Object);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Vector getOIDs();
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.util.Vector getValues();
+    method @Deprecated public java.util.Vector getOIDs();
+    method @Deprecated public java.util.Vector getValues();
     method @Deprecated public String toString(boolean, java.util.Hashtable);
-    field @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier CN;
+    field @Deprecated public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier CN;
     field @Deprecated public static final java.util.Hashtable DefaultSymbols;
     field @Deprecated public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier O;
     field @Deprecated public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier OU;
@@ -337,7 +337,7 @@ package com.android.org.bouncycastle.asn1.x509 {
 package com.android.org.bouncycastle.asn1.x9 {
 
   public interface X9ObjectIdentifiers {
-    field @dalvik.annotation.compat.UnsupportedAppUsage public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier ecdsa_with_SHA256;
+    field public static final com.android.org.bouncycastle.asn1.ASN1ObjectIdentifier ecdsa_with_SHA256;
   }
 
 }
@@ -405,7 +405,7 @@ package com.android.org.bouncycastle.jcajce.util {
 package com.android.org.bouncycastle.jce {
 
   @Deprecated public class X509Principal extends com.android.org.bouncycastle.asn1.x509.X509Name implements java.security.Principal {
-    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509Principal(byte[]) throws java.io.IOException;
+    ctor @Deprecated public X509Principal(byte[]) throws java.io.IOException;
     ctor @Deprecated public X509Principal(java.util.Vector, java.util.Hashtable);
     method public byte[] getEncoded();
   }
@@ -415,11 +415,11 @@ package com.android.org.bouncycastle.jce {
 package com.android.org.bouncycastle.jce.provider {
 
   public final class BouncyCastleProvider extends java.security.Provider {
-    ctor @dalvik.annotation.compat.UnsupportedAppUsage public BouncyCastleProvider();
+    ctor public BouncyCastleProvider();
   }
 
   @Deprecated public class X509CertificateObject extends java.security.cert.X509Certificate {
-    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509CertificateObject(com.android.org.bouncycastle.asn1.x509.Certificate) throws java.security.cert.CertificateParsingException;
+    ctor @Deprecated public X509CertificateObject(com.android.org.bouncycastle.asn1.x509.Certificate) throws java.security.cert.CertificateParsingException;
   }
 
 }
@@ -474,15 +474,15 @@ package com.android.org.bouncycastle.x509 {
   }
 
   @Deprecated public class X509V3CertificateGenerator {
-    ctor @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public X509V3CertificateGenerator();
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public java.security.cert.X509Certificate generate(java.security.PrivateKey) throws java.security.cert.CertificateEncodingException, java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setIssuerDN(javax.security.auth.x500.X500Principal);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setNotAfter(java.util.Date);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setNotBefore(java.util.Date);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setPublicKey(java.security.PublicKey) throws java.lang.IllegalArgumentException;
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSerialNumber(java.math.BigInteger);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSignatureAlgorithm(String);
-    method @Deprecated @dalvik.annotation.compat.UnsupportedAppUsage public void setSubjectDN(javax.security.auth.x500.X500Principal);
+    ctor @Deprecated public X509V3CertificateGenerator();
+    method @Deprecated public java.security.cert.X509Certificate generate(java.security.PrivateKey) throws java.security.cert.CertificateEncodingException, java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
+    method @Deprecated public void setIssuerDN(javax.security.auth.x500.X500Principal);
+    method @Deprecated public void setNotAfter(java.util.Date);
+    method @Deprecated public void setNotBefore(java.util.Date);
+    method @Deprecated public void setPublicKey(java.security.PublicKey) throws java.lang.IllegalArgumentException;
+    method @Deprecated public void setSerialNumber(java.math.BigInteger);
+    method @Deprecated public void setSignatureAlgorithm(String);
+    method @Deprecated public void setSubjectDN(javax.security.auth.x500.X500Principal);
   }
 
 }
