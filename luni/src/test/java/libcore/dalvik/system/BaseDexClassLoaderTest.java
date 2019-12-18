@@ -20,10 +20,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import dalvik.system.BaseDexClassLoader;
 import dalvik.system.DelegateLastClassLoader;
 import dalvik.system.PathClassLoader;
+import java.lang.reflect.Method;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -63,6 +65,7 @@ public final class BaseDexClassLoaderTest {
 
     private ClassLoader pcl;
     private File jar;
+    private File jar2;
     private Reporter reporter;
 
     // For resources that we will load in this test. We're re-using parent.jar and child.jar
@@ -81,12 +84,17 @@ public final class BaseDexClassLoaderTest {
     }
 
     @Before
-    public void extractTestJar() throws Exception {
+    public void extractTestJars() throws Exception {
         // Extract loading-test.jar from the resource.
         pcl = BaseDexClassLoaderTest.class.getClassLoader();
         jar = File.createTempFile("loading-test", ".jar");
         try (InputStream in = pcl.getResourceAsStream("dalvik/system/loading-test.jar");
              FileOutputStream out = new FileOutputStream(jar)) {
+          Streams.copy(in, out);
+        }
+        jar2 = File.createTempFile("loading-test2", ".jar");
+        try (InputStream in = pcl.getResourceAsStream("dalvik/system/loading-test2.jar");
+             FileOutputStream out = new FileOutputStream(jar2)) {
           Streams.copy(in, out);
         }
     }
@@ -103,8 +111,9 @@ public final class BaseDexClassLoaderTest {
     }
 
     @After
-    public void deleteTestJar() throws Exception {
+    public void deleteTestJars() throws Exception {
         assertTrue(jar.delete());
+        assertTrue(jar2.delete());
     }
 
     @Test
@@ -336,5 +345,31 @@ public final class BaseDexClassLoaderTest {
         // Check that the shared library was queried first.
         assertEquals("child", readResource(delegateLast, "resource.txt"));
 
+    }
+
+    @Test
+    public void testAddDexPath() throws Exception {
+        BaseDexClassLoader bdcl = new PathClassLoader(jar.getPath(),
+            ClassLoader.getSystemClassLoader());
+
+        Class test1Class = bdcl.loadClass("test.Test1");
+        Method testMethod = test1Class.getMethod("test", (Class[]) null);
+        String testResult = (String) testMethod.invoke(null, (Object[]) null);
+        assertEquals("blort", testResult);
+
+        // Just for completeness sake, prove that we were able to load
+        // the class only after addDexPath was called.
+        try {
+          bdcl.loadClass("test2.Target2");
+          fail();
+        } catch (ClassNotFoundException expected) {
+        }
+
+        bdcl.addDexPath(jar2.getPath());
+
+        Class target2Class = bdcl.loadClass("test2.Target2");
+        Method frotzMethod = target2Class.getMethod("frotz", (Class[]) null);
+        String frotzResult = (String) frotzMethod.invoke(null, (Object[]) null);
+        assertEquals("frotz", frotzResult);
     }
 }
