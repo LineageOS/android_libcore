@@ -479,6 +479,7 @@ java_library_static {
         "//external/conscrypt",
         "//frameworks/base/location/tests/locationtests",
         "//frameworks/base/core/tests/coretests",
+        "//frameworks/base/wifi/tests",
     ],
     hostdex: true,
     srcs: [
