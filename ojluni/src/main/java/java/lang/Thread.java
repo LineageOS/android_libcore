@@ -40,6 +40,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.LockSupport;
 import sun.nio.ch.Interruptible;
 import sun.reflect.CallerSensitive;
+import dalvik.system.RuntimeHooks;
+import dalvik.system.ThreadPrioritySetter;
 import dalvik.system.VMStack;
 import libcore.util.EmptyArray;
 
@@ -1244,7 +1246,17 @@ class Thread implements Runnable {
             synchronized(this) {
                 this.priority = newPriority;
                 if (isAlive()) {
-                    setPriority0(newPriority);
+                    // BEGIN Android-added: Customize behavior of Thread.setPriority().
+                    // http://b/139521784
+                    // setPriority0(newPriority);
+                    ThreadPrioritySetter threadPrioritySetter =
+                        RuntimeHooks.getThreadPrioritySetter();
+                    if (threadPrioritySetter != null) {
+                        threadPrioritySetter.setPriority(newPriority);
+                    } else {
+                        setPriority0(newPriority);
+                    }
+                    // END Android-added: Customize behavior of Thread.setPriority().
                 }
             }
         }
