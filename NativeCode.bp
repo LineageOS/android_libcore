@@ -88,6 +88,7 @@ cc_library_shared {
     name: "libandroidio",
     visibility: [
         "//art/build/apex",
+        "//external/conscrypt",
     ],
     defaults: [
         "core_native_default_flags",
