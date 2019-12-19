@@ -261,10 +261,6 @@ java_library {
         "//external/wycheproof",
         "//libcore/benchmarks",
     ],
-    apex_available: [
-        "com.android.art.release",
-        "com.android.art.debug",
-    ],
     defaults: ["libcore_java_defaults"],
     installable: true,
     hostdex: true,
@@ -308,10 +304,6 @@ java_library {
         "//external/wycheproof",
         "//libcore/benchmarks",
         "//frameworks/layoutlib",
-    ],
-    apex_available: [
-        "com.android.art.release",
-        "com.android.art.debug",
     ],
     defaults: ["libcore_java_defaults"],
     installable: true,
