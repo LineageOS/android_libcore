@@ -151,9 +151,10 @@ public final class Os {
      */
     public static void fchown(FileDescriptor fd, int uid, int gid) throws ErrnoException { Libcore.os.fchown(fd, uid, gid); }
 
-    /** @hide */
-    @libcore.api.CorePlatformApi
-    public static int fcntlInt(FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
+    /**
+     * See <a href="http://man7.org/linux/man-pages/man2/fcntl.2.html">fcntl(2)</a>.
+     */
+    public static int fcntlInt(@NonNull FileDescriptor fd, int cmd, int arg) throws ErrnoException { return Libcore.os.fcntlInt(fd, cmd, arg); }
 
     /** @hide */
     public static int fcntlVoid(FileDescriptor fd, int cmd) throws ErrnoException { return Libcore.os.fcntlVoid(fd, cmd); }
