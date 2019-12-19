@@ -50,10 +50,6 @@ cc_library_shared {
     visibility: [
         "//art/build/apex",
     ],
-    apex_available: [
-        "com.android.art.release",
-        "com.android.art.debug",
-    ],
     defaults: [
         "core_native_default_flags",
         "core_native_default_libs",
@@ -93,10 +89,6 @@ cc_library_shared {
     visibility: [
         "//art/build/apex",
         "//external/conscrypt",
-    ],
-    apex_available: [
-        "com.android.art.release",
-        "com.android.art.debug",
     ],
     defaults: [
         "core_native_default_flags",
@@ -173,10 +165,6 @@ cc_library_shared {
     visibility: [
         "//art/build/apex",
     ],
-    apex_available: [
-        "com.android.art.release",
-        "com.android.art.debug",
-    ],
     defaults: ["libopenjdk_native_defaults"],
     shared_libs: [
         "libopenjdkjvm",
@@ -188,9 +176,6 @@ cc_library_shared {
     name: "libopenjdkd",
     visibility: [
         "//art/build/apex",
-    ],
-    apex_available: [
-        "com.android.art.debug",
     ],
     defaults: ["libopenjdk_native_defaults"],
     shared_libs: [
