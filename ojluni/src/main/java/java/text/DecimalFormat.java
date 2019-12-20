@@ -490,7 +490,7 @@ public class DecimalFormat extends NumberFormat {
         this.icuDecimalFormat =  new android.icu.text.DecimalFormat(pattern,
                 symbols.getIcuDecimalFormatSymbols());
         // Android-changed: Compatibility mode for j.t.DecimalFormat. http://b/112355520
-        icuDecimalFormat.setParseStrictMode(ParseMode.COMPATIBILITY);
+        icuDecimalFormat.setParseStrictMode(ParseMode.JAVA_COMPATIBILITY);
         updateFieldsFromIcu();
     }
 
