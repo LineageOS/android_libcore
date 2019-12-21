@@ -261,6 +261,10 @@ java_library {
         "//external/wycheproof",
         "//libcore/benchmarks",
     ],
+    apex_available: [
+        "com.android.art.release",
+        "com.android.art.debug",
+    ],
     defaults: ["libcore_java_defaults"],
     installable: true,
     hostdex: true,
@@ -304,6 +308,10 @@ java_library {
         "//external/wycheproof",
         "//libcore/benchmarks",
         "//frameworks/layoutlib",
+    ],
+    apex_available: [
+        "com.android.art.release",
+        "com.android.art.debug",
     ],
     defaults: ["libcore_java_defaults"],
     installable: true,
@@ -563,6 +571,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java9language"],
 }
 
+genrule {
+    name: "core-tests-smali-dex",
+    srcs: ["luni/src/test/java/**/*.smali"],
+    cmd: "$(location smali) ass --api 28 -o $(out) $(in)",
+    out: ["core-tests-smali.dex"],
+    tools: ["smali"],
+}
+
 // Builds the core-tests library.
 java_test {
     name: "core-tests",
@@ -599,6 +615,7 @@ java_test {
         ":annotations-test",
         ":filesystemstest",
         ":parameter-metadata-test",
+        ":core-tests-smali-dex",
     ],
 
     sdk_version: "none",
