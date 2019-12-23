@@ -24,7 +24,7 @@ build = [
 genrule {
     name: "notices-for-framework-stubs",
     visibility: [
-        "//development/build",
+        "//frameworks/base",
     ],
     tool_files: [
         "NOTICE",
