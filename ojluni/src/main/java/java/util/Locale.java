@@ -2350,7 +2350,7 @@ public final class Locale implements Cloneable, Serializable {
      * <li>{@code new Locale("en").getDisplayName(Locale.US)} -> {@code English}
      * <li>{@code new Locale("en", "US").getDisplayName(Locale.US)} -> {@code English (United States)}
      * <li>{@code new Locale("en", "US", "POSIX").getDisplayName(Locale.US)} -> {@code English (United States,Computer)}
-     * <li>{@code Locale.fromLanguageTag("zh-Hant-CN").getDisplayName(Locale.US)} -> {@code Chinese (Traditional Han,China)}
+     * <li>{@code Locale.forLanguageTag("zh-Hant-CN").getDisplayName(Locale.US)} -> {@code Chinese (Traditional Han,China)}
      * <li>{@code new Locale("en").getDisplayName(Locale.FRANCE)} -> {@code anglais}
      * <li>{@code new Locale("en", "US").getDisplayName(Locale.FRANCE)} -> {@code anglais (États-Unis)}
      * <li>{@code new Locale("en", "US", "POSIX").getDisplayName(Locale.FRANCE)} -> {@code anglais (États-Unis,informatique)}.
