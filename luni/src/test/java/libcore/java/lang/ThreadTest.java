@@ -17,17 +17,16 @@
 package libcore.java.lang;
 
 import dalvik.system.InMemoryDexClassLoader;
-import java.io.ByteArrayOutputStream;
+
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.ByteBuffer;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.ArrayList;
-import java.util.List;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
@@ -143,6 +142,85 @@ public final class ThreadTest extends TestCase {
     public void testContextClassLoaderIsInherited() {
         Thread other = new Thread();
         assertSame(Thread.currentThread().getContextClassLoader(), other.getContextClassLoader());
+    }
+
+    public void testSetPriority_unstarted() throws Exception {
+        Thread thread = new Thread();
+        checkSetPriority_inBounds_succeeds(thread);
+        checkSetPriority_outOfBounds_fails(thread);
+    }
+
+    public void testSetPriority_starting() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Thread thread = new Thread("starting thread") {
+            @Override public void run() { try { latch.await(); } catch (Exception e) { } }
+        };
+        // priority set while thread was not started should carry over to started thread
+        int priority = thread.getPriority() + 1;
+        if (priority > Thread.MAX_PRIORITY) {
+            priority = Thread.MIN_PRIORITY;
+        }
+        thread.setPriority(priority);
+        thread.start();
+        assertEquals(priority, thread.getPriority());
+        latch.countDown();
+        thread.join();
+    }
+
+    public void testSetPriority_started() throws Exception {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Thread startedThread = new Thread("started thread") {
+            @Override public void run() { try { latch.await(); } catch (Exception e) { } }
+        };
+        startedThread.start();
+        checkSetPriority_inBounds_succeeds(startedThread);
+        checkSetPriority_outOfBounds_fails(startedThread);
+        latch.countDown();
+        startedThread.join();
+    }
+
+    public void testSetPriority_joined() throws Exception {
+        Thread joinedThread = new Thread();
+        joinedThread.start();
+        joinedThread.join();
+
+        int originalPriority = joinedThread.getPriority();
+        for (int p = Thread.MIN_PRIORITY; p <= Thread.MAX_PRIORITY; p++) {
+            joinedThread.setPriority(p);
+            // setting the priority of a not-alive Thread should not succeed
+            assertEquals(originalPriority, joinedThread.getPriority());
+        }
+        checkSetPriority_outOfBounds_fails(joinedThread);
+    }
+
+    private static void checkSetPriority_inBounds_succeeds(Thread thread) {
+        int oldPriority = thread.getPriority();
+        try {
+            for (int priority = Thread.MIN_PRIORITY; priority <= Thread.MAX_PRIORITY; priority++) {
+                thread.setPriority(priority);
+                assertEquals(priority, thread.getPriority());
+            }
+        } finally {
+            thread.setPriority(oldPriority);
+        }
+        assertEquals(oldPriority, thread.getPriority());
+    }
+
+    private static void checkSetPriority_outOfBounds_fails(Thread thread) {
+        checkSetPriority_outOfBounds_fails(thread, Thread.MIN_PRIORITY - 1);
+        checkSetPriority_outOfBounds_fails(thread, Thread.MAX_PRIORITY + 1);
+        checkSetPriority_outOfBounds_fails(thread, Integer.MIN_VALUE);
+        checkSetPriority_outOfBounds_fails(thread, Integer.MAX_VALUE);
+    }
+
+    private static void checkSetPriority_outOfBounds_fails(Thread thread, int invalidPriority) {
+        int oldPriority = thread.getPriority();
+        try {
+            thread.setPriority(invalidPriority);
+            fail();
+        } catch (IllegalArgumentException expected) {
+        }
+        assertEquals(oldPriority, thread.getPriority()); // priority shouldn't have changed
     }
 
     public void testUncaughtExceptionPreHandler_calledBeforeDefaultHandler() {
