@@ -87,6 +87,45 @@ public class OsTest extends TestCase {
         }
     }
 
+    public void testFcntlInt_UdpSocket() throws Exception {
+        final FileDescriptor fd = Os.socket(AF_INET, SOCK_DGRAM, 0);
+        try {
+            assertEquals(0, (Os.fcntlVoid(fd, F_GETFL) & O_NONBLOCK));
+
+            // Verify that we can set file descriptor flags on sockets
+            Os.fcntlInt(fd, F_SETFL, SOCK_DGRAM | O_NONBLOCK);
+            assertTrue((Os.fcntlVoid(fd, F_GETFL) & O_NONBLOCK) != 0);
+
+            // Check that we can turn it off also.
+            Os.fcntlInt(fd, F_SETFL, SOCK_DGRAM);
+            assertEquals(0, (Os.fcntlVoid(fd, F_GETFL) & O_NONBLOCK));
+        } finally {
+            Os.close(fd);
+        }
+    }
+
+    public void testFcntlInt_InvalidCmd() throws Exception {
+        final FileDescriptor fd = Os.socket(AF_INET, SOCK_DGRAM, 0);
+        try {
+            final int unknownCmd = -1;
+            Os.fcntlInt(fd, unknownCmd, 0);
+            fail("Expected failure due to invalid cmd");
+        } catch (ErrnoException expected) {
+            assertEquals(EINVAL, expected.errno);
+        } finally {
+            Os.close(fd);
+        }
+    }
+
+    public void testFcntlInt_NullFd() throws Exception {
+        try {
+            Os.fcntlInt(null, F_SETFL, O_NONBLOCK);
+            fail("Expected failure due to null file descriptor");
+        } catch (ErrnoException expected) {
+            assertEquals(EBADF, expected.errno);
+        }
+    }
+
     public void testUnixDomainSockets_in_file_system() throws Exception {
         String path = System.getProperty("java.io.tmpdir") + "/test_unix_socket";
         new File(path).delete();
