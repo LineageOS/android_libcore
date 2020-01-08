@@ -443,12 +443,12 @@ public interface List<E> extends Collection<E> {
      * &#064;Override
      * public void sort(Comparator&lt;? super E&gt; c) {
      *   Object[] elements = toArray();
-     *    Arrays.sort(elements, c);
-     *    ListIterator&lt;E&gt; iterator = (ListIterator&lt;Object&gt;) listIterator();
-     *    for (Object element : elements) {
-     *      iterator.next();
-     *      iterator.set((E) element);
-     *    }
+     *   Arrays.sort(elements, c);
+     *   ListIterator&lt;E&gt; iterator = (ListIterator&lt;Object&gt;) listIterator();
+     *   for (Object element : elements) {
+     *     iterator.next();
+     *     iterator.set((E) element);
+     *   }
      * }
      * </pre>
      *
