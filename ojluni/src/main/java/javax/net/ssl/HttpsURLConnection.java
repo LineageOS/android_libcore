@@ -30,6 +30,7 @@ import java.net.URL;
 import java.net.HttpURLConnection;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
+import libcore.api.CorePlatformApi;
 
 /**
  * <code>HttpsURLConnection</code> extends <code>HttpURLConnection</code>
@@ -186,6 +187,8 @@ class HttpsURLConnection extends HttpURLConnection
      * Holds the default instance so class preloading doesn't create an instance of
      * it.
      */
+    private static final String OK_HOSTNAME_VERIFIER_CLASS
+        = "com.android.okhttp.internal.tls.OkHostnameVerifier";
     private static class NoPreloadHolder {
         public static HostnameVerifier defaultHostnameVerifier;
         static {
@@ -197,7 +200,7 @@ class HttpsURLConnection extends HttpURLConnection
                   * the server name from the certificate mismatch.
                   */
                 defaultHostnameVerifier = (HostnameVerifier)
-                        Class.forName("com.android.okhttp.internal.tls.OkHostnameVerifier")
+                        Class.forName(OK_HOSTNAME_VERIFIER_CLASS)
                         .getField("INSTANCE").get(null);
             } catch (Exception e) {
                 throw new AssertionError("Failed to obtain okhttp HostnameVerifier", e);
@@ -318,6 +321,30 @@ class HttpsURLConnection extends HttpURLConnection
 
         hostnameVerifier = v;
     }
+
+    // BEGIN Android-added: Core platform API to obtain a strict hostname verifier
+    /**
+     * Obtains a stricter <code>HostnameVerifier</code>.
+     *
+     * The <code>HostnameVerifier</code> returned by this method will reject certificates
+     * with wildcards for top-level domains such "*.com".
+     *
+     * @see com.squareup.okhttp.internal.tls.OkHostnameVerifier
+     *
+     * @hide
+     */
+    @CorePlatformApi
+    public static HostnameVerifier getStrictHostnameVerifier() {
+        try {
+            return (HostnameVerifier) Class
+                .forName(OK_HOSTNAME_VERIFIER_CLASS)
+                .getMethod("strictInstance")
+                .invoke(null);
+        } catch (Exception e) {
+            return null;
+        }
+     }
+    // END Android-added: Core platform API to obtain a strict hostname verifier
 
     /**
      * Gets the <code>HostnameVerifier</code> in place on this instance.
