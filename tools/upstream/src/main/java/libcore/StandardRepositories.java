@@ -113,7 +113,9 @@ public class StandardRepositories {
 
     public Repository referenceUpstream(Path relPath) {
         boolean isJsr166 = isJsr166(relPath);
-        if (isJsr166) {
+        if (relPath.toString().equals("java/util/concurrent/Flow.java")) {
+            return openJdk9p181;
+        } else if (isJsr166) {
             return openJdk9b113;
         } else if (relPath.startsWith("java/sql/") || relPath.startsWith("javax/sql/")) {
             return openJdk7u40;
