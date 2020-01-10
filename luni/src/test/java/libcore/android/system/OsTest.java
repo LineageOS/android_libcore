@@ -87,7 +87,7 @@ public class OsTest extends TestCase {
         }
     }
 
-    public void testFcntlInt_UdpSocket() throws Exception {
+    public void testFcntlInt_udpSocket() throws Exception {
         final FileDescriptor fd = Os.socket(AF_INET, SOCK_DGRAM, 0);
         try {
             assertEquals(0, (Os.fcntlVoid(fd, F_GETFL) & O_NONBLOCK));
@@ -104,7 +104,7 @@ public class OsTest extends TestCase {
         }
     }
 
-    public void testFcntlInt_InvalidCmd() throws Exception {
+    public void testFcntlInt_invalidCmd() throws Exception {
         final FileDescriptor fd = Os.socket(AF_INET, SOCK_DGRAM, 0);
         try {
             final int unknownCmd = -1;
@@ -117,7 +117,7 @@ public class OsTest extends TestCase {
         }
     }
 
-    public void testFcntlInt_NullFd() throws Exception {
+    public void testFcntlInt_nullFd() throws Exception {
         try {
             Os.fcntlInt(null, F_SETFL, O_NONBLOCK);
             fail("Expected failure due to null file descriptor");
