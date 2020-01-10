@@ -121,6 +121,10 @@ public class ObjectsTest extends junit.framework.TestCase {
     } catch (NullPointerException expected) {
     }
 
+    // This does not currently throw. The presence of this test ensures that any
+    // future behavior change is deliberate.
+    assertEquals(h, Objects.requireNonNull(h, (Supplier<String>) null));
+
     // The message returned by the supplier is null.
     try {
       Objects.requireNonNull(null, () -> null);
