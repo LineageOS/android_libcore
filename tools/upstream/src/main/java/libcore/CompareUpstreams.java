@@ -170,8 +170,7 @@ public class CompareUpstreams {
                 : null;
 
         for (Path relPath : relPaths) {
-            Repository expectedUpstream = standardRepositories.referenceUpstreamAsOfAndroidP(
-                relPath);
+            Repository expectedUpstream = standardRepositories.referenceUpstream(relPath);
             out.print(relPath + "\t");
             Path ojluniFile = standardRepositories.ojluni().absolutePath(relPath);
             List<String> linesB = Util.readLines(ojluniFile);
