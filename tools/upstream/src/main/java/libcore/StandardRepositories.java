@@ -37,6 +37,7 @@ public class StandardRepositories {
     private final List<Repository> historicUpstreams;
     private final Repository openJdk8u121;
     private final Repository openJdk9b113;
+    private final Repository openJdk9p181;
     private final Repository openJdk7u40;
     private final OjluniRepository ojluni;
 
@@ -46,6 +47,7 @@ public class StandardRepositories {
         allUpstreams.add(openJdk9(upstreamRoot, "9+181"));
         this.openJdk9b113 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9b113+"));
         this.openJdk8u121 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u121-b13"));
+        this.openJdk9p181 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9+181"));
         Repository openJdk8u60 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u60"));
         this.openJdk7u40 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "7u40"));
         this.allUpstreams = Collections.unmodifiableList(new ArrayList<>(allUpstreams));
@@ -109,7 +111,7 @@ public class StandardRepositories {
         return result;
     }
 
-    public Repository referenceUpstreamAsOfAndroidP(Path relPath) {
+    public Repository referenceUpstream(Path relPath) {
         boolean isJsr166 = isJsr166(relPath);
         if (isJsr166) {
             return openJdk9b113;
