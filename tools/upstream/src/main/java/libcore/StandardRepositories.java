@@ -111,9 +111,24 @@ public class StandardRepositories {
         return result;
     }
 
+    private static final Set<String> REL_PATHS_AT_OPENJDK9_181 = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(
+                    "java/util/concurrent/Flow.java",
+                    "java/util/AbstractList.java",
+                    "java/util/ImmutableCollections.java",
+                    "java/util/KeyValueHolder.java",
+                    "java/util/List.java",
+                    "java/util/Map.java",
+                    "java/util/Objects.java",
+                    "java/util/Set.java",
+                    "jdk/internal/HotSpotIntrinsicCandidate.java",
+                    "jdk/internal/vm/annotation/Stable.java",
+                    "jdk/internal/util/Preconditions.java"
+                    )));
+
     public Repository referenceUpstream(Path relPath) {
         boolean isJsr166 = isJsr166(relPath);
-        if (relPath.toString().equals("java/util/concurrent/Flow.java")) {
+        if (REL_PATHS_AT_OPENJDK9_181.contains(relPath.toString())) {
             return openJdk9p181;
         } else if (isJsr166) {
             return openJdk9b113;
