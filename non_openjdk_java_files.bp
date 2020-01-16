@@ -446,6 +446,7 @@ filegroup {
     srcs: [
         "luni/src/main/java/libcore/api/CorePlatformApi.java",
         "luni/src/main/java/libcore/api/IntraCoreApi.java",
+        "luni/src/main/java/libcore/timezone/TimeZoneDataFiles.java",
         "luni/src/main/java/libcore/timezone/TzDataSetVersion.java",
     ],
 }

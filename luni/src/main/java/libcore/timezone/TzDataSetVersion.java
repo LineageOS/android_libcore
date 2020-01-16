@@ -102,13 +102,17 @@ public class TzDataSetVersion {
                     + REVISION_PATTERN.pattern()
                     + ".*" /* ignore trailing */);
 
+    @libcore.api.CorePlatformApi
     public final int formatMajorVersion;
+
+    @libcore.api.CorePlatformApi
     public final int formatMinorVersion;
 
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
     @libcore.api.CorePlatformApi
     public final String rulesVersion;
 
+    @libcore.api.CorePlatformApi
     public final int revision;
 
     @libcore.api.CorePlatformApi
@@ -153,6 +157,17 @@ public class TzDataSetVersion {
     public static TzDataSetVersion readFromFile(File file) throws IOException, TzDataSetException {
         byte[] versionBytes = readBytes(file, TzDataSetVersion.TZ_DATA_VERSION_FILE_LENGTH);
         return fromBytes(versionBytes);
+    }
+
+    /**
+     * Reads the version of time zone data supplied by the time zone data module.
+     */
+    @libcore.api.CorePlatformApi
+    public static TzDataSetVersion readTimeZoneModuleVersion()
+            throws IOException, TzDataSetException {
+        String tzVersionFileName =
+                TimeZoneDataFiles.getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
+        return readFromFile(new File(tzVersionFileName));
     }
 
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797

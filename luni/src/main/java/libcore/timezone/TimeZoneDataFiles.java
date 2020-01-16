@@ -55,6 +55,7 @@ public final class TimeZoneDataFiles {
         return System.getenv(ANDROID_DATA_ENV) + "/misc/zoneinfo/";
     }
 
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
     @libcore.api.CorePlatformApi
     public static String getDataTimeZoneFile(String fileName) {
         return getDataTimeZoneRootDir() + "current/" + fileName;

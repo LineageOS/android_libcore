@@ -1171,8 +1171,12 @@ package libcore.timezone {
     method public static int currentFormatMinorVersion();
     method public static boolean isCompatibleWithThisDevice(libcore.timezone.TzDataSetVersion);
     method public static libcore.timezone.TzDataSetVersion readFromFile(java.io.File) throws java.io.IOException, libcore.timezone.TzDataSetVersion.TzDataSetException;
+    method public static libcore.timezone.TzDataSetVersion readTimeZoneModuleVersion() throws java.io.IOException, libcore.timezone.TzDataSetVersion.TzDataSetException;
     method public byte[] toBytes();
     field public static final String DEFAULT_FILE_NAME = "tz_version";
+    field public final int formatMajorVersion;
+    field public final int formatMinorVersion;
+    field public final int revision;
     field public final String rulesVersion;
   }
 
