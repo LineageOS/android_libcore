@@ -16,7 +16,11 @@
 
 package dalvik.system;
 
+import android.compat.annotation.ChangeId;
+import android.compat.annotation.EnabledAfter;
 import android.compat.annotation.UnsupportedAppUsage;
+
+import dalvik.annotation.compat.VersionCodes;
 
 import java.lang.ref.FinalizerReference;
 import java.util.HashMap;
@@ -57,6 +61,16 @@ public final class VMRuntime {
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a", "arm64");
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a-hwasan", "arm64");
     }
+
+    /**
+     * Remove meta-reflection workaround for hidden api usage for apps targeting R+. This allowed
+     * apps to obtain references to blacklisted fields and methods through an extra layer of
+     * reflection.
+     */
+    @ChangeId
+    @EnabledAfter(targetSdkVersion = VersionCodes.Q)
+    private static final long
+        PREVENT_META_REFLECTION_BLACKLIST_ACCESS = 142365358; // This is a bug id.
 
     /**
      * Interface for logging hidden API usage events.
