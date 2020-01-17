@@ -40,6 +40,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.LockSupport;
 import sun.nio.ch.Interruptible;
 import sun.reflect.CallerSensitive;
+import dalvik.system.RuntimeHooks;
+import dalvik.system.ThreadPrioritySetter;
 import dalvik.system.VMStack;
 import libcore.util.EmptyArray;
 
@@ -1244,7 +1246,18 @@ class Thread implements Runnable {
             synchronized(this) {
                 this.priority = newPriority;
                 if (isAlive()) {
-                    setPriority0(newPriority);
+                    // BEGIN Android-added: Customize behavior of Thread.setPriority().
+                    // http://b/139521784
+                    // setPriority0(newPriority);
+                    ThreadPrioritySetter threadPrioritySetter =
+                        RuntimeHooks.getThreadPrioritySetter();
+                    int nativeTid = this.getNativeTid();
+                    if (threadPrioritySetter != null && nativeTid != 0) {
+                        threadPrioritySetter.setPriority(nativeTid, newPriority);
+                    } else {
+                        setPriority0(newPriority);
+                    }
+                    // END Android-added: Customize behavior of Thread.setPriority().
                 }
             }
         }
@@ -2327,4 +2340,10 @@ class Thread implements Runnable {
 
     // Android-added: Android specific nativeGetStatus() method.
     private native int nativeGetStatus(boolean hasBeenStarted);
+
+    // Android-added: Customize behavior of Thread.setPriority(). http://b/139521784
+    // Note: this function returns the tid of native thread, which is different than
+    // the managed tid of Thread.
+    @FastNative
+    private native int getNativeTid();
 }
