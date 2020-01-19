@@ -484,6 +484,7 @@ java_library {
 java_library_static {
     name: "core-test-rules",
     visibility: [
+        "//art/build/sdk",
         "//external/conscrypt",
         "//frameworks/base/location/tests/locationtests",
         "//frameworks/base/core/tests/coretests",
@@ -504,6 +505,7 @@ java_library_static {
 java_library_static {
     name: "core-compat-test-rules",
     visibility: [
+        "//art/build/sdk",
         "//frameworks/base/tests/PlatformCompatGating/test-rules",
     ],
     srcs: [
@@ -527,6 +529,7 @@ java_library_static {
 java_library_static {
     name: "core-tests-support",
     visibility: [
+        "//art/build/sdk",
         "//cts/apps/CtsVerifier",
         "//cts/tests/tests/keystore",
         "//cts/tests/tests/net",
@@ -985,6 +988,7 @@ droidstubs {
 java_library_host {
     name: "timezone-host",
     visibility: [
+        "//art/build/sdk",
         "//system/timezone/distro/core",
     ],
     srcs: [":timezone_host_files"],
