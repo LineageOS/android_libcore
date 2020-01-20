@@ -282,10 +282,17 @@ public class InetAddressTest {
     public void test_isReachable_by_ICMP() throws Exception {
         InetAddress[] inetAddresses = InetAddress.getAllByName("www.google.com");
         for (InetAddress ia : inetAddresses) {
-            // ICMP is not reliable, allow 5 attempts before failing.
-            assertTrue(ia.isReachableByICMP(5 * 1000 /* ICMP timeout */));
+            // ICMP is not reliable, allow 5 attempts to each IP address before failing.
+            // If any address is reachable then that's sufficient.
+            if (ia.isReachableByICMP(5 * 1000 /* ICMP timeout */)) {
+                return;
+            }
         }
+        fail();
+    }
 
+    @Test
+    public void test_inUnreachable() throws Exception {
         // IPv6 discard prefix. RFC 6666.
         final InetAddress blackholeAddress = InetAddress.getByName("100::1");
         assertFalse(blackholeAddress.isReachable(1000));
