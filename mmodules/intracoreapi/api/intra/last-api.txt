@@ -53,6 +53,14 @@ package libcore.api {
 
 }
 
+package libcore.io {
+
+  @libcore.api.IntraCoreApi public final class AsynchronousCloseMonitor {
+    method @libcore.api.IntraCoreApi public static void signalBlockedThreads(java.io.FileDescriptor);
+  }
+
+}
+
 package libcore.net {
 
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract class NetworkSecurityPolicy {
