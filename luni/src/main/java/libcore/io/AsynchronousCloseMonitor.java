@@ -18,11 +18,19 @@ package libcore.io;
 
 import android.compat.annotation.UnsupportedAppUsage;
 import java.io.FileDescriptor;
+import libcore.api.IntraCoreApi;
 
+/**
+ * Implements interruption of threads blocked in I/O system calls.
+ *
+ * @hide
+ */
+@IntraCoreApi
 public final class AsynchronousCloseMonitor {
     private AsynchronousCloseMonitor() {
     }
 
     @UnsupportedAppUsage
+    @IntraCoreApi
     public static native void signalBlockedThreads(FileDescriptor fd);
 }
