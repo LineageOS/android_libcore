@@ -470,7 +470,7 @@ public class ZoneInfoTest extends TestCase {
    * creates the {@link ZoneInfo} instances does not prevent any of the time zones being loaded.
    */
   public void testReadTimeZone_All() throws Exception {
-    ZoneInfoDB.TzData instance = ZoneInfoDB.getInstance();
+    ZoneInfoDB instance = ZoneInfoDB.getInstance();
     String[] availableIDs = instance.getAvailableIDs();
     Arrays.sort(availableIDs);
     for (String id : availableIDs) {

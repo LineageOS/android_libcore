@@ -1187,14 +1187,11 @@ package libcore.timezone {
     ctor public TzDataSetVersion.TzDataSetException(String, Throwable);
   }
 
-  public final class ZoneInfoDB {
-    method public static libcore.timezone.ZoneInfoDB.TzData getInstance();
-  }
-
-  public static class ZoneInfoDB.TzData implements java.lang.AutoCloseable {
+  public final class ZoneInfoDB implements java.lang.AutoCloseable {
+    method public static libcore.timezone.ZoneInfoDB getInstance();
     method public String getVersion();
     method public boolean hasTimeZone(String) throws java.io.IOException;
-    method public static libcore.timezone.ZoneInfoDB.TzData loadTzData(String);
+    method public static libcore.timezone.ZoneInfoDB loadTzData(String);
     method public libcore.util.ZoneInfo makeTimeZone(String) throws java.io.IOException;
     method public void validate() throws java.io.IOException;
   }
