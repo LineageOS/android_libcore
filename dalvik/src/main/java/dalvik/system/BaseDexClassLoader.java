@@ -159,6 +159,20 @@ public class BaseDexClassLoader extends ClassLoader {
     }
 
     /**
+     * Computes the classloader contexts for each classpath entry in {@code pathList.getDexPaths()}.
+     *
+     * Note that this method is not thread safe, i.e. it is the responsibility of the caller to
+     * ensure that {@code pathList.getDexPaths()} is not modified concurrently with this method
+     * being called.
+     *
+     * @return A non-null array of non-null strings of length
+     *   {@code 2 * pathList.getDexPaths().size()}. Every even index (0 is even here) is a dex file
+     *   path and every odd entry is the class loader context used to load the previously listed dex
+     *   file. E.g. a result might be {@code { "foo.dex", "PCL[]", "bar.dex", "PCL[foo.dex]" } }.
+     */
+    private native String[] computeClassLoaderContextsNative();
+
+    /**
      * Constructs an instance.
      *
      * dexFile must be an in-memory representation of a full dexFile.
