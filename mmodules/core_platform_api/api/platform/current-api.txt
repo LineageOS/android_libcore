@@ -501,19 +501,6 @@ package dalvik.annotation.codegen {
 
 package dalvik.annotation.compat {
 
-  @java.lang.annotation.Repeatable(UnsupportedAppUsage.Container.class) @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.TYPE}) public @interface UnsupportedAppUsage {
-    method public abstract String expectedSignature() default "";
-    method public abstract String implicitMember() default "";
-    method public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
-    method public abstract String overrideSourcePosition() default "";
-    method public abstract String publicAlternatives() default "";
-    method public abstract long trackingBug() default 0;
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE) public static @interface UnsupportedAppUsage.Container {
-    method public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
-  }
-
   public class VersionCodes {
     field public static final int O = 26; // 0x1a
     field public static final int P = 28; // 0x1c
