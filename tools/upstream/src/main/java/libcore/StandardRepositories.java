@@ -35,6 +35,7 @@ public class StandardRepositories {
     private final List<Repository> allUpstreams;
     // upstreams older than what is currently the default
     private final List<Repository> historicUpstreams;
+    private final Repository openJdk8u222;
     private final Repository openJdk8u121;
     private final Repository openJdk9b113;
     private final Repository openJdk9p181;
@@ -47,6 +48,7 @@ public class StandardRepositories {
         allUpstreams.add(openJdk9(upstreamRoot, "9+181"));
         this.openJdk9b113 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9b113+"));
         this.openJdk8u121 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u121-b13"));
+        this.openJdk8u222 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u222-b01"));
         this.openJdk9p181 = addAndReturn(allUpstreams, openJdk9(upstreamRoot, "9+181"));
         Repository openJdk8u60 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "8u60"));
         this.openJdk7u40 = addAndReturn(allUpstreams, openJdkLegacy(upstreamRoot, "7u40"));
@@ -126,10 +128,25 @@ public class StandardRepositories {
                     "jdk/internal/util/Preconditions.java"
                     )));
 
+    private static final Set<String> REL_PATHS_AT_OPENJDK8_222 = Collections.unmodifiableSet(
+            new HashSet<>(Arrays.asList(
+                    "java/time/chrono/JapaneseEra.java",
+                    "java/util/JapaneseImperialCalendar.java",
+                    "sun/util/calendar/Era.java",
+                    // Tests:
+                    "java/time/tck/java/time/chrono/TCKJapaneseChronology.java",
+                    "java/time/tck/java/time/chrono/TCKJapaneseEra.java",
+                    "java/time/test/java/time/chrono/TestJapaneseChronology.java",
+                    "java/time/test/java/time/chrono/TestUmmAlQuraChronology.java",
+                    "java/time/test/java/time/format/TestNonIsoFormatter.java"
+            )));
+
     public Repository referenceUpstream(Path relPath) {
         boolean isJsr166 = isJsr166(relPath);
         if (REL_PATHS_AT_OPENJDK9_181.contains(relPath.toString())) {
             return openJdk9p181;
+        } else if (REL_PATHS_AT_OPENJDK8_222.contains(relPath.toString())) {
+            return openJdk8u222;
         } else if (isJsr166) {
             return openJdk9b113;
         } else if (relPath.startsWith("java/sql/") || relPath.startsWith("javax/sql/")) {
