@@ -21,19 +21,6 @@ package android.compat {
 
 package dalvik.annotation.compat {
 
-  @java.lang.annotation.Repeatable(UnsupportedAppUsage.Container.class) @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.TYPE}) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public @interface UnsupportedAppUsage {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String expectedSignature() default "";
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String implicitMember() default "";
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract int maxTargetSdk() default java.lang.Integer.MAX_VALUE;
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String overrideSourcePosition() default "";
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract String publicAlternatives() default "";
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract long trackingBug() default 0;
-  }
-
-  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE) @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static @interface UnsupportedAppUsage.Container {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public abstract dalvik.annotation.compat.UnsupportedAppUsage[] value();
-  }
-
   @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class VersionCodes {
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int O = 26; // 0x1a
     field @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static final int P = 28; // 0x1c
