@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
  * - The ANDROID_BUILD_TOP environment variable must be set to point to the
  * AOSP root directory (parent of libcore).
  *
- * To check out upstreams OpenJDK 7u40, 8u60, 8u121-b13, and 9+181, run:
+ * To check out upstreams OpenJDK 7u40, 8u60, 8u121-b13, 8u222-b01 and 9+181, run:
  *
  *  mkdir ~/openjdk
  *  cd ~/openjdk
@@ -58,6 +58,8 @@ import java.util.regex.Pattern;
  *  (cd !$ ; hg update -r jdk8u121-b13 && sh get_source.sh && sh common/bin/hgforest.sh update -r jdk8u121-b13)
  *  hg clone http://hg.openjdk.java.net/jdk8u/jdk8u60/ 8u60
  *  (cd !$ ; sh get_source.sh)
+ *  hg clone http://hg.openjdk.java.net/jdk8u/jdk8u 8u222-b01
+ *  (cd !$ ; hg update -r jdk8u222-b01 && sh get_source.sh && sh common/bin/hgforest.sh update -r jdk8u222-b01)
  *  hg clone http://hg.openjdk.java.net/jdk9/jdk9/ 9+181
  *  (cd !$ ; hg update -r jdk-9+181 && sh get_source.sh && sh common/bin/hgforest.sh update -r jdk-9+181)
  *
