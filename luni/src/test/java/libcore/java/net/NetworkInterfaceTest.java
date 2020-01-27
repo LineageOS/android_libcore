@@ -16,8 +16,8 @@
 
 package libcore.java.net;
 
-import junit.framework.TestCase;
 
+import android.system.StructIfaddrs;
 import java.io.BufferedReader;
 import java.io.FileDescriptor;
 import java.io.InputStreamReader;
@@ -29,6 +29,7 @@ import java.net.InterfaceAddress;
 import java.net.MulticastSocket;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -37,6 +38,11 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
+import libcore.junit.junit3.TestCaseWithRules;
+import libcore.junit.util.SwitchTargetSdkVersionRule;
+import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
+import org.junit.Rule;
+import org.junit.rules.TestRule;
 
 import static android.system.OsConstants.AF_INET;
 import static android.system.OsConstants.IFF_LOOPBACK;
@@ -47,7 +53,10 @@ import static android.system.OsConstants.IFF_UP;
 import static android.system.OsConstants.SOCK_DGRAM;
 import static java.net.NetworkInterface.getNetworkInterfaces;
 
-public class NetworkInterfaceTest extends TestCase {
+public class NetworkInterfaceTest extends TestCaseWithRules {
+    @Rule
+    public TestRule switchTargetSdkVersionRule = SwitchTargetSdkVersionRule.getInstance();
+
     // http://code.google.com/p/android/issues/detail?id=13784
     private final static int ARPHRD_ETHER = 1; // from if_arp.h
     public void testIPv6() throws Exception {
@@ -100,13 +109,30 @@ public class NetworkInterfaceTest extends TestCase {
             }
             // Ethernet
             if (isEthernet(nif.getName())) {
-                assertEquals(6, nif.getHardwareAddress().length);
                 for (InterfaceAddress ia : nif.getInterfaceAddresses()) {
                     if (ia.getAddress() instanceof Inet4Address) {
                         assertNotNull(ia.getBroadcast());
                     }
                 }
             }
+        }
+    }
+
+    @TargetSdkVersion(29)
+    public void testGetHardwareAddress_compat_returnsHardwareAddress() throws Exception {
+        // Ensure apps with a targetSdk version <= 29 are able to access the MAC address of ethernet
+        // devices.
+        for (NetworkInterface nif : Collections.list(getNetworkInterfaces())) {
+            if (isEthernet(nif.getName())) {
+                assertEquals(6, nif.getHardwareAddress().length);
+            }
+        }
+    }
+
+    public void testGetHardwareAddress_returnsNull() throws Exception {
+        // Hardware addresses should be unavailable to non-system apps.
+        for (NetworkInterface nif : Collections.list(getNetworkInterfaces())) {
+            assertNull(nif.getHardwareAddress());
         }
     }
 
@@ -201,31 +227,16 @@ public class NetworkInterfaceTest extends TestCase {
         } catch(SocketException expected) {}
     }
 
-    // b/29243557
-    public void testGetNetworkInterfaces() throws Exception {
-        // Check that the interfaces we get from #getNetworkInterfaces agrees with IP-LINK(8).
+    public void testGetNetworkInterfaces_matchesIfaddrs() throws Exception {
+        StructIfaddrs[] ifaddrs = Libcore.os.getifaddrs();
+        Set<String> ifaddrsNames = new HashSet<>();
+        Arrays.asList(ifaddrs).forEach(ifa -> ifaddrsNames.add(ifa.ifa_name));
 
-        // Parse output of ip link.
-        String[] cmd = { "ip", "link" };
-        Process proc = Runtime.getRuntime().exec(cmd);
-        BufferedReader stdInput = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-        Set<String> expectedNiNames = new HashSet<>();
-        for (String s; (s = stdInput.readLine()) != null; ) {
-            String[] split = s.split(": |@");
-            try {
-                if (split.length > 2) {
-                    expectedNiNames.add(split[1]);
-                }
-            } catch (NumberFormatException e) {
-                // Skip this line.
-            }
-        }
-
-        Enumeration<NetworkInterface> nifs = NetworkInterface.getNetworkInterfaces();
+        List<NetworkInterface> nifs = Collections.list(NetworkInterface.getNetworkInterfaces());
         Set<String> actualNiNames = new HashSet<>();
-        Collections.list(nifs).forEach(ni -> actualNiNames.add(ni.getName()));
+        nifs.forEach(ni -> actualNiNames.add(ni.getName()));
 
-        assertEquals(expectedNiNames, actualNiNames);
+        assertEquals(ifaddrsNames, actualNiNames);
     }
 
     // Calling getSubInterfaces on interfaces with no subinterface should not throw NPE.
