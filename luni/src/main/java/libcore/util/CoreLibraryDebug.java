@@ -21,7 +21,7 @@ import com.android.icu.util.Icu4cMetadata;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.TzDataSetVersion;
 import libcore.timezone.TzDataSetVersion.TzDataSetException;
-import libcore.timezone.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDb;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,7 +109,7 @@ public class CoreLibraryDebug {
                 android.icu.util.TimeZone.getTZDataVersion());
         debugInfo.addStringEntry(
                 debugKeyPrefix + "libcore.tzdb_version",
-                ZoneInfoDB.getInstance().getVersion());
+                ZoneInfoDb.getInstance().getVersion());
         debugInfo.addStringEntry(
                 debugKeyPrefix + "icu4c.tzdb_version",
                 Icu4cMetadata.getTzdbVersion());
