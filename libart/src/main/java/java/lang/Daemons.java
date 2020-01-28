@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import libcore.util.EmptyArray;
 
 import dalvik.system.VMRuntime;
+import dalvik.system.VMDebug;
 
 /**
  * Calls Object.finalize() on objects in the finalizer reference queue. The VM
@@ -322,7 +323,7 @@ public final class Daemons {
                     continue;
                 }
                 final Object finalizing = waitForFinalization();
-                if (finalizing != null && !VMRuntime.getRuntime().isDebuggerActive()) {
+                if (finalizing != null && !VMDebug.isDebuggerConnected()) {
                     finalizerTimedOut(finalizing);
                     break;
                 }
