@@ -475,12 +475,6 @@ public final class VMRuntime {
     public native void clampGrowthLimit();
 
     /**
-     * Returns true if either a Java debugger or native debugger is active.
-     */
-    @FastNative
-    public native boolean isDebuggerActive();
-
-    /**
      * Returns true if native debugging is on.
      */
     @libcore.api.CorePlatformApi
