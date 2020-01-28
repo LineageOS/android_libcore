@@ -26,7 +26,7 @@ import java.util.Objects;
  * @hide
  */
 @libcore.api.CorePlatformApi
-public class TelephonyNetwork {
+public final class TelephonyNetwork {
 
     /**
      * A numeric network identifier consisting of the Mobile Country Code (MCC) and the Mobile

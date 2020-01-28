@@ -83,14 +83,14 @@ public class CoreLibraryDebug {
             try {
                 TzDataSetVersion tzDataSetVersion =
                         TzDataSetVersion.readFromFile(file);
-                String formatVersionString = tzDataSetVersion.formatMajorVersion + "."
-                        + tzDataSetVersion.formatMinorVersion;
+                String formatVersionString = tzDataSetVersion.getFormatMajorVersion() + "."
+                        + tzDataSetVersion.getFormatMinorVersion();
                 debugInfo.addStringEntry(statusKey, "OK")
                         .addStringEntry(debugKeyPrefix + "formatVersion", formatVersionString)
                         .addStringEntry(debugKeyPrefix + "rulesVersion",
-                                tzDataSetVersion.rulesVersion)
+                                tzDataSetVersion.getRulesVersion())
                         .addStringEntry(debugKeyPrefix + "revision",
-                                tzDataSetVersion.revision);
+                                tzDataSetVersion.getRevision());
             } catch (IOException | TzDataSetException e) {
                 debugInfo.addStringEntry(statusKey, "ERROR");
                 debugInfo.addStringEntry(debugKeyPrefix + "exception_class", e.getClass().getName());
