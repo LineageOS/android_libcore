@@ -155,7 +155,7 @@ class MetricsRunner {
             String action, String relativeDirectoryName, String deviceDirectoryName, String apk)
             throws DeviceNotAvailableException, IOException {
         String command = String.format(
-                "am instrument -w -e dumpdir %s -e action %s  %s",
+                "am instrument --no-isolated-storage -w -e dumpdir %s -e action %s  %s",
                 relativeDirectoryName, action, apk);
         testDevice.executeShellCommand(command);
         checkForErrorFile(deviceDirectoryName);
