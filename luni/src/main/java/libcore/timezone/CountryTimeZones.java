@@ -97,7 +97,7 @@ public final class CountryTimeZones {
                     if (TimeZone.UNKNOWN_ZONE_ID.equals(timeZone.getID())) {
                         // This shouldn't happen given the validation that takes place in
                         // createValidatedCountryTimeZones().
-                        System.logW("Skipping invalid zone in TimeZoneMapping: " + timeZoneId);
+                        throw new IllegalStateException("Invalid zone in TimeZoneMapping: " + this);
                     }
                 }
             }
