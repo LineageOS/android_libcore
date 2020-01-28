@@ -37,9 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import android.compat.annotation.ChangeId;
-import android.compat.Compatibility;
-import android.system.Os;
 import android.system.StructIfaddrs;
 import libcore.io.IoUtils;
 import libcore.io.Libcore;
@@ -61,21 +58,6 @@ import static android.system.OsConstants.*;
  * @since 1.4
  */
 public final class NetworkInterface {
-    // BEGIN Android-added: Return anonymized device address to non-system processes.
-    /**
-     * Gates whether calls to {@link #getHardwareAddress()} made by non-system processes
-     * to return the actual MAC address (pre-change behavior) or an anonymized MAC address
-     * (post-change behavior). Future versions of Android will enforce the post-change
-     * behavior through SELinux.
-     */
-    @ChangeId
-    static final long ANONYMIZED_DEVICE_ADDRESS_CHANGE_ID = 141455849L;
-    // This is used instead of the own device MAC.
-    private static final byte[] ANONYMIZED_DEVICE_ADDRESS = {0x02, 0x00, 0x00, 0x00, 0x00, 0x00};
-    // First UID of non-system applications. See {@code android.os.Process.FIRST_APPLICATION_UID}.
-    private static final int FIRST_APPLICATION_UID = 10000;
-    // END Android-added: Return anonymized device address to non-system processes.
-
     private String name;
     private String displayName;
     private int index;
@@ -569,23 +551,8 @@ public final class NetworkInterface {
         if (ni == null) {
             throw new SocketException("NetworkInterface doesn't exist anymore");
         }
+        return ni.hardwareAddr;
         // END Android-changed: Fix upstream not returning link-down interfaces. http://b/26238832
-        // BEGIN Android-changed: Return anonymized device address to non-system processes.
-        if (!Compatibility.isChangeEnabled(ANONYMIZED_DEVICE_ADDRESS_CHANGE_ID)) {
-            return ni.hardwareAddr;
-        } else {
-            if (ni.hardwareAddr == null) {
-                // MAC address does not exist or is not accessible.
-                return null;
-            }
-            if (Os.getuid() < FIRST_APPLICATION_UID) {
-                // This is a system process. Return the actual MAC address.
-                return ni.hardwareAddr;
-            } else {
-                return ANONYMIZED_DEVICE_ADDRESS;
-            }
-        }
-        // END Android-changed: Return anonymized device address to non-system processes.
     }
 
     /**
