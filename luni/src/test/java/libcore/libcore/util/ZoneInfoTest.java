@@ -26,7 +26,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import libcore.io.BufferIterator;
-import libcore.timezone.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDb;
 import libcore.timezone.testing.ZoneInfoTestHelper;
 import libcore.util.ZoneInfo;
 
@@ -470,7 +470,7 @@ public class ZoneInfoTest extends TestCase {
    * creates the {@link ZoneInfo} instances does not prevent any of the time zones being loaded.
    */
   public void testReadTimeZone_All() throws Exception {
-    ZoneInfoDB instance = ZoneInfoDB.getInstance();
+    ZoneInfoDb instance = ZoneInfoDb.getInstance();
     String[] availableIDs = instance.getAvailableIDs();
     Arrays.sort(availableIDs);
     for (String id : availableIDs) {

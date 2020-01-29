@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.TimeZoneFinder;
 import libcore.timezone.TzDataSetVersion;
-import libcore.timezone.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDb;
 import libcore.util.CoreLibraryDebug;
 import libcore.util.DebugInfo;
 
@@ -185,7 +185,7 @@ public class TimeZoneIntegrationTest {
     public void testTimeZoneDataVersion() {
         String icu4cTzVersion = Icu4cMetadata.getTzdbVersion();
 
-        String zoneInfoTzVersion = ZoneInfoDB.getInstance().getVersion();
+        String zoneInfoTzVersion = ZoneInfoDb.getInstance().getVersion();
         assertEquals(icu4cTzVersion, zoneInfoTzVersion);
 
         String icu4jTzVersion = android.icu.util.TimeZone.getTZDataVersion();
@@ -291,7 +291,7 @@ public class TimeZoneIntegrationTest {
                 "core_library.timezone.source.system_status"));
         assertFileExists(
                 TimeZoneDataFiles.getSystemTzFile(TzDataSetVersion.DEFAULT_FILE_NAME));
-        assertFileExists(TimeZoneDataFiles.getSystemTzFile(ZoneInfoDB.TZDATA_FILE_NAME));
+        assertFileExists(TimeZoneDataFiles.getSystemTzFile(ZoneInfoDb.TZDATA_FILE_NAME));
         // The following files once existed in /system but have been removed as part of APEX work.
         assertFileDoesNotExist(
                 TimeZoneDataFiles.getSystemTzFile(TimeZoneFinder.TZLOOKUP_FILE_NAME));
@@ -309,7 +309,7 @@ public class TimeZoneIntegrationTest {
             Function<String, String> pathCreationFunction) {
         List<String> relativePaths = Arrays.asList(
                 TzDataSetVersion.DEFAULT_FILE_NAME,
-                ZoneInfoDB.TZDATA_FILE_NAME,
+                ZoneInfoDb.TZDATA_FILE_NAME,
                 TimeZoneFinder.TZLOOKUP_FILE_NAME);
         return relativePaths.stream().map(pathCreationFunction).collect(Collectors.toList());
     }
@@ -336,7 +336,7 @@ public class TimeZoneIntegrationTest {
      */
     @Test
     public void testTimeZoneIdLookup() {
-        String[] zoneInfoDbAvailableIds = ZoneInfoDB.getInstance().getAvailableIDs();
+        String[] zoneInfoDbAvailableIds = ZoneInfoDb.getInstance().getAvailableIDs();
 
         // ICU has a known set of IDs. We want ANY because we don't want to filter to ICU's
         // canonical IDs only.
