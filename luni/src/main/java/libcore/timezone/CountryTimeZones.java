@@ -203,7 +203,7 @@ public final class CountryTimeZones {
         // We rely on ZoneInfoDB to tell us what the known valid time zone IDs are. ICU may
         // recognize more but we want to be sure that zone IDs can be used with java.util as well as
         // android.icu and ICU is expected to have a superset.
-        String[] validTimeZoneIdsArray = ZoneInfoDB.getInstance().getAvailableIDs();
+        String[] validTimeZoneIdsArray = ZoneInfoDb.getInstance().getAvailableIDs();
         HashSet<String> validTimeZoneIdsSet = new HashSet<>(Arrays.asList(validTimeZoneIdsArray));
         List<TimeZoneMapping> validCountryTimeZoneMappings = new ArrayList<>();
         for (TimeZoneMapping timeZoneMapping : timeZoneMappings) {

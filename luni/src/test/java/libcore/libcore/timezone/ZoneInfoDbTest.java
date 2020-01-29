@@ -23,22 +23,22 @@ import java.io.RandomAccessFile;
 import libcore.timezone.TimeZoneDataFiles;
 import libcore.timezone.testing.ZoneInfoTestHelper;
 import libcore.util.ZoneInfo;
-import libcore.timezone.ZoneInfoDB;
+import libcore.timezone.ZoneInfoDb;
 
-import static libcore.timezone.ZoneInfoDB.SIZEOF_INDEX_ENTRY;
+import static libcore.timezone.ZoneInfoDb.SIZEOF_INDEX_ENTRY;
 
-public class ZoneInfoDBTest extends junit.framework.TestCase {
+public class ZoneInfoDbTest extends junit.framework.TestCase {
 
   // The base tzdata file, always present on a device.
   private static final String TZDATA_FILE =
-          TimeZoneDataFiles.getTimeZoneModuleTzFile(ZoneInfoDB.TZDATA_FILE_NAME);
+          TimeZoneDataFiles.getTimeZoneModuleTzFile(ZoneInfoDb.TZDATA_FILE_NAME);
 
   // An empty override file should fall back to the default file.
   public void testLoadTzDataWithFallback_emptyOverrideFile() throws Exception {
     String emptyFilePath = makeEmptyFile().getPath();
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE);
-         ZoneInfoDB dataWithEmptyOverride =
-                 ZoneInfoDB.loadTzDataWithFallback(emptyFilePath, TZDATA_FILE)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE);
+         ZoneInfoDb dataWithEmptyOverride =
+                 ZoneInfoDb.loadTzDataWithFallback(emptyFilePath, TZDATA_FILE)) {
       assertEquals(data.getVersion(), dataWithEmptyOverride.getVersion());
       assertEquals(data.getAvailableIDs().length, dataWithEmptyOverride.getAvailableIDs().length);
     }
@@ -47,9 +47,9 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   // A corrupt override file should fall back to the default file.
   public void testLoadTzDataWithFallback_corruptOverrideFile() throws Exception {
     String corruptFilePath = makeCorruptFile().getPath();
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE);
-         ZoneInfoDB dataWithCorruptOverride =
-                 ZoneInfoDB.loadTzDataWithFallback(corruptFilePath, TZDATA_FILE)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE);
+         ZoneInfoDb dataWithCorruptOverride =
+                 ZoneInfoDb.loadTzDataWithFallback(corruptFilePath, TZDATA_FILE)) {
       assertEquals(data.getVersion(), dataWithCorruptOverride.getVersion());
       assertEquals(data.getAvailableIDs().length, dataWithCorruptOverride.getAvailableIDs().length);
     }
@@ -58,7 +58,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   // Given no tzdata files we can use, we should fall back to built-in "GMT".
   public void testLoadTzDataWithFallback_noGoodFile() throws Exception {
     String emptyFilePath = makeEmptyFile().getPath();
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzDataWithFallback(emptyFilePath)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzDataWithFallback(emptyFilePath)) {
       assertEquals("missing", data.getVersion());
       assertEquals(1, data.getAvailableIDs().length);
       assertEquals("GMT", data.getAvailableIDs()[0]);
@@ -80,9 +80,9 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     content[10] = 'z';
 
     File goodFile = makeTemporaryFile(content);
-    try (ZoneInfoDB dataWithOverride =
-              ZoneInfoDB.loadTzDataWithFallback(goodFile.getPath(), TZDATA_FILE);
-         ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE)) {
+    try (ZoneInfoDb dataWithOverride =
+              ZoneInfoDb.loadTzDataWithFallback(goodFile.getPath(), TZDATA_FILE);
+         ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE)) {
 
       assertEquals("9999z", dataWithOverride.getVersion());
       assertEquals(data.getAvailableIDs().length, dataWithOverride.getAvailableIDs().length);
@@ -106,7 +106,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     byte[] data = new ZoneInfoTestHelper.TzDataBuilder().initializeToValid().build();
     File testFile = makeTemporaryFile(data);
     try {
-      assertNotNull(ZoneInfoDB.loadTzData(testFile.getPath()));
+      assertNotNull(ZoneInfoDb.loadTzData(testFile.getPath()));
     } finally {
       testFile.delete();
     }
@@ -149,7 +149,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
     // Sections must be in the correct order: section sizing is calculated using them.
     int indexOffset = 10;
     builder.setIndexOffsetOverride(indexOffset);
-    int dataOffset = indexOffset + ZoneInfoDB.SIZEOF_INDEX_ENTRY - 1;
+    int dataOffset = indexOffset + ZoneInfoDb.SIZEOF_INDEX_ENTRY - 1;
     builder.setDataOffsetOverride(dataOffset);
     builder.setZoneTabOffsetOverride(dataOffset + 40);
 
@@ -207,7 +207,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   private static void checkInvalidDataDetected(byte[] data) throws Exception {
     File testFile = makeTemporaryFile(data);
     try {
-      assertNull(ZoneInfoDB.loadTzData(testFile.getPath()));
+      assertNull(ZoneInfoDb.loadTzData(testFile.getPath()));
     } finally {
       testFile.delete();
     }
@@ -215,7 +215,7 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
 
   // Confirms any caching that exists correctly handles TimeZone mutability.
   public void testMakeTimeZone_timeZoneMutability() throws Exception {
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE)) {
       String tzId = "Europe/London";
       ZoneInfo first = data.makeTimeZone(tzId);
       ZoneInfo second = data.makeTimeZone(tzId);
@@ -233,14 +233,14 @@ public class ZoneInfoDBTest extends junit.framework.TestCase {
   }
 
   public void testMakeTimeZone_notFound() throws Exception {
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE)) {
       assertNull(data.makeTimeZone("THIS_TZ_DOES_NOT_EXIST"));
       assertFalse(data.hasTimeZone("THIS_TZ_DOES_NOT_EXIST"));
     }
   }
 
   public void testMakeTimeZone_found() throws Exception {
-    try (ZoneInfoDB data = ZoneInfoDB.loadTzData(TZDATA_FILE)) {
+    try (ZoneInfoDb data = ZoneInfoDb.loadTzData(TZDATA_FILE)) {
       assertNotNull(data.makeTimeZone("Europe/London"));
       assertTrue(data.hasTimeZone("Europe/London"));
     }
