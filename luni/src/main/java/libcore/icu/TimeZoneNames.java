@@ -16,7 +16,6 @@
 
 package libcore.icu;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -24,7 +23,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import libcore.util.BasicLruCache;
-import libcore.timezone.ZoneInfoDB;
 
 /**
  * Provides access to ICU's time zone name data.

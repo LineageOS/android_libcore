@@ -258,7 +258,7 @@ filegroup {
         "luni/src/main/java/libcore/timezone/TimeZoneFinder.java",
         "luni/src/main/java/libcore/timezone/TzDataSetVersion.java",
         "luni/src/main/java/libcore/timezone/XmlUtils.java",
-        "luni/src/main/java/libcore/timezone/ZoneInfoDB.java",
+        "luni/src/main/java/libcore/timezone/ZoneInfoDb.java",
         "luni/src/main/java/libcore/util/ArrayUtils.java",
         "luni/src/main/java/libcore/util/BasicLruCache.java",
         "luni/src/main/java/libcore/util/CoreLibraryDebug.java",
