@@ -38,12 +38,12 @@ import libcore.util.ZoneInfo;
  * @hide - used to implement TimeZone
  */
 @libcore.api.CorePlatformApi
-public final class ZoneInfoDB implements AutoCloseable {
+public final class ZoneInfoDb implements AutoCloseable {
 
   // VisibleForTesting
   public static final String TZDATA_FILE_NAME = "tzdata";
 
-  private static final ZoneInfoDB DATA = ZoneInfoDB.loadTzDataWithFallback(
+  private static final ZoneInfoDb DATA = ZoneInfoDb.loadTzDataWithFallback(
           TimeZoneDataFiles.getTimeZoneFilePaths(TZDATA_FILE_NAME));
 
   // The database reserves 40 bytes for each id.
@@ -104,18 +104,18 @@ public final class ZoneInfoDB implements AutoCloseable {
   };
 
   @libcore.api.CorePlatformApi
-  public static ZoneInfoDB getInstance() {
+  public static ZoneInfoDb getInstance() {
     return DATA;
   }
 
   /**
    * Loads the data at the specified paths in order, returning the first valid one as a
-   * {@link ZoneInfoDB} object. If there is no valid one found a basic fallback instance is created
+   * {@link ZoneInfoDb} object. If there is no valid one found a basic fallback instance is created
    * containing just GMT.
    */
-  public static ZoneInfoDB loadTzDataWithFallback(String... paths) {
+  public static ZoneInfoDb loadTzDataWithFallback(String... paths) {
     for (String path : paths) {
-      ZoneInfoDB tzData = new ZoneInfoDB();
+      ZoneInfoDb tzData = new ZoneInfoDb();
       if (tzData.loadData(path)) {
         return tzData;
       }
@@ -125,29 +125,29 @@ public final class ZoneInfoDB implements AutoCloseable {
     // This is actually implemented in TimeZone itself, so if this is the only time zone
     // we report, we won't be asked any more questions.
     System.logE("Couldn't find any " + TZDATA_FILE_NAME + " file!");
-    return ZoneInfoDB.createFallback();
+    return ZoneInfoDb.createFallback();
   }
 
   /**
-   * Loads the data at the specified path and returns the {@link ZoneInfoDB} object if it is valid,
+   * Loads the data at the specified path and returns the {@link ZoneInfoDb} object if it is valid,
    * otherwise {@code null}.
    */
   @libcore.api.CorePlatformApi
-  public static ZoneInfoDB loadTzData(String path) {
-    ZoneInfoDB tzData = new ZoneInfoDB();
+  public static ZoneInfoDb loadTzData(String path) {
+    ZoneInfoDb tzData = new ZoneInfoDb();
     if (tzData.loadData(path)) {
       return tzData;
     }
     return null;
   }
 
-  private static ZoneInfoDB createFallback() {
-    ZoneInfoDB tzData = new ZoneInfoDB();
+  private static ZoneInfoDb createFallback() {
+    ZoneInfoDb tzData = new ZoneInfoDb();
     tzData.populateFallback();
     return tzData;
   }
 
-  private ZoneInfoDB() {
+  private ZoneInfoDb() {
   }
 
   /**
@@ -177,7 +177,7 @@ public final class ZoneInfoDB implements AutoCloseable {
 
   /**
    * Loads the data file at the specified path. If the data is valid {@code true} will be
-   * returned and the {@link ZoneInfoDB} instance can be used. If {@code false} is returned then the
+   * returned and the {@link ZoneInfoDb} instance can be used. If {@code false} is returned then the
    * ZoneInfoDB instance is left in a closed state and must be discarded.
    */
   private boolean loadData(String path) {
