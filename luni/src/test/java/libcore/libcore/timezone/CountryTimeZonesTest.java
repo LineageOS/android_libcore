@@ -376,7 +376,7 @@ public class CountryTimeZonesTest {
                         x -> x == null ? "null" : x.getID();
                 Function<OffsetResult, String> offsetResultFormatter =
                         x -> x == null ? "null"
-                                : "{" + x.mTimeZone.getID() + ", " + x.mOneMatch + "}";
+                                : "{" + x.getTimeZone().getID() + ", " + x.isOnlyMatch() + "}";
                 failures.add("Fail: case=" + i
                         + ", totalOffsetMillis=" + totalOffsetMillis
                         + ", isDst=" + isDst
@@ -540,8 +540,8 @@ public class CountryTimeZonesTest {
     private static boolean offsetResultEquals(OffsetResult expected, OffsetResult actual) {
         return expected == actual
                 || (expected != null && actual != null
-                && Objects.equals(expected.mTimeZone.getID(), actual.mTimeZone.getID())
-                && expected.mOneMatch == actual.mOneMatch);
+                && Objects.equals(expected.getTimeZone().getID(), actual.getTimeZone().getID())
+                && expected.isOnlyMatch() == actual.isOnlyMatch());
     }
 
     /**

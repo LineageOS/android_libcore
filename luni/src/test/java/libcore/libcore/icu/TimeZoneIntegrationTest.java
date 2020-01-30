@@ -247,9 +247,9 @@ public class TimeZoneIntegrationTest {
         TzDataSetVersion actualVersion = TzDataSetVersion.readFromFile(new File(versionFile));
         assertEquals(
                 TzDataSetVersion.currentFormatMajorVersion(),
-                actualVersion.formatMajorVersion);
+                actualVersion.getFormatMajorVersion());
         int minDeviceMinorVersion = TzDataSetVersion.currentFormatMinorVersion();
-        assertTrue(actualVersion.formatMinorVersion >= minDeviceMinorVersion);
+        assertTrue(actualVersion.getFormatMinorVersion() >= minDeviceMinorVersion);
     }
 
     /**

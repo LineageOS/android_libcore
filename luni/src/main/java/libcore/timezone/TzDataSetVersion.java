@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * @hide
  */
 @libcore.api.CorePlatformApi
-public class TzDataSetVersion {
+public final class TzDataSetVersion {
 
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
     /**
@@ -102,18 +102,10 @@ public class TzDataSetVersion {
                     + REVISION_PATTERN.pattern()
                     + ".*" /* ignore trailing */);
 
-    @libcore.api.CorePlatformApi
-    public final int formatMajorVersion;
-
-    @libcore.api.CorePlatformApi
-    public final int formatMinorVersion;
-
-    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
-    @libcore.api.CorePlatformApi
-    public final String rulesVersion;
-
-    @libcore.api.CorePlatformApi
-    public final int revision;
+    private final int formatMajorVersion;
+    private final int formatMinorVersion;
+    private final String rulesVersion;
+    private final int revision;
 
     @libcore.api.CorePlatformApi
     public TzDataSetVersion(int formatMajorVersion, int formatMinorVersion, String rulesVersion,
@@ -168,6 +160,27 @@ public class TzDataSetVersion {
         String tzVersionFileName =
                 TimeZoneDataFiles.getTimeZoneModuleTzFile(TzDataSetVersion.DEFAULT_FILE_NAME);
         return readFromFile(new File(tzVersionFileName));
+    }
+
+    @libcore.api.CorePlatformApi
+    public int getFormatMajorVersion() {
+        return formatMajorVersion;
+    }
+
+    @libcore.api.CorePlatformApi
+    public int getFormatMinorVersion() {
+        return formatMinorVersion;
+    }
+
+    @libcore.api.CorePlatformApi
+    public String getRulesVersion() {
+        return rulesVersion;
+    }
+
+    // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797
+    @libcore.api.CorePlatformApi
+    public int getRevision() {
+        return revision;
     }
 
     // Remove from CorePlatformApi when all users in platform code are removed. http://b/123398797

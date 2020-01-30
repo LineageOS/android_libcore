@@ -432,7 +432,7 @@ public class TimeZoneFinderTest {
                 + "  </countryzones>\n"
                 + "</timezones>\n");
         CountryTimeZones countryTimeZones = finder.lookupCountryTimeZones("gb");
-        assertTrue(countryTimeZones.getDefaultTimeZoneBoost());
+        assertTrue(countryTimeZones.isDefaultTimeZoneBoosted());
     }
 
     @Test
