@@ -34,7 +34,7 @@ import java.util.Set;
  * @hide
  */
 @libcore.api.CorePlatformApi
-public class TelephonyNetworkFinder {
+public final class TelephonyNetworkFinder {
 
     private final Map<MccMnc, TelephonyNetwork> networksMap;
     private final List<TelephonyNetwork> networksList;
