@@ -396,12 +396,30 @@ public final class NetworkInterface {
     public static Enumeration<NetworkInterface> getNetworkInterfaces()
         throws SocketException {
         final NetworkInterface[] netifs = getAll();
-
         // Android-changed: Rewrote NetworkInterface on top of Libcore.io.
-        // specified to return null if no network interfaces
+        // // specified to return null if no network interfaces
+        // if (netifs == null)
         if (netifs.length == 0)
             return null;
 
+        // Android-changed: Rewrote NetworkInterface on top of Libcore.io.
+        /*
+        return new Enumeration<NetworkInterface>() {
+            private int i = 0;
+            public NetworkInterface nextElement() {
+                if (netifs != null && i < netifs.length) {
+                    NetworkInterface netif = netifs[i++];
+                    return netif;
+                } else {
+                    throw new NoSuchElementException();
+                }
+            }
+
+            public boolean hasMoreElements() {
+                return (netifs != null && i < netifs.length);
+            }
+        };
+        */
         return Collections.enumeration(Arrays.asList(netifs));
     }
 
