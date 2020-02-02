@@ -577,10 +577,14 @@ public class OsTest extends TestCase {
 
     public void test_NetlinkSocket() throws Exception {
         FileDescriptor nlSocket = Os.socket(AF_NETLINK, SOCK_DGRAM, NETLINK_ROUTE);
-        Os.bind(nlSocket, new NetlinkSocketAddress());
-        NetlinkSocketAddress address = (NetlinkSocketAddress) Os.getsockname(nlSocket);
-        assertTrue(address.getPortId() > 0);
-        assertEquals(0, address.getGroupsMask());
+        try {
+            Os.bind(nlSocket, new NetlinkSocketAddress());
+            // Non-system processes should not be allowed to bind() to NETLINK_ROUTE sockets.
+            // http://b/141455849
+            fail("bind() on NETLINK_ROUTE socket succeeded");
+        } catch (ErrnoException expectedException) {
+            assertEquals(expectedException.errno, EACCES);
+        }
 
         NetlinkSocketAddress nlKernel = new NetlinkSocketAddress();
         Os.connect(nlSocket, nlKernel);
@@ -980,7 +984,7 @@ public class OsTest extends TestCase {
 
         // ENOTSUP, Extended attributes are not supported by the filesystem, or are disabled.
         // Since kernel version 4.9 (or some other version after 4.4), *xattr() methods
-        // may set errno to EACCESS instead. This behavior change is likely related to
+        // may set errno to EACCES instead. This behavior change is likely related to
         // https://patchwork.kernel.org/patch/9294421/ which reimplemented getxattr, setxattr,
         // and removexattr on top of generic handlers.
         final String path = "/proc/self/stat";
