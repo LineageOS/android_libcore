@@ -49,8 +49,12 @@ class MetricsRunner {
      */
     static MetricsRunner create(ITestDevice testDevice, TestLogData logs)
             throws DeviceNotAvailableException {
-        String deviceParentDirectory =
-                testDevice.executeShellCommand("echo -n ${EXTERNAL_STORAGE}");
+        // TODO(b/145514052): Work out how to get this dynamically rather than hard-coding.
+        // In theory it should be possible to do this with
+        //   testDevice.executeShellCommand("echo -n ${EXTERNAL_STORAGE}");
+        // but the value returned by that call ("/sdcard") no longer works.
+        // Until that issue is resolved, it should be safe to assume the following path:
+        String deviceParentDirectory = "/storage/emulated/0";
         return new MetricsRunner(testDevice, deviceParentDirectory, logs);
     }
 
