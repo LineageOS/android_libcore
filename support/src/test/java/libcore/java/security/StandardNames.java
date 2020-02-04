@@ -1028,7 +1028,7 @@ public final class StandardNames {
                             "SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA",
                             "SSL_RSA_WITH_RC4_128_MD5",
                             "TLS_EMPTY_RENEGOTIATION_INFO_SCSV")
-            : CpuFeatures.isAESHardwareAccelerated() ? CIPHER_SUITES_ANDROID_AES_HARDWARE
+            : CpuFeatures.isAesHardwareAccelerated() ? CIPHER_SUITES_ANDROID_AES_HARDWARE
                     : CIPHER_SUITES_ANDROID_SOFTWARE;
 
     // NOTE: This list needs to be kept in sync with Javadoc of javax.net.ssl.SSLSocket and
