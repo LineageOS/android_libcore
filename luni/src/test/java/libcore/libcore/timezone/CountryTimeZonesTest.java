@@ -504,7 +504,11 @@ public class CountryTimeZonesTest {
     public void timeZoneMapping_getTimeZone_badZoneId() {
         TimeZoneMapping timeZoneMapping =
                 TimeZoneMapping.createForTests("DOES_NOT_EXIST", true, 1234L);
-        assertNull(timeZoneMapping.getTimeZone());
+        try {
+            timeZoneMapping.getTimeZone();
+            fail();
+        } catch (RuntimeException expected) {
+        }
     }
 
     @Test
