@@ -101,6 +101,7 @@ class JapaneseImperialCalendar extends Calendar {
      */
     public static final int HEISEI = 4;
 
+    // Android-changed: Integrate OpenJDK support for Japanese Era Reiwa.
     /**
      * The ERA constant designating the Reiwa era.
      */
