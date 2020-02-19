@@ -368,6 +368,7 @@ public final class JapaneseChronology extends AbstractChronology implements Seri
         throw new DateTimeException("Invalid yearOfEra value");
     }
 
+    // Android-changed: Integrate OpenJDK support for Japanese Era Reiwa.
     /**
      * Returns the calendar system era object from the given numeric value.
      *
