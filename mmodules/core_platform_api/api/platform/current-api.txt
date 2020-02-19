@@ -535,7 +535,7 @@ package dalvik.system {
   }
 
   public static interface BaseDexClassLoader.Reporter {
-    method public void report(java.util.List<java.lang.ClassLoader>, java.util.List<java.lang.String>);
+    method public void report(java.util.Map<java.lang.String,java.lang.String>);
   }
 
   public final class BlockGuard {
