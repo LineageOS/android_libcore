@@ -104,7 +104,7 @@ class JapaneseImperialCalendar extends Calendar {
     /**
      * The ERA constant designating the Reiwa era.
      */
-    private static final int REIWA = 5;
+    public static final int REIWA = 5;
 
     private static final int EPOCH_OFFSET   = 719163; // Fixed date of January 1, 1970 (Gregorian)
     private static final int EPOCH_YEAR     = 1970;
