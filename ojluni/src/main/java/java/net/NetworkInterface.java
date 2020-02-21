@@ -60,7 +60,7 @@ import static android.system.OsConstants.*;
  * {@link NetworkInterface}s may be restricted. For example, non-system apps
  * with {@code targetSdkVersion >= android.os.Build.VERSION_CODES.R} will only
  * have access to information about {@link NetworkInterface}s that are
- * associated with an {@link Inet4Address}.
+ * associated with an {@link InetAddress}.
  *
  * @since 1.4
  */
@@ -386,7 +386,7 @@ public final class NetworkInterface {
      * For non-system apps with
      * {@code targetSdkVersion >= android.os.Build.VERSION_CODES.R}, this
      * method will only return information for {@link NetworkInterface}s that
-     * are associated with an {@link Inet4Address}.
+     * are associated with an {@link InetAddress}.
      *
      * @return an Enumeration of NetworkInterfaces found on this machine
      *         that <a href="#access-restrictions">are accessible</a>.
