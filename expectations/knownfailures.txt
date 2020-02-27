@@ -1830,5 +1830,15 @@
   result: EXEC_FAILED,
   bug: 62408076,
   name: "libcore.java.lang.reflect.annotations.AnnotatedElementParameterTest#testImplicitConstructorParameters_singleAnnotation"
+},
+{
+  description: "Exclude SSLEngine_Closed test since its behavior has changed post Q and it won't pass with the latest Conscrypt module installed",
+  bug: 148097409,
+  names: [
+    "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[0: TLSv1.2 client, TLSv1.2 server]",
+    "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[1: TLSv1.2 client, TLSv1.3 server]",
+    "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[2: TLSv1.3 client, TLSv1.2 server]",
+    "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[3: TLSv1.3 client, TLSv1.3 server]"
+  ]
 }
 ]
