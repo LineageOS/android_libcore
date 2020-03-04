@@ -19,7 +19,15 @@ package libcore.icu;
 import android.compat.annotation.UnsupportedAppUsage;
 import android.icu.impl.ICUData;
 import android.icu.impl.ICUResourceBundle;
+import android.icu.text.BreakIterator;
+import android.icu.text.CaseMap;
+import android.icu.text.DateFormatSymbols;
+import android.icu.text.DecimalFormat;
+import android.icu.text.DecimalFormatSymbols;
+import android.icu.text.NumberFormat;
 import android.icu.text.NumberingSystem;
+import android.icu.util.Calendar;
+import android.icu.util.GregorianCalendar;
 import android.icu.util.UResourceBundle;
 
 import java.text.DateFormat;
@@ -144,9 +152,6 @@ public final class LocaleData {
     public String exponentSeparator;
     public String infinity;
     public String NaN;
-    // Also used by Currency.
-    public String currencySymbol;
-    public String internationalCurrencySymbol;
 
     // Used by DecimalFormat and NumberFormat.
     public String numberPattern;
@@ -241,11 +246,17 @@ public final class LocaleData {
         throw new AssertionError();
     }
 
-    private static LocaleData initLocaleData(Locale locale) {
+    /*
+     * This method is made public for testing
+     */
+    public static LocaleData initLocaleData(Locale locale) {
         LocaleData localeData = new LocaleData();
-        if (!ICU.initLocaleDataNative(locale.toLanguageTag(), localeData)) {
-            throw new AssertionError("couldn't initialize LocaleData for locale " + locale);
-        }
+
+        localeData.initializeDateTimePatterns(locale);
+        localeData.initializeYesterdayTodayAndTomorrow(locale);
+        localeData.initializeDateFormatData(locale);
+        localeData.initializeDecimalFormatData(locale);
+        localeData.initializeCalendarData(locale);
 
         // Libcore localizes pattern separator while ICU doesn't. http://b/112080617
         initializePatternSeparator(localeData, locale);
@@ -296,7 +307,7 @@ public final class LocaleData {
         if (!"latn".equals(nsName)) {
             try {
                 patternSeparator = rb.getStringWithFallback(
-                    "NumberElements/" + nsName +"/symbols/list");
+                    "NumberElements/" + nsName + "/symbols/list");
             } catch (MissingResourceException e) {
                 // Try Latin numbering system later
             }
@@ -316,5 +327,146 @@ public final class LocaleData {
 
         // Pattern separator in libcore supports single java character only.
         localeData.patternSeparator = patternSeparator.charAt(0);
+    }
+
+    private void initializeDateFormatData(Locale locale) {
+        DateFormatSymbols dfs = new DateFormatSymbols(GregorianCalendar.class, locale);
+
+        longMonthNames = dfs.getMonths(DateFormatSymbols.FORMAT, DateFormatSymbols.WIDE);
+        shortMonthNames = dfs.getMonths(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
+        tinyMonthNames = dfs.getMonths(DateFormatSymbols.FORMAT, DateFormatSymbols.NARROW);
+        longWeekdayNames = dfs.getWeekdays(DateFormatSymbols.FORMAT, DateFormatSymbols.WIDE);
+        shortWeekdayNames = dfs
+            .getWeekdays(DateFormatSymbols.FORMAT, DateFormatSymbols.ABBREVIATED);
+        tinyWeekdayNames = dfs.getWeekdays(DateFormatSymbols.FORMAT, DateFormatSymbols.NARROW);
+
+        longStandAloneMonthNames = dfs
+            .getMonths(DateFormatSymbols.STANDALONE, DateFormatSymbols.WIDE);
+        shortStandAloneMonthNames = dfs
+            .getMonths(DateFormatSymbols.STANDALONE, DateFormatSymbols.ABBREVIATED);
+        tinyStandAloneMonthNames = dfs
+            .getMonths(DateFormatSymbols.STANDALONE, DateFormatSymbols.NARROW);
+        longStandAloneWeekdayNames = dfs
+            .getWeekdays(DateFormatSymbols.STANDALONE, DateFormatSymbols.WIDE);
+        shortStandAloneWeekdayNames = dfs
+            .getWeekdays(DateFormatSymbols.STANDALONE, DateFormatSymbols.ABBREVIATED);
+        tinyStandAloneWeekdayNames = dfs
+            .getWeekdays(DateFormatSymbols.STANDALONE, DateFormatSymbols.NARROW);
+
+        String[] ampmNarrowStrings = dfs.getAmpmNarrowStrings();
+        narrowAm = ampmNarrowStrings[0];
+        narrowPm = ampmNarrowStrings[1];
+
+        amPm = dfs.getAmPmStrings();
+        eras = dfs.getEras();
+
+    }
+
+    private void initializeDecimalFormatData(Locale locale) {
+        DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(locale);
+
+        decimalSeparator = dfs.getDecimalSeparator();
+        groupingSeparator = dfs.getGroupingSeparator();
+        patternSeparator = dfs.getPatternSeparator();
+        percent = dfs.getPercentString();
+        perMill = dfs.getPerMillString();
+        monetarySeparator = dfs.getMonetaryDecimalSeparator();
+        minusSign = dfs.getMinusSignString();
+        exponentSeparator = dfs.getExponentSeparator();
+        infinity = dfs.getInfinity();
+        NaN = dfs.getNaN();
+        zeroDigit = dfs.getZeroDigit();
+
+        DecimalFormat df = (DecimalFormat) NumberFormat
+            .getInstance(locale, NumberFormat.NUMBERSTYLE);
+        numberPattern = df.toPattern();
+
+        df = (DecimalFormat) NumberFormat.getInstance(locale, NumberFormat.CURRENCYSTYLE);
+        currencyPattern = df.toPattern();
+
+        df = (DecimalFormat) NumberFormat.getInstance(locale, NumberFormat.PERCENTSTYLE);
+        percentPattern = df.toPattern();
+
+    }
+
+    private void initializeCalendarData(Locale locale) {
+        Calendar calendar = Calendar.getInstance(locale);
+
+        firstDayOfWeek = calendar.getFirstDayOfWeek();
+        minimalDaysInFirstWeek = calendar.getMinimalDaysInFirstWeek();
+    }
+
+    private void initializeYesterdayTodayAndTomorrow(Locale locale) throws AssertionError {
+        try {
+            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
+                ICUData.ICU_BASE_NAME, locale);
+            rb = rb.getWithFallback("fields/day/relative");
+            // Enable fallback because a resource bundle could contain 1 only, not -1.
+            yesterday = rb.getStringWithFallback("-1");
+            today = rb.getStringWithFallback("0");
+            tomorrow = rb.getStringWithFallback("1");
+        } catch (MissingResourceException e) {
+            // Preserve legacy behavior throwing AssertionError for missing resource.
+            throw new AssertionError(e);
+        }
+
+        BreakIterator breakIterator = BreakIterator.getSentenceInstance(locale);
+
+        CaseMap.Title caseMap = CaseMap.toTitle().noLowercase().noBreakAdjustment();
+        yesterday = caseMap.apply(locale, breakIterator, yesterday);
+        today = caseMap.apply(locale, breakIterator, today);
+        tomorrow = caseMap.apply(locale, breakIterator, tomorrow);
+    }
+
+    private void initializeDateTimePatterns(Locale locale) {
+        try {
+            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
+                ICUData.ICU_BASE_NAME, locale);
+            rb = rb.getWithFallback("calendar/gregorian/DateTimePatterns");
+            fullTimeFormat = getStringOrFirstArrayElement(rb, 0);
+            longTimeFormat = getStringOrFirstArrayElement(rb, 1);
+            mediumTimeFormat = getStringOrFirstArrayElement(rb, 2);
+            shortTimeFormat = getStringOrFirstArrayElement(rb, 3);
+            fullDateFormat = getStringOrFirstArrayElement(rb, 4);
+            longDateFormat = getStringOrFirstArrayElement(rb, 5);
+            mediumDateFormat = getStringOrFirstArrayElement(rb, 6);
+            shortDateFormat = getStringOrFirstArrayElement(rb, 7);
+        } catch (MissingResourceException e) {
+            // Preserve legacy behavior throwing AssertionError for missing resource.
+            throw new AssertionError(e);
+        }
+    }
+
+    private static String getStringOrFirstArrayElement(UResourceBundle rb, int index) {
+        try {
+            UResourceBundle currentBundle = rb.get(index);
+            int type = currentBundle.getType();
+            final String result;
+            switch(type) {
+                case UResourceBundle.STRING:
+                    result = currentBundle.getString();
+                    break;
+                case UResourceBundle.ARRAY:
+                    // In case there is an array, Android currently only cares about the
+                    // first string of that array, the rest of the array is used by ICU
+                    // for additional data ignored by Android.
+                    result = currentBundle.getString(0);
+                    break;
+                default:
+                  // Preserve legacy behavior of setting null
+                    result = null;
+                    System.logE(String.format(
+                        "Unsupported type when setting String field from ICU resource (type %d)",
+                        type)
+                    );
+            }
+            return result;
+        } catch (MissingResourceException e) {
+            // Preserve legacy behavior of avoiding throwing for missing resource.
+            System.logE(String.format(
+                "Error setting String field from ICU resource (index %d)", index), e
+            );
+            return null;
+        }
     }
 }
