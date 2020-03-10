@@ -30,8 +30,7 @@ public class LocaleDataTest extends junit.framework.TestCase {
     // Test that we can get the locale data for all known locales.
     for (Locale l : Locale.getAvailableLocales()) {
       LocaleData d = LocaleData.get(l);
-      // System.err.format("%20s %s %s %s\n", l, d.yesterday, d.today, d.tomorrow);
-      // System.err.format("%20s %10s %10s\n", l, d.timeFormat_hm, d.timeFormat_Hm);
+      System.err.format("%20s %10s %10s\n", l, d.timeFormat_hm, d.timeFormat_Hm);
     }
   }
 
@@ -58,17 +57,6 @@ public class LocaleDataTest extends junit.framework.TestCase {
     assertEquals("Sun", l.shortStandAloneWeekdayNames[1]);
     assertEquals("S", l.tinyStandAloneWeekdayNames[1]);
 
-    assertEquals("Yesterday", l.yesterday);
-    assertEquals("Today", l.today);
-    assertEquals("Tomorrow", l.tomorrow);
-  }
-
-  public void test_de_DE() throws Exception {
-    LocaleData l = LocaleData.get(new Locale("de", "DE"));
-
-    assertEquals("Gestern", l.yesterday);
-    assertEquals("Heute", l.today);
-    assertEquals("Morgen", l.tomorrow);
   }
 
   public void test_cs_CZ() throws Exception {
@@ -81,15 +69,6 @@ public class LocaleDataTest extends junit.framework.TestCase {
     assertEquals("leden", l.longStandAloneMonthNames[0]);
     assertEquals("led", l.shortStandAloneMonthNames[0]);
     assertEquals("1", l.tinyStandAloneMonthNames[0]);
-  }
-
-  public void test_ko_KR() throws Exception {
-    LocaleData l = LocaleData.get(new Locale("ko", "KR"));
-
-    // Ensure the fix for http://b/14493853 doesn't mangle Hangul.
-    assertEquals("어제", l.yesterday);
-    assertEquals("오늘", l.today);
-    assertEquals("내일", l.tomorrow);
   }
 
   public void test_ru_RU() throws Exception {
@@ -222,9 +201,6 @@ public class LocaleDataTest extends junit.framework.TestCase {
     assertArrayEquals(baseMsg + "longStandAloneWeekdayNames", testData.longStandAloneWeekdayNames, localeData.longStandAloneWeekdayNames);
     assertArrayEquals(baseMsg + "shortStandAloneWeekdayNames", testData.shortStandAloneWeekdayNames, localeData.shortStandAloneWeekdayNames);
     assertArrayEquals(baseMsg + "tinyStandAloneWeekdayNames", testData.tinyStandAloneWeekdayNames, localeData.tinyStandAloneWeekdayNames);
-    assertEquals(baseMsg + "yesterday", testData.yesterday, localeData.yesterday);
-    assertEquals(baseMsg + "today", testData.today, localeData.today);
-    assertEquals(baseMsg + "tomorrow", testData.tomorrow, localeData.tomorrow);
 
     assertEquals(baseMsg + "fullTimeFormat", testData.fullTimeFormat, localeData.fullTimeFormat);
     assertEquals(baseMsg + "longTimeFormat", testData.longTimeFormat, localeData.longTimeFormat);
@@ -273,11 +249,6 @@ public class LocaleDataTest extends junit.framework.TestCase {
       public String[] longStandAloneWeekdayNames; // "Sunday", ...
       public String[] shortStandAloneWeekdayNames; // "Sun", ...
       public String[] tinyStandAloneWeekdayNames; // "S", ...
-
-      // Used by frameworks/base DateSorter and DateUtils.
-      public String yesterday; // "Yesterday".
-      public String today; // "Today".
-      public String tomorrow; // "Tomorrow".
 
       public String fullTimeFormat;
       public String longTimeFormat;
