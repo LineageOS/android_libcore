@@ -282,40 +282,6 @@ static bool getDateTimePatterns(JNIEnv* env, jobject localeData, const char* loc
   return true;
 }
 
-static bool getYesterdayTodayAndTomorrow(JNIEnv* env, jobject localeData, const icu::Locale& locale, const char* locale_name) {
-  UErrorCode status = U_ZERO_ERROR;
-  ScopedResourceBundle root(ures_open(NULL, locale_name, &status));
-  ScopedResourceBundle fields(ures_getByKey(root.get(), "fields", NULL, &status));
-  ScopedResourceBundle day(ures_getByKey(fields.get(), "day", NULL, &status));
-  ScopedResourceBundle relative(ures_getByKey(day.get(), "relative", NULL, &status));
-  if (U_FAILURE(status)) {
-    return false;
-  }
-
-  icu::UnicodeString yesterday(icu::ures_getUnicodeStringByKey(relative.get(), "-1", &status));
-  icu::UnicodeString today(icu::ures_getUnicodeStringByKey(relative.get(), "0", &status));
-  icu::UnicodeString tomorrow(icu::ures_getUnicodeStringByKey(relative.get(), "1", &status));
-  if (U_FAILURE(status)) {
-    ALOGE("Error getting yesterday/today/tomorrow for %s: %s", locale_name, u_errorName(status));
-    return false;
-  }
-
-  // We title-case the strings so they have consistent capitalization (http://b/14493853).
-  std::unique_ptr<icu::BreakIterator> brk(icu::BreakIterator::createSentenceInstance(locale, status));
-  if (U_FAILURE(status)) {
-    ALOGE("Error getting yesterday/today/tomorrow break iterator for %s: %s", locale_name, u_errorName(status));
-    return false;
-  }
-  yesterday.toTitle(brk.get(), locale, U_TITLECASE_NO_LOWERCASE | U_TITLECASE_NO_BREAK_ADJUSTMENT);
-  today.toTitle(brk.get(), locale, U_TITLECASE_NO_LOWERCASE | U_TITLECASE_NO_BREAK_ADJUSTMENT);
-  tomorrow.toTitle(brk.get(), locale, U_TITLECASE_NO_LOWERCASE | U_TITLECASE_NO_BREAK_ADJUSTMENT);
-
-  setStringField(env, localeData, "yesterday", yesterday);
-  setStringField(env, localeData, "today", today);
-  setStringField(env, localeData, "tomorrow", tomorrow);
-  return true;
-}
-
 extern "C" jboolean Java_libcore_libcore_icu_LocaleDataTest_initIcu4cLocaleData(JNIEnv* env,
     jclass, jstring javaLanguageTag, jobject icu4cLocaleData, jobject dataClass) {
   if (icu4cLocaleDataClass == nullptr) {
@@ -350,19 +316,6 @@ extern "C" jboolean Java_libcore_libcore_icu_LocaleDataTest_initIcu4cLocaleData(
   }
   if (!foundDateTimePatterns) {
     ALOGE("Couldn't find ICU DateTimePatterns for %s", languageTag.c_str());
-    return JNI_FALSE;
-  }
-
-  // Get the "Yesterday", "Today", and "Tomorrow" strings.
-  bool foundYesterdayTodayAndTomorrow = false;
-  for (LocaleNameIterator it(icuLocale.locale().getBaseName(), status); it.HasNext(); it.Up()) {
-    if (getYesterdayTodayAndTomorrow(env, localeData, icuLocale.locale(), it.Get())) {
-      foundYesterdayTodayAndTomorrow = true;
-      break;
-    }
-  }
-  if (!foundYesterdayTodayAndTomorrow) {
-    ALOGE("Couldn't find ICU yesterday/today/tomorrow for %s", languageTag.c_str());
     return JNI_FALSE;
   }
 

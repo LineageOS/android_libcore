@@ -19,8 +19,6 @@ package libcore.icu;
 import android.compat.annotation.UnsupportedAppUsage;
 import android.icu.impl.ICUData;
 import android.icu.impl.ICUResourceBundle;
-import android.icu.text.BreakIterator;
-import android.icu.text.CaseMap;
 import android.icu.text.DateFormatSymbols;
 import android.icu.text.DecimalFormat;
 import android.icu.text.DecimalFormatSymbols;
@@ -100,11 +98,9 @@ public final class LocaleData {
     @libcore.api.CorePlatformApi
     public String[] tinyStandAloneWeekdayNames; // "S", ...
 
-    // Used by frameworks/base DateSorter and DateUtils.
-    @libcore.api.CorePlatformApi
-    public String yesterday; // "Yesterday".
+    // today and tomorrow is only kept for @UnsupportedAppUsage.
+    // Their value is hard-coded, not localized.
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
     public String today; // "Today".
     @UnsupportedAppUsage
     public String tomorrow; // "Tomorrow".
@@ -160,6 +156,8 @@ public final class LocaleData {
     public String percentPattern;
 
     private LocaleData() {
+        today = "Today";
+        tomorrow = "Tomorrow";
     }
 
     @UnsupportedAppUsage
@@ -253,7 +251,6 @@ public final class LocaleData {
         LocaleData localeData = new LocaleData();
 
         localeData.initializeDateTimePatterns(locale);
-        localeData.initializeYesterdayTodayAndTomorrow(locale);
         localeData.initializeDateFormatData(locale);
         localeData.initializeDecimalFormatData(locale);
         localeData.initializeCalendarData(locale);
@@ -394,28 +391,6 @@ public final class LocaleData {
 
         firstDayOfWeek = calendar.getFirstDayOfWeek();
         minimalDaysInFirstWeek = calendar.getMinimalDaysInFirstWeek();
-    }
-
-    private void initializeYesterdayTodayAndTomorrow(Locale locale) throws AssertionError {
-        try {
-            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-                ICUData.ICU_BASE_NAME, locale);
-            rb = rb.getWithFallback("fields/day/relative");
-            // Enable fallback because a resource bundle could contain 1 only, not -1.
-            yesterday = rb.getStringWithFallback("-1");
-            today = rb.getStringWithFallback("0");
-            tomorrow = rb.getStringWithFallback("1");
-        } catch (MissingResourceException e) {
-            // Preserve legacy behavior throwing AssertionError for missing resource.
-            throw new AssertionError(e);
-        }
-
-        BreakIterator breakIterator = BreakIterator.getSentenceInstance(locale);
-
-        CaseMap.Title caseMap = CaseMap.toTitle().noLowercase().noBreakAdjustment();
-        yesterday = caseMap.apply(locale, breakIterator, yesterday);
-        today = caseMap.apply(locale, breakIterator, today);
-        tomorrow = caseMap.apply(locale, breakIterator, tomorrow);
     }
 
     private void initializeDateTimePatterns(Locale locale) {
