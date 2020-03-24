@@ -1840,5 +1840,13 @@
     "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[2: TLSv1.3 client, TLSv1.2 server]",
     "com.android.org.conscrypt.javax.net.ssl.SSLEngineVersionCompatibilityTest#test_SSLEngine_Closed[3: TLSv1.3 client, TLSv1.3 server]"
   ]
+},
+{
+  description: "OpenSSLProvider changed constructor signatures making these tests fail when latest Conscrypt module installed",
+  bug: 148097409,
+  names: [
+    "com.android.org.conscrypt.ct.CTVerifierTest",
+    "com.android.org.conscrypt.CertPinManagerTest"
+  ]
 }
 ]
