@@ -607,8 +607,12 @@ java_test {
         "xml/src/test/java/**/*.java",
     ],
     exclude_srcs: [
+        "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
         "luni/src/test/java/libcore/java/util/zip/Zip64Test.java",
         "luni/src/test/java/libcore/java/util/zip/Zip64FileTest.java",
+        "luni/src/test/java/libcore/javax/crypto/**/*.java",
+        "luni/src/test/java/libcore/javax/net/ssl/**/*.java",
+        "luni/src/test/java/org/apache/harmony/crypto/**/*.java",
     ],
 
     java_resource_dirs: [
@@ -640,6 +644,7 @@ java_test {
         "core-test-rules",
         "core-tests-support",
         "junit-params",
+        "libcore-crypto-tests",
         "mockftpserver",
         "mockito-target",
         "mockwebserver",
@@ -658,6 +663,40 @@ java_test {
     },
 
     test_config: "AndroidTest-core-tests.xml",
+}
+
+java_test {
+    name: "libcore-crypto-tests",
+
+    visibility: [
+        "//art/build/sdk",
+        "//external/conscrypt/apex/tests",
+    ],
+    srcs: [
+        "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
+        "luni/src/test/java/libcore/javax/crypto/**/*.java",
+        "luni/src/test/java/libcore/javax/net/ssl/**/*.java",
+        "luni/src/test/java/org/apache/harmony/crypto/**/*.java",
+    ],
+    exclude_srcs: [
+        "luni/src/test/java/org/apache/harmony/crypto/tests/javax/crypto/SealedObjectTest.java",
+    ],
+
+    java_resource_dirs: [
+        "luni/src/test/java",
+        "luni/src/test/resources",
+        "support/src/test/java",
+    ],
+
+    sdk_version: "none",
+    system_modules: "core-all-system-modules",
+
+    static_libs: [
+        "core-test-rules",
+        "core-tests-support",
+        "junit-params",
+        "mockito-target",
+    ],
 }
 
 // Builds the core-ojtests library that contains test code from OpenJDK.
