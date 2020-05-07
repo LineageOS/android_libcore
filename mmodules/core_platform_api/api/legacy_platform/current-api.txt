@@ -211,10 +211,6 @@ package com.android.org.bouncycastle.asn1 {
     ctor public DERBitString(byte[]);
   }
 
-  @Deprecated public class DERInteger extends com.android.org.bouncycastle.asn1.ASN1Integer {
-    ctor @Deprecated public DERInteger(long);
-  }
-
   public class DERNull extends com.android.org.bouncycastle.asn1.ASN1Null {
     field public static final com.android.org.bouncycastle.asn1.DERNull INSTANCE;
   }
