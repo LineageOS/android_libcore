@@ -606,7 +606,6 @@ package dalvik.system {
   }
 
   public final class RuntimeHooks {
-    method @Nullable public static dalvik.system.ThreadPrioritySetter getThreadPrioritySetter();
     method public static void setThreadPrioritySetter(@NonNull dalvik.system.ThreadPrioritySetter);
     method public static void setTimeZoneIdSupplier(java.util.function.Supplier<java.lang.String>);
     method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
