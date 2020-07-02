@@ -575,14 +575,6 @@ package dalvik.system {
     method public default void report(String);
   }
 
-  public interface DalvikLogHandler {
-    method public void publish(java.util.logging.Logger, String, java.util.logging.Level, String);
-  }
-
-  public final class DalvikLogging {
-    method public static String loggerNameToTag(String);
-  }
-
   public final class DelegateLastClassLoader extends dalvik.system.PathClassLoader {
     ctor public DelegateLastClassLoader(String, String, ClassLoader, ClassLoader[]);
   }
