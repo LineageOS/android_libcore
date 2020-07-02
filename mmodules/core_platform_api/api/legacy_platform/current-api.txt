@@ -1077,68 +1077,6 @@ package libcore.net.event {
 
 }
 
-package libcore.timezone {
-
-  public final class CountryTimeZones {
-    method public String getCountryIso();
-    method public android.icu.util.TimeZone getDefaultTimeZone();
-    method public String getDefaultTimeZoneId();
-    method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getEffectiveTimeZoneMappingsAt(long);
-    method public java.util.List<libcore.timezone.CountryTimeZones.TimeZoneMapping> getTimeZoneMappings();
-    method public boolean hasUtcZone(long);
-    method public boolean isDefaultTimeZoneBoosted();
-    method public libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(long, android.icu.util.TimeZone, int, boolean);
-    method public libcore.timezone.CountryTimeZones.OffsetResult lookupByOffsetWithBias(long, android.icu.util.TimeZone, int);
-    method public boolean matchesCountryCode(String);
-  }
-
-  public static final class CountryTimeZones.OffsetResult {
-    method public android.icu.util.TimeZone getTimeZone();
-    method public boolean isOnlyMatch();
-  }
-
-  public static final class CountryTimeZones.TimeZoneMapping {
-    method public static libcore.timezone.CountryTimeZones.TimeZoneMapping createForTests(String, boolean, Long);
-    method public Long getNotUsedAfter();
-    method public android.icu.util.TimeZone getTimeZone();
-    method public String getTimeZoneId();
-    method public boolean isShownInPicker();
-  }
-
-  public final class CountryZonesFinder {
-    method public java.util.List<java.lang.String> lookupAllCountryIsoCodes();
-    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
-    method public java.util.List<libcore.timezone.CountryTimeZones> lookupCountryTimeZonesForZoneId(String);
-  }
-
-  public final class TelephonyLookup {
-    method public static libcore.timezone.TelephonyLookup createInstance(String) throws java.io.IOException;
-    method public static libcore.timezone.TelephonyLookup getInstance();
-    method public libcore.timezone.TelephonyNetworkFinder getTelephonyNetworkFinder();
-    method public void validate() throws java.io.IOException;
-  }
-
-  public final class TelephonyNetwork {
-    method public String getCountryIsoCode();
-    method public String getMcc();
-    method public String getMnc();
-  }
-
-  public final class TelephonyNetworkFinder {
-    method public libcore.timezone.TelephonyNetwork findNetworkByMccMnc(String, String);
-  }
-
-  public final class TimeZoneFinder {
-    method public static libcore.timezone.TimeZoneFinder createInstance(String) throws java.io.IOException;
-    method public libcore.timezone.CountryZonesFinder getCountryZonesFinder();
-    method public String getIanaVersion();
-    method public static libcore.timezone.TimeZoneFinder getInstance();
-    method public libcore.timezone.CountryTimeZones lookupCountryTimeZones(String);
-    method public void validate() throws java.io.IOException;
-  }
-
-}
-
 package libcore.util {
 
   public final class ArrayUtils {
