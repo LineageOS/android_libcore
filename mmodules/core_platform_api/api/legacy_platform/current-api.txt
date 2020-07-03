@@ -758,10 +758,6 @@ package java.lang {
     method public static long randomLongInternal();
   }
 
-  public final class System {
-    method public static void logE(String, Throwable);
-  }
-
   public class Thread implements java.lang.Runnable {
     method public static java.lang.Thread.UncaughtExceptionHandler getUncaughtExceptionPreHandler();
     method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
