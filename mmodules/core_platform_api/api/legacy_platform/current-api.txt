@@ -946,11 +946,6 @@ package libcore.icu {
     method public static String formatDateRange(long, long, int, String);
   }
 
-  public final class ICU {
-    method public static String getBestDateTimePattern(String, java.util.Locale);
-    method public static char[] getDateFormatOrder(String);
-  }
-
   public final class LocaleData {
     method public static libcore.icu.LocaleData get(java.util.Locale);
     method public String getDateFormat(int);
