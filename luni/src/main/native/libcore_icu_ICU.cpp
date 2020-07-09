@@ -24,7 +24,6 @@
 
 #include <log/log.h>
 #include <nativehelper/JNIHelp.h>
-#include <nativehelper/ScopedStringChars.h>
 #include <nativehelper/ScopedUtfChars.h>
 #include <nativehelper/jni_macros.h>
 #include <nativehelper/toStringArray.h>
@@ -85,55 +84,6 @@ static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, uloc_countAvailable, uloc_getAvailable);
 }
 
-static jstring ICU_getBestDateTimePatternNative(JNIEnv* env, jclass, jstring javaSkeleton, jstring javaLanguageTag) {
-  ScopedIcuULoc icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return NULL;
-  }
-
-  UErrorCode status = U_ZERO_ERROR;
-  std::unique_ptr<UDateTimePatternGenerator, decltype(&udatpg_close)> generator(
-    udatpg_open(icuLocale.locale(), &status), &udatpg_close);
-  if (maybeThrowIcuException(env, "udatpg_open", status)) {
-    return NULL;
-  }
-
-  const ScopedStringChars skeletonHolder(env, javaSkeleton);
-  // Convert jchar* to UChar* with the inline-able utility provided by char16ptr.h
-  // which prevents certain compiler optimization than reinterpret_cast.
-  icu::ConstChar16Ptr skeletonPtr(skeletonHolder.get());
-  const UChar* skeleton = icu::toUCharPtr(skeletonPtr.get());
-
-  int32_t patternLength;
-  // Try with fixed-size buffer. 128 chars should be enough for most patterns.
-  // If the buffer is not sufficient, run the below case of U_BUFFER_OVERFLOW_ERROR.
-  #define PATTERN_BUFFER_SIZE 128
-  {
-    UChar buffer[PATTERN_BUFFER_SIZE];
-    status = U_ZERO_ERROR;
-    patternLength = udatpg_getBestPattern(generator.get(), skeleton,
-      skeletonHolder.size(), buffer, PATTERN_BUFFER_SIZE, &status);
-    if (U_SUCCESS(status)) {
-      return jniCreateString(env, buffer, patternLength);
-    } else if (status != U_BUFFER_OVERFLOW_ERROR) {
-      maybeThrowIcuException(env, "udatpg_getBestPattern", status);
-      return NULL;
-    }
-  }
-  #undef PATTERN_BUFFER_SIZE
-
-  // Case U_BUFFER_OVERFLOW_ERROR
-  std::unique_ptr<UChar[]> buffer(new UChar[patternLength+1]);
-  status = U_ZERO_ERROR;
-  patternLength = udatpg_getBestPattern(generator.get(), skeleton,
-      skeletonHolder.size(), buffer.get(), patternLength+1, &status);
-  if (maybeThrowIcuException(env, "udatpg_getBestPattern", status)) {
-    return NULL;
-  }
-
-  return jniCreateString(env, buffer.get(), patternLength);
-}
-
 static void ICU_setDefaultLocale(JNIEnv* env, jclass, jstring javaLanguageTag) {
   ScopedIcuULoc icuLocale(env, javaLanguageTag);
   if (!icuLocale.valid()) {
@@ -151,7 +101,6 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDefaultLocale, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Country, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Language, "(Ljava/lang/String;)Ljava/lang/String;"),
