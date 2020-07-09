@@ -16,9 +16,9 @@
 
 package libcore.icu;
 
+import com.android.icu.text.DecimalFormatSymbolsBridge;
+
 import android.compat.annotation.UnsupportedAppUsage;
-import android.icu.impl.ICUData;
-import android.icu.impl.ICUResourceBundle;
 import android.icu.text.DateFormatSymbols;
 import android.icu.text.DecimalFormat;
 import android.icu.text.DecimalFormatSymbols;
@@ -27,12 +27,10 @@ import android.icu.text.NumberingSystem;
 import android.icu.util.Calendar;
 import android.icu.util.GregorianCalendar;
 import android.icu.util.ULocale;
-import android.icu.util.UResourceBundle;
 
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import libcore.util.Objects;
 
 /**
@@ -288,36 +286,18 @@ public final class LocaleData {
 
     // Libcore localizes pattern separator while ICU doesn't. http://b/112080617
     private static void initializePatternSeparator(LocaleData localeData, Locale locale) {
-        NumberingSystem ns = NumberingSystem.getInstance(locale);
+        ULocale uLocale = ULocale.forLocale(locale);
+        NumberingSystem ns = NumberingSystem.getInstance(uLocale);
         // A numbering system could be numeric or algorithmic. DecimalFormat can only use
         // a numeric and decimal-based (radix == 10) system. Fallback to a Latin, a known numeric
         // and decimal-based if the default numbering system isn't. All locales should have data
         // for Latin numbering system after locale data fallback. See Numbering system section
         // in Unicode Technical Standard #35 for more details.
-        String nsName = ns != null && ns.getRadix() == 10 && !ns.isAlgorithmic()
-            ? ns.getName() : "latn";
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-            ICUData.ICU_BASE_NAME, locale);
-        String patternSeparator = null;
-        // The fallback of number format data isn't well-specified in the spec.
-        // But the separator can't be null / empty, and ICU uses Latin numbering system
-        // as fallback.
-        if (!"latn".equals(nsName)) {
-            try {
-                patternSeparator = rb.getStringWithFallback(
-                    "NumberElements/" + nsName + "/symbols/list");
-            } catch (MissingResourceException e) {
-                // Try Latin numbering system later
-            }
+        if (ns == null || ns.getRadix() != 10 || ns.isAlgorithmic()) {
+            ns = NumberingSystem.LATIN;
         }
-
-        if (patternSeparator == null) {
-            try {
-                patternSeparator = rb.getStringWithFallback("NumberElements/latn/symbols/list");
-            } catch (MissingResourceException e) {
-                // Fallback to the default separator ';'.
-            }
-        }
+        String patternSeparator =
+            DecimalFormatSymbolsBridge.getLocalizedPatternSeparator(uLocale, ns);
 
         if (patternSeparator == null || patternSeparator.isEmpty()) {
             patternSeparator = ";";
