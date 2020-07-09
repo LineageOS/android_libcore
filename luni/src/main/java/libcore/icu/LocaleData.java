@@ -26,6 +26,7 @@ import android.icu.text.NumberFormat;
 import android.icu.text.NumberingSystem;
 import android.icu.util.Calendar;
 import android.icu.util.GregorianCalendar;
+import android.icu.util.ULocale;
 import android.icu.util.UResourceBundle;
 
 import java.text.DateFormat;
@@ -394,54 +395,24 @@ public final class LocaleData {
     }
 
     private void initializeDateTimePatterns(Locale locale) {
-        try {
-            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-                ICUData.ICU_BASE_NAME, locale);
-            rb = rb.getWithFallback("calendar/gregorian/DateTimePatterns");
-            fullTimeFormat = getStringOrFirstArrayElement(rb, 0);
-            longTimeFormat = getStringOrFirstArrayElement(rb, 1);
-            mediumTimeFormat = getStringOrFirstArrayElement(rb, 2);
-            shortTimeFormat = getStringOrFirstArrayElement(rb, 3);
-            fullDateFormat = getStringOrFirstArrayElement(rb, 4);
-            longDateFormat = getStringOrFirstArrayElement(rb, 5);
-            mediumDateFormat = getStringOrFirstArrayElement(rb, 6);
-            shortDateFormat = getStringOrFirstArrayElement(rb, 7);
-        } catch (MissingResourceException e) {
-            // Preserve legacy behavior throwing AssertionError for missing resource.
-            throw new AssertionError(e);
-        }
-    }
+        ULocale uLocale = ULocale.forLocale(locale);
+        String calType = "gregorian";
 
-    private static String getStringOrFirstArrayElement(UResourceBundle rb, int index) {
-        try {
-            UResourceBundle currentBundle = rb.get(index);
-            int type = currentBundle.getType();
-            final String result;
-            switch(type) {
-                case UResourceBundle.STRING:
-                    result = currentBundle.getString();
-                    break;
-                case UResourceBundle.ARRAY:
-                    // In case there is an array, Android currently only cares about the
-                    // first string of that array, the rest of the array is used by ICU
-                    // for additional data ignored by Android.
-                    result = currentBundle.getString(0);
-                    break;
-                default:
-                  // Preserve legacy behavior of setting null
-                    result = null;
-                    System.logE(String.format(
-                        "Unsupported type when setting String field from ICU resource (type %d)",
-                        type)
-                    );
-            }
-            return result;
-        } catch (MissingResourceException e) {
-            // Preserve legacy behavior of avoiding throwing for missing resource.
-            System.logE(String.format(
-                "Error setting String field from ICU resource (index %d)", index), e
-            );
-            return null;
-        }
+        fullTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.FULL);
+        longTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.LONG);
+        mediumTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat. MEDIUM);
+        shortTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.SHORT);
+        fullDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.FULL, android.icu.text.DateFormat.NONE);
+        longDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.LONG, android.icu.text.DateFormat.NONE);
+        mediumDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.MEDIUM, android.icu.text.DateFormat.NONE);
+        shortDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.SHORT, android.icu.text.DateFormat.NONE);
     }
 }
