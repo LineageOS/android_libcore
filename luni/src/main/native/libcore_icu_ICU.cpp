@@ -40,32 +40,6 @@
 
 #define U_ICUDATA_CURR U_ICUDATA_NAME "-" "curr"
 
-class ScopedResourceBundle {
- public:
-  explicit ScopedResourceBundle(UResourceBundle* bundle) : bundle_(bundle) {
-  }
-
-  ~ScopedResourceBundle() {
-    if (bundle_ != NULL) {
-      ures_close(bundle_);
-    }
-  }
-
-  UResourceBundle* get() {
-    return bundle_;
-  }
-
-  bool hasKey(const char* key) {
-    UErrorCode status = U_ZERO_ERROR;
-    ures_getStringByKey(bundle_, key, NULL, &status);
-    return U_SUCCESS(status);
-  }
-
- private:
-  UResourceBundle* bundle_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedResourceBundle);
-};
-
 static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
   ScopedIcuULoc icuLocale(env, javaLocaleName);
   if (!icuLocale.valid()) {
@@ -81,49 +55,6 @@ static jstring ICU_getScript(JNIEnv* env, jclass, jstring javaLocaleName) {
     return NULL;
   }
   return env->NewStringUTF(buffer.get());
-}
-
-// TODO: rewrite this with int32_t ucurr_forLocale(const char* locale, UChar* buff, int32_t buffCapacity, UErrorCode* ec)...
-static jstring ICU_getCurrencyCode(JNIEnv* env, jclass, jstring javaCountryCode) {
-    UErrorCode status = U_ZERO_ERROR;
-    ScopedResourceBundle supplData(ures_openDirect(U_ICUDATA_CURR, "supplementalData", &status));
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-
-    ScopedResourceBundle currencyMap(ures_getByKey(supplData.get(), "CurrencyMap", NULL, &status));
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-
-    ScopedUtfChars countryCode(env, javaCountryCode);
-    ScopedResourceBundle currency(ures_getByKey(currencyMap.get(), countryCode.c_str(), NULL, &status));
-    if (U_FAILURE(status)) {
-        return NULL;
-    }
-
-    ScopedResourceBundle currencyElem(ures_getByIndex(currency.get(), 0, NULL, &status));
-    if (U_FAILURE(status)) {
-        return env->NewStringUTF("XXX");
-    }
-
-    // Check if there's a 'to' date. If there is, the currency isn't used anymore.
-    ScopedResourceBundle currencyTo(ures_getByKey(currencyElem.get(), "to", NULL, &status));
-    if (!U_FAILURE(status)) {
-        return NULL;
-    }
-    // Ignore the failure to find a 'to' date.
-    status = U_ZERO_ERROR;
-
-    ScopedResourceBundle currencyId(ures_getByKey(currencyElem.get(), "id", NULL, &status));
-    if (U_FAILURE(status)) {
-        // No id defined for this country
-        return env->NewStringUTF("XXX");
-    }
-
-    int32_t charCount;
-    const UChar* chars = ures_getString(currencyId.get(), &charCount, &status);
-    return (charCount == 0) ? env->NewStringUTF("XXX") : jniCreateString(env, chars, charCount);
 }
 
 static jstring ICU_getISO3Country(JNIEnv* env, jclass, jstring javaLanguageTag) {
@@ -221,7 +152,6 @@ static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
 static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getAvailableLocalesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getBestDateTimePatternNative, "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, getCurrencyCode, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getDefaultLocale, "()Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Country, "(Ljava/lang/String;)Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISO3Language, "(Ljava/lang/String;)Ljava/lang/String;"),
