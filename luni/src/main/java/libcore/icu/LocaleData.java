@@ -16,9 +16,9 @@
 
 package libcore.icu;
 
+import com.android.icu.text.DecimalFormatSymbolsBridge;
+
 import android.compat.annotation.UnsupportedAppUsage;
-import android.icu.impl.ICUData;
-import android.icu.impl.ICUResourceBundle;
 import android.icu.text.DateFormatSymbols;
 import android.icu.text.DecimalFormat;
 import android.icu.text.DecimalFormatSymbols;
@@ -26,12 +26,11 @@ import android.icu.text.NumberFormat;
 import android.icu.text.NumberingSystem;
 import android.icu.util.Calendar;
 import android.icu.util.GregorianCalendar;
-import android.icu.util.UResourceBundle;
+import android.icu.util.ULocale;
 
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.MissingResourceException;
 import libcore.util.Objects;
 
 /**
@@ -287,36 +286,18 @@ public final class LocaleData {
 
     // Libcore localizes pattern separator while ICU doesn't. http://b/112080617
     private static void initializePatternSeparator(LocaleData localeData, Locale locale) {
-        NumberingSystem ns = NumberingSystem.getInstance(locale);
+        ULocale uLocale = ULocale.forLocale(locale);
+        NumberingSystem ns = NumberingSystem.getInstance(uLocale);
         // A numbering system could be numeric or algorithmic. DecimalFormat can only use
         // a numeric and decimal-based (radix == 10) system. Fallback to a Latin, a known numeric
         // and decimal-based if the default numbering system isn't. All locales should have data
         // for Latin numbering system after locale data fallback. See Numbering system section
         // in Unicode Technical Standard #35 for more details.
-        String nsName = ns != null && ns.getRadix() == 10 && !ns.isAlgorithmic()
-            ? ns.getName() : "latn";
-        ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-            ICUData.ICU_BASE_NAME, locale);
-        String patternSeparator = null;
-        // The fallback of number format data isn't well-specified in the spec.
-        // But the separator can't be null / empty, and ICU uses Latin numbering system
-        // as fallback.
-        if (!"latn".equals(nsName)) {
-            try {
-                patternSeparator = rb.getStringWithFallback(
-                    "NumberElements/" + nsName + "/symbols/list");
-            } catch (MissingResourceException e) {
-                // Try Latin numbering system later
-            }
+        if (ns == null || ns.getRadix() != 10 || ns.isAlgorithmic()) {
+            ns = NumberingSystem.LATIN;
         }
-
-        if (patternSeparator == null) {
-            try {
-                patternSeparator = rb.getStringWithFallback("NumberElements/latn/symbols/list");
-            } catch (MissingResourceException e) {
-                // Fallback to the default separator ';'.
-            }
-        }
+        String patternSeparator =
+            DecimalFormatSymbolsBridge.getLocalizedPatternSeparator(uLocale, ns);
 
         if (patternSeparator == null || patternSeparator.isEmpty()) {
             patternSeparator = ";";
@@ -394,54 +375,24 @@ public final class LocaleData {
     }
 
     private void initializeDateTimePatterns(Locale locale) {
-        try {
-            ICUResourceBundle rb = (ICUResourceBundle) UResourceBundle.getBundleInstance(
-                ICUData.ICU_BASE_NAME, locale);
-            rb = rb.getWithFallback("calendar/gregorian/DateTimePatterns");
-            fullTimeFormat = getStringOrFirstArrayElement(rb, 0);
-            longTimeFormat = getStringOrFirstArrayElement(rb, 1);
-            mediumTimeFormat = getStringOrFirstArrayElement(rb, 2);
-            shortTimeFormat = getStringOrFirstArrayElement(rb, 3);
-            fullDateFormat = getStringOrFirstArrayElement(rb, 4);
-            longDateFormat = getStringOrFirstArrayElement(rb, 5);
-            mediumDateFormat = getStringOrFirstArrayElement(rb, 6);
-            shortDateFormat = getStringOrFirstArrayElement(rb, 7);
-        } catch (MissingResourceException e) {
-            // Preserve legacy behavior throwing AssertionError for missing resource.
-            throw new AssertionError(e);
-        }
-    }
+        ULocale uLocale = ULocale.forLocale(locale);
+        String calType = "gregorian";
 
-    private static String getStringOrFirstArrayElement(UResourceBundle rb, int index) {
-        try {
-            UResourceBundle currentBundle = rb.get(index);
-            int type = currentBundle.getType();
-            final String result;
-            switch(type) {
-                case UResourceBundle.STRING:
-                    result = currentBundle.getString();
-                    break;
-                case UResourceBundle.ARRAY:
-                    // In case there is an array, Android currently only cares about the
-                    // first string of that array, the rest of the array is used by ICU
-                    // for additional data ignored by Android.
-                    result = currentBundle.getString(0);
-                    break;
-                default:
-                  // Preserve legacy behavior of setting null
-                    result = null;
-                    System.logE(String.format(
-                        "Unsupported type when setting String field from ICU resource (type %d)",
-                        type)
-                    );
-            }
-            return result;
-        } catch (MissingResourceException e) {
-            // Preserve legacy behavior of avoiding throwing for missing resource.
-            System.logE(String.format(
-                "Error setting String field from ICU resource (index %d)", index), e
-            );
-            return null;
-        }
+        fullTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.FULL);
+        longTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.LONG);
+        mediumTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat. MEDIUM);
+        shortTimeFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.NONE, android.icu.text.DateFormat.SHORT);
+        fullDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.FULL, android.icu.text.DateFormat.NONE);
+        longDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.LONG, android.icu.text.DateFormat.NONE);
+        mediumDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.MEDIUM, android.icu.text.DateFormat.NONE);
+        shortDateFormat = Calendar.getDateTimeFormatString(uLocale, calType,
+            android.icu.text.DateFormat.SHORT, android.icu.text.DateFormat.NONE);
     }
 }
