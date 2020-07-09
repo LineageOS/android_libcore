@@ -19,6 +19,7 @@ package libcore.icu;
 import android.compat.annotation.UnsupportedAppUsage;
 import android.icu.text.CurrencyMetaInfo;
 import android.icu.text.CurrencyMetaInfo.CurrencyFilter;
+import android.icu.text.DateTimePatternGenerator;
 import android.icu.util.ULocale;
 
 import java.util.Collections;
@@ -280,15 +281,22 @@ public final class ICU {
     synchronized (CACHED_PATTERNS) {
       String pattern = CACHED_PATTERNS.get(key);
       if (pattern == null) {
-        pattern = getBestDateTimePatternNative(skeleton, languageTag);
+        pattern = getBestDateTimePattern0(skeleton, locale);
         CACHED_PATTERNS.put(key, pattern);
       }
       return pattern;
     }
   }
 
+  private static String getBestDateTimePattern0(String skeleton, Locale locale) {
+      DateTimePatternGenerator dtpg = DateTimePatternGenerator.getInstance(locale);
+      return dtpg.getBestPattern(skeleton);
+  }
+
   @UnsupportedAppUsage
-  private static native String getBestDateTimePatternNative(String skeleton, String languageTag);
+  private static String getBestDateTimePatternNative(String skeleton, String languageTag) {
+    return getBestDateTimePattern0(skeleton, Locale.forLanguageTag(languageTag));
+  }
 
   @UnsupportedAppUsage
   @libcore.api.CorePlatformApi
