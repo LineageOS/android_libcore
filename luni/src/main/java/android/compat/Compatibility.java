@@ -121,13 +121,13 @@ public final class Compatibility {
         }
         @CorePlatformApi
         protected void reportChange(long changeId) {
-            System.logW(String.format(
-                    "No Compatibility callbacks set! Reporting change %d", changeId));
+            // Do not use String.format here (b/160912695)
+            System.logW("No Compatibility callbacks set! Reporting change " + changeId);
         }
         @CorePlatformApi
         protected boolean isChangeEnabled(long changeId) {
-            System.logW(String.format(
-                    "No Compatibility callbacks set! Querying change %d", changeId));
+            // Do not use String.format here (b/160912695)
+            System.logW("No Compatibility callbacks set! Querying change " + changeId);
             return true;
         }
     }
