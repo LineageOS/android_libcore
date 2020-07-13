@@ -952,11 +952,6 @@ package libcore.icu {
     field public char zeroDigit;
   }
 
-  public final class RelativeDateTimeFormatter {
-    method public static String getRelativeDateTimeString(java.util.Locale, java.util.TimeZone, long, long, long, long, int);
-    method public static String getRelativeTimeSpanString(java.util.Locale, java.util.TimeZone, long, long, long, int);
-  }
-
 }
 
 package libcore.internal {
