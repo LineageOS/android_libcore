@@ -25,6 +25,8 @@ import android.icu.impl.ICUResourceBundle;
 import android.icu.text.NumberingSystem;
 import android.icu.util.UResourceBundle;
 
+import dalvik.system.VMRuntime;
+
 import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -71,6 +73,9 @@ public final class LocaleData {
      *
      * Note that Locale.ROOT is used as language/country neutral locale or fallback locale,
      * and does not guarantee to represent English locale.
+     *
+     * This flag is only for documentation and can't be overridden by app. Please use
+     * {@code targetSdkVersion} to enable the new behavior.
      */
     @ChangeId
     @EnabledAfter(targetSdkVersion=29 /* Android Q */)
@@ -215,10 +220,14 @@ public final class LocaleData {
      * @return a compatible locale for the bug b/159514442
      */
     public static Locale getCompatibleLocaleForBug159514442(Locale locale) {
-        if (Locale.ROOT.equals(locale) &&
-            // isChangeEnabled() always returns true in non-app process
-            !Compatibility.isChangeEnabled(USE_REAL_ROOT_LOCALE)) {
-            locale = LOCALE_EN_US_POSIX;
+        if (Locale.ROOT.equals(locale)) {
+            int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
+            // Don't use Compatibility.isChangeEnabled(USE_REAL_ROOT_LOCALE) because the app compat
+            // framework lives in libcore and can depend on this class via various format methods,
+            // e.g. String.format(). See b/160912695.
+            if (targetSdkVersion <= 29 /* Android Q */) {
+                locale = LOCALE_EN_US_POSIX;
+            }
         }
         return locale;
     }
