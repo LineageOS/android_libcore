@@ -269,7 +269,6 @@ public final class LocaleData {
         return Objects.toString(this);
     }
 
-    @libcore.api.CorePlatformApi
     public String getDateFormat(int style) {
         switch (style) {
         case DateFormat.SHORT:
