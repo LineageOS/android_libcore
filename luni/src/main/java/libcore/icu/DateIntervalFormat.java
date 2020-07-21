@@ -31,7 +31,6 @@ import static libcore.icu.DateUtilsBridge.FORMAT_UTC;
  *
  * @hide
  */
-@libcore.api.CorePlatformApi
 public final class DateIntervalFormat {
 
   private static final BasicLruCache<String, android.icu.text.DateIntervalFormat> CACHED_FORMATTERS
@@ -42,7 +41,6 @@ public final class DateIntervalFormat {
 
   // This is public DateUtils API in frameworks/base.
   @UnsupportedAppUsage
-  @libcore.api.CorePlatformApi
   public static String formatDateRange(long startMs, long endMs, int flags, String olsonId) {
     if ((flags & FORMAT_UTC) != 0) {
       olsonId = "UTC";
