@@ -924,14 +924,11 @@ package libcore.icu {
 
   public final class LocaleData {
     method public static libcore.icu.LocaleData get(java.util.Locale);
-    field public String[] amPm;
     field public Integer firstDayOfWeek;
     field public String[] longMonthNames;
     field public String[] longStandAloneMonthNames;
     field public String[] longStandAloneWeekdayNames;
     field public String[] longWeekdayNames;
-    field public String narrowAm;
-    field public String narrowPm;
     field public String[] shortMonthNames;
     field public String[] shortStandAloneMonthNames;
     field public String[] shortStandAloneWeekdayNames;
