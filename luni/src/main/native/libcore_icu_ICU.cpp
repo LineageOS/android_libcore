@@ -80,17 +80,6 @@ static jobjectArray ICU_getAvailableLocalesNative(JNIEnv* env, jclass) {
     return toStringArray(env, uloc_countAvailable, uloc_getAvailable);
 }
 
-static void ICU_setDefaultLocale(JNIEnv* env, jclass, jstring javaLanguageTag) {
-  ScopedIcuULoc icuLocale(env, javaLanguageTag);
-  if (!icuLocale.valid()) {
-    return;
-  }
-
-  UErrorCode status = U_ZERO_ERROR;
-  uloc_setDefault(icuLocale.locale(), &status);
-  maybeThrowIcuException(env, "uloc_setDefault", status);
-}
-
 static jstring ICU_getDefaultLocale(JNIEnv* env, jclass) {
   return env->NewStringUTF(uloc_getDefault());
 }
@@ -103,7 +92,6 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, getISOCountriesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getISOLanguagesNative, "()[Ljava/lang/String;"),
     NATIVE_METHOD(ICU, getScript, "(Ljava/lang/String;)Ljava/lang/String;"),
-    NATIVE_METHOD(ICU, setDefaultLocale, "(Ljava/lang/String;)V"),
 };
 
 void register_libcore_icu_ICU(JNIEnv* env) {
