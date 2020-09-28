@@ -20,8 +20,6 @@
 #include <memory>
 #include <vector>
 
-#include <aicu/AIcu.h>
-
 #include <log/log.h>
 #include <nativehelper/JNIHelp.h>
 #include <nativehelper/ScopedUtfChars.h>
@@ -108,21 +106,11 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(ICU, setDefaultLocale, "(Ljava/lang/String;)V"),
 };
 
-//
-// Global initialization & Teardown for ICU Setup
-//   - Contains handlers for JNI_OnLoad and JNI_OnUnload
-//
-
-// Init ICU, configuring it and loading the data files.
 void register_libcore_icu_ICU(JNIEnv* env) {
-  AIcu_register();
-
   jniRegisterNativeMethods(env, "libcore/icu/ICU", gMethods, NELEM(gMethods));
 }
 
-// De-init ICU, unloading the data files. Do the opposite of the above function.
 void unregister_libcore_icu_ICU() {
   // Skip unregistering JNI methods explicitly, class unloading takes care of
   // it.
-  AIcu_deregister();
 }
