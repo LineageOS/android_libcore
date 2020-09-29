@@ -847,6 +847,10 @@ java_sdk_library {
         "ojluni-annotated-sdk-stubs",
     ],
 
+    doctag_files: [
+        ":known-oj-tags",
+    ],
+
     errorprone: {
         javacflags: [
             "-Xep:MissingOverride:OFF",
