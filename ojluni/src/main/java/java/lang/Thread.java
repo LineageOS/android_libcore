@@ -2342,13 +2342,9 @@ class Thread implements Runnable {
     // Android-added: Android specific nativeGetStatus() method.
     private native int nativeGetStatus(boolean hasBeenStarted);
 
-    // BEGIN Android-added: Customize behavior of Thread.setPriority(). http://b/139521784
-    /**
-     * Returns the thread ID of the underlying native thread -- which is different from
-     * the {@link #getId() managed thread ID} -- or 0 if the native thread is not
-     * started or has stopped.
-     */
+    // Android-added: Customize behavior of Thread.setPriority(). http://b/139521784
+    // Note: this function returns the tid of native thread, which is different than
+    // the managed tid of Thread.
     @FastNative
     private native int getNativeTid();
-    // END Android-added: Customize behavior of Thread.setPriority(). http://b/139521784
 }
