@@ -231,15 +231,31 @@ public final class VMDebug {
     public static native long threadCpuTimeNanos();
 
     /**
-     * Count the number and aggregate size of memory allocations between
-     * two points.
+     * Starts counting the number and aggregate size of memory allocations.
      */
     @libcore.api.CorePlatformApi
     public static native void startAllocCounting();
+
+    /**
+     * Stops counting the number and aggregate size of memory allocations.
+     */
     @libcore.api.CorePlatformApi
     public static native void stopAllocCounting();
+
+    /**
+     * Returns information on the number of objects allocated by the runtime between a
+     * {@link #startAllocCounting() start} and {@link #stopAllocCounting() stop}.
+     *
+     * @param kind either KIND_GLOBAL_* or KIND_THREAD_*.
+     */
     @libcore.api.CorePlatformApi
     public static native int getAllocCount(int kind);
+
+    /**
+     * Resets counting the number and aggregate size of memory allocations for the given kinds.
+     *
+     * @param kinds a union of KIND_GLOBAL_* and KIND_THREAD_*.
+     */
     @libcore.api.CorePlatformApi
     public static native void resetAllocCount(int kinds);
 
@@ -275,6 +291,9 @@ public final class VMDebug {
 
     /**
      * Dumps a list of loaded class to the log file.
+     *
+     * @param flags a union of {@link android.os.Debug.SHOW_FULL_DETAIL},
+     *    {@link android.os.Debug.SHOW_CLASSLOADER}, and {@link android.os.Debug.SHOW_INITIALIZED}.
      */
     @libcore.api.CorePlatformApi
     @FastNative
