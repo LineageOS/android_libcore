@@ -25,7 +25,6 @@
  */
 package java.lang;
 
-import com.android.i18n.timezone.TimeZoneDataFiles;
 import dalvik.annotation.optimization.CriticalNative;
 import dalvik.annotation.optimization.FastNative;
 import android.system.ErrnoException;
@@ -1000,13 +999,6 @@ public final class System {
         p.put("android.icu.library.version", ICU.getIcuVersion());
         p.put("android.icu.unicode.version", ICU.getUnicodeVersion());
         p.put("android.icu.cldr.version", ICU.getCldrVersion());
-
-        // Property override for ICU4J : this is the location of the ICU4C data. This
-        // is prioritized over the properties in ICUConfig.properties. The issue with using
-        // that is that it doesn't play well with jarjar and it needs complicated build rules
-        // to change its default value.
-        String icuDataPath = TimeZoneDataFiles.generateIcuDataPath();
-        p.put("android.icu.impl.ICUBinary.dataPath", icuDataPath);
 
         parsePropertyAssignments(p, specialProperties());
 
