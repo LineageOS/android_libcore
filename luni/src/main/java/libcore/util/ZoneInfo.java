@@ -300,7 +300,7 @@ public final class ZoneInfo extends TimeZone {
     public Object clone() {
         // Pass the mDstSavings and mUseDst explicitly because they must not be recalculated when
         // cloning. See {@link #create(ZoneInfoData)}.
-        return new ZoneInfo(mDelegate.createCopy(), mDstSavings, mUseDst);
+        return new ZoneInfo(mDelegate, mDstSavings, mUseDst);
     }
 
     public int getOffsetsByUtcTime(long utcTimeInMillis, int[] offsets) {
