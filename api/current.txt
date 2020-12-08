@@ -2266,10 +2266,11 @@ package java.lang {
   }
 
   public final class Byte extends java.lang.Number implements java.lang.Comparable<java.lang.Byte> {
-    ctor public Byte(byte);
-    ctor public Byte(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Byte(byte);
+    ctor @Deprecated public Byte(@NonNull String) throws java.lang.NumberFormatException;
     method public static int compare(byte, byte);
     method public int compareTo(@NonNull Byte);
+    method public static int compareUnsigned(byte, byte);
     method @NonNull public static Byte decode(@NonNull String) throws java.lang.NumberFormatException;
     method public double doubleValue();
     method public float floatValue();
