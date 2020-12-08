@@ -3589,10 +3589,11 @@ package java.lang {
   }
 
   public final class Short extends java.lang.Number implements java.lang.Comparable<java.lang.Short> {
-    ctor public Short(short);
-    ctor public Short(String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Short(short);
+    ctor @Deprecated public Short(String) throws java.lang.NumberFormatException;
     method public static int compare(short, short);
     method public int compareTo(Short);
+    method public static int compareUnsigned(short, short);
     method public static Short decode(String) throws java.lang.NumberFormatException;
     method public double doubleValue();
     method public float floatValue();
