@@ -10819,6 +10819,7 @@ package java.time {
     method public static java.time.LocalTime of(int, int);
     method public static java.time.LocalTime of(int, int, int);
     method public static java.time.LocalTime of(int, int, int, int);
+    method public static java.time.LocalTime ofInstant(java.time.Instant, java.time.ZoneId);
     method public static java.time.LocalTime ofNanoOfDay(long);
     method public static java.time.LocalTime ofSecondOfDay(long);
     method public static java.time.LocalTime parse(CharSequence);
@@ -10829,6 +10830,7 @@ package java.time {
     method public java.time.LocalTime plusMinutes(long);
     method public java.time.LocalTime plusNanos(long);
     method public java.time.LocalTime plusSeconds(long);
+    method public long toEpochSecond(java.time.LocalDate, java.time.ZoneOffset);
     method public long toNanoOfDay();
     method public int toSecondOfDay();
     method public java.time.LocalTime truncatedTo(java.time.temporal.TemporalUnit);
