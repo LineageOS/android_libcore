@@ -94,18 +94,27 @@ public class HostnameVerifierTest extends TestCase implements
      * out certificates that match so broadly.
      */
     public void testWildcardsDoesNotNeedTwoDots() throws Exception {
-        // openssl req -x509 -nodes -days 36500 -subj '/CN=*.com' -newkey rsa:512 -out cert.pem
+        /*
+         * $ cat ./cert.cnf
+         * [req]
+         * distinguished_name=distinguished_name
+         * req_extensions=req_extensions
+         * x509_extensions=x509_extensions
+         * [distinguished_name]
+         * [req_extensions]
+         * [x509_extensions]
+         * subjectAltName=DNS:*.com
+         */
+        // openssl req -x509 -nodes -days 36500 -subj '/CN=CommonName' -config ./cert.cnf -newkey rsa:512 -out cert.pem
         String cert = "-----BEGIN CERTIFICATE-----\n"
-                + "MIIBjDCCATagAwIBAgIJAOVulXCSu6HuMA0GCSqGSIb3DQEBBQUAMBAxDjAMBgNV\n"
-                + "BAMUBSouY29tMCAXDTEwMTIyMDE2NDkzOFoYDzIxMTAxMTI2MTY0OTM4WjAQMQ4w\n"
-                + "DAYDVQQDFAUqLmNvbTBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDJd8xqni+h7Iaz\n"
-                + "ypItivs9kPuiJUqVz+SuJ1C05SFc3PmlRCvwSIfhyD67fHcbMdl+A/LrIjhhKZJe\n"
-                + "1joO0+pFAgMBAAGjcTBvMB0GA1UdDgQWBBS4Iuzf5w8JdCp+EtBfdFNudf6+YzBA\n"
-                + "BgNVHSMEOTA3gBS4Iuzf5w8JdCp+EtBfdFNudf6+Y6EUpBIwEDEOMAwGA1UEAxQF\n"
-                + "Ki5jb22CCQDlbpVwkruh7jAMBgNVHRMEBTADAQH/MA0GCSqGSIb3DQEBBQUAA0EA\n"
-                + "U6LFxmZr31lFyis2/T68PpjAppc0DpNQuA2m/Y7oTHBDi55Fw6HVHCw3lucuWZ5d\n"
-                + "qUYo4ES548JdpQtcLrW2sA==\n"
-                + "-----END CERTIFICATE-----";
+                + "MIIBODCB46ADAgECAgkA5o09Q/EN/kMwDQYJKoZIhvcNAQELBQAwFTETMBEGA1UE\n"
+                + "AxMKQ29tbW9uTmFtZTAgFw0xODAxMTEwMDM1MDNaGA8yMTE3MTIxODAwMzUwM1ow\n"
+                + "FTETMBEGA1UEAxMKQ29tbW9uTmFtZTBcMA0GCSqGSIb3DQEBAQUAA0sAMEgCQQDE\n"
+                + "u2Yguj/n8mUvmEVIJeSxbtcK98yCkg07BIVPQaRBpBTjWk/lxRWlMGVAWTcls1El\n"
+                + "IvLn+/NsBLx5l4UFfkDFAgMBAAGjFDASMBAGA1UdEQQJMAeCBSouY29tMA0GCSqG\n"
+                + "SIb3DQEBCwUAA0EASyUpA60cGL8ePVO5XD4XGGIms5Dwd147+wiqKcYodnB8rlbF\n"
+                + "nxeiH6VZH3lBKJjrAXB0rOaBzb9jCuVxjYldew==\n"
+                + "-----END CERTIFICATE-----\n";
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
         InputStream in = new ByteArrayInputStream(cert.getBytes("UTF-8"));
         X509Certificate x509 = (X509Certificate) cf.generateCertificate(in);
