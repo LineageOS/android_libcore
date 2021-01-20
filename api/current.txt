@@ -13633,6 +13633,7 @@ package java.util {
   }
 
   public interface Set<E> extends java.util.Collection<E> {
+    method public static <E> java.util.Set<E> copyOf(java.util.Collection<? extends E>);
     method @NonNull public static <E> java.util.Set<E> of();
     method @NonNull public static <E> java.util.Set<E> of(@NonNull E);
     method @NonNull public static <E> java.util.Set<E> of(@NonNull E, @NonNull E);
