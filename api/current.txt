@@ -10588,6 +10588,7 @@ package java.time {
     method public static java.time.Duration between(java.time.temporal.Temporal, java.time.temporal.Temporal);
     method public int compareTo(java.time.Duration);
     method public java.time.Duration dividedBy(long);
+    method public long dividedBy(java.time.Duration);
     method public static java.time.Duration from(java.time.temporal.TemporalAmount);
     method public long get(java.time.temporal.TemporalUnit);
     method public int getNano();
@@ -10624,10 +10625,18 @@ package java.time {
     method public java.time.Duration plusSeconds(long);
     method public java.time.temporal.Temporal subtractFrom(java.time.temporal.Temporal);
     method public long toDays();
+    method public long toDaysPart();
     method public long toHours();
+    method public int toHoursPart();
     method public long toMillis();
+    method public int toMillisPart();
     method public long toMinutes();
+    method public int toMinutesPart();
     method public long toNanos();
+    method public int toNanosPart();
+    method public long toSeconds();
+    method public int toSecondsPart();
+    method public java.time.Duration truncatedTo(java.time.temporal.TemporalUnit);
     method public java.time.Duration withNanos(int);
     method public java.time.Duration withSeconds(long);
     field public static final java.time.Duration ZERO;
