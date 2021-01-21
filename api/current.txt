@@ -13232,6 +13232,7 @@ package java.util {
     method @Nullable public default V computeIfPresent(K, @NonNull java.util.function.BiFunction<? super K,? super V,? extends V>);
     method public boolean containsKey(@Nullable Object);
     method public boolean containsValue(@Nullable Object);
+    method public static <K, V> java.util.Map<K,V> copyOf(java.util.Map<? extends K,? extends V>);
     method @NonNull public static <K, V> java.util.Map.Entry<K,V> entry(@NonNull K, @NonNull V);
     method @NonNull public java.util.Set<java.util.Map.Entry<K,V>> entrySet();
     method public boolean equals(@Nullable Object);
