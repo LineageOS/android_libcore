@@ -477,6 +477,7 @@ package android.system {
     field public static final int SOCK_SEQPACKET;
     field public static final int SOCK_STREAM;
     field public static final int SOL_SOCKET;
+    field public static final int SOL_UDP;
     field public static final int SO_BINDTODEVICE;
     field public static final int SO_BROADCAST;
     field public static final int SO_DEBUG;
@@ -532,6 +533,8 @@ package android.system {
     field public static final int S_IXUSR;
     field public static final int TCP_NODELAY;
     field public static final int TCP_USER_TIMEOUT;
+    field public static final int UDP_GRO;
+    field public static final int UDP_SEGMENT;
     field public static final int WCONTINUED;
     field public static final int WEXITED;
     field public static final int WNOHANG;
