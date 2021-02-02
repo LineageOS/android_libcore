@@ -2058,7 +2058,7 @@ public final class URLConnectionTest extends TestCase {
 
             assertEquals(Arrays.asList("verify " + hostName), hostnameVerifier.calls);
             assertEquals(Arrays.asList("checkServerTrusted ["
-                    + "CN=" + hostName + " 3, "
+                    + "CN=Local Host 3, "
                     + "CN=Test Intermediate Certificate Authority 2, "
                     + "CN=Test Root Certificate Authority 1"
                     + "] ECDHE_RSA"),
