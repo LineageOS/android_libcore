@@ -217,6 +217,27 @@ package libcore.util {
 
 }
 
+package sun.security.pkcs {
+
+  public class PKCS7 {
+    ctor public PKCS7(java.io.InputStream) throws java.io.IOException, sun.security.pkcs.ParsingException;
+    ctor public PKCS7(byte[]) throws sun.security.pkcs.ParsingException;
+    method public java.security.cert.X509Certificate[] getCertificates();
+    method public sun.security.pkcs.SignerInfo[] getSignerInfos();
+    method public sun.security.pkcs.SignerInfo verify(sun.security.pkcs.SignerInfo, java.io.InputStream) throws java.io.IOException, java.security.NoSuchAlgorithmException, java.security.SignatureException;
+    method public sun.security.pkcs.SignerInfo[] verify(byte[]) throws java.security.NoSuchAlgorithmException, java.security.SignatureException;
+  }
+
+  public class ParsingException extends java.io.IOException {
+  }
+
+  public class SignerInfo {
+    ctor public SignerInfo();
+    method public java.util.ArrayList<java.security.cert.X509Certificate> getCertificateChain(sun.security.pkcs.PKCS7) throws java.io.IOException;
+  }
+
+}
+
 package sun.security.util {
 
   public final class ObjectIdentifier implements java.io.Serializable {
