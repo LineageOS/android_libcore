@@ -420,6 +420,15 @@ package sun.misc {
 
 }
 
+package sun.security.jca {
+
+  public class Providers {
+    method public static Object startJarVerification();
+    method public static void stopJarVerification(Object);
+  }
+
+}
+
 package sun.security.pkcs {
 
   public class PKCS7 {
