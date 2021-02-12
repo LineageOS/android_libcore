@@ -75,6 +75,15 @@ package libcore.io {
 
 }
 
+package libcore.net.event {
+
+  public class NetworkEventDispatcher {
+    method public static libcore.net.event.NetworkEventDispatcher getInstance();
+    method public void onNetworkConfigurationChanged();
+  }
+
+}
+
 package libcore.util {
 
   public class HexEncoding {
