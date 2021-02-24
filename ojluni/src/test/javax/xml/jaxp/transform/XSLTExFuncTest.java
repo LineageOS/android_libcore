@@ -26,7 +26,11 @@
  * @summary test XSLT extension functions
  * @run main/othervm XSLTExFuncTest
  */
+// Android-changed: Added package & Test import
+package test.javax.xml.jaxp.transform;
+import org.testng.annotations.Test;
 
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.security.AllPermission;
 import java.security.CodeSource;
@@ -57,31 +61,42 @@ public class XSLTExFuncTest extends TestBase {
         super(name);
     }
     boolean hasSM;
-    String xslFile, xslFileId;
-    String xmlFile, xmlFileId;
+    // Android-changed: Load the files from java resources.
+    // String xslFile, xslFileId;
+    // String xmlFile, xmlFileId;
+    InputStream xslFile, xmlFile;
+    String xslFileId;
 
     protected void setUp() {
         super.setUp();
-        xmlFile = filepath + "/tokenize.xml";
-        xslFile = filepath + "/tokenize.xsl";
+        // Android-changed: Load the files from java resources.
+        // xmlFile = filepath + "/tokenize.xml";
+        // xslFile = filepath + "/tokenize.xsl";
+        xmlFile = XSLTExFuncTest.class.getResourceAsStream("tokenize.xml");
+        xslFile = XSLTExFuncTest.class.getResourceAsStream("tokenize.xsl");
 
         /**
          * On Windows platform it needs triple '/' for valid URL while double '/' is enough on Linux or Solaris.
          * Here use file:/// directly to make it work on Windows and it will not impact other platforms.
          */
-        xslFileId = "file:///" + xslFile;
+        // Android-changed: Load the files from java resources.
+        // xslFileId = "file:///" + xslFile;
+        xslFileId = "file:///" + filepath + "/tokenize.xsl";
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    // Android-changed: Removed args & added @Test
+    @Test
+    public static void main() {
         XSLTExFuncTest test = new XSLTExFuncTest("OneTest");
         test.setUp();
 
         test.testExtFunc();
-        test.testExtFuncNotAllowed();
+        // Android-removed: Android doesn't allow setting a SecurityManager.
+        // test.testExtFuncNotAllowed();
+        // Android-added: Call setUp() before each test
+        test.setUp();
         test.testEnableExtFunc();
+        test.setUp();
         test.testTemplatesEnableExtFunc();
         test.tearDown();
 
@@ -128,9 +143,10 @@ public class XSLTExFuncTest extends TestBase {
      * Security is enabled, use new feature: enableExtensionFunctions
      */
     public void testEnableExtFunc() {
-        Policy p = new SimplePolicy(new AllPermission());
-        Policy.setPolicy(p);
-        System.setSecurityManager(new SecurityManager());
+        // Android-removed: Android doesn't use SecurityManager.
+        // Policy p = new SimplePolicy(new AllPermission());
+        // Policy.setPolicy(p);
+        // System.setSecurityManager(new SecurityManager());
         TransformerFactory factory = TransformerFactory.newInstance();
 
         /**
@@ -165,9 +181,10 @@ public class XSLTExFuncTest extends TestBase {
      * template to create a transformer
      */
     public void testTemplatesEnableExtFunc() {
-        Policy p = new SimplePolicy(new AllPermission());
-        Policy.setPolicy(p);
-        System.setSecurityManager(new SecurityManager());
+        // Android-removed: Android doesn't use SecurityManager.
+        // Policy p = new SimplePolicy(new AllPermission());
+        // Policy.setPolicy(p);
+        // System.setSecurityManager(new SecurityManager());
         TransformerFactory factory = TransformerFactory.newInstance();
 
         /**

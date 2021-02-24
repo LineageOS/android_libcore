@@ -20,6 +20,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// Android-changed: Added package
+package test.javax.xml.jaxp.transform;
 
 import java.security.Policy;
 

@@ -26,6 +26,10 @@
  * @summary test XPath extension functions
  * @run main/othervm XPathExFuncTest
  */
+// Android-changed: Added package & Test import
+package test.javax.xml.jaxp.transform;
+import org.testng.annotations.Test;
+
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.AllPermission;
@@ -69,24 +73,30 @@ public class XPathExFuncTest extends TestBase {
         super(name);
     }
     boolean hasSM;
-    String xslFile, xslFileId;
-    String xmlFile, xmlFileId;
+    // Android-changed: Load the files from java resources.
+    // String xslFile, xslFileId;
+    // String xmlFile, xmlFileId;
+    InputStream xmlStream;
 
     protected void setUp() {
         super.setUp();
-        xmlFile = filepath + "/SecureProcessingTest.xml";
+        // Android-changed: Load the files from java resources.
+        // xmlFile = filepath + "/SecureProcessingTest.xml";
+        xmlStream = XPathExFuncTest.class.getResourceAsStream("SecureProcessingTest.xml");
 
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
+    // Android-changed: Removed args & added @Test
+    @Test
+    public static void main() {
         XPathExFuncTest test = new XPathExFuncTest("OneTest");
         test.setUp();
 
         test.testExtFunc();
-        test.testExtFuncNotAllowed();
+        // Android-removed: Android doesn't allow setting a SecurityManager.
+        // test.testExtFuncNotAllowed();
+        // Android-added: Call setUp() before each test
+        test.setUp();
         test.testEnableExtFunc();
         test.tearDown();
 
@@ -111,9 +121,9 @@ public class XPathExFuncTest extends TestBase {
      * Security is enabled, extension function not allowed
      */
     public void testExtFuncNotAllowed() {
-        Policy p = new SimplePolicy(new AllPermission());
-        Policy.setPolicy(p);
-        System.setSecurityManager(new SecurityManager());
+         Policy p = new SimplePolicy(new AllPermission());
+         Policy.setPolicy(p);
+         System.setSecurityManager(new SecurityManager());
 
         try {
             evaluate(false);
@@ -131,9 +141,10 @@ public class XPathExFuncTest extends TestBase {
      * Security is enabled, use new feature: enableExtensionFunctions
      */
     public void testEnableExtFunc() {
-        Policy p = new SimplePolicy(new AllPermission());
-        Policy.setPolicy(p);
-        System.setSecurityManager(new SecurityManager());
+        // Android-removed: Android doesn't use SecurityManager.
+        // Policy p = new SimplePolicy(new AllPermission());
+        // Policy.setPolicy(p);
+        // System.setSecurityManager(new SecurityManager());
 
 
         try {
@@ -156,7 +167,9 @@ public class XPathExFuncTest extends TestBase {
 
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            InputStream xmlStream = new FileInputStream(xmlFile);
+            // Android-changed: Load the xml file from java resources.
+            // InputStream xmlStream = new FileInputStream(xmlFile);
+            InputStream xmlStream = this.xmlStream; // new FileInputStream(xmlFile);
             document = documentBuilder.parse(xmlStream);
         } catch (Exception e) {
             fail(e.toString());
