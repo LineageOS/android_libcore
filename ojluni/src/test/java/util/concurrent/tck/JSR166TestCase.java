@@ -65,6 +65,7 @@
  *      JSR166TestCase
  */
 
+package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -73,9 +74,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
+//import java.lang.management.ManagementFactory;
+//import java.lang.management.ThreadInfo;
+//import java.lang.management.ThreadMXBean;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -1059,6 +1060,8 @@ public class JSR166TestCase extends TestCase {
             }
         }
 
+        // Android-removed: Android doesn't have ManagementFactory.
+        /*
         ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
         System.err.println("------ stacktrace dump start ------");
         for (ThreadInfo info : threadMXBean.dumpAllThreads(true, true)) {
@@ -1079,6 +1082,7 @@ public class JSR166TestCase extends TestCase {
             System.err.print(info);
         }
         System.err.println("------ stacktrace dump end ------");
+        */
 
         if (sm != null) System.setSecurityManager(sm);
     }

@@ -33,6 +33,7 @@
  * Pat Fisher, Mike Judd.
  */
 
+package test.java.util.concurrent.tck;
 import java.util.concurrent.atomic.AtomicReference;
 
 import junit.framework.Test;
