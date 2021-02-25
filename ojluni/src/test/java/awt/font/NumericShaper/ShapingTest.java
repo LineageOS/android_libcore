@@ -28,15 +28,21 @@
  * used where appropriate.
  */
 
+package test.java.awt.font.NumericShaper;
+
 import java.awt.font.NumericShaper;
 import java.util.EnumSet;
 import static java.awt.font.NumericShaper.*;
+
+import org.testng.annotations.Test;
 
 public class ShapingTest {
 
     private static boolean err = false;
 
-    public static void main(String[] args) {
+    // Android-changed: Removed args & added @Test
+    @Test
+    public static void main() {
         test6842557();
         test6943963();
         test6903266();

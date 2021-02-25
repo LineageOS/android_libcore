@@ -28,10 +28,14 @@
  * @run main/timeout=300/othervm MTTest
  */
 
+package test.java.awt.font.NumericShaper;
+
 import java.awt.font.NumericShaper;
 import java.util.Arrays;
 import java.util.EnumSet;
 import static java.awt.font.NumericShaper.*;
+
+import org.testng.annotations.Test;
 
 public class MTTest {
     static volatile boolean runrun = true;
@@ -43,7 +47,9 @@ public class MTTest {
 
     static NumericShaper ns1, ns2, ns3, ns4;
 
-    public static void main(String[] args) {
+    // Android-changed: Removed args & added @Test
+    @Test
+    public static void main() {
         System.out.println("original: " + text);
         ns1 = getContextualShaper(EnumSet.of(Range.EASTERN_ARABIC, Range.THAI),
                                   Range.EUROPEAN);

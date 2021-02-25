@@ -27,9 +27,13 @@
  * @summary Make sure that EASTERN_ARABIC works with the enum interface.
  */
 
+package test.java.awt.font.NumericShaper;
+
 import java.awt.font.NumericShaper;
 import java.util.EnumSet;
 import static java.awt.font.NumericShaper.*;
+
+import org.testng.annotations.Test;
 
 public class EasternArabicTest {
     static NumericShaper ns_old, ns_new;
@@ -52,7 +56,9 @@ public class EasternArabicTest {
         // Ethiopic zero doesn't exist even in Unicode 5.1.0.
     };
 
-    public static void main(String[] args) {
+    // Android-changed: Removed args & added @Test
+    @Test
+    public static void main() {
         ns_old = getContextualShaper(TAMIL|ETHIOPIC|EASTERN_ARABIC|ARABIC|THAI|LAO,
                                      EUROPEAN);
         ns_new = getContextualShaper(EnumSet.of(Range.THAI,
