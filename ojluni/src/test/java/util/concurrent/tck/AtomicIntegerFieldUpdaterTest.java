@@ -33,7 +33,6 @@
  * Pat Fisher, Mike Judd.
  */
 
-package test.java.util.concurrent.tck;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import junit.framework.Test;

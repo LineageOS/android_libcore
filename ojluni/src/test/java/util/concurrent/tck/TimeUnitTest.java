@@ -33,7 +33,6 @@
  * Pat Fisher, Mike Judd.
  */
 
-package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.DAYS;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MICROSECONDS;

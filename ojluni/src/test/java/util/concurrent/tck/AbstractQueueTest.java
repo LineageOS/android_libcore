@@ -33,7 +33,6 @@
  * Pat Fisher, Mike Judd.
  */
 
-package test.java.util.concurrent.tck;
 import java.util.AbstractQueue;
 import java.util.Arrays;
 import java.util.Iterator;

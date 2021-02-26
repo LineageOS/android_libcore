@@ -31,7 +31,6 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package test.java.util.concurrent.tck;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.LongAdder;

@@ -33,7 +33,6 @@
  * Pat Fisher, Mike Judd.
  */
 
-package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.util.concurrent.CountDownLatch;

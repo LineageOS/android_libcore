@@ -32,7 +32,6 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
-package test.java.util.concurrent.tck;
 import junit.framework.Test;
 
 /**

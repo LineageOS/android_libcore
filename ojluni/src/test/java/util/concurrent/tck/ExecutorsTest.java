@@ -33,7 +33,6 @@
  * Pat Fisher, Mike Judd.
  */
 
-package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.security.AccessControlContext;
@@ -382,8 +381,7 @@ public class ExecutorsTest extends JSR166TestCase {
                         String name = current.getName();
                         assertTrue(name.endsWith("thread-1"));
                         assertSame(thisccl, current.getContextClassLoader());
-                        // Android-removed: Android doesn't support real AccessControlContext.
-                        // assertEquals(thisacc, AccessController.getCossntext());
+                        assertEquals(thisacc, AccessController.getContext());
                         done.countDown();
                     }};
                 ExecutorService e = Executors.newSingleThreadExecutor(Executors.privilegedThreadFactory());
