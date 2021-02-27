@@ -673,10 +673,7 @@ java_test {
         "bouncycastle",
     ],
 
-    static_libs: [
-        "junit",
-        "testng",
-    ],
+    static_libs: ["testng"],
 
     // ojluni/src/test/java/util/stream/{bootlib,boottest}
     // contains tests that are in packages from java.base;
@@ -733,7 +730,6 @@ java_test {
     system_modules: "core-all-system-modules",
     libs: [
         "bouncycastle",
-        "junit",
         "okhttp",
         "testng",
     ],
