@@ -32,6 +32,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.Spliterator;
 
@@ -60,7 +61,7 @@ public class LinkedBlockingDeque8Test extends JSR166TestCase {
      */
     public void testSpliterator_characteristics() {
         LinkedBlockingDeque q = new LinkedBlockingDeque();
-        Spliterator s = q.spliterator();zz
+        Spliterator s = q.spliterator();
         int characteristics = s.characteristics();
         int required = Spliterator.CONCURRENT
             | Spliterator.NONNULL

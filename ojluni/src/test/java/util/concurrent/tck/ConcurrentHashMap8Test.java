@@ -31,6 +31,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
 import static java.util.Spliterator.CONCURRENT;
 import static java.util.Spliterator.DISTINCT;
 import static java.util.Spliterator.NONNULL;
@@ -323,7 +324,8 @@ public class ConcurrentHashMap8Test extends JSR166TestCase {
      */
     public void testGetMappedValue() {
         ConcurrentHashMap map = map5();
-        assertNull(map.keySet().getMappedValue());
+        // Android-changed: ConcurrentHashMap.keySet() has 2 return type variants on Android.
+        assertNull(((ConcurrentHashMap.KeySetView)map.keySet()).getMappedValue());
         try {
             map.keySet(null);
             shouldThrow();

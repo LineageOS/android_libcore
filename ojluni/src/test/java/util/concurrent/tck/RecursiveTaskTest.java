@@ -31,6 +31,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.util.HashSet;

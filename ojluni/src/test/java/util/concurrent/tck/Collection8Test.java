@@ -32,6 +32,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
 import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -69,7 +70,9 @@ import junit.framework.Test;
  * Contains tests applicable to all jdk8+ Collection implementations.
  * An extension of CollectionTest.
  */
-public class Collection8Test extends JSR166TestCase {
+// Android-changed: Mark this abstract to prevent scanned by the JUnit directly. http://b/181312360
+// public class Collection8Test extends JSR166TestCase {
+public abstract class Collection8Test extends JSR166TestCase {
     final CollectionImplementation impl;
 
     /** Tests are parameterized by a Collection implementation. */
@@ -78,8 +81,19 @@ public class Collection8Test extends JSR166TestCase {
         this.impl = impl;
     }
 
+    // BEGIN Android-added: Mark Collection8Test abstract. http://b/181312360
+    static class AndroidCollection8Test extends Collection8Test {
+
+        AndroidCollection8Test(CollectionImplementation impl, String methodName) {
+            super(impl, methodName);
+        }
+    }
+    // END Android-added: Mark Collection8Test abstract. http://b/181312360
+
     public static Test testSuite(CollectionImplementation impl) {
-        return parameterizedTestSuite(Collection8Test.class,
+        // Android-changed: Prevent scanned by the JUnit directly. http://b/181312360
+        // return parameterizedTestSuite(Collection8Test.class,
+        return parameterizedTestSuite(AndroidCollection8Test.class,
                                       CollectionImplementation.class,
                                       impl);
     }

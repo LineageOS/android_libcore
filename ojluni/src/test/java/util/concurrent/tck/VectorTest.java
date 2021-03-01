@@ -32,6 +32,7 @@
  * http://creativecommons.org/publicdomain/zero/1.0/
  */
 
+package test.java.util.concurrent.tck;
 import java.util.Vector;
 import java.util.Collection;
 import java.util.List;
