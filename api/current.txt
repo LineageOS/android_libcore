@@ -13066,6 +13066,7 @@ package java.util {
   public interface List<E> extends java.util.Collection<E> {
     method public void add(int, E);
     method public boolean addAll(int, @NonNull java.util.Collection<? extends E>);
+    method @NonNull public static <E> java.util.List<E> copyOf(@NonNull java.util.Collection<? extends E>);
     method public E get(int);
     method public int indexOf(@Nullable Object);
     method public int lastIndexOf(@Nullable Object);
