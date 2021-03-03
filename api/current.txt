@@ -4158,6 +4158,7 @@ package java.lang.annotation {
     enum_constant public static final java.lang.annotation.ElementType FIELD;
     enum_constant public static final java.lang.annotation.ElementType LOCAL_VARIABLE;
     enum_constant public static final java.lang.annotation.ElementType METHOD;
+    enum_constant public static final java.lang.annotation.ElementType MODULE;
     enum_constant public static final java.lang.annotation.ElementType PACKAGE;
     enum_constant public static final java.lang.annotation.ElementType PARAMETER;
     enum_constant public static final java.lang.annotation.ElementType TYPE;
