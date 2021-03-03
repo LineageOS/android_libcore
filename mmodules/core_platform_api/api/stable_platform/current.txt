@@ -119,6 +119,28 @@ package libcore.io {
 
 }
 
+package libcore.net {
+
+  public abstract class NetworkSecurityPolicy {
+    ctor public NetworkSecurityPolicy();
+    method public static libcore.net.NetworkSecurityPolicy getInstance();
+    method public abstract boolean isCertificateTransparencyVerificationRequired(String);
+    method public abstract boolean isCleartextTrafficPermitted();
+    method public abstract boolean isCleartextTrafficPermitted(String);
+    method public static void setInstance(libcore.net.NetworkSecurityPolicy);
+  }
+
+}
+
+package libcore.net.event {
+
+  public class NetworkEventDispatcher {
+    method public static libcore.net.event.NetworkEventDispatcher getInstance();
+    method public void onNetworkConfigurationChanged();
+  }
+
+}
+
 package libcore.util {
 
   public class FP16 {
