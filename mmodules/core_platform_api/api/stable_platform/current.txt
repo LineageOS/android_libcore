@@ -121,6 +121,11 @@ package libcore.io {
 
 package libcore.net {
 
+  public class InetAddressUtils {
+    method public static boolean isNumericAddress(String);
+    method public static java.net.InetAddress parseNumericAddress(String);
+  }
+
   public abstract class NetworkSecurityPolicy {
     ctor public NetworkSecurityPolicy();
     method public static libcore.net.NetworkSecurityPolicy getInstance();
