@@ -28,6 +28,18 @@ package android.compat {
 
 }
 
+package android.system {
+
+  public final class Os {
+    method public static int ioctlInt(java.io.FileDescriptor, int) throws android.system.ErrnoException;
+  }
+
+  public final class OsConstants {
+    field public static final int TIOCOUTQ;
+  }
+
+}
+
 package dalvik.system {
 
   public final class VMDebug {
