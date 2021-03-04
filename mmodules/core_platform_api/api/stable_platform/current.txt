@@ -108,6 +108,7 @@ package libcore.io {
     method public static void closeQuietly(AutoCloseable);
     method public static void closeQuietly(java.io.FileDescriptor);
     method public static void closeQuietly(java.net.Socket);
+    method public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
   }
 
   public final class Streams {
