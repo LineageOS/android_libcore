@@ -42,6 +42,18 @@ package android.system {
 
 package dalvik.system {
 
+  public abstract class SocketTagger {
+    ctor public SocketTagger();
+    method public static dalvik.system.SocketTagger get();
+    method public static void set(dalvik.system.SocketTagger);
+    method public abstract void tag(java.io.FileDescriptor) throws java.net.SocketException;
+    method public final void tag(java.net.Socket) throws java.net.SocketException;
+    method public final void tag(java.net.DatagramSocket) throws java.net.SocketException;
+    method public abstract void untag(java.io.FileDescriptor) throws java.net.SocketException;
+    method public final void untag(java.net.Socket) throws java.net.SocketException;
+    method public final void untag(java.net.DatagramSocket) throws java.net.SocketException;
+  }
+
   public final class VMDebug {
     method public static void attachAgent(String, ClassLoader) throws java.io.IOException;
     method public static long countInstancesOfClass(Class, boolean);
