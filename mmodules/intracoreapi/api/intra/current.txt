@@ -158,10 +158,10 @@ package sun.security.util {
 
 package sun.security.x509 {
 
-  @libcore.api.IntraCoreApi public class AlgorithmId implements sun.security.util.DerEncoder java.io.Serializable {
+  @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public class AlgorithmId implements sun.security.util.DerEncoder java.io.Serializable {
     method @libcore.api.IntraCoreApi public void derEncode(java.io.OutputStream) throws java.io.IOException;
     method @libcore.api.IntraCoreApi public static sun.security.x509.AlgorithmId get(String) throws java.security.NoSuchAlgorithmException;
-    method @libcore.api.IntraCoreApi public String getName();
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public String getName();
   }
 
 }

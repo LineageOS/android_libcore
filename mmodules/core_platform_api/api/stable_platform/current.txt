@@ -217,3 +217,19 @@ package libcore.util {
 
 }
 
+package sun.security.util {
+
+  public final class ObjectIdentifier implements java.io.Serializable {
+    ctor public ObjectIdentifier(String) throws java.io.IOException;
+  }
+
+}
+
+package sun.security.x509 {
+
+  public class AlgorithmId implements java.io.Serializable {
+    method public String getName();
+  }
+
+}
+
