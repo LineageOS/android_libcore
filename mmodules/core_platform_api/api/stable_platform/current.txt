@@ -42,6 +42,12 @@ package android.system {
 
 package dalvik.system {
 
+  public class AnnotatedStackTraceElement {
+    method public Object getBlockedOn();
+    method public Object[] getHeldLocks();
+    method public StackTraceElement getStackTraceElement();
+  }
+
   public abstract class SocketTagger {
     ctor public SocketTagger();
     method public static dalvik.system.SocketTagger get();
