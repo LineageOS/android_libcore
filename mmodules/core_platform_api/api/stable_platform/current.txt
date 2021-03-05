@@ -54,6 +54,18 @@ package dalvik.system {
     method public StackTraceElement getStackTraceElement();
   }
 
+  public class BaseDexClassLoader extends java.lang.ClassLoader {
+    method public void addDexPath(String);
+    method public void addNativePath(java.util.Collection<java.lang.String>);
+    method public String getLdLibraryPath();
+    method public void reportClassLoaderChain();
+    method public static void setReporter(dalvik.system.BaseDexClassLoader.Reporter);
+  }
+
+  public static interface BaseDexClassLoader.Reporter {
+    method public void report(java.util.Map<java.lang.String,java.lang.String>);
+  }
+
   public abstract class SocketTagger {
     ctor public SocketTagger();
     method public static dalvik.system.SocketTagger get();
