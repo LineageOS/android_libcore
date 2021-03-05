@@ -182,6 +182,27 @@ package java.net {
 
 }
 
+package java.nio {
+
+  public class DirectByteBuffer extends java.nio.MappedByteBuffer {
+    ctor public DirectByteBuffer(int, long, java.io.FileDescriptor, Runnable, boolean);
+    method public final long address();
+    method public final void setAccessible(boolean);
+  }
+
+  public final class NIOAccess {
+    method public static Object getBaseArray(java.nio.Buffer);
+    method public static int getBaseArrayOffset(java.nio.Buffer);
+  }
+
+  public final class NioUtils {
+    method public static void freeDirectBuffer(java.nio.ByteBuffer);
+    method public static byte[] unsafeArray(java.nio.ByteBuffer);
+    method public static int unsafeArrayOffset(java.nio.ByteBuffer);
+  }
+
+}
+
 package java.util.concurrent {
 
   public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
