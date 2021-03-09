@@ -91,6 +91,16 @@ package dalvik.system {
 
 }
 
+package java.net {
+
+  public class InetAddress implements java.io.Serializable {
+    method public static void clearDnsCache();
+    method public static java.net.InetAddress[] getAllByNameOnNet(String, int) throws java.net.UnknownHostException;
+    method public static java.net.InetAddress getByNameOnNet(String, int) throws java.net.UnknownHostException;
+  }
+
+}
+
 package libcore.content.type {
 
   public final class MimeMap {
