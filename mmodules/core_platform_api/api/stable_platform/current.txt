@@ -174,10 +174,22 @@ package dalvik.system {
 
 package java.net {
 
+  public class DatagramSocket implements java.io.Closeable {
+    method public java.io.FileDescriptor getFileDescriptor$();
+  }
+
   public class InetAddress implements java.io.Serializable {
     method public static void clearDnsCache();
     method public static java.net.InetAddress[] getAllByNameOnNet(String, int) throws java.net.UnknownHostException;
     method public static java.net.InetAddress getByNameOnNet(String, int) throws java.net.UnknownHostException;
+  }
+
+  public class Socket implements java.io.Closeable {
+    method public java.io.FileDescriptor getFileDescriptor$();
+  }
+
+  public abstract class SocketImpl implements java.net.SocketOptions {
+    method public java.io.FileDescriptor getFD$();
   }
 
 }
