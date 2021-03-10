@@ -178,6 +178,17 @@ package java.net {
     method public java.io.FileDescriptor getFileDescriptor$();
   }
 
+  public final class Inet4Address extends java.net.InetAddress {
+    field public static final java.net.InetAddress ALL;
+    field public static final java.net.InetAddress ANY;
+    field public static final java.net.InetAddress LOOPBACK;
+  }
+
+  public final class Inet6Address extends java.net.InetAddress {
+    field public static final java.net.InetAddress ANY;
+    field public static final java.net.InetAddress LOOPBACK;
+  }
+
   public class InetAddress implements java.io.Serializable {
     method public static void clearDnsCache();
     method public static java.net.InetAddress[] getAllByNameOnNet(String, int) throws java.net.UnknownHostException;
