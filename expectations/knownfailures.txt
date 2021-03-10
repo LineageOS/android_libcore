@@ -102,7 +102,7 @@
 {
   description: "Android doesn't allow null parent.",
   result: EXEC_FAILED,
-  name: "tests.java.security.SecureClassLoaderTest#testSecureClassLoaderClassLoader"
+  name: "tests.java.security.SecureClassLoaderTest#testNullParent"
 },
 {
   description: "not supported",
