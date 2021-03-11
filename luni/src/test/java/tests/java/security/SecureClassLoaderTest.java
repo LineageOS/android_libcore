@@ -165,12 +165,24 @@ public class SecureClassLoaderTest extends TestCase {
             (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x02, (byte) 0x00,
             (byte) 0x21, };
 
-    @KnownFailure("Android doesn't allow null parent.")
     public void testSecureClassLoaderClassLoader() throws Exception {
         URL[] urls = new URL[] { new URL("http://localhost") };
         URLClassLoader ucl = URLClassLoader.newInstance(urls);
-        new MyClassLoader(ucl);
+        MyClassLoader classLoader = new MyClassLoader(ucl);
 
+        try {
+            classLoader.tryDefineClass("ClassA", new byte[0], 0, 0, null);
+            fail("SecureClassloader.defineClass doesn't throw");
+        } catch (UnsupportedOperationException e) {}
+
+        try {
+            classLoader.tryDefineClass("ClassB", ByteBuffer.wrap(new byte[0]), null);
+            fail("SecureClassloader.defineClass doesn't throw");
+        } catch (UnsupportedOperationException e) {}
+    }
+
+    @KnownFailure("Android doesn't allow null parent.")
+    public void testNullParent() {
         try {
             new MyClassLoader(null);
         } catch (Exception e) {
@@ -231,6 +243,15 @@ public class SecureClassLoaderTest extends TestCase {
         public Class define(String name, byte[] b, int off, int len,
                 CodeSource cs) {
             return defineClass(name, b, off, len, cs);
+        }
+
+        public Class<?> tryDefineClass(String name, byte[] bytes, int off, int len,
+                CodeSource codeSource) {
+            return this.defineClass(name, bytes, off, len, codeSource);
+        }
+
+        public Class<?> tryDefineClass(String name, ByteBuffer byteBuffer, CodeSource codeSource) {
+            return this.defineClass(name, byteBuffer, codeSource);
         }
 
     }
