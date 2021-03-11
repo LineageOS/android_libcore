@@ -22,15 +22,12 @@
 
 package tests.java.security;
 
-import dalvik.annotation.KnownFailure;
-
 import junit.framework.TestCase;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.ByteBuffer;
 import java.security.CodeSource;
-import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.ProtectionDomain;
 import java.security.SecureClassLoader;
@@ -181,7 +178,6 @@ public class SecureClassLoaderTest extends TestCase {
         } catch (UnsupportedOperationException e) {}
     }
 
-    @KnownFailure("Android doesn't allow null parent.")
     public void testNullParent() {
         try {
             new MyClassLoader(null);
