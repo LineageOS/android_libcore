@@ -153,6 +153,23 @@ package dalvik.system {
 
 }
 
+package java.util.concurrent {
+
+  public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
+    method public java.util.concurrent.CompletableFuture<T> completeOnTimeout(T, long, java.util.concurrent.TimeUnit);
+    method public static <U> java.util.concurrent.CompletableFuture<U> failedFuture(Throwable);
+  }
+
+}
+
+package java.util.zip {
+
+  public class ZipEntry implements java.lang.Cloneable {
+    method public long getDataOffset();
+  }
+
+}
+
 package libcore.content.type {
 
   public final class MimeMap {
