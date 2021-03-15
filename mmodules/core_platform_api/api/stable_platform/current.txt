@@ -393,7 +393,9 @@ package sun.misc {
     method public boolean getBoolean(Object, long);
     method public byte getByte(Object, long);
     method public byte getByte(long);
+    method public double getDouble(Object, long);
     method public double getDouble(long);
+    method public float getFloat(Object, long);
     method public float getFloat(long);
     method public int getInt(Object, long);
     method public int getInt(long);
@@ -405,7 +407,9 @@ package sun.misc {
     method public void putBoolean(Object, long, boolean);
     method public void putByte(Object, long, byte);
     method public void putByte(long, byte);
+    method public void putDouble(Object, long, double);
     method public void putDouble(long, double);
+    method public void putFloat(Object, long, float);
     method public void putFloat(long, float);
     method public void putInt(Object, long, int);
     method public void putInt(long, int);
