@@ -85,6 +85,10 @@ package android.system {
     field public final long rlim_cur;
   }
 
+  public final class UnixSocketAddress extends java.net.SocketAddress {
+    method public static android.system.UnixSocketAddress createFileSystem(String);
+  }
+
   public final class VmSocketAddress extends java.net.SocketAddress {
     ctor public VmSocketAddress(int, int);
     method public int getSvmCid();
