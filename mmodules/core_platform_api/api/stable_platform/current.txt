@@ -60,6 +60,10 @@ package android.system {
     field public static final int _LINUX_CAPABILITY_VERSION_3;
   }
 
+  public final class PacketSocketAddress extends java.net.SocketAddress {
+    ctor public PacketSocketAddress(int, int, byte[]);
+  }
+
   public final class StructCapUserData {
     ctor public StructCapUserData(int, int, int);
     field public final int effective;
