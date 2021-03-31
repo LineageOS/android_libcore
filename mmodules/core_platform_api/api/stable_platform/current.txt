@@ -193,6 +193,11 @@ package dalvik.system {
     ctor public PathClassLoader(@NonNull String, @Nullable String, @Nullable ClassLoader, @Nullable ClassLoader[]);
   }
 
+  public final class RuntimeHooks {
+    method public static void setTimeZoneIdSupplier(@NonNull java.util.function.Supplier<java.lang.String>);
+    method public static void setUncaughtExceptionPreHandler(@Nullable java.lang.Thread.UncaughtExceptionHandler);
+  }
+
   public abstract class SocketTagger {
     ctor public SocketTagger();
     method public static dalvik.system.SocketTagger get();

@@ -260,8 +260,8 @@ package dalvik.system {
   }
 
   public final class RuntimeHooks {
-    method public static void setTimeZoneIdSupplier(java.util.function.Supplier<java.lang.String>);
-    method public static void setUncaughtExceptionPreHandler(java.lang.Thread.UncaughtExceptionHandler);
+    method public static void setTimeZoneIdSupplier(@NonNull java.util.function.Supplier<java.lang.String>);
+    method public static void setUncaughtExceptionPreHandler(@Nullable java.lang.Thread.UncaughtExceptionHandler);
   }
 
   public abstract class SocketTagger {
