@@ -189,6 +189,10 @@ package dalvik.system {
     method @Deprecated @NonNull public String getStatus();
   }
 
+  public class PathClassLoader extends dalvik.system.BaseDexClassLoader {
+    ctor public PathClassLoader(@NonNull String, @Nullable String, @Nullable ClassLoader, @Nullable ClassLoader[]);
+  }
+
   public abstract class SocketTagger {
     ctor public SocketTagger();
     method public static dalvik.system.SocketTagger get();

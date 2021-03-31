@@ -256,7 +256,7 @@ package dalvik.system {
   }
 
   public class PathClassLoader extends dalvik.system.BaseDexClassLoader {
-    ctor public PathClassLoader(String, String, ClassLoader, ClassLoader[]);
+    ctor public PathClassLoader(@NonNull String, @Nullable String, @Nullable ClassLoader, @Nullable ClassLoader[]);
   }
 
   public final class RuntimeHooks {
