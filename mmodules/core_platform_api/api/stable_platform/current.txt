@@ -323,6 +323,10 @@ package java.io {
     method public void setInt$(int);
   }
 
+  public class FileInputStream extends java.io.InputStream {
+    ctor public FileInputStream(java.io.FileDescriptor, boolean);
+  }
+
 }
 
 package java.net {
