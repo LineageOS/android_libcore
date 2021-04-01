@@ -375,6 +375,10 @@ package java.net {
 
 package java.nio {
 
+  public abstract class ByteBuffer extends java.nio.Buffer implements java.lang.Comparable<java.nio.ByteBuffer> {
+    method public void setAccessible(boolean);
+  }
+
   public class DirectByteBuffer extends java.nio.MappedByteBuffer {
     ctor public DirectByteBuffer(int, long, java.io.FileDescriptor, Runnable, boolean);
     method public final long address();
