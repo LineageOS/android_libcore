@@ -359,6 +359,8 @@ package java.net {
     method public static void clearDnsCache();
     method public static java.net.InetAddress[] getAllByNameOnNet(String, int) throws java.net.UnknownHostException;
     method public static java.net.InetAddress getByNameOnNet(String, int) throws java.net.UnknownHostException;
+    method @Deprecated public static boolean isNumeric(String);
+    method @Deprecated public static java.net.InetAddress parseNumericAddress(String);
   }
 
   public class Socket implements java.io.Closeable {
