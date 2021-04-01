@@ -316,6 +316,15 @@ package dalvik.system {
 
 }
 
+package java.io {
+
+  public final class FileDescriptor {
+    method public int getInt$();
+    method public void setInt$(int);
+  }
+
+}
+
 package java.net {
 
   public class DatagramSocket implements java.io.Closeable {
