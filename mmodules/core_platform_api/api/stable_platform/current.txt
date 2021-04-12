@@ -398,6 +398,18 @@ package java.nio {
 
 }
 
+package java.security {
+
+  public abstract class Provider extends java.util.Properties {
+    method public void warmUpServiceProvision();
+  }
+
+  public abstract class Signature extends java.security.SignatureSpi {
+    method public java.security.SignatureSpi getCurrentSpi();
+  }
+
+}
+
 package java.util.concurrent {
 
   public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
