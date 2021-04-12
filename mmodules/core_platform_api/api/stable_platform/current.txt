@@ -418,6 +418,14 @@ package java.text {
 
 }
 
+package java.util {
+
+  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> {
+    method public java.util.Map.Entry<K,V> eldest();
+  }
+
+}
+
 package java.util.concurrent {
 
   public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
