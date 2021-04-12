@@ -136,7 +136,7 @@ public class BaseDexClassLoader extends ClassLoader {
      *
      * @hide
      */
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void reportClassLoaderChain() {
         if (reporter == null) {
             return;
@@ -215,10 +215,14 @@ public class BaseDexClassLoader extends ClassLoader {
     }
 
     /**
+     * Adds a new dex path to path list.
+     *
+     * @param dexPath dex path to add to path list
+     *
      * @hide
      */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addDexPath(String dexPath) {
         addDexPath(dexPath, false /*isTrusted*/);
     }
@@ -233,10 +237,13 @@ public class BaseDexClassLoader extends ClassLoader {
 
     /**
      * Adds additional native paths for consideration in subsequent calls to
-     * {@link #findLibrary(String)}
+     * {@link #findLibrary(String)}.
+     *
+     * @param libPaths collection of paths to be added to path list
+     *
      * @hide
      */
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addNativePath(Collection<String> libPaths) {
         pathList.addNativePath(libPaths);
     }
@@ -324,10 +331,15 @@ public class BaseDexClassLoader extends ClassLoader {
     }
 
     /**
+     * Returns colon-separated set of directories where libraries should be
+     * searched for first, before the standard set of directories.
+     *
+     * @return colon-separated set of search directories
+     *
      * @hide
      */
     @UnsupportedAppUsage
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public String getLdLibraryPath() {
         StringBuilder result = new StringBuilder();
         for (File directory : pathList.getNativeLibraryDirectories()) {
@@ -352,7 +364,7 @@ public class BaseDexClassLoader extends ClassLoader {
      * @param newReporter the new Reporter. Setting null will cancel reporting.
      * @hide
      */
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setReporter(Reporter newReporter) {
         reporter = newReporter;
     }
@@ -365,9 +377,12 @@ public class BaseDexClassLoader extends ClassLoader {
     }
 
     /**
+     * Reports the construction of a {@link BaseDexClassLoader} and provides opaque
+     * information about the class loader chain.
+     *
      * @hide
      */
-    @libcore.api.CorePlatformApi
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public interface Reporter {
         /**
          * Reports the construction of a BaseDexClassLoader and provides opaque information about
@@ -379,7 +394,7 @@ public class BaseDexClassLoader extends ClassLoader {
          * @param contextsMap A map from dex file paths to the class loader context used to load
          *     each dex file.
          */
-        @libcore.api.CorePlatformApi
+        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         void report(Map<String, String> contextsMap);
     }
 }
