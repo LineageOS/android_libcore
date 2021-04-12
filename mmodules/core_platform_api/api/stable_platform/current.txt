@@ -410,6 +410,14 @@ package java.security {
 
 }
 
+package java.text {
+
+  public abstract class DateFormat extends java.text.Format {
+    method public static final void set24HourTimePref(Boolean);
+  }
+
+}
+
 package java.util.concurrent {
 
   public class CompletableFuture<T> implements java.util.concurrent.CompletionStage<T> java.util.concurrent.Future<T> {
