@@ -128,6 +128,9 @@ public class BaseDexClassLoader extends ClassLoader {
                 : Arrays.copyOf(sharedLibraryLoaders, sharedLibraryLoaders.length);
         this.pathList = new DexPathList(this, dexPath, librarySearchPath, null, isTrusted);
 
+        // Run background verification after having set 'pathList'.
+        this.pathList.maybeRunBackgroundVerification(this);
+
         reportClassLoaderChain();
     }
 
@@ -186,6 +189,8 @@ public class BaseDexClassLoader extends ClassLoader {
         this.sharedLibraryLoaders = null;
         this.pathList = new DexPathList(this, librarySearchPath);
         this.pathList.initByteBufferDexPath(dexFiles);
+        // Run background verification after having set 'pathList'.
+        this.pathList.maybeRunBackgroundVerification(this);
     }
 
     @Override
