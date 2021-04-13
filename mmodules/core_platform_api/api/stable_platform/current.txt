@@ -443,6 +443,14 @@ package java.util.zip {
 
 }
 
+package javax.net.ssl {
+
+  public abstract class HttpsURLConnection extends java.net.HttpURLConnection {
+    method public static javax.net.ssl.HostnameVerifier getStrictHostnameVerifier();
+  }
+
+}
+
 package libcore.content.type {
 
   public final class MimeMap {
