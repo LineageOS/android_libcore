@@ -486,11 +486,15 @@ package libcore.io {
   }
 
   public final class IoUtils {
-    method public static void close(java.io.FileDescriptor) throws java.io.IOException;
-    method public static void closeQuietly(AutoCloseable);
-    method public static void closeQuietly(java.io.FileDescriptor);
-    method public static void closeQuietly(java.net.Socket);
-    method public static void setBlocking(java.io.FileDescriptor, boolean) throws java.io.IOException;
+    method public static int acquireRawFd(@NonNull java.io.FileDescriptor);
+    method public static void close(@Nullable java.io.FileDescriptor) throws java.io.IOException;
+    method public static void closeQuietly(@Nullable AutoCloseable);
+    method public static void closeQuietly(@Nullable java.io.FileDescriptor);
+    method public static void closeQuietly(@Nullable java.net.Socket);
+    method @NonNull public static byte[] readFileAsByteArray(@NonNull String) throws java.io.IOException;
+    method @NonNull public static String readFileAsString(@NonNull String) throws java.io.IOException;
+    method public static void setBlocking(@NonNull java.io.FileDescriptor, boolean) throws java.io.IOException;
+    method public static void setFdOwner(@NonNull java.io.FileDescriptor, @NonNull Object);
   }
 
   public interface Os {
