@@ -584,13 +584,13 @@ package libcore.internal {
 package libcore.io {
 
   public class ForwardingOs implements libcore.io.Os {
-    ctor protected ForwardingOs(libcore.io.Os);
-    method public boolean access(String, int) throws android.system.ErrnoException;
-    method public java.io.FileDescriptor open(String, int, int) throws android.system.ErrnoException;
-    method public void remove(String) throws android.system.ErrnoException;
-    method public void rename(String, String) throws android.system.ErrnoException;
-    method public android.system.StructStat stat(String) throws android.system.ErrnoException;
-    method public void unlink(String) throws android.system.ErrnoException;
+    ctor protected ForwardingOs(@NonNull libcore.io.Os);
+    method public boolean access(@Nullable String, int) throws android.system.ErrnoException;
+    method public java.io.FileDescriptor open(@Nullable String, int, int) throws android.system.ErrnoException;
+    method public void remove(@Nullable String) throws android.system.ErrnoException;
+    method public void rename(@Nullable String, @Nullable String) throws android.system.ErrnoException;
+    method @Nullable public android.system.StructStat stat(@Nullable String) throws android.system.ErrnoException;
+    method public void unlink(@Nullable String) throws android.system.ErrnoException;
   }
 
   public final class IoBridge {
