@@ -512,10 +512,14 @@ package libcore.io {
   }
 
   public final class Streams {
-    method public static int copy(java.io.InputStream, java.io.OutputStream) throws java.io.IOException;
-    method public static byte[] readFully(java.io.InputStream) throws java.io.IOException;
-    method public static String readFully(java.io.Reader) throws java.io.IOException;
-    method public static byte[] readFullyNoClose(java.io.InputStream) throws java.io.IOException;
+    method public static int copy(@NonNull java.io.InputStream, @NonNull java.io.OutputStream) throws java.io.IOException;
+    method public static void readFully(@NonNull java.io.InputStream, @NonNull byte[]) throws java.io.IOException;
+    method @NonNull public static byte[] readFully(@NonNull java.io.InputStream) throws java.io.IOException;
+    method @NonNull public static String readFully(@NonNull java.io.Reader) throws java.io.IOException;
+    method @NonNull public static byte[] readFullyNoClose(@NonNull java.io.InputStream) throws java.io.IOException;
+    method public static int readSingleByte(@NonNull java.io.InputStream) throws java.io.IOException;
+    method public static long skipByReading(@NonNull java.io.InputStream, long) throws java.io.IOException;
+    method public static void writeSingleByte(@NonNull java.io.OutputStream, int) throws java.io.IOException;
   }
 
 }
