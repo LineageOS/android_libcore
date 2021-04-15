@@ -135,9 +135,9 @@ package libcore.net {
 
 package libcore.util {
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public class NativeAllocationRegistry {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long);
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public Runnable registerNativeAllocation(Object, long);
+  @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public class NativeAllocationRegistry {
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static libcore.util.NativeAllocationRegistry createMalloced(@NonNull ClassLoader, long);
+    method @NonNull @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public Runnable registerNativeAllocation(@NonNull Object, long);
   }
 
   @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE) @java.lang.annotation.Target({java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.PARAMETER, java.lang.annotation.ElementType.TYPE_USE}) @libcore.api.IntraCoreApi public @interface NonNull {

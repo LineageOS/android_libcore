@@ -752,12 +752,12 @@ package libcore.util {
   }
 
   public class NativeAllocationRegistry {
-    ctor public NativeAllocationRegistry(ClassLoader, long, long);
+    ctor public NativeAllocationRegistry(@NonNull ClassLoader, long, long);
     method public static void applyFreeFunction(long, long);
-    method public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long, long);
-    method public static libcore.util.NativeAllocationRegistry createMalloced(ClassLoader, long);
-    method public static libcore.util.NativeAllocationRegistry createNonmalloced(ClassLoader, long, long);
-    method public Runnable registerNativeAllocation(Object, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(@NonNull ClassLoader, long, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(@NonNull ClassLoader, long);
+    method public static libcore.util.NativeAllocationRegistry createNonmalloced(@NonNull ClassLoader, long, long);
+    method @NonNull public Runnable registerNativeAllocation(@NonNull Object, long);
   }
 
   public class SneakyThrow {

@@ -622,6 +622,15 @@ package libcore.util {
     method public static String encodeToString(byte[], boolean);
   }
 
+  public class NativeAllocationRegistry {
+    ctor public NativeAllocationRegistry(@NonNull ClassLoader, long, long);
+    method public static void applyFreeFunction(long, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(@NonNull ClassLoader, long, long);
+    method public static libcore.util.NativeAllocationRegistry createMalloced(@NonNull ClassLoader, long);
+    method public static libcore.util.NativeAllocationRegistry createNonmalloced(@NonNull ClassLoader, long, long);
+    method @NonNull public Runnable registerNativeAllocation(@NonNull Object, long);
+  }
+
 }
 
 package sun.misc {
