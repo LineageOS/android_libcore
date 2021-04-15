@@ -631,6 +631,10 @@ package libcore.util {
     method @NonNull public Runnable registerNativeAllocation(@NonNull Object, long);
   }
 
+  public class SneakyThrow {
+    method public static void sneakyThrow(@NonNull Throwable);
+  }
+
 }
 
 package sun.misc {

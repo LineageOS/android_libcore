@@ -761,7 +761,7 @@ package libcore.util {
   }
 
   public class SneakyThrow {
-    method public static void sneakyThrow(Throwable);
+    method public static void sneakyThrow(@NonNull Throwable);
   }
 
   public class XmlObjectFactory {
