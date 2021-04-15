@@ -765,9 +765,9 @@ package libcore.util {
   }
 
   public class XmlObjectFactory {
-    method public static org.xml.sax.XMLReader newXMLReader();
-    method public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
-    method public static org.xmlpull.v1.XmlSerializer newXmlSerializer();
+    method @NonNull public static org.xml.sax.XMLReader newXMLReader();
+    method @NonNull public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
+    method @NonNull public static org.xmlpull.v1.XmlSerializer newXmlSerializer();
   }
 
 }

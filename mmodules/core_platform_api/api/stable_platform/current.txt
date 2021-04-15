@@ -635,6 +635,12 @@ package libcore.util {
     method public static void sneakyThrow(@NonNull Throwable);
   }
 
+  public class XmlObjectFactory {
+    method @NonNull public static org.xml.sax.XMLReader newXMLReader();
+    method @NonNull public static org.xmlpull.v1.XmlPullParser newXmlPullParser();
+    method @NonNull public static org.xmlpull.v1.XmlSerializer newXmlSerializer();
+  }
+
 }
 
 package sun.misc {
