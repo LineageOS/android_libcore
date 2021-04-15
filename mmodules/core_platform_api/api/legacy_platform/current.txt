@@ -618,12 +618,12 @@ package libcore.io {
   }
 
   public final class Memory {
-    method public static void memmove(Object, int, Object, int, long);
-    method public static int peekInt(byte[], int, java.nio.ByteOrder);
-    method public static short peekShort(byte[], int, java.nio.ByteOrder);
-    method public static void pokeInt(byte[], int, int, java.nio.ByteOrder);
-    method public static void pokeLong(byte[], int, long, java.nio.ByteOrder);
-    method public static void pokeShort(byte[], int, short, java.nio.ByteOrder);
+    method public static void memmove(@NonNull Object, int, @NonNull Object, int, long);
+    method public static int peekInt(@NonNull byte[], int, @NonNull java.nio.ByteOrder);
+    method public static short peekShort(@NonNull byte[], int, @NonNull java.nio.ByteOrder);
+    method public static void pokeInt(@NonNull byte[], int, int, @NonNull java.nio.ByteOrder);
+    method public static void pokeLong(@NonNull byte[], int, long, @NonNull java.nio.ByteOrder);
+    method public static void pokeShort(@NonNull byte[], int, short, @NonNull java.nio.ByteOrder);
   }
 
   public interface Os {

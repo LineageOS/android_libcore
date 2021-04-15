@@ -497,6 +497,15 @@ package libcore.io {
     method public static void setFdOwner(@NonNull java.io.FileDescriptor, @NonNull Object);
   }
 
+  public final class Memory {
+    method public static void memmove(@NonNull Object, int, @NonNull Object, int, long);
+    method public static int peekInt(@NonNull byte[], int, @NonNull java.nio.ByteOrder);
+    method public static short peekShort(@NonNull byte[], int, @NonNull java.nio.ByteOrder);
+    method public static void pokeInt(@NonNull byte[], int, int, @NonNull java.nio.ByteOrder);
+    method public static void pokeLong(@NonNull byte[], int, long, @NonNull java.nio.ByteOrder);
+    method public static void pokeShort(@NonNull byte[], int, short, @NonNull java.nio.ByteOrder);
+  }
+
   public interface Os {
     method public static boolean compareAndSetDefault(libcore.io.Os, libcore.io.Os);
     method public static libcore.io.Os getDefault();
