@@ -872,6 +872,9 @@ java_sdk_library {
     ],
     java_version: "1.9",
 
+    // Make dex jars for the stubs available for use by hiddenapi processing.
+    compile_dex: true,
+
     public: {
         enabled: true,
     },
