@@ -157,6 +157,22 @@ package dalvik.system {
     method public void onPathAccess(String);
   }
 
+  public final class CloseGuard {
+    method public void close();
+    method public static dalvik.system.CloseGuard get();
+    method public static dalvik.system.CloseGuard.Reporter getReporter();
+    method public void open(String);
+    method public void openWithCallSite(String, String);
+    method public static void setEnabled(boolean);
+    method public static void setReporter(dalvik.system.CloseGuard.Reporter);
+    method public void warnIfOpen();
+  }
+
+  public static interface CloseGuard.Reporter {
+    method public void report(String, Throwable);
+    method public default void report(String);
+  }
+
   public abstract class SocketTagger {
     ctor public SocketTagger();
     method public static dalvik.system.SocketTagger get();
