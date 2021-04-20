@@ -60,11 +60,11 @@ package dalvik.system {
     method @libcore.api.IntraCoreApi public void onNetwork();
   }
 
-  @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public final class CloseGuard {
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void close();
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void open(String);
-    method @libcore.api.CorePlatformApi @libcore.api.IntraCoreApi public void warnIfOpen();
+  @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public final class CloseGuard {
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public void close();
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static dalvik.system.CloseGuard get();
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public void open(String);
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public void warnIfOpen();
   }
 
   @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public final class VMRuntime {
