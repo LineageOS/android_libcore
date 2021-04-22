@@ -2,17 +2,17 @@
 package android.compat {
 
   public final class Compatibility {
+    method public static void clearBehaviorChangeDelegate();
     method public static void clearOverrides();
     method public static boolean isChangeEnabled(long);
-    method public static void reportChange(long);
-    method public static void setCallbacks(android.compat.Compatibility.Callbacks);
+    method public static void reportUnconditionalChange(long);
+    method public static void setBehaviorChangeDelegate(android.compat.Compatibility.BehaviorChangeDelegate);
     method public static void setOverrides(android.compat.Compatibility.ChangeConfig);
   }
 
-  public static class Compatibility.Callbacks {
-    ctor protected Compatibility.Callbacks();
-    method protected boolean isChangeEnabled(long);
-    method protected void reportChange(long);
+  public static interface Compatibility.BehaviorChangeDelegate {
+    method public default boolean isChangeEnabled(long);
+    method public default void onChangeReported(long);
   }
 
   public static final class Compatibility.ChangeConfig {
