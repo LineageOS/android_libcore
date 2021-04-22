@@ -55,8 +55,8 @@ public final class Compatibility {
      */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @IntraCoreApi
-    public static void reportUnconditionalChange(@ChangeId long changeId) {
-        sCallbacks.onChangeReported(changeId);
+    public static void reportChange(@ChangeId long changeId) {
+        sCallbacks.reportChange(changeId);
     }
 
     /**
@@ -68,7 +68,7 @@ public final class Compatibility {
      * {@code false}, the calling code should behave as it did in earlier releases.
      *
      * <p>When this method returns {@code true}, it will also report the change as
-     * {@link #reportUnconditionalChange(long)} would, so there is no need to call that method directly.
+     * {@link #reportChange(long)} would, so there is no need to call that method directly.
      *
      * @param changeId The ID of the compatibility change in question.
      * @return {@code true} if the change is enabled for the current app.
@@ -79,32 +79,13 @@ public final class Compatibility {
         return sCallbacks.isChangeEnabled(changeId);
     }
 
-    private static final BehaviorChangeDelegate DEFAULT_CALLBACKS = new BehaviorChangeDelegate(){};
+    private volatile static Callbacks sCallbacks = new Callbacks();
 
-    private volatile static BehaviorChangeDelegate sCallbacks = DEFAULT_CALLBACKS;
-
-    /**
-     * Sets the behavior change delegate.
-     *
-     * All changes reported via the {@link Compatibility} class will be forwarded to this class.
-     */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-    public static void setBehaviorChangeDelegate(BehaviorChangeDelegate callbacks) {
+    public static void setCallbacks(Callbacks callbacks) {
         sCallbacks = Objects.requireNonNull(callbacks);
     }
 
-    /**
-     * Removes a behavior change delegate previously set via {@link #setBehaviorChangeDelegate}.
-     */
-    @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-    public static void clearBehaviorChangeDelegate() {
-        sCallbacks = DEFAULT_CALLBACKS;
-    }
-
-    /**
-     * For use by tests only. Causes values from {@code overrides} to be returned instead of the
-     * real value.
-     */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void setOverrides(ChangeConfig overrides) {
         // Setting overrides twice in a row does not need to be supported because
@@ -118,9 +99,6 @@ public final class Compatibility {
         sCallbacks = new OverrideCallbacks(sCallbacks, overrides);
     }
 
-    /**
-     * For use by tests only. Removes overrides set by {@link #setOverrides}.
-     */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void clearOverrides() {
         if (!(sCallbacks instanceof OverrideCallbacks)) {
@@ -137,21 +115,17 @@ public final class Compatibility {
      * breaking @CorePlatformApi binary compatibility.
      */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-    public interface BehaviorChangeDelegate {
-        /**
-         * Called when a change is reported via {@link Compatibility#reportUnconditionalChange}
-         */
+    public static class Callbacks {
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-        default void onChangeReported(long changeId) {
+        protected Callbacks() {
+        }
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        protected void reportChange(long changeId) {
             // Do not use String.format here (b/160912695)
             System.logW("No Compatibility callbacks set! Reporting change " + changeId);
         }
-
-        /**
-         * Called when a change is queried via {@link Compatibility#isChangeEnabled}
-         */
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
-        default boolean isChangeEnabled(long changeId) {
+        protected boolean isChangeEnabled(long changeId) {
             // Do not use String.format here (b/160912695)
             System.logW("No Compatibility callbacks set! Querying change " + changeId);
             return true;
@@ -240,16 +214,16 @@ public final class Compatibility {
         }
     }
 
-    private static class OverrideCallbacks implements BehaviorChangeDelegate {
-        private final BehaviorChangeDelegate delegate;
+    private static class OverrideCallbacks extends Callbacks {
+        private final Callbacks delegate;
         private final ChangeConfig changeConfig;
 
-        private OverrideCallbacks(BehaviorChangeDelegate delegate, ChangeConfig changeConfig) {
+        private OverrideCallbacks(Callbacks delegate, ChangeConfig changeConfig) {
             this.delegate = Objects.requireNonNull(delegate);
             this.changeConfig = Objects.requireNonNull(changeConfig);
         }
         @Override
-        public boolean isChangeEnabled(long changeId) {
+        protected boolean isChangeEnabled(long changeId) {
            if (changeConfig.isForceEnabled(changeId)) {
                return true;
            }
