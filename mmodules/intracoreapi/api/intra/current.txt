@@ -3,7 +3,7 @@ package android.compat {
 
   @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public final class Compatibility {
     method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static boolean isChangeEnabled(long);
-    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static void reportChange(long);
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static void reportUnconditionalChange(long);
   }
 
   @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static final class Compatibility.ChangeConfig {
