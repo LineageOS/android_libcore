@@ -82,7 +82,7 @@ public final class Os {
      * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static @Nullable StructCapUserData[] capget(@NonNull StructCapUserHeader hdr) throws ErrnoException {
+    public static @Nullable StructUserCapData[] capget(@NonNull StructUserCapHeader hdr) throws ErrnoException {
         return Libcore.os.capget(hdr);
     }
 
@@ -97,7 +97,7 @@ public final class Os {
      *                        set, or to set a capability in the effective set that is
      *                        not in the permitted set; or
      *                        the caller attempted to use
-     *                        {@link capset(StructCapUserHeader, StructCapUserData[])}
+     *                        {@link capset( StructUserCapHeader , StructUserCapData[])}
      *                        to modify the capabilities of a thread other than itself,
      *                        but lacked sufficient privilege;
      *                        or there is no such thread.
@@ -105,7 +105,7 @@ public final class Os {
      * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void capset(@NonNull StructCapUserHeader hdr, @NonNull StructCapUserData[] data)
+    public static void capset(@NonNull StructUserCapHeader hdr, @NonNull StructUserCapData[] data)
             throws ErrnoException {
         Libcore.os.capset(hdr, data);
     }
@@ -331,8 +331,6 @@ public final class Os {
      * @param option name of the option to get
      * @return       {@link StructLinger} associated with given {@code fd}
      * @throws ErrnoException
-     *
-     * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @Nullable StructLinger getsockoptLinger(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
@@ -793,8 +791,6 @@ public final class Os {
      * @param value  {@link StructLinger} to set for {@code fd}
      * @throws ErrnoException if {@code fd} is invalid; or
      *                        {@code option} is unknown at given {@code level}
-     *
-     * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setsockoptLinger(@NonNull FileDescriptor fd, int level, int option, @NonNull StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }

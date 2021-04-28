@@ -20,14 +20,14 @@ import libcore.util.Objects;
 
 /**
  * Corresponds to Linux' __user_cap_header_struct for capget and capset.
- * Used in {@link Os.capget(StructCapUserHeader)} and
- * {@link Os.capset(StructCapUserHeader, StructCapUserData[])}.
+ * Used in {@link Os.capget( StructUserCapHeader )} and
+ * {@link Os.capset( StructUserCapHeader , StructUserCapData[])}.
  *
  * Capabilities defined in <a href="https://man7.org/linux/man-pages/man7/capabilities.7.html">capabilities(7)</a>
  * @hide
  */
 @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-public final class StructCapUserHeader {
+public final class StructUserCapHeader {
     /**
      * Version of the header. Note this is not final as capget() may mutate the field when an
      * invalid version is provided.
@@ -48,7 +48,7 @@ public final class StructCapUserHeader {
      * @param pid     process id
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public StructCapUserHeader(int version, int pid) {
+    public StructUserCapHeader(int version, int pid) {
         this.version = version;
         this.pid = pid;
     }
