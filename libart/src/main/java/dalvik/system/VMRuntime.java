@@ -631,6 +631,7 @@ public final class VMRuntime {
     @libcore.api.CorePlatformApi
     public native void requestConcurrentGC();
 
+    public native void concurrentGC();
     public native void requestHeapTrim();
     public native void trimHeap();
     public native void startHeapTaskProcessor();
