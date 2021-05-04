@@ -692,7 +692,7 @@ package libcore.util {
     field public static final String[] STRING;
   }
 
-  public class FP16 {
+  public final class FP16 {
     method public static short ceil(short);
     method public static int compare(short, short);
     method public static boolean equals(short, short);
