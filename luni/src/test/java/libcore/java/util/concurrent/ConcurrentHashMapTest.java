@@ -38,6 +38,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import libcore.java.util.MapDefaultMethodTester;
+
 @RunWith(JUnit4.class)
 public class ConcurrentHashMapTest {
 
@@ -248,6 +250,69 @@ public class ConcurrentHashMapTest {
         } catch (Throwable t) {
             fail("Unexpected exception: " + t.getMessage());
         }
+    }
+
+    @Test
+    public void testGetOrDefault() {
+        MapDefaultMethodTester.test_getOrDefault(new ConcurrentHashMap<>(),
+                false /*doesNotAcceptNullKey*/, false /*doesNotAcceptNullValue*/,
+                true /*getAcceptsAnyObject*/);
+    }
+
+    @Test
+    public void testForEach() {
+        MapDefaultMethodTester.test_forEach(new ConcurrentHashMap<>());
+    }
+
+    @Test
+    public void testPutIfAbsent() {
+        MapDefaultMethodTester
+                .test_putIfAbsent(new ConcurrentHashMap<>(), false /*doesNotAcceptNullKey*/,
+                        false /*doesNotAcceptNullValue*/);
+    }
+
+    @Test
+    public void testRemove() {
+        MapDefaultMethodTester
+                .test_remove(new ConcurrentHashMap<>(), false /*doesNotAcceptNullKey*/,
+                        false /*doesNotAcceptNullValue*/);
+    }
+
+    @Test
+    public void testReplace$K$V$V() {
+        MapDefaultMethodTester
+                .test_replace$K$V$V(new ConcurrentHashMap<>(), false /*doesNotAcceptNullKey*/,
+                        false /*doesNotAcceptNullValue*/);
+    }
+
+    @Test
+    public void testReplace$K$V() {
+        MapDefaultMethodTester.test_replace$K$V(new ConcurrentHashMap<>(),
+                false /*doesNotAcceptNullKey*/, false /*doesNotAcceptNullValue*/);
+    }
+
+    @Test
+    public void testComputeIfAbsent() {
+        MapDefaultMethodTester.test_computeIfAbsent(new ConcurrentHashMap<>(),
+                false /*doesNotAcceptNullKey*/, false /*doesNotAcceptNullValue*/);
+    }
+
+    @Test
+    public void testComputeIfPresent() {
+        MapDefaultMethodTester.test_computeIfPresent(new ConcurrentHashMap<>(),
+                false /*doesNotAcceptNullKey*/);
+    }
+
+    @Test
+    public void testCompute() {
+        MapDefaultMethodTester
+                .test_compute(new ConcurrentHashMap<>(), false /*doesNotAcceptNullKey*/);
+    }
+
+    @Test
+    public void testMerge() {
+        MapDefaultMethodTester.test_merge(new ConcurrentHashMap<>(),
+                false /*doesNotAcceptNullKey*/);
     }
 
 }
