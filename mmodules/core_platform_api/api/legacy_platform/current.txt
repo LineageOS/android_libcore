@@ -567,15 +567,6 @@ package libcore.content.type {
 
 }
 
-package libcore.internal {
-
-  public final class StringPool {
-    ctor public StringPool();
-    method public String get(char[], int, int);
-  }
-
-}
-
 package libcore.io {
 
   public class ForwardingOs implements libcore.io.Os {
