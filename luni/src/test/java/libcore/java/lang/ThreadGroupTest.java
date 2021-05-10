@@ -19,6 +19,7 @@ package libcore.java.lang;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -85,6 +86,40 @@ public class ThreadGroupTest {
         assertFalse("Both threads were interrupted", mLatch.await(5, TimeUnit.SECONDS));
 
         assertEquals("Thread from parent group was interrupted", 1, mLatch.getCount());
+    }
+
+    @Test
+    public void suspend_shouldThrowUnsupportedOperationException() throws Exception {
+        ThreadGroup threadGroup = new ThreadGroup("test group");
+
+        Thread thread = createHangThread(threadGroup);
+        thread.start();
+
+        try {
+            threadGroup.suspend();
+            fail("suspend() didn't throw UnsupportedOperationException");
+        } catch (UnsupportedOperationException ignored) {
+            // expected
+        } finally {
+            thread.join();
+        }
+    }
+
+    @Test
+    public void stop_shouldThrowUnsupportedOperationException() throws Exception {
+        ThreadGroup threadGroup = new ThreadGroup("test group");
+
+        Thread thread = createHangThread(threadGroup);
+        thread.start();
+
+        try {
+            threadGroup.stop();
+            fail("stop() didn't throw UnsupportedOperationException");
+        } catch (UnsupportedOperationException ignored) {
+            // expected
+        } finally {
+            thread.join();
+        }
     }
 
     private Thread createHangThread(ThreadGroup threadGroup) {
