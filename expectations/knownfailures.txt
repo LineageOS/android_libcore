@@ -1837,5 +1837,13 @@
   names: [
       "com.android.org.apache.harmony.luni.tests.internal.process.SystemProcessTest#test_interrupt"
   ]
+},
+{
+  description: "Expected failure",
+  result: EXEC_FAILED,
+  bug: 177953386,
+  names: [
+      "libcore.javax.net.ssl.DefaultHostnameVerifierTest#testSubjectOnlyCert"
+  ]
 }
 ]
