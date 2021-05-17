@@ -202,10 +202,6 @@ cc_library_shared {
         "liblog",
         "libnativehelper",
     ],
-
-    strip: {
-        keep_symbols: true,
-    },
 }
 
 // Set of gtest unit tests.
