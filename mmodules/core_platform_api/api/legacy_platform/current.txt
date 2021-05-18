@@ -590,7 +590,6 @@ package libcore.io {
     method public static void closeQuietly(@Nullable AutoCloseable);
     method public static void closeQuietly(@Nullable java.io.FileDescriptor);
     method public static void closeQuietly(@Nullable java.net.Socket);
-    method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
     method @NonNull public static byte[] readFileAsByteArray(@NonNull String) throws java.io.IOException;
     method @NonNull public static String readFileAsString(@NonNull String) throws java.io.IOException;
     method public static void setBlocking(@NonNull java.io.FileDescriptor, boolean) throws java.io.IOException;

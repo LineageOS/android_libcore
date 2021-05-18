@@ -279,7 +279,6 @@ public final class IoUtils {
      *
      * @deprecated Use {@link TestIoUtils#createTemporaryDirectory} instead.
      */
-    @libcore.api.CorePlatformApi
     @Deprecated
     public static void deleteContents(File dir) throws IOException {
         File[] files = dir.listFiles();
