@@ -107,6 +107,19 @@ package android.system {
 
 }
 
+package dalvik.annotation.codegen {
+
+  @java.lang.annotation.Repeatable(CovariantReturnType.CovariantReturnTypes.class) @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD}) public @interface CovariantReturnType {
+    method public abstract int presentAfter();
+    method public abstract Class<?> returnType();
+  }
+
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD}) public static @interface CovariantReturnType.CovariantReturnTypes {
+    method public abstract dalvik.annotation.codegen.CovariantReturnType[] value();
+  }
+
+}
+
 package dalvik.system {
 
   public class AnnotatedStackTraceElement {
