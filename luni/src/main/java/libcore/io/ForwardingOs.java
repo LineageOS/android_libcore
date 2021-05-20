@@ -21,8 +21,8 @@ import android.system.GaiException;
 import android.system.Int32Ref;
 import android.system.Int64Ref;
 import android.system.StructAddrinfo;
-import android.system.StructCapUserData;
-import android.system.StructCapUserHeader;
+import android.system.StructUserCapData;
+import android.system.StructUserCapHeader;
 import android.system.StructGroupReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
@@ -111,11 +111,11 @@ public class ForwardingOs implements Os {
     public void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException { os.bind(fd, address, port); }
     public void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException { os.bind(fd, address); }
     @Override
-    public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException {
+    public StructUserCapData[] capget(StructUserCapHeader hdr) throws ErrnoException {
         return os.capget(hdr);
     }
     @Override
-    public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException {
+    public void capset(StructUserCapHeader hdr, StructUserCapData[] data) throws ErrnoException {
         os.capset(hdr, data);
     }
     @UnsupportedAppUsage
