@@ -37,8 +37,8 @@ package android.system {
   }
 
   public final class Os {
-    method @Nullable public static android.system.StructCapUserData[] capget(@NonNull android.system.StructCapUserHeader) throws android.system.ErrnoException;
-    method public static void capset(@NonNull android.system.StructCapUserHeader, @NonNull android.system.StructCapUserData[]) throws android.system.ErrnoException;
+    method @Nullable public static android.system.StructUserCapData[] capget(@NonNull android.system.StructUserCapHeader) throws android.system.ErrnoException;
+    method public static void capset(@NonNull android.system.StructUserCapHeader, @NonNull android.system.StructUserCapData[]) throws android.system.ErrnoException;
     method public static int getpgid(int) throws android.system.ErrnoException;
     method @Nullable public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
     method public static int getsockoptInt(@NonNull java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
@@ -80,25 +80,19 @@ package android.system {
     ctor public PacketSocketAddress(int, int, byte[]);
   }
 
-  public final class StructCapUserData {
-    ctor public StructCapUserData(int, int, int);
+  public final class StructRlimit {
+    field public final long rlim_cur;
+  }
+
+  public final class StructUserCapData {
+    ctor public StructUserCapData(int, int, int);
     field public final int effective;
     field public final int inheritable;
     field public final int permitted;
   }
 
-  public final class StructCapUserHeader {
-    ctor public StructCapUserHeader(int, int);
-  }
-
-  public final class StructLinger {
-    ctor public StructLinger(int, int);
-    method public boolean isOn();
-    field public final int l_linger;
-  }
-
-  public final class StructRlimit {
-    field public final long rlim_cur;
+  public final class StructUserCapHeader {
+    ctor public StructUserCapHeader(int, int);
   }
 
   public final class UnixSocketAddress extends java.net.SocketAddress {
@@ -596,7 +590,6 @@ package libcore.io {
     method public static void closeQuietly(@Nullable AutoCloseable);
     method public static void closeQuietly(@Nullable java.io.FileDescriptor);
     method public static void closeQuietly(@Nullable java.net.Socket);
-    method @Deprecated public static void deleteContents(java.io.File) throws java.io.IOException;
     method @NonNull public static byte[] readFileAsByteArray(@NonNull String) throws java.io.IOException;
     method @NonNull public static String readFileAsString(@NonNull String) throws java.io.IOException;
     method public static void setBlocking(@NonNull java.io.FileDescriptor, boolean) throws java.io.IOException;

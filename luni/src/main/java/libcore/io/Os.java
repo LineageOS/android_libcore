@@ -21,8 +21,8 @@ import android.system.GaiException;
 import android.system.Int32Ref;
 import android.system.Int64Ref;
 import android.system.StructAddrinfo;
-import android.system.StructCapUserData;
-import android.system.StructCapUserHeader;
+import android.system.StructUserCapData;
+import android.system.StructUserCapHeader;
 import android.system.StructGroupReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
@@ -62,8 +62,8 @@ public interface Os {
     public InetAddress[] android_getaddrinfo(String node, StructAddrinfo hints, int netId) throws GaiException;
     public void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
-    public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException;
-    public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException;
+    public StructUserCapData[] capget(StructUserCapHeader hdr) throws ErrnoException;
+    public void capset(StructUserCapHeader hdr, StructUserCapData[] data) throws ErrnoException;
     @UnsupportedAppUsage
     public void chmod(String path, int mode) throws ErrnoException;
     public void chown(String path, int uid, int gid) throws ErrnoException;

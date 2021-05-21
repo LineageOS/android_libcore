@@ -21,8 +21,8 @@ import android.system.GaiException;
 import android.system.Int32Ref;
 import android.system.Int64Ref;
 import android.system.StructAddrinfo;
-import android.system.StructCapUserData;
-import android.system.StructCapUserHeader;
+import android.system.StructUserCapData;
+import android.system.StructUserCapHeader;
 import android.system.StructGroupReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
@@ -54,9 +54,9 @@ public final class Linux implements Os {
     public native void bind(FileDescriptor fd, InetAddress address, int port) throws ErrnoException, SocketException;
     public native void bind(FileDescriptor fd, SocketAddress address) throws ErrnoException, SocketException;
     @Override
-    public native StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException;
+    public native StructUserCapData[] capget(StructUserCapHeader hdr) throws ErrnoException;
     @Override
-    public native void capset(StructCapUserHeader hdr, StructCapUserData[] data)
+    public native void capset(StructUserCapHeader hdr, StructUserCapData[] data)
             throws ErrnoException;
     public native void chmod(String path, int mode) throws ErrnoException;
     public native void chown(String path, int uid, int gid) throws ErrnoException;
