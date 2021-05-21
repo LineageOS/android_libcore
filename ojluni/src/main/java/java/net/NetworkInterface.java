@@ -612,9 +612,9 @@ public final class NetworkInterface {
             throw new SocketException("NetworkInterface doesn't exist anymore");
         }
         // Return 02:00:00:00:00:00 for apps having a target SDK version < R if they would have
-        // otherwise gotten a null MAC address.
-        if (ni.hardwareAddr == null &&
-                !Compatibility.isChangeEnabled(RETURN_NULL_HARDWARE_ADDRESS)) {
+        // otherwise gotten a null MAC address (excluding loopback).
+        if (ni.hardwareAddr == null && !"lo".equals(name)
+                && !Compatibility.isChangeEnabled(RETURN_NULL_HARDWARE_ADDRESS)) {
             return DEFAULT_MAC_ADDRESS.clone();
         }
         return ni.hardwareAddr;
