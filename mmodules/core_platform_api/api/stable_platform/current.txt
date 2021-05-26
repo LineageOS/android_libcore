@@ -646,6 +646,40 @@ package libcore.util {
 
 }
 
+package org.apache.harmony.dalvik.ddmc {
+
+  public class Chunk {
+    ctor public Chunk(int, byte[], int, int);
+    ctor public Chunk(int, java.nio.ByteBuffer);
+    field public int type;
+  }
+
+  public abstract class ChunkHandler {
+    ctor public ChunkHandler();
+    method public static org.apache.harmony.dalvik.ddmc.Chunk createFailChunk(int, String);
+    method public abstract org.apache.harmony.dalvik.ddmc.Chunk handleChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    method public static String name(int);
+    method public abstract void onConnected();
+    method public abstract void onDisconnected();
+    method public static int type(String);
+    method public static java.nio.ByteBuffer wrapChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    field public static final java.nio.ByteOrder CHUNK_ORDER;
+  }
+
+  public final class DdmServer {
+    method public static void registerHandler(int, org.apache.harmony.dalvik.ddmc.ChunkHandler);
+    method public static void registrationComplete();
+    method public static void sendChunk(org.apache.harmony.dalvik.ddmc.Chunk);
+    method public static org.apache.harmony.dalvik.ddmc.ChunkHandler unregisterHandler(int);
+  }
+
+  public final class DdmVmInternal {
+    method public static void setRecentAllocationsTrackingEnabled(boolean);
+    method public static void setThreadNotifyEnabled(boolean);
+  }
+
+}
+
 package org.json {
 
   public class JSONObject {
