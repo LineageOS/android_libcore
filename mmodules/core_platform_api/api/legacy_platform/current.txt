@@ -647,8 +647,8 @@ package libcore.net {
 package libcore.net.event {
 
   public final class NetworkEventDispatcher {
+    method public void dispatchNetworkConfigurationChange();
     method public static libcore.net.event.NetworkEventDispatcher getInstance();
-    method public void onNetworkConfigurationChanged();
   }
 
 }
