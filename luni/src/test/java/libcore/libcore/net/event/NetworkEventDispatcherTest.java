@@ -41,7 +41,7 @@ public class NetworkEventDispatcherTest extends TestCase {
 
   public void testOnNetworkConfigurationChanged_noListeners() throws Exception {
     NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
-    networkEventDispatcher.onNetworkConfigurationChanged();
+    networkEventDispatcher.dispatchNetworkConfigurationChange();
   }
 
   public void testFireNetworkEvent_oneListener() throws Exception {
@@ -49,7 +49,7 @@ public class NetworkEventDispatcherTest extends TestCase {
     NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
     networkEventDispatcher.addListener(listener);
 
-    networkEventDispatcher.onNetworkConfigurationChanged();
+    networkEventDispatcher.dispatchNetworkConfigurationChange();
 
     listener.assertNetworkConfigurationChangedEvent(1);
   }
@@ -60,7 +60,7 @@ public class NetworkEventDispatcherTest extends TestCase {
     networkEventDispatcher.addListener(listener);
     networkEventDispatcher.removeListener(listener);
 
-    networkEventDispatcher.onNetworkConfigurationChanged();
+    networkEventDispatcher.dispatchNetworkConfigurationChange();
 
     listener.assertNetworkConfigurationChangedEvent(0);
   }
