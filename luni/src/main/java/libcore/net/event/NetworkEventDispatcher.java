@@ -77,7 +77,7 @@ public final class NetworkEventDispatcher {
    * Notifies registered listeners of a network configuration change.
    */
   @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-  public void onNetworkConfigurationChanged() {
+  public void dispatchNetworkConfigurationChange() {
     for (NetworkEventListener listener : listeners) {
       try {
         listener.onNetworkConfigurationChanged();
