@@ -31,7 +31,7 @@ public class NetworkEventDispatcherTest extends TestCase {
   }
 
   public void testAddListener_null() throws Exception {
-    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher() {};
+    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
     try {
       networkEventDispatcher.addListener(null);
       fail();
@@ -40,13 +40,13 @@ public class NetworkEventDispatcherTest extends TestCase {
   }
 
   public void testOnNetworkConfigurationChanged_noListeners() throws Exception {
-    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher() {};
+    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
     networkEventDispatcher.onNetworkConfigurationChanged();
   }
 
   public void testFireNetworkEvent_oneListener() throws Exception {
     FakeNetworkEventListener listener = new FakeNetworkEventListener();
-    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher() {};
+    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
     networkEventDispatcher.addListener(listener);
 
     networkEventDispatcher.onNetworkConfigurationChanged();
@@ -56,7 +56,7 @@ public class NetworkEventDispatcherTest extends TestCase {
 
   public void testRemoveEventListener() throws Exception {
     FakeNetworkEventListener listener = new FakeNetworkEventListener();
-    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher() {};
+    NetworkEventDispatcher networkEventDispatcher = new NetworkEventDispatcher();
     networkEventDispatcher.addListener(listener);
     networkEventDispatcher.removeListener(listener);
 
