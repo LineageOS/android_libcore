@@ -42,7 +42,6 @@ package android.system {
     method public static int getpgid(int) throws android.system.ErrnoException;
     method @Nullable public static android.system.StructRlimit getrlimit(int) throws android.system.ErrnoException;
     method public static int getsockoptInt(@NonNull java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
-    method @Nullable public static android.system.StructLinger getsockoptLinger(@NonNull java.io.FileDescriptor, int, int) throws android.system.ErrnoException;
     method public static int ioctlInt(@NonNull java.io.FileDescriptor, int) throws android.system.ErrnoException;
     method @Nullable public static java.io.FileDescriptor[] pipe2(int) throws android.system.ErrnoException;
     method @Nullable public static String realpath(@Nullable String) throws android.system.ErrnoException;
@@ -50,7 +49,6 @@ package android.system {
     method public static void setregid(int, int) throws android.system.ErrnoException;
     method public static void setreuid(int, int) throws android.system.ErrnoException;
     method public static void setsockoptIfreq(@NonNull java.io.FileDescriptor, int, int, @Nullable String) throws android.system.ErrnoException;
-    method public static void setsockoptLinger(@NonNull java.io.FileDescriptor, int, int, @NonNull android.system.StructLinger) throws android.system.ErrnoException;
     method public static long splice(@NonNull java.io.FileDescriptor, @Nullable android.system.Int64Ref, @NonNull java.io.FileDescriptor, @Nullable android.system.Int64Ref, long, int) throws android.system.ErrnoException;
     method public static void unlink(@Nullable String) throws android.system.ErrnoException;
   }
