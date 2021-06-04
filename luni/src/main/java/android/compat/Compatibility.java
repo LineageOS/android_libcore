@@ -178,12 +178,20 @@ public final class Compatibility {
         }
     }
 
+    /**
+     * @hide
+     */
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @IntraCoreApi
     public static final class ChangeConfig {
         private final Set<Long> enabled;
         private final Set<Long> disabled;
 
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public ChangeConfig(@NonNull Set<@NonNull Long> enabled, @NonNull Set<@NonNull Long> disabled) {
             this.enabled = Objects.requireNonNull(enabled);
             this.disabled = Objects.requireNonNull(disabled);
@@ -201,6 +209,11 @@ public final class Compatibility {
             }
         }
 
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public boolean isEmpty() {
             return enabled.isEmpty() && disabled.isEmpty();
         }
@@ -214,30 +227,69 @@ public final class Compatibility {
             return result;
         }
 
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public @NonNull long[] getEnabledChangesArray() {
             return toLongArray(enabled);
         }
 
+
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public @NonNull long[] getDisabledChangesArray() {
             return toLongArray(disabled);
         }
 
+
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public @NonNull Set<@NonNull Long> getEnabledSet() {
             return Collections.unmodifiableSet(enabled);
         }
 
+
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public @NonNull Set<@NonNull Long> getDisabledSet() {
             return Collections.unmodifiableSet(disabled);
         }
 
+
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public boolean isForceEnabled(long changeId) {
             return enabled.contains(changeId);
         }
 
+
+        /**
+         * @hide
+         */
+        @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
+        @IntraCoreApi
         public boolean isForceDisabled(long changeId) {
             return disabled.contains(changeId);
         }
 
+
+        /**
+         * @hide
+         */
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -249,11 +301,18 @@ public final class Compatibility {
                     disabled.equals(that.disabled);
         }
 
+        /**
+         * @hide
+         */
         @Override
         public int hashCode() {
             return Objects.hash(enabled, disabled);
         }
 
+
+        /**
+         * @hide
+         */
         @Override
         public String toString() {
             return "ChangeConfig{enabled=" + enabled + ", disabled=" + disabled + '}';
