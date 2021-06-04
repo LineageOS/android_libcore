@@ -50,6 +50,8 @@ public class AnnotatedStackTraceElement {
      * Returns the {@link StackTraceElement} describing the Java stack frame.
      *
      * @return {@link StackTraceElement} describing the Java stack frame.
+     *
+     * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public StackTraceElement getStackTraceElement() {
@@ -61,6 +63,8 @@ public class AnnotatedStackTraceElement {
      * May be {@code null}.
      *
      * @return array of objects current frame is syncronized on.
+     *
+     * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public Object[] getHeldLocks() {
@@ -73,6 +77,8 @@ public class AnnotatedStackTraceElement {
      *
      * @return object this thread is waiting to lock, or waiting on, if any,
      *         or {@code null}, if none.
+     *
+     * @hide
      */
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public Object getBlockedOn() {
