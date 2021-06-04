@@ -7,14 +7,14 @@ package android.compat {
   }
 
   @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public static final class Compatibility.ChangeConfig {
-    ctor public Compatibility.ChangeConfig(@NonNull java.util.Set<java.lang.Long>, @NonNull java.util.Set<java.lang.Long>);
-    method @NonNull public long[] getDisabledChangesArray();
-    method @NonNull public java.util.Set<java.lang.Long> getDisabledSet();
-    method @NonNull public long[] getEnabledChangesArray();
-    method @NonNull public java.util.Set<java.lang.Long> getEnabledSet();
-    method public boolean isEmpty();
-    method public boolean isForceDisabled(long);
-    method public boolean isForceEnabled(long);
+    ctor @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public Compatibility.ChangeConfig(@NonNull java.util.Set<java.lang.Long>, @NonNull java.util.Set<java.lang.Long>);
+    method @NonNull @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public long[] getDisabledChangesArray();
+    method @NonNull @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public java.util.Set<java.lang.Long> getDisabledSet();
+    method @NonNull @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public long[] getEnabledChangesArray();
+    method @NonNull @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public java.util.Set<java.lang.Long> getEnabledSet();
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public boolean isEmpty();
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public boolean isForceDisabled(long);
+    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public boolean isForceEnabled(long);
   }
 
 }
@@ -158,10 +158,10 @@ package sun.security.util {
 
 package sun.security.x509 {
 
-  @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public class AlgorithmId implements sun.security.util.DerEncoder java.io.Serializable {
+  @libcore.api.IntraCoreApi public class AlgorithmId implements sun.security.util.DerEncoder java.io.Serializable {
     method @libcore.api.IntraCoreApi public void derEncode(java.io.OutputStream) throws java.io.IOException;
     method @libcore.api.IntraCoreApi public static sun.security.x509.AlgorithmId get(String) throws java.security.NoSuchAlgorithmException;
-    method @libcore.api.CorePlatformApi(status=libcore.api.CorePlatformApi.Status.STABLE) @libcore.api.IntraCoreApi public String getName();
+    method @libcore.api.IntraCoreApi public String getName();
   }
 
 }
