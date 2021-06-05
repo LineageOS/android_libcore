@@ -56,8 +56,6 @@ import sun.security.util.*;
  * @author Amit Kapoor
  * @author Hemma Prafullchandra
  */
-// Android-added: stable CorePlatformAPI
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public class AlgorithmId implements Serializable, DerEncoder {
 
     /** use serialVersionUID from JDK 1.1. for interoperability */
@@ -233,8 +231,6 @@ public class AlgorithmId implements Serializable, DerEncoder {
      *
      * @return name of the algorithm
      */
-    // Android-added: stable CorePlatformAPI
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public String getName() {
         String algName = nameTable.get(algid);
         if (algName != null) {
