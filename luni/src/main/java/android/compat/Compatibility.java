@@ -16,6 +16,9 @@
 
 package android.compat;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
 import android.compat.annotation.ChangeId;
 
 import libcore.api.CorePlatformApi;
@@ -34,6 +37,7 @@ import libcore.util.NonNull;
  *
  * @hide
  */
+@SystemApi(client = MODULE_LIBRARIES)
 @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
 @IntraCoreApi
 public final class Compatibility {
@@ -56,6 +60,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @IntraCoreApi
     public static void reportUnconditionalChange(@ChangeId long changeId) {
@@ -79,6 +84,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @IntraCoreApi
     public static boolean isChangeEnabled(@ChangeId long changeId) {
@@ -96,6 +102,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void setBehaviorChangeDelegate(BehaviorChangeDelegate callbacks) {
         sCallbacks = Objects.requireNonNull(callbacks);
@@ -106,6 +113,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void clearBehaviorChangeDelegate() {
         sCallbacks = DEFAULT_CALLBACKS;
@@ -117,6 +125,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void setOverrides(ChangeConfig overrides) {
         // Setting overrides twice in a row does not need to be supported because
@@ -135,6 +144,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public static void clearOverrides() {
         if (!(sCallbacks instanceof OverrideCallbacks)) {
@@ -152,6 +162,7 @@ public final class Compatibility {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     public interface BehaviorChangeDelegate {
         /**
@@ -159,6 +170,7 @@ public final class Compatibility {
          *
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         default void onChangeReported(long changeId) {
             // Do not use String.format here (b/160912695)
@@ -170,6 +182,7 @@ public final class Compatibility {
          *
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         default boolean isChangeEnabled(long changeId) {
             // Do not use String.format here (b/160912695)
@@ -181,6 +194,7 @@ public final class Compatibility {
     /**
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
     @IntraCoreApi
     public static final class ChangeConfig {
@@ -190,6 +204,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public ChangeConfig(@NonNull Set<@NonNull Long> enabled, @NonNull Set<@NonNull Long> disabled) {
@@ -212,6 +227,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public boolean isEmpty() {
@@ -230,6 +246,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public @NonNull long[] getEnabledChangesArray() {
@@ -240,6 +257,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public @NonNull long[] getDisabledChangesArray() {
@@ -250,6 +268,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public @NonNull Set<@NonNull Long> getEnabledSet() {
@@ -260,6 +279,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public @NonNull Set<@NonNull Long> getDisabledSet() {
@@ -270,6 +290,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public boolean isForceEnabled(long changeId) {
@@ -280,6 +301,7 @@ public final class Compatibility {
         /**
          * @hide
          */
+        @SystemApi(client = MODULE_LIBRARIES)
         @CorePlatformApi(status = CorePlatformApi.Status.STABLE)
         @IntraCoreApi
         public boolean isForceDisabled(long changeId) {
