@@ -120,10 +120,10 @@ package dalvik.annotation.codegen {
 
 package dalvik.system {
 
-  public class AnnotatedStackTraceElement {
-    method public Object getBlockedOn();
-    method public Object[] getHeldLocks();
-    method public StackTraceElement getStackTraceElement();
+  public final class AnnotatedStackTraceElement {
+    method @Nullable public Object getBlockedOn();
+    method @Nullable public Object[] getHeldLocks();
+    method @NonNull public StackTraceElement getStackTraceElement();
   }
 
   public class AppSpecializationHooks {
