@@ -16,6 +16,10 @@
 
 package dalvik.annotation.codegen;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
@@ -60,6 +64,7 @@ import java.lang.annotation.Target;
 @Repeatable(CovariantReturnType.CovariantReturnTypes.class)
 @Retention(RetentionPolicy.CLASS)
 @Target({ ElementType.METHOD})
+@SystemApi(client = MODULE_LIBRARIES)
 @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public @interface CovariantReturnType {
 
@@ -69,6 +74,7 @@ public @interface CovariantReturnType {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     Class<?> returnType();
 
@@ -78,15 +84,18 @@ public @interface CovariantReturnType {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     int presentAfter();
 
     /** @hide */
     @Retention(RetentionPolicy.CLASS)
     @Target({ElementType.METHOD})
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @interface CovariantReturnTypes {
         /** @hide */
+        @SystemApi(client = MODULE_LIBRARIES)
         @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         CovariantReturnType[] value();
     }
