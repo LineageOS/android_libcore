@@ -188,6 +188,10 @@ package dalvik.system {
     method public default void report(String);
   }
 
+  public final class DelegateLastClassLoader extends dalvik.system.PathClassLoader {
+    ctor public DelegateLastClassLoader(String, String, ClassLoader, ClassLoader[]);
+  }
+
   @Deprecated public final class DexFile {
     method @Deprecated @NonNull public static dalvik.system.DexFile.OptimizationInfo getDexFileOptimizationInfo(@NonNull String, @NonNull String) throws java.io.FileNotFoundException;
     method @Deprecated @Nullable public static String[] getDexFileOutputPaths(@NonNull String, @NonNull String) throws java.io.FileNotFoundException;
