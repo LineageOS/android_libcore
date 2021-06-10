@@ -15223,12 +15223,25 @@ package java.util.concurrent.atomic {
   public class AtomicBoolean implements java.io.Serializable {
     ctor public AtomicBoolean(boolean);
     ctor public AtomicBoolean();
+    method public final boolean compareAndExchange(boolean, boolean);
+    method public final boolean compareAndExchangeAcquire(boolean, boolean);
+    method public final boolean compareAndExchangeRelease(boolean, boolean);
     method public final boolean compareAndSet(boolean, boolean);
     method public final boolean get();
+    method public final boolean getAcquire();
     method public final boolean getAndSet(boolean);
+    method public final boolean getOpaque();
+    method public final boolean getPlain();
     method public final void lazySet(boolean);
     method public final void set(boolean);
-    method public boolean weakCompareAndSet(boolean, boolean);
+    method public final void setOpaque(boolean);
+    method public final void setPlain(boolean);
+    method public final void setRelease(boolean);
+    method @Deprecated public boolean weakCompareAndSet(boolean, boolean);
+    method public final boolean weakCompareAndSetAcquire(boolean, boolean);
+    method public boolean weakCompareAndSetPlain(boolean, boolean);
+    method public final boolean weakCompareAndSetRelease(boolean, boolean);
+    method public final boolean weakCompareAndSetVolatile(boolean, boolean);
   }
 
   public class AtomicInteger extends java.lang.Number implements java.io.Serializable {
