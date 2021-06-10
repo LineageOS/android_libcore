@@ -680,7 +680,8 @@ public class MethodHandles {
             // Android-changed: The bootstrap classloader isn't null.
             if (allowedModes == ALL_MODES &&
                     lookupClass.getClassLoader() == Object.class.getClassLoader()) {
-                if (name.startsWith("java.") ||
+                if ((name.startsWith("java.")
+                            && !name.startsWith("java.util.concurrent.atomic.Atomic")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
                                 && !name.equals("sun.reflect.ReflectionFactory"))) {
