@@ -15317,24 +15317,37 @@ package java.util.concurrent.atomic {
     ctor public AtomicLong();
     method public final long accumulateAndGet(long, java.util.function.LongBinaryOperator);
     method public final long addAndGet(long);
+    method public final long compareAndExchange(long, long);
+    method public final long compareAndExchangeAcquire(long, long);
+    method public final long compareAndExchangeRelease(long, long);
     method public final boolean compareAndSet(long, long);
     method public final long decrementAndGet();
     method public double doubleValue();
     method public float floatValue();
     method public final long get();
+    method public final long getAcquire();
     method public final long getAndAccumulate(long, java.util.function.LongBinaryOperator);
     method public final long getAndAdd(long);
     method public final long getAndDecrement();
     method public final long getAndIncrement();
     method public final long getAndSet(long);
     method public final long getAndUpdate(java.util.function.LongUnaryOperator);
+    method public final long getOpaque();
+    method public final long getPlain();
     method public final long incrementAndGet();
     method public int intValue();
     method public final void lazySet(long);
     method public long longValue();
     method public final void set(long);
+    method public final void setOpaque(long);
+    method public final void setPlain(long);
+    method public final void setRelease(long);
     method public final long updateAndGet(java.util.function.LongUnaryOperator);
-    method public final boolean weakCompareAndSet(long, long);
+    method @Deprecated public final boolean weakCompareAndSet(long, long);
+    method public final boolean weakCompareAndSetAcquire(long, long);
+    method public final boolean weakCompareAndSetPlain(long, long);
+    method public final boolean weakCompareAndSetRelease(long, long);
+    method public final boolean weakCompareAndSetVolatile(long, long);
   }
 
   public class AtomicLongArray implements java.io.Serializable {
