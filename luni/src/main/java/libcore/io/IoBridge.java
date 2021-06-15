@@ -383,6 +383,7 @@ public final class IoBridge {
         }
     }
 
+    @SuppressWarnings("NewApi") // False positive lint limitation, see b/177434707.
     private static void setSocketOptionErrno(FileDescriptor fd, int option, Object value) throws ErrnoException, SocketException {
         switch (option) {
         case SocketOptions.IP_MULTICAST_IF:
