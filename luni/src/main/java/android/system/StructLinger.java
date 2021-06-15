@@ -47,6 +47,7 @@ public final class StructLinger {
      * @param l_onoff  whether or not linger is enabled, non-zero is on
      * @param l_linger linger time, in seconds
      */
+    @SuppressWarnings("NewApi") // False positive lint limitation, see b/177434707.
     public StructLinger(int l_onoff, int l_linger) {
         this.l_onoff = l_onoff;
         this.l_linger = l_linger;
@@ -57,6 +58,7 @@ public final class StructLinger {
      *
      * @return {@code true} if linger is enabled, and {@code false} otherwise
      */
+    @SuppressWarnings("NewApi") // False positive lint limitation, see b/177434707.
     public boolean isOn() {
         return l_onoff != 0;
     }
