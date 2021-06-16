@@ -16,6 +16,10 @@
 
 package android.system;
 
+import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
+
+import android.annotation.SystemApi;
+
 import libcore.util.Objects;
 
 /**
@@ -36,6 +40,7 @@ import libcore.util.Objects;
  *
  * @hide
  */
+@SystemApi(client = MODULE_LIBRARIES)
 @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class StructLinger {
     /**
@@ -43,6 +48,7 @@ public final class StructLinger {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public final int l_onoff;
 
@@ -51,6 +57,7 @@ public final class StructLinger {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public final int l_linger;
 
@@ -63,6 +70,7 @@ public final class StructLinger {
      * @hide
      */
     @SuppressWarnings("NewApi") // False positive lint limitation, see b/177434707.
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public StructLinger(int l_onoff, int l_linger) {
         this.l_onoff = l_onoff;
@@ -77,6 +85,7 @@ public final class StructLinger {
      * @hide
      */
     @SuppressWarnings("NewApi") // False positive lint limitation, see b/177434707.
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public boolean isOn() {
         return l_onoff != 0;

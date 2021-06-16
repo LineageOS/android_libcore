@@ -342,6 +342,7 @@ public final class Os {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @Nullable StructLinger getsockoptLinger(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
 
@@ -811,6 +812,7 @@ public final class Os {
      *
      * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setsockoptLinger(@NonNull FileDescriptor fd, int level, int option, @NonNull StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
