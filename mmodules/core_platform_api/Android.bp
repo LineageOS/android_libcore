@@ -50,7 +50,6 @@ java_defaults {
     droiddoc_options: [
         "--hide HiddenSuperclass",
         "--hide-annotation libcore.api.Hide",
-        "--skip-annotation-instance-methods=false",
         "--force-convert-to-warning-nullability-annotations +*:-android.*:+android.icu.*:-dalvik.* ",
     ],
     merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
