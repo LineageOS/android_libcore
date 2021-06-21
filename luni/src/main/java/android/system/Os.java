@@ -339,7 +339,11 @@ public final class Os {
      * @param option name of the option to get
      * @return       {@link StructLinger} associated with given {@code fd}
      * @throws ErrnoException
+     *
+     * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @Nullable StructLinger getsockoptLinger(@NonNull FileDescriptor fd, int level, int option) throws ErrnoException { return Libcore.os.getsockoptLinger(fd, level, option); }
 
     /**
@@ -805,7 +809,11 @@ public final class Os {
      * @param value  {@link StructLinger} to set for {@code fd}
      * @throws ErrnoException if {@code fd} is invalid; or
      *                        {@code option} is unknown at given {@code level}
+     *
+     * @hide
      */
+    @SystemApi(client = MODULE_LIBRARIES)
+    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setsockoptLinger(@NonNull FileDescriptor fd, int level, int option, @NonNull StructLinger value) throws ErrnoException { Libcore.os.setsockoptLinger(fd, level, option, value); }
 
     /**
