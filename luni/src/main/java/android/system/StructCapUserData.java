@@ -24,8 +24,8 @@ import libcore.util.Objects;
 
 /**
  * Corresponds to Linux' __user_cap_data_struct for capget and capset.
- * Used in {@link Os.capget( StructUserCapHeader )} and
- * {@link Os.capset( StructUserCapHeader , StructUserCapData[])}.
+ * Used in {@link Os.capget(StructCapUserHeader)} and
+ * {@link Os.capset(StructCapUserHeader, StructCapUserData[])}.
  *
  * See <a href="https://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
  *
@@ -33,7 +33,7 @@ import libcore.util.Objects;
  */
 @SystemApi(client = MODULE_LIBRARIES)
 @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-public final class StructUserCapData {
+public final class StructCapUserData {
     /**
      * Effective capability mask.
      *
@@ -72,7 +72,7 @@ public final class StructUserCapData {
      */
     @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public StructUserCapData(int effective, int permitted, int inheritable) {
+    public StructCapUserData(int effective, int permitted, int inheritable) {
         this.effective = effective;
         this.permitted = permitted;
         this.inheritable = inheritable;
