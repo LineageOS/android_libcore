@@ -717,48 +717,41 @@ public class MulticastSocketTest extends TestCaseWithRules {
         if (!supportsMulticast) {
             return;
         }
-        test_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv4);
+        test_setNetworkInterfaceLjava_net_NetworkInterface(ipv4NetworkInterface, GOOD_IPv4);
     }
 
     public void test_setNetworkInterfaceLjava_net_NetworkInterface_IPv6() throws Exception {
         if (!supportsMulticast) {
             return;
         }
-        test_setNetworkInterfaceLjava_net_NetworkInterface(GOOD_IPv6);
+        test_setNetworkInterfaceLjava_net_NetworkInterface(ipv6NetworkInterface, GOOD_IPv6);
     }
 
-    private void test_setNetworkInterfaceLjava_net_NetworkInterface(InetAddress group)
+    private void test_setNetworkInterfaceLjava_net_NetworkInterface(
+            NetworkInterface networkInterface, InetAddress group)
             throws IOException, InterruptedException {
         // Set up the receiving socket and join the group.
-        Enumeration theInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (theInterfaces.hasMoreElements()) {
-            NetworkInterface thisInterface = (NetworkInterface) theInterfaces.nextElement();
-            if (willWorkForMulticast(thisInterface)) {
-                if ((!(thisInterface.getInetAddresses().nextElement()).isLoopbackAddress())) {
-                    MulticastSocket receivingSocket = createReceivingSocket(0);
-                    InetSocketAddress groupAddress =
-                            new InetSocketAddress(group, receivingSocket.getLocalPort());
-                    receivingSocket.joinGroup(groupAddress, thisInterface);
+        MulticastSocket receivingSocket = createReceivingSocket(0);
+        InetSocketAddress groupAddress =
+                new InetSocketAddress(group, receivingSocket.getLocalPort());
+        receivingSocket.joinGroup(groupAddress, networkInterface);
 
-                    // Send the packets on a particular interface. The source address in the
-                    // received packet should be one of the addresses for the interface set.
-                    MulticastSocket sendingSocket = new MulticastSocket(0);
-                    sendingSocket.setNetworkInterface(thisInterface);
-                    String msg = thisInterface.getName();
-                    DatagramPacket sdp = createSendDatagramPacket(groupAddress, msg);
-                    sendingSocket.send(sdp);
+        // Send the packets on a particular interface. The source address in the
+        // received packet should be one of the addresses for the interface set.
+        MulticastSocket sendingSocket = new MulticastSocket(0);
+        sendingSocket.setNetworkInterface(networkInterface);
+        String msg = networkInterface.getName();
+        DatagramPacket sdp = createSendDatagramPacket(groupAddress, msg);
+        sendingSocket.send(sdp);
 
-                    DatagramPacket rdp = createReceiveDatagramPacket();
-                    receivingSocket.receive(rdp);
-                    String receivedMessage = extractMessage(rdp);
-                    assertEquals("Group member did not recv data sent on a specific interface",
-                            msg, receivedMessage);
-                    // Stop the server.
-                    receivingSocket.close();
-                    sendingSocket.close();
-                }
-            }
-        }
+        DatagramPacket rdp = createReceiveDatagramPacket();
+        receivingSocket.receive(rdp);
+        String receivedMessage = extractMessage(rdp);
+        assertEquals("Group member did not recv data sent on a specific interface",
+                msg, receivedMessage);
+        // Stop the server.
+        receivingSocket.close();
+        sendingSocket.close();
     }
 
     public void test_setTimeToLiveI() throws Exception {
