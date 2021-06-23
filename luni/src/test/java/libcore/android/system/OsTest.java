@@ -822,6 +822,41 @@ public class OsTest {
         checkSendToSocketAddress(AF_INET6, InetAddress.getByName("::1"));
     }
 
+    private static short asShort(StructCmsghdr cmsg) {
+        ByteBuffer buf = ByteBuffer.wrap(cmsg.cmsg_data).order(ByteOrder.nativeOrder());
+        assertEquals(Short.BYTES, buf.capacity());
+        return buf.getShort();
+    }
+
+    private static int asInt(StructCmsghdr cmsg) {
+        ByteBuffer buf = ByteBuffer.wrap(cmsg.cmsg_data).order(ByteOrder.nativeOrder());
+        assertEquals(Integer.BYTES, buf.capacity());
+        return buf.getInt();
+    }
+
+    @Test
+    public void test_StructCmsgHdrConstructors() throws Exception {
+        final StructCmsghdr cmsg1 = new StructCmsghdr(1, 2, (short) 32005);
+        assertEquals(1, cmsg1.cmsg_level);
+        assertEquals(2, cmsg1.cmsg_type);
+        assertEquals(32005, asShort(cmsg1));
+
+        ByteBuffer buf = ByteBuffer.allocate(Short.BYTES);
+        buf.order(ByteOrder.nativeOrder());
+        buf.putShort((short) 32005);
+        assertArrayEquals(cmsg1.cmsg_data, buf.array());
+
+        buf = ByteBuffer.allocate(Integer.BYTES);
+        buf.order(ByteOrder.nativeOrder());
+        buf.putInt(1000042);
+
+        final StructCmsghdr cmsg2 = new StructCmsghdr(456789, 123456, buf.array());
+        assertEquals(456789, cmsg2.cmsg_level);
+        assertEquals(123456, cmsg2.cmsg_type);
+        assertEquals(1000042, asInt(cmsg2));
+        assertArrayEquals(buf.array(), cmsg2.cmsg_data);
+    }
+
     /*
      * Test case for sendmsg with/without GSO in loopback iface,
      * recvmsg/gro would not happen since in loopback
