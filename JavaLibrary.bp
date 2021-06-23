@@ -895,6 +895,7 @@ java_sdk_library {
         // ojluni/annotated/mmodules and rather than in the original source. See the comments
         // in openjdk_java_files.bp for more details.
         ":openjdk_mmodule_extra_files",
+        ":okhttp_api_files",
 
     ],
     libs: [
