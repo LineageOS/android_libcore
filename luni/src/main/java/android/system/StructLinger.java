@@ -26,8 +26,8 @@ import libcore.util.Objects;
  * Corresponds to C's {@code struct linger} from
  * <a href="http://pubs.opengroup.org/onlinepubs/9699919799/basedefs/sys_socket.h.html">&lt;sys/socket.h&gt;</a>
  *
- * When enabled, a {@link Os#close(java.io.FileDescriptor)} or
- * {@link Os#shutdown(java.io.FileDescriptor, int)} will
+ * When enabled, a {@link Os.close(java.io.FileDescriptor) or
+ * {@link Os.shutdown(java.io.FileDescriptor, int)} will
  * not return until all queued messages for the socket have been successfully sent or the
  * linger timeout has been reached. Otherwise, the call returns immediately and the closing is
  * done in the background.
@@ -48,8 +48,6 @@ public final class StructLinger {
      *
      * @hide
      */
-    @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public final int l_onoff;
 
     /**
