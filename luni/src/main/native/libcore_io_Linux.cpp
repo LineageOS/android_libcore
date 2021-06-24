@@ -878,14 +878,14 @@ static void AssertException(JNIEnv* env) {
 // We assume the calls are rare enough that it does not make sense to cache class objects. The
 // advantage is lower maintenance burden.
 
-static bool ReadStructUserCapHeader(
+static bool ReadStructCapUserHeader(
         JNIEnv* env, jobject java_header, __user_cap_header_struct* c_header) {
     if (java_header == nullptr) {
         jniThrowNullPointerException(env, "header is null");
         return false;
     }
 
-    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructUserCapHeader"));
+    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructCapUserHeader"));
     if (header_class.get() == nullptr) {
         return false;
     }
@@ -909,9 +909,9 @@ static bool ReadStructUserCapHeader(
     return true;
 }
 
-static void SetStructUserCapHeaderVersion(
+static void SetStructCapUserHeaderVersion(
         JNIEnv* env, jobject java_header, __user_cap_header_struct* c_header) {
-    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructUserCapHeader"));
+    ScopedLocalRef<jclass> header_class(env, env->FindClass("android/system/StructCapUserHeader"));
     if (header_class.get() == nullptr) {
         env->ExceptionClear();
         return;
@@ -925,7 +925,7 @@ static void SetStructUserCapHeaderVersion(
     env->SetIntField(java_header, version_fid, c_header->version);
 }
 
-static jobject CreateStructUserCapData(
+static jobject CreateStructCapUserData(
         JNIEnv* env, jclass data_class, __user_cap_data_struct* c_data) {
     if (c_data == nullptr) {
         // Should not happen.
@@ -944,13 +944,13 @@ static jobject CreateStructUserCapData(
     return env->NewObject(data_class, data_cons, e, p, i);
 }
 
-static bool ReadStructUserCapData(JNIEnv* env, jobject java_data, __user_cap_data_struct* c_data) {
+static bool ReadStructCapUserData(JNIEnv* env, jobject java_data, __user_cap_data_struct* c_data) {
     if (java_data == nullptr) {
         jniThrowNullPointerException(env, "data is null");
         return false;
     }
 
-    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructUserCapData"));
+    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructCapUserData"));
     if (data_class.get() == nullptr) {
         return false;
     }
@@ -1072,7 +1072,7 @@ static void Linux_bindSocketAddress(
 static jobjectArray Linux_capget(JNIEnv* env, jobject, jobject header) {
     // Convert Java header struct to kernel datastructure.
     __user_cap_header_struct cap_header;
-    if (!ReadStructUserCapHeader(env, header, &cap_header)) {
+    if (!ReadStructCapUserHeader(env, header, &cap_header)) {
         AssertException(env);
         return nullptr;
     }
@@ -1083,7 +1083,7 @@ static jobjectArray Linux_capget(JNIEnv* env, jobject, jobject header) {
         // Check for EINVAL. In that case, mutate the header.
         if (errno == EINVAL) {
             int saved_errno = errno;
-            SetStructUserCapHeaderVersion(env, header, &cap_header);
+            SetStructCapUserHeaderVersion(env, header, &cap_header);
             errno = saved_errno;
         }
         throwErrnoException(env, "capget");
@@ -1091,7 +1091,7 @@ static jobjectArray Linux_capget(JNIEnv* env, jobject, jobject header) {
     }
 
     // Create the result array.
-    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructUserCapData"));
+    ScopedLocalRef<jclass> data_class(env, env->FindClass("android/system/StructCapUserData"));
     if (data_class.get() == nullptr) {
         return nullptr;
     }
@@ -1104,7 +1104,7 @@ static jobjectArray Linux_capget(JNIEnv* env, jobject, jobject header) {
     // Translate the values we got.
     for (size_t i = 0; i < result_size; ++i) {
         ScopedLocalRef<jobject> value(
-                env, CreateStructUserCapData(env, data_class.get(), &cap_data[i]));
+                env, CreateStructCapUserData(env, data_class.get(), &cap_data[i]));
         if (value.get() == nullptr) {
             AssertException(env);
             return nullptr;
@@ -1118,7 +1118,7 @@ static void Linux_capset(
         JNIEnv* env, jobject, jobject header, jobjectArray data) {
     // Convert Java header struct to kernel datastructure.
     __user_cap_header_struct cap_header;
-    if (!ReadStructUserCapHeader(env, header, &cap_header)) {
+    if (!ReadStructCapUserHeader(env, header, &cap_header)) {
         AssertException(env);
         return;
     }
@@ -1137,7 +1137,7 @@ static void Linux_capset(
     // Translate the values we got.
     for (size_t i = 0; i < result_size; ++i) {
         ScopedLocalRef<jobject> value(env, env->GetObjectArrayElement(data, i));
-        if (!ReadStructUserCapData(env, value.get(), &cap_data[i])) {
+        if (!ReadStructCapUserData(env, value.get(), &cap_data[i])) {
             AssertException(env);
             return;
         }
@@ -2752,9 +2752,9 @@ static JNINativeMethod gMethods[] = {
     NATIVE_METHOD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/InetAddress;I)V"),
     NATIVE_METHOD_OVERLOAD(Linux, bind, "(Ljava/io/FileDescriptor;Ljava/net/SocketAddress;)V", SocketAddress),
     NATIVE_METHOD(Linux, capget,
-                  "(Landroid/system/StructUserCapHeader;)[Landroid/system/StructUserCapData;"),
+                  "(Landroid/system/StructCapUserHeader;)[Landroid/system/StructCapUserData;"),
     NATIVE_METHOD(Linux, capset,
-                  "(Landroid/system/StructUserCapHeader;[Landroid/system/StructUserCapData;)V"),
+                  "(Landroid/system/StructCapUserHeader;[Landroid/system/StructCapUserData;)V"),
     NATIVE_METHOD(Linux, chmod, "(Ljava/lang/String;I)V"),
     NATIVE_METHOD(Linux, chown, "(Ljava/lang/String;II)V"),
     NATIVE_METHOD(Linux, close, "(Ljava/io/FileDescriptor;)V"),
