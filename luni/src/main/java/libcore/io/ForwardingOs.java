@@ -23,8 +23,8 @@ import android.system.GaiException;
 import android.system.Int32Ref;
 import android.system.Int64Ref;
 import android.system.StructAddrinfo;
-import android.system.StructUserCapData;
-import android.system.StructUserCapHeader;
+import android.system.StructCapUserData;
+import android.system.StructCapUserHeader;
 import android.system.StructGroupReq;
 import android.system.StructIfaddrs;
 import android.system.StructLinger;
@@ -149,7 +149,7 @@ public class ForwardingOs implements Os {
      * @hide
      */
     @Override
-    public StructUserCapData[] capget(StructUserCapHeader hdr) throws ErrnoException {
+    public StructCapUserData[] capget(StructCapUserHeader hdr) throws ErrnoException {
         return os.capget(hdr);
     }
 
@@ -157,7 +157,7 @@ public class ForwardingOs implements Os {
      * @hide
      */
     @Override
-    public void capset(StructUserCapHeader hdr, StructUserCapData[] data) throws ErrnoException {
+    public void capset(StructCapUserHeader hdr, StructCapUserData[] data) throws ErrnoException {
         os.capset(hdr, data);
     }
 
