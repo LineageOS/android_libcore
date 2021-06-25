@@ -5,10 +5,10 @@ android-libcore-team+review@google.com
 
 # People who can approve changes for submission; don't send review emails to them
 # unless you know what you're doing.
-dauletz@google.com
 mingaleev@google.com
 nfuller@google.com
 nikitai@google.com
+oth@google.com
 paulduffin@google.com
 prb@google.com
 rpl@google.com
