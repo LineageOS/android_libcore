@@ -86,7 +86,7 @@ public final class Os {
      */
     @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static @Nullable StructUserCapData[] capget(@NonNull StructUserCapHeader hdr) throws ErrnoException {
+    public static @Nullable StructCapUserData[] capget(@NonNull StructCapUserHeader hdr) throws ErrnoException {
         return Libcore.os.capget(hdr);
     }
 
@@ -101,7 +101,7 @@ public final class Os {
      *                        set, or to set a capability in the effective set that is
      *                        not in the permitted set; or
      *                        the caller attempted to use
-     *                        {@link capset( StructUserCapHeader , StructUserCapData[])}
+     *                        {@link capset(StructCapUserHeader, StructCapUserData[])}
      *                        to modify the capabilities of a thread other than itself,
      *                        but lacked sufficient privilege;
      *                        or there is no such thread.
@@ -110,7 +110,7 @@ public final class Os {
      */
     @SystemApi(client = MODULE_LIBRARIES)
     @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
-    public static void capset(@NonNull StructUserCapHeader hdr, @NonNull StructUserCapData[] data)
+    public static void capset(@NonNull StructCapUserHeader hdr, @NonNull StructCapUserData[] data)
             throws ErrnoException {
         Libcore.os.capset(hdr, data);
     }

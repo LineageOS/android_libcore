@@ -30,11 +30,11 @@ public final class OsConstants {
     }
 
     /**
-     * Returns the index of the element in the {@link StructUserCapData} (cap_user_data)
+     * Returns the index of the element in the {@link StructCapUserData} (cap_user_data)
      * array that this capability is stored in.
      *
      * @param x capability
-     * @return index of the element in the {@link StructUserCapData} array storing this capability
+     * @return index of the element in the {@link StructCapUserData} array storing this capability
      *
      * @hide
      */
@@ -45,7 +45,7 @@ public final class OsConstants {
 
     /**
      * Returns the mask for the given capability. This is relative to the capability's
-     * {@link StructUserCapData} (cap_user_data) element, the index of which can be
+     * {@link StructCapUserData} (cap_user_data) element, the index of which can be
      * retrieved with {@link CAP_TO_INDEX}.
      *
      * @param x capability
@@ -419,9 +419,9 @@ public final class OsConstants {
     public static final int IP_TOS = placeholder();
     public static final int IP_TTL = placeholder();
     /**
-     * Version constant to be used in {@link StructUserCapHeader} with
-     * {@link Os#capset(StructUserCapHeader, StructUserCapData[])} and
-     * {@link Os#capget(StructUserCapHeader)}.
+     * Version constant to be used in {@link StructCapUserHeader} with
+     * {@link Os#capset(StructCapUserHeader, StructCapUserData[])} and
+     * {@link Os#capget(StructCapUserHeader)}.
      *
      * See <a href="https://man7.org/linux/man-pages/man2/capget.2.html">capget(2)</a>.
      *
