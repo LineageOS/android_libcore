@@ -78,6 +78,7 @@ public static long round(double a) { throw new RuntimeException("Stub!"); }
 
 public static double random() { throw new RuntimeException("Stub!"); }
 
+@libcore.api.CorePlatformApi
 public static long randomLongInternal() { throw new RuntimeException("Stub!"); }
 
 public static int addExact(int x, int y) { throw new RuntimeException("Stub!"); }
