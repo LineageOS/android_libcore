@@ -113,6 +113,34 @@ package android.system {
 
 }
 
+package com.android.okhttp.internalandroidapi {
+
+  public final class AndroidResponseCacheAdapter {
+    ctor public AndroidResponseCacheAdapter(@NonNull com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder);
+    method public void close() throws java.io.IOException;
+    method public void delete() throws java.io.IOException;
+    method public void flush() throws java.io.IOException;
+    method @Nullable public java.net.CacheResponse get(@NonNull java.net.URI, @NonNull String, @Nullable java.util.Map<java.lang.String,java.util.List<java.lang.String>>) throws java.io.IOException;
+    method @NonNull public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+    method public int getHitCount();
+    method public long getMaxSize();
+    method public int getNetworkCount();
+    method public int getRequestCount();
+    method public long getSize() throws java.io.IOException;
+    method @Nullable public java.net.CacheRequest put(@NonNull java.net.URI, @NonNull java.net.URLConnection) throws java.io.IOException;
+  }
+
+  public interface HasCacheHolder {
+    method @NonNull public com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder getCacheHolder();
+  }
+
+  public static final class HasCacheHolder.CacheHolder {
+    method @NonNull public static com.android.okhttp.internalandroidapi.HasCacheHolder.CacheHolder create(@NonNull java.io.File, long);
+    method public boolean isEquivalent(@NonNull java.io.File, long);
+  }
+
+}
+
 package dalvik.annotation.codegen {
 
   @java.lang.annotation.Repeatable(CovariantReturnType.CovariantReturnTypes.class) @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.CLASS) @java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD}) public @interface CovariantReturnType {
@@ -331,6 +359,10 @@ package dalvik.system {
     field public static final int ACCESS_METHOD_REFLECTION = 1; // 0x1
   }
 
+  public final class VMStack {
+    method @Nullable @dalvik.annotation.optimization.FastNative public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(Thread);
+  }
+
   public final class ZygoteHooks {
     method public static void gcAndFinalize();
     method public static boolean isIndefiniteThreadSuspensionSafe();
@@ -391,6 +423,14 @@ package java.net {
     method @NonNull public static java.net.InetAddress getByNameOnNet(@Nullable String, int) throws java.net.UnknownHostException;
     method @Deprecated public static boolean isNumeric(String);
     method @Deprecated public static java.net.InetAddress parseNumericAddress(String);
+  }
+
+  public class InetSocketAddress extends java.net.SocketAddress {
+    ctor public InetSocketAddress();
+  }
+
+  public class ServerSocket implements java.io.Closeable {
+    method public java.net.SocketImpl getImpl() throws java.net.SocketException;
   }
 
   public class Socket implements java.io.Closeable {
@@ -464,6 +504,18 @@ package java.util.zip {
 
 }
 
+package javax.crypto {
+
+  public class Cipher {
+    method public javax.crypto.CipherSpi getCurrentSpi();
+  }
+
+  public class Mac implements java.lang.Cloneable {
+    method public javax.crypto.MacSpi getCurrentSpi();
+  }
+
+}
+
 package javax.net.ssl {
 
   public abstract class HttpsURLConnection extends java.net.HttpURLConnection {
@@ -504,6 +556,13 @@ package libcore.io {
     method public void rename(@Nullable String, @Nullable String) throws android.system.ErrnoException;
     method @Nullable public android.system.StructStat stat(@Nullable String) throws android.system.ErrnoException;
     method public void unlink(@Nullable String) throws android.system.ErrnoException;
+  }
+
+  public final class IoBridge {
+    method public static void closeAndSignalBlockedThreads(@NonNull java.io.FileDescriptor) throws java.io.IOException;
+    method @NonNull public static java.io.FileDescriptor open(@NonNull String, int) throws java.io.FileNotFoundException;
+    method public static int read(@NonNull java.io.FileDescriptor, @NonNull byte[], int, int) throws java.io.IOException;
+    method public static void write(@NonNull java.io.FileDescriptor, @NonNull byte[], int, int) throws java.io.IOException;
   }
 
   public final class IoUtils {
@@ -588,6 +647,16 @@ package libcore.net.http {
 }
 
 package libcore.util {
+
+  public final class EmptyArray {
+    field @NonNull public static final boolean[] BOOLEAN;
+    field @NonNull public static final byte[] BYTE;
+    field @NonNull public static final float[] FLOAT;
+    field @NonNull public static final int[] INT;
+    field @NonNull public static final long[] LONG;
+    field @NonNull public static final Object[] OBJECT;
+    field @NonNull public static final String[] STRING;
+  }
 
   public final class FP16 {
     method public static short ceil(short);
