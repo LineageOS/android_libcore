@@ -312,9 +312,7 @@ public final class IoUtils {
      *
      * @hide
      */
-    @libcore.api.CorePlatformApi
-    @Deprecated
-    public static void deleteContents(File dir) throws IOException {
+    public static void deleteContents(@NonNull File dir) throws IOException {
         File[] files = dir.listFiles();
         if (files != null) {
             for (File file : files) {
