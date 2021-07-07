@@ -29,7 +29,8 @@ public class ScannerBenchmark {
     private static final Random RANDOM = new Random();
 
     enum LineLength {
-        SHORT(1, 50),
+        TINY(1, 5),
+        SHORT(10, 50),
         MEDIUM(100, 1_000),
         LONG(10_000, 50_000);
 
@@ -50,7 +51,7 @@ public class ScannerBenchmark {
         }
     }
 
-    @Param({"SHORT", "MEDIUM"})
+    @Param({"TINY", "SHORT", "MEDIUM"})
     private LineLength lineLength;
 
     @Param({"1", "5", "10", "100", "1000", "10000", "25000"})
