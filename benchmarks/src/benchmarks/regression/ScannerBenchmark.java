@@ -24,12 +24,13 @@ import java.io.ByteArrayInputStream;
 import java.util.Random;
 import java.util.Scanner;
 
-public class ScannerReadFileBenchmark {
+public class ScannerBenchmark {
 
     private static final Random RANDOM = new Random();
 
     enum LineLength {
-        SHORT(1, 50),
+        TINY(1, 5),
+        SHORT(10, 50),
         MEDIUM(100, 1_000),
         LONG(10_000, 50_000);
 
@@ -50,10 +51,10 @@ public class ScannerReadFileBenchmark {
         }
     }
 
-    @Param({"SHORT", "MEDIUM"})
+    @Param({"TINY", "SHORT", "MEDIUM"})
     private LineLength lineLength;
 
-    @Param({"1", "5", "10", "100", "1000", "10000"})
+    @Param({"1", "5", "10", "100", "1000", "10000", "25000"})
     private int linesCount;
 
     private byte[] data;
@@ -102,12 +103,10 @@ public class ScannerReadFileBenchmark {
     }
 
     @Benchmark
-    void readAll(int nreps) {
-        for (int i = 0; i < nreps; ++i) {
-            Scanner scanner = new Scanner(new ByteArrayInputStream(data));
-            while (scanner.hasNext()) {
-                scanner.nextLine();
-            }
+    void readAll() {
+        Scanner scanner = new Scanner(new ByteArrayInputStream(data));
+        while (scanner.hasNext()) {
+            scanner.nextLine();
         }
     }
 }

@@ -90,6 +90,7 @@ filegroup {
         "libart/src/main/java/java/lang/invoke/ByteArrayViewVarHandle.java",
         "libart/src/main/java/java/lang/invoke/ByteBufferViewVarHandle.java",
         "libart/src/main/java/java/lang/invoke/FieldVarHandle.java",
+        "libart/src/main/java/java/lang/invoke/StaticFieldVarHandle.java",
     ],
     path: "libart/src/main",
     visibility: ["//visibility:private"],
