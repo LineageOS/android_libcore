@@ -1505,7 +1505,7 @@ assertEquals(""+l, (String) MH_this.invokeExact(subl)); // Listie method
             final boolean isStatic = true;
             final boolean performAccessChecks = true;
             commonFieldChecks(field, decl, type, isStatic, performAccessChecks);
-            return FieldVarHandle.create(field);
+            return StaticFieldVarHandle.create(field);
         }
         // END Android-changed: OpenJDK 9+181 VarHandle API factory method.
 
@@ -1828,7 +1828,7 @@ return mh1;
             final boolean isStatic = Modifier.isStatic(f.getModifiers());
             final boolean performAccessChecks = true;
             commonFieldChecks(f, f.getDeclaringClass(), f.getType(), isStatic, performAccessChecks);
-            return FieldVarHandle.create(f);
+            return isStatic ? StaticFieldVarHandle.create(f) : FieldVarHandle.create(f);
         }
         // END Android-changed: OpenJDK 9+181 VarHandle API factory method.
 
