@@ -774,16 +774,25 @@ ZIP_Open_Generic(const char *name, char **pmsg, int mode, jlong lastModified)
 {
     jzfile *zip = NULL;
 
+    /*
+     * We want to know if ZIP_Get_From_Cache fails, which isn't possible to
+     * distinguish without passing a non-null message value. Hence, if the user
+     * didn't supply a `pmsg`, we make and manage our own.
+     */
+    char *localPmsg = NULL;
+
     /* Clear zip error message */
-    if (pmsg != 0) {
-        *pmsg = NULL;
+    zip = ZIP_Get_From_Cache(name, &localPmsg, lastModified);
+
+    if (zip == NULL && localPmsg == NULL) {
+        ZFILE zfd = ZFILE_Open(name, mode);
+        zip = ZIP_Put_In_Cache(name, zfd, &localPmsg, lastModified);
     }
 
-    zip = ZIP_Get_From_Cache(name, pmsg, lastModified);
-
-    if (zip == NULL && *pmsg == NULL) {
-        ZFILE zfd = ZFILE_Open(name, mode);
-        zip = ZIP_Put_In_Cache(name, zfd, pmsg, lastModified);
+    if (pmsg == NULL) {
+      free(localPmsg);
+    } else {
+      *pmsg = localPmsg;
     }
     return zip;
 }
