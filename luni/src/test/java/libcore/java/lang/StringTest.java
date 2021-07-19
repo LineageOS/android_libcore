@@ -170,6 +170,7 @@ public class StringTest extends TestCase {
         assertEquals("[104, 63]", Arrays.toString("h\ud800".getBytes(cs)));
         // A high surrogate not followed by a low surrogate is an error replaced with '?'.
         assertEquals("[104, 63, 105]", Arrays.toString("h\ud800i".getBytes(cs)));
+        assertEquals("[104, 63, -48, -128]", Arrays.toString("h\ud800\u0400".getBytes(cs)));
     }
 
     public void test_new_String_bad() throws Exception {
