@@ -4288,6 +4288,9 @@ package java.lang.invoke {
   public class MethodHandles {
     method public static java.lang.invoke.MethodHandle arrayElementGetter(Class<?>) throws java.lang.IllegalArgumentException;
     method public static java.lang.invoke.MethodHandle arrayElementSetter(Class<?>) throws java.lang.IllegalArgumentException;
+    method public static java.lang.invoke.VarHandle arrayElementVarHandle(Class<?>) throws java.lang.IllegalArgumentException;
+    method public static java.lang.invoke.VarHandle byteArrayViewVarHandle(Class<?>, java.nio.ByteOrder) throws java.lang.IllegalArgumentException;
+    method public static java.lang.invoke.VarHandle byteBufferViewVarHandle(Class<?>, java.nio.ByteOrder) throws java.lang.IllegalArgumentException;
     method public static java.lang.invoke.MethodHandle catchException(java.lang.invoke.MethodHandle, Class<? extends java.lang.Throwable>, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle collectArguments(java.lang.invoke.MethodHandle, int, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle constant(Class<?>, Object);
@@ -4308,6 +4311,8 @@ package java.lang.invoke {
     method public static <T extends java.lang.reflect.Member> T reflectAs(Class<T>, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle spreadInvoker(java.lang.invoke.MethodType, int);
     method public static java.lang.invoke.MethodHandle throwException(Class<?>, Class<? extends java.lang.Throwable>);
+    method public static java.lang.invoke.MethodHandle varHandleExactInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
+    method public static java.lang.invoke.MethodHandle varHandleInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
   }
 
   public static final class MethodHandles.Lookup {
@@ -4319,6 +4324,8 @@ package java.lang.invoke {
     method public java.lang.invoke.MethodHandle findStatic(Class<?>, String, java.lang.invoke.MethodType) throws java.lang.IllegalAccessException, java.lang.NoSuchMethodException;
     method public java.lang.invoke.MethodHandle findStaticGetter(Class<?>, String, Class<?>) throws java.lang.IllegalAccessException, java.lang.NoSuchFieldException;
     method public java.lang.invoke.MethodHandle findStaticSetter(Class<?>, String, Class<?>) throws java.lang.IllegalAccessException, java.lang.NoSuchFieldException;
+    method public java.lang.invoke.VarHandle findStaticVarHandle(Class<?>, String, Class<?>) throws java.lang.IllegalAccessException, java.lang.NoSuchFieldException;
+    method public java.lang.invoke.VarHandle findVarHandle(Class<?>, String, Class<?>) throws java.lang.IllegalAccessException, java.lang.NoSuchFieldException;
     method public java.lang.invoke.MethodHandle findVirtual(Class<?>, String, java.lang.invoke.MethodType) throws java.lang.IllegalAccessException, java.lang.NoSuchMethodException;
     method public java.lang.invoke.MethodHandles.Lookup in(Class<?>);
     method public Class<?> lookupClass();
@@ -4329,6 +4336,7 @@ package java.lang.invoke {
     method public java.lang.invoke.MethodHandle unreflectGetter(java.lang.reflect.Field) throws java.lang.IllegalAccessException;
     method public java.lang.invoke.MethodHandle unreflectSetter(java.lang.reflect.Field) throws java.lang.IllegalAccessException;
     method public java.lang.invoke.MethodHandle unreflectSpecial(java.lang.reflect.Method, Class<?>) throws java.lang.IllegalAccessException;
+    method public java.lang.invoke.VarHandle unreflectVarHandle(java.lang.reflect.Field) throws java.lang.IllegalAccessException;
     field public static final int PACKAGE = 8; // 0x8
     field public static final int PRIVATE = 2; // 0x2
     field public static final int PROTECTED = 4; // 0x4
@@ -4372,6 +4380,86 @@ package java.lang.invoke {
     method public final java.lang.invoke.MethodHandle dynamicInvoker();
     method public final java.lang.invoke.MethodHandle getTarget();
     method public void setTarget(java.lang.invoke.MethodHandle);
+  }
+
+  public abstract class VarHandle {
+    method public final java.lang.invoke.MethodType accessModeType(java.lang.invoke.VarHandle.AccessMode);
+    method public static void acquireFence();
+    method public final Object compareAndExchange(java.lang.Object...);
+    method public final Object compareAndExchangeAcquire(java.lang.Object...);
+    method public final Object compareAndExchangeRelease(java.lang.Object...);
+    method public final boolean compareAndSet(java.lang.Object...);
+    method public final java.util.List<java.lang.Class<?>> coordinateTypes();
+    method public static void fullFence();
+    method public final Object get(java.lang.Object...);
+    method public final Object getAcquire(java.lang.Object...);
+    method public final Object getAndAdd(java.lang.Object...);
+    method public final Object getAndAddAcquire(java.lang.Object...);
+    method public final Object getAndAddRelease(java.lang.Object...);
+    method public final Object getAndBitwiseAnd(java.lang.Object...);
+    method public final Object getAndBitwiseAndAcquire(java.lang.Object...);
+    method public final Object getAndBitwiseAndRelease(java.lang.Object...);
+    method public final Object getAndBitwiseOr(java.lang.Object...);
+    method public final Object getAndBitwiseOrAcquire(java.lang.Object...);
+    method public final Object getAndBitwiseOrRelease(java.lang.Object...);
+    method public final Object getAndBitwiseXor(java.lang.Object...);
+    method public final Object getAndBitwiseXorAcquire(java.lang.Object...);
+    method public final Object getAndBitwiseXorRelease(java.lang.Object...);
+    method public final Object getAndSet(java.lang.Object...);
+    method public final Object getAndSetAcquire(java.lang.Object...);
+    method public final Object getAndSetRelease(java.lang.Object...);
+    method public final Object getOpaque(java.lang.Object...);
+    method public final Object getVolatile(java.lang.Object...);
+    method public final boolean isAccessModeSupported(java.lang.invoke.VarHandle.AccessMode);
+    method public static void loadLoadFence();
+    method public static void releaseFence();
+    method public final void set(java.lang.Object...);
+    method public final void setOpaque(java.lang.Object...);
+    method public final void setRelease(java.lang.Object...);
+    method public final void setVolatile(java.lang.Object...);
+    method public static void storeStoreFence();
+    method public final java.lang.invoke.MethodHandle toMethodHandle(java.lang.invoke.VarHandle.AccessMode);
+    method public final Class<?> varType();
+    method public final boolean weakCompareAndSet(java.lang.Object...);
+    method public final boolean weakCompareAndSetAcquire(java.lang.Object...);
+    method public final boolean weakCompareAndSetPlain(java.lang.Object...);
+    method public final boolean weakCompareAndSetRelease(java.lang.Object...);
+  }
+
+  public enum VarHandle.AccessMode {
+    method public String methodName();
+    method public static java.lang.invoke.VarHandle.AccessMode valueFromMethodName(String);
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode COMPARE_AND_EXCHANGE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode COMPARE_AND_EXCHANGE_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode COMPARE_AND_EXCHANGE_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode COMPARE_AND_SET;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_ADD;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_ADD_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_ADD_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_AND;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_AND_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_AND_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_OR;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_OR_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_OR_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_XOR;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_XOR_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_BITWISE_XOR_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_SET;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_SET_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_AND_SET_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_OPAQUE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode GET_VOLATILE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode SET;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode SET_OPAQUE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode SET_RELEASE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode SET_VOLATILE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode WEAK_COMPARE_AND_SET;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode WEAK_COMPARE_AND_SET_ACQUIRE;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode WEAK_COMPARE_AND_SET_PLAIN;
+    enum_constant public static final java.lang.invoke.VarHandle.AccessMode WEAK_COMPARE_AND_SET_RELEASE;
   }
 
   public class VolatileCallSite extends java.lang.invoke.CallSite {
