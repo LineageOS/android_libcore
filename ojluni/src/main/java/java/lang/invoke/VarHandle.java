@@ -431,7 +431,6 @@ import java.util.Objects;
  * @see MethodHandles
  * @see MethodType
  * @since 9
- * @hide
  */
 public abstract class VarHandle {
     // Android-added: Using sun.misc.Unsafe for fence implementation.

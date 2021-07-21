@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 7.1.0-dev" type="baseline" client="" dependencies="true" name="" variant="all" version="7.1.0-dev">
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ArrayElementVarHandle extends VarHandle {"
+        errorLine2="                                          ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ArrayElementVarHandle.java"
+            line="27"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteArrayViewVarHandle extends VarHandle {"
+        errorLine2="                                           ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteArrayViewVarHandle.java"
+            line="25"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteBufferViewVarHandle extends VarHandle {"
+        errorLine2="                                            ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteBufferViewVarHandle.java"
+            line="26"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="class FieldVarHandle extends VarHandle {"
+        errorLine2="                             ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/FieldVarHandle.java"
+            line="26"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="            } else if (refc == VarHandle.class) {"
+        errorLine2="                               ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="900"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        Class&lt;?> refc = VarHandle.class;"
+        errorLine2="                        ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2470"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        MethodType methodType = type.insertParameterTypes(0, VarHandle.class);"
+        errorLine2="                                                             ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2477"
+            column="62"/>
+    </issue>
+
+</issues>
