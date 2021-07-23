@@ -15236,37 +15236,24 @@ package java.util.concurrent.atomic {
     ctor public AtomicInteger();
     method public final int accumulateAndGet(int, java.util.function.IntBinaryOperator);
     method public final int addAndGet(int);
-    method public final int compareAndExchange(int, int);
-    method public final int compareAndExchangeAcquire(int, int);
-    method public final int compareAndExchangeRelease(int, int);
     method public final boolean compareAndSet(int, int);
     method public final int decrementAndGet();
     method public double doubleValue();
     method public float floatValue();
     method public final int get();
-    method public final int getAcquire();
     method public final int getAndAccumulate(int, java.util.function.IntBinaryOperator);
     method public final int getAndAdd(int);
     method public final int getAndDecrement();
     method public final int getAndIncrement();
     method public final int getAndSet(int);
     method public final int getAndUpdate(java.util.function.IntUnaryOperator);
-    method public final int getOpaque();
-    method public final int getPlain();
     method public final int incrementAndGet();
     method public int intValue();
     method public final void lazySet(int);
     method public long longValue();
     method public final void set(int);
-    method public final void setOpaque(int);
-    method public final void setPlain(int);
-    method public final void setRelease(int);
     method public final int updateAndGet(java.util.function.IntUnaryOperator);
-    method @Deprecated public final boolean weakCompareAndSet(int, int);
-    method public final boolean weakCompareAndSetAcquire(int, int);
-    method public final boolean weakCompareAndSetPlain(int, int);
-    method public final boolean weakCompareAndSetRelease(int, int);
-    method public final boolean weakCompareAndSetVolatile(int, int);
+    method public final boolean weakCompareAndSet(int, int);
   }
 
   public class AtomicIntegerArray implements java.io.Serializable {
