@@ -35,19 +35,18 @@
 
 package java.util.concurrent.atomic;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.function.IntBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
 /**
  * An {@code int} value that may be updated atomically.  See the
- * {@link VarHandle} specification for descriptions of the properties
- * of atomic accesses. An {@code AtomicInteger} is used in
- * applications such as atomically incremented counters, and cannot be
- * used as a replacement for an {@link java.lang.Integer}. However,
- * this class does extend {@code Number} to allow uniform access by
- * tools and utilities that deal with numerically-based classes.
+ * {@link java.util.concurrent.atomic} package specification for
+ * description of the properties of atomic variables. An
+ * {@code AtomicInteger} is used in applications such as atomically
+ * incremented counters, and cannot be used as a replacement for an
+ * {@link java.lang.Integer}. However, this class does extend
+ * {@code Number} to allow uniform access by tools and utilities that
+ * deal with numerically-based classes.
  *
  * @since 1.5
  * @author Doug Lea
@@ -55,23 +54,17 @@ import java.util.function.IntUnaryOperator;
 public class AtomicInteger extends Number implements java.io.Serializable {
     private static final long serialVersionUID = 6214790243416807050L;
 
-    /*
-     * This class intended to be implemented using VarHandles, but there
-     * are unresolved cyclic startup dependencies.
-     */
-    // BEGIN Android-changed: Using VarHandle instead of Unsafe
-    // private static final jdk.internal.misc.Unsafe U = jdk.internal.misc.Unsafe.getUnsafe();
-    // private static final long VALUE = U.objectFieldOffset(AtomicInteger.class, "value");
-    private static final VarHandle VALUE;
+    private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+    private static final long VALUE;
+
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            VALUE = l.findVarHandle(AtomicInteger.class, "value", int.class);
+            VALUE = U.objectFieldOffset
+                (AtomicInteger.class.getDeclaredField("value"));
         } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new Error(e);
         }
     }
-    // END Android-changed: Using VarHandle instead of Unsafe
 
     private volatile int value;
 
@@ -91,8 +84,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Returns the current value,
-     * with memory effects as specified by {@link VarHandle#getVolatile}.
+     * Gets the current value.
      *
      * @return the current value
      */
@@ -101,8 +93,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Sets the value to {@code newValue},
-     * with memory effects as specified by {@link VarHandle#setVolatile}.
+     * Sets to the given value.
      *
      * @param newValue the new value
      */
@@ -111,171 +102,112 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Sets the value to {@code newValue},
-     * with memory effects as specified by {@link VarHandle#setRelease}.
+     * Eventually sets to the given value.
      *
      * @param newValue the new value
      * @since 1.6
      */
     public final void lazySet(int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putIntRelease(this, VALUE, newValue);
-        VALUE.setRelease(this, newValue);
+        U.putOrderedInt(this, VALUE, newValue);
     }
 
     /**
-     * Atomically sets the value to {@code newValue} and returns the old value,
-     * with memory effects as specified by {@link VarHandle#getAndSet}.
+     * Atomically sets to the given value and returns the old value.
      *
      * @param newValue the new value
      * @return the previous value
      */
     public final int getAndSet(int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndSetInt(this, VALUE, newValue);
-        return (int)VALUE.getAndSet(this, newValue);
+        return U.getAndSetInt(this, VALUE, newValue);
     }
 
     /**
-     * Atomically sets the value to {@code newValue}
-     * if the current value {@code == expectedValue},
-     * with memory effects as specified by {@link VarHandle#compareAndSet}.
+     * Atomically sets the value to the given updated value
+     * if the current value {@code ==} the expected value.
      *
-     * @param expectedValue the expected value
-     * @param newValue the new value
+     * @param expect the expected value
+     * @param update the new value
      * @return {@code true} if successful. False return indicates that
      * the actual value was not equal to the expected value.
      */
-    public final boolean compareAndSet(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndSetInt(this, VALUE, expectedValue, newValue);
-        return VALUE.compareAndSet(this, expectedValue, newValue);
+    public final boolean compareAndSet(int expect, int update) {
+        return U.compareAndSwapInt(this, VALUE, expect, update);
     }
 
     /**
-     * Possibly atomically sets the value to {@code newValue}
-     * if the current value {@code == expectedValue},
-     * with memory effects as specified by {@link VarHandle#weakCompareAndSetPlain}.
+     * Atomically sets the value to the given updated value
+     * if the current value {@code ==} the expected value.
      *
-     * @deprecated This method has plain memory effects but the method
-     * name implies volatile memory effects (see methods such as
-     * {@link #compareAndExchange} and {@link #compareAndSet}).  To avoid
-     * confusion over plain or volatile memory effects it is recommended that
-     * the method {@link #weakCompareAndSetPlain} be used instead.
+     * <p><a href="package-summary.html#weakCompareAndSet">May fail
+     * spuriously and does not provide ordering guarantees</a>, so is
+     * only rarely an appropriate alternative to {@code compareAndSet}.
      *
-     * @param expectedValue the expected value
-     * @param newValue the new value
+     * @param expect the expected value
+     * @param update the new value
      * @return {@code true} if successful
-     * @see #weakCompareAndSetPlain
      */
-    @Deprecated(since="9")
-    public final boolean weakCompareAndSet(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetIntPlain(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
+    public final boolean weakCompareAndSet(int expect, int update) {
+        return U.compareAndSwapInt(this, VALUE, expect, update);
     }
 
     /**
-     * Possibly atomically sets the value to {@code newValue}
-     * if the current value {@code == expectedValue},
-     * with memory effects as specified by {@link VarHandle#weakCompareAndSetPlain}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return {@code true} if successful
-     * @since 9
-     */
-    public final boolean weakCompareAndSetPlain(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetIntPlain(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetPlain(this, expectedValue, newValue);
-    }
-
-    /**
-     * Atomically increments the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
-     *
-     * <p>Equivalent to {@code getAndAdd(1)}.
+     * Atomically increments by one the current value.
      *
      * @return the previous value
      */
     public final int getAndIncrement() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, 1);
-        return (int)VALUE.getAndAdd(this, 1);
+        return U.getAndAddInt(this, VALUE, 1);
     }
 
     /**
-     * Atomically decrements the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
-     *
-     * <p>Equivalent to {@code getAndAdd(-1)}.
+     * Atomically decrements by one the current value.
      *
      * @return the previous value
      */
     public final int getAndDecrement() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, -1);
-        return (int)VALUE.getAndAdd(this, -1);
+        return U.getAndAddInt(this, VALUE, -1);
     }
 
     /**
-     * Atomically adds the given value to the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
+     * Atomically adds the given value to the current value.
      *
      * @param delta the value to add
      * @return the previous value
      */
     public final int getAndAdd(int delta) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, delta);
-        return (int)VALUE.getAndAdd(this, delta);
+        return U.getAndAddInt(this, VALUE, delta);
     }
 
     /**
-     * Atomically increments the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
-     *
-     * <p>Equivalent to {@code addAndGet(1)}.
+     * Atomically increments by one the current value.
      *
      * @return the updated value
      */
     public final int incrementAndGet() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, 1) + 1;
-        return (int)VALUE.getAndAdd(this, 1) + 1;
+        return U.getAndAddInt(this, VALUE, 1) + 1;
     }
 
     /**
-     * Atomically decrements the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
-     *
-     * <p>Equivalent to {@code addAndGet(-1)}.
+     * Atomically decrements by one the current value.
      *
      * @return the updated value
      */
     public final int decrementAndGet() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, -1) - 1;
-        return (int)VALUE.getAndAdd(this, -1) - 1;
+        return U.getAndAddInt(this, VALUE, -1) - 1;
     }
 
     /**
-     * Atomically adds the given value to the current value,
-     * with memory effects as specified by {@link VarHandle#getAndAdd}.
+     * Atomically adds the given value to the current value.
      *
      * @param delta the value to add
      * @return the updated value
      */
     public final int addAndGet(int delta) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getAndAddInt(this, VALUE, delta) + delta;
-        return (int)VALUE.getAndAdd(this, delta) + delta;
+        return U.getAndAddInt(this, VALUE, delta) + delta;
     }
 
     /**
-     * Atomically updates (with memory effects as specified by {@link
-     * VarHandle#compareAndSet}) the current value with the results of
+     * Atomically updates the current value with the results of
      * applying the given function, returning the previous value. The
      * function should be side-effect-free, since it may be re-applied
      * when attempted updates fail due to contention among threads.
@@ -285,19 +217,16 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 1.8
      */
     public final int getAndUpdate(IntUnaryOperator updateFunction) {
-        int prev = get(), next = 0;
-        for (boolean haveNext = false;;) {
-            if (!haveNext)
-                next = updateFunction.applyAsInt(prev);
-            if (weakCompareAndSetVolatile(prev, next))
-                return prev;
-            haveNext = (prev == (prev = get()));
-        }
+        int prev, next;
+        do {
+            prev = get();
+            next = updateFunction.applyAsInt(prev);
+        } while (!compareAndSet(prev, next));
+        return prev;
     }
 
     /**
-     * Atomically updates (with memory effects as specified by {@link
-     * VarHandle#compareAndSet}) the current value with the results of
+     * Atomically updates the current value with the results of
      * applying the given function, returning the updated value. The
      * function should be side-effect-free, since it may be re-applied
      * when attempted updates fail due to contention among threads.
@@ -307,25 +236,22 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      * @since 1.8
      */
     public final int updateAndGet(IntUnaryOperator updateFunction) {
-        int prev = get(), next = 0;
-        for (boolean haveNext = false;;) {
-            if (!haveNext)
-                next = updateFunction.applyAsInt(prev);
-            if (weakCompareAndSetVolatile(prev, next))
-                return next;
-            haveNext = (prev == (prev = get()));
-        }
+        int prev, next;
+        do {
+            prev = get();
+            next = updateFunction.applyAsInt(prev);
+        } while (!compareAndSet(prev, next));
+        return next;
     }
 
     /**
-     * Atomically updates (with memory effects as specified by {@link
-     * VarHandle#compareAndSet}) the current value with the results of
+     * Atomically updates the current value with the results of
      * applying the given function to the current and given values,
      * returning the previous value. The function should be
      * side-effect-free, since it may be re-applied when attempted
-     * updates fail due to contention among threads.  The function is
-     * applied with the current value as its first argument, and the
-     * given update as the second argument.
+     * updates fail due to contention among threads.  The function
+     * is applied with the current value as its first argument,
+     * and the given update as the second argument.
      *
      * @param x the update value
      * @param accumulatorFunction a side-effect-free function of two arguments
@@ -334,25 +260,22 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      */
     public final int getAndAccumulate(int x,
                                       IntBinaryOperator accumulatorFunction) {
-        int prev = get(), next = 0;
-        for (boolean haveNext = false;;) {
-            if (!haveNext)
-                next = accumulatorFunction.applyAsInt(prev, x);
-            if (weakCompareAndSetVolatile(prev, next))
-                return prev;
-            haveNext = (prev == (prev = get()));
-        }
+        int prev, next;
+        do {
+            prev = get();
+            next = accumulatorFunction.applyAsInt(prev, x);
+        } while (!compareAndSet(prev, next));
+        return prev;
     }
 
     /**
-     * Atomically updates (with memory effects as specified by {@link
-     * VarHandle#compareAndSet}) the current value with the results of
+     * Atomically updates the current value with the results of
      * applying the given function to the current and given values,
      * returning the updated value. The function should be
      * side-effect-free, since it may be re-applied when attempted
-     * updates fail due to contention among threads.  The function is
-     * applied with the current value as its first argument, and the
-     * given update as the second argument.
+     * updates fail due to contention among threads.  The function
+     * is applied with the current value as its first argument,
+     * and the given update as the second argument.
      *
      * @param x the update value
      * @param accumulatorFunction a side-effect-free function of two arguments
@@ -361,14 +284,12 @@ public class AtomicInteger extends Number implements java.io.Serializable {
      */
     public final int accumulateAndGet(int x,
                                       IntBinaryOperator accumulatorFunction) {
-        int prev = get(), next = 0;
-        for (boolean haveNext = false;;) {
-            if (!haveNext)
-                next = accumulatorFunction.applyAsInt(prev, x);
-            if (weakCompareAndSetVolatile(prev, next))
-                return next;
-            haveNext = (prev == (prev = get()));
-        }
+        int prev, next;
+        do {
+            prev = get();
+            next = accumulatorFunction.applyAsInt(prev, x);
+        } while (!compareAndSet(prev, next));
+        return next;
     }
 
     /**
@@ -380,10 +301,7 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Returns the current value of this {@code AtomicInteger} as an
-     * {@code int},
-     * with memory effects as specified by {@link VarHandle#getVolatile}.
-     *
+     * Returns the value of this {@code AtomicInteger} as an {@code int}.
      * Equivalent to {@link #get()}.
      */
     public int intValue() {
@@ -391,9 +309,8 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Returns the current value of this {@code AtomicInteger} as a
-     * {@code long} after a widening primitive conversion,
-     * with memory effects as specified by {@link VarHandle#getVolatile}.
+     * Returns the value of this {@code AtomicInteger} as a {@code long}
+     * after a widening primitive conversion.
      * @jls 5.1.2 Widening Primitive Conversions
      */
     public long longValue() {
@@ -401,9 +318,8 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Returns the current value of this {@code AtomicInteger} as a
-     * {@code float} after a widening primitive conversion,
-     * with memory effects as specified by {@link VarHandle#getVolatile}.
+     * Returns the value of this {@code AtomicInteger} as a {@code float}
+     * after a widening primitive conversion.
      * @jls 5.1.2 Widening Primitive Conversions
      */
     public float floatValue() {
@@ -411,199 +327,12 @@ public class AtomicInteger extends Number implements java.io.Serializable {
     }
 
     /**
-     * Returns the current value of this {@code AtomicInteger} as a
-     * {@code double} after a widening primitive conversion,
-     * with memory effects as specified by {@link VarHandle#getVolatile}.
+     * Returns the value of this {@code AtomicInteger} as a {@code double}
+     * after a widening primitive conversion.
      * @jls 5.1.2 Widening Primitive Conversions
      */
     public double doubleValue() {
         return (double)get();
-    }
-
-    // jdk9
-
-    /**
-     * Returns the current value, with memory semantics of reading as
-     * if the variable was declared non-{@code volatile}.
-     *
-     * @return the value
-     * @since 9
-     */
-    public final int getPlain() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getInt(this, VALUE);
-        return (int)VALUE.get(this);
-    }
-
-    /**
-     * Sets the value to {@code newValue}, with memory semantics
-     * of setting as if the variable was declared non-{@code volatile}
-     * and non-{@code final}.
-     *
-     * @param newValue the new value
-     * @since 9
-     */
-    public final void setPlain(int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putInt(this, VALUE, newValue);
-        VALUE.set(this, newValue);
-    }
-
-    /**
-     * Returns the current value,
-     * with memory effects as specified by {@link VarHandle#getOpaque}.
-     *
-     * @return the value
-     * @since 9
-     */
-    public final int getOpaque() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getIntOpaque(this, VALUE);
-        return (int)VALUE.getOpaque(this);
-    }
-
-    /**
-     * Sets the value to {@code newValue},
-     * with memory effects as specified by {@link VarHandle#setOpaque}.
-     *
-     * @param newValue the new value
-     * @since 9
-     */
-    public final void setOpaque(int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putIntOpaque(this, VALUE, newValue);
-        VALUE.setOpaque(this, newValue);
-    }
-
-    /**
-     * Returns the current value,
-     * with memory effects as specified by {@link VarHandle#getAcquire}.
-     *
-     * @return the value
-     * @since 9
-     */
-    public final int getAcquire() {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.getIntAcquire(this, VALUE);
-        return (int)VALUE.getAcquire(this);
-    }
-
-    /**
-     * Sets the value to {@code newValue},
-     * with memory effects as specified by {@link VarHandle#setRelease}.
-     *
-     * @param newValue the new value
-     * @since 9
-     */
-    public final void setRelease(int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // U.putIntRelease(this, VALUE, newValue);
-        VALUE.setRelease(this, newValue);
-    }
-
-    /**
-     * Atomically sets the value to {@code newValue} if the current value,
-     * referred to as the <em>witness value</em>, {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#compareAndExchange}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return the witness value, which will be the same as the
-     * expected value if successful
-     * @since 9
-     */
-    public final int compareAndExchange(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeInt(this, VALUE, expectedValue, newValue);
-        return (int)VALUE.compareAndExchange(this, expectedValue, newValue);
-    }
-
-    /**
-     * Atomically sets the value to {@code newValue} if the current value,
-     * referred to as the <em>witness value</em>, {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#compareAndExchangeAcquire}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return the witness value, which will be the same as the
-     * expected value if successful
-     * @since 9
-     */
-    public final int compareAndExchangeAcquire(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeIntAcquire(this, VALUE, expectedValue, newValue);
-        return (int)VALUE.compareAndExchangeAcquire(this, expectedValue, newValue);
-    }
-
-    /**
-     * Atomically sets the value to {@code newValue} if the current value,
-     * referred to as the <em>witness value</em>, {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#compareAndExchangeRelease}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return the witness value, which will be the same as the
-     * expected value if successful
-     * @since 9
-     */
-    public final int compareAndExchangeRelease(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.compareAndExchangeIntRelease(this, VALUE, expectedValue, newValue);
-        return (int)VALUE.compareAndExchangeRelease(this, expectedValue, newValue);
-    }
-
-    /**
-     * Possibly atomically sets the value to {@code newValue} if
-     * the current value {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#weakCompareAndSet}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return {@code true} if successful
-     * @since 9
-     */
-    public final boolean weakCompareAndSetVolatile(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        //return U.weakCompareAndSetInt(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSet(this, expectedValue, newValue);
-    }
-
-    /**
-     * Possibly atomically sets the value to {@code newValue} if
-     * the current value {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#weakCompareAndSetAcquire}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return {@code true} if successful
-     * @since 9
-     */
-    public final boolean weakCompareAndSetAcquire(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetIntAcquire(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetAcquire(this, expectedValue, newValue);
-    }
-
-    /**
-     * Possibly atomically sets the value to {@code newValue} if
-     * the current value {@code == expectedValue},
-     * with memory effects as specified by
-     * {@link VarHandle#weakCompareAndSetRelease}.
-     *
-     * @param expectedValue the expected value
-     * @param newValue the new value
-     * @return {@code true} if successful
-     * @since 9
-     */
-    public final boolean weakCompareAndSetRelease(int expectedValue, int newValue) {
-        // Android-changed: Using VarHandle instead of Unsafe
-        // return U.weakCompareAndSetIntRelease(this, VALUE, expectedValue, newValue);
-        return VALUE.weakCompareAndSetRelease(this, expectedValue, newValue);
     }
 
 }
