@@ -100,7 +100,6 @@ public class PathClassLoader extends BaseDexClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public PathClassLoader(
             @NonNull String dexPath, @Nullable String librarySearchPath, @Nullable ClassLoader parent,
             @Nullable ClassLoader[] sharedLibraryLoaders) {

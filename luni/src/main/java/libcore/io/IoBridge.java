@@ -95,7 +95,6 @@ import static android.system.OsConstants.*;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class IoBridge {
 
     private IoBridge() {
@@ -294,7 +293,6 @@ public final class IoBridge {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void closeAndSignalBlockedThreads(@NonNull FileDescriptor fd) throws IOException {
         if (fd == null) {
             return;
@@ -556,7 +554,6 @@ public final class IoBridge {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static @NonNull FileDescriptor open(@NonNull String path, int flags) throws FileNotFoundException {
         FileDescriptor fd = null;
         try {
@@ -598,7 +595,6 @@ public final class IoBridge {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static int read(@NonNull FileDescriptor fd, @NonNull byte[] bytes, int byteOffset, int byteCount) throws IOException {
         ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {
@@ -640,7 +636,6 @@ public final class IoBridge {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void write(@NonNull FileDescriptor fd,@NonNull  byte[] bytes, int byteOffset, int byteCount) throws IOException {
         ArrayUtils.throwsIfOutOfBounds(bytes.length, byteOffset, byteCount);
         if (byteCount == 0) {
