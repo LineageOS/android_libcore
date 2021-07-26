@@ -1408,7 +1408,7 @@ filegroup {
 // sources, these API annotations can be placed in .annotated.java stub files
 // under ojluni/annotations/mmodule. Classes must be hidden using the
 // libcore.api.Hide annotation, and then the class and the members to be exposed
-// must be annotated with libcore.api.CorePlatformApi and/or
+// must be annotated with android.annotation.SystemApi and/or
 // libcore.api.IntraCoreApi.
 filegroup {
     name: "openjdk_mmodule_extra_files",

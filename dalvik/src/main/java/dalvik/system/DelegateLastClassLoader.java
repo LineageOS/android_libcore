@@ -132,7 +132,6 @@ public final class DelegateLastClassLoader extends PathClassLoader {
      *
      * @hide
      */
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @SystemApi(client = MODULE_LIBRARIES)
     public DelegateLastClassLoader(
             String dexPath, String librarySearchPath, ClassLoader parent,
