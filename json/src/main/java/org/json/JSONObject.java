@@ -683,7 +683,6 @@ public class JSONObject {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     @NonNull public Set<@NonNull String> keySet() {
         return nameValuePairs.keySet();
     }
