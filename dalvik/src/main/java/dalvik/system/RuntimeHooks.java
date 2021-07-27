@@ -37,7 +37,6 @@ import libcore.util.Nullable;
  * @hide
  */
 @SystemApi(client = MODULE_LIBRARIES)
-@libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
 public final class RuntimeHooks {
 
     private static Supplier<String> zoneIdSupplier;
@@ -61,7 +60,6 @@ public final class RuntimeHooks {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setTimeZoneIdSupplier(@NonNull Supplier<String> zoneIdSupplier) {
         if (RuntimeHooks.zoneIdSupplier != null) {
             throw new UnsupportedOperationException("zoneIdSupplier instance already set");
@@ -91,7 +89,6 @@ public final class RuntimeHooks {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setUncaughtExceptionPreHandler(
             @Nullable Thread.UncaughtExceptionHandler uncaughtExceptionHandler) {
         Thread.setUncaughtExceptionPreHandler(uncaughtExceptionHandler);

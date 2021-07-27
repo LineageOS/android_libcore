@@ -145,7 +145,6 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void reportClassLoaderChain() {
         if (reporter == null) {
             return;
@@ -234,7 +233,6 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addDexPath(@Nullable String dexPath) {
         addDexPath(dexPath, false /*isTrusted*/);
     }
@@ -256,7 +254,6 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public void addNativePath(@NonNull Collection<String> libPaths) {
         pathList.addNativePath(libPaths);
     }
@@ -353,7 +350,6 @@ public class BaseDexClassLoader extends ClassLoader {
      */
     @UnsupportedAppUsage
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public @NonNull String getLdLibraryPath() {
         StringBuilder result = new StringBuilder();
         for (File directory : pathList.getNativeLibraryDirectories()) {
@@ -379,7 +375,6 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public static void setReporter(@Nullable Reporter newReporter) {
         reporter = newReporter;
     }
@@ -398,7 +393,6 @@ public class BaseDexClassLoader extends ClassLoader {
      * @hide
      */
     @SystemApi(client = MODULE_LIBRARIES)
-    @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
     public interface Reporter {
         /**
          * Reports the construction of a BaseDexClassLoader and provides opaque information about
@@ -413,7 +407,6 @@ public class BaseDexClassLoader extends ClassLoader {
          * @hide
          */
         @SystemApi(client = MODULE_LIBRARIES)
-        @libcore.api.CorePlatformApi(status = libcore.api.CorePlatformApi.Status.STABLE)
         void report(@NonNull Map<String, String> contextsMap);
     }
 }
