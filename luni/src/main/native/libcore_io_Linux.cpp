@@ -2321,13 +2321,18 @@ static jint Linux_sendmsg(JNIEnv* env, jobject, jobject javaFd, jobject structMs
         return -1;
     }
 
+    // Determine if the socket address is an internet address. We need to do this before invoking
+    // NET_FAILURE_RETRY(sendmsg) because that can throw and we can't call env->IsInstanceOf
+    // with a pending exception (b/194980932).
+    const bool isInetSocketAddressClass =
+            env->IsInstanceOf(sockAddrObj, JniConstants::GetInetSocketAddressClass(env));
+
     sockaddr* _sa = sa_len ? reinterpret_cast<sockaddr*>(&ss) : NULL;
     scopedMsghdrValue.setMsgNameAndLen(_sa, sa_len);
     rc  = NET_FAILURE_RETRY(env, ssize_t, sendmsg, javaFd, \
                                  &(scopedMsghdrValue.getObject()), flags);
 
-    if (sockAddrObj &&
-        !env->IsInstanceOf(sockAddrObj, JniConstants::GetInetSocketAddressClass(env))) {
+    if (sockAddrObj && !isInetSocketAddressClass) {
         // non InetSockAddress case, return now;
         return rc;
     }
