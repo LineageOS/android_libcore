@@ -73,7 +73,8 @@ public final class Compatibility {
      * {@code false}, the calling code should behave as it did in earlier releases.
      *
      * <p>When this method returns {@code true}, it will also report the change as
-     * {@link #reportUnconditionalChange(long)} would, so there is no need to call that method directly.
+     * {@link #reportUnconditionalChange(long)} would, so there is no need to call that method
+     * directly.
      *
      * @param changeId The ID of the compatibility change in question.
      * @return {@code true} if the change is enabled for the current app.
