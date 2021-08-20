@@ -15421,15 +15421,28 @@ package java.util.concurrent.atomic {
     ctor public AtomicReference(V);
     ctor public AtomicReference();
     method public final V accumulateAndGet(V, java.util.function.BinaryOperator<V>);
+    method public final V compareAndExchange(V, V);
+    method public final V compareAndExchangeAcquire(V, V);
+    method public final V compareAndExchangeRelease(V, V);
     method public final boolean compareAndSet(V, V);
     method public final V get();
+    method public final V getAcquire();
     method public final V getAndAccumulate(V, java.util.function.BinaryOperator<V>);
     method public final V getAndSet(V);
     method public final V getAndUpdate(java.util.function.UnaryOperator<V>);
+    method public final V getOpaque();
+    method public final V getPlain();
     method public final void lazySet(V);
     method public final void set(V);
+    method public final void setOpaque(V);
+    method public final void setPlain(V);
+    method public final void setRelease(V);
     method public final V updateAndGet(java.util.function.UnaryOperator<V>);
-    method public final boolean weakCompareAndSet(V, V);
+    method @Deprecated public final boolean weakCompareAndSet(V, V);
+    method public final boolean weakCompareAndSetAcquire(V, V);
+    method public final boolean weakCompareAndSetPlain(V, V);
+    method public final boolean weakCompareAndSetRelease(V, V);
+    method public final boolean weakCompareAndSetVolatile(V, V);
   }
 
   public class AtomicReferenceArray<E> implements java.io.Serializable {
