@@ -143,6 +143,8 @@ class Repo:
         if 0 != subprocess.call(['git', 'init', '-b', 'main', self.dir]):
             raise RuntimeError(
                 "Unable to initialize working git repository.")
+        subprocess.call(['git', '-C', self.dir,
+                         'config', 'rerere.enabled', 'true'])
 
     def commit_all(self, id, msg):
         if 0 != subprocess.call(['git', '-C', self.dir, 'add', '*']):
@@ -161,14 +163,59 @@ class Repo:
                                .format(branch))
 
     def merge(self, branch):
-        if 0 != subprocess.call(['git', '-C', self.dir,
+        """
+        Tries to merge in a branch and returns True if the merge commit has
+        been created. If there are conflicts to be resolved, this returns
+        False.
+        """
+        if 0 == subprocess.call(['git', '-C', self.dir,
                                 'merge', branch, '--no-edit']):
-            raise RuntimeError("Unable to merge the {} branch.".format(branch))
+            return True
+        if not self.is_merging():
+            raise RuntimeError("Unable to run merge for the {} branch."
+                               .format(branch))
+        subprocess.call(['git', '-C', self.dir, 'rerere'])
+        return False
+
+    def check_resolved_from_cache(self):
+        """
+        Checks if some conflicts have been resolved by the git rerere tool. The
+        tool only applies the previous resolution, but does not mark the file
+        as resolved afterwards. Therefore this function will go through the
+        unresolved files and see if there are outstanding conflicts. If all
+        conflicts have been resolved, the file gets stages.
+
+        Returns True if all conflicts are resolved, False otherwise.
+        """
+        # git diff --check will exit with error if there are conflicts to be
+        # resolved, therefore we need to use check=False option to avoid an
+        # exception to be raised
+        conflict_markers = subprocess.run(['git', '-C', self.dir,
+                                           'diff', '--check'],
+                                          stdout=subprocess.PIPE,
+                                          check=False).stdout
+        conflicts = subprocess.check_output(['git', '-C', self.dir, 'diff',
+                                             '--name-only', '--diff-filter=U'])
+
+        for filename in conflicts.splitlines():
+            if conflict_markers.find(filename) != -1:
+                print("{} still has conflicts, please resolve manually".
+                      format(filename))
+            else:
+                print("{} has been resolved, staging it".format(filename))
+                subprocess.call(['git', '-C', self.dir, 'add', filename])
+
+        return not self.has_conflicts()
 
     def has_changes(self):
         result = subprocess.check_output(['git', '-C', self.dir, 'status',
                                           '--porcelain'])
         return len(result) != 0
+
+    def has_conflicts(self):
+        conflicts = subprocess.check_output(['git', '-C', self.dir, 'diff',
+                                             '--name-only', '--diff-filter=U'])
+        return len(conflicts) != 0
 
     def is_merging(self):
         return 0 == subprocess.call(['git', '-C', self.dir, 'rev-parse',
@@ -177,6 +224,7 @@ class Repo:
 
     def complete_merge(self):
         print("Completing merge in {}".format(self.dir))
+        subprocess.call(['git', '-C', self.dir, 'rerere'])
         if 0 != subprocess.call(['git', '-C', self.dir,
                                  'commit', '--no-edit']):
             raise RuntimeError("Unable to complete the merge in {}."
@@ -185,14 +233,29 @@ class Repo:
             raise RuntimeError(
                 "Merging in {} is not complete".format(self.dir))
 
+    def load_resolve_files(self, resolve_dir):
+        print("Loading resolve files from {}".format(resolve_dir))
+        if not os.path.lexists(resolve_dir):
+            print("Resolve dir {} not found, no resolutions will be used"
+                  .format(resolve_dir))
+            return
+        make_copy(resolve_dir, self.dir + "/.git/rr-cache")
+
+    def save_resolve_files(self, resolve_dir):
+        print("Saving resolve files to {}".format(resolve_dir))
+        if not os.path.lexists(resolve_dir):
+            os.makedirs(resolve_dir)
+        make_copy(self.dir + "/.git/rr-cache", resolve_dir)
+
 
 class Merger:
-    def __init__(self, repo_dir, rel_path):
+    def __init__(self, repo_dir, rel_path, resolve_dir):
         self.repo = Repo(repo_dir)
         # Have all the source files copied inside a src dir, so we don't have
         # any issue with copying back the .git dir
         self.working_dir = repo_dir + "/src"
         self.rel_path = rel_path
+        self.resolve_dir = resolve_dir
 
     def create_working_dir(self):
         if os.path.lexists(self.repo.dir):
@@ -209,6 +272,8 @@ class Merger:
                 raise
         os.makedirs(self.working_dir)
         self.repo.init()
+        if self.resolve_dir is not None:
+            self.repo.load_resolve_files(self.resolve_dir)
 
     def copy_upstream_files(self, version, msg):
         full_path = get_upstream_path(version, self.rel_path)
@@ -233,14 +298,20 @@ class Merger:
             return False
 
     def run_ojluni_merge(self):
-        try:
-            self.repo.merge('ojluni')
-        except RuntimeError as e:
-            raise RuntimeError('\r\n' + str(e) +
-                               '\r\nManually merge the changes and rerun '
-                               'this script with --continue')
+        if self.repo.merge('ojluni'):
+            return
+        if self.repo.check_resolved_from_cache():
+            self.repo.complete_merge()
+            return
+        raise RuntimeError('\r\nThere are conflicts to be resolved.'
+                           '\r\nManually merge the changes and rerun '
+                           'this script with --continue')
 
     def copy_back_to_ojluni(self):
+        # Save any resolutions that were made for future reuse
+        if self.resolve_dir is not None:
+            self.repo.save_resolve_files(self.resolve_dir)
+
         src_path = self.working_dir
         dst_path = get_ojluni_path(self.rel_path)
         if os.path.isfile(dst_path):
@@ -311,6 +382,10 @@ def main():
     parser.add_argument('-d', '--work-dir', default='/tmp/ojluni-merge',
                         help='Path where the merge will be performed. '
                         'Any existing files in the path will be removed')
+    parser.add_argument('-r', '--resolve-dir', default=None,
+                        dest='resolve_dir',
+                        help='Path where the git resolutions are cached. '
+                        'By default, no cache is used.')
     parser.add_argument('--continue', action='store_true', dest='proceed',
                         help='Flag to specify after merge conflicts '
                         'are resolved')
@@ -320,7 +395,7 @@ def main():
                         'a file or folder.')
     args = parser.parse_args()
     try:
-        merger = Merger(args.work_dir, args.rel_path[0])
+        merger = Merger(args.work_dir, args.rel_path[0], args.resolve_dir)
         if args.proceed:
             merger.complete_existing_run()
         else:
