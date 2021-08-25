@@ -15223,12 +15223,25 @@ package java.util.concurrent.atomic {
   public class AtomicBoolean implements java.io.Serializable {
     ctor public AtomicBoolean(boolean);
     ctor public AtomicBoolean();
+    method public final boolean compareAndExchange(boolean, boolean);
+    method public final boolean compareAndExchangeAcquire(boolean, boolean);
+    method public final boolean compareAndExchangeRelease(boolean, boolean);
     method public final boolean compareAndSet(boolean, boolean);
     method public final boolean get();
+    method public final boolean getAcquire();
     method public final boolean getAndSet(boolean);
+    method public final boolean getOpaque();
+    method public final boolean getPlain();
     method public final void lazySet(boolean);
     method public final void set(boolean);
-    method public boolean weakCompareAndSet(boolean, boolean);
+    method public final void setOpaque(boolean);
+    method public final void setPlain(boolean);
+    method public final void setRelease(boolean);
+    method @Deprecated public boolean weakCompareAndSet(boolean, boolean);
+    method public final boolean weakCompareAndSetAcquire(boolean, boolean);
+    method public boolean weakCompareAndSetPlain(boolean, boolean);
+    method public final boolean weakCompareAndSetRelease(boolean, boolean);
+    method public final boolean weakCompareAndSetVolatile(boolean, boolean);
   }
 
   public class AtomicInteger extends java.lang.Number implements java.io.Serializable {
@@ -15274,21 +15287,34 @@ package java.util.concurrent.atomic {
     ctor public AtomicIntegerArray(int[]);
     method public final int accumulateAndGet(int, int, java.util.function.IntBinaryOperator);
     method public final int addAndGet(int, int);
+    method public final int compareAndExchange(int, int, int);
+    method public final int compareAndExchangeAcquire(int, int, int);
+    method public final int compareAndExchangeRelease(int, int, int);
     method public final boolean compareAndSet(int, int, int);
     method public final int decrementAndGet(int);
     method public final int get(int);
+    method public final int getAcquire(int);
     method public final int getAndAccumulate(int, int, java.util.function.IntBinaryOperator);
     method public final int getAndAdd(int, int);
     method public final int getAndDecrement(int);
     method public final int getAndIncrement(int);
     method public final int getAndSet(int, int);
     method public final int getAndUpdate(int, java.util.function.IntUnaryOperator);
+    method public final int getOpaque(int);
+    method public final int getPlain(int);
     method public final int incrementAndGet(int);
     method public final void lazySet(int, int);
     method public final int length();
     method public final void set(int, int);
+    method public final void setOpaque(int, int);
+    method public final void setPlain(int, int);
+    method public final void setRelease(int, int);
     method public final int updateAndGet(int, java.util.function.IntUnaryOperator);
-    method public final boolean weakCompareAndSet(int, int, int);
+    method @Deprecated public final boolean weakCompareAndSet(int, int, int);
+    method public final boolean weakCompareAndSetAcquire(int, int, int);
+    method public final boolean weakCompareAndSetPlain(int, int, int);
+    method public final boolean weakCompareAndSetRelease(int, int, int);
+    method public final boolean weakCompareAndSetVolatile(int, int, int);
   }
 
   public abstract class AtomicIntegerFieldUpdater<T> {
@@ -15317,24 +15343,37 @@ package java.util.concurrent.atomic {
     ctor public AtomicLong();
     method public final long accumulateAndGet(long, java.util.function.LongBinaryOperator);
     method public final long addAndGet(long);
+    method public final long compareAndExchange(long, long);
+    method public final long compareAndExchangeAcquire(long, long);
+    method public final long compareAndExchangeRelease(long, long);
     method public final boolean compareAndSet(long, long);
     method public final long decrementAndGet();
     method public double doubleValue();
     method public float floatValue();
     method public final long get();
+    method public final long getAcquire();
     method public final long getAndAccumulate(long, java.util.function.LongBinaryOperator);
     method public final long getAndAdd(long);
     method public final long getAndDecrement();
     method public final long getAndIncrement();
     method public final long getAndSet(long);
     method public final long getAndUpdate(java.util.function.LongUnaryOperator);
+    method public final long getOpaque();
+    method public final long getPlain();
     method public final long incrementAndGet();
     method public int intValue();
     method public final void lazySet(long);
     method public long longValue();
     method public final void set(long);
+    method public final void setOpaque(long);
+    method public final void setPlain(long);
+    method public final void setRelease(long);
     method public final long updateAndGet(java.util.function.LongUnaryOperator);
-    method public final boolean weakCompareAndSet(long, long);
+    method @Deprecated public final boolean weakCompareAndSet(long, long);
+    method public final boolean weakCompareAndSetAcquire(long, long);
+    method public final boolean weakCompareAndSetPlain(long, long);
+    method public final boolean weakCompareAndSetRelease(long, long);
+    method public final boolean weakCompareAndSetVolatile(long, long);
   }
 
   public class AtomicLongArray implements java.io.Serializable {
@@ -15342,21 +15381,34 @@ package java.util.concurrent.atomic {
     ctor public AtomicLongArray(long[]);
     method public final long accumulateAndGet(int, long, java.util.function.LongBinaryOperator);
     method public long addAndGet(int, long);
+    method public final long compareAndExchange(int, long, long);
+    method public final long compareAndExchangeAcquire(int, long, long);
+    method public final long compareAndExchangeRelease(int, long, long);
     method public final boolean compareAndSet(int, long, long);
     method public final long decrementAndGet(int);
     method public final long get(int);
+    method public final long getAcquire(int);
     method public final long getAndAccumulate(int, long, java.util.function.LongBinaryOperator);
     method public final long getAndAdd(int, long);
     method public final long getAndDecrement(int);
     method public final long getAndIncrement(int);
     method public final long getAndSet(int, long);
     method public final long getAndUpdate(int, java.util.function.LongUnaryOperator);
+    method public final long getOpaque(int);
+    method public final long getPlain(int);
     method public final long incrementAndGet(int);
     method public final void lazySet(int, long);
     method public final int length();
     method public final void set(int, long);
+    method public final void setOpaque(int, long);
+    method public final void setPlain(int, long);
+    method public final void setRelease(int, long);
     method public final long updateAndGet(int, java.util.function.LongUnaryOperator);
-    method public final boolean weakCompareAndSet(int, long, long);
+    method @Deprecated public final boolean weakCompareAndSet(int, long, long);
+    method public final boolean weakCompareAndSetAcquire(int, long, long);
+    method public final boolean weakCompareAndSetPlain(int, long, long);
+    method public final boolean weakCompareAndSetRelease(int, long, long);
+    method public final boolean weakCompareAndSetVolatile(int, long, long);
   }
 
   public abstract class AtomicLongFieldUpdater<T> {
@@ -15395,31 +15447,57 @@ package java.util.concurrent.atomic {
     ctor public AtomicReference(V);
     ctor public AtomicReference();
     method public final V accumulateAndGet(V, java.util.function.BinaryOperator<V>);
+    method public final V compareAndExchange(V, V);
+    method public final V compareAndExchangeAcquire(V, V);
+    method public final V compareAndExchangeRelease(V, V);
     method public final boolean compareAndSet(V, V);
     method public final V get();
+    method public final V getAcquire();
     method public final V getAndAccumulate(V, java.util.function.BinaryOperator<V>);
     method public final V getAndSet(V);
     method public final V getAndUpdate(java.util.function.UnaryOperator<V>);
+    method public final V getOpaque();
+    method public final V getPlain();
     method public final void lazySet(V);
     method public final void set(V);
+    method public final void setOpaque(V);
+    method public final void setPlain(V);
+    method public final void setRelease(V);
     method public final V updateAndGet(java.util.function.UnaryOperator<V>);
-    method public final boolean weakCompareAndSet(V, V);
+    method @Deprecated public final boolean weakCompareAndSet(V, V);
+    method public final boolean weakCompareAndSetAcquire(V, V);
+    method public final boolean weakCompareAndSetPlain(V, V);
+    method public final boolean weakCompareAndSetRelease(V, V);
+    method public final boolean weakCompareAndSetVolatile(V, V);
   }
 
   public class AtomicReferenceArray<E> implements java.io.Serializable {
     ctor public AtomicReferenceArray(int);
     ctor public AtomicReferenceArray(E[]);
     method public final E accumulateAndGet(int, E, java.util.function.BinaryOperator<E>);
+    method public final E compareAndExchange(int, E, E);
+    method public final E compareAndExchangeAcquire(int, E, E);
+    method public final E compareAndExchangeRelease(int, E, E);
     method public final boolean compareAndSet(int, E, E);
     method public final E get(int);
+    method public final E getAcquire(int);
     method public final E getAndAccumulate(int, E, java.util.function.BinaryOperator<E>);
     method public final E getAndSet(int, E);
     method public final E getAndUpdate(int, java.util.function.UnaryOperator<E>);
+    method public final E getOpaque(int);
+    method public final E getPlain(int);
     method public final void lazySet(int, E);
     method public final int length();
     method public final void set(int, E);
+    method public final void setOpaque(int, E);
+    method public final void setPlain(int, E);
+    method public final void setRelease(int, E);
     method public final E updateAndGet(int, java.util.function.UnaryOperator<E>);
-    method public final boolean weakCompareAndSet(int, E, E);
+    method @Deprecated public final boolean weakCompareAndSet(int, E, E);
+    method public final boolean weakCompareAndSetAcquire(int, E, E);
+    method public final boolean weakCompareAndSetPlain(int, E, E);
+    method public final boolean weakCompareAndSetRelease(int, E, E);
+    method public final boolean weakCompareAndSetVolatile(int, E, E);
   }
 
   public abstract class AtomicReferenceFieldUpdater<T, V> {
