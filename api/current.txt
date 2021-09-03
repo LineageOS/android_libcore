@@ -4518,6 +4518,16 @@ package java.lang.invoke {
 
 package java.lang.ref {
 
+  public final class Cleaner {
+    method public static java.lang.ref.Cleaner create();
+    method public static java.lang.ref.Cleaner create(java.util.concurrent.ThreadFactory);
+    method public java.lang.ref.Cleaner.Cleanable register(Object, Runnable);
+  }
+
+  public static interface Cleaner.Cleanable {
+    method public void clean();
+  }
+
   public class PhantomReference<T> extends java.lang.ref.Reference<T> {
     ctor public PhantomReference(T, java.lang.ref.ReferenceQueue<? super T>);
   }
