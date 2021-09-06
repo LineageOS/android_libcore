@@ -3049,9 +3049,9 @@ package java.lang {
   }
 
   public final class Float extends java.lang.Number implements java.lang.Comparable<java.lang.Float> {
-    ctor public Float(float);
-    ctor public Float(double);
-    ctor public Float(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Float(float);
+    ctor @Deprecated public Float(double);
+    ctor @Deprecated public Float(@NonNull String) throws java.lang.NumberFormatException;
     method public static int compare(float, float);
     method public int compareTo(@NonNull Float);
     method public double doubleValue();
