@@ -15986,6 +15986,7 @@ package java.util.function {
     method public default java.util.function.Predicate<T> and(java.util.function.Predicate<? super T>);
     method public static <T> java.util.function.Predicate<T> isEqual(Object);
     method public default java.util.function.Predicate<T> negate();
+    method public static <T> java.util.function.Predicate<T> not(java.util.function.Predicate<? super T>);
     method public default java.util.function.Predicate<T> or(java.util.function.Predicate<? super T>);
     method public boolean test(T);
   }
