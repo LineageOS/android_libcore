@@ -2968,8 +2968,8 @@ package java.lang {
   }
 
   public final class Double extends java.lang.Number implements java.lang.Comparable<java.lang.Double> {
-    ctor public Double(double);
-    ctor public Double(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Double(double);
+    ctor @Deprecated public Double(@NonNull String) throws java.lang.NumberFormatException;
     method public static int compare(double, double);
     method public int compareTo(@NonNull Double);
     method public static long doubleToLongBits(double);
