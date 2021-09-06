@@ -26,7 +26,7 @@
 package java.lang;
 
 import java.util.Random;
-import sun.misc.DoubleConsts;
+import jdk.internal.math.DoubleConsts;
 
 /**
  * The class {@code StrictMath} contains methods for performing basic

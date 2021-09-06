@@ -25,9 +25,9 @@
 
 package java.lang;
 
-import sun.misc.FloatingDecimal;
-import sun.misc.FloatConsts;
-import sun.misc.DoubleConsts;
+import jdk.internal.math.FloatingDecimal;
+import jdk.internal.math.FloatConsts;
+import jdk.internal.math.DoubleConsts;
 
 /**
  * The {@code Float} class wraps a value of primitive type
