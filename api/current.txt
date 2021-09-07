@@ -13513,11 +13513,15 @@ package java.util {
     method public static java.util.OptionalDouble empty();
     method public double getAsDouble();
     method public void ifPresent(java.util.function.DoubleConsumer);
+    method public void ifPresentOrElse(java.util.function.DoubleConsumer, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public static java.util.OptionalDouble of(double);
     method public double orElse(double);
     method public double orElseGet(java.util.function.DoubleSupplier);
-    method public <X extends java.lang.Throwable> double orElseThrow(java.util.function.Supplier<X>) throws X;
+    method public double orElseThrow();
+    method public <X extends java.lang.Throwable> double orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.DoubleStream stream();
   }
 
   public final class OptionalInt {
