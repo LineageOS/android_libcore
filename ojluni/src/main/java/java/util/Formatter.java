@@ -57,9 +57,8 @@ import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 
 import libcore.icu.LocaleData;
-import sun.misc.FpUtils;
-import sun.misc.DoubleConsts;
-import sun.misc.FormattedFloatingDecimal;
+import jdk.internal.math.DoubleConsts;
+import jdk.internal.math.FormattedFloatingDecimal;
 
 // Android-changed: Use localized exponent separator for %e.
 /**
