@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -154,7 +154,7 @@ public class FloatingDecimal{
 
         /**
          * Indicates the sign of the value.
-         * @return <code>value < 0.0</code>.
+         * @return {@code value < 0.0}.
          */
         public boolean isNegative();
 
@@ -187,7 +187,7 @@ public class FloatingDecimal{
      * and infinite values.
      */
     private static class ExceptionalBinaryToASCIIBuffer implements BinaryToASCIIConverter {
-        final private String image;
+        private final String image;
         private boolean isNegative;
 
         public ExceptionalBinaryToASCIIBuffer(String image, boolean isNegative) {
@@ -1003,8 +1003,8 @@ public class FloatingDecimal{
      * A <code>ASCIIToBinaryConverter</code> container for a <code>double</code>.
      */
     static class PreparedASCIIToBinaryBuffer implements ASCIIToBinaryConverter {
-        final private double doubleVal;
-        final private float floatVal;
+        private final double doubleVal;
+        private final float floatVal;
 
         public PreparedASCIIToBinaryBuffer(double doubleVal, float floatVal) {
             this.doubleVal = doubleVal;
@@ -1992,21 +1992,32 @@ public class FloatingDecimal{
                         break expLoop; // stop parsing exponent.
                     }
                 }
-                int expLimit = BIG_DECIMAL_EXPONENT+nDigits+nTrailZero;
-                if ( expOverflow || ( expVal > expLimit ) ){
-                    //
-                    // The intent here is to end up with
-                    // infinity or zero, as appropriate.
-                    // The reason for yielding such a small decExponent,
-                    // rather than something intuitive such as
-                    // expSign*Integer.MAX_VALUE, is that this value
-                    // is subject to further manipulation in
-                    // doubleValue() and floatValue(), and I don't want
-                    // it to be able to cause overflow there!
-                    // (The only way we can get into trouble here is for
-                    // really outrageous nDigits+nTrailZero, such as 2 billion. )
-                    //
-                    decExp = expSign*expLimit;
+                int expLimit = BIG_DECIMAL_EXPONENT + nDigits + nTrailZero;
+                if (expOverflow || (expVal > expLimit)) {
+                    // There is still a chance that the exponent will be safe to
+                    // use: if it would eventually decrease due to a negative
+                    // decExp, and that number is below the limit.  We check for
+                    // that here.
+                    if (!expOverflow && (expSign == 1 && decExp < 0)
+                            && (expVal + decExp) < expLimit) {
+                        // Cannot overflow: adding a positive and negative number.
+                        decExp += expVal;
+                    } else {
+                        //
+                        // The intent here is to end up with
+                        // infinity or zero, as appropriate.
+                        // The reason for yielding such a small decExponent,
+                        // rather than something intuitive such as
+                        // expSign*Integer.MAX_VALUE, is that this value
+                        // is subject to further manipulation in
+                        // doubleValue() and floatValue(), and I don't want
+                        // it to be able to cause overflow there!
+                        // (The only way we can get into trouble here is for
+                        // really outrageous nDigits+nTrailZero, such as 2
+                        // billion.)
+                        //
+                        decExp = expSign * expLimit;
+                    }
                 } else {
                     // this should not overflow, since we tested
                     // for expVal > (MAX+N), where N >= abs(decExp)
@@ -2366,8 +2377,8 @@ public class FloatingDecimal{
 
                 // Float calculations
                 int floatBits = isNegative ? FloatConsts.SIGN_BIT_MASK : 0;
-                if (exponent >= FloatConsts.MIN_EXPONENT) {
-                    if (exponent > FloatConsts.MAX_EXPONENT) {
+                if (exponent >= Float.MIN_EXPONENT) {
+                    if (exponent > Float.MAX_EXPONENT) {
                         // Float.POSITIVE_INFINITY
                         floatBits |= FloatConsts.EXP_BIT_MASK;
                     } else {
@@ -2398,12 +2409,12 @@ public class FloatingDecimal{
                 float fValue = Float.intBitsToFloat(floatBits);
 
                 // Check for overflow and update exponent accordingly.
-                if (exponent > DoubleConsts.MAX_EXPONENT) {         // Infinite result
+                if (exponent > Double.MAX_EXPONENT) {         // Infinite result
                     // overflow to properly signed infinity
                     return isNegative ? A2BC_NEGATIVE_INFINITY : A2BC_POSITIVE_INFINITY;
                 } else {  // Finite return value
-                    if (exponent <= DoubleConsts.MAX_EXPONENT && // (Usually) normal result
-                            exponent >= DoubleConsts.MIN_EXPONENT) {
+                    if (exponent <= Double.MAX_EXPONENT && // (Usually) normal result
+                            exponent >= Double.MIN_EXPONENT) {
 
                         // The result returned in this block cannot be a
                         // zero or subnormal; however after the
@@ -2423,7 +2434,7 @@ public class FloatingDecimal{
                                 (DoubleConsts.SIGNIF_BIT_MASK & significand);
 
                     } else {  // Subnormal or zero
-                        // (exponent < DoubleConsts.MIN_EXPONENT)
+                        // (exponent < Double.MIN_EXPONENT)
 
                         if (exponent < (DoubleConsts.MIN_SUB_EXPONENT - 1)) {
                             // No way to round back to nonzero value
@@ -2463,7 +2474,7 @@ public class FloatingDecimal{
                             // Now, discard the bits
                             significand = significand >> bitsDiscarded;
 
-                            significand = ((((long) (DoubleConsts.MIN_EXPONENT - 1) + // subnorm exp.
+                            significand = ((((long) (Double.MIN_EXPONENT - 1) + // subnorm exp.
                                     (long) DoubleConsts.EXP_BIAS) <<
                                     (DoubleConsts.SIGNIFICAND_WIDTH - 1))
                                     & DoubleConsts.EXP_BIT_MASK) |
