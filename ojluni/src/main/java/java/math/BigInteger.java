@@ -37,8 +37,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import libcore.math.NativeBN;
-import sun.misc.DoubleConsts;
-import sun.misc.FloatConsts;
+import jdk.internal.math.DoubleConsts;
+import jdk.internal.math.FloatConsts;
 import libcore.util.NonNull;
 
 /**
