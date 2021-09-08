@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,7 +27,7 @@ package jdk.internal.math;
 
 /**
  * This class contains additional constants documenting limits of the
- * <code>float</code> type.
+ * {@code float} type.
  *
  * @author Joseph D. Darcy
  */
@@ -53,7 +53,7 @@ public class FloatConsts {
 
     /**
      * The number of logical bits in the significand of a
-     * <code>float</code> number, including the implicit bit.
+     * {@code float} number, including the implicit bit.
      */
     public static final int SIGNIFICAND_WIDTH   = 24;
 
@@ -72,32 +72,31 @@ public class FloatConsts {
     public static final int     MIN_EXPONENT    = -126;
 
     /**
-     * The exponent the smallest positive <code>float</code> subnormal
-     * value would have if it could be normalized.  It is equal to the
-     * value returned by <code>FpUtils.ilogb(Float.MIN_VALUE)</code>.
+     * The exponent the smallest positive {@code float} subnormal
+     * value would have if it could be normalized.
      */
-    public static final int     MIN_SUB_EXPONENT = MIN_EXPONENT -
+    public static final int     MIN_SUB_EXPONENT = Float.MIN_EXPONENT -
                                                    (SIGNIFICAND_WIDTH - 1);
 
     /**
-     * Bias used in representing a <code>float</code> exponent.
+     * Bias used in representing a {@code float} exponent.
      */
     public static final int     EXP_BIAS        = 127;
 
     /**
-     * Bit mask to isolate the sign bit of a <code>float</code>.
+     * Bit mask to isolate the sign bit of a {@code float}.
      */
     public static final int     SIGN_BIT_MASK   = 0x80000000;
 
     /**
      * Bit mask to isolate the exponent field of a
-     * <code>float</code>.
+     * {@code float}.
      */
     public static final int     EXP_BIT_MASK    = 0x7F800000;
 
     /**
      * Bit mask to isolate the significand field of a
-     * <code>float</code>.
+     * {@code float}.
      */
     public static final int     SIGNIF_BIT_MASK = 0x007FFFFF;
 
