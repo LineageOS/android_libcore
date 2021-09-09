@@ -29,8 +29,8 @@ package java.lang;
 import dalvik.annotation.optimization.CriticalNative;
 import java.util.Random;
 
-import sun.misc.FloatConsts;
-import sun.misc.DoubleConsts;
+import jdk.internal.math.FloatConsts;
+import jdk.internal.math.DoubleConsts;
 
 // Android-note: Document that the results from Math are based on libm's behavior.
 // For performance, Android implements many of the methods in this class in terms of the underlying
