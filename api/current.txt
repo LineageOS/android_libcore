@@ -3306,6 +3306,8 @@ package java.lang {
     method public static int floorMod(int, int);
     method public static int floorMod(long, int);
     method public static long floorMod(long, long);
+    method public static double fma(double, double, double);
+    method public static float fma(float, float, float);
     method public static int getExponent(float);
     method public static int getExponent(double);
     method public static double hypot(double, double);
