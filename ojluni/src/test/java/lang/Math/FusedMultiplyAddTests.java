@@ -344,18 +344,26 @@ public class FusedMultiplyAddTests {
             double expected) {
         Tests.test("Math.fma(double)", input1, input2, input3,
                 Math.fma(input1, input2, input3), expected);
+        Tests.test("StrictMath.fma(double)", input1, input2, input3,
+                               StrictMath.fma(input1, input2, input3), expected);
 
         // Permute first two inputs
         Tests.test("Math.fma(double)", input2, input1, input3,
                 Math.fma(input2, input1, input3), expected);
+        Tests.test("StrictMath.fma(double)", input2, input1, input3,
+                               StrictMath.fma(input2, input1, input3), expected);
     }
 
     private static void testFusedMacCase(float input1, float input2, float input3, float expected) {
         Tests.test("Math.fma(float)", input1, input2, input3,
                 Math.fma(input1, input2, input3), expected);
+        Tests.test("StrictMath.fma(float)", input1, input2, input3,
+                               StrictMath.fma(input1, input2, input3), expected);
 
         // Permute first two inputs
         Tests.test("Math.fma(float)", input2, input1, input3,
                 Math.fma(input2, input1, input3), expected);
+        Tests.test("StrictMath.fma(float)", input2, input1, input3,
+                               StrictMath.fma(input2, input1, input3), expected);
     }
 }
