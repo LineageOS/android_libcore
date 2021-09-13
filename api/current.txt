@@ -4018,6 +4018,7 @@ package java.lang {
     method public final void join(long) throws java.lang.InterruptedException;
     method public final void join(long, int) throws java.lang.InterruptedException;
     method public final void join() throws java.lang.InterruptedException;
+    method public static void onSpinWait();
     method @Deprecated public final void resume();
     method public void run();
     method public void setContextClassLoader(@Nullable ClassLoader);
