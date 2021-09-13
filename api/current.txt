@@ -3991,6 +3991,7 @@ package java.lang {
     ctor public Thread(@Nullable Runnable, @NonNull String);
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String);
     ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long);
+    ctor public Thread(@Nullable ThreadGroup, @Nullable Runnable, @NonNull String, long, boolean);
     method public static int activeCount();
     method public final void checkAccess();
     method @Deprecated public int countStackFrames();
