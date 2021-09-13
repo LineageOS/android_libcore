@@ -593,6 +593,7 @@ public final class VMDebug {
         runtimeStatsMap.put("art.gc.blocking-gc-count-rate-histogram", 7);
         runtimeStatsMap.put("art.gc.objects-allocated", 8);
         runtimeStatsMap.put("art.gc.total-time-waiting-for-gc", 9);
+        runtimeStatsMap.put("art.gc.pre-oome-gc-count", 10);
     }
 
     /**
