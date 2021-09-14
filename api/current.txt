@@ -2240,8 +2240,8 @@ package java.lang {
 
   public class ArrayIndexOutOfBoundsException extends java.lang.IndexOutOfBoundsException {
     ctor public ArrayIndexOutOfBoundsException();
-    ctor public ArrayIndexOutOfBoundsException(int);
     ctor public ArrayIndexOutOfBoundsException(String);
+    ctor public ArrayIndexOutOfBoundsException(int);
   }
 
   public class ArrayStoreException extends java.lang.RuntimeException {
@@ -3133,6 +3133,7 @@ package java.lang {
   public class IndexOutOfBoundsException extends java.lang.RuntimeException {
     ctor public IndexOutOfBoundsException();
     ctor public IndexOutOfBoundsException(String);
+    ctor public IndexOutOfBoundsException(int);
   }
 
   public class InheritableThreadLocal<T> extends java.lang.ThreadLocal<T> {
