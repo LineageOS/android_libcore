@@ -13524,11 +13524,15 @@ package java.util {
     method public static java.util.OptionalInt empty();
     method public int getAsInt();
     method public void ifPresent(java.util.function.IntConsumer);
+    method public void ifPresentOrElse(java.util.function.IntConsumer, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public static java.util.OptionalInt of(int);
     method public int orElse(int);
     method public int orElseGet(java.util.function.IntSupplier);
-    method public <X extends java.lang.Throwable> int orElseThrow(java.util.function.Supplier<X>) throws X;
+    method public int orElseThrow();
+    method public <X extends java.lang.Throwable> int orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.IntStream stream();
   }
 
   public final class OptionalLong {
