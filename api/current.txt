@@ -13492,16 +13492,21 @@ package java.util {
   public final class Optional<T> {
     method public static <T> java.util.Optional<T> empty();
     method public java.util.Optional<T> filter(java.util.function.Predicate<? super T>);
-    method public <U> java.util.Optional<U> flatMap(java.util.function.Function<? super T,java.util.Optional<U>>);
+    method public <U> java.util.Optional<U> flatMap(java.util.function.Function<? super T,? extends java.util.Optional<? extends U>>);
     method public T get();
     method public void ifPresent(java.util.function.Consumer<? super T>);
+    method public void ifPresentOrElse(java.util.function.Consumer<? super T>, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public <U> java.util.Optional<U> map(java.util.function.Function<? super T,? extends U>);
     method public static <T> java.util.Optional<T> of(T);
     method public static <T> java.util.Optional<T> ofNullable(T);
+    method public java.util.Optional<T> or(java.util.function.Supplier<? extends java.util.Optional<? extends T>>);
     method public T orElse(T);
     method public T orElseGet(java.util.function.Supplier<? extends T>);
+    method public T orElseThrow();
     method public <X extends java.lang.Throwable> T orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.Stream<T> stream();
   }
 
   public final class OptionalDouble {
