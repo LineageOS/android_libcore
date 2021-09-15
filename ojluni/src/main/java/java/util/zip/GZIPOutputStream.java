@@ -32,6 +32,7 @@ import java.io.IOException;
  * This class implements a stream filter for writing compressed data in
  * the GZIP file format.
  * @author      David Connelly
+ * @since 1.1
  *
  */
 public
@@ -44,13 +45,13 @@ class GZIPOutputStream extends DeflaterOutputStream {
     /*
      * GZIP header magic number.
      */
-    private final static int GZIP_MAGIC = 0x8b1f;
+    private static final int GZIP_MAGIC = 0x8b1f;
 
     /*
      * Trailer size in bytes.
      *
      */
-    private final static int TRAILER_SIZE = 8;
+    private static final int TRAILER_SIZE = 8;
 
     /**
      * Creates a new output stream with the specified buffer size.
