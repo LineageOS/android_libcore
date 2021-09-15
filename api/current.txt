@@ -2240,8 +2240,8 @@ package java.lang {
 
   public class ArrayIndexOutOfBoundsException extends java.lang.IndexOutOfBoundsException {
     ctor public ArrayIndexOutOfBoundsException();
-    ctor public ArrayIndexOutOfBoundsException(int);
     ctor public ArrayIndexOutOfBoundsException(String);
+    ctor public ArrayIndexOutOfBoundsException(int);
   }
 
   public class ArrayStoreException extends java.lang.RuntimeException {
@@ -2968,8 +2968,8 @@ package java.lang {
   }
 
   public final class Double extends java.lang.Number implements java.lang.Comparable<java.lang.Double> {
-    ctor public Double(double);
-    ctor public Double(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Double(double);
+    ctor @Deprecated public Double(@NonNull String) throws java.lang.NumberFormatException;
     method public static int compare(double, double);
     method public int compareTo(@NonNull Double);
     method public static long doubleToLongBits(double);
@@ -3049,9 +3049,9 @@ package java.lang {
   }
 
   public final class Float extends java.lang.Number implements java.lang.Comparable<java.lang.Float> {
-    ctor public Float(float);
-    ctor public Float(double);
-    ctor public Float(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Float(float);
+    ctor @Deprecated public Float(double);
+    ctor @Deprecated public Float(@NonNull String) throws java.lang.NumberFormatException;
     method public static int compare(float, float);
     method public int compareTo(@NonNull Float);
     method public double doubleValue();
@@ -3133,6 +3133,7 @@ package java.lang {
   public class IndexOutOfBoundsException extends java.lang.RuntimeException {
     ctor public IndexOutOfBoundsException();
     ctor public IndexOutOfBoundsException(String);
+    ctor public IndexOutOfBoundsException(int);
   }
 
   public class InheritableThreadLocal<T> extends java.lang.ThreadLocal<T> {
@@ -3306,6 +3307,8 @@ package java.lang {
     method public static int floorMod(int, int);
     method public static int floorMod(long, int);
     method public static long floorMod(long, long);
+    method public static double fma(double, double, double);
+    method public static float fma(float, float, float);
     method public static int getExponent(float);
     method public static int getExponent(double);
     method public static double hypot(double, double);
@@ -3689,6 +3692,8 @@ package java.lang {
     method public static int floorMod(int, int);
     method public static int floorMod(long, int);
     method public static long floorMod(long, long);
+    method public static double fma(double, double, double);
+    method public static float fma(float, float, float);
     method public static int getExponent(float);
     method public static int getExponent(double);
     method public static double hypot(double, double);
@@ -13492,49 +13497,66 @@ package java.util {
   public final class Optional<T> {
     method public static <T> java.util.Optional<T> empty();
     method public java.util.Optional<T> filter(java.util.function.Predicate<? super T>);
-    method public <U> java.util.Optional<U> flatMap(java.util.function.Function<? super T,java.util.Optional<U>>);
+    method public <U> java.util.Optional<U> flatMap(java.util.function.Function<? super T,? extends java.util.Optional<? extends U>>);
     method public T get();
     method public void ifPresent(java.util.function.Consumer<? super T>);
+    method public void ifPresentOrElse(java.util.function.Consumer<? super T>, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public <U> java.util.Optional<U> map(java.util.function.Function<? super T,? extends U>);
     method public static <T> java.util.Optional<T> of(T);
     method public static <T> java.util.Optional<T> ofNullable(T);
+    method public java.util.Optional<T> or(java.util.function.Supplier<? extends java.util.Optional<? extends T>>);
     method public T orElse(T);
     method public T orElseGet(java.util.function.Supplier<? extends T>);
+    method public T orElseThrow();
     method public <X extends java.lang.Throwable> T orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.Stream<T> stream();
   }
 
   public final class OptionalDouble {
     method public static java.util.OptionalDouble empty();
     method public double getAsDouble();
     method public void ifPresent(java.util.function.DoubleConsumer);
+    method public void ifPresentOrElse(java.util.function.DoubleConsumer, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public static java.util.OptionalDouble of(double);
     method public double orElse(double);
     method public double orElseGet(java.util.function.DoubleSupplier);
-    method public <X extends java.lang.Throwable> double orElseThrow(java.util.function.Supplier<X>) throws X;
+    method public double orElseThrow();
+    method public <X extends java.lang.Throwable> double orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.DoubleStream stream();
   }
 
   public final class OptionalInt {
     method public static java.util.OptionalInt empty();
     method public int getAsInt();
     method public void ifPresent(java.util.function.IntConsumer);
+    method public void ifPresentOrElse(java.util.function.IntConsumer, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public static java.util.OptionalInt of(int);
     method public int orElse(int);
     method public int orElseGet(java.util.function.IntSupplier);
-    method public <X extends java.lang.Throwable> int orElseThrow(java.util.function.Supplier<X>) throws X;
+    method public int orElseThrow();
+    method public <X extends java.lang.Throwable> int orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.IntStream stream();
   }
 
   public final class OptionalLong {
     method public static java.util.OptionalLong empty();
     method public long getAsLong();
     method public void ifPresent(java.util.function.LongConsumer);
+    method public void ifPresentOrElse(java.util.function.LongConsumer, Runnable);
+    method public boolean isEmpty();
     method public boolean isPresent();
     method public static java.util.OptionalLong of(long);
     method public long orElse(long);
     method public long orElseGet(java.util.function.LongSupplier);
-    method public <X extends java.lang.Throwable> long orElseThrow(java.util.function.Supplier<X>) throws X;
+    method public long orElseThrow();
+    method public <X extends java.lang.Throwable> long orElseThrow(java.util.function.Supplier<? extends X>) throws X;
+    method public java.util.stream.LongStream stream();
   }
 
   public interface PrimitiveIterator<T, T_CONS> extends java.util.Iterator<T> {
