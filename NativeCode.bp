@@ -198,6 +198,7 @@ cc_library_shared {
         "luni/src/test/native/libcore_java_io_FileTest.cpp",
         "luni/src/test/native/libcore_java_lang_ThreadTest.cpp",
         "luni/src/test/native/libcore_java_nio_BufferTest.cpp",
+        "luni/src/test/native/libcore_java_time_BionicTzdbConsistencyTest.cpp",
         "luni/src/test/native/libcore_libcore_util_NativeAllocationRegistryTest.cpp",
     ],
     shared_libs: [
