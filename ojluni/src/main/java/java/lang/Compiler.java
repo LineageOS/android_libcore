@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,70 +26,81 @@
 
 package java.lang;
 
+// Android-changed: Remove @throws clauses; clarify Android behavior.
 /**
  * Does nothing on Android.
+ *
+ * The {@code Compiler} class is provided to support Java-to-native-code
+ * compilers and related services. By design, the {@code Compiler} class does
+ * nothing; it serves as a placeholder for a JIT compiler implementation.
+ * If no compiler is available, these methods do nothing.
+ *
+ * @deprecated JIT compilers and their technologies vary too widely to
+ * be controlled effectively by a standardized interface. As such, many
+ * JIT compiler implementations ignore this interface, and are instead
+ * controllable by implementation-specific mechanisms such as command-line
+ * options. This class is subject to removal in a future version of Java SE.
+ *
+ * @author  Frank Yellin
+ * @since   1.0
  */
+@Deprecated(since="9", forRemoval=true)
 public final class Compiler  {
-    /**
-     * Prevent this class from being instantiated.
-     */
     private Compiler() {}               // don't make instances
 
     /**
-     * Compiles the specified class using the JIT compiler and indicates if
-     * compilation has been successful. Does nothing and returns false on
-     * Android.
+     * Compiles the specified class.
+     * Does nothing and returns {@code false} on Android.
      *
-     * @param classToCompile
-     *            java.lang.Class the class to JIT compile
-     * @return {@code true} if the compilation has been successful;
-     *         {@code false} if it has failed or if there is no JIT compiler
-     *         available.
+     * @param  clazz
+     *         A class
+     *
+     * @return  {@code true} if the compilation succeeded; {@code false} if the
+     *          compilation failed or no compiler is available
+     *
      */
-    public static boolean compileClass(Class<?> classToCompile) {
+    public static boolean compileClass(Class<?> clazz) {
         return false;
     }
 
     /**
-     * Compiles all classes whose name matches the specified name using the JIT
-     * compiler and indicates if compilation has been successful. Does nothing
-     * and returns false on Android.
+     * Compiles all classes whose name matches the specified string.
+     * Does nothing and returns {@code false} on Android.
      *
-     * @param nameRoot
-     *            the string to match class names with.
-     * @return {@code true} if the compilation has been successful;
-     *         {@code false} if it has failed or if there is no JIT compiler
-     *         available.
+     * @param  string
+     *         The name of the classes to compile
+     *
+     * @return  {@code true} if the compilation succeeded; {@code false} if the
+     *          compilation failed or no compiler is available
+     *
      */
-    public static boolean compileClasses(String nameRoot) {
+    public static boolean compileClasses(String string) {
         return false;
     }
 
     /**
-     * Executes an operation according to the specified command object. This
-     * method is the low-level interface to the JIT compiler. It may return any
-     * object or {@code null} if no JIT compiler is available. Returns null
+     * Examines the argument type and its fields and perform some documented
+     * operation.  No specific operations are required. Returns {@code null}
      * on Android, whether or not the system has a JIT.
      *
-     * @param cmd
-     *            the command object for the JIT compiler.
-     * @return the result of executing command or {@code null}.
+     * @param  any
+     *         An argument
+     *
+     * @return  A compiler-specific value, or {@code null} if no compiler is
+     *          available
+     *
      */
-    public static Object command(Object cmd) {
+    public static Object command(Object any) {
         return null;
     }
 
     /**
-     * Enables the JIT compiler. Does nothing on Android.
+     * Cause the Compiler to resume operation. Does nothing on Android.
      */
-    public static void enable() {
-
-    }
+    public static void enable() { }
 
     /**
-     * Disables the JIT compiler. Does nothing on Android.
+     * Cause the Compiler to cease operation. Does nothing on Android.
      */
-    public static void disable() {
-
-    }
+    public static void disable() { }
 }
