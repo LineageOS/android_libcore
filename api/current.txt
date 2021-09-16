@@ -4883,7 +4883,9 @@ package java.math {
   }
 
   public class BigInteger extends java.lang.Number implements java.lang.Comparable<java.math.BigInteger> {
+    ctor public BigInteger(byte[], int, int);
     ctor public BigInteger(byte[]);
+    ctor public BigInteger(int, byte[], int, int);
     ctor public BigInteger(int, byte[]);
     ctor public BigInteger(@NonNull String, int);
     ctor public BigInteger(@NonNull String);
@@ -4928,6 +4930,8 @@ package java.math {
     method @NonNull public java.math.BigInteger shiftRight(int);
     method public short shortValueExact();
     method public int signum();
+    method @NonNull public java.math.BigInteger sqrt();
+    method @NonNull public java.math.BigInteger[] sqrtAndRemainder();
     method @NonNull public java.math.BigInteger subtract(@NonNull java.math.BigInteger);
     method public boolean testBit(int);
     method public byte[] toByteArray();
@@ -4936,6 +4940,7 @@ package java.math {
     method @NonNull public java.math.BigInteger xor(@NonNull java.math.BigInteger);
     field @NonNull public static final java.math.BigInteger ONE;
     field @NonNull public static final java.math.BigInteger TEN;
+    field @NonNull public static final java.math.BigInteger TWO;
     field @NonNull public static final java.math.BigInteger ZERO;
   }
 
