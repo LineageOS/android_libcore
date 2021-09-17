@@ -13113,6 +13113,7 @@ package java.util {
 
   public class IntSummaryStatistics implements java.util.function.IntConsumer {
     ctor public IntSummaryStatistics();
+    ctor public IntSummaryStatistics(long, int, int, long) throws java.lang.IllegalArgumentException;
     method public void accept(int);
     method public void combine(java.util.IntSummaryStatistics);
     method public final double getAverage();
