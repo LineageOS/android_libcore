@@ -156,4 +156,26 @@
             column="22" />
     </issue>
 
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
+        errorLine2="                       ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="296"
+            column="24" />
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="956"
+            column="22" />
+    </issue>
+
 </issues>

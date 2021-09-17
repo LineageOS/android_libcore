@@ -4818,9 +4818,9 @@ package java.math {
     method public java.math.BigDecimal add(java.math.BigDecimal, java.math.MathContext);
     method public byte byteValueExact();
     method public int compareTo(java.math.BigDecimal);
-    method public java.math.BigDecimal divide(java.math.BigDecimal, int, int);
+    method @Deprecated public java.math.BigDecimal divide(java.math.BigDecimal, int, int);
     method public java.math.BigDecimal divide(java.math.BigDecimal, int, java.math.RoundingMode);
-    method public java.math.BigDecimal divide(java.math.BigDecimal, int);
+    method @Deprecated public java.math.BigDecimal divide(java.math.BigDecimal, int);
     method public java.math.BigDecimal divide(java.math.BigDecimal, java.math.RoundingMode);
     method public java.math.BigDecimal divide(java.math.BigDecimal);
     method public java.math.BigDecimal divide(java.math.BigDecimal, java.math.MathContext);
@@ -4853,10 +4853,11 @@ package java.math {
     method public int scale();
     method public java.math.BigDecimal scaleByPowerOfTen(int);
     method public java.math.BigDecimal setScale(int, java.math.RoundingMode);
-    method public java.math.BigDecimal setScale(int, int);
+    method @Deprecated public java.math.BigDecimal setScale(int, int);
     method public java.math.BigDecimal setScale(int);
     method public short shortValueExact();
     method public int signum();
+    method public java.math.BigDecimal sqrt(java.math.MathContext);
     method public java.math.BigDecimal stripTrailingZeros();
     method public java.math.BigDecimal subtract(java.math.BigDecimal);
     method public java.math.BigDecimal subtract(java.math.BigDecimal, java.math.MathContext);
@@ -4870,14 +4871,14 @@ package java.math {
     method public static java.math.BigDecimal valueOf(long);
     method public static java.math.BigDecimal valueOf(double);
     field public static final java.math.BigDecimal ONE;
-    field public static final int ROUND_CEILING = 2; // 0x2
-    field public static final int ROUND_DOWN = 1; // 0x1
-    field public static final int ROUND_FLOOR = 3; // 0x3
-    field public static final int ROUND_HALF_DOWN = 5; // 0x5
-    field public static final int ROUND_HALF_EVEN = 6; // 0x6
-    field public static final int ROUND_HALF_UP = 4; // 0x4
-    field public static final int ROUND_UNNECESSARY = 7; // 0x7
-    field public static final int ROUND_UP = 0; // 0x0
+    field @Deprecated public static final int ROUND_CEILING = 2; // 0x2
+    field @Deprecated public static final int ROUND_DOWN = 1; // 0x1
+    field @Deprecated public static final int ROUND_FLOOR = 3; // 0x3
+    field @Deprecated public static final int ROUND_HALF_DOWN = 5; // 0x5
+    field @Deprecated public static final int ROUND_HALF_EVEN = 6; // 0x6
+    field @Deprecated public static final int ROUND_HALF_UP = 4; // 0x4
+    field @Deprecated public static final int ROUND_UNNECESSARY = 7; // 0x7
+    field @Deprecated public static final int ROUND_UP = 0; // 0x0
     field public static final java.math.BigDecimal TEN;
     field public static final java.math.BigDecimal ZERO;
   }
