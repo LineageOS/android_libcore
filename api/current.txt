@@ -2954,12 +2954,12 @@ package java.lang {
     method public int compareTo(T);
   }
 
-  public final class Compiler {
-    method public static Object command(Object);
-    method public static boolean compileClass(Class<?>);
-    method public static boolean compileClasses(String);
-    method public static void disable();
-    method public static void enable();
+  @Deprecated public final class Compiler {
+    method @Deprecated public static Object command(Object);
+    method @Deprecated public static boolean compileClass(Class<?>);
+    method @Deprecated public static boolean compileClasses(String);
+    method @Deprecated public static void disable();
+    method @Deprecated public static void enable();
   }
 
   @java.lang.annotation.Documented @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME) @java.lang.annotation.Target({java.lang.annotation.ElementType.CONSTRUCTOR, java.lang.annotation.ElementType.FIELD, java.lang.annotation.ElementType.LOCAL_VARIABLE, java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.PACKAGE, java.lang.annotation.ElementType.MODULE, java.lang.annotation.ElementType.PARAMETER, java.lang.annotation.ElementType.TYPE}) public @interface Deprecated {
