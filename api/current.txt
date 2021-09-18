@@ -2266,8 +2266,8 @@ package java.lang {
   }
 
   public final class Boolean implements java.lang.Comparable<java.lang.Boolean> java.io.Serializable {
-    ctor public Boolean(boolean);
-    ctor public Boolean(@Nullable String);
+    ctor @Deprecated public Boolean(boolean);
+    ctor @Deprecated public Boolean(@Nullable String);
     method public boolean booleanValue();
     method public static int compare(boolean, boolean);
     method public int compareTo(@NonNull Boolean);
