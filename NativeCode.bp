@@ -140,8 +140,10 @@ cc_defaults {
                 "-D_LARGEFILE64_SOURCE",
                 "-D_GNU_SOURCE",
                 "-DLINUX",
-                "-D__GLIBC__",
             ],
+        },
+        glibc: {
+            cflags: ["-D__GLIBC__"],
         },
         android: {
             shared_libs: [
