@@ -57,6 +57,7 @@
 #include <android-base/file.h>
 #include <android-base/logging.h>
 #include <android-base/macros.h>
+#include <android-base/stringprintf.h>
 #include <android-base/strings.h>
 #include <log/log.h>
 #include <nativehelper/JNIPlatformHelp.h>
@@ -2650,8 +2651,17 @@ static jobject Linux_statvfs(JNIEnv* env, jobject, jstring javaPath) {
 
 static jstring Linux_strerror(JNIEnv* env, jobject, jint errnum) {
     char buffer[BUFSIZ];
+#ifdef ANDROID_HOST_MUSL
+    /* musl only provides the posix version of strerror_r that returns int */
+    int ret = strerror_r(errnum, buffer, sizeof(buffer));
+    if (ret != 0) {
+      return env->NewStringUTF(android::base::StringPrintf("Unknown error %d", errnum).c_str());
+    }
+    return env->NewStringUTF(buffer);
+#else
     const char* message = strerror_r(errnum, buffer, sizeof(buffer));
     return env->NewStringUTF(message);
+#endif
 }
 
 static jstring Linux_strsignal(JNIEnv* env, jobject, jint signal) {
