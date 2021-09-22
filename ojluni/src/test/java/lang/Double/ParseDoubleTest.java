@@ -35,6 +35,7 @@ import java.util.regex.*;
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
+// Android-changed: remove pass/fail counting; migrate to org.testng assertions instead of throws
 public class ParseDoubleTest {
 
     private static final BigDecimal HALF = BigDecimal.valueOf(0.5);
@@ -194,9 +195,10 @@ public class ParseDoubleTest {
         "+Infinitye10",
 
         // Non-ASCII digits are not recognized
-        "\u0661e\u0661", // 1e1 in Arabic-Indic digits
-        "\u06F1e\u06F1", // 1e1 in Extended Arabic-Indic digits
-        "\u0967e\u0967", // 1e1 in Devanagari digits
+        // Android-removed: non-ASCII digits tests
+        // "\u0661e\u0661", // 1e1 in Arabic-Indic digits
+        // "\u06F1e\u06F1", // 1e1 in Extended Arabic-Indic digits
+        // "\u0967e\u0967", // 1e1 in Devanagari digits
 
         // JCK test lex03592m3
         ".",
@@ -568,16 +570,12 @@ public class ParseDoubleTest {
             }
             catch (NumberFormatException e) {
                 if (! exceptionalInput) {
-                    throw new RuntimeException("Double.parseDouble rejected " +
-                                               "good string `" + input[i] +
-                                               "'.");
+                    Assert.fail("Double.parseDouble rejected good string `" + input[i] + "'.");
                 }
                 break;
             }
             if (exceptionalInput) {
-                throw new RuntimeException("Double.parseDouble accepted " +
-                                           "bad string `" + input[i] +
-                                           "'.");
+                Assert.fail("Double.parseDouble accepted bad string `" + input[i] + "'.");
             }
         }
     }
@@ -648,15 +646,13 @@ public class ParseDoubleTest {
 
         for(int i = 0; i < input.length; i++) {
              Matcher m = fpPattern.matcher(input[i]);
-             if (m.matches() != ! exceptionalInput) {
-                 throw new RuntimeException("Regular expression " +
+             Assert.assertEquals(m.matches(), ! exceptionalInput, "Regular expression " +
                                             (exceptionalInput?
                                              "accepted bad":
                                              "rejected good") +
                                             " string `" +
                                             input[i] + "'.");
              }
-        }
 
     }
 
@@ -666,7 +662,6 @@ public class ParseDoubleTest {
      */
     @Test
     public void testSubnormalPowers() {
-        boolean failed = false;
         BigDecimal TWO = BigDecimal.valueOf(2);
         // An ulp is the same for all subnormal values
         BigDecimal ulp_BD = new BigDecimal(Double.MIN_VALUE);
@@ -685,41 +680,26 @@ public class ParseDoubleTest {
 
             double convertedLowerBound = Double.parseDouble(lowerBound.toString());
             double convertedUpperBound = Double.parseDouble(upperBound.toString());
-            if (convertedLowerBound != d) {
-                failed = true;
-                System.out.printf("2^%d lowerBound converts as %a %s%n",
-                                  i, convertedLowerBound, lowerBound);
-            }
-            if (convertedUpperBound != d) {
-                failed = true;
-                System.out.printf("2^%d upperBound converts as %a %s%n",
-                                  i, convertedUpperBound, upperBound);
-            }
+            Assert.assertEquals(convertedLowerBound, d,
+                    String.format("2^%d lowerBound converts as %a %s%n", i,
+                            convertedLowerBound, lowerBound));
+            Assert.assertEquals(convertedUpperBound, d,
+                    String.format("2^%d upperBound converts as %a %s%n",
+                                  i, convertedUpperBound, upperBound));
         }
         /*
          * Double.MIN_VALUE
          * The region ]0.5*Double.MIN_VALUE, 1.5*Double.MIN_VALUE[ should round to Double.MIN_VALUE .
          */
         BigDecimal minValue = new BigDecimal(Double.MIN_VALUE);
-        if (Double.parseDouble(minValue.multiply(new BigDecimal(0.5)).toString()) != 0.0) {
-            failed = true;
-            System.out.printf("0.5*MIN_VALUE doesn't convert 0%n");
-        }
-        if (Double.parseDouble(minValue.multiply(new BigDecimal(0.50000000001)).toString()) != Double.MIN_VALUE) {
-            failed = true;
-            System.out.printf("0.50000000001*MIN_VALUE doesn't convert to MIN_VALUE%n");
-        }
-        if (Double.parseDouble(minValue.multiply(new BigDecimal(1.49999999999)).toString()) != Double.MIN_VALUE) {
-            failed = true;
-            System.out.printf("1.49999999999*MIN_VALUE doesn't convert to MIN_VALUE%n");
-        }
-        if (Double.parseDouble(minValue.multiply(new BigDecimal(1.5)).toString()) != 2*Double.MIN_VALUE) {
-            failed = true;
-            System.out.printf("1.5*MIN_VALUE doesn't convert to 2*MIN_VALUE%n");
-        }
-
-        if (failed)
-            throw new RuntimeException("Inconsistent conversion");
+        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(0.5)).toString()), 0.0,
+                "0.5*MIN_VALUE doesn't convert 0");
+        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(0.50000000001)).toString()), Double.MIN_VALUE,
+                "0.50000000001*MIN_VALUE doesn't convert to MIN_VALUE");
+        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(1.49999999999)).toString()), Double.MIN_VALUE,
+                "1.49999999999*MIN_VALUE doesn't convert to MIN_VALUE");
+        Assert.assertEquals(Double.parseDouble(minValue.multiply(new BigDecimal(1.5)).toString()), 2*Double.MIN_VALUE,
+                "1.5*MIN_VALUE doesn't convert to 2*MIN_VALUE");
     }
 
     /**
@@ -745,7 +725,6 @@ public class ParseDoubleTest {
     public void testStrictness() {
         final double expected = 0x0.0000008000000p-1022;
 //        final double expected = 0x0.0000008000001p-1022;
-        boolean failed = false;
         double conversion = 0.0;
         double sum = 0.0; // Prevent conversion from being optimized away
 
@@ -755,16 +734,23 @@ public class ParseDoubleTest {
         for(int i = 0; i <= 12_000; i++) {
             conversion = Double.parseDouble(decimal);
             sum += conversion;
+        // BEGIN Android-changed: replace printf with assert
+        /*
             if (conversion != expected) {
                 failed = true;
                 System.out.printf("Iteration %d converts as %a%n",
                                   i, conversion);
             }
+         */
+            Assert.assertEquals(conversion, expected,
+                    String.format("Iteration %d converts as %a%n", i, conversion));
         }
-
+        /*
         System.out.println("Sum = "  + sum);
         if (failed)
             throw new RuntimeException("Inconsistent conversion");
+         */
+        // END Android-changed: replace printf with assert
     }
 
     @Test
