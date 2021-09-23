@@ -13974,6 +13974,7 @@ package java.util {
     method public java.util.stream.LongStream longs(long, long, long);
     method public java.util.stream.LongStream longs(long, long);
     method public boolean nextBoolean();
+    method public void nextBytes(byte[]);
     method public double nextDouble();
     method public double nextDouble(double);
     method public double nextDouble(double, double);
