@@ -13340,6 +13340,7 @@ package java.util {
 
   public class LongSummaryStatistics implements java.util.function.IntConsumer java.util.function.LongConsumer {
     ctor public LongSummaryStatistics();
+    ctor public LongSummaryStatistics(long, long, long, long) throws java.lang.IllegalArgumentException;
     method public void accept(int);
     method public void accept(long);
     method public void combine(java.util.LongSummaryStatistics);
