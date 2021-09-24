@@ -1448,6 +1448,7 @@ filegroup {
         "ojluni/src/main/java/jdk/net/NetworkPermission.java",
         "ojluni/src/main/java/jdk/net/SocketFlow.java",
         "ojluni/src/main/java/jdk/net/Sockets.java",
+        "ojluni/src/main/java/jdk/internal/misc/Unsafe.java",
         "ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java",
         "ojluni/src/main/java/jdk/internal/util/Preconditions.java",
         "ojluni/src/main/java/sun/invoke/util/BytecodeDescriptor.java",
