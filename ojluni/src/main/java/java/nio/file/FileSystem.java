@@ -343,18 +343,12 @@ public abstract class FileSystem
      * </tr>
      * <tr>
      *   <th scope="row"><code>&#47;home&#47;*&#47;*</code>
-     *   <td>Matches <code>&#47;home&#47;gus&#47;data</code> on UNIX platforms</td>
+     *   <td>Matches <code>&#47;home&#47;gus&#47;data</code></td>
      * </tr>
      * <tr>
      *   <th scope="row"><code>&#47;home&#47;**</code>
      *   <td>Matches <code>&#47;home&#47;gus</code> and
-     *   <code>&#47;home&#47;gus&#47;data</code> on UNIX platforms</td>
-     * </tr>
-     * <tr>
-     *   <th scope="row"><code>C:&#92;&#92;*</code>
-     *   <td>Matches <code>C:&#92;foo</code> and <code>C:&#92;bar</code> on the Windows
-     *   platform (note that the backslash is escaped; as a string literal in the
-     *   Java Language the pattern would be <code>"C:&#92;&#92;&#92;&#92;*"</code>) </td>
+     *   <code>&#47;home&#47;gus&#47;data</code></td>
      * </tr>
      * </tbody>
      * </table>
