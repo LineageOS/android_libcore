@@ -13481,21 +13481,21 @@ package java.util {
     method @NonNull public static String toString(@Nullable Object, @NonNull String);
   }
 
-  public class Observable {
-    ctor public Observable();
-    method public void addObserver(java.util.Observer);
-    method protected void clearChanged();
-    method public int countObservers();
-    method public void deleteObserver(java.util.Observer);
-    method public void deleteObservers();
-    method public boolean hasChanged();
-    method public void notifyObservers();
-    method public void notifyObservers(Object);
-    method protected void setChanged();
+  @Deprecated public class Observable {
+    ctor @Deprecated public Observable();
+    method @Deprecated public void addObserver(java.util.Observer);
+    method @Deprecated protected void clearChanged();
+    method @Deprecated public int countObservers();
+    method @Deprecated public void deleteObserver(java.util.Observer);
+    method @Deprecated public void deleteObservers();
+    method @Deprecated public boolean hasChanged();
+    method @Deprecated public void notifyObservers();
+    method @Deprecated public void notifyObservers(Object);
+    method @Deprecated protected void setChanged();
   }
 
-  public interface Observer {
-    method public void update(java.util.Observable, Object);
+  @Deprecated public interface Observer {
+    method @Deprecated public void update(java.util.Observable, Object);
   }
 
   public final class Optional<T> {
