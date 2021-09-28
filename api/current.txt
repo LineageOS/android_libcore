@@ -12928,6 +12928,7 @@ package java.util {
   }
 
   public interface Enumeration<E> {
+    method public default java.util.Iterator<E> asIterator();
     method public boolean hasMoreElements();
     method public E nextElement();
   }
