@@ -56,6 +56,30 @@ public class CallSitesTest extends TestCase {
         }
     }
 
+    static class OurConstantCallSite extends ConstantCallSite {
+        OurConstantCallSite(MethodType targetType, MethodHandle createTargetHook) throws Throwable {
+            super(targetType, createTargetHook);
+        }
+
+        static MethodHandle createTargetHook(OurConstantCallSite callSite) throws Throwable {
+            final MethodType add2MethodType =
+                    MethodType.methodType(int.class, int.class, int.class);
+            return MethodHandles.lookup().findStatic(CallSitesTest.class, "add2", add2MethodType);
+        }
+    }
+
+    public void test_ConstantCallSiteWithHook() throws Throwable {
+        final MethodType targetType =
+                MethodType.methodType(int.class, int.class, int.class);
+        MethodHandle createTargetHook =
+                MethodHandles.lookup().findStatic(OurConstantCallSite.class, "createTargetHook",
+                                                  MethodType.methodType(MethodHandle.class,
+                                                                        OurConstantCallSite.class));
+        OurConstantCallSite callSite = new OurConstantCallSite(targetType, createTargetHook);
+        int x = (int) callSite.getTarget().invoke(1, 2);
+        assertEquals(3, x);
+    }
+
     public void test_MutableCallSiteConstructorNullMethodType() throws Throwable {
         try {
             MutableCallSite callSite = new MutableCallSite((MethodType) null);
@@ -258,15 +282,15 @@ public class CallSitesTest extends TestCase {
         assertEquals(100, (int) site.dynamicInvoker().invokeExact(147, 47));
     }
 
-    private static int add2(int x, int y) {
+    public static int add2(int x, int y) {
         return x + y;
     }
 
-    private static int add3(int x, int y, int z) {
+    public static int add3(int x, int y, int z) {
         return x + y + z;
     }
 
-    private static int sub2(int x, int y) {
+    public static int sub2(int x, int y) {
         return x - y;
     }
 }
