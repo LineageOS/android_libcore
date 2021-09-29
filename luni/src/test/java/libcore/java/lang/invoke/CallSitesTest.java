@@ -31,14 +31,22 @@ import java.lang.invoke.WrongMethodTypeException;
 import static java.lang.invoke.MethodHandles.Lookup.*;
 
 public class CallSitesTest extends TestCase {
-    public void test_ConstantCallSite() throws Throwable {
-        final MethodType type = MethodType.methodType(int.class, int.class, int.class);
-        final MethodHandle mh =
-                MethodHandles.lookup().findStatic(CallSitesTest.class, "add2", type);
-        final ConstantCallSite site = new ConstantCallSite(mh);
-        assertEquals(mh, site.getTarget());
-        assertEquals(type, site.type());
+    public void test_ConstantCallSiteConstructorNullMethodHandle() throws Throwable {
+        try {
+            ConstantCallSite site = new ConstantCallSite((MethodHandle) null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
 
+    private static MethodHandle methodHandleForAdd2() throws Throwable {
+        final MethodType mt = MethodType.methodType(int.class, int.class, int.class);
+        return MethodHandles.lookup().findStatic(CallSitesTest.class, "add2", mt);
+    }
+
+    public void test_ConstantCallSite() throws Throwable {
+        final MethodHandle mh = methodHandleForAdd2();
+        ConstantCallSite site = new ConstantCallSite(mh);
         int n = (int) site.dynamicInvoker().invokeExact(7, 37);
         assertEquals(44, n);
         try {
@@ -46,6 +54,123 @@ public class CallSitesTest extends TestCase {
             fail();
         } catch (UnsupportedOperationException e) {
         }
+    }
+
+    public void test_MutableCallSiteConstructorNullMethodType() throws Throwable {
+        try {
+            MutableCallSite callSite = new MutableCallSite((MethodType) null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
+
+    public void test_MutableCallSiteConstructorNullMethodHandle() throws Throwable {
+        try {
+            MutableCallSite callSite = new MutableCallSite((MethodHandle) null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
+
+    public void test_MutableCallsiteNoMethodHandle() throws Throwable {
+        try {
+            MutableCallSite callSite =
+                    new MutableCallSite(MethodType.methodType(int.class, int.class, int.class));
+            int result = (int) callSite.getTarget().invokeExact(1, 2);
+            fail();
+        } catch (IllegalStateException e) {
+        }
+    }
+
+    public void test_MutableCallSite() throws Throwable {
+        final MethodHandle mh = methodHandleForAdd2();
+        final MutableCallSite site = new MutableCallSite(mh);
+
+        // Invocation test
+        int n = (int) site.getTarget().invokeExact(7, 37);
+        assertEquals(44, n);
+
+        // setTarget() tests
+        try {
+            final MethodType mt_add3 =
+                    MethodType.methodType(int.class, int.class, int.class, int.class);
+            final MethodHandle mh_add3 =
+                    MethodHandles.lookup().findStatic(CallSitesTest.class, "add3", mt_add3);
+
+            site.setTarget(mh_add3);
+            fail();
+        } catch (WrongMethodTypeException e) {
+        }
+        try {
+            site.setTarget(null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+        final MethodHandle mh_sub2 =
+                MethodHandles.lookup().findStatic(CallSitesTest.class, "sub2",
+                                                  MethodType.methodType(int.class, int.class, int.class));
+        site.setTarget(mh_sub2);
+        n = (int) site.getTarget().invokeExact(7, 37);
+        assertEquals(-30, n);
+    }
+
+    public void test_VolatileCallSiteConstructorNullMethodType() throws Throwable {
+        try {
+            VolatileCallSite vc = new VolatileCallSite((MethodType) null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
+
+    public void test_VolatileCallSiteConstructorNullMethodHandle() throws Throwable {
+        try {
+            VolatileCallSite vc = new VolatileCallSite((MethodHandle) null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+    }
+
+    public void test_VolatileCallsiteNoMethodHandle() throws Throwable {
+        try {
+            VolatileCallSite vc =
+                    new VolatileCallSite(MethodType.methodType(int.class, int.class, int.class));
+            int result = (int) vc.getTarget().invokeExact(1, 2);
+            fail();
+        } catch (IllegalStateException e) {
+        }
+    }
+
+    public void test_VolatileCallSite() throws Throwable {
+        final MethodHandle mh = methodHandleForAdd2();
+        final VolatileCallSite site = new VolatileCallSite(mh);
+
+        // Invocation test
+        int n = (int) site.getTarget().invokeExact(7, 37);
+        assertEquals(44, n);
+
+        // setTarget() tests
+        try {
+            final MethodType mt_add3 =
+                    MethodType.methodType(int.class, int.class, int.class, int.class);
+            final MethodHandle mh_add3 =
+                    MethodHandles.lookup().findStatic(CallSitesTest.class, "add3", mt_add3);
+            site.setTarget(mh_add3);
+            fail();
+        } catch (WrongMethodTypeException e) {
+        }
+        try {
+            site.setTarget(null);
+            fail();
+        } catch (NullPointerException e) {
+        }
+
+        // One last invocation test
+        final MethodHandle mh_sub2 =
+                MethodHandles.lookup().findStatic(CallSitesTest.class, "sub2",
+                                                  MethodType.methodType(int.class, int.class, int.class));
+        site.setTarget(mh_sub2);
+        n = (int) site.getTarget().invokeExact(7, 37);
+        assertEquals(-30, n);
     }
 
     public void test_EarlyBoundMutableCallSite() throws Throwable {
@@ -97,7 +222,7 @@ public class CallSitesTest extends TestCase {
     }
 
     private static void commonMutableCallSitesTest(CallSite site,
-                                                  MethodHandle firstTarget) throws Throwable{
+                                                   MethodHandle firstTarget) throws Throwable {
         site.setTarget(firstTarget);
         site.setTarget(firstTarget);
 
