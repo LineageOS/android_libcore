@@ -16,14 +16,10 @@
 
 package libcore.javax.xml.datatype;
 
-import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeConstants.Field;
 import javax.xml.datatype.Duration;
 import junit.framework.TestCase;
 
@@ -186,78 +182,6 @@ public class DurationTest extends TestCase {
                     i.subtract(j);
                 } catch (UnsupportedOperationException expected) {}
             }
-        }
-    }
-
-    /**
-     * Avoid depending on {@link javax.xml.datatype.DatatypeFactory}, and
-     * throws {@link UnsupportedOperationException} on abstract methods,
-     * since proper implementation does not exist in Android.
-     */
-    private static final class DurationImpl extends javax.xml.datatype.Duration {
-
-        private final int sign;
-        private final Map<Field, Number> fields;
-
-        DurationImpl(int sgn, int y, int months, int d, int h, int m, float s) {
-            sign = sgn;
-            fields = new HashMap<>();
-            if (y >= 0) { fields.put(DatatypeConstants.YEARS, y); }
-            if (months >= 0) { fields.put(DatatypeConstants.MONTHS, months); }
-            if (d >= 0) { fields.put(DatatypeConstants.DAYS, d); }
-            if (h >= 0) { fields.put(DatatypeConstants.HOURS, h); }
-            if (m >= 0) { fields.put(DatatypeConstants.MINUTES, m); }
-            if (s >= 0) { fields.put(DatatypeConstants.SECONDS, s); }
-        }
-
-        @Override
-        public int getSign() {
-            return sign;
-        }
-
-        @Override
-        public Number getField(Field field) {
-            return fields.get(field);
-        }
-
-        @Override
-        public boolean isSet(Field field) {
-            return fields.containsKey(field);
-        }
-
-        @Override
-        public Duration add(Duration rhs) {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public void addTo(Calendar calendar) {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public Duration multiply(BigDecimal factor) {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public Duration negate() {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public Duration normalizeWith(Calendar startTimeInstant) {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public int compare(Duration duration) {
-            throw new UnsupportedOperationException("Stub implementation");
-        }
-
-        @Override
-        public int hashCode() {
-            throw new UnsupportedOperationException("Stub implementation");
         }
     }
 }
