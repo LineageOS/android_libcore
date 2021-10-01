@@ -12702,6 +12702,7 @@ package java.util {
     method @NonNull public default java.util.stream.Stream<E> stream();
     method @NonNull public Object[] toArray();
     method @NonNull public <T> T[] toArray(@NonNull T[]);
+    method @NonNull public default <T> T[] toArray(@NonNull java.util.function.IntFunction<T[]>);
   }
 
   public class Collections {
