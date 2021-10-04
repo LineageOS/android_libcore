@@ -4644,6 +4644,7 @@ package java.lang.reflect {
 
   public class MalformedParameterizedTypeException extends java.lang.RuntimeException {
     ctor public MalformedParameterizedTypeException();
+    ctor public MalformedParameterizedTypeException(String);
   }
 
   public class MalformedParametersException extends java.lang.RuntimeException {
