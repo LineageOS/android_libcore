@@ -16107,6 +16107,7 @@ package java.util.jar {
     method public java.util.jar.Attributes getAttributes() throws java.io.IOException;
     method public java.security.cert.Certificate[] getCertificates();
     method public java.security.CodeSigner[] getCodeSigners();
+    method public String getRealName();
     field public static final int CENATT = 36; // 0x24
     field public static final int CENATX = 38; // 0x26
     field public static final int CENCOM = 32; // 0x20
