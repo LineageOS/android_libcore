@@ -144,6 +144,7 @@ filegroup {
         "ojluni/src/main/java/java/lang/IllegalAccessError.java",
         "ojluni/src/main/java/java/lang/IllegalAccessException.java",
         "ojluni/src/main/java/java/lang/IllegalArgumentException.java",
+        "ojluni/src/main/java/java/lang/IllegalCallerException.java",
         "ojluni/src/main/java/java/lang/IllegalMonitorStateException.java",
         "ojluni/src/main/java/java/lang/IllegalStateException.java",
         "ojluni/src/main/java/java/lang/IllegalThreadStateException.java",
