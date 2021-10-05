@@ -683,6 +683,20 @@ public final class Unsafe {
     @FastNative
     public native void copyMemory(long srcAddr, long dstAddr, long bytes);
 
+    /**
+     * Atomically updates Java variable to {@code x} if it is currently
+     * holding {@code expected}.
+     *
+     * <p>This operation has memory semantics of a {@code volatile} read
+     * and write.  Corresponds to C11 atomic_compare_exchange_strong.
+     *
+     * @return {@code true} if successful
+     */
+    //@HotSpotIntrinsicCandidate
+    @FastNative
+    public final native boolean compareAndSetInt(Object o, long offset,
+                                                 int expected,
+                                                 int x);
 
     // The following contain CAS-based Java implementations used on
     // platforms not supporting native instructions
@@ -787,6 +801,17 @@ public final class Unsafe {
         return v;
     }
 
+    /** Release version of {@link #putIntVolatile(Object, long, int)} */
+    // @HotSpotIntrinsicCandidate
+    public final void putIntRelease(Object o, long offset, int x) {
+        putIntVolatile(o, offset, x);
+    }
+
+    /** Acquire version of {@link #getIntVolatile(Object, long)} */
+    // @HotSpotIntrinsicCandidate
+    public final int getIntAcquire(Object o, long offset) {
+        return getIntVolatile(o, offset);
+    }
 
     /**
      * Ensures that loads before the fence will not be reordered with loads and
