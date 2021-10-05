@@ -15818,7 +15818,11 @@ package java.util.concurrent.locks {
     method public java.util.concurrent.locks.ReadWriteLock asReadWriteLock();
     method public java.util.concurrent.locks.Lock asWriteLock();
     method public int getReadLockCount();
+    method public static boolean isLockStamp(long);
+    method public static boolean isOptimisticReadStamp(long);
+    method public static boolean isReadLockStamp(long);
     method public boolean isReadLocked();
+    method public static boolean isWriteLockStamp(long);
     method public boolean isWriteLocked();
     method public long readLock();
     method public long readLockInterruptibly() throws java.lang.InterruptedException;
