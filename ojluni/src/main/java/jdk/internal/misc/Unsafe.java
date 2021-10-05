@@ -85,6 +85,37 @@ public final class Unsafe {
     }
 
     /**
+     * Reports the location of the field with a given name in the storage
+     * allocation of its class.
+     *
+     * @throws NullPointerException if any parameter is {@code null}.
+     * @throws InternalError if there is no field named {@code name} declared
+     *         in class {@code c}, i.e., if {@code c.getDeclaredField(name)}
+     *         would throw {@code java.lang.NoSuchFieldException}.
+     *
+     * @see #objectFieldOffset(Field)
+     */
+    public long objectFieldOffset(Class<?> c, String name) {
+        if (c == null || name == null) {
+            throw new NullPointerException();
+        }
+
+        Field field = null;
+        Field[] fields = c.getDeclaredFields();
+        for (Field f : fields) {
+            if (f.getName().equals(name)) {
+                field = f;
+                break;
+            }
+        }
+        if (field == null) {
+            // TODO: follow convention from objectFieldOffset
+            throw new InternalError();
+        }
+        return objectFieldOffset(field);
+    }
+
+    /**
      * Gets the offset from the start of an array object's memory to
      * the memory used to store its initial (zeroeth) element.
      *
