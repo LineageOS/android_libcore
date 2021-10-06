@@ -1470,10 +1470,14 @@ public class ThreadPoolExecutor extends AbstractExecutorService {
     // whose finalize method invokes super.finalize() (as is recommended).
     // Before JDK 11, finalize() had a non-empty method body.
 
+    // Android-added: The @deprecated javadoc tag
     /**
      * @implNote Previous versions of this class had a finalize method
      * that shut down this executor, but in this version, finalize
      * does nothing.
+     *
+     * @deprecated Subclass is not recommended to override finalize(). If it
+     * must, please always invoke super.finalize().
      */
     @Deprecated(since="9")
     protected void finalize() {}
