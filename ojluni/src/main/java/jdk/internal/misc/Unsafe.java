@@ -723,11 +723,41 @@ public final class Unsafe {
      *
      * @return {@code true} if successful
      */
-    //@HotSpotIntrinsicCandidate
+    // @HotSpotIntrinsicCandidate
     @FastNative
     public final native boolean compareAndSetInt(Object o, long offset,
                                                  int expected,
                                                  int x);
+
+    /**
+     * Atomically updates Java variable to {@code x} if it is currently
+     * holding {@code expected}.
+     *
+     * <p>This operation has memory semantics of a {@code volatile} read
+     * and write.  Corresponds to C11 atomic_compare_exchange_strong.
+     *
+     * @return {@code true} if successful
+     */
+    // @HotSpotIntrinsicCandidate
+    @FastNative
+    public final native boolean compareAndSetLong(Object o, long offset,
+                                                  long expected,
+                                                  long x);
+
+    /**
+     * Atomically updates Java variable to {@code x} if it is currently
+     * holding {@code expected}.
+     *
+     * <p>This operation has memory semantics of a {@code volatile} read
+     * and write.  Corresponds to C11 atomic_compare_exchange_strong.
+     *
+     * @return {@code true} if successful
+     */
+    // @HotSpotIntrinsicCandidate
+    @FastNative
+    public final native boolean compareAndSetObject(Object o, long offset,
+                                                    Object expected,
+                                                    Object x);
 
     // The following contain CAS-based Java implementations used on
     // platforms not supporting native instructions
@@ -844,6 +874,30 @@ public final class Unsafe {
         return getIntVolatile(o, offset);
     }
 
+    /** Release version of {@link #putLongVolatile(Object, long, long)} */
+    // @HotSpotIntrinsicCandidate
+    public final void putLongRelease(Object o, long offset, long x) {
+        putLongVolatile(o, offset, x);
+    }
+
+    /** Acquire version of {@link #getLongVolatile(Object, long)} */
+    // @HotSpotIntrinsicCandidate
+    public final long getLongAcquire(Object o, long offset) {
+        return getLongVolatile(o, offset);
+    }
+
+    /** Release version of {@link #putObjectVolatile(Object, long, Object)} */
+    // @HotSpotIntrinsicCandidate
+    public final void putObjectRelease(Object o, long offset, Object x) {
+        putObjectVolatile(o, offset, x);
+    }
+
+    /** Acquire version of {@link #getObjectVolatile(Object, long)} */
+    // @HotSpotIntrinsicCandidate
+    public final Object getObjectAcquire(Object o, long offset) {
+        return getObjectVolatile(o, offset);
+    }
+
     /**
      * Ensures that loads before the fence will not be reordered with loads and
      * stores after the fence; a "LoadLoad plus LoadStore barrier".
@@ -888,4 +942,5 @@ public final class Unsafe {
     // @HotSpotIntrinsicCandidate
     @FastNative
     public native void fullFence();
+
 }
