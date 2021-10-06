@@ -85,6 +85,37 @@ public final class Unsafe {
     }
 
     /**
+     * Reports the location of the field with a given name in the storage
+     * allocation of its class.
+     *
+     * @throws NullPointerException if any parameter is {@code null}.
+     * @throws InternalError if there is no field named {@code name} declared
+     *         in class {@code c}, i.e., if {@code c.getDeclaredField(name)}
+     *         would throw {@code java.lang.NoSuchFieldException}.
+     *
+     * @see #objectFieldOffset(Field)
+     */
+    public long objectFieldOffset(Class<?> c, String name) {
+        if (c == null || name == null) {
+            throw new NullPointerException();
+        }
+
+        Field field = null;
+        Field[] fields = c.getDeclaredFields();
+        for (Field f : fields) {
+            if (f.getName().equals(name)) {
+                field = f;
+                break;
+            }
+        }
+        if (field == null) {
+            // TODO: follow convention from objectFieldOffset
+            throw new InternalError();
+        }
+        return objectFieldOffset(field);
+    }
+
+    /**
      * Gets the offset from the start of an array object's memory to
      * the memory used to store its initial (zeroeth) element.
      *
@@ -683,6 +714,20 @@ public final class Unsafe {
     @FastNative
     public native void copyMemory(long srcAddr, long dstAddr, long bytes);
 
+    /**
+     * Atomically updates Java variable to {@code x} if it is currently
+     * holding {@code expected}.
+     *
+     * <p>This operation has memory semantics of a {@code volatile} read
+     * and write.  Corresponds to C11 atomic_compare_exchange_strong.
+     *
+     * @return {@code true} if successful
+     */
+    //@HotSpotIntrinsicCandidate
+    @FastNative
+    public final native boolean compareAndSetInt(Object o, long offset,
+                                                 int expected,
+                                                 int x);
 
     // The following contain CAS-based Java implementations used on
     // platforms not supporting native instructions
@@ -787,6 +832,17 @@ public final class Unsafe {
         return v;
     }
 
+    /** Release version of {@link #putIntVolatile(Object, long, int)} */
+    // @HotSpotIntrinsicCandidate
+    public final void putIntRelease(Object o, long offset, int x) {
+        putIntVolatile(o, offset, x);
+    }
+
+    /** Acquire version of {@link #getIntVolatile(Object, long)} */
+    // @HotSpotIntrinsicCandidate
+    public final int getIntAcquire(Object o, long offset) {
+        return getIntVolatile(o, offset);
+    }
 
     /**
      * Ensures that loads before the fence will not be reordered with loads and
