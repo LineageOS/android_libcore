@@ -44,6 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.io.ObjectStreamClass.processQueue;
 import sun.reflect.misc.ReflectUtil;
 import dalvik.system.VMStack;
+import jdk.internal.misc.SharedSecrets;
 
 /**
  * An ObjectInputStream deserializes primitive data and objects previously
@@ -1131,6 +1132,33 @@ public class ObjectInputStream
 
     // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
     // Removed ObjectInputFilter related methods.
+
+    /**
+     * Checks the given array type and length to ensure that creation of such
+     * an array is permitted by this ObjectInputStream. The arrayType argument
+     * must represent an actual array type.
+     *
+     * This private method is called via SharedSecrets.
+     *
+     * @param arrayType the array type
+     * @param arrayLength the array length
+     * @throws NullPointerException if arrayType is null
+     * @throws IllegalArgumentException if arrayType isn't actually an array type
+     * @throws NegativeArraySizeException if arrayLength is negative
+     * @throws InvalidClassException if the filter rejects creation
+     */
+    private void checkArray(Class<?> arrayType, int arrayLength) throws InvalidClassException {
+        if (! arrayType.isArray()) {
+            throw new IllegalArgumentException("not an array type");
+        }
+
+        if (arrayLength < 0) {
+            throw new NegativeArraySizeException();
+        }
+
+        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // filterCheck(arrayType, arrayLength);
+    }
 
     /**
      * Provide access to the persistent fields read from the input stream.
@@ -3709,8 +3737,8 @@ public class ObjectInputStream
     private static void setValidator(ObjectInputStream ois, ObjectStreamClassValidator validator) {
         ois.validator = validator;
     }
-    static {
-        SharedSecrets.setJavaObjectInputStreamAccess(ObjectInputStream::setValidator);
-    }
     */
+    static {
+        SharedSecrets.setJavaObjectInputStreamAccess(ObjectInputStream::checkArray);
+    }
 }
