@@ -1307,6 +1307,8 @@ package java.io {
     method public int available();
     method public int read();
     method public int read(byte[], int, int);
+    method public byte[] readAllBytes();
+    method public int readNBytes(byte[], int, int);
     method public void reset();
     method public long skip(long);
     field protected byte[] buf;
@@ -1322,9 +1324,11 @@ package java.io {
     method public int size();
     method @NonNull public byte[] toByteArray();
     method @NonNull public String toString(@NonNull String) throws java.io.UnsupportedEncodingException;
+    method @NonNull public String toString(@NonNull java.nio.charset.Charset);
     method @Deprecated @NonNull public String toString(int);
     method public void write(int);
     method public void write(@NonNull byte[], int, int);
+    method public void writeBytes(byte[]);
     method public void writeTo(@NonNull java.io.OutputStream) throws java.io.IOException;
     field @NonNull protected byte[] buf;
     field protected int count;
