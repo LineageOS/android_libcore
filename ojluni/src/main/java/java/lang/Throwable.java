@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -111,14 +111,14 @@ import  java.util.*;
  * @author  Josh Bloch (Added exception chaining and programmatic access to
  *          stack trace in 1.4.)
  * @jls 11.2 Compile-Time Checking of Exceptions
- * @since JDK1.0
+ * @since 1.0
  */
 public class Throwable implements Serializable {
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     private static final long serialVersionUID = -3042686055658047285L;
 
     /**
-     * Native code saves some indication of the stack backtrace in this slot.
+     * The JVM saves some indication of the stack backtrace in this slot.
      */
     private transient Object backtrace;
 
@@ -141,7 +141,7 @@ public class Throwable implements Serializable {
          * {@linkplain #setStackTrace(StackTraceElement[]) Setting the
          * stack trace} to a one-element array containing this sentinel
          * value indicates future attempts to set the stack trace will be
-         * ignored.  The sentinal is equal to the result of calling:<br>
+         * ignored.  The sentinel is equal to the result of calling:<br>
          * {@code new StackTraceElement("", "", null, Integer.MIN_VALUE)}
          */
         public static final StackTraceElement STACK_TRACE_ELEMENT_SENTINEL =
@@ -206,7 +206,7 @@ public class Throwable implements Serializable {
      * The field is initialized to a zero-length array.  A {@code
      * null} value of this field indicates subsequent calls to {@link
      * #setStackTrace(StackTraceElement[])} and {@link
-     * #fillInStackTrace()} will be be no-ops.
+     * #fillInStackTrace()} will be no-ops.
      *
      * @serial
      * @since 1.4
@@ -214,6 +214,12 @@ public class Throwable implements Serializable {
     // Android-changed: Use libcore.util.EmptyArray for the empty stack trace.
     // private StackTraceElement[] stackTrace = UNASSIGNED_STACK;
     private StackTraceElement[] stackTrace = libcore.util.EmptyArray.STACK_TRACE_ELEMENT;
+
+    /**
+     * The JVM code sets the depth of the backtrace for later retrieval
+     */
+    // Android-removed: native getStackTrace is used instead.
+    // private transient int depth;
 
     // Android-removed: Use empty collection in place of SUPPRESSED_SENTINEL.
     // Adding this constant breaks serialization of some subclasses
@@ -397,7 +403,7 @@ public class Throwable implements Serializable {
      * {@code getMessage()}.
      *
      * @return  The localized description of this throwable.
-     * @since   JDK1.1
+     * @since   1.1
      */
     public String getLocalizedMessage() {
         return getMessage();
@@ -729,7 +735,7 @@ public class Throwable implements Serializable {
      * print writer.
      *
      * @param s {@code PrintWriter} to use for output
-     * @since   JDK1.1
+     * @since   1.1
      */
     public void printStackTrace(PrintWriter s) {
         printStackTrace(new WrappedPrintWriter(s));
@@ -907,15 +913,6 @@ public class Throwable implements Serializable {
         }
     }
 
-    // Android-removed: Unused native method getStackTraceDepth().
-    // /**
-    //  * Returns the number of elements in the stack trace (or 0 if the stack
-    //  * trace is unavailable).
-    //  *
-    //  * package-protection for use by SharedSecrets.
-    //  */
-    // native int getStackTraceDepth();
-
     /**
      * Returns the specified element of the stack trace.
      *
@@ -929,7 +926,6 @@ public class Throwable implements Serializable {
     // native StackTraceElement getStackTraceElement(int index);
     @FastNative
     private static native StackTraceElement[] nativeGetStackTrace(Object stackState);
-
 
     /**
      * Reads a {@code Throwable} from a stream, enforcing
