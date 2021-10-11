@@ -107,8 +107,12 @@ public class HypotTests {
         }
 
         // Big ones
-        for (int m = 100000; m < 100100; m++) {
-            for (int n = m + 100000; n < 200200; n++) {
+        // Android-changed: reduce test run time testing every 5th of original
+        // for (int m = 100000; m < 100100; m++) {
+        for (int m = 100000; m < 100100; m += 5) {
+            // Android-changed: reduce test run time testing every 1000th of original
+            // for (int n = m + 100000; n < 200200; n++) {
+            for (int n = m + 100000; n < 200200; n += 1000) {
                 long[] result = pythagoreanTriple(m, n);
                 testHypotCase(result[0], result[1], result[2]);
             }
@@ -124,7 +128,9 @@ public class HypotTests {
          * to (MAX_EXPONENT - 3), the computation should not overflow.
          */
         java.util.Random rand = new Random();
-        for (int i = 0; i < 1000; i++) {
+        // Android-changed: reduce test run time testing every 10th of original
+        // for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i += 10) {
             double d = rand.nextDouble();
             // Scale d to have an exponent equal to MAX_EXPONENT -15
             d = Math.scalb(d, Double.MAX_EXPONENT
