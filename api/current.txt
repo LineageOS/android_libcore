@@ -1876,6 +1876,7 @@ package java.io {
     ctor public OutputStream();
     method public void close() throws java.io.IOException;
     method public void flush() throws java.io.IOException;
+    method public static java.io.OutputStream nullOutputStream();
     method public abstract void write(int) throws java.io.IOException;
     method public void write(byte[]) throws java.io.IOException;
     method public void write(byte[], int, int) throws java.io.IOException;
