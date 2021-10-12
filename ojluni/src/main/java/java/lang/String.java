@@ -794,7 +794,7 @@ public final class String
         }
 
         if (dstBegin < 0) {
-            throw new ArrayIndexOutOfBoundsException("dstBegin < 0. dstBegin=" + dstBegin);
+            throw new ArrayIndexOutOfBoundsException("dstBegin < 0");
         }
         // dstBegin can be equal to dst.length, but only in the case where zero chars are to be
         // copied.
