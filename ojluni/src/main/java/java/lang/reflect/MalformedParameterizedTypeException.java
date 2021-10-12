@@ -36,4 +36,21 @@ package java.lang.reflect;
  */
 public class MalformedParameterizedTypeException extends RuntimeException {
     private static final long serialVersionUID = -5696557788586220964L;
+
+    /**
+     * Constructs a {@code MalformedParameterizedTypeException} with
+     * no detail message.
+     */
+    public MalformedParameterizedTypeException() {
+        super();
+    }
+
+    /**
+     * Constructs a {@code MalformedParameterizedTypeException} with
+     * the given detail message.
+     * @param message the detail message; may be {@code null}
+     */
+    public MalformedParameterizedTypeException(String message) {
+        super(message);
+    }
 }
