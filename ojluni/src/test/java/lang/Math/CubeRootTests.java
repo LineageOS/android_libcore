@@ -92,7 +92,9 @@ public class CubeRootTests {
         }
 
         // Test integer perfect cubes less than 2^53.
-        for (int i = 0; i <= 208063; i++) {
+        // Android-changed: reduce test run time testing every 100th of original
+        // for (int i = 0; i <= 208063; i++) {
+        for (int i = 0; i <= 208063; i += 100) {
             double d = i;
             testCubeRootCase(d * d * d, (double) i);
         }
