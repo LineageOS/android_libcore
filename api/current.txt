@@ -1577,6 +1577,8 @@ package java.io {
     ctor public FileReader(String) throws java.io.FileNotFoundException;
     ctor public FileReader(java.io.File) throws java.io.FileNotFoundException;
     ctor public FileReader(java.io.FileDescriptor);
+    ctor public FileReader(String, java.nio.charset.Charset) throws java.io.IOException;
+    ctor public FileReader(java.io.File, java.nio.charset.Charset) throws java.io.IOException;
   }
 
   public class FileWriter extends java.io.OutputStreamWriter {
@@ -1585,6 +1587,10 @@ package java.io {
     ctor public FileWriter(java.io.File) throws java.io.IOException;
     ctor public FileWriter(java.io.File, boolean) throws java.io.IOException;
     ctor public FileWriter(java.io.FileDescriptor);
+    ctor public FileWriter(String, java.nio.charset.Charset) throws java.io.IOException;
+    ctor public FileWriter(String, java.nio.charset.Charset, boolean) throws java.io.IOException;
+    ctor public FileWriter(java.io.File, java.nio.charset.Charset) throws java.io.IOException;
+    ctor public FileWriter(java.io.File, java.nio.charset.Charset, boolean) throws java.io.IOException;
   }
 
   @java.lang.FunctionalInterface public interface FilenameFilter {
