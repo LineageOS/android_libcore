@@ -1176,8 +1176,9 @@ public class StampedLock implements java.io.Serializable {
         }
         else if ((LockSupport.nextSecondarySeed() & OVERFLOW_YIELD_RATE) == 0)
             Thread.yield();
-        else
-            Thread.onSpinWait();
+        // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+        // else
+        //     Thread.onSpinWait();
         return 0L;
     }
 
@@ -1204,8 +1205,9 @@ public class StampedLock implements java.io.Serializable {
         }
         else if ((LockSupport.nextSecondarySeed() & OVERFLOW_YIELD_RATE) == 0)
             Thread.yield();
-        else
-            Thread.onSpinWait();
+        // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+        // else
+        //     Thread.onSpinWait();
         return 0L;
     }
 
@@ -1251,7 +1253,8 @@ public class StampedLock implements java.io.Serializable {
                 spins = (m == WBIT && wtail == whead) ? SPINS : 0;
             else if (spins > 0) {
                 --spins;
-                Thread.onSpinWait();
+                // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+                // Thread.onSpinWait();
             }
             else if ((p = wtail) == null) { // initialize queue
                 WNode hd = new WNode(WMODE, null);
@@ -1287,8 +1290,9 @@ public class StampedLock implements java.io.Serializable {
                             return ns;
                         }
                     }
-                    else
-                        Thread.onSpinWait();
+                    // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+                    // else
+                    //     Thread.onSpinWait();
                 }
             }
             else if (h != null) { // help release stale waiters
@@ -1364,7 +1368,8 @@ public class StampedLock implements java.io.Serializable {
                     else if (m >= WBIT) {
                         if (spins > 0) {
                             --spins;
-                            Thread.onSpinWait();
+                            // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+                            // Thread.onSpinWait();
                         }
                         else {
                             if (spins == 0) {
@@ -1473,8 +1478,9 @@ public class StampedLock implements java.io.Serializable {
                     }
                     else if (m >= WBIT && --k <= 0)
                         break;
-                    else
-                        Thread.onSpinWait();
+                    // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+                    // else
+                    //     Thread.onSpinWait();
                 }
             }
             else if (h != null) {
