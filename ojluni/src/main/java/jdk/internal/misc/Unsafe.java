@@ -129,6 +129,42 @@ public final class Unsafe {
         return getArrayBaseOffsetForComponentType(component);
     }
 
+    /** The value of {@code arrayBaseOffset(boolean[].class)} */
+    public static final int ARRAY_BOOLEAN_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(boolean[].class);
+
+    /** The value of {@code arrayBaseOffset(byte[].class)} */
+    public static final int ARRAY_BYTE_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(byte[].class);
+
+    /** The value of {@code arrayBaseOffset(short[].class)} */
+    public static final int ARRAY_SHORT_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(short[].class);
+
+    /** The value of {@code arrayBaseOffset(char[].class)} */
+    public static final int ARRAY_CHAR_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(char[].class);
+
+    /** The value of {@code arrayBaseOffset(int[].class)} */
+    public static final int ARRAY_INT_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(int[].class);
+
+    /** The value of {@code arrayBaseOffset(long[].class)} */
+    public static final int ARRAY_LONG_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(long[].class);
+
+    /** The value of {@code arrayBaseOffset(float[].class)} */
+    public static final int ARRAY_FLOAT_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(float[].class);
+
+    /** The value of {@code arrayBaseOffset(double[].class)} */
+    public static final int ARRAY_DOUBLE_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(double[].class);
+
+    /** The value of {@code arrayBaseOffset(Object[].class)} */
+    public static final int ARRAY_OBJECT_BASE_OFFSET
+            = theUnsafe.arrayBaseOffset(Object[].class);
+
     /**
      * Gets the size of each element of the given array class.
      *
@@ -143,10 +179,161 @@ public final class Unsafe {
       return getArrayIndexScaleForComponentType(component);
     }
 
+    /** The value of {@code arrayIndexScale(boolean[].class)} */
+    public static final int ARRAY_BOOLEAN_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(boolean[].class);
+
+    /** The value of {@code arrayIndexScale(byte[].class)} */
+    public static final int ARRAY_BYTE_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(byte[].class);
+
+    /** The value of {@code arrayIndexScale(short[].class)} */
+    public static final int ARRAY_SHORT_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(short[].class);
+
+    /** The value of {@code arrayIndexScale(char[].class)} */
+    public static final int ARRAY_CHAR_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(char[].class);
+
+    /** The value of {@code arrayIndexScale(int[].class)} */
+    public static final int ARRAY_INT_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(int[].class);
+
+    /** The value of {@code arrayIndexScale(long[].class)} */
+    public static final int ARRAY_LONG_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(long[].class);
+
+    /** The value of {@code arrayIndexScale(float[].class)} */
+    public static final int ARRAY_FLOAT_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(float[].class);
+
+    /** The value of {@code arrayIndexScale(double[].class)} */
+    public static final int ARRAY_DOUBLE_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(double[].class);
+
+    /** The value of {@code arrayIndexScale(Object[].class)} */
+    public static final int ARRAY_OBJECT_INDEX_SCALE
+            = theUnsafe.arrayIndexScale(Object[].class);
+
     @FastNative
     private static native int getArrayBaseOffsetForComponentType(Class component_class);
     @FastNative
     private static native int getArrayIndexScaleForComponentType(Class component_class);
+
+    /**
+     * Fetches a value at some byte offset into a given Java object.
+     * More specifically, fetches a value within the given object
+     * <code>o</code> at the given offset, or (if <code>o</code> is
+     * null) from the memory address whose numerical value is the
+     * given offset.  <p>
+     *
+     * The specification of this method is the same as {@link
+     * #getLong(Object, long)} except that the offset does not need to
+     * have been obtained from {@link #objectFieldOffset} on the
+     * {@link java.lang.reflect.Field} of some Java field.  The value
+     * in memory is raw data, and need not correspond to any Java
+     * variable.  Unless <code>o</code> is null, the value accessed
+     * must be entirely within the allocated object.  The endianness
+     * of the value in memory is the endianness of the native platform.
+     *
+     * <p> The read will be atomic with respect to the largest power
+     * of two that divides the GCD of the offset and the storage size.
+     * For example, getLongUnaligned will make atomic reads of 2-, 4-,
+     * or 8-byte storage units if the offset is zero mod 2, 4, or 8,
+     * respectively.  There are no other guarantees of atomicity.
+     * <p>
+     * 8-byte atomicity is only guaranteed on platforms on which
+     * support atomic accesses to longs.
+     *
+     * @param o Java heap object in which the value resides, if any, else
+     *        null
+     * @param offset The offset in bytes from the start of the object
+     * @return the value fetched from the indicated object
+     * @throws RuntimeException No defined exceptions are thrown, not even
+     *         {@link NullPointerException}
+     * @since 9
+     */
+    public final long getLongUnaligned(Object o, long offset) {
+        if ((offset & 7) == 0) {
+            return getLong(o, offset);
+        } else if ((offset & 3) == 0) {
+            return makeLong(getInt(o, offset),
+                    getInt(o, offset + 4));
+        } else if ((offset & 1) == 0) {
+            return makeLong(getShort(o, offset),
+                    getShort(o, offset + 2),
+                    getShort(o, offset + 4),
+                    getShort(o, offset + 6));
+        } else {
+            return makeLong(getByte(o, offset),
+                    getByte(o, offset + 1),
+                    getByte(o, offset + 2),
+                    getByte(o, offset + 3),
+                    getByte(o, offset + 4),
+                    getByte(o, offset + 5),
+                    getByte(o, offset + 6),
+                    getByte(o, offset + 7));
+        }
+    }
+
+    /** @see #getLongUnaligned(Object, long) */
+    public final int getIntUnaligned(Object o, long offset) {
+        if ((offset & 3) == 0) {
+            return getInt(o, offset);
+        } else if ((offset & 1) == 0) {
+            return makeInt(getShort(o, offset),
+                    getShort(o, offset + 2));
+        } else {
+            return makeInt(getByte(o, offset),
+                    getByte(o, offset + 1),
+                    getByte(o, offset + 2),
+                    getByte(o, offset + 3));
+        }
+    }
+
+    // These methods construct integers from bytes.  The byte ordering
+    // is the native endianness of this platform.
+    private static long makeLong(byte i0, byte i1, byte i2, byte i3, byte i4, byte i5, byte i6, byte i7) {
+        return ((toUnsignedLong(i0))
+                | (toUnsignedLong(i1) << 8)
+                | (toUnsignedLong(i2) << 16)
+                | (toUnsignedLong(i3) << 24)
+                | (toUnsignedLong(i4) << 32)
+                | (toUnsignedLong(i5) << 40)
+                | (toUnsignedLong(i6) << 48)
+                | (toUnsignedLong(i7) << 56));
+    }
+    private static long makeLong(short i0, short i1, short i2, short i3) {
+        return ((toUnsignedLong(i0))
+                | (toUnsignedLong(i1) << 16)
+                | (toUnsignedLong(i2) << 32)
+                | (toUnsignedLong(i3) << 48));
+    }
+    private static long makeLong(int i0, int i1) {
+        return (toUnsignedLong(i0))
+                | (toUnsignedLong(i1) << 32);
+    }
+    private static int makeInt(short i0, short i1) {
+        return (toUnsignedInt(i0))
+                | (toUnsignedInt(i1) << 16);
+    }
+    private static int makeInt(byte i0, byte i1, byte i2, byte i3) {
+        return ((toUnsignedInt(i0))
+                | (toUnsignedInt(i1) << 8)
+                | (toUnsignedInt(i2) << 16)
+                | (toUnsignedInt(i3) << 24));
+    }
+    private static short makeShort(byte i0, byte i1) {
+        return (short)((toUnsignedInt(i0))
+                | (toUnsignedInt(i1) << 8));
+    }
+
+    // Zero-extend an integer
+    private static int toUnsignedInt(byte n)    { return n & 0xff; }
+    private static int toUnsignedInt(short n)   { return n & 0xffff; }
+    private static long toUnsignedLong(byte n)  { return n & 0xffL; }
+    private static long toUnsignedLong(short n) { return n & 0xffffL; }
+    private static long toUnsignedLong(int n)   { return n & 0xffffffffL; }
 
     /**
      * Performs a compare-and-set operation on an {@code int}
