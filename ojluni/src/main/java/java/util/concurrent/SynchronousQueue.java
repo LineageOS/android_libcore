@@ -451,8 +451,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E>
                     }
                 }
                 if (spins > 0) {
-                    // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
-                    // Thread.onSpinWait();
+                    Thread.onSpinWait();
                     spins = shouldSpin(s) ? (spins - 1) : 0;
                 }
                 else if (s.waiter == null)
@@ -752,8 +751,7 @@ public class SynchronousQueue<E> extends AbstractQueue<E>
                 }
                 if (spins > 0) {
                     --spins;
-                    // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
-                    // Thread.onSpinWait();
+                    Thread.onSpinWait();
                 }
                 else if (s.waiter == null)
                     s.waiter = w;
