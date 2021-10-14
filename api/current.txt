@@ -1635,11 +1635,16 @@ package java.io {
     method public void close() throws java.io.IOException;
     method public void mark(int);
     method public boolean markSupported();
+    method public static java.io.InputStream nullInputStream();
     method public abstract int read() throws java.io.IOException;
     method public int read(byte[]) throws java.io.IOException;
     method public int read(byte[], int, int) throws java.io.IOException;
+    method public byte[] readAllBytes() throws java.io.IOException;
+    method public byte[] readNBytes(int) throws java.io.IOException;
+    method public int readNBytes(byte[], int, int) throws java.io.IOException;
     method public void reset() throws java.io.IOException;
     method public long skip(long) throws java.io.IOException;
+    method public long transferTo(java.io.OutputStream) throws java.io.IOException;
   }
 
   public class InputStreamReader extends java.io.Reader {
@@ -1876,6 +1881,7 @@ package java.io {
     ctor public OutputStream();
     method public void close() throws java.io.IOException;
     method public void flush() throws java.io.IOException;
+    method public static java.io.OutputStream nullOutputStream();
     method public abstract void write(int) throws java.io.IOException;
     method public void write(byte[]) throws java.io.IOException;
     method public void write(byte[], int, int) throws java.io.IOException;
