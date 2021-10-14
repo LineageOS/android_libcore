@@ -85,9 +85,9 @@ package java.util.concurrent;
  *       this.executor = executor;
  *     }
  *     public synchronized void request(long n) {
- *       if (!completed) {
+ *       if (n != 0 && !completed) {
  *         completed = true;
- *         if (n <= 0) {
+ *         if (n < 0) {
  *           IllegalArgumentException ex = new IllegalArgumentException();
  *           executor.execute(() -> subscriber.onError(ex));
  *         } else {
