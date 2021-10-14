@@ -56,11 +56,13 @@ package java.util.concurrent;
  * void solve(Executor e,
  *            Collection<Callable<Result>> solvers)
  *     throws InterruptedException, ExecutionException {
- *   CompletionService<Result> cs
- *       = new ExecutorCompletionService<>(e);
- *   solvers.forEach(cs::submit);
- *   for (int i = solvers.size(); i > 0; i--) {
- *     Result r = cs.take().get();
+ *   CompletionService<Result> ecs
+ *       = new ExecutorCompletionService<Result>(e);
+ *   for (Callable<Result> s : solvers)
+ *     ecs.submit(s);
+ *   int n = solvers.size();
+ *   for (int i = 0; i < n; ++i) {
+ *     Result r = ecs.take().get();
  *     if (r != null)
  *       use(r);
  *   }
@@ -74,31 +76,32 @@ package java.util.concurrent;
  * void solve(Executor e,
  *            Collection<Callable<Result>> solvers)
  *     throws InterruptedException {
- *   CompletionService<Result> cs
- *       = new ExecutorCompletionService<>(e);
+ *   CompletionService<Result> ecs
+ *       = new ExecutorCompletionService<Result>(e);
  *   int n = solvers.size();
  *   List<Future<Result>> futures = new ArrayList<>(n);
  *   Result result = null;
  *   try {
- *     solvers.forEach(solver -> futures.add(cs.submit(solver)));
- *     for (int i = n; i > 0; i--) {
+ *     for (Callable<Result> s : solvers)
+ *       futures.add(ecs.submit(s));
+ *     for (int i = 0; i < n; ++i) {
  *       try {
- *         Result r = cs.take().get();
+ *         Result r = ecs.take().get();
  *         if (r != null) {
  *           result = r;
  *           break;
  *         }
  *       } catch (ExecutionException ignore) {}
  *     }
- *   } finally {
- *     futures.forEach(future -> future.cancel(true));
+ *   }
+ *   finally {
+ *     for (Future<Result> f : futures)
+ *       f.cancel(true);
  *   }
  *
  *   if (result != null)
  *     use(result);
  * }}</pre>
- *
- * @since 1.5
  */
 public class ExecutorCompletionService<V> implements CompletionService<V> {
     private final Executor executor;
@@ -174,10 +177,6 @@ public class ExecutorCompletionService<V> implements CompletionService<V> {
         this.completionQueue = completionQueue;
     }
 
-    /**
-     * @throws RejectedExecutionException {@inheritDoc}
-     * @throws NullPointerException       {@inheritDoc}
-     */
     public Future<V> submit(Callable<V> task) {
         if (task == null) throw new NullPointerException();
         RunnableFuture<V> f = newTaskFor(task);
@@ -185,10 +184,6 @@ public class ExecutorCompletionService<V> implements CompletionService<V> {
         return f;
     }
 
-    /**
-     * @throws RejectedExecutionException {@inheritDoc}
-     * @throws NullPointerException       {@inheritDoc}
-     */
     public Future<V> submit(Runnable task, V result) {
         if (task == null) throw new NullPointerException();
         RunnableFuture<V> f = newTaskFor(task, result);
