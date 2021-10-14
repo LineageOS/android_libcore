@@ -590,8 +590,6 @@ public final class ThreadTest {
         }
     }
 
-    // BEGIN Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
-    /*
     @Test
     public void onSpinWait() throws InterruptedException {
         SpinWaitThread t = new SpinWaitThread();
@@ -616,6 +614,4 @@ public final class ThreadTest {
             done = true;
         }
     }
-     */
-    // END Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
 }
