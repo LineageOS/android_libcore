@@ -1040,8 +1040,9 @@ public class Phaser {
                     node = new QNode(this, phase, false, false, 0L);
                     node.wasInterrupted = interrupted;
                 }
-                else
-                    Thread.onSpinWait();
+                // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
+                // else
+                //     Thread.onSpinWait();
             }
             else if (node.isReleasable()) // done or aborted
                 break;
