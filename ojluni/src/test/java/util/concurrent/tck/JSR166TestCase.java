@@ -590,7 +590,6 @@ public class JSR166TestCase extends TestCase {
                 "AtomicReferenceArray9Test",
                 "ExecutorCompletionService9Test",
                 "ForkJoinPool9Test",
-                "SubmissionPublisherTest",
             };
             addNamedTestClasses(suite, java9TestClassNames);
         }

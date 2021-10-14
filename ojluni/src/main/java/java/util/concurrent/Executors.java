@@ -35,7 +35,6 @@
 
 package java.util.concurrent;
 
-import static java.lang.ref.Reference.reachabilityFence;
 import dalvik.annotation.optimization.ReachabilitySensitive;
 import java.security.AccessControlContext;
 import java.security.AccessControlException;
@@ -191,7 +190,9 @@ public class Executors {
      * returned executor is guaranteed not to be reconfigurable to use
      * additional threads.
      *
-     * @param threadFactory the factory to use when creating new threads
+     * @param threadFactory the factory to use when creating new
+     * threads
+     *
      * @return the newly created single-threaded Executor
      * @throws NullPointerException if threadFactory is null
      */
@@ -230,7 +231,6 @@ public class Executors {
      * will reuse previously constructed threads when they are
      * available, and uses the provided
      * ThreadFactory to create new threads when needed.
-     *
      * @param threadFactory the factory to use when creating new threads
      * @return the newly created thread pool
      * @throws NullPointerException if threadFactory is null
@@ -253,7 +253,6 @@ public class Executors {
      * given time. Unlike the otherwise equivalent
      * {@code newScheduledThreadPool(1)} the returned executor is
      * guaranteed not to be reconfigurable to use additional threads.
-     *
      * @return the newly created scheduled executor
      */
     public static ScheduledExecutorService newSingleThreadScheduledExecutor() {
@@ -272,9 +271,9 @@ public class Executors {
      * equivalent {@code newScheduledThreadPool(1, threadFactory)}
      * the returned executor is guaranteed not to be reconfigurable to
      * use additional threads.
-     *
-     * @param threadFactory the factory to use when creating new threads
-     * @return the newly created scheduled executor
+     * @param threadFactory the factory to use when creating new
+     * threads
+     * @return a newly created scheduled executor
      * @throws NullPointerException if threadFactory is null
      */
     public static ScheduledExecutorService newSingleThreadScheduledExecutor(ThreadFactory threadFactory) {
@@ -287,7 +286,7 @@ public class Executors {
      * given delay, or to execute periodically.
      * @param corePoolSize the number of threads to keep in the pool,
      * even if they are idle
-     * @return the newly created scheduled thread pool
+     * @return a newly created scheduled thread pool
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
      */
     public static ScheduledExecutorService newScheduledThreadPool(int corePoolSize) {
@@ -301,7 +300,7 @@ public class Executors {
      * even if they are idle
      * @param threadFactory the factory to use when the executor
      * creates a new thread
-     * @return the newly created scheduled thread pool
+     * @return a newly created scheduled thread pool
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
      * @throws NullPointerException if threadFactory is null
      */
@@ -463,9 +462,6 @@ public class Executors {
             task.run();
             return result;
         }
-        public String toString() {
-            return super.toString() + "[Wrapped task = " + task + "]";
-        }
     }
 
     /**
@@ -491,10 +487,6 @@ public class Executors {
             } catch (PrivilegedActionException e) {
                 throw e.getException();
             }
-        }
-
-        public String toString() {
-            return super.toString() + "[Wrapped task = " + task + "]";
         }
     }
 
@@ -550,10 +542,6 @@ public class Executors {
             } catch (PrivilegedActionException e) {
                 throw e.getException();
             }
-        }
-
-        public String toString() {
-            return super.toString() + "[Wrapped task = " + task + "]";
         }
     }
 
@@ -616,7 +604,7 @@ public class Executors {
         public Thread newThread(final Runnable r) {
             return super.newThread(new Runnable() {
                 public void run() {
-                    AccessController.doPrivileged(new PrivilegedAction<>() {
+                    AccessController.doPrivileged(new PrivilegedAction<Void>() {
                         public Void run() {
                             Thread.currentThread().setContextClassLoader(ccl);
                             r.run();
@@ -633,79 +621,47 @@ public class Executors {
      * of an ExecutorService implementation.
      */
     private static class DelegatedExecutorService
-            implements ExecutorService {
+            extends AbstractExecutorService {
         // Android-added: @ReachabilitySensitive
         // Needed for FinalizableDelegatedExecutorService below.
         @ReachabilitySensitive
         private final ExecutorService e;
         DelegatedExecutorService(ExecutorService executor) { e = executor; }
-        public void execute(Runnable command) {
-            try {
-                e.execute(command);
-            } finally { reachabilityFence(this); }
-        }
+        public void execute(Runnable command) { e.execute(command); }
         public void shutdown() { e.shutdown(); }
-        public List<Runnable> shutdownNow() {
-            try {
-                return e.shutdownNow();
-            } finally { reachabilityFence(this); }
-        }
-        public boolean isShutdown() {
-            try {
-                return e.isShutdown();
-            } finally { reachabilityFence(this); }
-        }
-        public boolean isTerminated() {
-            try {
-                return e.isTerminated();
-            } finally { reachabilityFence(this); }
-        }
+        public List<Runnable> shutdownNow() { return e.shutdownNow(); }
+        public boolean isShutdown() { return e.isShutdown(); }
+        public boolean isTerminated() { return e.isTerminated(); }
         public boolean awaitTermination(long timeout, TimeUnit unit)
             throws InterruptedException {
-            try {
-                return e.awaitTermination(timeout, unit);
-            } finally { reachabilityFence(this); }
+            return e.awaitTermination(timeout, unit);
         }
         public Future<?> submit(Runnable task) {
-            try {
-                return e.submit(task);
-            } finally { reachabilityFence(this); }
+            return e.submit(task);
         }
         public <T> Future<T> submit(Callable<T> task) {
-            try {
-                return e.submit(task);
-            } finally { reachabilityFence(this); }
+            return e.submit(task);
         }
         public <T> Future<T> submit(Runnable task, T result) {
-            try {
-                return e.submit(task, result);
-            } finally { reachabilityFence(this); }
+            return e.submit(task, result);
         }
         public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)
             throws InterruptedException {
-            try {
-                return e.invokeAll(tasks);
-            } finally { reachabilityFence(this); }
+            return e.invokeAll(tasks);
         }
         public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks,
                                              long timeout, TimeUnit unit)
             throws InterruptedException {
-            try {
-                return e.invokeAll(tasks, timeout, unit);
-            } finally { reachabilityFence(this); }
+            return e.invokeAll(tasks, timeout, unit);
         }
         public <T> T invokeAny(Collection<? extends Callable<T>> tasks)
             throws InterruptedException, ExecutionException {
-            try {
-                return e.invokeAny(tasks);
-            } finally { reachabilityFence(this); }
+            return e.invokeAny(tasks);
         }
         public <T> T invokeAny(Collection<? extends Callable<T>> tasks,
                                long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-            try {
-                return e.invokeAny(tasks, timeout, unit);
-            } finally { reachabilityFence(this); }
+            return e.invokeAny(tasks, timeout, unit);
         }
     }
 
@@ -714,7 +670,6 @@ public class Executors {
         FinalizableDelegatedExecutorService(ExecutorService executor) {
             super(executor);
         }
-        @SuppressWarnings("deprecation")
         protected void finalize() {
             super.shutdown();
         }
