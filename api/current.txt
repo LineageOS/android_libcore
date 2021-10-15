@@ -1307,6 +1307,8 @@ package java.io {
     method public int available();
     method public int read();
     method public int read(byte[], int, int);
+    method public byte[] readAllBytes();
+    method public int readNBytes(byte[], int, int);
     method public void reset();
     method public long skip(long);
     field protected byte[] buf;
@@ -1322,9 +1324,11 @@ package java.io {
     method public int size();
     method @NonNull public byte[] toByteArray();
     method @NonNull public String toString(@NonNull String) throws java.io.UnsupportedEncodingException;
+    method @NonNull public String toString(@NonNull java.nio.charset.Charset);
     method @Deprecated @NonNull public String toString(int);
     method public void write(int);
     method public void write(@NonNull byte[], int, int);
+    method public void writeBytes(byte[]);
     method public void writeTo(@NonNull java.io.OutputStream) throws java.io.IOException;
     field @NonNull protected byte[] buf;
     field protected int count;
@@ -14229,7 +14233,6 @@ package java.util.concurrent {
     ctor public ArrayBlockingQueue(int, boolean, java.util.Collection<? extends E>);
     method public int drainTo(java.util.Collection<? super E>);
     method public int drainTo(java.util.Collection<? super E>, int);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public java.util.Iterator<E> iterator();
     method public boolean offer(E);
     method public boolean offer(E, long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
@@ -14470,7 +14473,7 @@ package java.util.concurrent {
     method public final boolean isEmpty();
     method @NonNull public java.util.Iterator<K> iterator();
     method public boolean remove(@NonNull Object);
-    method public boolean removeAll(@NonNull java.util.Collection<?>);
+    method public final boolean removeAll(@NonNull java.util.Collection<?>);
     method public final boolean retainAll(@NonNull java.util.Collection<?>);
     method public final int size();
     method @NonNull public java.util.Spliterator<K> spliterator();
@@ -14486,7 +14489,6 @@ package java.util.concurrent {
     method public void addLast(E);
     method public java.util.Iterator<E> descendingIterator();
     method public E element();
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public E getFirst();
     method public E getLast();
     method public java.util.Iterator<E> iterator();
@@ -14512,7 +14514,6 @@ package java.util.concurrent {
   public class ConcurrentLinkedQueue<E> extends java.util.AbstractQueue<E> implements java.util.Queue<E> java.io.Serializable {
     ctor public ConcurrentLinkedQueue();
     ctor public ConcurrentLinkedQueue(java.util.Collection<? extends E>);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public java.util.Iterator<E> iterator();
     method public boolean offer(E);
     method public E peek();
@@ -14802,7 +14803,6 @@ package java.util.concurrent {
     ctor public ForkJoinPool();
     ctor public ForkJoinPool(int);
     ctor public ForkJoinPool(int, java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory, java.lang.Thread.UncaughtExceptionHandler, boolean);
-    ctor public ForkJoinPool(int, java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory, java.lang.Thread.UncaughtExceptionHandler, boolean, int, int, int, java.util.function.Predicate<? super java.util.concurrent.ForkJoinPool>, long, java.util.concurrent.TimeUnit);
     method public boolean awaitQuiescence(long, java.util.concurrent.TimeUnit);
     method public boolean awaitTermination(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
     method public static java.util.concurrent.ForkJoinPool commonPool();
@@ -14929,7 +14929,6 @@ package java.util.concurrent {
     method public java.util.Iterator<E> descendingIterator();
     method public int drainTo(java.util.Collection<? super E>);
     method public int drainTo(java.util.Collection<? super E>, int);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public E getFirst();
     method public E getLast();
     method public java.util.Iterator<E> iterator();
@@ -14970,7 +14969,6 @@ package java.util.concurrent {
     ctor public LinkedBlockingQueue(java.util.Collection<? extends E>);
     method public int drainTo(java.util.Collection<? super E>);
     method public int drainTo(java.util.Collection<? super E>, int);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public java.util.Iterator<E> iterator();
     method public boolean offer(E, long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
     method public boolean offer(E);
@@ -14988,7 +14986,6 @@ package java.util.concurrent {
     ctor public LinkedTransferQueue(java.util.Collection<? extends E>);
     method public int drainTo(java.util.Collection<? super E>);
     method public int drainTo(java.util.Collection<? super E>, int);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public int getWaitingConsumerCount();
     method public boolean hasWaitingConsumer();
     method public java.util.Iterator<E> iterator();
@@ -15038,7 +15035,6 @@ package java.util.concurrent {
     method public java.util.Comparator<? super E> comparator();
     method public int drainTo(java.util.Collection<? super E>);
     method public int drainTo(java.util.Collection<? super E>, int);
-    method public void forEach(java.util.function.Consumer<? super E>);
     method public java.util.Iterator<E> iterator();
     method public boolean offer(E);
     method public boolean offer(E, long, java.util.concurrent.TimeUnit);
@@ -15136,29 +15132,6 @@ package java.util.concurrent {
     method public boolean tryAcquire(int, long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
   }
 
-  public class SubmissionPublisher<T> implements java.lang.AutoCloseable java.util.concurrent.Flow.Publisher<T> {
-    ctor public SubmissionPublisher(java.util.concurrent.Executor, int, java.util.function.BiConsumer<? super java.util.concurrent.Flow.Subscriber<? super T>,? super java.lang.Throwable>);
-    ctor public SubmissionPublisher(java.util.concurrent.Executor, int);
-    ctor public SubmissionPublisher();
-    method public void close();
-    method public void closeExceptionally(Throwable);
-    method public java.util.concurrent.CompletableFuture<java.lang.Void> consume(java.util.function.Consumer<? super T>);
-    method public int estimateMaximumLag();
-    method public long estimateMinimumDemand();
-    method public Throwable getClosedException();
-    method public java.util.concurrent.Executor getExecutor();
-    method public int getMaxBufferCapacity();
-    method public int getNumberOfSubscribers();
-    method public java.util.List<java.util.concurrent.Flow.Subscriber<? super T>> getSubscribers();
-    method public boolean hasSubscribers();
-    method public boolean isClosed();
-    method public boolean isSubscribed(java.util.concurrent.Flow.Subscriber<? super T>);
-    method public int offer(T, java.util.function.BiPredicate<java.util.concurrent.Flow.Subscriber<? super T>,? super T>);
-    method public int offer(T, long, java.util.concurrent.TimeUnit, java.util.function.BiPredicate<java.util.concurrent.Flow.Subscriber<? super T>,? super T>);
-    method public int submit(T);
-    method public void subscribe(java.util.concurrent.Flow.Subscriber<? super T>);
-  }
-
   public class SynchronousQueue<E> extends java.util.AbstractQueue<E> implements java.util.concurrent.BlockingQueue<E> java.io.Serializable {
     ctor public SynchronousQueue();
     ctor public SynchronousQueue(boolean);
@@ -15200,7 +15173,7 @@ package java.util.concurrent {
     method public boolean awaitTermination(long, java.util.concurrent.TimeUnit) throws java.lang.InterruptedException;
     method protected void beforeExecute(Thread, Runnable);
     method public void execute(Runnable);
-    method @Deprecated protected void finalize();
+    method protected void finalize();
     method public int getActiveCount();
     method public long getCompletedTaskCount();
     method public int getCorePoolSize();
@@ -15251,12 +15224,9 @@ package java.util.concurrent {
 
   public enum TimeUnit {
     method public long convert(long, java.util.concurrent.TimeUnit);
-    method public long convert(java.time.Duration);
-    method public static java.util.concurrent.TimeUnit of(java.time.temporal.ChronoUnit);
     method public void sleep(long) throws java.lang.InterruptedException;
     method public void timedJoin(Thread, long) throws java.lang.InterruptedException;
     method public void timedWait(Object, long) throws java.lang.InterruptedException;
-    method public java.time.temporal.ChronoUnit toChronoUnit();
     method public long toDays(long);
     method public long toHours(long);
     method public long toMicros(long);
