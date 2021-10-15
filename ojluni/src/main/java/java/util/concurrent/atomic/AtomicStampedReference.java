@@ -35,9 +35,6 @@
 
 package java.util.concurrent.atomic;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
-
 /**
  * An {@code AtomicStampedReference} maintains an object reference
  * along with an integer "stamp", that can be updated atomically.
@@ -191,19 +188,20 @@ public class AtomicStampedReference<V> {
              casPair(current, Pair.of(expectedReference, newStamp)));
     }
 
-    // VarHandle mechanics
-    private static final VarHandle PAIR;
+    // Unsafe mechanics
+
+    private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+    private static final long PAIR;
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            PAIR = l.findVarHandle(AtomicStampedReference.class, "pair",
-                                   Pair.class);
+            PAIR = U.objectFieldOffset
+                (AtomicStampedReference.class.getDeclaredField("pair"));
         } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new Error(e);
         }
     }
 
     private boolean casPair(Pair<V> cmp, Pair<V> val) {
-        return PAIR.compareAndSet(this, cmp, val);
+        return U.compareAndSwapObject(this, PAIR, cmp, val);
     }
 }

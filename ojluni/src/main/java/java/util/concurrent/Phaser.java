@@ -35,15 +35,14 @@
 
 package java.util.concurrent;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 
 /**
  * A reusable synchronization barrier, similar in functionality to
- * {@link CyclicBarrier} and {@link CountDownLatch} but supporting
- * more flexible usage.
+ * {@link java.util.concurrent.CyclicBarrier CyclicBarrier} and
+ * {@link java.util.concurrent.CountDownLatch CountDownLatch}
+ * but supporting more flexible usage.
  *
  * <p><b>Registration.</b> Unlike the case for other barriers, the
  * number of parties <em>registered</em> to synchronize on a phaser
@@ -153,46 +152,49 @@ import java.util.concurrent.locks.LockSupport;
  * <p>A {@code Phaser} may be used instead of a {@code CountDownLatch}
  * to control a one-shot action serving a variable number of parties.
  * The typical idiom is for the method setting this up to first
- * register, then start all the actions, then deregister, as in:
+ * register, then start the actions, then deregister, as in:
  *
  * <pre> {@code
  * void runTasks(List<Runnable> tasks) {
- *   Phaser startingGate = new Phaser(1); // "1" to register self
+ *   final Phaser phaser = new Phaser(1); // "1" to register self
  *   // create and start threads
- *   for (Runnable task : tasks) {
- *     startingGate.register();
- *     new Thread(() -> {
- *       startingGate.arriveAndAwaitAdvance();
- *       task.run();
- *     }).start();
+ *   for (final Runnable task : tasks) {
+ *     phaser.register();
+ *     new Thread() {
+ *       public void run() {
+ *         phaser.arriveAndAwaitAdvance(); // await all creation
+ *         task.run();
+ *       }
+ *     }.start();
  *   }
  *
- *   // deregister self to allow threads to proceed
- *   startingGate.arriveAndDeregister();
+ *   // allow threads to start and deregister self
+ *   phaser.arriveAndDeregister();
  * }}</pre>
  *
  * <p>One way to cause a set of threads to repeatedly perform actions
  * for a given number of iterations is to override {@code onAdvance}:
  *
  * <pre> {@code
- * void startTasks(List<Runnable> tasks, int iterations) {
- *   Phaser phaser = new Phaser() {
+ * void startTasks(List<Runnable> tasks, final int iterations) {
+ *   final Phaser phaser = new Phaser() {
  *     protected boolean onAdvance(int phase, int registeredParties) {
- *       return phase >= iterations - 1 || registeredParties == 0;
+ *       return phase >= iterations || registeredParties == 0;
  *     }
  *   };
  *   phaser.register();
- *   for (Runnable task : tasks) {
+ *   for (final Runnable task : tasks) {
  *     phaser.register();
- *     new Thread(() -> {
- *       do {
- *         task.run();
- *         phaser.arriveAndAwaitAdvance();
- *       } while (!phaser.isTerminated());
- *     }).start();
+ *     new Thread() {
+ *       public void run() {
+ *         do {
+ *           task.run();
+ *           phaser.arriveAndAwaitAdvance();
+ *         } while (!phaser.isTerminated());
+ *       }
+ *     }.start();
  *   }
- *   // allow threads to proceed; don't wait for them
- *   phaser.arriveAndDeregister();
+ *   phaser.arriveAndDeregister(); // deregister self, don't wait
  * }}</pre>
  *
  * If the main task must later await termination, it
@@ -218,6 +220,7 @@ import java.util.concurrent.locks.LockSupport;
  *   }
  *   phaser.arriveAndDeregister();
  * }}</pre>
+ *
  *
  * <p>To create a set of {@code n} tasks using a tree of phasers, you
  * could use code of the following form, assuming a Task class with a
@@ -345,6 +348,10 @@ public class Phaser {
     private final AtomicReference<QNode> evenQ;
     private final AtomicReference<QNode> oddQ;
 
+    private AtomicReference<QNode> queueFor(int phase) {
+        return ((phase & 1) == 0) ? evenQ : oddQ;
+    }
+
     /**
      * Returns message string for bounds exceptions on arrival.
      */
@@ -381,7 +388,7 @@ public class Phaser {
             int unarrived = (counts == EMPTY) ? 0 : (counts & UNARRIVED_MASK);
             if (unarrived <= 0)
                 throw new IllegalStateException(badArrive(s));
-            if (STATE.compareAndSet(this, s, s-=adjust)) {
+            if (U.compareAndSwapLong(this, STATE, s, s-=adjust)) {
                 if (unarrived == 1) {
                     long n = s & PARTIES_MASK;  // base of next state
                     int nextUnarrived = (int)n >>> PARTIES_SHIFT;
@@ -394,12 +401,12 @@ public class Phaser {
                             n |= nextUnarrived;
                         int nextPhase = (phase + 1) & MAX_PHASE;
                         n |= (long)nextPhase << PHASE_SHIFT;
-                        STATE.compareAndSet(this, s, n);
+                        U.compareAndSwapLong(this, STATE, s, n);
                         releaseWaiters(phase);
                     }
                     else if (nextUnarrived == 0) { // propagate deregistration
                         phase = parent.doArrive(ONE_DEREGISTER);
-                        STATE.compareAndSet(this, s, s | EMPTY);
+                        U.compareAndSwapLong(this, STATE, s, s | EMPTY);
                     }
                     else
                         phase = parent.doArrive(ONE_ARRIVAL);
@@ -434,13 +441,13 @@ public class Phaser {
                 if (parent == null || reconcileState() == s) {
                     if (unarrived == 0)             // wait out advance
                         root.internalAwaitAdvance(phase, null);
-                    else if (STATE.compareAndSet(this, s, s + adjust))
+                    else if (U.compareAndSwapLong(this, STATE, s, s + adjust))
                         break;
                 }
             }
             else if (parent == null) {              // 1st root registration
                 long next = ((long)phase << PHASE_SHIFT) | adjust;
-                if (STATE.compareAndSet(this, s, next))
+                if (U.compareAndSwapLong(this, STATE, s, next))
                     break;
             }
             else {
@@ -452,8 +459,8 @@ public class Phaser {
                         // finish registration whenever parent registration
                         // succeeded, even when racing with termination,
                         // since these are part of the same "transaction".
-                        while (!STATE.weakCompareAndSet
-                               (this, s,
+                        while (!U.compareAndSwapLong
+                               (this, STATE, s,
                                 ((long)phase << PHASE_SHIFT) | adjust)) {
                             s = state;
                             phase = (int)(root.state >>> PHASE_SHIFT);
@@ -484,8 +491,8 @@ public class Phaser {
             // CAS to root phase with current parties, tripping unarrived
             while ((phase = (int)(root.state >>> PHASE_SHIFT)) !=
                    (int)(s >>> PHASE_SHIFT) &&
-                   !STATE.weakCompareAndSet
-                   (this, s,
+                   !U.compareAndSwapLong
+                   (this, STATE, s,
                     s = (((long)phase << PHASE_SHIFT) |
                          ((phase < 0) ? (s & COUNTS_MASK) :
                           (((p = (int)s >>> PARTIES_SHIFT) == 0) ? EMPTY :
@@ -674,7 +681,7 @@ public class Phaser {
             int unarrived = (counts == EMPTY) ? 0 : (counts & UNARRIVED_MASK);
             if (unarrived <= 0)
                 throw new IllegalStateException(badArrive(s));
-            if (STATE.compareAndSet(this, s, s -= ONE_ARRIVAL)) {
+            if (U.compareAndSwapLong(this, STATE, s, s -= ONE_ARRIVAL)) {
                 if (unarrived > 1)
                     return root.internalAwaitAdvance(phase, null);
                 if (root != this)
@@ -689,7 +696,7 @@ public class Phaser {
                     n |= nextUnarrived;
                 int nextPhase = (phase + 1) & MAX_PHASE;
                 n |= (long)nextPhase << PHASE_SHIFT;
-                if (!STATE.compareAndSet(this, s, n))
+                if (!U.compareAndSwapLong(this, STATE, s, n))
                     return (int)(state >>> PHASE_SHIFT); // terminated
                 releaseWaiters(phase);
                 return nextPhase;
@@ -805,7 +812,7 @@ public class Phaser {
         final Phaser root = this.root;
         long s;
         while ((s = root.state) >= 0) {
-            if (STATE.compareAndSet(root, s, s | TERMINATION_BIT)) {
+            if (U.compareAndSwapLong(root, STATE, s, s | TERMINATION_BIT)) {
                 // signal all threads
                 releaseWaiters(0); // Waiters on evenQ
                 releaseWaiters(1); // Waiters on oddQ
@@ -1040,9 +1047,6 @@ public class Phaser {
                     node = new QNode(this, phase, false, false, 0L);
                     node.wasInterrupted = interrupted;
                 }
-                // Android-removed: remove usage of Thread.onSpinWait. http://b/202837191
-                // else
-                //     Thread.onSpinWait();
             }
             else if (node.isReleasable()) // done or aborted
                 break;
@@ -1131,14 +1135,16 @@ public class Phaser {
         }
     }
 
-    // VarHandle mechanics
-    private static final VarHandle STATE;
+    // Unsafe mechanics
+
+    private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+    private static final long STATE;
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            STATE = l.findVarHandle(Phaser.class, "state", long.class);
+            STATE = U.objectFieldOffset
+                (Phaser.class.getDeclaredField("state"));
         } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new Error(e);
         }
 
         // Reduce the risk of rare disastrous classloading in first call to

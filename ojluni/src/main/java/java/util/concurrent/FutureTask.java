@@ -35,8 +35,6 @@
 
 package java.util.concurrent;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -71,6 +69,9 @@ public class FutureTask<V> implements RunnableFuture<V> {
      * cancellation races. Sync control in the current design relies
      * on a "state" field updated via CAS to track completion, along
      * with a simple Treiber stack to hold waiting threads.
+     *
+     * Style note: As usual, we bypass overhead of using
+     * AtomicXFieldUpdaters and instead directly use Unsafe intrinsics.
      */
 
     /**
@@ -162,8 +163,9 @@ public class FutureTask<V> implements RunnableFuture<V> {
     }
 
     public boolean cancel(boolean mayInterruptIfRunning) {
-        if (!(state == NEW && STATE.compareAndSet
-              (this, NEW, mayInterruptIfRunning ? INTERRUPTING : CANCELLED)))
+        if (!(state == NEW &&
+              U.compareAndSwapInt(this, STATE, NEW,
+                  mayInterruptIfRunning ? INTERRUPTING : CANCELLED)))
             return false;
         try {    // in case call to interrupt throws exception
             if (mayInterruptIfRunning) {
@@ -172,7 +174,7 @@ public class FutureTask<V> implements RunnableFuture<V> {
                     if (t != null)
                         t.interrupt();
                 } finally { // final state
-                    STATE.setRelease(this, INTERRUPTED);
+                    U.putOrderedInt(this, STATE, INTERRUPTED);
                 }
             }
         } finally {
@@ -226,9 +228,9 @@ public class FutureTask<V> implements RunnableFuture<V> {
      * @param v the value
      */
     protected void set(V v) {
-        if (STATE.compareAndSet(this, NEW, COMPLETING)) {
+        if (U.compareAndSwapInt(this, STATE, NEW, COMPLETING)) {
             outcome = v;
-            STATE.setRelease(this, NORMAL); // final state
+            U.putOrderedInt(this, STATE, NORMAL); // final state
             finishCompletion();
         }
     }
@@ -244,16 +246,16 @@ public class FutureTask<V> implements RunnableFuture<V> {
      * @param t the cause of failure
      */
     protected void setException(Throwable t) {
-        if (STATE.compareAndSet(this, NEW, COMPLETING)) {
+        if (U.compareAndSwapInt(this, STATE, NEW, COMPLETING)) {
             outcome = t;
-            STATE.setRelease(this, EXCEPTIONAL); // final state
+            U.putOrderedInt(this, STATE, EXCEPTIONAL); // final state
             finishCompletion();
         }
     }
 
     public void run() {
         if (state != NEW ||
-            !RUNNER.compareAndSet(this, null, Thread.currentThread()))
+            !U.compareAndSwapObject(this, RUNNER, null, Thread.currentThread()))
             return;
         try {
             Callable<V> c = callable;
@@ -294,7 +296,7 @@ public class FutureTask<V> implements RunnableFuture<V> {
      */
     protected boolean runAndReset() {
         if (state != NEW ||
-            !RUNNER.compareAndSet(this, null, Thread.currentThread()))
+            !U.compareAndSwapObject(this, RUNNER, null, Thread.currentThread()))
             return false;
         boolean ran = false;
         int s = state;
@@ -361,7 +363,7 @@ public class FutureTask<V> implements RunnableFuture<V> {
     private void finishCompletion() {
         // assert state > COMPLETING;
         for (WaitNode q; (q = waiters) != null;) {
-            if (WAITERS.weakCompareAndSet(this, q, null)) {
+            if (U.compareAndSwapObject(this, WAITERS, q, null)) {
                 for (;;) {
                     Thread t = q.thread;
                     if (t != null) {
@@ -423,7 +425,8 @@ public class FutureTask<V> implements RunnableFuture<V> {
                 q = new WaitNode();
             }
             else if (!queued)
-                queued = WAITERS.weakCompareAndSet(this, q.next = waiters, q);
+                queued = U.compareAndSwapObject(this, WAITERS,
+                                                q.next = waiters, q);
             else if (timed) {
                 final long parkNanos;
                 if (startTime == 0L) { // first time
@@ -472,7 +475,7 @@ public class FutureTask<V> implements RunnableFuture<V> {
                         if (pred.thread == null) // check for race
                             continue retry;
                     }
-                    else if (!WAITERS.compareAndSet(this, q, s))
+                    else if (!U.compareAndSwapObject(this, WAITERS, q, s))
                         continue retry;
                 }
                 break;
@@ -480,53 +483,21 @@ public class FutureTask<V> implements RunnableFuture<V> {
         }
     }
 
-    /**
-     * Returns a string representation of this FutureTask.
-     *
-     * @implSpec
-     * The default implementation returns a string identifying this
-     * FutureTask, as well as its completion state.  The state, in
-     * brackets, contains one of the strings {@code "Completed Normally"},
-     * {@code "Completed Exceptionally"}, {@code "Cancelled"}, or {@code
-     * "Not completed"}.
-     *
-     * @return a string representation of this FutureTask
-     */
-    public String toString() {
-        final String status;
-        switch (state) {
-        case NORMAL:
-            status = "[Completed normally]";
-            break;
-        case EXCEPTIONAL:
-            status = "[Completed exceptionally: " + outcome + "]";
-            break;
-        case CANCELLED:
-        case INTERRUPTING:
-        case INTERRUPTED:
-            status = "[Cancelled]";
-            break;
-        default:
-            final Callable<?> callable = this.callable;
-            status = (callable == null)
-                ? "[Not completed]"
-                : "[Not completed, task = " + callable + "]";
-        }
-        return super.toString() + status;
-    }
-
-    // VarHandle mechanics
-    private static final VarHandle STATE;
-    private static final VarHandle RUNNER;
-    private static final VarHandle WAITERS;
+    // Unsafe mechanics
+    private static final sun.misc.Unsafe U = sun.misc.Unsafe.getUnsafe();
+    private static final long STATE;
+    private static final long RUNNER;
+    private static final long WAITERS;
     static {
         try {
-            MethodHandles.Lookup l = MethodHandles.lookup();
-            STATE = l.findVarHandle(FutureTask.class, "state", int.class);
-            RUNNER = l.findVarHandle(FutureTask.class, "runner", Thread.class);
-            WAITERS = l.findVarHandle(FutureTask.class, "waiters", WaitNode.class);
+            STATE = U.objectFieldOffset
+                (FutureTask.class.getDeclaredField("state"));
+            RUNNER = U.objectFieldOffset
+                (FutureTask.class.getDeclaredField("runner"));
+            WAITERS = U.objectFieldOffset
+                (FutureTask.class.getDeclaredField("waiters"));
         } catch (ReflectiveOperationException e) {
-            throw new ExceptionInInitializerError(e);
+            throw new Error(e);
         }
 
         // Reduce the risk of rare disastrous classloading in first call to
