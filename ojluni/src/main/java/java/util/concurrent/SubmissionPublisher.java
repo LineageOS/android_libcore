@@ -1000,7 +1000,8 @@ public class SubmissionPublisher<T> implements Publisher<T>,
      * default visibility to simplify usage by callers.
      */
     @SuppressWarnings("serial")
-    @jdk.internal.vm.annotation.Contended
+    // Android-removed: @Contended, this hint is not used by the Android runtime.
+    // @jdk.internal.vm.annotation.Contended
     static final class BufferedSubscription<T>
         implements Subscription, ForkJoinPool.ManagedBlocker {
         long timeout;                      // Long.MAX_VALUE if untimed wait
@@ -1017,9 +1018,11 @@ public class SubmissionPublisher<T> implements Publisher<T>,
         BufferedSubscription<T> next;      // used only by publisher
         BufferedSubscription<T> nextRetry; // used only by publisher
 
-        @jdk.internal.vm.annotation.Contended("c") // segregate
+        // Android-removed: @Contended, this hint is not used by the Android runtime.
+        // @jdk.internal.vm.annotation.Contended("c") // segregate
         volatile long demand;              // # unfilled requests
-        @jdk.internal.vm.annotation.Contended("c")
+        // Android-removed: @Contended, this hint is not used by the Android runtime.
+        // @jdk.internal.vm.annotation.Contended("c")
         volatile int waiting;              // nonzero if producer blocked
 
         // ctl bit values

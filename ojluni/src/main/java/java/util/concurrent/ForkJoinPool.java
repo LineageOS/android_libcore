@@ -1311,7 +1311,8 @@ public class ForkJoinPool extends AbstractExecutorService {
     final UncaughtExceptionHandler ueh;  // per-worker UEH
     final Predicate<? super ForkJoinPool> saturate;
 
-    @jdk.internal.vm.annotation.Contended("fjpctl") // segregate
+    // Android-removed: @Contended, this hint is not used by the Android runtime.
+    // @jdk.internal.vm.annotation.Contended("fjpctl") // segregate
     volatile long ctl;                   // main pool control
 
     // Creating, registering and deregistering workers
