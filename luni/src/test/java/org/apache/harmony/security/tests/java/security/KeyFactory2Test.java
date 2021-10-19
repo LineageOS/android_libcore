@@ -329,7 +329,13 @@ public class KeyFactory2Test extends junit.framework.TestCase {
         while (e.hasMoreElements()) {
             String algorithm = (String) e.nextElement();
             if (algorithm.startsWith(KEYFACTORY_ID) && !algorithm.contains(" ")) {
-                algs.addElement(algorithm.substring(KEYFACTORY_ID.length()));
+                String element = algorithm.substring(KEYFACTORY_ID.length());
+                // XDH may or may not be present depending on the version of Conscrypt
+                // module installed.  If present, skip it as it is tested via MTS and
+                // Android 12 CTS.  b/195615724
+                if (!"XDH".equals(element)) {
+                    algs.addElement(element);
+                }
             }
         }
 
