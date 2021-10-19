@@ -6734,6 +6734,7 @@ package java.nio.file {
   public abstract class FileStore {
     ctor protected FileStore();
     method public abstract Object getAttribute(String) throws java.io.IOException;
+    method public long getBlockSize() throws java.io.IOException;
     method public abstract <V extends java.nio.file.attribute.FileStoreAttributeView> V getFileStoreAttributeView(Class<V>);
     method public abstract long getTotalSpace() throws java.io.IOException;
     method public abstract long getUnallocatedSpace() throws java.io.IOException;
