@@ -1457,6 +1457,7 @@ filegroup {
         "ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java",
         "ojluni/src/main/java/jdk/internal/reflect/Reflection.java",
         "ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java",
+        "ojluni/src/main/java/jdk/internal/util/ArraysSupport.java",
         "ojluni/src/main/java/jdk/internal/util/Preconditions.java",
         "ojluni/src/main/java/sun/invoke/util/BytecodeDescriptor.java",
         "ojluni/src/main/java/sun/invoke/util/Wrapper.java",
