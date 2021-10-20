@@ -285,7 +285,7 @@ public final class CopyOnWriteArrayListTest extends TestCase {
     public void testDoesNotRetainToArray() {
         String[] strings = { "a", "b", "c" };
         List<String> asList = Arrays.asList(strings);
-        assertEquals(String[].class, asList.toArray().getClass());
+
         CopyOnWriteArrayList<Object> objects = new CopyOnWriteArrayList<Object>(asList);
         objects.add(Boolean.TRUE);
     }
