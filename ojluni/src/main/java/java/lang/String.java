@@ -112,22 +112,23 @@ import libcore.util.CharsetUtils;
 
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
-
     // BEGIN Android-changed: The character data is managed by the runtime.
-    // We only keep track of the length here and compression here. This has several consequences
-    // throughout this class:
-    //  - References to value[i] are replaced by charAt(i).
-    //  - References to value.length are replaced by calls to length().
-    //  - Sometimes the result of length() is assigned to a local variable to avoid repeated calls.
-    //  - We skip several attempts at optimization where the values field was assigned to a local
-    //    variable to avoid the getfield opcode.
-    // These changes are not all marked individually.
-    //
-    // private final char value[];
-    //
-    // If STRING_COMPRESSION_ENABLED, count stores the length shifted one bit to the left with the
-    // lowest bit used to indicate whether or not the bytes are compressed (see GetFlaggedCount in
-    // the native code).
+    /*
+    We only keep track of the length here and compression here. This has several consequences
+    throughout this class:
+     - References to value[i] are replaced by charAt(i).
+     - References to value.length are replaced by calls to length().
+     - Sometimes the result of length() is assigned to a local variable to avoid repeated calls.
+     - We skip several attempts at optimization where the values field was assigned to a local
+       variable to avoid the getfield opcode.
+    These changes are not all marked individually.
+
+    If STRING_COMPRESSION_ENABLED, count stores the length shifted one bit to the left with the
+    lowest bit used to indicate whether or not the bytes are compressed (see GetFlaggedCount in
+    the native code).
+    /** The value is used for character storage. *
+    private final char value[];
+    */
     private final int count;
     // END Android-changed: The character data is managed by the runtime.
 
@@ -156,7 +157,8 @@ public final class String
      * unnecessary since Strings are immutable.
      */
     public String() {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this.value = "".value;
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -171,7 +173,9 @@ public final class String
      *         A {@code String}
      */
     public String(String original) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this.value = original.value;
+        // this.hash = original.hash;
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -185,7 +189,8 @@ public final class String
      *         The initial value of the string
      */
     public String(char value[]) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this.value = Arrays.copyOf(value, value.length);
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -211,8 +216,28 @@ public final class String
      *          characters outside the bounds of the {@code value} array
      */
     public String(char value[], int offset, int count) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        if (offset < 0) {
+            throw new StringIndexOutOfBoundsException(offset);
+        }
+        if (count <= 0) {
+            if (count < 0) {
+                throw new StringIndexOutOfBoundsException(count);
+            }
+            if (offset <= value.length) {
+                this.value = "".value;
+                return;
+            }
+        }
+        // Note: offset or count might be near -1>>>1.
+        if (offset > value.length - count) {
+            throw new StringIndexOutOfBoundsException(offset + count);
+        }
+        this.value = Arrays.copyOfRange(value, offset, offset+count);
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -244,8 +269,53 @@ public final class String
      * @since  1.5
      */
     public String(int[] codePoints, int offset, int count) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        if (offset < 0) {
+            throw new StringIndexOutOfBoundsException(offset);
+        }
+        if (count <= 0) {
+            if (count < 0) {
+                throw new StringIndexOutOfBoundsException(count);
+            }
+            if (offset <= codePoints.length) {
+                this.value = "".value;
+                return;
+            }
+        }
+        // Note: offset or count might be near -1>>>1.
+        if (offset > codePoints.length - count) {
+            throw new StringIndexOutOfBoundsException(offset + count);
+        }
+
+        final int end = offset + count;
+
+        // Pass 1: Compute precise size of char[]
+        int n = count;
+        for (int i = offset; i < end; i++) {
+            int c = codePoints[i];
+            if (Character.isBmpCodePoint(c))
+                continue;
+            else if (Character.isValidCodePoint(c))
+                n++;
+            else throw new IllegalArgumentException(Integer.toString(c));
+        }
+
+        // Pass 2: Allocate and fill in char[]
+        final char[] v = new char[n];
+
+        for (int i = offset, j = 0; i < end; i++, j++) {
+            int c = codePoints[i];
+            if (Character.isBmpCodePoint(c))
+                v[j] = (char)c;
+            else
+                Character.toSurrogates(c, v, j++);
+        }
+
+        this.value = v;
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -289,8 +359,25 @@ public final class String
      */
     @Deprecated
     public String(byte ascii[], int hibyte, int offset, int count) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        checkBounds(ascii, offset, count);
+        char value[] = new char[count];
+
+        if (hibyte == 0) {
+            for (int i = count; i-- > 0;) {
+                value[i] = (char)(ascii[i + offset] & 0xff);
+            }
+        } else {
+            hibyte <<= 8;
+            for (int i = count; i-- > 0;) {
+                value[i] = (char)(hibyte | (ascii[i + offset] & 0xff));
+            }
+        }
+        this.value = value;
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -325,9 +412,28 @@ public final class String
      */
     @Deprecated
     public String(byte ascii[], int hibyte) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        this(ascii, hibyte, 0, ascii.length);
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
+
+    // BEGIN Android-removed: checkBounds(byte[] bytes, int offset, int length) utility method.
+    /* Common private utility method used to bounds check the byte array
+     * and requested offset & length values used by the String(byte[],..)
+     * constructors.
+     *
+    private static void checkBounds(byte[] bytes, int offset, int length) {
+        if (length < 0)
+            throw new StringIndexOutOfBoundsException(length);
+        if (offset < 0)
+            throw new StringIndexOutOfBoundsException(offset);
+        if (offset > bytes.length - length)
+            throw new StringIndexOutOfBoundsException(offset + length);
+    }
+    // END Android-removed: checkBounds(byte[] bytes, int offset, int length) utility method.
 
     /**
      * Constructs a new {@code String} by decoding the specified subarray of
@@ -364,8 +470,15 @@ public final class String
      */
     public String(byte bytes[], int offset, int length, String charsetName)
             throws UnsupportedEncodingException {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        if (charsetName == null)
+            throw new NullPointerException("charsetName");
+        checkBounds(bytes, offset, length);
+        this.value = StringCoding.decode(charsetName, bytes, offset, length);
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -399,8 +512,15 @@ public final class String
      * @since  1.6
      */
     public String(byte bytes[], int offset, int length, Charset charset) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        if (charset == null)
+            throw new NullPointerException("charset");
+        checkBounds(bytes, offset, length);
+        this.value =  StringCoding.decode(charset, bytes, offset, length);
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -428,7 +548,8 @@ public final class String
      */
     public String(byte bytes[], String charsetName)
             throws UnsupportedEncodingException {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this(bytes, 0, bytes.length, charsetName);
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -453,7 +574,8 @@ public final class String
      * @since  1.6
      */
     public String(byte bytes[], Charset charset) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this(bytes, 0, bytes.length, charset);
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -484,7 +606,9 @@ public final class String
      * @since  JDK1.1
      */
     public String(byte bytes[], int offset, int length) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // checkBounds(bytes, offset, length);
+        // this.value = StringCoding.decode(bytes, offset, length);
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -505,7 +629,8 @@ public final class String
      * @since  JDK1.1
      */
     public String(byte bytes[]) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this(bytes, 0, bytes.length);
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
@@ -519,8 +644,14 @@ public final class String
      *         A {@code StringBuffer}
      */
     public String(StringBuffer buffer) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
+        /*
+        synchronized(buffer) {
+            this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
+        }
+        */
         throw new UnsupportedOperationException("Use StringFactory instead.");
+        // END Android-changed: Implemented as compiler and runtime intrinsics.
     }
 
     /**
@@ -539,11 +670,25 @@ public final class String
      * @since  1.5
      */
     public String(StringBuilder builder) {
-        // Android-changed: Constructor unsupported as all calls are intercepted by the runtime.
+        // Android-changed: Implemented as compiler and runtime intrinsics.
+        // this.value = Arrays.copyOf(builder.getValue(), builder.length());
         throw new UnsupportedOperationException("Use StringFactory instead.");
     }
 
-    // Android-removed: Unused package-private constructor String(char[] value, boolean share).
+    // BEGIN Android-removed: Unused package-private constructor String(char[] value, boolean share).
+    /*
+    /*
+    * Package private constructor which shares value array for speed.
+    * this constructor is always expected to be called with share==true.
+    * a separate constructor is needed because we already have a public
+    * String(char[]) constructor that makes a copy of the given char[].
+    *
+    String(char[] value, boolean share) {
+        // assert share : "unshared not supported";
+        this.value = value;
+    }
+    */
+    // END Android-removed: Unused package-private constructor String(char[] value, boolean share).
 
     // BEGIN Android-added: Constructor for internal use.
     // Not implemented in java as all calls are intercepted by the runtime.
@@ -568,7 +713,9 @@ public final class String
      */
     public int length() {
         // BEGIN Android-changed: Get length from count field rather than value array (see above).
-        // return value.length;
+        /*
+        return value.length;
+        */
         final boolean STRING_COMPRESSION_ENABLED = true;
         if (STRING_COMPRESSION_ENABLED) {
             // For the compression purposes (save the characters as 8-bit if all characters
@@ -614,6 +761,14 @@ public final class String
      *             string.
      */
     // BEGIN Android-changed: Replace with implementation in runtime to access chars (see above).
+    /*
+    public char charAt(int index) {
+        if ((index < 0) || (index >= value.length)) {
+            throw new StringIndexOutOfBoundsException(index);
+        }
+        return value[index];
+    }
+    */
     @FastNative
     public native char charAt(int index);
     // END Android-changed: Replace with implementation in runtime to access chars (see above).
@@ -742,6 +897,7 @@ public final class String
      */
     void getChars(char dst[], int dstBegin) {
         // Android-changed: Replace arraycopy with native call since chars are managed by runtime.
+        // System.arraycopy(value, 0, dst, dstBegin, value.length);
         getCharsNoCheck(0, length(), dst, dstBegin);
     }
 
@@ -777,6 +933,18 @@ public final class String
      */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
         // BEGIN Android-changed: Implement in terms of length() and native getCharsNoCheck method.
+        /*
+        if (srcBegin < 0) {
+            throw new StringIndexOutOfBoundsException(srcBegin);
+        }
+        if (srcEnd > value.length) {
+            throw new StringIndexOutOfBoundsException(srcEnd);
+        }
+        if (srcBegin > srcEnd) {
+            throw new StringIndexOutOfBoundsException(srcEnd - srcBegin);
+        }
+        System.arraycopy(value, srcBegin, dst, dstBegin, srcEnd - srcBegin);
+        */
         if (dst == null) {
             throw new NullPointerException("dst == null");
         }
@@ -934,8 +1102,10 @@ public final class String
      */
     public byte[] getBytes(Charset charset) {
         // BEGIN Android-changed: Skip StringCoding optimization that needs access to java chars.
-        // if (charset == null) throw new NullPointerException();
-        // return StringCoding.encode(charset, value, 0, value.length);
+        /*
+        if (charset == null) throw new NullPointerException();
+        return StringCoding.encode(charset, value, 0, value.length);
+        */
         if (charset == null) {
             throw new NullPointerException("charset == null");
         }
@@ -1168,6 +1338,26 @@ public final class String
      *          lexicographically greater than the string argument.
      */
     // BEGIN Android-changed: Replace with implementation in runtime to access chars (see above).
+    /*
+    public int compareTo(String anotherString) {
+        int len1 = value.length;
+        int len2 = anotherString.value.length;
+        int lim = Math.min(len1, len2);
+        char v1[] = value;
+        char v2[] = anotherString.value;
+
+        int k = 0;
+        while (k < lim) {
+            char c1 = v1[k];
+            char c2 = v2[k];
+            if (c1 != c2) {
+                return c1 - c2;
+            }
+            k++;
+        }
+        return len1 - len2;
+    }
+    */
     @FastNative
     public native int compareTo(String anotherString);
     // END Android-changed: Replace with implementation in runtime to access chars (see above).
@@ -1708,6 +1898,8 @@ public final class String
      */
     public int indexOf(String str, int fromIndex) {
         // Android-changed: Delegate to the static indexOf method below.
+        // return indexOf(value, 0, value.length,
+        //         str.value, 0, str.value.length, fromIndex);
         return indexOf(this, str, fromIndex);
     }
 
@@ -1865,6 +2057,8 @@ public final class String
      */
     public int lastIndexOf(String str, int fromIndex) {
         // Android-changed: Change parameters to static lastIndexOf to match new signature below.
+        // return lastIndexOf(value, 0, value.length,
+        //         str.value, 0, str.value.length, fromIndex);
         return lastIndexOf(this, str, fromIndex);
     }
 
@@ -2027,6 +2221,7 @@ public final class String
             throw new StringIndexOutOfBoundsException(this, beginIndex);
         }
         // Android-changed: Use native fastSubstring instead of String constructor.
+        // return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
         return (beginIndex == 0) ? this : fastSubstring(beginIndex, subLen);
     }
 
@@ -2066,6 +2261,7 @@ public final class String
 
         // Android-changed: Use native fastSubstring instead of String constructor.
         return ((beginIndex == 0) && (endIndex == length())) ? this
+        //         : new String(value, beginIndex, subLen);
                 : fastSubstring(beginIndex, subLen);
     }
 
@@ -2128,6 +2324,18 @@ public final class String
      *          characters followed by the string argument's characters.
      */
     // BEGIN Android-changed: Replace with implementation in runtime to access chars (see above).
+    /*
+    public String concat(String str) {
+        int otherLen = str.length();
+        if (otherLen == 0) {
+            return this;
+        }
+        int len = value.length;
+        char buf[] = Arrays.copyOf(value, len + otherLen);
+        str.getChars(buf, len);
+        return new String(buf, true);
+    }
+    */
     @FastNative
     public native String concat(String str);
     // END Android-changed: Replace with implementation in runtime to access chars (see above).
@@ -2164,6 +2372,29 @@ public final class String
     public String replace(char oldChar, char newChar) {
         // BEGIN Android-changed: Replace with implementation using native doReplace method.
         if (oldChar != newChar) {
+            /*
+            int len = value.length;
+            int i = -1;
+            char[] val = value; /* avoid getfield opcode *
+
+            while (++i < len) {
+                if (val[i] == oldChar) {
+                    break;
+                }
+            }
+            if (i < len) {
+                char buf[] = new char[len];
+                for (int j = 0; j < i; j++) {
+                    buf[j] = val[j];
+                }
+                while (i < len) {
+                    char c = val[i];
+                    buf[i] = (c == oldChar) ? newChar : c;
+                    i++;
+                }
+                return new String(buf, true);
+            }
+            */
             final int len = length();
             for (int i = 0; i < len; ++i) {
                 if (charAt(i) == oldChar) {
@@ -2328,6 +2559,10 @@ public final class String
      */
     public String replace(CharSequence target, CharSequence replacement) {
         // BEGIN Android-changed: Replace regex-based implementation with a bespoke one.
+        /*
+        return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
+                this).replaceAll(Matcher.quoteReplacement(replacement.toString()));
+        */
         if (target == null) {
             throw new NullPointerException("target == null");
         }
@@ -2475,6 +2710,58 @@ public final class String
     public String[] split(String regex, int limit) {
         // BEGIN Android-changed: Replace custom fast-path with use of new Pattern.fastSplit method.
         // Try fast splitting without allocating Pattern object
+        /*
+        /* fastpath if the regex is a
+         (1)one-char String and this character is not one of the
+            RegEx's meta characters ".$|()[{^?*+\\", or
+         (2)two-char String and the first char is the backslash and
+            the second is not the ascii digit or ascii letter.
+         *
+        char ch = 0;
+        if (((regex.value.length == 1 &&
+             ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
+             (regex.length() == 2 &&
+              regex.charAt(0) == '\\' &&
+              (((ch = regex.charAt(1))-'0')|('9'-ch)) < 0 &&
+              ((ch-'a')|('z'-ch)) < 0 &&
+              ((ch-'A')|('Z'-ch)) < 0)) &&
+            (ch < Character.MIN_HIGH_SURROGATE ||
+             ch > Character.MAX_LOW_SURROGATE))
+        {
+            int off = 0;
+            int next = 0;
+            boolean limited = limit > 0;
+            ArrayList<String> list = new ArrayList<>();
+            while ((next = indexOf(ch, off)) != -1) {
+                if (!limited || list.size() < limit - 1) {
+                    list.add(substring(off, next));
+                    off = next + 1;
+                } else {    // last one
+                    //assert (list.size() == limit - 1);
+                    list.add(substring(off, value.length));
+                    off = value.length;
+                    break;
+                }
+            }
+            // If no match was found, return this
+            if (off == 0)
+                return new String[]{this};
+
+            // Add remaining segment
+            if (!limited || list.size() < limit)
+                list.add(substring(off, value.length));
+
+            // Construct result
+            int resultSize = list.size();
+            if (limit == 0) {
+                while (resultSize > 0 && list.get(resultSize - 1).length() == 0) {
+                    resultSize--;
+                }
+            }
+            String[] result = new String[resultSize];
+            return list.subList(0, resultSize).toArray(result);
+        }
+        */
         String[] fast = Pattern.fastSplit(regex, this, limit);
         if (fast != null) {
             return fast;
@@ -2662,8 +2949,97 @@ public final class String
      * @since   1.1
      */
     public String toLowerCase(Locale locale) {
-        // Android-changed: Replace custom code with call to new CaseMapper class.
+        // BEGIN Android-changed: Replace custom code with call to new CaseMapper class.
+        /*
+        if (locale == null) {
+            throw new NullPointerException();
+        }
+
+        int firstUpper;
+        final int len = value.length;
+
+        /* Now check if there are any characters that need to be changed. *
+        scan: {
+            for (firstUpper = 0 ; firstUpper < len; ) {
+                char c = value[firstUpper];
+                if ((c >= Character.MIN_HIGH_SURROGATE)
+                        && (c <= Character.MAX_HIGH_SURROGATE)) {
+                    int supplChar = codePointAt(firstUpper);
+                    if (supplChar != Character.toLowerCase(supplChar)) {
+                        break scan;
+                    }
+                    firstUpper += Character.charCount(supplChar);
+                } else {
+                    if (c != Character.toLowerCase(c)) {
+                        break scan;
+                    }
+                    firstUpper++;
+                }
+            }
+            return this;
+        }
+
+        char[] result = new char[len];
+        int resultOffset = 0;  /* result may grow, so i+resultOffset
+                                * is the write location in result *
+
+        /* Just copy the first few lowerCase characters. *
+        System.arraycopy(value, 0, result, 0, firstUpper);
+
+        String lang = locale.getLanguage();
+        boolean localeDependent =
+                (lang == "tr" || lang == "az" || lang == "lt");
+        char[] lowerCharArray;
+        int lowerChar;
+        int srcChar;
+        int srcCount;
+        for (int i = firstUpper; i < len; i += srcCount) {
+            srcChar = (int)value[i];
+            if ((char)srcChar >= Character.MIN_HIGH_SURROGATE
+                    && (char)srcChar <= Character.MAX_HIGH_SURROGATE) {
+                srcChar = codePointAt(i);
+                srcCount = Character.charCount(srcChar);
+            } else {
+                srcCount = 1;
+            }
+            if (localeDependent ||
+                srcChar == '\u03A3' || // GREEK CAPITAL LETTER SIGMA
+                srcChar == '\u0130') { // LATIN CAPITAL LETTER I WITH DOT ABOVE
+                lowerChar = ConditionalSpecialCasing.toLowerCaseEx(this, i, locale);
+            } else {
+                lowerChar = Character.toLowerCase(srcChar);
+            }
+            if ((lowerChar == Character.ERROR)
+                    || (lowerChar >= Character.MIN_SUPPLEMENTARY_CODE_POINT)) {
+                if (lowerChar == Character.ERROR) {
+                    lowerCharArray =
+                            ConditionalSpecialCasing.toLowerCaseCharArray(this, i, locale);
+                } else if (srcCount == 2) {
+                    resultOffset += Character.toChars(lowerChar, result, i + resultOffset) - srcCount;
+                    continue;
+                } else {
+                    lowerCharArray = Character.toChars(lowerChar);
+                }
+
+                /* Grow result if needed *
+                int mapLen = lowerCharArray.length;
+                if (mapLen > srcCount) {
+                    char[] result2 = new char[result.length + mapLen - srcCount];
+                    System.arraycopy(result, 0, result2, 0, i + resultOffset);
+                    result = result2;
+                }
+                for (int x = 0; x < mapLen; ++x) {
+                    result[i + resultOffset + x] = lowerCharArray[x];
+                }
+                resultOffset += (mapLen - srcCount);
+            } else {
+                result[i + resultOffset] = (char)lowerChar;
+            }
+        }
+        return new String(result, 0, len + resultOffset);
+        */
         return CaseMapper.toLowerCase(locale, this);
+        // END Android-changed: Replace custom code with call to new CaseMapper class.
     }
 
     /**
@@ -2738,8 +3114,100 @@ public final class String
      * @since   1.1
      */
     public String toUpperCase(Locale locale) {
-        // Android-changed: Replace custom code with call to new CaseMapper class.
+        // BEGIN Android-changed: Replace custom code with call to new CaseMapper class.
+        /*
+        if (locale == null) {
+            throw new NullPointerException();
+        }
+
+        int firstLower;
+        final int len = value.length;
+
+        /* Now check if there are any characters that need to be changed. *
+        scan: {
+            for (firstLower = 0 ; firstLower < len; ) {
+                int c = (int)value[firstLower];
+                int srcCount;
+                if ((c >= Character.MIN_HIGH_SURROGATE)
+                        && (c <= Character.MAX_HIGH_SURROGATE)) {
+                    c = codePointAt(firstLower);
+                    srcCount = Character.charCount(c);
+                } else {
+                    srcCount = 1;
+                }
+                int upperCaseChar = Character.toUpperCaseEx(c);
+                if ((upperCaseChar == Character.ERROR)
+                        || (c != upperCaseChar)) {
+                    break scan;
+                }
+                firstLower += srcCount;
+            }
+            return this;
+        }
+
+        /* result may grow, so i+resultOffset is the write location in result *
+        int resultOffset = 0;
+        char[] result = new char[len]; /* may grow *
+
+        /* Just copy the first few upperCase characters. *
+        System.arraycopy(value, 0, result, 0, firstLower);
+
+        String lang = locale.getLanguage();
+        boolean localeDependent =
+                (lang == "tr" || lang == "az" || lang == "lt");
+        char[] upperCharArray;
+        int upperChar;
+        int srcChar;
+        int srcCount;
+        for (int i = firstLower; i < len; i += srcCount) {
+            srcChar = (int)value[i];
+            if ((char)srcChar >= Character.MIN_HIGH_SURROGATE &&
+                (char)srcChar <= Character.MAX_HIGH_SURROGATE) {
+                srcChar = codePointAt(i);
+                srcCount = Character.charCount(srcChar);
+            } else {
+                srcCount = 1;
+            }
+            if (localeDependent) {
+                upperChar = ConditionalSpecialCasing.toUpperCaseEx(this, i, locale);
+            } else {
+                upperChar = Character.toUpperCaseEx(srcChar);
+            }
+            if ((upperChar == Character.ERROR)
+                    || (upperChar >= Character.MIN_SUPPLEMENTARY_CODE_POINT)) {
+                if (upperChar == Character.ERROR) {
+                    if (localeDependent) {
+                        upperCharArray =
+                                ConditionalSpecialCasing.toUpperCaseCharArray(this, i, locale);
+                    } else {
+                        upperCharArray = Character.toUpperCaseCharArray(srcChar);
+                    }
+                } else if (srcCount == 2) {
+                    resultOffset += Character.toChars(upperChar, result, i + resultOffset) - srcCount;
+                    continue;
+                } else {
+                    upperCharArray = Character.toChars(upperChar);
+                }
+
+                /* Grow result if needed *
+                int mapLen = upperCharArray.length;
+                if (mapLen > srcCount) {
+                    char[] result2 = new char[result.length + mapLen - srcCount];
+                    System.arraycopy(result, 0, result2, 0, i + resultOffset);
+                    result = result2;
+                }
+                for (int x = 0; x < mapLen; ++x) {
+                    result[i + resultOffset + x] = upperCharArray[x];
+                }
+                resultOffset += (mapLen - srcCount);
+            } else {
+                result[i + resultOffset] = (char)upperChar;
+            }
+        }
+        return new String(result, 0, len + resultOffset);
+        */
         return CaseMapper.toUpperCase(locale, this, length());
+        // END Android-changed: Replace custom code with call to new CaseMapper class.
     }
 
     /**
@@ -2826,6 +3294,14 @@ public final class String
      *          the character sequence represented by this string.
      */
     // BEGIN Android-changed: Replace with implementation in runtime to access chars (see above).
+    /*
+    public char[] toCharArray() {
+        // Cannot use Arrays.copyOf because of class initialization order issues
+        char result[] = new char[value.length];
+        System.arraycopy(value, 0, result, 0, value.length);
+        return result;
+    }
+    */
     @FastNative
     public native char[] toCharArray();
     // END Android-changed: Replace with implementation in runtime to access chars (see above).
@@ -3097,8 +3573,7 @@ public final class String
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
      */
-    // BEGIN Android-changed: Annotate native method as @FastNative.
+    // Android-added: Annotate native method as @FastNative.
     @FastNative
-    // END Android-changed: Annotate native method as @FastNative.
     public native String intern();
 }
