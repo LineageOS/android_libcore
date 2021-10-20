@@ -3576,4 +3576,67 @@ public final class String
     // Android-added: Annotate native method as @FastNative.
     @FastNative
     public native String intern();
+
+    /**
+     * Returns a string whose value is the concatenation of this
+     * string repeated {@code count} times.
+     * <p>
+     * If this string is empty or count is zero then the empty
+     * string is returned.
+     *
+     * @param   count number of times to repeat
+     *
+     * @return  A string composed of this string repeated
+     *          {@code count} times or the empty string if this
+     *          string is empty or count is zero
+     *
+     * @throws  IllegalArgumentException if the {@code count} is
+     *          negative.
+     *
+     * @since 11
+     */
+    public String repeat(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count is negative: " + count);
+        }
+        if (count == 1) {
+            return this;
+        }
+        // Android-changed: Replace with implementation in runtime.
+        // final int len = value.length;
+        final int len = length();
+        if (len == 0 || count == 0) {
+            return "";
+        }
+        // BEGIN Android-changed: Replace with implementation in runtime.
+        /*
+        if (len == 1) {
+            final byte[] single = new byte[count];
+            Arrays.fill(single, value[0]);
+            return new String(single, coder);
+        }
+        */
+        // END Android-changed: Replace with implementation in runtime.
+        if (Integer.MAX_VALUE / count < len) {
+            throw new OutOfMemoryError("Repeating " + len + " bytes String " + count +
+                    " times will produce a String exceeding maximum size.");
+        }
+        // BEGIN Android-changed: Replace with implementation in runtime.
+        /*
+        final int limit = len * count;
+        final byte[] multiple = new byte[limit];
+        System.arraycopy(value, 0, multiple, 0, len);
+        int copied = len;
+        for (; copied < limit - copied; copied <<= 1) {
+            System.arraycopy(multiple, 0, multiple, copied, copied);
+        }
+        System.arraycopy(multiple, 0, multiple, copied, limit - copied);
+        return new String(multiple, coder);
+         */
+        // END Android-changed: Replace with implementation in runtime.
+        return doRepeat(count);
+    }
+
+    @FastNative
+    private native String doRepeat(int count);
 }
