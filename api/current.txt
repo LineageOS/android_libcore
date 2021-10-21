@@ -6166,8 +6166,10 @@ package java.nio.channels {
     method public static java.io.OutputStream newOutputStream(java.nio.channels.AsynchronousByteChannel);
     method public static java.io.Reader newReader(java.nio.channels.ReadableByteChannel, java.nio.charset.CharsetDecoder, int);
     method public static java.io.Reader newReader(java.nio.channels.ReadableByteChannel, String);
+    method public static java.io.Reader newReader(java.nio.channels.ReadableByteChannel, java.nio.charset.Charset);
     method public static java.io.Writer newWriter(java.nio.channels.WritableByteChannel, java.nio.charset.CharsetEncoder, int);
     method public static java.io.Writer newWriter(java.nio.channels.WritableByteChannel, String);
+    method public static java.io.Writer newWriter(java.nio.channels.WritableByteChannel, java.nio.charset.Charset);
   }
 
   public class ClosedByInterruptException extends java.nio.channels.AsynchronousCloseException {
