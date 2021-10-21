@@ -1708,6 +1708,7 @@ filegroup {
         "ojluni/src/main/java/sun/security/util/DerOutputStream.java",
         "ojluni/src/main/java/sun/security/util/DerValue.java",
         "ojluni/src/main/java/sun/security/util/DisabledAlgorithmConstraints.java",
+        "ojluni/src/main/java/sun/security/util/HexDumpEncoder.java",
         "ojluni/src/main/java/sun/security/util/KeyUtil.java",
         "ojluni/src/main/java/sun/security/util/Length.java",
         "ojluni/src/main/java/sun/security/util/ManifestDigester.java",
