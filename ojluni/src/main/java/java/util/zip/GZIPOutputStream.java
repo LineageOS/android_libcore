@@ -59,6 +59,13 @@ class GZIPOutputStream extends DeflaterOutputStream {
      * <p>The new output stream instance is created as if by invoking
      * the 3-argument constructor GZIPOutputStream(out, size, false).
      *
+     * Android-note: Android limits the number of UnbufferedIO operations that can be performed, so
+     * consider using buffered inputs with this class. More information can be found in the
+     * <a href="https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder#detectUnbufferedIo()">
+     * UnbufferedIO</a> and
+     * <a href="https://developer.android.com/reference/android/os/StrictMode"> StrictMode</a>
+     * documentation.
+     *
      * @param out the output stream
      * @param size the output buffer size
      * @exception IOException If an I/O error has occurred.

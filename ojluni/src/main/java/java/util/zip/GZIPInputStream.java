@@ -66,6 +66,14 @@ class GZIPInputStream extends InflaterInputStream {
 
     /**
      * Creates a new input stream with the specified buffer size.
+     *
+     * Android-note: Android limits the number of UnbufferedIO operations that can be performed, so
+     * consider using buffered inputs with this class. More information can be found in the
+     * <a href="https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder#detectUnbufferedIo()">
+     * UnbufferedIO</a> and
+     * <a href="https://developer.android.com/reference/android/os/StrictMode"> StrictMode</a>
+     * documentation.
+     *
      * @param in the input stream
      * @param size the input buffer size
      *
