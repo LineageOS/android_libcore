@@ -4260,7 +4260,7 @@ public class Arrays {
 
         @Override
         public Object[] toArray() {
-            return a.clone();
+            return Arrays.copyOf(a, a.length, Object[].class);
         }
 
         @Override
