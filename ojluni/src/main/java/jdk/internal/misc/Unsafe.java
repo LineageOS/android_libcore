@@ -26,6 +26,7 @@
 package jdk.internal.misc;
 
 import dalvik.annotation.optimization.FastNative;
+import jdk.internal.HotSpotIntrinsicCandidate;
 import sun.reflect.Reflection;
 
 import java.lang.reflect.Field;
@@ -909,7 +910,7 @@ public final class Unsafe {
      *
      * @return {@code true} if successful
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public final native boolean compareAndSetInt(Object o, long offset,
                                                  int expected,
@@ -924,7 +925,7 @@ public final class Unsafe {
      *
      * @return {@code true} if successful
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public final native boolean compareAndSetLong(Object o, long offset,
                                                   long expected,
@@ -939,7 +940,7 @@ public final class Unsafe {
      *
      * @return {@code true} if successful
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public final native boolean compareAndSetObject(Object o, long offset,
                                                     Object expected,
@@ -959,7 +960,7 @@ public final class Unsafe {
      * @return the previous value
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final int getAndAddInt(Object o, long offset, int delta) {
         int v;
         do {
@@ -979,7 +980,7 @@ public final class Unsafe {
      * @return the previous value
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final long getAndAddLong(Object o, long offset, long delta) {
         long v;
         do {
@@ -999,7 +1000,7 @@ public final class Unsafe {
      * @return the previous value
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final int getAndSetInt(Object o, long offset, int newValue) {
         int v;
         do {
@@ -1019,7 +1020,7 @@ public final class Unsafe {
      * @return the previous value
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final long getAndSetLong(Object o, long offset, long newValue) {
         long v;
         do {
@@ -1039,7 +1040,7 @@ public final class Unsafe {
      * @return the previous value
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final Object getAndSetObject(Object o, long offset, Object newValue) {
         Object v;
         do {
@@ -1049,37 +1050,37 @@ public final class Unsafe {
     }
 
     /** Release version of {@link #putIntVolatile(Object, long, int)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final void putIntRelease(Object o, long offset, int x) {
         putIntVolatile(o, offset, x);
     }
 
     /** Acquire version of {@link #getIntVolatile(Object, long)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final int getIntAcquire(Object o, long offset) {
         return getIntVolatile(o, offset);
     }
 
     /** Release version of {@link #putLongVolatile(Object, long, long)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final void putLongRelease(Object o, long offset, long x) {
         putLongVolatile(o, offset, x);
     }
 
     /** Acquire version of {@link #getLongVolatile(Object, long)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final long getLongAcquire(Object o, long offset) {
         return getLongVolatile(o, offset);
     }
 
     /** Release version of {@link #putObjectVolatile(Object, long, Object)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final void putObjectRelease(Object o, long offset, Object x) {
         putObjectVolatile(o, offset, x);
     }
 
     /** Acquire version of {@link #getObjectVolatile(Object, long)} */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final Object getObjectAcquire(Object o, long offset) {
         return getObjectVolatile(o, offset);
     }
@@ -1096,7 +1097,7 @@ public final class Unsafe {
      * provide a LoadLoad barrier also provide a LoadStore barrier for free.
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public native void loadFence();
 
@@ -1112,7 +1113,7 @@ public final class Unsafe {
      * provide a StoreStore barrier also provide a LoadStore barrier for free.
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public native void storeFence();
 
@@ -1125,7 +1126,7 @@ public final class Unsafe {
      * Corresponds to C11 atomic_thread_fence(memory_order_seq_cst).
      * @since 1.8
      */
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public native void fullFence();
 
