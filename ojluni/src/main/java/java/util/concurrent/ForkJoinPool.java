@@ -175,8 +175,7 @@ import java.util.concurrent.locks.LockSupport;
  * @since 1.7
  * @author Doug Lea
  */
-// Android-removed: @Contended, this hint is not used by the Android runtime.
-//@jdk.internal.vm.annotation.Contended
+@jdk.internal.vm.annotation.Contended
 public class ForkJoinPool extends AbstractExecutorService {
 
     /*
@@ -775,8 +774,7 @@ public class ForkJoinPool extends AbstractExecutorService {
      * Queues supporting work-stealing as well as external task
      * submission. See above for descriptions and algorithms.
      */
-    // Android-removed: @Contended, this hint is not used by the Android runtime.
-    //@jdk.internal.vm.annotation.Contended
+    @jdk.internal.vm.annotation.Contended
     static final class WorkQueue {
         volatile int source;       // source queue id, or sentinel
         int id;                    // pool index, mode, tag
@@ -1311,8 +1309,7 @@ public class ForkJoinPool extends AbstractExecutorService {
     final UncaughtExceptionHandler ueh;  // per-worker UEH
     final Predicate<? super ForkJoinPool> saturate;
 
-    // Android-removed: @Contended, this hint is not used by the Android runtime.
-    // @jdk.internal.vm.annotation.Contended("fjpctl") // segregate
+    @jdk.internal.vm.annotation.Contended("fjpctl") // segregate
     volatile long ctl;                   // main pool control
 
     // Creating, registering and deregistering workers
