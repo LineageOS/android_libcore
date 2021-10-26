@@ -2196,7 +2196,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
     // Division
 
 
-    // BEGIN Android-modified: Fall back to boringssl for large problems.
+    // BEGIN Android-changed: Fall back to boringssl for large problems.
     private static final int BORINGSSL_DIV_THRESHOLD = 40;
     private static final int BORINGSSL_DIV_OFFSET = 20;
 
@@ -2218,7 +2218,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
             // return divideBurnikelZiegler(val);
         }
     }
-    // END Android-modified: Fall back to boringssl for large problems.
+    // END Android-changed: Fall back to boringssl for large problems.
 
 
     /**
@@ -2250,7 +2250,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      */
     public BigInteger[] divideAndRemainder(BigInteger val) {
-        // BEGIN Android-modified: Fall back to boringssl for large problems.
+        // BEGIN Android-changed: Fall back to boringssl for large problems.
 
         // if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
         //        mag.length - val.mag < BURNIKEL_ZIEGLER_OFFSET) {
@@ -2280,7 +2280,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
             }
             // return divideAndRemainderBurnikelZiegler(val);
         }
-        // END Android-modified: Fall back to boringssl for large problems.
+        // END Android-changed: Fall back to boringssl for large problems.
     }
 
     /** Long division */
@@ -2304,7 +2304,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
      * @throws ArithmeticException if {@code val} is zero.
      */
     public BigInteger remainder(BigInteger val) {
-        // BEGIN Android-modified: Fall back to boringssl for large problems.
+        // BEGIN Android-changed: Fall back to boringssl for large problems.
         // if (val.mag.length < BURNIKEL_ZIEGLER_THRESHOLD ||
         //        mag.length - val.mag.length < BURNIKEL_ZIEGLER_OFFSET) {
         if (val.mag.length < BORINGSSL_DIV_THRESHOLD ||
@@ -2314,7 +2314,7 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
             return divideAndRemainder(val)[1];
             // return remainderBurnikelZiegler(val);
         }
-        // END Android-modified: Fall back to boringssl for large problems.
+        // END Android-changed: Fall back to boringssl for large problems.
     }
 
     /** Long division */
