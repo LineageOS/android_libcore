@@ -775,7 +775,7 @@ ZIP_Open_Generic(const char *name, char **pmsg, int mode, jlong lastModified)
     jzfile *zip = NULL;
 
     /* Clear zip error message */
-    // BEGIN: Android-changed: Don't crash crash if `pmsg` is NULL and getting from the cache fails.
+    // BEGIN Android-changed: Don't crash crash if `pmsg` is NULL and getting from the cache fails.
     /*
     if (pmsg != 0) {
         *pmsg = NULL;
@@ -806,7 +806,7 @@ ZIP_Open_Generic(const char *name, char **pmsg, int mode, jlong lastModified)
     } else {
       *pmsg = localPmsg;
     }
-    // END: Android-changed: Don't crash crash if `pmsg` is NULL and getting from the cache fails.
+    // END Android-changed: Don't crash crash if `pmsg` is NULL and getting from the cache fails.
     return zip;
 }
 
