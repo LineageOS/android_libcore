@@ -1952,10 +1952,13 @@ package java.io {
     ctor public PrintStream(java.io.OutputStream);
     ctor public PrintStream(java.io.OutputStream, boolean);
     ctor public PrintStream(java.io.OutputStream, boolean, String) throws java.io.UnsupportedEncodingException;
+    ctor public PrintStream(java.io.OutputStream, boolean, java.nio.charset.Charset);
     ctor public PrintStream(String) throws java.io.FileNotFoundException;
     ctor public PrintStream(String, String) throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException;
+    ctor public PrintStream(String, java.nio.charset.Charset) throws java.io.IOException;
     ctor public PrintStream(java.io.File) throws java.io.FileNotFoundException;
     ctor public PrintStream(java.io.File, String) throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException;
+    ctor public PrintStream(java.io.File, java.nio.charset.Charset) throws java.io.IOException;
     method public java.io.PrintStream append(CharSequence);
     method public java.io.PrintStream append(CharSequence, int, int);
     method public java.io.PrintStream append(char);
@@ -1996,10 +1999,13 @@ package java.io {
     ctor public PrintWriter(@NonNull java.io.Writer, boolean);
     ctor public PrintWriter(@NonNull java.io.OutputStream);
     ctor public PrintWriter(@NonNull java.io.OutputStream, boolean);
+    ctor public PrintWriter(@NonNull java.io.OutputStream, boolean, @NonNull java.nio.charset.Charset);
     ctor public PrintWriter(@NonNull String) throws java.io.FileNotFoundException;
     ctor public PrintWriter(@NonNull String, @NonNull String) throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException;
+    ctor public PrintWriter(@NonNull String, @NonNull java.nio.charset.Charset) throws java.io.IOException;
     ctor public PrintWriter(@NonNull java.io.File) throws java.io.FileNotFoundException;
     ctor public PrintWriter(@NonNull java.io.File, @NonNull String) throws java.io.FileNotFoundException, java.io.UnsupportedEncodingException;
+    ctor public PrintWriter(@NonNull java.io.File, @NonNull java.nio.charset.Charset) throws java.io.IOException;
     method @NonNull public java.io.PrintWriter append(@Nullable CharSequence);
     method @NonNull public java.io.PrintWriter append(@Nullable CharSequence, int, int);
     method @NonNull public java.io.PrintWriter append(char);
