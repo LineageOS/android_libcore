@@ -226,6 +226,7 @@ package dalvik.system {
 
   public final class DelegateLastClassLoader extends dalvik.system.PathClassLoader {
     ctor public DelegateLastClassLoader(String, String, ClassLoader, ClassLoader[]);
+    ctor public DelegateLastClassLoader(String, String, ClassLoader, ClassLoader[], ClassLoader[]);
   }
 
   @Deprecated public final class DexFile {
@@ -246,6 +247,7 @@ package dalvik.system {
 
   public class PathClassLoader extends dalvik.system.BaseDexClassLoader {
     ctor public PathClassLoader(@NonNull String, @Nullable String, @Nullable ClassLoader, @Nullable ClassLoader[]);
+    ctor public PathClassLoader(@NonNull String, @Nullable String, @Nullable ClassLoader, @Nullable ClassLoader[], @Nullable ClassLoader[]);
   }
 
   public final class RuntimeHooks {
