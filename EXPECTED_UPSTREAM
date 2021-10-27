@@ -406,3 +406,11 @@ ojluni/src/main/java/java/nio/channels/spi/AbstractSelectionKey.java,jdk8u/jdk8u
 ojluni/src/main/java/java/nio/channels/spi/AbstractSelector.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/spi/AbstractSelector.java
 ojluni/src/main/java/java/nio/channels/spi/AsynchronousChannelProvider.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/spi/AsynchronousChannelProvider.java
 ojluni/src/main/java/java/nio/channels/spi/SelectorProvider.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/spi/SelectorProvider.java
+ojluni/src/main/java/java/nio/charset/Charset.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/Charset.java
+ojluni/src/main/java/java/nio/charset/CoderMalfunctionError.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/CoderMalfunctionError.java
+ojluni/src/main/java/java/nio/charset/CoderResult.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/CoderResult.java
+ojluni/src/main/java/java/nio/charset/CodingErrorAction.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/CodingErrorAction.java
+ojluni/src/main/java/java/nio/charset/MalformedInputException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/MalformedInputException.java
+ojluni/src/main/java/java/nio/charset/StandardCharsets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/StandardCharsets.java
+ojluni/src/main/java/java/nio/charset/UnmappableCharacterException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/UnmappableCharacterException.java
+ojluni/src/main/java/java/nio/charset/spi/CharsetProvider.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/spi/CharsetProvider.java
