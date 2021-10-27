@@ -364,3 +364,10 @@ ojluni/src/main/java/java/net/URLStreamHandlerFactory.java,jdk8u/jdk8u121-b13,jd
 ojluni/src/main/java/java/net/UnknownHostException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/UnknownHostException.java
 ojluni/src/main/java/java/net/UnknownServiceException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/UnknownServiceException.java
 ojluni/src/main/java/java/net/package-info.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/package-info.java
+# Some java.nio Buffer and Exception classes are generated from templates, and thus has no direct mapping to an upstream file.
+ojluni/src/main/java/java/nio/Bits.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/Bits.java
+ojluni/src/main/java/java/nio/Buffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/Buffer.java
+ojluni/src/main/java/java/nio/ByteOrder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/ByteOrder.java
+ojluni/src/main/java/java/nio/CharBufferSpliterator.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/CharBufferSpliterator.java
+ojluni/src/main/java/java/nio/MappedByteBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/MappedByteBuffer.java
+ojluni/src/main/java/java/nio/StringCharBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/StringCharBuffer.java
