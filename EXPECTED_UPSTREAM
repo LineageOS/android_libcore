@@ -229,4 +229,21 @@ ojluni/src/main/java/java/lang/annotation/Retention.java,jdk11u/jdk-11+28,src/ja
 ojluni/src/main/java/java/lang/annotation/RetentionPolicy.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/annotation/RetentionPolicy.java
 ojluni/src/main/java/java/lang/annotation/Target.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/annotation/Target.java
 ojluni/src/main/java/java/lang/annotation/package-info.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/annotation/package-info.java
+ojluni/src/main/java/java/lang/invoke/CallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/CallSite.java
+ojluni/src/main/java/java/lang/invoke/ConstantCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/ConstantCallSite.java
+ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/LambdaConversionException.java
+ojluni/src/main/java/java/lang/invoke/MethodHandle.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandle.java
+# java.lang.invoke.MethodHandleImpl in libcore/ doesn't come from the upstream.
+ojluni/src/main/java/java/lang/invoke/MethodHandleInfo.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandleInfo.java
+ojluni/src/main/java/java/lang/invoke/MethodHandleNatives.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandleNatives.java
+ojluni/src/main/java/java/lang/invoke/MethodHandleStatics.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandleStatics.java
+ojluni/src/main/java/java/lang/invoke/MethodHandles.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandles.java
+ojluni/src/main/java/java/lang/invoke/MethodType.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodType.java
+ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodTypeForm.java
+ojluni/src/main/java/java/lang/invoke/MutableCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MutableCallSite.java
+ojluni/src/main/java/java/lang/invoke/Stable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/Stable.java
+# java.lang.invoke.Transformers isn't in the upstream OpenJDK
+ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk9/jdk-9+181,jdk/src/java.base/share/classes/java/lang/invoke/VarHandle.java
+ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/VolatileCallSite.java
+ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/WrongMethodTypeException.java
 ojluni/src/main/java/java/lang/package-info.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/package-info.java
