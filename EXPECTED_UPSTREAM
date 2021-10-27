@@ -278,3 +278,11 @@ ojluni/src/main/java/java/lang/reflect/UndeclaredThrowableException.java,jdk11u/
 ojluni/src/main/java/java/lang/reflect/WeakCache.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/reflect/WeakCache.java
 ojluni/src/main/java/java/lang/reflect/WildcardType.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/reflect/WildcardType.java
 ojluni/src/main/java/java/lang/reflect/package-info.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/reflect/package-info.java
+ojluni/src/main/java/java/math/BigDecimal.java,jdk8u/jdk8u252-ga,jdk/src/share/classes/java/math/BigDecimal.java
+ojluni/src/main/java/java/math/BigInteger.java,jdk8u/jdk8u252-ga,jdk/src/share/classes/java/math/BigInteger.java
+ojluni/src/main/java/java/math/BitSieve.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/BitSieve.java
+ojluni/src/main/java/java/math/MathContext.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/MathContext.java
+ojluni/src/main/java/java/math/MutableBigInteger.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/MutableBigInteger.java
+ojluni/src/main/java/java/math/RoundingMode.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/RoundingMode.java
+ojluni/src/main/java/java/math/SignedMutableBigInteger.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/SignedMutableBigInteger.java
+ojluni/src/main/java/java/math/package-info.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/math/package-info.java
