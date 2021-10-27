@@ -23,5 +23,11 @@ ojluni/src/main/java/com/sun/nio/file/SensitivityWatchEventModifier.java,jdk8u/j
 ojluni/src/main/java/com/sun/security/cert/internal/x509/X509V1CertImpl.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/com/sun/security/cert/internal/x509/X509V1CertImpl.java
 ojluni/src/main/java/java/awt/font/NumericShaper.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/awt/font/NumericShaper.java
 ojluni/src/main/java/java/awt/font/TextAttribute.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/awt/font/TextAttribute.java
+ojluni/src/main/java/java/beans/ChangeListenerMap.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/ChangeListenerMap.java
+ojluni/src/main/java/java/beans/IndexedPropertyChangeEvent.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/IndexedPropertyChangeEvent.java
+ojluni/src/main/java/java/beans/PropertyChangeEvent.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/PropertyChangeEvent.java
+ojluni/src/main/java/java/beans/PropertyChangeListener.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/PropertyChangeListener.java
+ojluni/src/main/java/java/beans/PropertyChangeListenerProxy.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/PropertyChangeListenerProxy.java
+ojluni/src/main/java/java/beans/PropertyChangeSupport.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/beans/PropertyChangeSupport.java
 ojluni/src/main/java/java/lang/NoSuchMethodException.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/NoSuchMethodException.java
 ojluni/src/main/java/java/lang/NullPointerException.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/NullPointerException.java
