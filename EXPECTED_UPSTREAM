@@ -247,3 +247,8 @@ ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk9/jdk-9+181,jdk/src/java
 ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/VolatileCallSite.java
 ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/WrongMethodTypeException.java
 ojluni/src/main/java/java/lang/package-info.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/package-info.java
+ojluni/src/main/java/java/lang/ref/PhantomReference.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/ref/PhantomReference.java
+ojluni/src/main/java/java/lang/ref/Reference.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/ref/Reference.java
+ojluni/src/main/java/java/lang/ref/ReferenceQueue.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/ref/ReferenceQueue.java
+ojluni/src/main/java/java/lang/ref/SoftReference.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/ref/SoftReference.java
+ojluni/src/main/java/java/lang/ref/WeakReference.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/lang/ref/WeakReference.java
