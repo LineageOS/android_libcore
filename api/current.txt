@@ -3820,7 +3820,6 @@ package java.lang {
     method public int offsetByCodePoints(int, int);
     method public boolean regionMatches(int, @NonNull String, int, int);
     method public boolean regionMatches(boolean, int, @NonNull String, int, int);
-    method @NonNull public String repeat(int);
     method @NonNull public String replace(char, char);
     method @NonNull public String replace(@NonNull CharSequence, @NonNull CharSequence);
     method @NonNull public String replaceAll(@NonNull String, @NonNull String);
