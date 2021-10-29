@@ -1542,3 +1542,11 @@ ojluni/src/main/java/sun/security/jca/ProviderConfig.java,jdk8u/jdk8u60-b31,jdk/
 ojluni/src/main/java/sun/security/jca/ProviderList.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/jca/ProviderList.java
 ojluni/src/main/java/sun/security/jca/Providers.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/jca/Providers.java
 ojluni/src/main/java/sun/security/jca/ServiceId.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/jca/ServiceId.java
+ojluni/src/main/java/sun/security/pkcs/ContentInfo.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/ContentInfo.java
+ojluni/src/main/java/sun/security/pkcs/PKCS7.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/PKCS7.java
+ojluni/src/main/java/sun/security/pkcs/PKCS8Key.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/PKCS8Key.java
+ojluni/src/main/java/sun/security/pkcs/PKCS9Attribute.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/PKCS9Attribute.java
+ojluni/src/main/java/sun/security/pkcs/PKCS9Attributes.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/PKCS9Attributes.java
+ojluni/src/main/java/sun/security/pkcs/ParsingException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/ParsingException.java
+ojluni/src/main/java/sun/security/pkcs/SignerInfo.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/SignerInfo.java
+ojluni/src/main/java/sun/security/pkcs/SigningCertificateInfo.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/pkcs/SigningCertificateInfo.java
