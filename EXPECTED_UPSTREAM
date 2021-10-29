@@ -1333,3 +1333,7 @@ ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk11u/jdk-11+28,
 ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
 ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/util/Preconditions.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/vm/annotation/Stable.java
+ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/ExtendedSocketOptions.java
+ojluni/src/main/java/jdk/net/NetworkPermission.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/NetworkPermission.java
+ojluni/src/main/java/jdk/net/SocketFlow.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/SocketFlow.java
+ojluni/src/main/java/jdk/net/Sockets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/Sockets.java
