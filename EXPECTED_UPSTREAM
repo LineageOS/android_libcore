@@ -1080,3 +1080,12 @@ ojluni/src/main/java/java/util/function/ToLongBiFunction.java,jdk11u/jdk-11+28,s
 ojluni/src/main/java/java/util/function/ToLongFunction.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/function/ToLongFunction.java
 ojluni/src/main/java/java/util/function/UnaryOperator.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/function/UnaryOperator.java
 ojluni/src/main/java/java/util/function/package-info.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/function/package-info.java
+ojluni/src/main/java/java/util/jar/Attributes.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Attributes.java
+ojluni/src/main/java/java/util/jar/JarEntry.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/jar/JarEntry.java
+ojluni/src/main/java/java/util/jar/JarException.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/jar/JarException.java
+ojluni/src/main/java/java/util/jar/JarFile.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarFile.java
+ojluni/src/main/java/java/util/jar/JarInputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarInputStream.java
+ojluni/src/main/java/java/util/jar/JarOutputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarOutputStream.java
+ojluni/src/main/java/java/util/jar/JarVerifier.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarVerifier.java
+ojluni/src/main/java/java/util/jar/Manifest.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Manifest.java
+ojluni/src/main/java/java/util/jar/Pack200.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Pack200.java
