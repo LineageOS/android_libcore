@@ -8518,6 +8518,12 @@ package java.security.cert {
     method public final java.security.cert.X509Certificate getTrustedCert();
   }
 
+  public final class URICertStoreParameters implements java.security.cert.CertStoreParameters {
+    ctor public URICertStoreParameters(java.net.URI);
+    method public java.security.cert.URICertStoreParameters clone();
+    method public java.net.URI getURI();
+  }
+
   public abstract class X509CRL extends java.security.cert.CRL implements java.security.cert.X509Extension {
     ctor protected X509CRL();
     method public abstract byte[] getEncoded() throws java.security.cert.CRLException;
