@@ -1108,3 +1108,16 @@ ojluni/src/main/java/java/util/logging/SimpleFormatter.java,jdk8u/jdk8u121-b13,j
 ojluni/src/main/java/java/util/logging/SocketHandler.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/logging/SocketHandler.java
 ojluni/src/main/java/java/util/logging/StreamHandler.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/logging/StreamHandler.java
 ojluni/src/main/java/java/util/logging/XMLFormatter.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/logging/XMLFormatter.java
+ojluni/src/main/java/java/util/prefs/AbstractPreferences.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/AbstractPreferences.java
+ojluni/src/main/java/java/util/prefs/BackingStoreException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/BackingStoreException.java
+ojluni/src/main/java/java/util/prefs/Base64.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/Base64.java
+ojluni/src/main/java/java/util/prefs/FileSystemPreferences.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/java/util/prefs/FileSystemPreferences.java
+ojluni/src/main/java/java/util/prefs/FileSystemPreferencesFactory.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/java/util/prefs/FileSystemPreferencesFactory.java
+ojluni/src/main/java/java/util/prefs/InvalidPreferencesFormatException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/InvalidPreferencesFormatException.java
+ojluni/src/main/java/java/util/prefs/NodeChangeEvent.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/NodeChangeEvent.java
+ojluni/src/main/java/java/util/prefs/NodeChangeListener.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/NodeChangeListener.java
+ojluni/src/main/java/java/util/prefs/PreferenceChangeEvent.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/PreferenceChangeEvent.java
+ojluni/src/main/java/java/util/prefs/PreferenceChangeListener.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/PreferenceChangeListener.java
+ojluni/src/main/java/java/util/prefs/Preferences.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/Preferences.java
+ojluni/src/main/java/java/util/prefs/PreferencesFactory.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/PreferencesFactory.java
+ojluni/src/main/java/java/util/prefs/XmlSupport.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/XmlSupport.java
