@@ -1337,3 +1337,6 @@ ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java,jdk8u/jdk8u121-b13,jdk/s
 ojluni/src/main/java/jdk/net/NetworkPermission.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/NetworkPermission.java
 ojluni/src/main/java/jdk/net/SocketFlow.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/SocketFlow.java
 ojluni/src/main/java/jdk/net/Sockets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/Sockets.java
+ojluni/src/main/java/sun/invoke/util/BytecodeDescriptor.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/invoke/util/BytecodeDescriptor.java
+ojluni/src/main/java/sun/invoke/util/VerifyAccess.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/invoke/util/VerifyAccess.java
+ojluni/src/main/java/sun/invoke/util/Wrapper.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/invoke/util/Wrapper.java
