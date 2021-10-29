@@ -1530,3 +1530,6 @@ ojluni/src/main/java/sun/nio/fs/UnixSecureDirectoryStream.java,jdk8u/jdk8u121-b1
 ojluni/src/main/java/sun/nio/fs/UnixUriUtils.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixUriUtils.java
 ojluni/src/main/java/sun/nio/fs/UnixUserPrincipals.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixUserPrincipals.java
 ojluni/src/main/java/sun/nio/fs/Util.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/fs/Util.java
+ojluni/src/main/java/sun/reflect/CallerSensitive.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/CallerSensitive.java
+ojluni/src/main/java/sun/reflect/Reflection.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/Reflection.java
+ojluni/src/main/java/sun/reflect/misc/ReflectUtil.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/misc/ReflectUtil.java
