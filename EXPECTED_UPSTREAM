@@ -1319,3 +1319,17 @@ ojluni/src/main/java/javax/sql/RowSetReader.java,jdk7u/jdk7u40-b60,jdk/src/share
 ojluni/src/main/java/javax/sql/RowSetWriter.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/RowSetWriter.java
 ojluni/src/main/java/javax/sql/StatementEvent.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/StatementEvent.java
 ojluni/src/main/java/javax/sql/StatementEventListener.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/StatementEventListener.java
+ojluni/src/main/java/jdk/internal/math/DoubleConsts.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/DoubleConsts.java
+ojluni/src/main/java/jdk/internal/math/FDBigInteger.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FDBigInteger.java
+ojluni/src/main/java/jdk/internal/math/FloatConsts.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FloatConsts.java
+ojluni/src/main/java/jdk/internal/math/FloatingDecimal.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FloatingDecimal.java
+ojluni/src/main/java/jdk/internal/math/FormattedFloatingDecimal.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FormattedFloatingDecimal.java
+ojluni/src/main/java/jdk/internal/misc/JavaIOFileDescriptorAccess.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/misc/JavaIOFileDescriptorAccess.java
+ojluni/src/main/java/jdk/internal/misc/JavaObjectInputStreamAccess.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/misc/JavaObjectInputStreamAccess.java
+ojluni/src/main/java/jdk/internal/misc/SharedSecrets.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/misc/SharedSecrets.java
+ojluni/src/main/java/jdk/internal/misc/Unsafe.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/misc/Unsafe.java
+ojluni/src/main/java/jdk/internal/misc/VM.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/misc/VM.java
+ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/reflect/CallerSensitive.java
+ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
+ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/util/Preconditions.java
+ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/vm/annotation/Stable.java
