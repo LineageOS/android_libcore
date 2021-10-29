@@ -1713,3 +1713,62 @@ ojluni/src/main/java/sun/util/logging/LoggingProxy.java,jdk8u/jdk8u121-b13,jdk/s
 ojluni/src/main/java/sun/util/logging/LoggingSupport.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/util/logging/LoggingSupport.java
 ojluni/src/main/java/sun/util/logging/PlatformLogger.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/util/logging/PlatformLogger.java
 ojluni/src/main/java/sun/util/resources/OpenListResourceBundle.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/util/resources/OpenListResourceBundle.java
+ojluni/src/main/native/Adler32.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/Adler32.c
+ojluni/src/main/native/CRC32.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/CRC32.c
+# Character.cpp doesn’t come from the upstream OpenJDK.
+ojluni/src/main/native/Console_md.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/java/io/Console_md.c
+ojluni/src/main/native/DatagramChannelImpl.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/DatagramChannelImpl.c
+ojluni/src/main/native/DatagramDispatcher.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/DatagramDispatcher.c
+ojluni/src/main/native/Deflater.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/Deflater.c
+ojluni/src/main/native/Double.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/lang/Double.c
+ojluni/src/main/native/EPoll.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/EPoll.c
+ojluni/src/main/native/EPollPort.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/EPollPort.c
+ojluni/src/main/native/FileChannelImpl.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/FileChannelImpl.c
+ojluni/src/main/native/FileDescriptor_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/io/FileDescriptor_md.c
+ojluni/src/main/native/FileDispatcherImpl.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/FileDispatcherImpl.c
+ojluni/src/main/native/FileInputStream.c,jdk7u/jdk7u40-b60,jdk/src/share/native/java/io/FileInputStream.c
+ojluni/src/main/native/FileKey.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/sun/nio/ch/FileKey.c
+ojluni/src/main/native/FileSystemPreferences.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/util/FileSystemPreferences.c
+ojluni/src/main/native/Float.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/lang/Float.c
+ojluni/src/main/native/IOUtil.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/IOUtil.c
+ojluni/src/main/native/Inet4Address.c,jdk7u/jdk7u40-b60,jdk/src/share/native/java/net/Inet4Address.c
+ojluni/src/main/native/Inet6Address.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/net/Inet6Address.c
+ojluni/src/main/native/InetAddress.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/net/InetAddress.c
+ojluni/src/main/native/Inflater.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/Inflater.c
+# JniConstants.cpp doesn’t come from the upstream OpenJDK.
+ojluni/src/main/native/LinuxNativeDispatcher.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/fs/LinuxNativeDispatcher.c
+ojluni/src/main/native/LinuxWatchService.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/fs/LinuxWatchService.c
+ojluni/src/main/native/MappedByteBuffer.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/java/nio/MappedByteBuffer.c
+# Math.c doesn’t come from the upstream OpenJDK.
+ojluni/src/main/native/NativeThread.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/NativeThread.c
+ojluni/src/main/native/Net.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/Net.c
+ojluni/src/main/native/ObjectInputStream.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/io/ObjectInputStream.c
+ojluni/src/main/native/ObjectOutputStream.c,jdk7u/jdk7u40-b60,jdk/src/share/native/java/io/ObjectOutputStream.c
+ojluni/src/main/native/ObjectStreamClass.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/io/ObjectStreamClass.c
+# OnLoad.cpp doesn’t come from the upstream OpenJDK.
+ojluni/src/main/native/PollArrayWrapper.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/PollArrayWrapper.c
+ojluni/src/main/native/ProcessEnvironment_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/lang/ProcessEnvironment_md.c
+ojluni/src/main/native/Runtime.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/lang/Runtime.c
+ojluni/src/main/native/ServerSocketChannelImpl.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/ServerSocketChannelImpl.c
+ojluni/src/main/native/SocketChannelImpl.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/ch/SocketChannelImpl.c
+ojluni/src/main/native/SocketInputStream.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/SocketInputStream.c
+ojluni/src/main/native/SocketOutputStream.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/java/net/SocketOutputStream.c
+ojluni/src/main/native/StrictMath.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/lang/StrictMath.c
+ojluni/src/main/native/System.c,jdk7u/jdk7u40-b60,jdk/src/share/native/java/lang/System.c
+ojluni/src/main/native/UNIXProcess_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/lang/UNIXProcess_md.c
+ojluni/src/main/native/UnixAsynchronousServerSocketChannelImpl.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/ch/UnixAsynchronousServerSocketChannelImpl.c
+ojluni/src/main/native/UnixAsynchronousSocketChannelImpl.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/ch/UnixAsynchronousSocketChannelImpl.c
+ojluni/src/main/native/UnixCopyFile.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/fs/UnixCopyFile.c
+ojluni/src/main/native/UnixFileSystem_md.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/java/io/UnixFileSystem_md.c
+ojluni/src/main/native/UnixNativeDispatcher.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/fs/UnixNativeDispatcher.c
+ojluni/src/main/native/ZipFile.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/ZipFile.c
+ojluni/src/main/native/canonicalize_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/io/canonicalize_md.c
+ojluni/src/main/native/io_util.c,jdk7u/jdk7u40-b60,jdk/src/share/native/java/io/io_util.c
+ojluni/src/main/native/io_util_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/io/io_util_md.c
+ojluni/src/main/native/jni_util.c,jdk8u/jdk8u60-b31,jdk/src/share/native/common/jni_util.c
+ojluni/src/main/native/jni_util_md.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/common/jni_util_md.c
+ojluni/src/main/native/linux_close.cpp,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/linux_close.c
+ojluni/src/main/native/net_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/net/net_util.c
+ojluni/src/main/native/net_util_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/net_util_md.c
+# socket_tagger_util.cpp doesn’t come from the upstream OpenJDK.
+ojluni/src/main/native/zip_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/util/zip/zip_util.c
