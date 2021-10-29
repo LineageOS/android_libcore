@@ -1121,3 +1121,7 @@ ojluni/src/main/java/java/util/prefs/PreferenceChangeListener.java,jdk8u/jdk8u12
 ojluni/src/main/java/java/util/prefs/Preferences.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/Preferences.java
 ojluni/src/main/java/java/util/prefs/PreferencesFactory.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/PreferencesFactory.java
 ojluni/src/main/java/java/util/prefs/XmlSupport.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/prefs/XmlSupport.java
+ojluni/src/main/java/java/util/regex/MatchResult.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/regex/MatchResult.java
+ojluni/src/main/java/java/util/regex/Matcher.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/regex/Matcher.java
+ojluni/src/main/java/java/util/regex/Pattern.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/regex/Pattern.java
+ojluni/src/main/java/java/util/regex/PatternSyntaxException.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/regex/PatternSyntaxException.java
