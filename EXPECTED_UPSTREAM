@@ -1533,3 +1533,6 @@ ojluni/src/main/java/sun/nio/fs/Util.java,jdk8u/jdk8u121-b13,jdk/src/share/class
 ojluni/src/main/java/sun/reflect/CallerSensitive.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/CallerSensitive.java
 ojluni/src/main/java/sun/reflect/Reflection.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/Reflection.java
 ojluni/src/main/java/sun/reflect/misc/ReflectUtil.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/reflect/misc/ReflectUtil.java
+ojluni/src/main/java/sun/security/action/GetBooleanAction.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/action/GetBooleanAction.java
+ojluni/src/main/java/sun/security/action/GetIntegerAction.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/action/GetIntegerAction.java
+ojluni/src/main/java/sun/security/action/GetPropertyAction.java,jdk11u/jdk-11+28,src/java.base/share/classes/sun/security/action/GetPropertyAction.java
