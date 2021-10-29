@@ -28,7 +28,11 @@ package java.math;
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class BigInteger extends java.lang.Number implements java.lang.Comparable<java.math.BigInteger> {
 
+    public BigInteger(byte[] val, int off, int len) { throw new RuntimeException("Stub!"); }
+
     public BigInteger(byte[] val) { throw new RuntimeException("Stub!"); }
+
+    public BigInteger(int signum, byte[] magnitude, int off, int len) { throw new RuntimeException("Stub!"); }
 
     public BigInteger(int signum, byte[] magnitude) { throw new RuntimeException("Stub!"); }
 
@@ -51,6 +55,8 @@ public class BigInteger extends java.lang.Number implements java.lang.Comparable
     @libcore.util.NonNull public static final BigInteger ZERO = null;
 
     @libcore.util.NonNull public static final BigInteger ONE = null;
+
+    @libcore.util.NonNull public static final java.math.BigInteger TWO = null;
 
     @libcore.util.NonNull public static final BigInteger TEN = null;
 
@@ -75,6 +81,10 @@ public class BigInteger extends java.lang.Number implements java.lang.Comparable
     @libcore.util.NonNull public BigInteger negate() { throw new RuntimeException("Stub!"); }
 
     public int signum() { return 0; }
+
+    @libcore.util.NonNull public BigInteger sqrt() { throw new RuntimeException("Stub!"); }
+
+    @libcore.util.NonNull public BigInteger[] sqrtAndRemainder() { throw new RuntimeException("Stub!"); }
 
     @libcore.util.NonNull public BigInteger mod(@libcore.util.NonNull BigInteger m) { throw new RuntimeException("Stub!"); }
 
