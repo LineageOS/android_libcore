@@ -589,6 +589,7 @@ filegroup {
         "ojluni/src/main/java/java/security/cert/PolicyNode.java",
         "ojluni/src/main/java/java/security/cert/PolicyQualifierInfo.java",
         "ojluni/src/main/java/java/security/cert/TrustAnchor.java",
+        "ojluni/src/main/java/java/security/cert/URICertStoreParameters.java",
         "ojluni/src/main/java/java/security/cert/X509Certificate.java",
         "ojluni/src/main/java/java/security/cert/X509CertSelector.java",
         "ojluni/src/main/java/java/security/cert/X509CRLEntry.java",
