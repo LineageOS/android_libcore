@@ -61,6 +61,7 @@ AUTOCOMPLETE_TAGS = [
     'jdk8u/jdk8u60-b31',
     'jdk9/jdk-9+181',
     'jdk11u/jdk-11+28',
+    'jdk11u/jdk-11.0.13-ga',
 ]
 
 

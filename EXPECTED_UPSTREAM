@@ -614,6 +614,7 @@ ojluni/src/main/java/java/security/cert/PKIXRevocationChecker.java,jdk8u/jdk8u12
 ojluni/src/main/java/java/security/cert/PolicyNode.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/PolicyNode.java
 ojluni/src/main/java/java/security/cert/PolicyQualifierInfo.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/PolicyQualifierInfo.java
 ojluni/src/main/java/java/security/cert/TrustAnchor.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/TrustAnchor.java
+ojluni/src/main/java/java/security/cert/URICertStoreParameters.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/security/cert/URICertStoreParameters.java
 ojluni/src/main/java/java/security/cert/X509CRL.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/X509CRL.java
 ojluni/src/main/java/java/security/cert/X509CRLEntry.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/X509CRLEntry.java
 ojluni/src/main/java/java/security/cert/X509CRLSelector.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/cert/X509CRLSelector.java
@@ -1772,3 +1773,4 @@ ojluni/src/main/native/net_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/n
 ojluni/src/main/native/net_util_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native/java/net/net_util_md.c
 # socket_tagger_util.cpp doesn’t come from the upstream OpenJDK.
 ojluni/src/main/native/zip_util.c,jdk8u/jdk8u121-b13,jdk/src/share/native/java/util/zip/zip_util.c
+ojluni/src/test/java/security/cert/URICertStoreParameters/TestBasic.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/URICertStoreParameters/TestBasic.java
