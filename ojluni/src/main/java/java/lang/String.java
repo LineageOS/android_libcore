@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -75,16 +75,10 @@ import libcore.util.CharsetUtils;
  * <p>
  * The Java language provides special support for the string
  * concatenation operator (&nbsp;+&nbsp;), and for conversion of
- * other objects to strings. String concatenation is implemented
- * through the {@code StringBuilder}(or {@code StringBuffer})
- * class and its {@code append} method.
- * String conversions are implemented through the method
- * {@code toString}, defined by {@code Object} and
- * inherited by all classes in Java. For additional information on
- * string concatenation and conversion, see Gosling, Joy, and Steele,
- * <i>The Java Language Specification</i>.
+ * other objects to strings. For additional information on string
+ * concatenation and conversion, see <i>The Java&trade; Language Specification</i>.
  *
- * <p> Unless otherwise noted, passing a <tt>null</tt> argument to a constructor
+ * <p> Unless otherwise noted, passing a {@code null} argument to a constructor
  * or method in this class will cause a {@link NullPointerException} to be
  * thrown.
  *
@@ -99,6 +93,18 @@ import libcore.util.CharsetUtils;
  * Unicode code points (i.e., characters), in addition to those for
  * dealing with Unicode code units (i.e., {@code char} values).
  *
+ * <p>Unless otherwise noted, methods for comparing Strings do not take locale
+ * into account.  The {@link java.text.Collator} class provides methods for
+ * finer-grain, locale-sensitive String comparison.
+ *
+ * @implNote The implementation of the string concatenation operator is left to
+ * the discretion of a Java compiler, as long as the compiler ultimately conforms
+ * to <i>The Java&trade; Language Specification</i>. For example, the {@code javac} compiler
+ * may implement the operator with {@code StringBuffer}, {@code StringBuilder},
+ * or {@code java.lang.invoke.StringConcatFactory} depending on the JDK version. The
+ * implementation of string conversion is typically through the method {@code toString},
+ * defined by {@code Object} and inherited by all classes in Java.
+ *
  * @author  Lee Boynton
  * @author  Arthur van Hoff
  * @author  Martin Buchholz
@@ -107,7 +113,8 @@ import libcore.util.CharsetUtils;
  * @see     java.lang.StringBuffer
  * @see     java.lang.StringBuilder
  * @see     java.nio.charset.Charset
- * @since   JDK1.0
+ * @since   1.0
+ * @jls     15.18.1 String Concatenation Operator +
  */
 
 public final class String
@@ -126,8 +133,19 @@ public final class String
     If STRING_COMPRESSION_ENABLED, count stores the length shifted one bit to the left with the
     lowest bit used to indicate whether or not the bytes are compressed (see GetFlaggedCount in
     the native code).
-    /** The value is used for character storage. *
-    private final char value[];
+    /**
+     * The value is used for character storage.
+     *
+     * @implNote This field is trusted by the VM, and is a subject to
+     * constant folding if String instance is constant. Overwriting this
+     * field after construction will cause problems.
+     *
+     * Additionally, it is marked with {@link Stable} to trust the contents
+     * of the array. No other facility in JDK provides this functionality (yet).
+     * {@link Stable} is safe here, because value is never null.
+     *
+    @Stable
+    private final byte[] value;
     */
     private final int count;
     // END Android-changed: The character data is managed by the runtime.
@@ -145,7 +163,7 @@ public final class String
      * Class String is special cased within the Serialization Stream Protocol.
      *
      * A String instance is written into an ObjectOutputStream according to
-     * <a href="{@docRoot}/../platform/serialization/spec/output.html">
+     * <a href="{@docRoot}/../specs/serialization/protocol.html#stream-elements">
      * Object Serialization Specification, Section 6.2, "Stream Elements"</a>
      */
     private static final ObjectStreamField[] serialPersistentFields =
@@ -212,8 +230,8 @@ public final class String
      *         The length
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code count} arguments index
-     *          characters outside the bounds of the {@code value} array
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code value.length - count}
      */
     public String(char value[], int offset, int count) {
         // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
@@ -263,8 +281,8 @@ public final class String
      *          codePoints}
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code count} arguments index
-     *          characters outside the bounds of the {@code codePoints} array
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code codePoints.length - count}
      *
      * @since  1.5
      */
@@ -327,7 +345,7 @@ public final class String
      * subarray.
      *
      * <p> Each {@code byte} in the subarray is converted to a {@code char} as
-     * specified in the method above.
+     * specified in the {@link #String(byte[],int) String(byte[],int)} constructor.
      *
      * @deprecated This method does not properly convert bytes into characters.
      * As of JDK&nbsp;1.1, the preferred way to do this is via the
@@ -347,7 +365,8 @@ public final class String
      *         The length
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} or {@code count} argument is invalid
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code ascii.length - count}
      *
      * @see  #String(byte[], int)
      * @see  #String(byte[], int, int, java.lang.String)
@@ -382,7 +401,7 @@ public final class String
 
     /**
      * Allocates a new {@code String} containing characters constructed from
-     * an array of 8-bit integer values. Each character <i>c</i>in the
+     * an array of 8-bit integer values. Each character <i>c</i> in the
      * resulting string is constructed from the corresponding component
      * <i>b</i> in the byte array such that:
      *
@@ -463,10 +482,10 @@ public final class String
      *          If the named charset is not supported
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], int offset, int length, String charsetName)
             throws UnsupportedEncodingException {
@@ -506,8 +525,8 @@ public final class String
      *         decode the {@code bytes}
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
      * @since  1.6
      */
@@ -544,7 +563,7 @@ public final class String
      * @throws  UnsupportedEncodingException
      *          If the named charset is not supported
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], String charsetName)
             throws UnsupportedEncodingException {
@@ -600,10 +619,10 @@ public final class String
      *         The number of bytes to decode
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and the {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], int offset, int length) {
         // Android-changed: Implemented as compiler and runtime intrinsics.
@@ -626,7 +645,7 @@ public final class String
      * @param  bytes
      *         The bytes to be decoded into characters
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[]) {
         // Android-changed: Implemented as compiler and runtime intrinsics.
@@ -1072,7 +1091,7 @@ public final class String
      * @throws  UnsupportedEncodingException
      *          If the named charset is not supported
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public byte[] getBytes(String charsetName)
             throws UnsupportedEncodingException {
@@ -1140,7 +1159,7 @@ public final class String
      *
      * @return  The resultant byte array
      *
-     * @since      JDK1.1
+     * @since      1.1
      */
     public byte[] getBytes() {
         // Android-changed: Skip StringCoding optimization that needs access to java chars.
@@ -1153,6 +1172,9 @@ public final class String
      * true} if and only if the argument is not {@code null} and is a {@code
      * String} object that represents the same sequence of characters as this
      * object.
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param  anObject
      *         The object to compare this {@code String} against
@@ -1189,6 +1211,9 @@ public final class String
      * sequence of characters as the specified {@code StringBuffer}. This method
      * synchronizes on the {@code StringBuffer}.
      *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
+     *
      * @param  sb
      *         The {@code StringBuffer} to compare this {@code String} against
      *
@@ -1222,6 +1247,9 @@ public final class String
      * same sequence of char values as the specified sequence. Note that if the
      * {@code CharSequence} is a {@code StringBuffer} then the method
      * synchronizes on it.
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param  cs
      *         The sequence to compare this {@code String} against
@@ -1271,13 +1299,13 @@ public final class String
      * <ul>
      *   <li> The two characters are the same (as compared by the
      *        {@code ==} operator)
-     *   <li> Applying the method {@link
-     *        java.lang.Character#toUpperCase(char)} to each character
-     *        produces the same result
-     *   <li> Applying the method {@link
-     *        java.lang.Character#toLowerCase(char)} to each character
-     *        produces the same result
+     *   <li> Calling {@code Character.toLowerCase(Character.toUpperCase(char))}
+     *        on each character produces the same result
      * </ul>
+     *
+     * <p>Note that this method does <em>not</em> take locale into account, and
+     * will result in unsatisfactory results for certain locales.  The
+     * {@link java.text.Collator} class provides locale-sensitive comparison.
      *
      * @param  anotherString
      *         The {@code String} to compare this {@code String} against
@@ -1315,7 +1343,7 @@ public final class String
      * or both. If they have different characters at one or more index
      * positions, let <i>k</i> be the smallest such index; then the string
      * whose character at position <i>k</i> has the smaller value, as
-     * determined by using the &lt; operator, lexicographically precedes the
+     * determined by using the {@code <} operator, lexicographically precedes the
      * other string. In this case, {@code compareTo} returns the
      * difference of the two character values at position {@code k} in
      * the two string -- that is, the value:
@@ -1329,6 +1357,9 @@ public final class String
      * <blockquote><pre>
      * this.length()-anotherString.length()
      * </pre></blockquote>
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param   anotherString   the {@code String} to be compared.
      * @return  the value {@code 0} if the argument string is equal to
@@ -1368,10 +1399,9 @@ public final class String
      * <p>
      * Note that this Comparator does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
-     * The java.text package provides <em>Collators</em> to allow
-     * locale-sensitive ordering.
+     * The {@link java.text.Collator} class provides locale-sensitive comparison.
      *
-     * @see     java.text.Collator#compare(String, String)
+     * @see     java.text.Collator
      * @since   1.2
      */
     public static final Comparator<String> CASE_INSENSITIVE_ORDER
@@ -1418,14 +1448,13 @@ public final class String
      * <p>
      * Note that this method does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
-     * The java.text package provides <em>collators</em> to allow
-     * locale-sensitive ordering.
+     * The {@link java.text.Collator} class provides locale-sensitive comparison.
      *
      * @param   str   the {@code String} to be compared.
      * @return  a negative integer, zero, or a positive integer as the
      *          specified String is greater than, equal to, or less
      *          than this String, ignoring case considerations.
-     * @see     java.text.Collator#compare(String, String)
+     * @see     java.text.Collator
      * @since   1.2
      */
     public int compareToIgnoreCase(String str) {
@@ -1454,6 +1483,9 @@ public final class String
      * {@code this.charAt(toffset + }<i>k</i>{@code ) != other.charAt(ooffset + }
      * <i>k</i>{@code )}
      * </ul>
+     *
+     * <p>Note that this method does <em>not</em> take locale into account.  The
+     * {@link java.text.Collator} class provides locale-sensitive comparison.
      *
      * @param   toffset   the starting offset of the subregion in this string.
      * @param   other     the string argument.
@@ -1508,15 +1540,15 @@ public final class String
      * <li>{@code ignoreCase} is {@code true} and there is some nonnegative
      * integer <i>k</i> less than {@code len} such that:
      * <blockquote><pre>
-     * Character.toLowerCase(this.charAt(toffset+k)) !=
-     Character.toLowerCase(other.charAt(ooffset+k))
-     * </pre></blockquote>
-     * and:
-     * <blockquote><pre>
-     * Character.toUpperCase(this.charAt(toffset+k)) !=
-     *         Character.toUpperCase(other.charAt(ooffset+k))
+     * Character.toLowerCase(Character.toUpperCase(this.charAt(toffset+k))) !=
+     Character.toLowerCase(Character.toUpperCase(other.charAt(ooffset+k)))
      * </pre></blockquote>
      * </ul>
+     *
+     * <p>Note that this method does <em>not</em> take locale into account,
+     * and will result in unsatisfactory results for certain locales when
+     * {@code ignoreCase} is {@code true}.  The {@link java.text.Collator} class
+     * provides locale-sensitive comparison.
      *
      * @param   ignoreCase   if {@code true}, ignore case when comparing
      *                       characters.
@@ -1615,7 +1647,7 @@ public final class String
      *          argument is an empty string or is equal to this
      *          {@code String} object as determined by the
      *          {@link #equals(Object)} method.
-     * @since   1. 0
+     * @since   1.0
      */
     public boolean startsWith(String prefix) {
         return startsWith(prefix, 0);
@@ -1866,11 +1898,11 @@ public final class String
      * Returns the index within this string of the first occurrence of the
      * specified substring.
      *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the smallest value {@code k} for which:
+     * <pre>{@code
+     * this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str   the substring to search for.
      * @return  the index of the first occurrence of the specified substring,
@@ -1884,11 +1916,12 @@ public final class String
      * Returns the index within this string of the first occurrence of the
      * specified substring, starting at the specified index.
      *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> &gt;= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the smallest value {@code k} for which:
+     * <pre>{@code
+     *     k >= Math.min(fromIndex, this.length()) &&
+     *                   this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index from which to start the search.
@@ -2025,11 +2058,11 @@ public final class String
      * specified substring.  The last occurrence of the empty string ""
      * is considered to occur at the index value {@code this.length()}.
      *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the largest value {@code k} for which:
+     * <pre>{@code
+     * this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str   the substring to search for.
      * @return  the index of the last occurrence of the specified substring,
@@ -2043,11 +2076,12 @@ public final class String
      * Returns the index within this string of the last occurrence of the
      * specified substring, searching backward starting at the specified index.
      *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> {@code <=} fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the largest value {@code k} for which:
+     * <pre>{@code
+     *     k <= Math.min(fromIndex, this.length()) &&
+     *                   this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index to start the search from.
@@ -2639,42 +2673,56 @@ public final class String
      *
      * <p> The {@code limit} parameter controls the number of times the
      * pattern is applied and therefore affects the length of the resulting
-     * array.  If the limit <i>n</i> is greater than zero then the pattern
-     * will be applied at most <i>n</i>&nbsp;-&nbsp;1 times, the array's
-     * length will be no greater than <i>n</i>, and the array's last entry
-     * will contain all input beyond the last matched delimiter.  If <i>n</i>
-     * is non-positive then the pattern will be applied as many times as
-     * possible and the array can have any length.  If <i>n</i> is zero then
-     * the pattern will be applied as many times as possible, the array can
-     * have any length, and trailing empty strings will be discarded.
+     * array.
+     * <ul>
+     *    <li><p>
+     *    If the <i>limit</i> is positive then the pattern will be applied
+     *    at most <i>limit</i>&nbsp;-&nbsp;1 times, the array's length will be
+     *    no greater than <i>limit</i>, and the array's last entry will contain
+     *    all input beyond the last matched delimiter.</p></li>
+     *
+     *    <li><p>
+     *    If the <i>limit</i> is zero then the pattern will be applied as
+     *    many times as possible, the array can have any length, and trailing
+     *    empty strings will be discarded.</p></li>
+     *
+     *    <li><p>
+     *    If the <i>limit</i> is negative then the pattern will be applied
+     *    as many times as possible and the array can have any length.</p></li>
+     * </ul>
      *
      * <p> The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
      *
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split example showing regex, limit, and result">
+     * <blockquote><table class="plain">
+     * <caption style="display:none">Split example showing regex, limit, and result</caption>
+     * <thead>
      * <tr>
-     *     <th>Regex</th>
-     *     <th>Limit</th>
-     *     <th>Result</th>
+     *     <th scope="col">Regex</th>
+     *     <th scope="col">Limit</th>
+     *     <th scope="col">Result</th>
      * </tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>2</td>
+     * </thead>
+     * <tbody>
+     * <tr><th scope="row" rowspan="3" style="font-weight:normal">:</th>
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">2</th>
      *     <td>{@code { "boo", "and:foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>5</td>
+     * <tr><!-- : -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">5</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>-2</td>
+     * <tr><!-- : -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">-2</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>5</td>
+     * <tr><th scope="row" rowspan="3" style="font-weight:normal">o</th>
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">5</th>
      *     <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>-2</td>
+     * <tr><!-- o -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">-2</th>
      *     <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>0</td>
+     * <tr><!-- o -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">0</th>
      *     <td>{@code { "b", "", ":and:f" }}</td></tr>
+     * </tbody>
      * </table></blockquote>
      *
      * <p> An invocation of this method of the form
@@ -2782,15 +2830,20 @@ public final class String
      * <p> The string {@code "boo:and:foo"}, for example, yields the following
      * results with these expressions:
      *
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split examples showing regex and result">
+     * <blockquote><table class="plain">
+     * <caption style="display:none">Split examples showing regex and result</caption>
+     * <thead>
      * <tr>
-     *  <th>Regex</th>
-     *  <th>Result</th>
+     *  <th scope="col">Regex</th>
+     *  <th scope="col">Result</th>
      * </tr>
-     * <tr><td align=center>:</td>
+     * </thead>
+     * <tbody>
+     * <tr><th scope="row" style="text-weight:normal">:</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>o</td>
+     * <tr><th scope="row" style="text-weight:normal">o</th>
      *     <td>{@code { "b", "", ":and:f" }}</td></tr>
+     * </tbody>
      * </table></blockquote>
      *
      *
@@ -2855,15 +2908,12 @@ public final class String
      *
      * <blockquote>For example,
      * <pre>{@code
-     *     List<String> strings = new LinkedList<>();
-     *     strings.add("Java");strings.add("is");
-     *     strings.add("cool");
+     *     List<String> strings = List.of("Java", "is", "cool");
      *     String message = String.join(" ", strings);
      *     //message returned is: "Java is cool"
      *
-     *     Set<String> strings = new LinkedHashSet<>();
-     *     strings.add("Java"); strings.add("is");
-     *     strings.add("very"); strings.add("cool");
+     *     Set<String> strings =
+     *         new LinkedHashSet<>(List.of("Java", "is", "very", "cool"));
      *     String message = String.join("-", strings);
      *     //message returned is: "Java-is-very-cool"
      * }</pre></blockquote>
@@ -2904,41 +2954,43 @@ public final class String
      * {@code String} may be a different length than the original {@code String}.
      * <p>
      * Examples of lowercase  mappings are in the following table:
-     * <table border="1" summary="Lowercase mapping examples showing language code of locale, upper case, lower case, and description">
+     * <table class="plain">
+     * <caption style="display:none">Lowercase mapping examples showing language code of locale, upper case, lower case, and description</caption>
+     * <thead>
      * <tr>
-     *   <th>Language Code of Locale</th>
-     *   <th>Upper Case</th>
-     *   <th>Lower Case</th>
-     *   <th>Description</th>
+     *   <th scope="col">Language Code of Locale</th>
+     *   <th scope="col">Upper Case</th>
+     *   <th scope="col">Lower Case</th>
+     *   <th scope="col">Description</th>
      * </tr>
+     * </thead>
+     * <tbody>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0130</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0130</th>
      *   <td>&#92;u0069</td>
      *   <td>capital letter I with dot above -&gt; small letter i</td>
      * </tr>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0049</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0049</th>
      *   <td>&#92;u0131</td>
      *   <td>capital letter I -&gt; small letter dotless i </td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>French Fries</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">French Fries</th>
      *   <td>french fries</td>
      *   <td>lowercased all chars in String</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td><img src="doc-files/capiota.gif" alt="capiota"><img src="doc-files/capchi.gif" alt="capchi">
-     *       <img src="doc-files/captheta.gif" alt="captheta"><img src="doc-files/capupsil.gif" alt="capupsil">
-     *       <img src="doc-files/capsigma.gif" alt="capsigma"></td>
-     *   <td><img src="doc-files/iota.gif" alt="iota"><img src="doc-files/chi.gif" alt="chi">
-     *       <img src="doc-files/theta.gif" alt="theta"><img src="doc-files/upsilon.gif" alt="upsilon">
-     *       <img src="doc-files/sigma1.gif" alt="sigma"></td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">
+     *       &Iota;&Chi;&Theta;&Upsilon;&Sigma;</th>
+     *   <td>&iota;&chi;&theta;&upsilon;&sigma;</td>
      *   <td>lowercased all chars in String</td>
      * </tr>
+     * </tbody>
      * </table>
      *
      * @param locale use the case transformation rules for this locale
@@ -3057,7 +3109,7 @@ public final class String
      * LATIN SMALL LETTER DOTLESS I character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toLowerCase(Locale.ROOT)}.
-     * <p>
+     *
      * @return  the {@code String}, converted to lowercase.
      * @see     java.lang.String#toLowerCase(Locale)
      */
@@ -3074,37 +3126,42 @@ public final class String
      * <p>
      * Examples of locale-sensitive and 1:M case mappings are in the following table.
      *
-     * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
+     * <table class="plain">
+     * <caption style="display:none">Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.</caption>
+     * <thead>
      * <tr>
-     *   <th>Language Code of Locale</th>
-     *   <th>Lower Case</th>
-     *   <th>Upper Case</th>
-     *   <th>Description</th>
+     *   <th scope="col">Language Code of Locale</th>
+     *   <th scope="col">Lower Case</th>
+     *   <th scope="col">Upper Case</th>
+     *   <th scope="col">Description</th>
      * </tr>
+     * </thead>
+     * <tbody>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0069</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0069</th>
      *   <td>&#92;u0130</td>
      *   <td>small letter i -&gt; capital letter I with dot above</td>
      * </tr>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0131</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0131</th>
      *   <td>&#92;u0049</td>
      *   <td>small letter dotless i -&gt; capital letter I</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>&#92;u00df</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u00df</th>
      *   <td>&#92;u0053 &#92;u0053</td>
      *   <td>small letter sharp s -&gt; two letters: SS</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>Fahrvergn&uuml;gen</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">Fahrvergn&uuml;gen</th>
      *   <td>FAHRVERGN&Uuml;GEN</td>
      *   <td></td>
      * </tr>
+     * </tbody>
      * </table>
      * @param locale use the case transformation rules for this locale
      * @return the {@code String}, converted to uppercase.
@@ -3225,7 +3282,7 @@ public final class String
      * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toUpperCase(Locale.ROOT)}.
-     * <p>
+     *
      * @return  the {@code String}, converted to uppercase.
      * @see     java.lang.String#toUpperCase(Locale)
      */
@@ -3234,35 +3291,36 @@ public final class String
     }
 
     /**
-     * Returns a string whose value is this string, with any leading and trailing
-     * whitespace removed.
+     * Returns a string whose value is this string, with all leading
+     * and trailing space removed, where space is defined
+     * as any character whose codepoint is less than or equal to
+     * {@code 'U+0020'} (the space character).
      * <p>
      * If this {@code String} object represents an empty character
      * sequence, or the first and last characters of character sequence
      * represented by this {@code String} object both have codes
-     * greater than {@code '\u005Cu0020'} (the space character), then a
+     * that are not space (as defined above), then a
      * reference to this {@code String} object is returned.
      * <p>
-     * Otherwise, if there is no character with a code greater than
-     * {@code '\u005Cu0020'} in the string, then a
-     * {@code String} object representing an empty string is
-     * returned.
+     * Otherwise, if all characters in this string are space (as
+     * defined above), then a  {@code String} object representing an
+     * empty string is returned.
      * <p>
      * Otherwise, let <i>k</i> be the index of the first character in the
-     * string whose code is greater than {@code '\u005Cu0020'}, and let
+     * string whose code is not a space (as defined above) and let
      * <i>m</i> be the index of the last character in the string whose code
-     * is greater than {@code '\u005Cu0020'}. A {@code String}
+     * is not a space (as defined above). A {@code String}
      * object is returned, representing the substring of this string that
      * begins with the character at index <i>k</i> and ends with the
      * character at index <i>m</i>-that is, the result of
      * {@code this.substring(k, m + 1)}.
      * <p>
-     * This method may be used to trim whitespace (as defined above) from
+     * This method may be used to trim space (as defined above) from
      * the beginning and end of a string.
      *
-     * @return  A string whose value is this string, with any leading and trailing white
-     *          space removed, or this string if it has no leading or
-     *          trailing white space.
+     * @return  a string whose value is this string, with all leading
+     *          and trailing space removed, or this string if it
+     *          has no leading or trailing space.
      */
     public String trim() {
         int len = length();
@@ -3312,7 +3370,9 @@ public final class String
      * arguments.
      *
      * <p> The locale always used is the one returned by {@link
-     * java.util.Locale#getDefault() Locale.getDefault()}.
+     * java.util.Locale#getDefault(java.util.Locale.Category)
+     * Locale.getDefault(Locale.Category)} with
+     * {@link java.util.Locale.Category#FORMAT FORMAT} category specified.
      *
      * @param  format
      *         A <a href="../util/Formatter.html#syntax">format string</a>
@@ -3572,6 +3632,7 @@ public final class String
      *
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
+     * @jls 3.10.5 String Literals
      */
     // Android-added: Annotate native method as @FastNative.
     @FastNative
