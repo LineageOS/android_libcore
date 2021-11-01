@@ -394,8 +394,8 @@ ojluni/src/main/java/java/nio/channels/ReadableByteChannel.java,jdk8u/jdk8u121-b
 ojluni/src/main/java/java/nio/channels/ScatteringByteChannel.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/ScatteringByteChannel.java
 ojluni/src/main/java/java/nio/channels/SeekableByteChannel.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/SeekableByteChannel.java
 ojluni/src/main/java/java/nio/channels/SelectableChannel.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/SelectableChannel.java
-ojluni/src/main/java/java/nio/channels/SelectionKey.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/SelectionKey.java
-ojluni/src/main/java/java/nio/channels/Selector.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/Selector.java
+ojluni/src/main/java/java/nio/channels/SelectionKey.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/SelectionKey.java
+ojluni/src/main/java/java/nio/channels/Selector.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/nio/channels/Selector.java
 ojluni/src/main/java/java/nio/channels/ServerSocketChannel.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/ServerSocketChannel.java
 ojluni/src/main/java/java/nio/channels/SocketChannel.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/SocketChannel.java
 ojluni/src/main/java/java/nio/channels/WritableByteChannel.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/channels/WritableByteChannel.java
@@ -1808,4 +1808,8 @@ ojluni/src/test/java/math/BigInteger/ProbablePrime.java,jdk11u/jdk-11+28,test/jd
 ojluni/src/test/java/math/BigInteger/StringConstructor.java,jdk11u/jdk-11+28,test/jdk/java/math/BigInteger/StringConstructor.java
 ojluni/src/test/java/math/BigInteger/TestValueExact.java,jdk11u/jdk-11+28,test/jdk/java/math/BigInteger/TestValueExact.java
 ojluni/src/test/java/math/BigInteger/UnicodeConstructor.java,jdk11u/jdk-11+28,test/jdk/java/math/BigInteger/UnicodeConstructor.java
+ojluni/src/test/java/nio/channels/SelectionKey/AtomicUpdates.java,jdk11u/jdk-11+28,test/jdk/java/nio/channels/SelectionKey/AtomicUpdates.java
+ojluni/src/test/java/nio/channels/Selector/ByteServer.java,jdk11u/jdk-11+28,test/jdk/java/nio/channels/Selector/ByteServer.java
+ojluni/src/test/java/nio/channels/Selector/SelectAfterRead.java,jdk11u/jdk-11+28,test/jdk/java/nio/channels/Selector/SelectAfterRead.java
+ojluni/src/test/java/nio/channels/Selector/SelectWithConsumer.java,jdk11u/jdk-11+28,test/jdk/java/nio/channels/Selector/SelectWithConsumer.java
 ojluni/src/test/java/security/cert/URICertStoreParameters/TestBasic.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/URICertStoreParameters/TestBasic.java
