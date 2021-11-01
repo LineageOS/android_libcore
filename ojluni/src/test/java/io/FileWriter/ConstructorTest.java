@@ -42,7 +42,6 @@ import org.testng.annotations.Test;
  * @run testng ConstructorTest
  */
 public class ConstructorTest {
-    static String USER_DIR = System.getProperty("user.dir", ".");
 
     public static enum ConstructorType {
         STRING,
@@ -56,8 +55,8 @@ public class ConstructorTest {
 
     @DataProvider(name = "parameters")
     public Object[][] getParameters() throws IOException {
-        File file1 = new File(USER_DIR, "FileWriterTest1.txt");
-        File file2 = new File(USER_DIR, "FileWriterTest2.txt");
+        File file1 = File.createTempFile("FileWriterTest1", "txt");
+        File file2 = File.createTempFile("FileWriterTest2", "txt");
 
         return new Object[][]{
                 {ConstructorType.STRING, file1, file2, StandardCharsets.UTF_8},
