@@ -1138,15 +1138,11 @@ public final class String
      * @since  1.6
      */
     public byte[] getBytes(Charset charset) {
+        if (charset == null) throw new NullPointerException();
         // BEGIN Android-changed: Skip StringCoding optimization that needs access to java chars.
         /*
-        if (charset == null) throw new NullPointerException();
         return StringCoding.encode(charset, coder(), value);
         */
-        if (charset == null) {
-            throw new NullPointerException("charset == null");
-        }
-
         final int len = length();
         final String name = charset.name();
         if ("UTF-8".equals(name)) {
@@ -1211,6 +1207,14 @@ public final class String
             return true;
         }
         if (anObject instanceof String) {
+            // BEGIN Android-changed: Implement in terms of charAt().
+            /*
+            String aString = (String)anObject;
+            if (coder() == aString.coder()) {
+                return isLatin1() ? StringLatin1.equals(value, aString.value)
+                                  : StringUTF16.equals(value, aString.value);
+            }
+             */
             String anotherString = (String)anObject;
             int n = length();
             if (n == anotherString.length()) {
@@ -1222,6 +1226,7 @@ public final class String
                 }
                 return true;
             }
+            // END Android-changed: Implement in terms of charAt().
         }
         return false;
     }
@@ -1249,16 +1254,35 @@ public final class String
     }
 
     private boolean nonSyncContentEquals(AbstractStringBuilder sb) {
-        char v2[] = sb.getValue();
-        int n = length();
-        if (n != sb.length()) {
+        int len = length();
+        if (len != sb.length()) {
             return false;
         }
-        for (int i = 0; i < n; i++) {
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        byte v1[] = value;
+        byte v2[] = sb.getValue();
+        if (coder() == sb.getCoder()) {
+            int n = v1.length;
+            for (int i = 0; i < n; i++) {
+                if (v1[i] != v2[i]) {
+                    return false;
+                }
+            }
+        } else {
+            if (!isLatin1()) {  // utf16 str and latin1 abs can never be "equal"
+                return false;
+            }
+            return StringUTF16.contentEquals(v1, v2, len);
+        }
+         */
+        char[] v2 = sb.getValue();
+        for (int i = 0; i < len; i++) {
             if (charAt(i) != v2[i]) {
                 return false;
             }
         }
+        // END Android-changed: Implement in terms of charAt().
         return true;
     }
 
@@ -1297,12 +1321,25 @@ public final class String
             return equals(cs);
         }
         // Argument is a generic CharSequence
-        int n = length();
-        if (n != cs.length()) {
+        int n = cs.length();
+        if (n != length()) {
             return false;
         }
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        byte[] val = this.value;
+        if (isLatin1()) {
+            for (int i = 0; i < n; i++) {
+                if ((val[i] & 0xff) != cs.charAt(i)) {
+                    return false;
+                }
+            }
+        } else {
+            if (!StringUTF16.contentEquals(val, cs, n)) {
+         */
         for (int i = 0; i < n; i++) {
             if (charAt(i) != cs.charAt(i)) {
+        // END Android-changed: Implement in terms of charAt().
                 return false;
             }
         }
@@ -1338,6 +1375,7 @@ public final class String
      * @see  #equals(Object)
      */
     public boolean equalsIgnoreCase(String anotherString) {
+        // Android-added: Cache length() result so it's called once.
         final int len = length();
         return (this == anotherString) ? true
                 : (anotherString != null)
@@ -1425,6 +1463,17 @@ public final class String
         private static final long serialVersionUID = 8575799808933029326L;
 
         public int compare(String s1, String s2) {
+            // BEGIN Android-changed: Implement in terms of charAt().
+            /*
+            byte v1[] = s1.value;
+            byte v2[] = s2.value;
+            if (s1.coder() == s2.coder()) {
+                return s1.isLatin1() ? StringLatin1.compareToCI(v1, v2)
+                                     : StringUTF16.compareToCI(v1, v2);
+            }
+            return s1.isLatin1() ? StringLatin1.compareToCI_UTF16(v1, v2)
+                                 : StringUTF16.compareToCI_Latin1(v1, v2);
+             */
             int n1 = s1.length();
             int n2 = s2.length();
             int min = Math.min(n1, n2);
@@ -1445,6 +1494,7 @@ public final class String
                 }
             }
             return n1 - n2;
+            // END Android-changed: Implement in terms of charAt().
         }
 
         /** Replaces the de-serialized object. */
@@ -1509,19 +1559,51 @@ public final class String
      *          exactly matches the specified subregion of the string argument;
      *          {@code false} otherwise.
      */
-    public boolean regionMatches(int toffset, String other, int ooffset,
-            int len) {
-        int to = toffset;
-        int po = ooffset;
+    public boolean regionMatches(int toffset, String other, int ooffset, int len) {
+        // BEGIN Android-removed: Implement in terms of charAt().
+        /*
+        byte tv[] = value;
+        byte ov[] = other.value;
+         */
         // Note: toffset, ooffset, or len might be near -1>>>1.
-        if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long)length() - len)
-                || (ooffset > (long)other.length() - len)) {
+        if ((ooffset < 0) || (toffset < 0) ||
+             (toffset > (long)length() - len) ||
+             (ooffset > (long)other.length() - len)) {
             return false;
         }
+        // BEGIN Android-removed: Implement in terms of charAt().
+        /*
+        if (coder() == other.coder()) {
+            if (!isLatin1() && (len > 0)) {
+                toffset = toffset << 1;
+                ooffset = ooffset << 1;
+                len = len << 1;
+            }
+            while (len-- > 0) {
+                if (tv[toffset++] != ov[ooffset++]) {
+                    return false;
+                }
+            }
+        } else {
+            if (coder() == LATIN1) {
+                while (len-- > 0) {
+                    if (StringLatin1.getChar(tv, toffset++) !=
+                        StringUTF16.getChar(ov, ooffset++)) {
+                        return false;
+                    }
+                }
+            } else {
+                while (len-- > 0) {
+                    if (StringUTF16.getChar(tv, toffset++) !=
+                        StringLatin1.getChar(ov, ooffset++)) {
+                        return false;
+                    }
+                }
+         */
         while (len-- > 0) {
-            if (charAt(to++) != other.charAt(po++)) {
+            if (charAt(toffset++) != other.charAt(ooffset++)) {
                 return false;
+        // END Android-removed: Implement in terms of charAt().
             }
         }
         return true;
@@ -1579,17 +1661,31 @@ public final class String
      */
     public boolean regionMatches(boolean ignoreCase, int toffset,
             String other, int ooffset, int len) {
-        int to = toffset;
-        int po = ooffset;
+        if (!ignoreCase) {
+            return regionMatches(toffset, other, ooffset, len);
+        }
         // Note: toffset, ooffset, or len might be near -1>>>1.
         if ((ooffset < 0) || (toffset < 0)
                 || (toffset > (long)length() - len)
                 || (ooffset > (long)other.length() - len)) {
             return false;
         }
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        byte tv[] = value;
+        byte ov[] = other.value;
+        if (coder() == other.coder()) {
+            return isLatin1()
+              ? StringLatin1.regionMatchesCI(tv, toffset, ov, ooffset, len)
+              : StringUTF16.regionMatchesCI(tv, toffset, ov, ooffset, len);
+        }
+        return isLatin1()
+              ? StringLatin1.regionMatchesCI_UTF16(tv, toffset, ov, ooffset, len)
+              : StringUTF16.regionMatchesCI_Latin1(tv, toffset, ov, ooffset, len);
+         */
         while (len-- > 0) {
-            char c1 = charAt(to++);
-            char c2 = other.charAt(po++);
+            char c1 = charAt(toffset++);
+            char c2 = other.charAt(ooffset++);
             if (c1 == c2) {
                 continue;
             }
@@ -1614,6 +1710,7 @@ public final class String
             return false;
         }
         return true;
+        // END Android-changed: Implement in terms of charAt().
     }
 
     /**
@@ -1634,17 +1731,42 @@ public final class String
      *          </pre>
      */
     public boolean startsWith(String prefix, int toffset) {
-        int to = toffset;
-        int po = 0;
+        // Android-added: Cache length() result so it's called once.
         int pc = prefix.length();
         // Note: toffset might be near -1>>>1.
-        if ((toffset < 0) || (toffset > length() - pc)) {
+        if (toffset < 0 || toffset > length() - pc) {
             return false;
         }
-        while (--pc >= 0) {
-            if (charAt(to++) != prefix.charAt(po++)) {
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        byte ta[] = value;
+        byte pa[] = prefix.value;
+        int po = 0;
+        int pc = pa.length;
+        if (coder() == prefix.coder()) {
+            int to = isLatin1() ? toffset : toffset << 1;
+            while (po < pc) {
+                if (ta[to++] != pa[po++]) {
+                    return false;
+                }
+            }
+        } else {
+            if (isLatin1()) {  // && pcoder == UTF16
                 return false;
             }
+            // coder == UTF16 && pcoder == LATIN1)
+            while (po < pc) {
+                if (StringUTF16.getChar(ta, toffset++) != (pa[po++] & 0xff)) {
+                    return false;
+               }
+            }
+         */
+        int po = 0;
+        while (--pc >= 0) {
+            if (charAt(toffset++) != prefix.charAt(po++)) {
+                return false;
+            }
+        // END Android-changed: Implement in terms of charAt().
         }
         return true;
     }
@@ -1696,12 +1818,19 @@ public final class String
      */
     public int hashCode() {
         int h = hash;
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        if (h == 0 && value.length > 0) {
+            hash = h = isLatin1() ? StringLatin1.hashCode(value)
+                                  : StringUTF16.hashCode(value);
+         */
         final int len = length();
         if (h == 0 && len > 0) {
             for (int i = 0; i < len; i++) {
                 h = 31 * h + charAt(i);
             }
             hash = h;
+        // END Android-changed: Implement in terms of charAt().
         }
         return h;
     }
@@ -1774,6 +1903,11 @@ public final class String
      *          if the character does not occur.
      */
     public int indexOf(int ch, int fromIndex) {
+    // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        return isLatin1() ? StringLatin1.indexOf(value, ch, fromIndex)
+                          : StringUTF16.indexOf(value, ch, fromIndex);
+         */
         final int max = length();
         if (fromIndex < 0) {
             fromIndex = 0;
@@ -1811,6 +1945,7 @@ public final class String
             }
         }
         return -1;
+    // END Android-changed: Implement in terms of charAt().
     }
 
     /**
@@ -1875,6 +2010,11 @@ public final class String
      *          if the character does not occur before that point.
      */
     public int lastIndexOf(int ch, int fromIndex) {
+    // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        return isLatin1() ? StringLatin1.lastIndexOf(value, ch, fromIndex)
+                          : StringUTF16.lastIndexOf(value, ch, fromIndex);
+         */
         if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
             // handle most cases here (ch is a BMP code point or a
             // negative value (invalid code point))
@@ -1905,6 +2045,7 @@ public final class String
             }
         }
         return -1;
+    // END Android-changed: Implement in terms of charAt().
     }
 
     /**
@@ -1922,7 +2063,19 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str) {
+        // BEGIN Android-changed: Implement with indexOf() method that takes String parameters.
+        /*
+        if (coder() == str.coder()) {
+            return isLatin1() ? StringLatin1.indexOf(value, str.value)
+                              : StringUTF16.indexOf(value, str.value);
+        }
+        if (coder() == LATIN1) {  // str.coder == UTF16
+            return -1;
+        }
+        return StringUTF16.indexOfLatin1(value, str.value);
+         */
         return indexOf(str, 0);
+        // END Android-changed: Implement with indexOf() method that takes String parameters.
     }
 
     /**
@@ -1943,12 +2096,12 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str, int fromIndex) {
-        // BEGIN Android-changed: Delegate to the static indexOf method below.
+        // BEGIN Android-changed: Implement with indexOf() method that takes String parameters.
         /*
         return indexOf(value, coder(), length(), str, fromIndex);
          */
         return indexOf(this, str, fromIndex);
-        // END Android-changed: Delegate to the static indexOf method below.
+        // END Android-changed: Implement with indexOf() method that takes String parameters.
     }
 
     // BEGIN Android-added: Private static indexOf method that takes String parameters.
@@ -2105,12 +2258,12 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(String str, int fromIndex) {
-        // BEGIN Android-changed: Change parameters to static lastIndexOf to match new signature below.
+        // BEGIN Android-changed: Implement with static lastIndexOf() that takes String parameters.
         /*
         return lastIndexOf(value, coder(), length(), str, fromIndex);
          */
         return lastIndexOf(this, str, fromIndex);
-        // END Android-changed: Change parameters to static lastIndexOf to match new signature below.
+        // END Android-changed: Implement with static lastIndexOf() that takes String parameters.
     }
 
     // BEGIN Android-added: Private static lastIndexOf method that takes String parameters.
@@ -2271,9 +2424,16 @@ public final class String
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(this, beginIndex);
         }
-        // Android-changed: Use native fastSubstring instead of String constructor.
-        // return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
-        return (beginIndex == 0) ? this : fastSubstring(beginIndex, subLen);
+        if (beginIndex == 0) {
+            return this;
+        }
+        // BEGIN Android-changed: Use native fastSubstring instead of String constructor.
+        /*
+        return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
+                          : StringUTF16.newString(value, beginIndex, subLen);
+         */
+        return fastSubstring(beginIndex, subLen);
+        // END Android-changed: Use native fastSubstring instead of String constructor.
     }
 
     /**
@@ -3162,6 +3322,12 @@ public final class String
      *          has no leading or trailing space.
      */
     public String trim() {
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        String ret = isLatin1() ? StringLatin1.trim(value)
+                                : StringUTF16.trim(value);
+        return ret == null ? this : ret;
+         */
         int len = length();
         int st = 0;
 
@@ -3172,6 +3338,7 @@ public final class String
             len--;
         }
         return ((st > 0) || (len < length())) ? substring(st, len) : this;
+        // END Android-changed: Implement in terms of charAt().
     }
 
     /**
