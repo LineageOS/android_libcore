@@ -168,8 +168,9 @@ public class ScheduledThreadPoolExecutor
      */
     private volatile boolean continueExistingPeriodicTasksAfterShutdown;
 
+    // Android-changed: Preserving behaviour on expired tasks (b/202927404)
     /**
-     * False if should cancel non-periodic not-yet-expired tasks on shutdown.
+     * False if should cancel non-periodic tasks on shutdown.
      */
     private volatile boolean executeExistingDelayedTasksAfterShutdown = true;
 
@@ -323,7 +324,9 @@ public class ScheduledThreadPoolExecutor
         return task.isPeriodic()
             ? continueExistingPeriodicTasksAfterShutdown
             : (executeExistingDelayedTasksAfterShutdown
-               || task.getDelay(NANOSECONDS) <= 0);
+            // Android-changed: Preserving behaviour on expired tasks (b/202927404)
+            //   || task.getDelay(NANOSECONDS) <= 0);
+              );
     }
 
     /**
@@ -384,7 +387,9 @@ public class ScheduledThreadPoolExecutor
                 RunnableScheduledFuture<?> t = (RunnableScheduledFuture<?>)e;
                 if ((t.isPeriodic()
                      ? !keepPeriodic
-                     : (!keepDelayed && t.getDelay(NANOSECONDS) > 0))
+                     // Android-changed: Preserving behaviour on expired tasks (b/202927404)
+                     // : (!keepDelayed && t.getDelay(NANOSECONDS) > 0))
+                     : !keepDelayed)
                     || t.isCancelled()) { // also remove if already cancelled
                     if (q.remove(t))
                         t.cancel(false);
