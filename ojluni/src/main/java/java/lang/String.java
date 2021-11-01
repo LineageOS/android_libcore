@@ -2761,67 +2761,32 @@ public final class String
      * @since 1.5
      */
     public String replace(CharSequence target, CharSequence replacement) {
-        // BEGIN Android-changed: Replace regex-based implementation with a bespoke one.
-        /*
-        return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
-                this).replaceAll(Matcher.quoteReplacement(replacement.toString()));
-        */
-        if (target == null) {
-            throw new NullPointerException("target == null");
-        }
+        // BEGIN Android-added: Additional null check for parameters.
+        Objects.requireNonNull(target);
+        Objects.requireNonNull(replacement);
+        // END Android-added: Additional null check for parameters.
 
-        if (replacement == null) {
-            throw new NullPointerException("replacement == null");
-        }
-
-        String replacementStr = replacement.toString();
-        String targetStr = target.toString();
-
-        // Special case when target == "". This is a pretty nonsensical transformation and nobody
-        // should be hitting this.
-        //
-        // See commit 870b23b3febc85 and http://code.google.com/p/android/issues/detail?id=8807
-        // An empty target is inserted at the start of the string, the end of the string and
-        // between all characters.
-        final int len = length();
-        if (targetStr.isEmpty()) {
-            // Note that overallocates by |replacement.size()| if |this| is the empty string, but
-            // that should be a rare case within an already nonsensical case.
-            StringBuilder sb = new StringBuilder(replacementStr.length() * (len + 2) + len);
-            sb.append(replacementStr);
-            for (int i = 0; i < len; ++i) {
-                sb.append(charAt(i));
-                sb.append(replacementStr);
-            }
-
-            return sb.toString();
-        }
-
-        // This is the "regular" case.
-        int lastMatch = 0;
-        StringBuilder sb = null;
-        for (;;) {
-            int currentMatch = indexOf(this, targetStr, lastMatch);
-            if (currentMatch == -1) {
-                break;
-            }
-
-            if (sb == null) {
-                sb = new StringBuilder(len);
-            }
-
-            sb.append(this, lastMatch, currentMatch);
-            sb.append(replacementStr);
-            lastMatch = currentMatch + targetStr.length();
-        }
-
-        if (sb != null) {
-            sb.append(this, lastMatch, len);
-            return sb.toString();
-        } else {
+        String tgtStr = target.toString();
+        String replStr = replacement.toString();
+        int j = indexOf(tgtStr);
+        if (j < 0) {
             return this;
         }
-        // END Android-changed: Replace regex-based implementation with a bespoke one.
+        int tgtLen = tgtStr.length();
+        int tgtLen1 = Math.max(tgtLen, 1);
+        int thisLen = length();
+
+        int newLenHint = thisLen - tgtLen + replStr.length();
+        if (newLenHint < 0) {
+            throw new OutOfMemoryError();
+        }
+        StringBuilder sb = new StringBuilder(newLenHint);
+        int i = 0;
+        do {
+            sb.append(this, i, j).append(replStr);
+            i = j + tgtLen;
+        } while (j < thisLen && (j = indexOf(tgtStr, j + tgtLen1)) > 0);
+        return sb.append(this, i, thisLen).toString();
     }
 
     /**
