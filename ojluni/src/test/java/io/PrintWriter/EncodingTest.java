@@ -43,7 +43,6 @@ import org.testng.annotations.Test;
  * @run testng EncodingTest
  */
 public class EncodingTest {
-    static String USER_DIR = System.getProperty("user.dir", ".");
     static boolean AUTOFLUSH = true;
     public static enum ConstructorType {
         STRING,
@@ -60,8 +59,8 @@ public class EncodingTest {
     public Object[][] getParameters() throws IOException {
         String csn = StandardCharsets.UTF_8.name();
         Charset charset = StandardCharsets.UTF_8;
-        File file1 = new File(USER_DIR, "PWCharsetTest1.txt");
-        File file2 = new File(USER_DIR, "PWCharsetTest2.txt");
+        File file1 = File.createTempFile("PSCharsetTest1", "txt");
+        File file2 = File.createTempFile("PSCharsetTest2", "txt");
 
         return new Object[][]{
                 {ConstructorType.STRING, file1, file2, csn, charset},
