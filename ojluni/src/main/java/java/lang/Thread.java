@@ -2412,19 +2412,17 @@ class Thread implements Runnable {
     // concurrent code, and we can not risk accidental false sharing.
     // Hence, the fields are isolated with @Contended.
 
-    // BEGIN Android-changed: @jdk.internal.vm.annotation.Contended is not supported on Android.
     /** The current seed for a ThreadLocalRandom */
-    // @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     long threadLocalRandomSeed;
 
     /** Probe hash value; nonzero if threadLocalRandomSeed initialized */
-    // @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     int threadLocalRandomProbe;
 
     /** Secondary seed isolated from public ThreadLocalRandom sequence */
-    //  @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     int threadLocalRandomSecondarySeed;
-    // END Android-changed: @jdk.internal.vm.annotation.Contended is not supported on Android.
 
     /* Some private helper methods */
     private native void setPriority0(int newPriority);
