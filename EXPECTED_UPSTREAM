@@ -1320,6 +1320,7 @@ ojluni/src/main/java/javax/sql/RowSetReader.java,jdk7u/jdk7u40-b60,jdk/src/share
 ojluni/src/main/java/javax/sql/RowSetWriter.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/RowSetWriter.java
 ojluni/src/main/java/javax/sql/StatementEvent.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/StatementEvent.java
 ojluni/src/main/java/javax/sql/StatementEventListener.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/StatementEventListener.java
+ojluni/src/main/java/jdk/internal/HotSpotIntrinsicCandidate.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/HotSpotIntrinsicCandidate.java
 ojluni/src/main/java/jdk/internal/math/DoubleConsts.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/DoubleConsts.java
 ojluni/src/main/java/jdk/internal/math/FDBigInteger.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FDBigInteger.java
 ojluni/src/main/java/jdk/internal/math/FloatConsts.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/math/FloatConsts.java
@@ -1333,6 +1334,8 @@ ojluni/src/main/java/jdk/internal/misc/VM.java,jdk11u/jdk-11+28,src/java.base/sh
 ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/reflect/CallerSensitive.java
 ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
 ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/util/Preconditions.java
+ojluni/src/main/java/jdk/internal/vm/annotation/Contended.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/vm/annotation/Contended.java
+ojluni/src/main/java/jdk/internal/vm/annotation/ReservedStackAccess.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/vm/annotation/ReservedStackAccess.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java,jdk11u/jdk-11+28,src/java.base/share/classes/jdk/internal/vm/annotation/Stable.java
 ojluni/src/main/java/jdk/net/ExtendedSocketOptions.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/ExtendedSocketOptions.java
 ojluni/src/main/java/jdk/net/NetworkPermission.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/jdk/net/NetworkPermission.java
