@@ -25,6 +25,8 @@
 
 package java.lang;
 
+import jdk.internal.HotSpotIntrinsicCandidate;
+
 /**
  * The Boolean class wraps a value of the primitive type
  * {@code boolean} in an object. An object of type
@@ -136,8 +138,7 @@ public final class Boolean implements java.io.Serializable,
      *
      * @return  the primitive {@code boolean} value of this object.
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public boolean booleanValue() {
         return value;
     }
@@ -156,8 +157,7 @@ public final class Boolean implements java.io.Serializable,
      * @return a {@code Boolean} instance representing {@code b}.
      * @since  1.4
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static Boolean valueOf(boolean b) {
         return (b ? TRUE : FALSE);
     }
