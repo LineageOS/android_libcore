@@ -6406,6 +6406,8 @@ package java.nio.channels {
     method public abstract java.nio.channels.SelectableChannel channel();
     method public abstract int interestOps();
     method public abstract java.nio.channels.SelectionKey interestOps(int);
+    method public int interestOpsAnd(int);
+    method public int interestOpsOr(int);
     method public final boolean isAcceptable();
     method public final boolean isConnectable();
     method public final boolean isReadable();
@@ -6427,7 +6429,10 @@ package java.nio.channels {
     method public abstract java.nio.channels.spi.SelectorProvider provider();
     method public abstract int select(long) throws java.io.IOException;
     method public abstract int select() throws java.io.IOException;
+    method public int select(java.util.function.Consumer<java.nio.channels.SelectionKey>, long) throws java.io.IOException;
+    method public int select(java.util.function.Consumer<java.nio.channels.SelectionKey>) throws java.io.IOException;
     method public abstract int selectNow() throws java.io.IOException;
+    method public int selectNow(java.util.function.Consumer<java.nio.channels.SelectionKey>) throws java.io.IOException;
     method public abstract java.util.Set<java.nio.channels.SelectionKey> selectedKeys();
     method public abstract java.nio.channels.Selector wakeup();
   }
