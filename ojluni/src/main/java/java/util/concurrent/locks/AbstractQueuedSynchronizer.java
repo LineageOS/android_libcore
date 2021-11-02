@@ -903,8 +903,6 @@ public abstract class AbstractQueuedSynchronizer
      * @param arg the acquire argument
      * @return {@code true} if interrupted while waiting
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
     final boolean acquireQueued(final Node node, int arg) {
         boolean interrupted = false;
         try {
@@ -1237,8 +1235,6 @@ public abstract class AbstractQueuedSynchronizer
      *        {@link #tryAcquire} but is otherwise uninterpreted and
      *        can represent anything you like.
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
     public final void acquire(int arg) {
         if (!tryAcquire(arg) &&
             acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
@@ -1302,8 +1298,6 @@ public abstract class AbstractQueuedSynchronizer
      *        can represent anything you like.
      * @return the value returned from {@link #tryRelease}
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
     public final boolean release(int arg) {
         if (tryRelease(arg)) {
             Node h = head;
@@ -1384,8 +1378,6 @@ public abstract class AbstractQueuedSynchronizer
      *        and can represent anything you like.
      * @return the value returned from {@link #tryReleaseShared}
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
     public final boolean releaseShared(int arg) {
         if (tryReleaseShared(arg)) {
             doReleaseShared();

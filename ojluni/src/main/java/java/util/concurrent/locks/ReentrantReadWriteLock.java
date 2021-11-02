@@ -37,6 +37,7 @@ package java.util.concurrent.locks;
 
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
+import jdk.internal.vm.annotation.ReservedStackAccess;
 
 /**
  * An implementation of {@link ReadWriteLock} supporting similar
@@ -365,8 +366,7 @@ public class ReentrantReadWriteLock
          * both read and write holds that are all released during a
          * condition wait and re-established in tryAcquire.
          */
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         protected final boolean tryRelease(int releases) {
             if (!isHeldExclusively())
                 throw new IllegalMonitorStateException();
@@ -378,8 +378,7 @@ public class ReentrantReadWriteLock
             return free;
         }
 
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         protected final boolean tryAcquire(int acquires) {
             /*
              * Walkthrough:
@@ -412,8 +411,7 @@ public class ReentrantReadWriteLock
             return true;
         }
 
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         protected final boolean tryReleaseShared(int unused) {
             Thread current = Thread.currentThread();
             if (firstReader == current) {
@@ -451,8 +449,7 @@ public class ReentrantReadWriteLock
                 "attempt to unlock read lock, not locked by current thread");
         }
 
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         protected final int tryAcquireShared(int unused) {
             /*
              * Walkthrough:
@@ -563,8 +560,7 @@ public class ReentrantReadWriteLock
          * This is identical in effect to tryAcquire except for lack
          * of calls to writerShouldBlock.
          */
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         final boolean tryWriteLock() {
             Thread current = Thread.currentThread();
             int c = getState();
@@ -586,8 +582,7 @@ public class ReentrantReadWriteLock
          * This is identical in effect to tryAcquireShared except for
          * lack of calls to readerShouldBlock.
          */
-        // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-        // @ReservedStackAccess
+        @ReservedStackAccess
         final boolean tryReadLock() {
             Thread current = Thread.currentThread();
             for (;;) {
