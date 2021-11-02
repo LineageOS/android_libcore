@@ -93,7 +93,7 @@ MSG_FIRST_COMMIT = ("Import {summary} from {ref}\n"
                     "Test: N/A")
 
 MSG_SECOND_COMMIT = ("Merge {summary} from {ref} into the "
-                     " expected_upstream branch\n"
+                     "expected_upstream branch\n"
                      "\n"
                      "List of files:\n"
                      "  {files}\n"
@@ -203,6 +203,7 @@ def create_commits(repo: Repo) -> None:
     print("This script should only run on aosp/expected_upstream branch. "
           f"Currently, this is on branch {repo.active_branch} "
           f"tracking {current_tracking_branch}")
+    return
 
   print("Reading EXPECTED_UPSTREAM file...")
   expected_upstream_entries = ExpectedUpstreamFile().read_all_entries()
