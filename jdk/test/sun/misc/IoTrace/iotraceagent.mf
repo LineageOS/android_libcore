@@ -1,3 +1,0 @@
-Premain-Class: IoTraceAgent
-Can-Redefine-Classes: true
-Boot-Class-Path: iotraceagent.jar

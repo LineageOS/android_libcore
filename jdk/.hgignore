@@ -1,6 +1,0 @@
-^build/
-^dist/
-/nbproject/private/
-^make/netbeans/.*/build/
-^make/netbeans/.*/dist/
-^.hgtip
