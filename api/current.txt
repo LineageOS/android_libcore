@@ -2112,6 +2112,7 @@ package java.io {
     ctor protected Reader(Object);
     method public void mark(int) throws java.io.IOException;
     method public boolean markSupported();
+    method public static java.io.Reader nullReader();
     method public int read(java.nio.CharBuffer) throws java.io.IOException;
     method public int read() throws java.io.IOException;
     method public int read(char[]) throws java.io.IOException;
@@ -2119,6 +2120,7 @@ package java.io {
     method public boolean ready() throws java.io.IOException;
     method public void reset() throws java.io.IOException;
     method public long skip(long) throws java.io.IOException;
+    method public long transferTo(java.io.Writer) throws java.io.IOException;
     field protected Object lock;
   }
 
@@ -2232,6 +2234,7 @@ package java.io {
     method public java.io.Writer append(CharSequence) throws java.io.IOException;
     method public java.io.Writer append(CharSequence, int, int) throws java.io.IOException;
     method public java.io.Writer append(char) throws java.io.IOException;
+    method public static java.io.Writer nullWriter();
     method public void write(int) throws java.io.IOException;
     method public void write(char[]) throws java.io.IOException;
     method public abstract void write(char[], int, int) throws java.io.IOException;
