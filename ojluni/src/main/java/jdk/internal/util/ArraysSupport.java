@@ -24,8 +24,7 @@
  */
 package jdk.internal.util;
 
-// Android-removed: unsupported annotation.
-// import jdk.internal.HotSpotIntrinsicCandidate;
+import jdk.internal.HotSpotIntrinsicCandidate;
 import jdk.internal.misc.Unsafe;
 
 /**
@@ -108,8 +107,7 @@ public class ArraysSupport {
      * compliment of the number of remaining pairs of elements to be checked in
      * the tail of the two arrays.
      */
-    // Android-removed: unsupported annotation.
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int vectorizedMismatch(Object a, long aOffset,
                                          Object b, long bOffset,
                                          int length,

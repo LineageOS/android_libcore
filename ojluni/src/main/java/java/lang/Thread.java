@@ -42,6 +42,7 @@ import sun.nio.ch.Interruptible;
 import sun.reflect.CallerSensitive;
 import dalvik.system.VMStack;
 import libcore.util.EmptyArray;
+import jdk.internal.HotSpotIntrinsicCandidate;
 
 
 /**
@@ -310,8 +311,7 @@ class Thread implements Runnable {
      *
      * @return  the currently executing thread.
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     @FastNative
     public static native Thread currentThread();
 
@@ -489,8 +489,7 @@ class Thread implements Runnable {
      *
      * @since 9
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static void onSpinWait() {}
 
     /**
@@ -2412,19 +2411,17 @@ class Thread implements Runnable {
     // concurrent code, and we can not risk accidental false sharing.
     // Hence, the fields are isolated with @Contended.
 
-    // BEGIN Android-changed: @jdk.internal.vm.annotation.Contended is not supported on Android.
     /** The current seed for a ThreadLocalRandom */
-    // @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     long threadLocalRandomSeed;
 
     /** Probe hash value; nonzero if threadLocalRandomSeed initialized */
-    // @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     int threadLocalRandomProbe;
 
     /** Secondary seed isolated from public ThreadLocalRandom sequence */
-    //  @jdk.internal.vm.annotation.Contended("tlr")
+    @jdk.internal.vm.annotation.Contended("tlr")
     int threadLocalRandomSecondarySeed;
-    // END Android-changed: @jdk.internal.vm.annotation.Contended is not supported on Android.
 
     /* Some private helper methods */
     private native void setPriority0(int newPriority);
