@@ -3613,7 +3613,7 @@ package java.lang {
     method public void checkExit(int);
     method public void checkLink(String);
     method public void checkListen(int);
-    method public void checkMemberAccess(Class<?>, int);
+    method @Deprecated public void checkMemberAccess(Class<?>, int);
     method public void checkMulticast(java.net.InetAddress);
     method @Deprecated public void checkMulticast(java.net.InetAddress, byte);
     method public void checkPackageAccess(String);
@@ -3629,7 +3629,7 @@ package java.lang {
     method public void checkSecurityAccess(String);
     method public void checkSetFactory();
     method public void checkSystemClipboardAccess();
-    method public boolean checkTopLevelWindow(Object);
+    method @Deprecated public boolean checkTopLevelWindow(Object);
     method public void checkWrite(java.io.FileDescriptor);
     method public void checkWrite(String);
     method @Deprecated protected int classDepth(String);
