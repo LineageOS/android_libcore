@@ -531,7 +531,7 @@ ojluni/src/main/java/java/security/KeyStoreSpi.java,jdk8u/jdk8u121-b13,jdk/src/s
 ojluni/src/main/java/java/security/MessageDigest.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/MessageDigest.java
 ojluni/src/main/java/java/security/MessageDigestSpi.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/MessageDigestSpi.java
 ojluni/src/main/java/java/security/NoSuchAlgorithmException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/NoSuchAlgorithmException.java
-ojluni/src/main/java/java/security/NoSuchProviderException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/NoSuchProviderException.java
+ojluni/src/main/java/java/security/NoSuchProviderException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/security/NoSuchProviderException.java
 ojluni/src/main/java/java/security/PKCS12Attribute.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/PKCS12Attribute.java
 ojluni/src/main/java/java/security/Permission.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/Permission.java
 ojluni/src/main/java/java/security/PermissionCollection.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/PermissionCollection.java
