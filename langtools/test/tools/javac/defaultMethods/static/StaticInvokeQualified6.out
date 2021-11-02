@@ -1,2 +1,0 @@
-StaticInvokeQualified.java:11:32: compiler.err.static.intf.method.invoke.not.supported.in.source: 1.6
-1 error
