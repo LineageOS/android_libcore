@@ -30,9 +30,9 @@ import dalvik.annotation.optimization.CriticalNative;
 
 import java.math.BigDecimal;
 import java.util.Random;
-
 import jdk.internal.math.FloatConsts;
 import jdk.internal.math.DoubleConsts;
+import jdk.internal.HotSpotIntrinsicCandidate;
 
 // Android-note: Document that the results from Math are based on libm's behavior.
 // For performance, Android implements many of the methods in this class in terms of the underlying
@@ -964,8 +964,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int addExact(int x, int y) {
         int r = x + y;
         // HD 2-12 Overflow iff both arguments have the opposite sign of the result
@@ -985,8 +984,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long addExact(long x, long y) {
         long r = x + y;
         // HD 2-12 Overflow iff both arguments have the opposite sign of the result
@@ -1006,8 +1004,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int subtractExact(int x, int y) {
         int r = x - y;
         // HD 2-12 Overflow iff the arguments have different signs and
@@ -1028,8 +1025,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long subtractExact(long x, long y) {
         long r = x - y;
         // HD 2-12 Overflow iff the arguments have different signs and
@@ -1050,8 +1046,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int multiplyExact(int x, int y) {
         long r = (long)x * (long)y;
         if ((int)r != r) {
@@ -1084,8 +1079,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long multiplyExact(long x, long y) {
         long r = x * y;
         long ax = Math.abs(x);
@@ -1111,8 +1105,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int incrementExact(int a) {
         if (a == Integer.MAX_VALUE) {
             throw new ArithmeticException("integer overflow");
@@ -1130,8 +1123,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long incrementExact(long a) {
         if (a == Long.MAX_VALUE) {
             throw new ArithmeticException("long overflow");
@@ -1149,8 +1141,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int decrementExact(int a) {
         if (a == Integer.MIN_VALUE) {
             throw new ArithmeticException("integer overflow");
@@ -1168,8 +1159,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long decrementExact(long a) {
         if (a == Long.MIN_VALUE) {
             throw new ArithmeticException("long overflow");
@@ -1187,8 +1177,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows an int
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int negateExact(int a) {
         if (a == Integer.MIN_VALUE) {
             throw new ArithmeticException("integer overflow");
@@ -1206,8 +1195,7 @@ public final class Math {
      * @throws ArithmeticException if the result overflows a long
      * @since 1.8
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long negateExact(long a) {
         if (a == Long.MIN_VALUE) {
             throw new ArithmeticException("long overflow");
@@ -1253,8 +1241,7 @@ public final class Math {
      * @return the result
      * @since 9
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static long multiplyHigh(long x, long y) {
         if (x < 0 || y < 0) {
             // Use technique from section 8-2 of Henry S. Warren, Jr.,
@@ -1574,8 +1561,7 @@ public final class Math {
      * @param   a   the argument whose absolute value is to be determined
      * @return  the absolute value of the argument.
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static double abs(double a) {
         // Android-changed: Implementation modified to exactly match ART intrinsics behavior.
         // Note, as a "quality of implementation", rather than pure "spec compliance",
@@ -1596,8 +1582,7 @@ public final class Math {
      * @param   b   another argument.
      * @return  the larger of {@code a} and {@code b}.
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int max(int a, int b) {
         return (a >= b) ? a : b;
     }
@@ -1682,8 +1667,7 @@ public final class Math {
      * @param   b   another argument.
      * @return  the smaller of {@code a} and {@code b}.
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static int min(int a, int b) {
         return (a <= b) ? a : b;
     }
@@ -1804,8 +1788,7 @@ public final class Math {
      *
      * @since 9
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static double fma(double a, double b, double c) {
         /*
          * Infinity and NaN arithmetic is not quite the same with two
@@ -1922,8 +1905,7 @@ public final class Math {
      *
      * @since 9
      */
-    // Android-removed: @HotSpotIntrinsicCandidate
-    // @HotSpotIntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public static float fma(float a, float b, float c) {
         /*
          *  Since the double format has more than twice the precision

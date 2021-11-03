@@ -38,6 +38,7 @@ package java.util.concurrent.locks;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import java.util.concurrent.TimeUnit;
+import jdk.internal.vm.annotation.ReservedStackAccess;
 
 /**
  * A capability-based lock with three modes for controlling read/write
@@ -454,8 +455,7 @@ public class StampedLock implements java.io.Serializable {
      *
      * @return a write stamp that can be used to unlock or convert mode
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long writeLock() {
         long next;
         return ((next = tryWriteLock()) != 0L) ? next : acquireWrite(false, 0L);
@@ -467,8 +467,7 @@ public class StampedLock implements java.io.Serializable {
      * @return a write stamp that can be used to unlock or convert mode,
      * or zero if the lock is not available
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long tryWriteLock() {
         long s;
         return (((s = state) & ABITS) == 0L) ? tryWriteLock(s) : 0L;
@@ -514,8 +513,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws InterruptedException if the current thread is interrupted
      * before acquiring the lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long writeLockInterruptibly() throws InterruptedException {
         long next;
         if (!Thread.interrupted() &&
@@ -530,8 +528,7 @@ public class StampedLock implements java.io.Serializable {
      *
      * @return a read stamp that can be used to unlock or convert mode
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long readLock() {
         long s, next;
         // bypass acquireRead on common uncontended case
@@ -548,8 +545,7 @@ public class StampedLock implements java.io.Serializable {
      * @return a read stamp that can be used to unlock or convert mode,
      * or zero if the lock is not available
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long tryReadLock() {
         long s, m, next;
         while ((m = (s = state) & ABITS) != WBIT) {
@@ -576,8 +572,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws InterruptedException if the current thread is interrupted
      * before acquiring the lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long tryReadLock(long time, TimeUnit unit)
         throws InterruptedException {
         long s, m, next, deadline;
@@ -611,8 +606,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws InterruptedException if the current thread is interrupted
      * before acquiring the lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public long readLockInterruptibly() throws InterruptedException {
         long s, next;
         if (!Thread.interrupted()
@@ -680,8 +674,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws IllegalMonitorStateException if the stamp does
      * not match the current state of this lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public void unlockWrite(long stamp) {
         if (state != stamp || (stamp & WBIT) == 0L)
             throw new IllegalMonitorStateException();
@@ -696,8 +689,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws IllegalMonitorStateException if the stamp does
      * not match the current state of this lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public void unlockRead(long stamp) {
         long s, m; WNode h;
         while (((s = state) & SBITS) == (stamp & SBITS)
@@ -724,8 +716,7 @@ public class StampedLock implements java.io.Serializable {
      * @throws IllegalMonitorStateException if the stamp does
      * not match the current state of this lock
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public void unlock(long stamp) {
         if ((stamp & WBIT) != 0L)
             unlockWrite(stamp);
@@ -858,8 +849,7 @@ public class StampedLock implements java.io.Serializable {
      *
      * @return {@code true} if the lock was held, else false
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public boolean tryUnlockWrite() {
         long s;
         if (((s = state) & WBIT) != 0L) {
@@ -876,8 +866,7 @@ public class StampedLock implements java.io.Serializable {
      *
      * @return {@code true} if the read lock was held, else false
      */
-    // Android-removed: @ReservedStackAccess from OpenJDK 9, not available on Android.
-    // @ReservedStackAccess
+    @ReservedStackAccess
     public boolean tryUnlockRead() {
         long s, m; WNode h;
         while ((m = (s = state) & ABITS) != 0L && m < WBIT) {
