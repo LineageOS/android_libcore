@@ -22,7 +22,6 @@
  */
 package test.java.lang.String;
 
-import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -56,11 +55,11 @@ public class Strip {
         equal("\b".stripTrailing(), "\b");
     }
 
-    // BEGIN Android-removed: Not yet ported.
     /*
      * Test full whitespace range
-     *
-    static void testWhitespace() {
+     */
+    @Test
+    public void testWhitespace() {
         StringBuilder sb = new StringBuilder(64);
         IntStream.range(1, 0xFFFF).filter(c -> Character.isWhitespace(c))
                 .forEach(c -> sb.append((char)c));
@@ -71,8 +70,6 @@ public class Strip {
         equal(testString.stripLeading(), "abc"  + whiteSpace);
         equal(testString.stripTrailing(), whiteSpace + "abc");
     }
-     */
-    // END Android-removed: Not yet ported.
 
     /*
      * Report difference in result.
