@@ -867,31 +867,6 @@ public final class Unsafe {
     public native void putDouble(long address, double x);
 
     /**
-     * Copies given memory block to a primitive array.
-     *
-     * @param srcAddr address to copy memory from
-     * @param dst address to copy memory to
-     * @param dstOffset offset in {@code dst}
-     * @param bytes number of bytes to copy
-     */
-    @FastNative
-    public native void copyMemoryToPrimitiveArray(long srcAddr,
-            Object dst, long dstOffset, long bytes);
-
-    /**
-     * Treat given primitive array as a continuous memory block and
-     * copy it to given memory address.
-     *
-     * @param src primitive array to copy data from
-     * @param srcOffset offset in {@code src} to copy from
-     * @param dstAddr memory address to copy data to
-     * @param bytes number of bytes to copy
-     */
-    @FastNative
-    public native void copyMemoryFromPrimitiveArray(Object src, long srcOffset,
-            long dstAddr, long bytes);
-
-    /**
      * Sets all bytes in a given block of memory to a copy of another block.
      *
      * @param srcAddr address of the source memory to be copied from
