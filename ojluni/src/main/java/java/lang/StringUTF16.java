@@ -27,6 +27,7 @@ package java.lang;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -63,6 +64,16 @@ final class StringUTF16 {
         return val.charAt(index);
     }
     // END Android-changed: Pass String instead of byte[]; implement in terms of charAt().
+
+    // BEGIN Android-changed: Pass String instead of byte[].
+    /*
+    public static int length(byte[] value) {
+        return value.length >> 1;
+     */
+    public static int length(String value) {
+        return value.length();
+    // END Android-changed: Pass String instead of byte[].
+    }
 
     // BEGIN Android-changed: Pass String instead of byte[].
     /*
@@ -286,5 +297,227 @@ final class StringUTF16 {
         return val.substring(index, index + len);
     }
     // END Android-changed: Pass String instead of byte[]; implement in terms of substring().
+
+    static class CharsSpliterator implements Spliterator.OfInt {
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        private final byte[] array;
+         */
+        private final String array;
+        // END Android-changed: Pass String instead of byte[].
+        private int index;        // current index, modified on advance/split
+        private final int fence;  // one past last index
+        private final int cs;
+
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        CharsSpliterator(byte[] array, int acs) {
+            this(array, 0, array.length >> 1, acs);
+         */
+        CharsSpliterator(String array, int acs) {
+            this(array, 0, array.length(), acs);
+        // END Android-changed: Pass String instead of byte[].
+        }
+
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        CharsSpliterator(byte[] array, int origin, int fence, int acs) {
+         */
+        CharsSpliterator(String array, int origin, int fence, int acs) {
+        // END Android-changed: Pass String instead of byte[].
+            this.array = array;
+            this.index = origin;
+            this.fence = fence;
+            this.cs = acs | Spliterator.ORDERED | Spliterator.SIZED
+                      | Spliterator.SUBSIZED;
+        }
+
+        @Override
+        public OfInt trySplit() {
+            int lo = index, mid = (lo + fence) >>> 1;
+            return (lo >= mid)
+                   ? null
+                   : new CharsSpliterator(array, lo, index = mid, cs);
+        }
+
+        @Override
+        public void forEachRemaining(IntConsumer action) {
+            // BEGIN Android-changed: Pass String instead of byte[].
+            /*
+            byte[] a; int i, hi; // hoist accesses and checks from loop
+             */
+            String a; int i, hi; // hoist accesses and checks from loop
+            // END Android-changed: Pass String instead of byte[].
+            if (action == null)
+                throw new NullPointerException();
+            // BEGIN Android-changed: Pass String instead of byte[].
+            /*
+            if (((a = array).length >> 1) >= (hi = fence) &&
+             */
+            if (((a = array).length()) >= (hi = fence) &&
+            // END Android-changed: Pass String instead of byte[].
+                (i = index) >= 0 && i < (index = hi)) {
+                do {
+                    action.accept(charAt(a, i));
+                } while (++i < hi);
+            }
+        }
+
+        @Override
+        public boolean tryAdvance(IntConsumer action) {
+            if (action == null)
+                throw new NullPointerException();
+            int i = index;
+            if (i >= 0 && i < fence) {
+                action.accept(charAt(array, i));
+                index++;
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        public long estimateSize() { return (long)(fence - index); }
+
+        @Override
+        public int characteristics() {
+            return cs;
+        }
+    }
+
+    static class CodePointsSpliterator implements Spliterator.OfInt {
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        private final byte[] array;
+         */
+        private final String array;
+        // END Android-changed: Pass String instead of byte[].
+        private int index;        // current index, modified on advance/split
+        private final int fence;  // one past last index
+        private final int cs;
+
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        CodePointsSpliterator(byte[] array, int acs) {
+            this(array, 0, array.length >> 1, acs);
+         */
+        CodePointsSpliterator(String array, int acs) {
+            this(array, 0, array.length(), acs);
+        // END Android-changed: Pass String instead of byte[].
+        }
+
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        CodePointsSpliterator(byte[] array, int origin, int fence, int acs) {
+         */
+        CodePointsSpliterator(String array, int origin, int fence, int acs) {
+        // END Android-changed: Pass String instead of byte[].
+            this.array = array;
+            this.index = origin;
+            this.fence = fence;
+            this.cs = acs | Spliterator.ORDERED;
+        }
+
+        @Override
+        public OfInt trySplit() {
+            int lo = index, mid = (lo + fence) >>> 1;
+            if (lo >= mid)
+                return null;
+
+            int midOneLess;
+            // If the mid-point intersects a surrogate pair
+            if (Character.isLowSurrogate(charAt(array, mid)) &&
+                Character.isHighSurrogate(charAt(array, midOneLess = (mid -1)))) {
+                // If there is only one pair it cannot be split
+                if (lo >= midOneLess)
+                    return null;
+                // Shift the mid-point to align with the surrogate pair
+                return new CodePointsSpliterator(array, lo, index = midOneLess, cs);
+            }
+            return new CodePointsSpliterator(array, lo, index = mid, cs);
+        }
+
+        @Override
+        public void forEachRemaining(IntConsumer action) {
+            // BEGIN Android-changed: Pass String instead of byte[].
+            /*
+            byte[] a; int i, hi; // hoist accesses and checks from loop
+             */
+            String a; int i, hi; // hoist accesses and checks from loop
+            // END Android-changed: Pass String instead of byte[].
+            if (action == null)
+                throw new NullPointerException();
+            // BEGIN Android-changed: Pass String instead of byte[].
+            /*
+            if (((a = array).length >> 1) >= (hi = fence) &&
+             */
+            if (((a = array).length()) >= (hi = fence) &&
+            // END Android-changed: Pass String instead of byte[].
+                (i = index) >= 0 && i < (index = hi)) {
+                do {
+                    i = advance(a, i, hi, action);
+                } while (i < hi);
+            }
+        }
+
+        @Override
+        public boolean tryAdvance(IntConsumer action) {
+            if (action == null)
+                throw new NullPointerException();
+            if (index >= 0 && index < fence) {
+                index = advance(array, index, fence, action);
+                return true;
+            }
+            return false;
+        }
+
+        // Advance one code point from the index, i, and return the next
+        // index to advance from
+        // BEGIN Android-changed: Pass String instead of byte[].
+        /*
+        private static int advance(byte[] a, int i, int hi, IntConsumer action) {
+         */
+        private static int advance(String a, int i, int hi, IntConsumer action) {
+        // END Android-changed: Pass String instead of byte[].
+            char c1 = charAt(a, i++);
+            int cp = c1;
+            if (Character.isHighSurrogate(c1) && i < hi) {
+                char c2 = charAt(a, i);
+                if (Character.isLowSurrogate(c2)) {
+                    i++;
+                    cp = Character.toCodePoint(c1, c2);
+                }
+            }
+            action.accept(cp);
+            return i;
+        }
+
+        @Override
+        public long estimateSize() { return (long)(fence - index); }
+
+        @Override
+        public int characteristics() {
+            return cs;
+        }
+    }
+
+    // BEGIN Android-changed: Pass String instead of byte[].
+    /*
+    public static char charAt(byte[] value, int index) {
+     */
+    public static char charAt(String value, int index) {
+    // END Android-changed: Pass String instead of byte[].
+        checkIndex(index, value);
+        return getChar(value, index);
+    }
+
+    // BEGIN Android-changed: Pass String instead of byte[].
+    /*
+    public static void checkIndex(int off, byte[] val) {
+     */
+    public static void checkIndex(int off, String val) {
+    // END Android-changed: Pass String instead of byte[].
+        String.checkIndex(off, length(val));
+    }
 
 }
