@@ -240,7 +240,7 @@ public class ObjectInputStream
             new ReferenceQueue<>();
     }
 
-    // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
     /*
     static {
         /* Setup access so sun.misc can invoke package private functions. *
@@ -282,10 +282,10 @@ public class ObjectInputStream
     /** validation callback list */
     private final ValidationList vlist;
     /** recursion depth */
-    // Android-changed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-changed: ObjectInputFilter logic not available on Android. http://b/110252929
     // private long depth;
     private int depth;
-    // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
     // /** Total number of references to any type of object, class, enum, proxy, etc. */
     // private long totalObjectRefs;
     /** whether stream is closed */
@@ -313,7 +313,7 @@ public class ObjectInputStream
      */
     private SerialCallbackContext curContext;
 
-    // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
     /**
      * Filter of class descriptors and classes read from the stream;
      * may be null.
@@ -348,7 +348,7 @@ public class ObjectInputStream
         bin = new BlockDataInputStream(in);
         handles = new HandleTable(10);
         vlist = new ValidationList();
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // serialFilter = ObjectInputFilter.Config.getSerialFilter();
         enableOverride = false;
         readStreamHeader();
@@ -380,7 +380,7 @@ public class ObjectInputStream
         bin = null;
         handles = null;
         vlist = null;
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // serialFilter = ObjectInputFilter.Config.getSerialFilter();
         enableOverride = true;
     }
@@ -1130,7 +1130,7 @@ public class ObjectInputStream
         return bin.readUTF();
     }
 
-    // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
     // Removed ObjectInputFilter related methods.
 
     /**
@@ -1156,7 +1156,7 @@ public class ObjectInputStream
             throw new NegativeArraySizeException();
         }
 
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // filterCheck(arrayType, arrayLength);
     }
 
@@ -1409,7 +1409,7 @@ public class ObjectInputStream
         }
 
         depth++;
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // totalObjectRefs++;
         try {
             switch (tc) {
@@ -1487,7 +1487,7 @@ public class ObjectInputStream
         }
         Object rep = resolveObject(obj);
         if (rep != obj) {
-            // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+            // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
             /*
             // The type of the original object has been filtered but resolveObject
             // may have replaced it;  filter the replacement's type
@@ -1569,7 +1569,7 @@ public class ObjectInputStream
             throw new InvalidObjectException(
                 "cannot read back reference to unshared object");
         }
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // filterCheck(null, -1);       // just a check for number of references, depth, no class
         return obj;
     }
@@ -1625,7 +1625,7 @@ public class ObjectInputStream
                 throw new StreamCorruptedException(
                     String.format("invalid type code: %02X", tc));
         }
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // if (descriptor != null) {
         //     validateDescriptor(descriptor);
         // }
@@ -1676,7 +1676,7 @@ public class ObjectInputStream
                 ReflectUtil.checkProxyPackageAccess(
                         getClass().getClassLoader(),
                         cl.getInterfaces());
-                // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+                // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
                 // // Filter the interfaces
                 // for (Class<?> clazz : cl.getInterfaces()) {
                 //     filterCheck(clazz, -1);
@@ -1689,7 +1689,7 @@ public class ObjectInputStream
 
         desc.initProxy(cl, resolveEx, readClassDesc(false));
 
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // // Call filterCheck on the definition
         // filterCheck(desc.forClass(), -1);
 
@@ -1787,7 +1787,7 @@ public class ObjectInputStream
         ObjectStreamClass desc = readClassDesc(false);
         int len = bin.readInt();
 
-        // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+        // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
         // filterCheck(desc.forClass(), len);
 
         Object array = null;
@@ -1938,7 +1938,7 @@ public class ObjectInputStream
                 rep = cloneArray(rep);
             }
             if (rep != obj) {
-                // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+                // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
                 /*
                 // Filter the replacement object
                 if (rep != null) {
@@ -2427,7 +2427,7 @@ public class ObjectInputStream
         }
     }
 
-    // Android-removed: ObjectInputFilter logic, to be reconsidered. http://b/110252929
+    // Android-removed: ObjectInputFilter logic not available on Android. http://b/110252929
     // Removed FilterValues class.
 
     /**
