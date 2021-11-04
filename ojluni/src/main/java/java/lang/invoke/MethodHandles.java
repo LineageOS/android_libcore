@@ -114,6 +114,73 @@ public class MethodHandles {
     }
 
     /**
+     * Returns a {@link Lookup lookup object} with full capabilities to emulate all
+     * supported bytecode behaviors, including <a href="MethodHandles.Lookup.html#privacc">
+     * private access</a>, on a target class.
+     * This method checks that a caller, specified as a {@code Lookup} object, is allowed to
+     * do <em>deep reflection</em> on the target class. If {@code m1} is the module containing
+     * the {@link Lookup#lookupClass() lookup class}, and {@code m2} is the module containing
+     * the target class, then this check ensures that
+     * <ul>
+     *     <li>{@code m1} {@link Module#canRead reads} {@code m2}.</li>
+     *     <li>{@code m2} {@link Module#isOpen(String,Module) opens} the package containing
+     *     the target class to at least {@code m1}.</li>
+     *     <li>The lookup has the {@link Lookup#MODULE MODULE} lookup mode.</li>
+     * </ul>
+     * <p>
+     * If there is a security manager, its {@code checkPermission} method is called to
+     * check {@code ReflectPermission("suppressAccessChecks")}.
+     * @apiNote The {@code MODULE} lookup mode serves to authenticate that the lookup object
+     * was created by code in the caller module (or derived from a lookup object originally
+     * created by the caller). A lookup object with the {@code MODULE} lookup mode can be
+     * shared with trusted parties without giving away {@code PRIVATE} and {@code PACKAGE}
+     * access to the caller.
+     * @param targetClass the target class
+     * @param lookup the caller lookup object
+     * @return a lookup object for the target class, with private access
+     * @throws IllegalArgumentException if {@code targetClass} is a primitive type or array class
+     * @throws NullPointerException if {@code targetClass} or {@code caller} is {@code null}
+     * @throws IllegalAccessException if the access check specified above fails
+     * @throws SecurityException if denied by the security manager
+     * @since 9
+     * @spec JPMS
+     * @see Lookup#dropLookupMode
+     */
+    public static Lookup privateLookupIn(Class<?> targetClass, Lookup lookup) throws IllegalAccessException {
+        // Android-removed: SecurityManager calls
+        // SecurityManager sm = System.getSecurityManager();
+        // if (sm != null) sm.checkPermission(ACCESS_PERMISSION);
+        if (targetClass.isPrimitive())
+            throw new IllegalArgumentException(targetClass + " is a primitive class");
+        if (targetClass.isArray())
+            throw new IllegalArgumentException(targetClass + " is an array class");
+        // BEGIN Android-removed: There is no module information on Android
+        /**
+         * Module targetModule = targetClass.getModule();
+         * Module callerModule = lookup.lookupClass().getModule();
+         * if (!callerModule.canRead(targetModule))
+         *     throw new IllegalAccessException(callerModule + " does not read " + targetModule);
+         * if (targetModule.isNamed()) {
+         *     String pn = targetClass.getPackageName();
+         *     assert pn.length() > 0 : "unnamed package cannot be in named module";
+         *     if (!targetModule.isOpen(pn, callerModule))
+         *         throw new IllegalAccessException(targetModule + " does not open " + pn + " to " + callerModule);
+         * }
+         * if ((lookup.lookupModes() & Lookup.MODULE) == 0)
+         *     throw new IllegalAccessException("lookup does not have MODULE lookup mode");
+         * if (!callerModule.isNamed() && targetModule.isNamed()) {
+         *     IllegalAccessLogger logger = IllegalAccessLogger.illegalAccessLogger();
+         *     if (logger != null) {
+         *         logger.logIfOpenedForIllegalAccess(lookup, targetClass);
+         *     }
+         * }
+         */
+        // END Android-removed: There is no module information on Android
+        return new Lookup(targetClass);
+    }
+
+
+    /**
      * Performs an unchecked "crack" of a
      * <a href="MethodHandleInfo.html#directmh">direct method handle</a>.
      * The result is as if the user had obtained a lookup object capable enough
@@ -681,7 +748,8 @@ public class MethodHandles {
             if (allowedModes == ALL_MODES &&
                     lookupClass.getClassLoader() == Object.class.getClassLoader()) {
                 if ((name.startsWith("java.")
-                            && !name.startsWith("java.util.concurrent.")) ||
+                            && !name.startsWith("java.util.concurrent.")
+                            && !name.equals("java.lang.Thread")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
                                 && !name.equals("sun.reflect.ReflectionFactory"))) {

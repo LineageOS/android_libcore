@@ -4339,6 +4339,7 @@ package java.lang.invoke {
     method public static java.lang.invoke.MethodHandle invoker(java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandles.Lookup lookup();
     method public static java.lang.invoke.MethodHandle permuteArguments(java.lang.invoke.MethodHandle, java.lang.invoke.MethodType, int...);
+    method public static java.lang.invoke.MethodHandles.Lookup privateLookupIn(Class<?>, java.lang.invoke.MethodHandles.Lookup) throws java.lang.IllegalAccessException;
     method public static java.lang.invoke.MethodHandles.Lookup publicLookup();
     method public static <T extends java.lang.reflect.Member> T reflectAs(Class<T>, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle spreadInvoker(java.lang.invoke.MethodType, int);
