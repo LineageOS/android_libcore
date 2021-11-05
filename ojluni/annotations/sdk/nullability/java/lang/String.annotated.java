@@ -203,6 +203,8 @@ public native char[] toCharArray();
 
 @libcore.util.NonNull public native java.lang.String intern();
 
+@libcore.util.NonNull public java.lang.String repeat(int count) { throw new RuntimeException("Stub!"); }
+
 public static final java.util.Comparator<java.lang.String> CASE_INSENSITIVE_ORDER;
 static { CASE_INSENSITIVE_ORDER = null; }
 }
