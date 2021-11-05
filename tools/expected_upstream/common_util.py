@@ -36,9 +36,15 @@ except ModuleNotFoundError:
 THIS_DIR = Path(__file__).resolve().parent
 LIBCORE_DIR = THIS_DIR.parent.parent.resolve()
 
-UPSTREAM_JAVA_BASE_PATHS = [
+UPSTREAM_CLASS_PATHS = [
     'jdk/src/share/classes/',
     'src/java.base/share/classes/',
+    'src/java.base/linux/classes/',
+    'src/java.base/unix/classes/',
+    'src/java.sql/share/classes/',
+    'src/java.logging/share/classes/',
+    'src/java.prefs/share/classes/',
+    'src/java.net/share/classes/',
 ]
 
 UPSTREAM_TEST_PATHS = [
@@ -46,7 +52,7 @@ UPSTREAM_TEST_PATHS = [
     'test/jdk/',
 ]
 
-UPSTREAM_SEARCH_PATHS = UPSTREAM_JAVA_BASE_PATHS + UPSTREAM_TEST_PATHS
+UPSTREAM_SEARCH_PATHS = UPSTREAM_CLASS_PATHS + UPSTREAM_TEST_PATHS
 
 OJLUNI_JAVA_BASE_PATH = 'ojluni/src/main/java/'
 OJLUNI_TEST_PATH = 'ojluni/src/'
@@ -208,7 +214,7 @@ class OpenjdkFinder:
     if relative_path:
       return f'{OJLUNI_TEST_PATH}test/{relative_path}'
 
-    for base_path in UPSTREAM_JAVA_BASE_PATHS:
+    for base_path in UPSTREAM_CLASS_PATHS:
       if src_path.startswith(base_path):
         length = len(base_path)
         relative_path = src_path[length:]
@@ -248,7 +254,7 @@ class OpenjdkFinder:
 
     TEST_PATH = OJLUNI_TEST_PATH + 'test/'
     if ojluni_path.startswith(OJLUNI_JAVA_BASE_PATH):
-      base_paths = UPSTREAM_JAVA_BASE_PATHS
+      base_paths = UPSTREAM_CLASS_PATHS
       length = len(OJLUNI_JAVA_BASE_PATH)
       relative_path = ojluni_path[length:]
     elif ojluni_path.startswith(TEST_PATH):
