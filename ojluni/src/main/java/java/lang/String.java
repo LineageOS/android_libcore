@@ -820,10 +820,17 @@ public final class String
      * @since      1.5
      */
     public int codePointAt(int index) {
-        if ((index < 0) || (index >= length())) {
-            throw new StringIndexOutOfBoundsException(index);
+        // BEGIN Android-changed: delegate codePointAt() to Character class.
+        /*
+        if (isLatin1()) {
+            checkIndex(index, value.length);
+            return value[index] & 0xff;
         }
-        // Android-changed: Skip codePointAtImpl optimization that needs access to java chars.
+        int length = value.length >> 1;
+        checkIndex(index, length);
+        return StringUTF16.codePointAt(value, index, length);
+         */
+        checkIndex(index, length());
         return Character.codePointAt(this, index);
     }
 
@@ -851,10 +858,16 @@ public final class String
      */
     public int codePointBefore(int index) {
         int i = index - 1;
-        if ((i < 0) || (i >= length())) {
+        if (i < 0 || i >= length()) {
             throw new StringIndexOutOfBoundsException(index);
         }
-        // Android-changed: Skip codePointBeforeImpl optimization that needs access to java chars.
+        // BEGIN Android-changed: delegate codePointBefore to Character class.
+        /*
+        if (isLatin1()) {
+            return (value[i] & 0xff);
+        }
+        return StringUTF16.codePointBefore(value, index);
+         */
         return Character.codePointBefore(this, index);
     }
 
@@ -880,11 +893,19 @@ public final class String
      * @since  1.5
      */
     public int codePointCount(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || endIndex > length() || beginIndex > endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex ||
+            endIndex > length()) {
             throw new IndexOutOfBoundsException();
         }
-        // Android-changed: Skip codePointCountImpl optimization that needs access to java chars.
+        // BEGIN Android-changed: delegate codePointCount to Character class.
+        /*
+        if (isLatin1()) {
+            return endIndex - beginIndex;
+        }
+        return StringUTF16.codePointCount(value, beginIndex, endIndex);
+         */
         return Character.codePointCount(this, beginIndex, endIndex);
+        // END Android-changed: delegate codePointCount to Character class.
     }
 
     /**
@@ -3529,4 +3550,15 @@ public final class String
 
     @FastNative
     private native String doRepeat(int count);
+
+    /*
+     * StringIndexOutOfBoundsException  if {@code index} is
+     * negative or greater than or equal to {@code length}.
+     */
+    static void checkIndex(int index, int length) {
+        if (index < 0 || index >= length) {
+            throw new StringIndexOutOfBoundsException("index " + index +
+                                                      ",length " + length);
+        }
+    }
 }
