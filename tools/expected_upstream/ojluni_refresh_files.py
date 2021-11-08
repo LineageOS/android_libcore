@@ -159,8 +159,9 @@ def merge_files_and_create_commit(entry_set: List[ExpectedUpstreamEntry],
     # However, it's fine, because we later reset the HEAD to the second commit.
     # The user expects the file showing in the file system, and the file is
     # not staged/untracked because the file is in the second commit too.
-    Path(entry.dst_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(entry.dst_path, "wb") as file:
+    absolute_dst_path = Path(LIBCORE_DIR, entry.dst_path)
+    absolute_dst_path.parent.mkdir(parents=True, exist_ok=True)
+    with absolute_dst_path.open("wb") as file:
       file.write(src_blob.data_stream.read())
     first_index.add(entry.dst_path)
 
@@ -190,7 +191,7 @@ def merge_files_and_create_commit(entry_set: List[ExpectedUpstreamEntry],
   # We updated the HEAD to the second commit. Thus, git-reset updates the
   # current index. Otherwise, the current index, aka, repo.index, shows that
   # the files are deleted.
-  repo.index.reset(paths=dst_paths)
+  repo.index.reset()
 
   print(f"New merge commit {second_commit} contains:")
   print(f"  {str_dst_paths}")
