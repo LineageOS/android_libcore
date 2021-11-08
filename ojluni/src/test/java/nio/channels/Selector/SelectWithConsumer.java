@@ -572,6 +572,7 @@ public class SelectWithConsumer {
             assertTrue(n == 1);
             assertFalse(sel.keys().contains(key1));
             assertTrue(sel.keys().contains(key2));
+            sel.selectNow();
             assertFalse(sel.selectedKeys().contains(key1));
             assertTrue(sel.selectedKeys().contains(key2));
 
