@@ -23,6 +23,7 @@
 package test.java.nio.channels.Channels;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,7 +35,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -50,7 +50,8 @@ public class EncodingTest {
     static final int ITERATIONS = 2;
     public static final String CS_UTF8 = StandardCharsets.UTF_8.name();
     public static final String CS_ISO8859 = StandardCharsets.ISO_8859_1.name();
-    static String USER_DIR = System.getProperty("user.dir", ".");
+    // Android-removed: Using temp file instead of user.dir
+    // static String USER_DIR = System.getProperty("user.dir", ".");
 
     // malformed input: a high surrogate without the low surrogate
     static char[] illChars = {
@@ -58,6 +59,17 @@ public class EncodingTest {
     };
 
     static byte[] data = getData();
+
+    // Android-added: Added constructor and temp file creation to avoid using user_dir.
+    File testFileHandle;
+    File testIllegalInputHandle;
+    File testIllegalOutputHandle;
+
+    public EncodingTest() throws IOException {
+      testFileHandle = File.createTempFile("channelsEncodingTest", "txt");
+      testIllegalInputHandle = File.createTempFile("channelsIllegalInputTest", "txt");
+      testIllegalOutputHandle = File.createTempFile("channelsIllegalOutputTest", "txt");
+    }
 
     static byte[] getData() {
         try {
@@ -74,9 +86,10 @@ public class EncodingTest {
         }
     }
 
-    String testFile = Paths.get(USER_DIR, "channelsEncodingTest.txt").toString();
-    String testIllegalInput = Paths.get(USER_DIR, "channelsIllegalInputTest.txt").toString();
-    String testIllegalOutput = Paths.get(USER_DIR, "channelsIllegalOutputTest.txt").toString();
+    // Android-changed: Using temp file instead of user.dir
+    String testFile = testFileHandle.getAbsolutePath();
+    String testIllegalInput = testIllegalInputHandle.getAbsolutePath();
+    String testIllegalOutput = testIllegalOutputHandle.getAbsolutePath();
 
 
     /*
