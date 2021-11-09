@@ -383,6 +383,12 @@ public final class String
         throw new RuntimeException("Stub!");
     }
 
+    public java.lang.String strip() { throw new RuntimeException("Stub!"); }
+
+    public java.lang.String stripLeading() { throw new RuntimeException("Stub!"); }
+
+    public java.lang.String stripTrailing() { throw new RuntimeException("Stub!"); }
+
     public java.lang.String toString() {
         throw new RuntimeException("Stub!");
     }
