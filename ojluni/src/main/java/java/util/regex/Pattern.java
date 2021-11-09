@@ -1225,8 +1225,15 @@ public final class Pattern
             return null;
         }
         char ch = re.charAt(0);
-        if (len == 1 && FASTSPLIT_METACHARACTERS.indexOf(ch) == -1) {
-            // We're looking for a single non-metacharacter. Easy.
+        if (len == 1) {
+            if (Character.isSurrogate(ch)) {
+                // Single surrogate is an invalid UTF-16 sequence.
+                return null;
+            } else if (FASTSPLIT_METACHARACTERS.indexOf(ch) != -1) {
+                // We don't allow a single metacharacter.
+                return null;
+            }
+            // pass through
         } else if (len == 2 && ch == '\\') {
             // We're looking for a quoted character.
             // Quoted metacharacters are effectively single non-metacharacters.
