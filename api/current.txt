@@ -3832,6 +3832,9 @@ package java.lang {
     method @NonNull public String[] split(@NonNull String);
     method public boolean startsWith(@NonNull String, int);
     method public boolean startsWith(@NonNull String);
+    method @NonNull public String strip();
+    method @NonNull public String stripLeading();
+    method @NonNull public String stripTrailing();
     method @NonNull public CharSequence subSequence(int, int);
     method @NonNull public String substring(int);
     method @NonNull public String substring(int, int);
