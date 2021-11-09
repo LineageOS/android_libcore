@@ -11,6 +11,8 @@ git fetch aosp upstream-openjdk11u
 THIS_DIR=$(realpath $(dirname $BASH_SOURCE))
 alias ojluni_refresh_files=${THIS_DIR}/ojluni_refresh_files.py
 alias ojluni_modify_expectation=${THIS_DIR}/ojluni_modify_expectation.py
+alias ojluni_run_tool_tests='PYTHONPATH=${PYTHONPATH}:${THIS_DIR} python3 -B -m unittest discover -v -s tests -p "*_test.py"'
+alias ojluni_upgrade_identicals=${THIS_DIR}/ojluni_upgrade_identicals.py
 
 
 _ojluni_modify_expectation ()
