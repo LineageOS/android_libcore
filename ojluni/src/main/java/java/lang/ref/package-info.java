@@ -23,6 +23,7 @@
  * questions.
  */
 
+// Android-changed: Remove docs to java.lang.ref.Cleaner until it's imported
 /**
  * Provides reference-object classes, which support a limited degree
  * of interaction with the garbage collector.  A program may use a
@@ -44,8 +45,6 @@
  * implementing canonicalizing mappings that do not prevent their keys
  * (or values) from being reclaimed, and phantom references are for
  * scheduling post-mortem cleanup actions.
- * Post-mortem cleanup actions can be registered and managed by a
- * {@link java.lang.ref.Cleaner}.
  *
  * <p> Each reference-object type is implemented by a subclass of the
  * abstract base {@link java.lang.ref.Reference} class.
