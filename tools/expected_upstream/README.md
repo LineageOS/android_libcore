@@ -150,7 +150,7 @@ git commit -- EXPECTED_UPSTREAM
 
 Then upload your change to AOSP gerrit.
 ```shell
-repo upload --cbr -t . # -t sets a topic to the CLs in the gerrit
+repo upload --cbr .
 ```
 
 Then you can switch back to your local `master` branch to apply the changes
