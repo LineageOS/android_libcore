@@ -113,6 +113,53 @@ public class MethodHandles {
         return Lookup.PUBLIC_LOOKUP;
     }
 
+    // Android-removed: Documentation related to the security manager and module checks
+    /**
+     * Returns a {@link Lookup lookup object} with full capabilities to emulate all
+     * supported bytecode behaviors, including <a href="MethodHandles.Lookup.html#privacc">
+     * private access</a>, on a target class.
+     * @param targetClass the target class
+     * @param lookup the caller lookup object
+     * @return a lookup object for the target class, with private access
+     * @throws IllegalArgumentException if {@code targetClass} is a primitive type or array class
+     * @throws NullPointerException if {@code targetClass} or {@code caller} is {@code null}
+     * @throws IllegalAccessException is not thrown on Android
+     * @since 9
+     */
+    public static Lookup privateLookupIn(Class<?> targetClass, Lookup lookup) throws IllegalAccessException {
+        // Android-removed: SecurityManager calls
+        // SecurityManager sm = System.getSecurityManager();
+        // if (sm != null) sm.checkPermission(ACCESS_PERMISSION);
+        if (targetClass.isPrimitive())
+            throw new IllegalArgumentException(targetClass + " is a primitive class");
+        if (targetClass.isArray())
+            throw new IllegalArgumentException(targetClass + " is an array class");
+        // BEGIN Android-removed: There is no module information on Android
+        /**
+         * Module targetModule = targetClass.getModule();
+         * Module callerModule = lookup.lookupClass().getModule();
+         * if (!callerModule.canRead(targetModule))
+         *     throw new IllegalAccessException(callerModule + " does not read " + targetModule);
+         * if (targetModule.isNamed()) {
+         *     String pn = targetClass.getPackageName();
+         *     assert pn.length() > 0 : "unnamed package cannot be in named module";
+         *     if (!targetModule.isOpen(pn, callerModule))
+         *         throw new IllegalAccessException(targetModule + " does not open " + pn + " to " + callerModule);
+         * }
+         * if ((lookup.lookupModes() & Lookup.MODULE) == 0)
+         *     throw new IllegalAccessException("lookup does not have MODULE lookup mode");
+         * if (!callerModule.isNamed() && targetModule.isNamed()) {
+         *     IllegalAccessLogger logger = IllegalAccessLogger.illegalAccessLogger();
+         *     if (logger != null) {
+         *         logger.logIfOpenedForIllegalAccess(lookup, targetClass);
+         *     }
+         * }
+         */
+        // END Android-removed: There is no module information on Android
+        return new Lookup(targetClass);
+    }
+
+
     /**
      * Performs an unchecked "crack" of a
      * <a href="MethodHandleInfo.html#directmh">direct method handle</a>.
@@ -681,7 +728,8 @@ public class MethodHandles {
             if (allowedModes == ALL_MODES &&
                     lookupClass.getClassLoader() == Object.class.getClassLoader()) {
                 if ((name.startsWith("java.")
-                            && !name.startsWith("java.util.concurrent.")) ||
+                            && !name.startsWith("java.util.concurrent.")
+                            && !name.equals("java.lang.Thread")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
                                 && !name.equals("sun.reflect.ReflectionFactory"))) {
