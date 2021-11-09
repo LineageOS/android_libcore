@@ -976,9 +976,14 @@ public final class String
      *                {@code dst.length}</ul>
      */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
+        // BEGIN Android-added: Null pointer check.
+        if (dst == null) {
+            throw new NullPointerException("dst == null");
+        }
+        // END Android-added: Null pointer check.
+        checkBoundsBeginEnd(srcBegin, srcEnd, length());
         // BEGIN Android-changed: Implement in terms of length() and native getCharsNoCheck method.
         /*
-        checkBoundsBeginEnd(srcBegin, srcEnd, length());
         checkBoundsOffCount(dstBegin, srcEnd - srcBegin, dst.length);
         if (isLatin1()) {
             StringLatin1.getChars(value, srcBegin, srcEnd, dst, dstBegin);
@@ -986,22 +991,6 @@ public final class String
             StringUTF16.getChars(value, srcBegin, srcEnd, dst, dstBegin);
         }
         */
-        if (dst == null) {
-            throw new NullPointerException("dst == null");
-        }
-
-        if (srcBegin < 0) {
-            throw new StringIndexOutOfBoundsException(this, srcBegin);
-        }
-        if (srcEnd > length()) {
-            throw new StringIndexOutOfBoundsException(this, srcEnd);
-        }
-
-        int n = srcEnd - srcBegin;
-        if (srcEnd < srcBegin) {
-            throw new StringIndexOutOfBoundsException(this, srcBegin, n);
-        }
-
         if (dstBegin < 0) {
             throw new ArrayIndexOutOfBoundsException("dstBegin < 0. dstBegin=" + dstBegin);
         }
@@ -1011,6 +1000,8 @@ public final class String
             throw new ArrayIndexOutOfBoundsException(
                     "dstBegin > dst.length. dstBegin=" + dstBegin + ", dst.length=" + dst.length);
         }
+
+        int n = srcEnd - srcBegin;
         if (n > dst.length - dstBegin) {
             throw new ArrayIndexOutOfBoundsException(
                     "n > dst.length - dstBegin. n=" + n + ", dst.length=" + dst.length
@@ -1076,16 +1067,17 @@ public final class String
      */
     @Deprecated(since="1.1")
     public void getBytes(int srcBegin, int srcEnd, byte dst[], int dstBegin) {
-        if (srcBegin < 0) {
-            throw new StringIndexOutOfBoundsException(this, srcBegin);
+        checkBoundsBeginEnd(srcBegin, srcEnd, length());
+        Objects.requireNonNull(dst);
+        checkBoundsOffCount(dstBegin, srcEnd - srcBegin, dst.length);
+        // BEGIN Android-changed: Implement in terms of charAt().
+        /*
+        if (isLatin1()) {
+            StringLatin1.getBytes(value, srcBegin, srcEnd, dst, dstBegin);
+        } else {
+            StringUTF16.getBytes(value, srcBegin, srcEnd, dst, dstBegin);
         }
-        if (srcEnd > length()) {
-            throw new StringIndexOutOfBoundsException(this, srcEnd);
-        }
-        if (srcBegin > srcEnd) {
-            throw new StringIndexOutOfBoundsException(this, srcEnd - srcBegin);
-        }
-
+         */
         int j = dstBegin;
         int n = srcEnd;
         int i = srcBegin;
@@ -1093,6 +1085,7 @@ public final class String
         while (i < n) {
             dst[j++] = (byte)charAt(i++);
         }
+        // END Android-changed: Implement in terms of charAt().
     }
 
     /**
@@ -2306,21 +2299,20 @@ public final class String
      *             {@code endIndex}.
      */
     public String substring(int beginIndex, int endIndex) {
-        if (beginIndex < 0) {
-            throw new StringIndexOutOfBoundsException(this, beginIndex);
-        }
-        if (endIndex > length()) {
-            throw new StringIndexOutOfBoundsException(this, endIndex);
-        }
+        int length = length();
+        checkBoundsBeginEnd(beginIndex, endIndex, length);
         int subLen = endIndex - beginIndex;
-        if (subLen < 0) {
-            throw new StringIndexOutOfBoundsException(subLen);
+        if (beginIndex == 0 && endIndex == length) {
+            return this;
         }
 
-        // Android-changed: Use native fastSubstring instead of String constructor.
-        return ((beginIndex == 0) && (endIndex == length())) ? this
-        //         : new String(value, beginIndex, subLen);
-                : fastSubstring(beginIndex, subLen);
+        // BEGIN Android-changed: Use native fastSubstring instead of String constructor.
+        /*
+        return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
+                          : StringUTF16.newString(value, beginIndex, subLen);
+         */
+        return fastSubstring(beginIndex, subLen);
+        // END Android-changed: Use native fastSubstring instead of String constructor.
     }
 
     // BEGIN Android-added: Native method to access char storage managed by runtime.
@@ -3559,6 +3551,36 @@ public final class String
         if (index < 0 || index >= length) {
             throw new StringIndexOutOfBoundsException("index " + index +
                                                       ",length " + length);
+        }
+    }
+
+    /*
+     * Check {@code offset}, {@code count} against {@code 0} and {@code length}
+     * bounds.
+     *
+     * @throws  StringIndexOutOfBoundsException
+     *          If {@code offset} is negative, {@code count} is negative,
+     *          or {@code offset} is greater than {@code length - count}
+     */
+    static void checkBoundsOffCount(int offset, int count, int length) {
+        if (offset < 0 || count < 0 || offset > length - count) {
+            throw new StringIndexOutOfBoundsException(
+                "offset " + offset + ", count " + count + ", length " + length);
+        }
+    }
+
+    /*
+     * Check {@code begin}, {@code end} against {@code 0} and {@code length}
+     * bounds.
+     *
+     * @throws  StringIndexOutOfBoundsException
+     *          If {@code begin} is negative, {@code begin} is greater than
+     *          {@code end}, or {@code end} is greater than {@code length}.
+     */
+    static void checkBoundsBeginEnd(int begin, int end, int length) {
+        if (begin < 0 || begin > end || end > length) {
+            throw new StringIndexOutOfBoundsException(
+                "begin " + begin + ", end " + end + ", length " + length);
         }
     }
 }
