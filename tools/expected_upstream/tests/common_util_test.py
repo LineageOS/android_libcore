@@ -188,6 +188,18 @@ class OpenJdkFinderTest(unittest.TestCase):
         'test/jdk/java/math/BigInteger/BigIntegerTest.java',
         self.finder.find_src_path_from_ojluni_path(
             'ojluni/src/test/java/math/BigInteger/BigIntegerTest.java'))
+    self.assertEqual(
+        'src/java.base/unix/classes/sun/nio/fs/UnixPath.java',
+        self.finder.find_src_path_from_ojluni_path(
+            'ojluni/src/main/java/sun/nio/fs/UnixPath.java'))
+    self.assertEqual(
+        'src/java.sql/share/classes/java/sql/Array.java',
+        self.finder.find_src_path_from_ojluni_path(
+            'ojluni/src/main/java/java/sql/Array.java'))
+    self.assertEqual(
+        'src/java.logging/share/classes/java/util/logging/Formatter.java',
+        self.finder.find_src_path_from_ojluni_path(
+            'ojluni/src/main/java/java/util/logging/Formatter.java'))
 
   def test_match_path_prefix(self):
     self.assert_match_path_prefix([
