@@ -3307,6 +3307,113 @@ public final class String
     }
 
     /**
+     * Returns a string whose value is this string, with all leading
+     * and trailing {@link Character#isWhitespace(int) white space}
+     * removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all code points in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point that is not a {@link Character#isWhitespace(int) white space}
+     * up to and including the last code point that is not a
+     * {@link Character#isWhitespace(int) white space}.
+     * <p>
+     * This method may be used to strip
+     * {@link Character#isWhitespace(int) white space} from
+     * the beginning and end of a string.
+     *
+     * @return  a string whose value is this string, with all leading
+     *          and trailing white space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String strip() {
+        // BEGIN Android-changed: Delegate to StringUTF16.
+        /*
+        String ret = isLatin1() ? StringLatin1.strip(value)
+                                : StringUTF16.strip(value);
+         */
+        String ret = StringUTF16.strip(this);
+        // END Android-changed: Delegate to StringUTF16.
+        return ret == null ? this : ret;
+    }
+
+    /**
+     * Returns a string whose value is this string, with all leading
+     * {@link Character#isWhitespace(int) white space} removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all code points in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point that is not a {@link Character#isWhitespace(int) white space}
+     * up to to and including the last code point of this string.
+     * <p>
+     * This method may be used to trim
+     * {@link Character#isWhitespace(int) white space} from
+     * the beginning of a string.
+     *
+     * @return  a string whose value is this string, with all leading white
+     *          space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String stripLeading() {
+        // BEGIN Android-changed: Delegate to StringUTF16.
+        /*
+        String ret = isLatin1() ? StringLatin1.stripLeading(value)
+                                : StringUTF16.stripLeading(value);
+         */
+        String ret = StringUTF16.stripLeading(this);
+        // END Android-changed: Delegate to StringUTF16.
+        return ret == null ? this : ret;
+    }
+
+    /**
+     * Returns a string whose value is this string, with all trailing
+     * {@link Character#isWhitespace(int) white space} removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all characters in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point of this string up to and including the last code point
+     * that is not a {@link Character#isWhitespace(int) white space}.
+     * <p>
+     * This method may be used to trim
+     * {@link Character#isWhitespace(int) white space} from
+     * the end of a string.
+     *
+     * @return  a string whose value is this string, with all trailing white
+     *          space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String stripTrailing() {
+        // BEGIN Android-changed: Delegate to StringUTF16.
+        /*
+        String ret = isLatin1() ? StringLatin1.stripTrailing(value)
+                                : StringUTF16.stripTrailing(value);
+         */
+        String ret = StringUTF16.stripTrailing(this);
+        // END Android-changed: Delegate to StringUTF16.
+        return ret == null ? this : ret;
+    }
+
+    /**
      * This object (which is already a string!) is itself returned.
      *
      * @return  the string itself.
