@@ -104,6 +104,7 @@ import sun.text.normalizer.NormalizerBase;
  * @see                Collator
  * @see                RuleBasedCollator
  * @author             Helena Shih, Laura Werner, Richard Gillam
+ * @since 1.1
  */
 public final class CollationElementIterator
 {
@@ -111,7 +112,7 @@ public final class CollationElementIterator
      * Null order which indicates the end of string is reached by the
      * cursor.
      */
-    public final static int NULLORDER = 0xffffffff;
+    public static final int NULLORDER = 0xffffffff;
 
     /**
      * CollationElementIterator constructor.  This takes the source string and
@@ -124,7 +125,7 @@ public final class CollationElementIterator
     CollationElementIterator(String sourceText, RuleBasedCollator owner) {
         this.owner = owner;
         ordering = owner.getTables();
-        if ( sourceText.length() != 0 ) {
+        if (!sourceText.isEmpty()) {
             NormalizerBase.Mode mode =
                 CollatorUtilities.toNormalizerMode(owner.getDecomposition());
             text = new NormalizerBase(sourceText, mode);
@@ -358,7 +359,7 @@ public final class CollationElementIterator
      * @param order the collation element
      * @return the element's primary component
      */
-    public final static int primaryOrder(int order)
+    public static final int primaryOrder(int order)
     {
         order &= RBCollationTables.PRIMARYORDERMASK;
         return (order >>> RBCollationTables.PRIMARYORDERSHIFT);
@@ -368,7 +369,7 @@ public final class CollationElementIterator
      * @param order the collation element
      * @return the element's secondary component
      */
-    public final static short secondaryOrder(int order)
+    public static final short secondaryOrder(int order)
     {
         order = order & RBCollationTables.SECONDARYORDERMASK;
         return ((short)(order >> RBCollationTables.SECONDARYORDERSHIFT));
@@ -378,7 +379,7 @@ public final class CollationElementIterator
      * @param order the collation element
      * @return the element's tertiary component
      */
-    public final static short tertiaryOrder(int order)
+    public static final short tertiaryOrder(int order)
     {
         return ((short)(order &= RBCollationTables.TERTIARYORDERMASK));
     }
@@ -540,14 +541,14 @@ public final class CollationElementIterator
      * Determine if a character is a Thai vowel (which sorts after
      * its base consonant).
      */
-    private final static boolean isThaiPreVowel(int ch) {
+    private static final boolean isThaiPreVowel(int ch) {
         return (ch >= 0x0e40) && (ch <= 0x0e44);
     }
 
     /**
      * Determine if a character is a Thai base consonant
      */
-    private final static boolean isThaiBaseConsonant(int ch) {
+    private static final boolean isThaiBaseConsonant(int ch) {
         return (ch >= 0x0e01) && (ch <= 0x0e2e);
     }
 
@@ -555,14 +556,14 @@ public final class CollationElementIterator
      * Determine if a character is a Lao vowel (which sorts after
      * its base consonant).
      */
-    private final static boolean isLaoPreVowel(int ch) {
+    private static final boolean isLaoPreVowel(int ch) {
         return (ch >= 0x0ec0) && (ch <= 0x0ec4);
     }
 
     /**
      * Determine if a character is a Lao base consonant
      */
-    private final static boolean isLaoBaseConsonant(int ch) {
+    private static final boolean isLaoBaseConsonant(int ch) {
         return (ch >= 0x0e81) && (ch <= 0x0eae);
     }
 
@@ -634,7 +635,7 @@ public final class CollationElementIterator
      *  Check if a comparison order is ignorable.
      *  @return true if a character is ignorable, false otherwise.
      */
-    final static boolean isIgnorable(int order)
+    static final boolean isIgnorable(int order)
     {
         return ((primaryOrder(order) == 0) ? true : false);
     }
@@ -770,7 +771,7 @@ public final class CollationElementIterator
         return order;
     }
 
-    final static int UNMAPPEDCHARVALUE = 0x7FFF0000;
+    static final int UNMAPPEDCHARVALUE = 0x7FFF0000;
 
     private NormalizerBase text = null;
     private int[] buffer = null;
