@@ -252,6 +252,7 @@ ojluni/src/main/java/java/lang/ref/Reference.java,jdk8u/jdk8u121-b13,jdk/src/sha
 ojluni/src/main/java/java/lang/ref/ReferenceQueue.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/ref/ReferenceQueue.java
 ojluni/src/main/java/java/lang/ref/SoftReference.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ref/SoftReference.java
 ojluni/src/main/java/java/lang/ref/WeakReference.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ref/WeakReference.java
+ojluni/src/main/java/java/lang/ref/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ref/package-info.java
 ojluni/src/main/java/java/lang/reflect/AccessibleObject.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/reflect/AccessibleObject.java
 ojluni/src/main/java/java/lang/reflect/AnnotatedElement.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/reflect/AnnotatedElement.java
 ojluni/src/main/java/java/lang/reflect/Array.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/reflect/Array.java
@@ -413,6 +414,7 @@ ojluni/src/main/java/java/nio/charset/CodingErrorAction.java,jdk11u/jdk-11.0.13-
 ojluni/src/main/java/java/nio/charset/MalformedInputException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/charset/MalformedInputException.java
 ojluni/src/main/java/java/nio/charset/StandardCharsets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/StandardCharsets.java
 ojluni/src/main/java/java/nio/charset/UnmappableCharacterException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/charset/UnmappableCharacterException.java
+ojluni/src/main/java/java/nio/charset/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/charset/package-info.java
 ojluni/src/main/java/java/nio/charset/spi/CharsetProvider.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/charset/spi/CharsetProvider.java
 ojluni/src/main/java/java/nio/file/AccessDeniedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/file/AccessDeniedException.java
 ojluni/src/main/java/java/nio/file/AccessMode.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/file/AccessMode.java
@@ -488,6 +490,7 @@ ojluni/src/main/java/java/nio/file/attribute/UserPrincipalLookupService.java,jdk
 ojluni/src/main/java/java/nio/file/attribute/UserPrincipalNotFoundException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/file/attribute/UserPrincipalNotFoundException.java
 ojluni/src/main/java/java/nio/file/spi/FileSystemProvider.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/file/spi/FileSystemProvider.java
 ojluni/src/main/java/java/nio/file/spi/FileTypeDetector.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/file/spi/FileTypeDetector.java
+ojluni/src/main/java/java/nio/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/nio/package-info.java
 ojluni/src/main/java/java/security/AccessControlContext.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/AccessControlContext.java
 ojluni/src/main/java/java/security/AccessControlException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/AccessControlException.java
 ojluni/src/main/java/java/security/AccessController.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/AccessController.java
