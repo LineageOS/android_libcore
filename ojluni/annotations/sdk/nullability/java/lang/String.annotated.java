@@ -177,6 +177,8 @@ public java.lang.@libcore.util.NonNull String @libcore.util.NonNull [] split(@li
 
 @libcore.util.NonNull public java.lang.String stripTrailing() { throw new RuntimeException("Stub!"); }
 
+public boolean isBlank() { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
 public native char[] toCharArray();
