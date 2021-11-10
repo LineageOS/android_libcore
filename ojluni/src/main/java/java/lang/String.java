@@ -35,10 +35,13 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import jdk.internal.HotSpotIntrinsicCandidate;
 
 import libcore.util.CharsetUtils;
@@ -3491,6 +3494,53 @@ public final class String
      */
     public String toString() {
         return this;
+    }
+
+    /**
+     * Returns a stream of {@code int} zero-extending the {@code char} values
+     * from this sequence.  Any char which maps to a <a
+     * href="{@docRoot}/java.base/java/lang/Character.html#unicode">surrogate code
+     * point</a> is passed through uninterpreted.
+     *
+     * @return an IntStream of char values from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream chars() {
+        return StreamSupport.intStream(
+            // BEGIN Android-removed: Delegate to StringUTF16.
+            /*
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CharsSpliterator(value, Spliterator.IMMUTABLE),
+             */
+            new StringUTF16.CharsSpliterator(this, Spliterator.IMMUTABLE),
+            // END Android-removed: Delegate to StringUTF16.
+            false);
+    }
+
+
+    /**
+     * Returns a stream of code point values from this sequence.  Any surrogate
+     * pairs encountered in the sequence are combined as if by {@linkplain
+     * Character#toCodePoint Character.toCodePoint} and the result is passed
+     * to the stream. Any other code units, including ordinary BMP characters,
+     * unpaired surrogates, and undefined code units, are zero-extended to
+     * {@code int} values which are then passed to the stream.
+     *
+     * @return an IntStream of Unicode code points from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream codePoints() {
+        return StreamSupport.intStream(
+            // BEGIN Android-removed: Delegate to StringUTF16.
+            /*
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CodePointsSpliterator(value, Spliterator.IMMUTABLE),
+             */
+            new StringUTF16.CodePointsSpliterator(this, Spliterator.IMMUTABLE),
+            // END Android-removed: Delegate to StringUTF16.
+            false);
     }
 
     /**
