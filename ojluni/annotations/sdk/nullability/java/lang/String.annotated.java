@@ -35,6 +35,7 @@ import java.util.StringJoiner;
 import java.util.Locale;
 import java.util.Formatter;
 import java.util.Comparator;
+import java.util.stream.Stream;
 
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class String implements java.io.Serializable, java.lang.Comparable<java.lang.String>, java.lang.CharSequence {
@@ -178,6 +179,8 @@ public java.lang.@libcore.util.NonNull String @libcore.util.NonNull [] split(@li
 @libcore.util.NonNull public java.lang.String stripTrailing() { throw new RuntimeException("Stub!"); }
 
 public boolean isBlank() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public java.util.stream.Stream<String> lines() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
