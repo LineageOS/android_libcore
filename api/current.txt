@@ -3811,6 +3811,7 @@ package java.lang {
     method public int indexOf(@NonNull String);
     method public int indexOf(@NonNull String, int);
     method @NonNull public String intern();
+    method public boolean isBlank();
     method public boolean isEmpty();
     method @NonNull public static String join(@NonNull CharSequence, @Nullable java.lang.CharSequence...);
     method @NonNull public static String join(@NonNull CharSequence, @NonNull Iterable<? extends java.lang.CharSequence>);

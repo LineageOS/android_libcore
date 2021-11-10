@@ -3414,6 +3414,36 @@ public final class String
     }
 
     /**
+     * Returns {@code true} if the string is empty or contains only
+     * {@link Character#isWhitespace(int) white space} codepoints,
+     * otherwise {@code false}.
+     *
+     * @return {@code true} if the string is empty or contains only
+     *         {@link Character#isWhitespace(int) white space} codepoints,
+     *         otherwise {@code false}
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public boolean isBlank() {
+        return indexOfNonWhitespace() == length();
+    }
+
+    private int indexOfNonWhitespace() {
+        // BEGIN Android-removed: Delegate to StringUTF16.
+        /*
+        if (isLatin1()) {
+            return StringLatin1.indexOfNonWhitespace(value);
+        } else {
+            return StringUTF16.indexOfNonWhitespace(value);
+        }
+         */
+        return StringUTF16.indexOfNonWhitespace(this);
+        // END Android-removed: Delegate to StringUTF16.
+    }
+
+    /**
      * This object (which is already a string!) is itself returned.
      *
      * @return  the string itself.
