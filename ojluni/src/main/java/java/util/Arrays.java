@@ -4255,7 +4255,12 @@ public class Arrays {
 
         @Override
         public Object[] toArray() {
-            return Arrays.copyOf(a, a.length, Object[].class);
+            // Android-changed: there are applications which expect this method
+            // to return array with component type E, not just Object.
+            // Keeping pre-Java 9 behaviour for compatibility sake.
+            // See b/204397945.
+            // return Arrays.copyOf(a, a.length, Object[].class);
+            return a.clone();
         }
 
         @Override
