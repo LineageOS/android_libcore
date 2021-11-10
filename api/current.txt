@@ -3820,6 +3820,7 @@ package java.lang {
     method public int lastIndexOf(@NonNull String);
     method public int lastIndexOf(@NonNull String, int);
     method public int length();
+    method @NonNull public java.util.stream.Stream<java.lang.String> lines();
     method public boolean matches(@NonNull String);
     method public int offsetByCodePoints(int, int);
     method public boolean regionMatches(int, @NonNull String, int, int);

@@ -391,6 +391,8 @@ public final class String
 
     public boolean isBlank() { throw new RuntimeException("Stub!"); }
 
+    public java.util.stream.Stream<String> lines() { throw new RuntimeException("Stub!"); }
+
     public java.lang.String toString() {
         throw new RuntimeException("Stub!");
     }
