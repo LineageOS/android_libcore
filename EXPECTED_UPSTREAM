@@ -727,7 +727,7 @@ ojluni/src/main/java/java/text/CharacterIteratorFieldDelegate.java,jdk11u/jdk-11
 ojluni/src/main/java/java/text/ChoiceFormat.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/ChoiceFormat.java
 ojluni/src/main/java/java/text/CollationElementIterator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/CollationElementIterator.java
 ojluni/src/main/java/java/text/CollationKey.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/CollationKey.java
-ojluni/src/main/java/java/text/Collator.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/Collator.java
+ojluni/src/main/java/java/text/Collator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/Collator.java
 ojluni/src/main/java/java/text/DateFormat.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/DateFormat.java
 ojluni/src/main/java/java/text/DateFormatSymbols.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/DateFormatSymbols.java
 ojluni/src/main/java/java/text/DecimalFormat.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/DecimalFormat.java
@@ -744,7 +744,7 @@ ojluni/src/main/java/java/text/NumberFormat.java,jdk8u/jdk8u121-b13,jdk/src/shar
 ojluni/src/main/java/java/text/ParseException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/ParseException.java
 ojluni/src/main/java/java/text/ParsePosition.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/ParsePosition.java
 ojluni/src/main/java/java/text/PatternEntry.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/PatternEntry.java
-ojluni/src/main/java/java/text/RuleBasedCollator.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/RuleBasedCollator.java
+ojluni/src/main/java/java/text/RuleBasedCollator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/RuleBasedCollator.java
 ojluni/src/main/java/java/text/SimpleDateFormat.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/text/SimpleDateFormat.java
 ojluni/src/main/java/java/text/StringCharacterIterator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/text/StringCharacterIterator.java
 ojluni/src/main/java/java/time/Clock.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/time/Clock.java
