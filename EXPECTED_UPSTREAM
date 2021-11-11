@@ -1024,11 +1024,11 @@ ojluni/src/main/java/java/util/concurrent/atomic/AtomicReference.java,jdk11u/jdk
 ojluni/src/main/java/java/util/concurrent/atomic/AtomicReferenceArray.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/atomic/AtomicReferenceArray.java
 ojluni/src/main/java/java/util/concurrent/atomic/AtomicReferenceFieldUpdater.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/atomic/AtomicReferenceFieldUpdater.java
 ojluni/src/main/java/java/util/concurrent/atomic/AtomicStampedReference.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/atomic/AtomicStampedReference.java
-ojluni/src/main/java/java/util/concurrent/atomic/DoubleAccumulator.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/concurrent/atomic/DoubleAccumulator.java
-ojluni/src/main/java/java/util/concurrent/atomic/DoubleAdder.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/concurrent/atomic/DoubleAdder.java
-ojluni/src/main/java/java/util/concurrent/atomic/LongAccumulator.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/concurrent/atomic/LongAccumulator.java
-ojluni/src/main/java/java/util/concurrent/atomic/LongAdder.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/concurrent/atomic/LongAdder.java
-ojluni/src/main/java/java/util/concurrent/atomic/Striped64.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/concurrent/atomic/Striped64.java
+ojluni/src/main/java/java/util/concurrent/atomic/DoubleAccumulator.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/concurrent/atomic/DoubleAccumulator.java
+ojluni/src/main/java/java/util/concurrent/atomic/DoubleAdder.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/concurrent/atomic/DoubleAdder.java
+ojluni/src/main/java/java/util/concurrent/atomic/LongAccumulator.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/concurrent/atomic/LongAccumulator.java
+ojluni/src/main/java/java/util/concurrent/atomic/LongAdder.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/concurrent/atomic/LongAdder.java
+ojluni/src/main/java/java/util/concurrent/atomic/Striped64.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/concurrent/atomic/Striped64.java
 ojluni/src/main/java/java/util/concurrent/atomic/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/atomic/package-info.java
 ojluni/src/main/java/java/util/concurrent/locks/AbstractOwnableSynchronizer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/AbstractOwnableSynchronizer.java
 ojluni/src/main/java/java/util/concurrent/locks/AbstractQueuedLongSynchronizer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/AbstractQueuedLongSynchronizer.java
