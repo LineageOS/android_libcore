@@ -1675,6 +1675,8 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
             return new BigInteger(shiftLeft(x,Integer.numberOfTrailingZeros(y)), sign);
         }
         int xlen = x.length;
+        // BEGIN Android-changed: Try to predict result length to avoid copy. http://b/140780742
+        /*
         int[] rmag =  new int[xlen + 1];
         long carry = 0;
         long yl = y & LONG_MASK;
@@ -1689,6 +1691,32 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
         } else {
             rmag[rstart] = (int)carry;
         }
+        */
+        long carry = 0;
+        long yl = y & LONG_MASK;
+        // Bound the 2 most significant product (int-sized) "digits". Less-significant ints in x's
+        // magnitude cannot contribute more than 1 in the uppermost int.
+        long highDigitsBound = ((x[0] & LONG_MASK) + 1) * yl;  // Cannot overflow as unsigned long.
+        int rlen = ((highDigitsBound >>> 32) == 0) ? xlen : xlen + 1;
+        int[] rmag =  new int[rlen];
+        int rindex = rlen - 1;
+        for (int i = xlen - 1; i >= 0; i--) {
+            long product = (x[i] & LONG_MASK) * yl + carry;
+            rmag[rindex--] = (int)product;
+            carry = product >>> 32;
+        }
+        if (rindex == -1) {
+            assert(carry == 0);
+        } else {
+            assert(rindex == 0);
+            if (carry == 0) {
+                // We mis-estimated the length. Very rare.
+                rmag = java.util.Arrays.copyOfRange(rmag, 1, rmag.length);
+            } else {
+                rmag[0] = (int)carry;
+            }
+        }
+        // END Android-changed: Try to predict result length to avoid copy.
         return new BigInteger(rmag, sign);
     }
 

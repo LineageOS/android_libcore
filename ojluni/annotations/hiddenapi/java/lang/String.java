@@ -389,6 +389,10 @@ public final class String
 
     public java.lang.String stripTrailing() { throw new RuntimeException("Stub!"); }
 
+    public boolean isBlank() { throw new RuntimeException("Stub!"); }
+
+    public java.util.stream.Stream<String> lines() { throw new RuntimeException("Stub!"); }
+
     public java.lang.String toString() {
         throw new RuntimeException("Stub!");
     }

@@ -35,9 +35,13 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import jdk.internal.HotSpotIntrinsicCandidate;
 
 import libcore.util.CharsetUtils;
@@ -3414,12 +3418,129 @@ public final class String
     }
 
     /**
+     * Returns {@code true} if the string is empty or contains only
+     * {@link Character#isWhitespace(int) white space} codepoints,
+     * otherwise {@code false}.
+     *
+     * @return {@code true} if the string is empty or contains only
+     *         {@link Character#isWhitespace(int) white space} codepoints,
+     *         otherwise {@code false}
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public boolean isBlank() {
+        return indexOfNonWhitespace() == length();
+    }
+
+    private int indexOfNonWhitespace() {
+        // BEGIN Android-removed: Delegate to StringUTF16.
+        /*
+        if (isLatin1()) {
+            return StringLatin1.indexOfNonWhitespace(value);
+        } else {
+            return StringUTF16.indexOfNonWhitespace(value);
+        }
+         */
+        return StringUTF16.indexOfNonWhitespace(this);
+        // END Android-removed: Delegate to StringUTF16.
+    }
+
+    /**
+     * Returns a stream of lines extracted from this string,
+     * separated by line terminators.
+     * <p>
+     * A <i>line terminator</i> is one of the following:
+     * a line feed character {@code "\n"} (U+000A),
+     * a carriage return character {@code "\r"} (U+000D),
+     * or a carriage return followed immediately by a line feed
+     * {@code "\r\n"} (U+000D U+000A).
+     * <p>
+     * A <i>line</i> is either a sequence of zero or more characters
+     * followed by a line terminator, or it is a sequence of one or
+     * more characters followed by the end of the string. A
+     * line does not include the line terminator.
+     * <p>
+     * The stream returned by this method contains the lines from
+     * this string in the order in which they occur.
+     *
+     * @apiNote This definition of <i>line</i> implies that an empty
+     *          string has zero lines and that there is no empty line
+     *          following a line terminator at the end of a string.
+     *
+     * @implNote This method provides better performance than
+     *           split("\R") by supplying elements lazily and
+     *           by faster search of new line terminators.
+     *
+     * @return  the stream of lines extracted from this string
+     *
+     * @since 11
+     */
+    public Stream<String> lines() {
+        // BEGIN Android-removed: Delegate to StringUTF16.
+        /*
+        return isLatin1() ? StringLatin1.lines(value)
+                          : StringUTF16.lines(value);
+         */
+        return StringUTF16.lines(this);
+        // END Android-removed: Delegate to StringUTF16.
+    }
+
+    /**
      * This object (which is already a string!) is itself returned.
      *
      * @return  the string itself.
      */
     public String toString() {
         return this;
+    }
+
+    /**
+     * Returns a stream of {@code int} zero-extending the {@code char} values
+     * from this sequence.  Any char which maps to a <a
+     * href="{@docRoot}/java.base/java/lang/Character.html#unicode">surrogate code
+     * point</a> is passed through uninterpreted.
+     *
+     * @return an IntStream of char values from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream chars() {
+        return StreamSupport.intStream(
+            // BEGIN Android-removed: Delegate to StringUTF16.
+            /*
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CharsSpliterator(value, Spliterator.IMMUTABLE),
+             */
+            new StringUTF16.CharsSpliterator(this, Spliterator.IMMUTABLE),
+            // END Android-removed: Delegate to StringUTF16.
+            false);
+    }
+
+
+    /**
+     * Returns a stream of code point values from this sequence.  Any surrogate
+     * pairs encountered in the sequence are combined as if by {@linkplain
+     * Character#toCodePoint Character.toCodePoint} and the result is passed
+     * to the stream. Any other code units, including ordinary BMP characters,
+     * unpaired surrogates, and undefined code units, are zero-extended to
+     * {@code int} values which are then passed to the stream.
+     *
+     * @return an IntStream of Unicode code points from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream codePoints() {
+        return StreamSupport.intStream(
+            // BEGIN Android-removed: Delegate to StringUTF16.
+            /*
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CodePointsSpliterator(value, Spliterator.IMMUTABLE),
+             */
+            new StringUTF16.CodePointsSpliterator(this, Spliterator.IMMUTABLE),
+            // END Android-removed: Delegate to StringUTF16.
+            false);
     }
 
     /**

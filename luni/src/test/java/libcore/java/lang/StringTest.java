@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import java.util.stream.IntStream;
 import junit.framework.TestCase;
 
 public class StringTest extends TestCase {
@@ -794,5 +795,37 @@ public class StringTest extends TestCase {
         } finally {
             Locale.setDefault(defaultLocale);
         }
+    }
+
+    /**
+     * In addition to upstream tests that test whitespace characters from range [1, 0xFFFF],
+     * test *all* whitespace characters from [1, Character.MAX_CODE_POINT] to include non-BMP
+     * whitespaces.
+     */
+    public void testStrip_allWhitespaces() {
+        StringBuilder sb = new StringBuilder();
+        IntStream.range(1, Character.MAX_CODE_POINT).filter(Character::isWhitespace)
+                .forEach(c -> sb.append((char)c));
+        String whiteSpace = sb.toString();
+
+        String testString = whiteSpace + "abc" + whiteSpace;
+        assertEquals("abc", testString.strip());
+        assertEquals("abc" + whiteSpace, testString.stripLeading());
+        assertEquals(whiteSpace + "abc", testString.stripTrailing());
+    }
+
+    /**
+     * In addition to upstream tests that test whitespace characters from range [1, 0xFFFF],
+     * test *all* whitespace characters from [1, Character.MAX_CODE_POINT] to include non-BMP
+     * whitespaces.
+     */
+    public void testIsBlank_allWhitespaces() {
+        StringBuilder sb = new StringBuilder();
+        IntStream.range(1, 0xFFFF).filter(Character::isWhitespace)
+                .forEach(c -> sb.append((char)c));
+        String whiteSpace = sb.toString();
+
+        assertTrue(whiteSpace.isBlank());
+        assertFalse((whiteSpace + "abc" + whiteSpace).isBlank());
     }
 }
