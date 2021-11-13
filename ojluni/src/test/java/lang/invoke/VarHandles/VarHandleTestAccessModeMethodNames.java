@@ -21,12 +21,10 @@
  * questions.
  */
 
-// Android-added: package name
-package test.java.lang.invoke.VarHandles;
-
 /*
  * @test
  * @run testng VarHandleTestAccessModeMethodNames
+ * @modules java.base/java.lang.invoke:open
  */
 
 import org.testng.annotations.DataProvider;
