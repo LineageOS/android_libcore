@@ -60,17 +60,6 @@ public class EncodingTest {
 
     static byte[] data = getData();
 
-    // Android-added: Added constructor and temp file creation to avoid using user_dir.
-    File testFileHandle;
-    File testIllegalInputHandle;
-    File testIllegalOutputHandle;
-
-    public EncodingTest() throws IOException {
-      testFileHandle = File.createTempFile("channelsEncodingTest", "txt");
-      testIllegalInputHandle = File.createTempFile("channelsIllegalInputTest", "txt");
-      testIllegalOutputHandle = File.createTempFile("channelsIllegalOutputTest", "txt");
-    }
-
     static byte[] getData() {
         try {
             String str1 = "A string that contains ";
@@ -86,11 +75,27 @@ public class EncodingTest {
         }
     }
 
-    // Android-changed: Using temp file instead of user.dir
-    String testFile = testFileHandle.getAbsolutePath();
-    String testIllegalInput = testIllegalInputHandle.getAbsolutePath();
-    String testIllegalOutput = testIllegalOutputHandle.getAbsolutePath();
+    // BEGIN Android-changed: Using temp file instead of user.dir
+    // String testFile = Paths.get(USER_DIR, "channelsEncodingTest.txt").toString();
+    // String testIllegalInput = Paths.get(USER_DIR, "channelsIllegalInputTest.txt").toString();
+    // String testIllegalOutput = Paths.get(USER_DIR, "channelsIllegalOutputTest.txt").toString();
+    private final String testFile;
+    private final String testIllegalInput;
+    private final String testIllegalOutput;
 
+    private final File testFileHandle;
+    private final File testIllegalInputHandle;
+    private final File testIllegalOutputHandle;
+
+    public EncodingTest() throws IOException {
+        testFileHandle = File.createTempFile("channelsEncodingTest", "txt");
+        testIllegalInputHandle = File.createTempFile("channelsIllegalInputTest", "txt");
+        testIllegalOutputHandle = File.createTempFile("channelsIllegalOutputTest", "txt");
+        testFile = testFileHandle.getAbsolutePath();
+        testIllegalInput = testIllegalInputHandle.getAbsolutePath();
+        testIllegalOutput = testIllegalOutputHandle.getAbsolutePath();
+    }
+    // BEGIN Android-changed: Using temp file instead of user.dir
 
     /*
      * DataProvider for read and write test.

@@ -697,6 +697,9 @@ java_test {
         "ojluni/src/test/java/**/*.java",
         "ojluni/src/test/javax/**/*.java",
     ],
+    exclude_srcs: [
+        "ojluni/src/test/java/lang/invoke/VarHandles/**/*.java",
+    ],
     java_resource_dirs: [
         "ojluni/src/test/java",
         "ojluni/src/test/resources",
@@ -753,10 +756,12 @@ java_test {
     //     and won't actually run, and
     // 2.) util/stream/boot*. Those directories contain classes in the package java.util.stream;
     //     excluding them means we don't need patch_module: "java.base"
+    // 3.) java.lang.invoke.VarHandles. A few issues to clear out then address b/203822478.
     exclude_srcs: [
         "**/DeserializeMethodTest.java",
         "**/SerializedLambdaTest.java",
         "ojluni/src/test/java/util/stream/boot*/**/*",
+        "ojluni/src/test/java/lang/invoke/VarHandles/**/*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
