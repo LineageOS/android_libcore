@@ -279,6 +279,7 @@ java_library {
             "java.lang.Object",
             "java.lang.String",
             "java.lang.invoke.MethodHandle",
+            "java.lang.invoke.VarHandle",
             "java.lang.ref.Reference",
             "java.lang.reflect.Proxy",
             "java.util.AbstractMap",
