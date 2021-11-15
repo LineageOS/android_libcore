@@ -49,6 +49,9 @@ import java.util.Locale;
 import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 
+// Android-removed: Remove javadoc related to "rg" Locale extension.
+// The "rg" extension isn't supported until https://unicode-org.atlassian.net/browse/ICU-21831
+// is resolved, because java.text.* stack relies on ICU on resource resolution.
 /**
  * This class represents the set of symbols (such as the decimal separator,
  * the grouping separator, and so on) needed by <code>DecimalFormat</code>
@@ -56,10 +59,6 @@ import libcore.icu.LocaleData;
  * <code>DecimalFormatSymbols</code> from its locale data.  If you need to change any
  * of these symbols, you can get the <code>DecimalFormatSymbols</code> object from
  * your <code>DecimalFormat</code> and modify it.
- *
- * <p>If the locale contains "rg" (region override)
- * <a href="../util/Locale.html#def_locale_extension">Unicode extension</a>,
- * the symbols are overridden for the designated region.
  *
  * @see          java.util.Locale
  * @see          DecimalFormat
