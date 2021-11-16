@@ -141,7 +141,10 @@ public class CopyOnWriteArrayList<E>
             es = ((CopyOnWriteArrayList<?>)c).getArray();
         else {
             es = c.toArray();
-            if (c.getClass() != java.util.ArrayList.class)
+            // Android-changed: Defend against c.toArray (incorrectly) not returning Object[]
+            //                  (see b/204397945)
+            // if (c.getClass() != java.util.ArrayList.class)
+            if (es.getClass() != Object[].class)
                 es = Arrays.copyOf(es, es.length, Object[].class);
         }
         setArray(es);
