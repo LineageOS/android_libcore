@@ -29,44 +29,35 @@
  * if invalid params are specified and NoSuchAlgorithmException (or
  * CertificateException for CertificateFactory) if bogus type is specified
  */
+package test.java.security.cert;
+
+import static org.testng.Assert.assertThrows;
+
 import java.security.*;
 import java.security.cert.*;
 import java.util.*;
+import org.testng.annotations.Test;
 
 public class GetInstance {
 
-    public static void main(String[] args) throws Exception {
+    @Test
+    public static void testGetInstance(String[] args) throws Exception {
 
         CollectionCertStoreParameters ccsp
-            = new CollectionCertStoreParameters(new ArrayList());
-        try {
-            CertStore cs = CertStore.getInstance("LDAP", ccsp);
-            throw new Exception("CertStore.getInstance() should have thrown " +
-                "InvalidAlgorithmParameterException");
-        } catch (InvalidAlgorithmParameterException iape) { }
+            = new CollectionCertStoreParameters(new ArrayList<>());
+        assertThrows(InvalidAlgorithmParameterException.class,
+            () -> CertStore.getInstance("LDAP", ccsp));
 
-        try {
-            CertStore cs = CertStore.getInstance("BOGUS", null);
-            throw new Exception("CertStore.getInstance() should have thrown " +
-                "NoSuchAlgorithmException");
-        } catch (NoSuchAlgorithmException nsae) { }
+        assertThrows(NoSuchAlgorithmException.class,
+            () -> CertStore.getInstance("BOGUS", null));
 
-        try {
-            CertPathBuilder cpb = CertPathBuilder.getInstance("BOGUS");
-            throw new Exception("CertPathBuilder.getInstance() should have " +
-                "thrown NoSuchAlgorithmException");
-        } catch (NoSuchAlgorithmException nsae) { }
+        assertThrows(NoSuchAlgorithmException.class,
+            () -> CertPathBuilder.getInstance("BOGUS"));
 
-        try {
-            CertPathValidator cpv = CertPathValidator.getInstance("BOGUS");
-            throw new Exception("CertPathValidator.getInstance() should have " +
-                "thrown NoSuchAlgorithmException");
-        } catch (NoSuchAlgorithmException nsae) { }
+        assertThrows(NoSuchAlgorithmException.class,
+            () -> CertPathValidator.getInstance("BOGUS"));
 
-        try {
-            CertificateFactory cf = CertificateFactory.getInstance("BOGUS");
-            throw new Exception("CertificateFactory.getInstance() should " +
-                "have thrown CertificateException");
-        } catch (CertificateException ce) { }
+        assertThrows(CertificateException.class,
+            () -> CertificateFactory.getInstance("BOGUS"));
     }
 }

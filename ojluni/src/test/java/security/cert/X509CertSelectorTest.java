@@ -20,6 +20,9 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package test.java.security.cert;
+
+import static org.testng.Assert.assertEquals;
 import static sun.security.x509.GeneralNameInterface.NAME_DIRECTORY;
 import static sun.security.x509.NameConstraintsExtension.EXCLUDED_SUBTREES;
 import static sun.security.x509.NameConstraintsExtension.PERMITTED_SUBTREES;
@@ -31,6 +34,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
+import java.security.Principal;
 import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -44,6 +48,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import org.testng.annotations.Test;
 
 import sun.security.util.DerInputStream;
 import sun.security.util.DerOutputStream;
@@ -152,10 +158,14 @@ public class X509CertSelectorTest {
     // Certificate to run tests on
     private final X509Certificate cert;
 
+    // BEGIN Android-removed: Not needed with testng
+    /*
     public static void main(String[] args) throws Exception {
         X509CertSelectorTest test = new X509CertSelectorTest();
         test.doTest();
     }
+    */
+    // END Android-removed: Not needed with testng
 
     public X509CertSelectorTest() throws CertificateException, IOException {
         cert = (X509Certificate) CertificateFactory.getInstance("X.509")
@@ -163,6 +173,8 @@ public class X509CertSelectorTest {
     }
 
     // Runs the test.
+    // BEGIN Android-removed: Not needed with testng
+    /*
     private void doTest() throws Exception {
         System.out.println("START OF TESTS FOR " + "X509CertSelector");
 
@@ -183,9 +195,12 @@ public class X509CertSelectorTest {
         testBasicConstraints();
         testCertificate();
     }
+    */
+    // END Android-removed: Not needed with testng
 
     // Tests matching on the serial number contained in the certificate.
-    private void testSerialNumber() {
+    @Test
+    public void testSerialNumber() {
         System.out.println("X.509 Certificate Match on serialNumber");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -198,7 +213,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on the issuer name contained in the certificate.
-    private void testIssuer() throws IOException {
+    @Test
+    public void testIssuer() throws IOException {
         System.out.println("X.509 Certificate Match on issuer");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -214,7 +230,8 @@ public class X509CertSelectorTest {
      * Tests matching on the subject key identifier contained in the
      * certificate.
      */
-    private void testSubjectKeyIdentifier() throws IOException {
+    @Test
+    public void testSubjectKeyIdentifier() throws IOException {
         System.out.println("X.509 Certificate Match on subjectKeyIdentifier");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -233,7 +250,8 @@ public class X509CertSelectorTest {
      * Tests matching on the authority key identifier contained in the
      * certificate.
      */
-    private void testAuthorityKeyIdentifier() throws IOException {
+    @Test
+    public void testAuthorityKeyIdentifier() throws IOException {
         System.out.println("X.509 Certificate Match on authorityKeyIdentifier");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -253,7 +271,8 @@ public class X509CertSelectorTest {
      * Tests matching on the certificate validity component contained in the
      * certificate.
      */
-    private void testCertificateValid() {
+    @Test
+    public void testCertificateValid() {
         System.out.println("X.509 Certificate Match on certificateValid");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -271,7 +290,8 @@ public class X509CertSelectorTest {
      * Tests matching on the private key validity component contained in the
      * certificate.
      */
-    private void testPrivateKeyValid() throws IOException, CertificateException {
+    @Test
+    public void testPrivateKeyValid() throws IOException, CertificateException {
         System.out.println("X.509 Certificate Match on privateKeyValid");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -304,7 +324,8 @@ public class X509CertSelectorTest {
      * Tests matching on the subject public key algorithm ID component contained
      * in the certificate.
      */
-    private void testSubjectPublicKeyAlgID() throws IOException {
+    @Test
+    public void testSubjectPublicKeyAlgID() throws IOException {
         System.out.println("X.509 Certificate Match on subjectPublicKeyAlgID");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -318,7 +339,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on the key usage extension contained in the certificate.
-    private void testKeyUsage() {
+    @Test
+    public void testKeyUsage() {
         System.out.println("X.509 Certificate Match on keyUsage");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -337,7 +359,8 @@ public class X509CertSelectorTest {
      * Tests matching on the subject alternative name extension contained in the
      * certificate.
      */
-    private void testSubjectAltName() throws IOException {
+    @Test
+    public void testSubjectAltName() throws IOException {
         System.out.println("X.509 Certificate Match on subjectAltName");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -369,7 +392,8 @@ public class X509CertSelectorTest {
      * Tests matching on the policy constraints extension contained in the
      * certificate.
      */
-    private void testPolicy() throws IOException {
+    @Test
+    public void testPolicy() throws IOException {
         System.out.println("X.509 Certificate Match on certificatePolicies");
         // test encoding of CertificatePoliciesExtension because we wrote the
         // code
@@ -396,7 +420,8 @@ public class X509CertSelectorTest {
      * Tests matching on the name constraints extension contained in the
      * certificate.
      */
-    private void testPathToName() throws IOException {
+    @Test
+    public void testPathToName() throws IOException {
         System.out.println("X.509 Certificate Match on pathToName");
 
         X509CertSelector selector = null;
@@ -452,7 +477,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on the subject name contained in the certificate.
-    private void testSubject() throws IOException {
+    @Test
+    public void testSubject() throws IOException {
         System.out.println("X.509 Certificate Match on subject");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -465,7 +491,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on the subject public key contained in the certificate.
-    private void testSubjectPublicKey() throws IOException, GeneralSecurityException {
+    @Test
+    public void testSubjectPublicKey() throws IOException, GeneralSecurityException {
         System.out.println("X.509 Certificate Match on subject public key");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -482,6 +509,7 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on the name constraints contained in the certificate.
+    // TODO(b/203769066): Depends on updated X509Certificate implementation
     private void testNameConstraints() throws IOException {
         System.out.println("X.509 Certificate Match on name constraints");
         // bad match
@@ -499,7 +527,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests matching on basic constraints.
-    private void testBasicConstraints() {
+    @Test
+    public void testBasicConstraints() {
         System.out.println("X.509 Certificate Match on basic constraints");
         // bad match
         X509CertSelector selector = new X509CertSelector();
@@ -513,7 +542,8 @@ public class X509CertSelectorTest {
     }
 
     // Tests certificateEquals criterion
-    private void testCertificate() {
+    @Test
+    public void testCertificate() {
         System.out.println("X.509 Certificate Match on certificateEquals criterion");
 
         X509CertSelector selector = new X509CertSelector();
@@ -524,8 +554,8 @@ public class X509CertSelectorTest {
 
     private void checkMatch(X509CertSelector selector, X509Certificate cert, boolean match) {
         boolean result = selector.match(cert);
-        if (match != result)
-            throw new RuntimeException(selector + " match " + cert + " is " + result + ", but expect " + match);
+        assertEquals(result, match,
+            selector + " match " + cert + " is " + result + ", but expect " + match);
     }
 
     private static GeneralSubtree getGeneralSubtree(GeneralNameInterface gni) {

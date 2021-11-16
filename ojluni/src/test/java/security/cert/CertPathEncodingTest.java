@@ -20,6 +20,10 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package test.java.security.cert;
+
+import static org.testng.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.security.cert.CertPath;
 import java.security.cert.Certificate;
@@ -28,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
+import org.testng.annotations.Test;
 
 /*
  * @test
@@ -225,7 +230,8 @@ public final class CertPathEncodingTest {
             "";
 
     // Runs test of CertPath encoding and decoding.
-    public static void main(String[] args) throws Exception {
+    @Test
+    public static void testCertPathEncoding(String[] args) throws Exception {
         // Make the CertPath whose encoded form has already been stored
         CertificateFactory certFac = CertificateFactory.getInstance("X509");
 
@@ -237,17 +243,13 @@ public final class CertPathEncodingTest {
 
         // Get the encoded form of the CertPath we made
         byte[] encoded = cp.getEncoded("PKCS7");
-
         // check if it matches the encoded value
-        if (!Arrays.equals(encoded, Base64.getMimeDecoder().decode(pkcs7path.getBytes()))) {
-            throw new RuntimeException("PKCS#7 encoding doesn't match stored value");
-        }
+        assertEquals(Base64.getMimeDecoder().decode(pkcs7path.getBytes()), encoded,
+            "PKCS#7 encoding doesn't match stored value");
 
         // Generate a CertPath from the encoded value and check if it equals
         // the CertPath generated from the certificates
         CertPath decodedCP = certFac.generateCertPath(new ByteArrayInputStream(encoded), "PKCS7");
-        if (!decodedCP.equals(cp)) {
-            throw new RuntimeException("CertPath decoded from PKCS#7 isn't equal to original");
-        }
+        assertEquals(decodedCP, cp, "CertPath decoded from PKCS#7 isn't equal to original");
     }
 }
