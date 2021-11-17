@@ -393,6 +393,7 @@ public final class NetworkInterface {
     }
 
     // Android-added: Document restrictions for non-system apps. http://b/170188668
+    // Android-added: Note about NullPointerException in older versions. http://b/206053582
     /**
      * Returns all the interfaces on this machine. The {@code Enumeration}
      * contains at least one element, possibly representing a loopback
@@ -404,6 +405,10 @@ public final class NetworkInterface {
      * <p>
      * For non-system apps, this method will only return information for
      * {@link NetworkInterface}s associated with an {@link InetAddress}.
+     * <p>
+     * ANDROID NOTE: On Android versions before S (API level 31), this method may throw a
+     *               NullPointerException if called in an environment where there is a virtual
+     *               interface without a parent interface present.
      *
      * @return an Enumeration of NetworkInterfaces found on this machine
      *         that <a href="#access-restrictions">are accessible</a>.
