@@ -49,6 +49,10 @@ import java.util.MissingResourceException;
 import java.util.TimeZone;
 import libcore.icu.ICU;
 
+// Android-removed: Remove javadoc related to "rg" and "ca" Locale extension.
+// The "ca" extension isn't supported, because Android's java.text supports Gregorian calendar only.
+// The "rg" extension isn't supported until https://unicode-org.atlassian.net/browse/ICU-21831
+// is resolved, because java.text.* stack relies on ICU on resource resolution.
 /**
  * {@code DateFormat} is an abstract class for date/time formatting subclasses which
  * formats and parses dates or time in a language-independent manner.
@@ -56,7 +60,6 @@ import libcore.icu.ICU;
  * formatting (i.e., date &rarr; text), parsing (text &rarr; date), and
  * normalization.  The date is represented as a <code>Date</code> object or
  * as the milliseconds since January 1, 1970, 00:00:00 GMT.
- *
  * <p>{@code DateFormat} provides many class methods for obtaining default date/time
  * formatters based on the default or a given locale and a number of formatting
  * styles. The formatting styles include {@link #FULL}, {@link #LONG}, {@link #MEDIUM}, and {@link #SHORT}. More
@@ -94,11 +97,10 @@ import libcore.icu.ICU;
  * }</pre>
  * </blockquote>
  *
- * <p>If the specified locale contains "ca" (calendar), "rg" (region override),
- * and/or "tz" (timezone) <a href="../util/Locale.html#def_locale_extension">Unicode
- * extensions</a>, the calendar, the country and/or the time zone for formatting
- * are overridden. If both "ca" and "rg" are specified, the calendar from the "ca"
- * extension supersedes the implicit one from the "rg" extension.
+ * Starting from Android 13, <p>if the specified locale contains "tz" (timezone)
+ * <a href="../util/Locale.html#def_locale_extension">Unicode
+ * extensions</a>, the time zone for formatting
+ * are overridden.
  *
  * <p>You can use a DateFormat to parse also.
  * <blockquote>
