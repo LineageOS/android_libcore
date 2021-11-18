@@ -9,3 +9,5 @@ Android Core Library
 [Import files from OpenJDK](tools/expected_upstream/README.md)
 
 [Add nullability annotations](ojluni/annotations/README)
+
+[Run benchmark tests](benchmarks/README.md)
