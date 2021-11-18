@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1996, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1996, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -172,75 +172,79 @@ import sun.util.locale.provider.ResourceBundleBasedAdapter;
  * are not localized.
  *
  * <blockquote>
- * <table border=0 cellspacing=3 cellpadding=0 summary="Chart showing symbol,
- *  location, localized, and meaning.">
- *     <tr style="background-color: rgb(204, 204, 255);">
- *          <th align=left>Symbol
- *          <th align=left>Location
- *          <th align=left>Localized?
- *          <th align=left>Meaning
- *     <tr valign=top>
- *          <td><code>0</code>
+ * <table class="striped">
+ * <caption style="display:none">Chart showing symbol, location, localized, and meaning.</caption>
+ * <thead>
+ *     <tr>
+ *          <th scope="col" style="text-align:left">Symbol
+ *          <th scope="col" style="text-align:left">Location
+ *          <th scope="col" style="text-align:left">Localized?
+ *          <th scope="col" style="text-align:left">Meaning
+ * </thead>
+ * <tbody>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>0</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Digit
- *     <tr style="vertical-align: top; background-color: rgb(238, 238, 255);">
- *          <td><code>#</code>
+ *     <tr style="vertical-align: top">
+ *          <th scope="row"><code>#</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Digit, zero shows as absent
- *     <tr valign=top>
- *          <td><code>.</code>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>.</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Decimal separator or monetary decimal separator
- *     <tr style="vertical-align: top; background-color: rgb(238, 238, 255);">
- *          <td><code>-</code>
+ *     <tr style="vertical-align: top">
+ *          <th scope="row"><code>-</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Minus sign
- *     <tr valign=top>
- *          <td><code>,</code>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>,</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Grouping separator
- *     <tr style="vertical-align: top; background-color: rgb(238, 238, 255);">
- *          <td><code>E</code>
+ *     <tr style="vertical-align: top">
+ *          <th scope="row"><code>E</code>
  *          <td>Number
  *          <td>Yes
  *          <td>Separates mantissa and exponent in scientific notation.
  *              <em>Need not be quoted in prefix or suffix.</em>
- *     <tr valign=top>
- *          <td><code>;</code>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>;</code>
  *          <td>Subpattern boundary
  *          <td>Yes
  *          <td>Separates positive and negative subpatterns
- *     <tr style="vertical-align: top; background-color: rgb(238, 238, 255);">
- *          <td><code>%</code>
+ *     <tr style="vertical-align: top">
+ *          <th scope="row"><code>%</code>
  *          <td>Prefix or suffix
  *          <td>Yes
  *          <td>Multiply by 100 and show as percentage
- *     <tr valign=top>
- *          <td><code>&#92;u2030</code>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>&#92;u2030</code>
  *          <td>Prefix or suffix
  *          <td>Yes
  *          <td>Multiply by 1000 and show as per mille value
- *     <tr style="vertical-align: top; background-color: rgb(238, 238, 255);">
- *          <td><code>&#164;</code> (<code>&#92;u00A4</code>)
+ *     <tr style="vertical-align: top">
+ *          <th scope="row"><code>&#164;</code> (<code>&#92;u00A4</code>)
  *          <td>Prefix or suffix
  *          <td>No
  *          <td>Currency sign, replaced by currency symbol.  If
  *              doubled, replaced by international currency symbol.
  *              If present in a pattern, the monetary decimal separator
  *              is used instead of the decimal separator.
- *     <tr valign=top>
- *          <td><code>'</code>
+ *     <tr style="vertical-align:top">
+ *          <th scope="row"><code>'</code>
  *          <td>Prefix or suffix
  *          <td>No
  *          <td>Used to quote special characters in a prefix or suffix,
  *              for example, <code>"'#'#"</code> formats 123 to
  *              <code>"#123"</code>.  To create a single quote
  *              itself, use two in a row: <code>"# o''clock"</code>.
+ * </tbody>
  * </table>
  * </blockquote>
  *
@@ -327,7 +331,7 @@ import sun.util.locale.provider.ResourceBundleBasedAdapter;
  * and <code>isParseIntegerOnly()</code> are false.
  * </ul>
  *
- * <h4><a name="synchronization">Synchronization</a></h4>
+ * <h4><a id="synchronization">Synchronization</a></h4>
  *
  * <p>
  * Decimal formats are generally not synchronized.
@@ -371,12 +375,13 @@ import sun.util.locale.provider.ResourceBundleBasedAdapter;
  * }
  * }</pre></blockquote>
  *
- * @see          <a href="https://docs.oracle.com/javase/tutorial/i18n/format/decimalFormat.html">Java Tutorial</a>
+ * @see          <a href="http://docs.oracle.com/javase/tutorial/i18n/format/decimalFormat.html">Java Tutorial</a>
  * @see          NumberFormat
  * @see          DecimalFormatSymbols
  * @see          ParsePosition
  * @author       Mark Davis
  * @author       Alan Liu
+ * @since 1.1
  */
 public class DecimalFormat extends NumberFormat {
 
@@ -475,8 +480,14 @@ public class DecimalFormat extends NumberFormat {
      * @param number     the number to format
      * @param toAppendTo the <code>StringBuffer</code> to which the formatted
      *                   text is to be appended
-     * @param pos        On input: an alignment field, if desired.
-     *                   On output: the offsets of the alignment field.
+     * @param pos        keeps track on the position of the field within the
+     *                   returned string. For example, for formatting a number
+     *                   {@code 1234567.89} in {@code Locale.US} locale,
+     *                   if the given {@code fieldPosition} is
+     *                   {@link NumberFormat#INTEGER_FIELD}, the begin index
+     *                   and end index of {@code fieldPosition} will be set
+     *                   to 0 and 9, respectively for the output string
+     *                   {@code 1,234,567.89}.
      * @return           the value passed in as <code>toAppendTo</code>
      * @exception        IllegalArgumentException if <code>number</code> is
      *                   null or not an instance of <code>Number</code>.
@@ -512,8 +523,16 @@ public class DecimalFormat extends NumberFormat {
      * Formats a double to produce a string.
      * @param number    The double to format
      * @param result    where the text is to be appended
-     * @param fieldPosition    On input: an alignment field, if desired.
-     * On output: the offsets of the alignment field.
+     * @param fieldPosition    keeps track on the position of the field within
+     *                         the returned string. For example, for formatting
+     *                         a number {@code 1234567.89} in {@code Locale.US}
+     *                         locale, if the given {@code fieldPosition} is
+     *                         {@link NumberFormat#INTEGER_FIELD}, the begin index
+     *                         and end index of {@code fieldPosition} will be set
+     *                         to 0 and 9, respectively for the output string
+     *                         {@code 1,234,567.89}.
+     * @exception NullPointerException if {@code result} or
+     *            {@code fieldPosition} is {@code null}
      * @exception ArithmeticException if rounding is needed with rounding
      *            mode being set to RoundingMode.UNNECESSARY
      * @return The formatted number string
@@ -630,8 +649,16 @@ public class DecimalFormat extends NumberFormat {
      * Format a long to produce a string.
      * @param number    The long to format
      * @param result    where the text is to be appended
-     * @param fieldPosition    On input: an alignment field, if desired.
-     * On output: the offsets of the alignment field.
+     * @param fieldPosition    keeps track on the position of the field within
+     *                         the returned string. For example, for formatting
+     *                         a number {@code 123456789} in {@code Locale.US}
+     *                         locale, if the given {@code fieldPosition} is
+     *                         {@link NumberFormat#INTEGER_FIELD}, the begin index
+     *                         and end index of {@code fieldPosition} will be set
+     *                         to 0 and 11, respectively for the output string
+     *                         {@code 123,456,789}.
+     * @exception       NullPointerException if {@code result} or
+     *                  {@code fieldPosition} is {@code null}
      * @exception       ArithmeticException if rounding is needed with rounding
      *                  mode being set to RoundingMode.UNNECESSARY
      * @return The formatted number string
@@ -718,8 +745,14 @@ public class DecimalFormat extends NumberFormat {
      * Formats a BigDecimal to produce a string.
      * @param number    The BigDecimal to format
      * @param result    where the text is to be appended
-     * @param fieldPosition    On input: an alignment field, if desired.
-     * On output: the offsets of the alignment field.
+     * @param fieldPosition    keeps track on the position of the field within
+     *                         the returned string. For example, for formatting
+     *                         a number {@code 1234567.89} in {@code Locale.US}
+     *                         locale, if the given {@code fieldPosition} is
+     *                         {@link NumberFormat#INTEGER_FIELD}, the begin index
+     *                         and end index of {@code fieldPosition} will be set
+     *                         to 0 and 9, respectively for the output string
+     *                         {@code 1,234,567.89}.
      * @return The formatted number string
      * @exception        ArithmeticException if rounding is needed with rounding
      *                   mode being set to RoundingMode.UNNECESSARY
@@ -771,8 +804,14 @@ public class DecimalFormat extends NumberFormat {
      * Format a BigInteger to produce a string.
      * @param number    The BigInteger to format
      * @param result    where the text is to be appended
-     * @param fieldPosition    On input: an alignment field, if desired.
-     * On output: the offsets of the alignment field.
+     * @param fieldPosition    keeps track on the position of the field within
+     *                         the returned string. For example, for formatting
+     *                         a number {@code 123456789} in {@code Locale.US}
+     *                         locale, if the given {@code fieldPosition} is
+     *                         {@link NumberFormat#INTEGER_FIELD}, the begin index
+     *                         and end index of {@code fieldPosition} will be set
+     *                         to 0 and 11, respectively for the output string
+     *                         {@code 123,456,789}.
      * @return The formatted number string
      * @exception        ArithmeticException if rounding is needed with rounding
      *                   mode being set to RoundingMode.UNNECESSARY
@@ -968,7 +1007,7 @@ public class DecimalFormat extends NumberFormat {
      *     Decimal  : min = 0. max = 3.
      *
      */
-    private void checkAndSetFastPathStatus() {
+    private boolean checkAndSetFastPathStatus() {
 
         boolean fastPathWasOn = isFastPath;
 
@@ -998,12 +1037,27 @@ public class DecimalFormat extends NumberFormat {
         } else
             isFastPath = false;
 
+        resetFastPathData(fastPathWasOn);
+        fastPathCheckNeeded = false;
+
+        /*
+         * Returns true after successfully checking the fast path condition and
+         * setting the fast path data. The return value is used by the
+         * fastFormat() method to decide whether to call the resetFastPathData
+         * method to reinitialize fast path data or is it already initialized
+         * in this method.
+         */
+        return true;
+    }
+
+    private void resetFastPathData(boolean fastPathWasOn) {
         // Since some instance properties may have changed while still falling
         // in the fast-path case, we need to reinitialize fastPathData anyway.
         if (isFastPath) {
             // We need to instantiate fastPathData if not already done.
-            if (fastPathData == null)
+            if (fastPathData == null) {
                 fastPathData = new FastPathData();
+            }
 
             // Sets up the locale specific constants used when formatting.
             // '0' is our default representation of zero.
@@ -1011,22 +1065,25 @@ public class DecimalFormat extends NumberFormat {
             fastPathData.groupingChar = symbols.getGroupingSeparator();
 
             // Sets up fractional constants related to currency/decimal pattern.
-            fastPathData.fractionalMaxIntBound = (isCurrencyFormat) ? 99 : 999;
-            fastPathData.fractionalScaleFactor = (isCurrencyFormat) ? 100.0d : 1000.0d;
+            fastPathData.fractionalMaxIntBound = (isCurrencyFormat)
+                    ? 99 : 999;
+            fastPathData.fractionalScaleFactor = (isCurrencyFormat)
+                    ? 100.0d : 1000.0d;
 
             // Records the need for adding prefix or suffix
-            fastPathData.positiveAffixesRequired =
-                (positivePrefix.length() != 0) || (positiveSuffix.length() != 0);
-            fastPathData.negativeAffixesRequired =
-                (negativePrefix.length() != 0) || (negativeSuffix.length() != 0);
+            fastPathData.positiveAffixesRequired
+                    = !positivePrefix.isEmpty() || !positiveSuffix.isEmpty();
+            fastPathData.negativeAffixesRequired
+                    = !negativePrefix.isEmpty() || !negativeSuffix.isEmpty();
 
             // Creates a cached char container for result, with max possible size.
             int maxNbIntegralDigits = 10;
             int maxNbGroups = 3;
-            int containerSize =
-                Math.max(positivePrefix.length(), negativePrefix.length()) +
-                maxNbIntegralDigits + maxNbGroups + 1 + maximumFractionDigits +
-                Math.max(positiveSuffix.length(), negativeSuffix.length());
+            int containerSize
+                    = Math.max(positivePrefix.length(), negativePrefix.length())
+                    + maxNbIntegralDigits + maxNbGroups + 1
+                    + maximumFractionDigits
+                    + Math.max(positiveSuffix.length(), negativeSuffix.length());
 
             fastPathData.fastPathContainer = new char[containerSize];
 
@@ -1038,17 +1095,18 @@ public class DecimalFormat extends NumberFormat {
 
             // Sets up fixed index positions for integral and fractional digits.
             // Sets up decimal point in cached result container.
-            int longestPrefixLength =
-                Math.max(positivePrefix.length(), negativePrefix.length());
-            int decimalPointIndex =
-                maxNbIntegralDigits + maxNbGroups + longestPrefixLength;
+            int longestPrefixLength
+                    = Math.max(positivePrefix.length(),
+                            negativePrefix.length());
+            int decimalPointIndex
+                    = maxNbIntegralDigits + maxNbGroups + longestPrefixLength;
 
-            fastPathData.integralLastIndex    = decimalPointIndex - 1;
+            fastPathData.integralLastIndex = decimalPointIndex - 1;
             fastPathData.fractionalFirstIndex = decimalPointIndex + 1;
-            fastPathData.fastPathContainer[decimalPointIndex] =
-                isCurrencyFormat ?
-                symbols.getMonetaryDecimalSeparator() :
-                symbols.getDecimalSeparator();
+            fastPathData.fastPathContainer[decimalPointIndex]
+                    = isCurrencyFormat
+                            ? symbols.getMonetaryDecimalSeparator()
+                            : symbols.getDecimalSeparator();
 
         } else if (fastPathWasOn) {
             // Previous state was fast-path and is no more.
@@ -1059,8 +1117,6 @@ public class DecimalFormat extends NumberFormat {
             fastPathData.charsPositivePrefix = null;
             fastPathData.charsNegativePrefix = null;
         }
-
-        fastPathCheckNeeded = false;
     }
 
     /**
@@ -1554,9 +1610,11 @@ public class DecimalFormat extends NumberFormat {
      * @return the formatted result for {@code d} as a string.
      */
     String fastFormat(double d) {
+        boolean isDataSet = false;
         // (Re-)Evaluates fast-path status if needed.
-        if (fastPathCheckNeeded)
-            checkAndSetFastPathStatus();
+        if (fastPathCheckNeeded) {
+            isDataSet = checkAndSetFastPathStatus();
+        }
 
         if (!isFastPath )
             // DecimalFormat instance is not in a fast-path state.
@@ -1580,8 +1638,20 @@ public class DecimalFormat extends NumberFormat {
         if (d > MAX_INT_AS_DOUBLE)
             // Filters out values that are outside expected fast-path range
             return null;
-        else
+        else {
+            if (!isDataSet) {
+                /*
+                 * If the fast path data is not set through
+                 * checkAndSetFastPathStatus() and fulfil the
+                 * fast path conditions then reset the data
+                 * directly through resetFastPathData()
+                 */
+                resetFastPathData(isFastPath);
+            }
             fastDoubleFormat(d, negative);
+
+        }
+
 
         // Returns a new string from updated fastPathContainer.
         return new String(fastPathData.fastPathContainer,
@@ -1918,7 +1988,7 @@ public class DecimalFormat extends NumberFormat {
                         Format.Field signAttribute) {
         int start = result.length();
 
-        if (string.length() > 0) {
+        if (!string.isEmpty()) {
             result.append(string);
             for (int counter = 0, max = positions.length; counter < max;
                  counter++) {
@@ -1996,7 +2066,7 @@ public class DecimalFormat extends NumberFormat {
         // special case NaN
         if (text.regionMatches(pos.index, symbols.getNaN(), 0, symbols.getNaN().length())) {
             pos.index = pos.index + symbols.getNaN().length();
-            return new Double(Double.NaN);
+            return Double.valueOf(Double.NaN);
         }
 
         boolean[] status = new boolean[STATUS_LENGTH];
@@ -2007,19 +2077,19 @@ public class DecimalFormat extends NumberFormat {
         // special case INFINITY
         if (status[STATUS_INFINITE]) {
             if (status[STATUS_POSITIVE] == (multiplier >= 0)) {
-                return new Double(Double.POSITIVE_INFINITY);
+                return Double.valueOf(Double.POSITIVE_INFINITY);
             } else {
-                return new Double(Double.NEGATIVE_INFINITY);
+                return Double.valueOf(Double.NEGATIVE_INFINITY);
             }
         }
 
         if (multiplier == 0) {
             if (digitList.isZero()) {
-                return new Double(Double.NaN);
+                return Double.valueOf(Double.NaN);
             } else if (status[STATUS_POSITIVE]) {
-                return new Double(Double.POSITIVE_INFINITY);
+                return Double.valueOf(Double.POSITIVE_INFINITY);
             } else {
-                return new Double(Double.NEGATIVE_INFINITY);
+                return Double.valueOf(Double.NEGATIVE_INFINITY);
             }
         }
 
@@ -2093,8 +2163,8 @@ public class DecimalFormat extends NumberFormat {
                             !isParseIntegerOnly();
             }
 
-            return gotDouble ?
-                (Number)new Double(doubleResult) : (Number)new Long(longResult);
+            // cast inside of ?: because of binary numeric promotion, JLS 15.25
+            return gotDouble ? (Number)doubleResult : (Number)longResult;
         }
     }
 
@@ -2873,7 +2943,7 @@ public class DecimalFormat extends NumberFormat {
                     } else {
                         string = symbols.getCurrencySymbol();
                     }
-                    if (string.length() > 0) {
+                    if (!string.isEmpty()) {
                         if (positions == null) {
                             positions = new ArrayList<>(2);
                         }
@@ -3160,13 +3230,6 @@ public class DecimalFormat extends NumberFormat {
         isCurrencyFormat = false;
         useExponentialNotation = false;
 
-        // Two variables are used to record the subrange of the pattern
-        // occupied by phase 1.  This is used during the processing of the
-        // second pattern (the one representing negative numbers) to ensure
-        // that no deviation exists in phase 1 between the two patterns.
-        int phaseOneStart = 0;
-        int phaseOneLength = 0;
-
         int start = 0;
         for (int j = 1; j >= 0 && start < pattern.length(); --j) {
             boolean inQuote = false;
@@ -3217,9 +3280,6 @@ public class DecimalFormat extends NumberFormat {
                             ch == groupingSeparator ||
                             ch == decimalSeparator) {
                             phase = 1;
-                            if (j == 1) {
-                                phaseOneStart = pos;
-                            }
                             --pos; // Reprocess this character
                             continue;
                         } else if (ch == CURRENCY_SIGN) {
@@ -3290,17 +3350,29 @@ public class DecimalFormat extends NumberFormat {
                     break;
 
                 case 1:
-                    // Phase one must be identical in the two sub-patterns. We
-                    // enforce this by doing a direct comparison. While
-                    // processing the first sub-pattern, we just record its
-                    // length. While processing the second, we compare
-                    // characters.
-                    if (j == 1) {
-                        ++phaseOneLength;
-                    } else {
-                        if (--phaseOneLength == 0) {
-                            phase = 2;
-                            affix = suffix;
+                    // The negative subpattern (j = 0) serves only to specify the
+                    // negative prefix and suffix, so all the phase 1 characters
+                    // e.g. digits, zeroDigit, groupingSeparator,
+                    // decimalSeparator, exponent are ignored
+                    if (j == 0) {
+                        while (pos < pattern.length()) {
+                            char negPatternChar = pattern.charAt(pos);
+                            if (negPatternChar == digit
+                                    || negPatternChar == zeroDigit
+                                    || negPatternChar == groupingSeparator
+                                    || negPatternChar == decimalSeparator) {
+                                ++pos;
+                            } else if (pattern.regionMatches(pos, exponent,
+                                    0, exponent.length())) {
+                                pos = pos + exponent.length();
+                            } else {
+                                // Not a phase 1 character, consider it as
+                                // suffix and parse it in phase 2
+                                --pos; //process it again in outer loop
+                                phase = 2;
+                                affix = suffix;
+                                break;
+                            }
                         }
                         continue;
                     }
@@ -3354,7 +3426,6 @@ public class DecimalFormat extends NumberFormat {
                          while (pos < pattern.length() &&
                                pattern.charAt(pos) == zeroDigit) {
                             ++minExponentDigits;
-                            ++phaseOneLength;
                             ++pos;
                         }
 
@@ -3373,7 +3444,6 @@ public class DecimalFormat extends NumberFormat {
                         phase = 2;
                         affix = suffix;
                         --pos;
-                        --phaseOneLength;
                         continue;
                     }
                     break;
@@ -3444,7 +3514,7 @@ public class DecimalFormat extends NumberFormat {
             }
         }
 
-        if (pattern.length() == 0) {
+        if (pattern.isEmpty()) {
             posPrefixPattern = posSuffixPattern = "";
             setMinimumIntegerDigits(0);
             setMaximumIntegerDigits(MAXIMUM_INTEGER_DIGITS);
