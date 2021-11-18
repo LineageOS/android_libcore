@@ -54,6 +54,9 @@ import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 import libcore.icu.TimeZoneNames;
 
+// Android-removed: Remove javadoc related to "rg" Locale extension.
+// The "rg" extension isn't supported until https://unicode-org.atlassian.net/browse/ICU-21831
+// is resolved, because java.text.* stack relies on ICU on resource resolution.
 /**
  * <code>DateFormatSymbols</code> is a public class for encapsulating
  * localizable date-time formatting data, such as the names of the
@@ -81,10 +84,6 @@ import libcore.icu.TimeZoneNames;
  * new SimpleDateFormat(aPattern, DateFormatSymbols.getInstance(aLocale)).
  * </pre>
  * </blockquote>
- *
- * <p>If the locale contains "rg" (region override)
- * <a href="../util/Locale.html#def_locale_extension">Unicode extension</a>,
- * the symbols are overridden for the designated region.
  *
  * <p>
  * <code>DateFormatSymbols</code> objects are cloneable. When you obtain
