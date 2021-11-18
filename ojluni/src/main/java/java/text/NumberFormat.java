@@ -55,6 +55,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 
+// Android-removed: Remove javadoc related to "rg" Locale extension.
+// The "rg" extension isn't supported until https://unicode-org.atlassian.net/browse/ICU-21831
+// is resolved, because java.text.* stack relies on ICU on resource resolution.
 /**
  * <code>NumberFormat</code> is the abstract base class for all number
  * formats. This class provides the interface for formatting and parsing
@@ -95,11 +98,9 @@ import libcore.icu.LocaleData;
  * }</pre>
  * </blockquote>
  *
- * <p>If the locale contains "nu" (numbers) and/or "rg" (region override)
+ * <p>If the locale contains "nu" (numbers)
  * <a href="../util/Locale.html#def_locale_extension">Unicode extensions</a>,
  * the decimal digits, and/or the country used for formatting are overridden.
- * If both "nu" and "rg" are specified, the decimal digits from the "nu"
- * extension supersedes the implicit one from the "rg" extension.
  *
  * <p>You can also use a {@code NumberFormat} to parse numbers:
  * <blockquote>
