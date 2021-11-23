@@ -592,6 +592,7 @@ public class SelectWithConsumer {
     /**
      * Test an action invoking select()
      */
+    @Test(enabled = false)
     public void testReentrantSelect1() throws Exception {
         Pipe p = Pipe.open();
         try (Selector sel = Selector.open()) {
@@ -621,6 +622,7 @@ public class SelectWithConsumer {
     /**
      * Test an action invoking selectNow()
      */
+    @Test(enabled = false)
     public void testReentrantSelect2() throws Exception {
         Pipe p = Pipe.open();
         try (Selector sel = Selector.open()) {
@@ -650,6 +652,7 @@ public class SelectWithConsumer {
     /**
      * Test an action invoking select(Consumer)
      */
+    @Test(enabled = false)
     public void testReentrantSelect3() throws Exception {
         Pipe p = Pipe.open();
         try (Selector sel = Selector.open()) {
