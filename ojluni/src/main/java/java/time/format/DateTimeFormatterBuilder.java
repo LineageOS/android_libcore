@@ -218,8 +218,11 @@ public final class DateTimeFormatterBuilder {
         //         .getLocaleResources(locale);
         // String pattern = lr.getJavaTimeDateTimePattern(
         //         convertStyle(timeStyle), convertStyle(dateStyle), chrono.getCalendarType());
-        ExtendedCalendar extendedCalendar = ICU.getExtendedCalendar(locale,
-                chrono.getCalendarType());
+
+        // "iso8601" calendar type doesn't work well for ICU due to http://b/206566562.
+        // Workaround the issue by using Gregorian calendar.
+        String calType = chrono instanceof IsoChronology ? "gregorian" : chrono.getCalendarType();
+        ExtendedCalendar extendedCalendar = ICU.getExtendedCalendar(locale, calType);
         String pattern = extendedCalendar.getDateTimePattern(convertStyle(dateStyle),
                 convertStyle(timeStyle));
         // Transform the pattern coming from ICU because DateTimeFormatter does not handle some date
