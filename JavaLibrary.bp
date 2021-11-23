@@ -551,6 +551,11 @@ java_test {
     libs: [
         "junit",
     ],
+    errorprone: {
+        javacflags: [
+            "-Xep:DoNotCall:OFF",
+        ],
+    },
 }
 
 // A filegroup that provides access to a source file for a toolchain test that
