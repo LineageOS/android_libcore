@@ -8,7 +8,7 @@ git fetch aosp upstream-openjdk8u
 git fetch aosp upstream-openjdk9
 git fetch aosp upstream-openjdk11u
 
-THIS_DIR=$(realpath $(dirname $BASH_SOURCE))
+THIS_DIR=$(realpath $(dirname ${BASH_SOURCE[0]:-$0}))
 alias ojluni_refresh_files=${THIS_DIR}/ojluni_refresh_files.py
 alias ojluni_modify_expectation=${THIS_DIR}/ojluni_modify_expectation.py
 alias ojluni_run_tool_tests='PYTHONPATH=${PYTHONPATH}:${THIS_DIR} python3 -B -m unittest discover -v -s tests -p "*_test.py"'
