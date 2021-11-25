@@ -1440,7 +1440,7 @@ ojluni/src/main/java/sun/nio/ch/FileChannelImpl.java,jdk8u/jdk8u121-b13,jdk/src/
 # sun.nio.ch.FileDescriptorHolderSocketImpl doesn’t come from the upstream OpenJDK.
 ojluni/src/main/java/sun/nio/ch/FileDispatcher.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/ch/FileDispatcher.java
 ojluni/src/main/java/sun/nio/ch/FileDispatcherImpl.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/ch/FileDispatcherImpl.java
-ojluni/src/main/java/sun/nio/ch/FileKey.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/ch/FileKey.java
+ojluni/src/main/java/sun/nio/ch/FileKey.java,jdk11u/jdk-11+28,src/java.base/unix/classes/sun/nio/ch/FileKey.java
 ojluni/src/main/java/sun/nio/ch/FileLockImpl.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/ch/FileLockImpl.java
 ojluni/src/main/java/sun/nio/ch/FileLockTable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/ch/FileLockTable.java
 ojluni/src/main/java/sun/nio/ch/Groupable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/nio/ch/Groupable.java
