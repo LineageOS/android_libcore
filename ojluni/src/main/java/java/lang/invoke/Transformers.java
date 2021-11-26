@@ -1008,15 +1008,14 @@ public class Transformers {
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
-            // We need to artifically throw a WrongMethodTypeException here because we
+            // We need to artificially throw a WrongMethodTypeException here because we
             // can't call invokeExact on the target inside the transformer.
             if (isExactInvoker) {
-                // TODO: We should do the comparison by hand if this new type creation
-                // on every invoke proves too expensive.
-                MethodType callType = emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
-                if (!targetType.equals(callType)) {
+                MethodType callsiteType =
+                    emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
+                if (!exactMatch(callsiteType, targetType)) {
                     throw new WrongMethodTypeException("Wrong type, Expected: " + targetType
-                            + " was: " + callType);
+                            + " was: " + callsiteType);
                 }
             }
 
@@ -1030,6 +1029,45 @@ public class Transformers {
             // Finally, invoke the handle and copy the return value.
             target.invoke(targetFrame);
             targetFrame.copyReturnValueTo(emulatedStackFrame);
+        }
+
+         /**
+          * Checks whether two method types are compatible as an exact match. The exact match
+          * is based on the erased form (all reference types treated as Object).
+          * @param callsiteType the MethodType associated with the invocation.
+          * @param targetType the MethodType of the MethodHandle being invoked.
+          * @return true if {@code callsiteType} and {@code targetType} are an exact match.
+          */
+        static private boolean exactMatch(MethodType callsiteType, MethodType targetType) {
+            final int parameterCount = callsiteType.parameterCount();
+            if (callsiteType.parameterCount() != targetType.parameterCount()) {
+                return false;
+            }
+
+            for (int i = 0; i < parameterCount; ++i) {
+                Class argumentType  = callsiteType.parameterType(i);
+                Class parameterType = targetType.parameterType(i);
+                if (!exactMatch(argumentType, parameterType)) {
+                    return false;
+                }
+            }
+            // Check return type, noting it's always okay to discard the return value.
+            return callsiteType.returnType() == Void.TYPE ||
+                exactMatch(callsiteType.returnType(), targetType.returnType());
+        }
+
+        /**
+         * Checks whether two types are an exact match. The exact match is based on the erased
+         * types so any two reference types match, but primitive types must be the same.
+         * @param lhs first class to compare.
+         * @param rhs second class to compare.
+         * @return true if both classes satisfy the exact match criteria.
+         */
+        static private boolean exactMatch(Class lhs, Class rhs) {
+            if (lhs.isPrimitive() || rhs.isPrimitive()) {
+                return lhs == rhs;
+            }
+            return true; // Both types are references, compatibility is checked at the point of use.
         }
     }
 
