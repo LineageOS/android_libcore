@@ -1761,14 +1761,7 @@ public final class Long extends Number implements Comparable<Long> {
      * @since 1.5
      */
     public static long highestOneBit(long i) {
-        // HD, Figure 3-1
-        i |= (i >>  1);
-        i |= (i >>  2);
-        i |= (i >>  4);
-        i |= (i >>  8);
-        i |= (i >> 16);
-        i |= (i >> 32);
-        return i - (i >>> 1);
+        return i & (MIN_VALUE >>> numberOfLeadingZeros(i));
     }
 
     /**
@@ -1812,18 +1805,9 @@ public final class Long extends Number implements Comparable<Long> {
      */
     @HotSpotIntrinsicCandidate
     public static int numberOfLeadingZeros(long i) {
-        // HD, Figure 5-6
-         if (i == 0)
-            return 64;
-        int n = 1;
         int x = (int)(i >>> 32);
-        if (x == 0) { n += 32; x = (int)i; }
-        if (x >>> 16 == 0) { n += 16; x <<= 16; }
-        if (x >>> 24 == 0) { n +=  8; x <<=  8; }
-        if (x >>> 28 == 0) { n +=  4; x <<=  4; }
-        if (x >>> 30 == 0) { n +=  2; x <<=  2; }
-        n -= x >>> 31;
-        return n;
+        return x == 0 ? 32 + Integer.numberOfLeadingZeros((int)i)
+                : Integer.numberOfLeadingZeros(x);
     }
 
     /**
@@ -1939,10 +1923,8 @@ public final class Long extends Number implements Comparable<Long> {
         i = (i & 0x5555555555555555L) << 1 | (i >>> 1) & 0x5555555555555555L;
         i = (i & 0x3333333333333333L) << 2 | (i >>> 2) & 0x3333333333333333L;
         i = (i & 0x0f0f0f0f0f0f0f0fL) << 4 | (i >>> 4) & 0x0f0f0f0f0f0f0f0fL;
-        i = (i & 0x00ff00ff00ff00ffL) << 8 | (i >>> 8) & 0x00ff00ff00ff00ffL;
-        i = (i << 48) | ((i & 0xffff0000L) << 16) |
-            ((i >>> 16) & 0xffff0000L) | (i >>> 48);
-        return i;
+
+        return reverseBytes(i);
     }
 
     /**
