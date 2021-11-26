@@ -224,8 +224,6 @@ public class Unsigned {
         }
     }
 
-    // BEGIN Android-removed: Not yet ported.
-    /*
     @Test
     public void testParseUnsignedLong() {
         long maxUnsignedInt = Integer.toUnsignedLong(0xffff_ffff);
@@ -262,6 +260,8 @@ public class Unsigned {
                                       "\tconverting back ''%s'' resulted in %d%n",
                                       value, radix, bigString,  longResult));
 
+                // BEGIN Android-removed: Not yet ported.
+                /*
                 // test offset based parse method
                 longResult = Long.parseUnsignedLong("prefix" + bigString + "suffix", "prefix".length(),
                         "prefix".length() + bigString.length(), radix);
@@ -272,6 +272,8 @@ public class Unsigned {
                     String.format("Bad roundtrip conversion of %d in base %d" +
                             "\tconverting back ''%s'' resulted in %d%n",
                             value, radix, bigString,  longResult));
+                 */
+                // END Android-removed: Not yet ported.
             }
         }
 
@@ -338,8 +340,6 @@ public class Unsigned {
             }
         }
     }
-     */
-    // END Android-removed: Not yet ported.
 
     @Test
     public void testDivideAndRemainder() {
