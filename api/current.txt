@@ -3255,8 +3255,8 @@ package java.lang {
   }
 
   public final class Long extends java.lang.Number implements java.lang.Comparable<java.lang.Long> {
-    ctor public Long(long);
-    ctor public Long(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Long(long);
+    ctor @Deprecated public Long(@NonNull String) throws java.lang.NumberFormatException;
     method public static int bitCount(long);
     method public static int compare(long, long);
     method public int compareTo(@NonNull Long);
