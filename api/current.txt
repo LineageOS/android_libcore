@@ -3203,6 +3203,7 @@ package java.lang {
     method public static int parseInt(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static int parseInt(@NonNull String) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static int parseUnsignedInt(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String) throws java.lang.NumberFormatException;
     method public static int remainderUnsigned(int, int);
     method public static int reverse(int);
@@ -3277,6 +3278,7 @@ package java.lang {
     method public static int numberOfLeadingZeros(long);
     method public static int numberOfTrailingZeros(long);
     method public static long parseLong(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static long parseLong(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static long parseLong(@NonNull String) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String, int) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String) throws java.lang.NumberFormatException;
