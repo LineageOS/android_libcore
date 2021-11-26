@@ -3200,6 +3200,7 @@ package java.lang {
     method public static int numberOfLeadingZeros(int);
     method public static int numberOfTrailingZeros(int);
     method public static int parseInt(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static int parseInt(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static int parseInt(@NonNull String) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String, int) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String) throws java.lang.NumberFormatException;
