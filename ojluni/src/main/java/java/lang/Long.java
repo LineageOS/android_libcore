@@ -388,34 +388,62 @@ public final class Long extends Number implements Comparable<Long> {
         // assert shift > 0 && shift <=5 : "Illegal shift value";
         int mag = Long.SIZE - Long.numberOfLeadingZeros(val);
         int chars = Math.max(((mag + (shift - 1)) / shift), 1);
-        char[] buf = new char[chars];
 
-        formatUnsignedLong(val, shift, buf, 0, chars);
-        // Android-changed: Use regular constructor instead of one which takes over "buf".
-        // return new String(buf, true);
+        // BEGIN Android-changed: Use single-byte chars.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[chars];
+            formatUnsignedLong0(val, shift, buf, 0, chars);
+        /*
+            return new String(buf, LATIN1);
+        } else {
+            byte[] buf = new byte[chars * 2];
+            formatUnsignedLong0UTF16(val, shift, buf, 0, chars);
+            return new String(buf, UTF16);
+        }
+        */
         return new String(buf);
+        // END Android-changed: Use single-byte chars.
     }
 
     /**
-     * Format a long (treated as unsigned) into a character buffer.
+     * Format a long (treated as unsigned) into a character buffer. If
+     * {@code len} exceeds the formatted ASCII representation of {@code val},
+     * {@code buf} will be padded with leading zeroes.
+     *
      * @param val the unsigned long to format
      * @param shift the log2 of the base to format in (4 for hex, 3 for octal, 1 for binary)
      * @param buf the character buffer to write to
      * @param offset the offset in the destination buffer to start at
      * @param len the number of characters to write
-     * @return the lowest character location used
      */
-     static int formatUnsignedLong(long val, int shift, char[] buf, int offset, int len) {
-        int charPos = len;
+
+    /** byte[]/LATIN1 version    */
+    static void formatUnsignedLong0(long val, int shift, byte[] buf, int offset, int len) {
+        int charPos = offset + len;
         int radix = 1 << shift;
         int mask = radix - 1;
         do {
-            buf[offset + --charPos] = Integer.digits[((int) val) & mask];
+            buf[--charPos] = (byte)Integer.digits[((int) val) & mask];
             val >>>= shift;
-        } while (val != 0 && charPos > 0);
-
-        return charPos;
+        } while (charPos > offset);
     }
+
+    // BEGIN Android-removed: UTF16 version of formatUnsignedLong0().
+    /*
+    /** byte[]/UTF16 version    *
+    private static void formatUnsignedLong0UTF16(long val, int shift, byte[] buf, int offset, int len) {
+        int charPos = offset + len;
+        int radix = 1 << shift;
+        int mask = radix - 1;
+        do {
+            StringUTF16.putChar(buf, --charPos, Integer.digits[((int) val) & mask]);
+            val >>>= shift;
+        } while (charPos > offset);
+    }
+     */
+    // END Android-removed: UTF16 version of formatUnsignedLong0().
 
     /**
      * Returns a {@code String} object representing the specified
@@ -429,7 +457,7 @@ public final class Long extends Number implements Comparable<Long> {
      */
     public static String toString(long i) {
         int size = stringSize(i);
-        // BEGIN Android-changed: Alsways use single-byte buffer.
+        // BEGIN Android-changed: Always use single-byte buffer.
         /*
         if (COMPACT_STRINGS) {
          */
@@ -444,7 +472,7 @@ public final class Long extends Number implements Comparable<Long> {
         }
          */
         return new String(buf);
-        // END Android-changed: Alsways use single-byte buffer.
+        // END Android-changed: Always use single-byte buffer.
     }
 
     /**
