@@ -592,7 +592,7 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         String timeZonePattern = "zzzz";
         int timeZoneStyle = TimeZone.LONG;
         doTestFormat(Locale.ENGLISH, timeZoneStyle, timeZonePattern, "Coordinated Universal Time");
-        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern, "Temps universel coordonné");
+        doTestFormat(Locale.FRANCE, timeZoneStyle, timeZonePattern, "temps universel coordonné");
         doTestFormat(Locale.SIMPLIFIED_CHINESE, timeZoneStyle, timeZonePattern, "协调世界时");
     }
 
@@ -632,7 +632,7 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
         doUtcParsingTest(Locale.ENGLISH, timeZonePattern, timeZoneStyle,
                 "Coordinated Universal Time");
         doUtcParsingTest(Locale.FRENCH, timeZonePattern, timeZoneStyle,
-                "Temps universel coordonné");
+                "temps universel coordonné");
         doUtcParsingTest(Locale.SIMPLIFIED_CHINESE, timeZonePattern, timeZoneStyle,
                 "协调世界时");
     }
