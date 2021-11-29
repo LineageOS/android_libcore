@@ -854,7 +854,8 @@ public abstract class MethodHandle {
     public MethodHandle asType(MethodType newType) {
         // Fast path alternative to a heavyweight {@code asType} call.
         // Return 'this' if the conversion will be a no-op.
-        if (newType == type) {
+        // Android-changed: Use `type()` rather than `type` due to nominal type.
+        if (newType == type()) {
             return this;
         }
         // Android-removed: Type conversion memoizing is unsupported on Android.
@@ -1414,7 +1415,8 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
      * @see MethodHandles#insertArguments
      */
     public MethodHandle bindTo(Object x) {
-        x = type.leadingReferenceParameter().cast(x);  // throw CCE if needed
+        // Android-changed: use `type()` instead of `type` due to nominal type.
+        x = type().leadingReferenceParameter().cast(x);  // throw CCE if needed
         // Android-changed: Android specific implementation.
         // return bindArgumentL(0, x);
         return new Transformers.BindTo(this, x);
@@ -1442,7 +1444,8 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
         return standardString();
     }
     String standardString() {
-        return "MethodHandle"+type;
+        // Android-changed: use `type()` rather than `type` due to Android's nominal type.
+        return "MethodHandle"+type();
     }
 
     // BEGIN Android-removed: Debugging support unused on Android.
