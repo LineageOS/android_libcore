@@ -705,7 +705,7 @@ java_test {
         "ojluni/src/test/javax/**/*.java",
     ],
     exclude_srcs: [
-        "ojluni/src/test/java/lang/invoke/VarHandles/**/*.java",
+        "ojluni/src/test/java/lang/invoke/VarHandles/**/*ByteArray*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
@@ -775,7 +775,7 @@ java_test {
         "**/DeserializeMethodTest.java",
         "**/SerializedLambdaTest.java",
         "ojluni/src/test/java/util/stream/boot*/**/*",
-        "ojluni/src/test/java/lang/invoke/VarHandles/**/*.java",
+        "ojluni/src/test/java/lang/invoke/VarHandles/**/*ByteArray*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
