@@ -655,6 +655,7 @@ java_test {
         javacflags: [
             "-Xep:TryFailThrowable:ERROR",
             "-Xep:ComparisonOutOfRange:ERROR",
+            "-Xep:DoNotCall:OFF",
         ],
     },
 
@@ -742,6 +743,13 @@ java_test {
     // deleting those tests or moving them to a different
     // package.
     patch_module: "java.base",
+
+    errorprone: {
+        javacflags: [
+            "-Xep:AlwaysThrows:OFF",
+            "-Xep:DoNotCall:OFF",
+        ],
+    },
 }
 
 // Builds the core-ojtests-public library. Excludes any private API tests.
@@ -788,6 +796,13 @@ java_test {
         "okhttp",
         "testng",
     ],
+
+    errorprone: {
+        javacflags: [
+            "-Xep:AlwaysThrows:OFF",
+            "-Xep:DoNotCall:OFF",
+        ],
+    },
 }
 
 // Exports annotated stubs source files in ojluni/annotations/sdk to make them
