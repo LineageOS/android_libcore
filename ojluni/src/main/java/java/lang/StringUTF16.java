@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
+import jdk.internal.HotSpotIntrinsicCandidate;
 
 // BEGIN Android-added: Clarification for usage of StringUTF16 and not StringLatin1.
 /**
@@ -60,6 +61,7 @@ final class StringUTF16 {
         return (char)(((val[index++] & 0xff) << HI_BYTE_SHIFT) |
                       ((val[index]   & 0xff) << LO_BYTE_SHIFT));
      */
+    @HotSpotIntrinsicCandidate
     static char getChar(String val, int index) {
         return val.charAt(index);
     }
