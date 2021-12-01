@@ -21,6 +21,9 @@
  * questions.
  */
 
+// Android-added: package for test.
+package test.java.lang.invoke.VarHandles;
+
 /*
  * @test
  * @run testng/othervm -Diters=10    -Xint                   VarHandleTestAccessByte
