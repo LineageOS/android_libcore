@@ -564,7 +564,8 @@ public final class VMRuntime {
      * Returns the address of {@code array[0]}. This differs from using JNI in that JNI
      * might lie and give you the address of a copy of the array when in forcecopy mode.
      *
-     * @param array the object we want the native address of.
+     * @param array the object we want the native address of. Must be a non-movable
+     * primitive array.
      * @return native address of {@code array[0]}.
      *
      * @hide
