@@ -21,6 +21,9 @@
  * questions.
  */
 
+// Android-added: package for test.
+package test.java.lang.invoke.VarHandles;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleInfo;
 import java.lang.invoke.MethodHandles;
