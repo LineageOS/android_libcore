@@ -3,6 +3,199 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ArrayElementVarHandle extends VarHandle {"
+        errorLine2="                                          ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ArrayElementVarHandle.java"
+            line="26"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
+        errorLine2="                       ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="296"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="956"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="            return TWO;"
+        errorLine2="                   ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="865"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                        result = result.add(TWO);"
+        errorLine2="                                            ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="883"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                result = result.add(TWO);"
+        errorLine2="                                    ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="896"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                z = z.modPow(TWO, this);"
+        errorLine2="                             ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="1113"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        if (w.equals(TWO))"
+        errorLine2="                     ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="3846"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteArrayViewVarHandle extends VarHandle {"
+        errorLine2="                                           ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteArrayViewVarHandle.java"
+            line="25"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteBufferViewVarHandle extends VarHandle {"
+        errorLine2="                                            ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteBufferViewVarHandle.java"
+            line="26"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="class FieldVarHandle extends VarHandle {"
+        errorLine2="                             ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/FieldVarHandle.java"
+            line="26"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="                                || VarHandle.class.isAssignableFrom(declaringClass))) {"
+        errorLine2="                                   ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java"
+            line="165"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="            } else if (refc == VarHandle.class) {"
+        errorLine2="                               ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="949"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        Class&lt;?> refc = VarHandle.class;"
+        errorLine2="                        ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2519"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        MethodType methodType = type.insertParameterTypes(0, VarHandle.class);"
+        errorLine2="                                                             ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2526"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        errorLine1="        if (p == null || (!(p instanceof URICertStoreParameters))) {"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
+            line="127"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        errorLine1="        URICertStoreParameters other = (URICertStoreParameters)p;"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
+            line="135"
+            column="41"/>
+    </issue>
+
+    <!-- TODO(b/205570605): The following repeats all the issues above, but with
+         required API level 32 instead of 33 in the messages. This happens in
+         unbundled Mainline builds, e.g.
+         m TARGET_PRODUCT=mainline_modules_arm TARGET_BUILD_APPS=com.android.art TARGET_BUILD_UNBUNDLED=true lint-check
+    -->
+
+    <issue
+        id="NewApi"
         message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="final class ArrayElementVarHandle extends VarHandle {"
         errorLine2="                                          ~~~~~~~~~">
@@ -10,6 +203,83 @@
             file="libcore/libart/src/main/java/java/lang/invoke/ArrayElementVarHandle.java"
             line="26"
             column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
+        errorLine2="                       ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="296"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="956"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="            return TWO;"
+        errorLine2="                   ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="865"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                        result = result.add(TWO);"
+        errorLine2="                                            ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="883"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                result = result.add(TWO);"
+        errorLine2="                                    ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="896"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                z = z.modPow(TWO, this);"
+        errorLine2="                             ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="1113"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        if (w.equals(TWO))"
+        errorLine2="                     ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="3846"
+            column="22"/>
     </issue>
 
     <issue
@@ -48,11 +318,22 @@
     <issue
         id="NewApi"
         message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="                                || VarHandle.class.isAssignableFrom(declaringClass))) {"
+        errorLine2="                                   ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java"
+            line="165"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="            } else if (refc == VarHandle.class) {"
         errorLine2="                               ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="901"
+            line="949"
             column="32"/>
     </issue>
 
@@ -63,7 +344,7 @@
         errorLine2="                        ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2471"
+            line="2519"
             column="25"/>
     </issue>
 
@@ -74,10 +355,9 @@
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2478"
+            line="2526"
             column="62"/>
     </issue>
-
 
     <issue
         id="NewApi"
@@ -99,83 +379,6 @@
             file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
             line="135"
             column="41"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="            return TWO;"
-        errorLine2="                   ~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="864"
-            column="20" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="                        result = result.add(TWO);"
-        errorLine2="                                            ~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="882"
-            column="45" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="                result = result.add(TWO);"
-        errorLine2="                                    ~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="895"
-            column="37" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="                z = z.modPow(TWO, this);"
-        errorLine2="                             ~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="1112"
-            column="30" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="        if (w.equals(TWO))"
-        errorLine2="                     ~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="3821"
-            column="22" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
-        errorLine2="                       ~~~~~~~~~~~~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="296"
-            column="24" />
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
-        errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="956"
-            column="22" />
     </issue>
 
 </issues>
