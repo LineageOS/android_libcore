@@ -1,6 +1,8 @@
 #!/bin/bash
 
-javac -d . ../../../../../../make/jdk/src/classes/build/tools/spp/Spp.java
+# Android-changed: different path to Spp.java
+# javac -d . ../../../../../../make/jdk/src/classes/build/tools/spp/Spp.java
+javac -d . $ANDROID_BUILD_TOP/libcore/ojluni/src/tools/build/tools/spp/Spp.java
 
 SPP=build.tools.spp.Spp
 

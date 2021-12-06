@@ -21,6 +21,9 @@
  * questions.
  */
 
+// Android-added: package for test.
+package test.java.lang.invoke.VarHandles.accessibility;
+
 /* @test
  * @bug 8152645
  * @summary test field lookup accessibility of MethodHandles and VarHandles
