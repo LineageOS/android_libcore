@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,6 +27,8 @@
 package java.lang;
 
 import java.lang.annotation.Native;
+import java.util.Objects;
+import jdk.internal.HotSpotIntrinsicCandidate;
 
 /**
  * The {@code Integer} class wraps a value of the primitive type
@@ -48,7 +50,7 @@ import java.lang.annotation.Native;
  * @author  Arthur van Hoff
  * @author  Josh Bloch
  * @author  Joseph D. Darcy
- * @since JDK1.0
+ * @since 1.0
  */
 public final class Integer extends Number implements Comparable<Integer> {
     /**
@@ -67,7 +69,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * The {@code Class} instance representing the primitive type
      * {@code int}.
      *
-     * @since   JDK1.1
+     * @since   1.1
      */
     @SuppressWarnings("unchecked")
     public static final Class<Integer>  TYPE = (Class<Integer>) Class.getPrimitiveClass("int");
@@ -75,7 +77,7 @@ public final class Integer extends Number implements Comparable<Integer> {
     /**
      * All possible chars for representing a number as a String
      */
-    final static char[] digits = {
+    static final char[] digits = {
         '0' , '1' , '2' , '3' , '4' , '5' ,
         '6' , '7' , '8' , '9' , 'a' , 'b' ,
         'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
@@ -228,7 +230,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *          represented by the argument in hexadecimal (base&nbsp;16).
      * @see #parseUnsignedInt(String, int)
      * @see #toUnsignedString(int, int)
-     * @since   JDK1.0.2
+     * @since   1.0.2
      */
     public static String toHexString(int i) {
         return toUnsignedString0(i, 4);
@@ -266,7 +268,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *          represented by the argument in octal (base&nbsp;8).
      * @see #parseUnsignedInt(String, int)
      * @see #toUnsignedString(int, int)
-     * @since   JDK1.0.2
+     * @since   1.0.2
      */
     public static String toOctalString(int i) {
         return toUnsignedString0(i, 3);
@@ -298,7 +300,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *          represented by the argument in binary (base&nbsp;2).
      * @see #parseUnsignedInt(String, int)
      * @see #toUnsignedString(int, int)
-     * @since   JDK1.0.2
+     * @since   1.0.2
      */
     public static String toBinaryString(int i) {
         return toUnsignedString0(i, 1);
@@ -401,6 +403,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @param   i   an integer to be converted.
      * @return  a string representation of the argument in base&nbsp;10.
      */
+    @HotSpotIntrinsicCandidate
     public static String toString(int i) {
         if (i == Integer.MIN_VALUE)
             return "-2147483648";
@@ -498,7 +501,8 @@ public final class Integer extends Number implements Comparable<Integer> {
         }
     }
 
-    final static int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,
+    // Left here for compatibility reasons, see JDK-8143900.
+    static final int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,
                                       99999999, 999999999, Integer.MAX_VALUE };
 
     // Requires positive x
@@ -729,7 +733,7 @@ public final class Integer extends Number implements Comparable<Integer> {
     /**
      * Parses the string argument as an unsigned decimal integer. The
      * characters in the string must all be decimal digits, except
-     * that the first character may be an an ASCII plus sign {@code
+     * that the first character may be an ASCII plus sign {@code
      * '+'} ({@code '\u005Cu002B'}). The resulting integer value
      * is returned, exactly as if the argument and the radix 10 were
      * given as arguments to the {@link
@@ -861,6 +865,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @return an {@code Integer} instance representing {@code i}.
      * @since  1.5
      */
+    @HotSpotIntrinsicCandidate
     public static Integer valueOf(int i) {
         if (i >= IntegerCache.low && i <= IntegerCache.high)
             return IntegerCache.cache[i + (-IntegerCache.low)];
@@ -924,6 +929,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * Returns the value of this {@code Integer} as an
      * {@code int}.
      */
+    @HotSpotIntrinsicCandidate
     public int intValue() {
         return value;
     }
@@ -983,13 +989,13 @@ public final class Integer extends Number implements Comparable<Integer> {
     }
 
     /**
-     * Returns a hash code for a {@code int} value; compatible with
+     * Returns a hash code for an {@code int} value; compatible with
      * {@code Integer.hashCode()}.
      *
      * @param value the value to hash
      * @since 1.8
      *
-     * @return a hash code value for a {@code int} value.
+     * @return a hash code value for an {@code int} value.
      */
     public static int hashCode(int value) {
         return value;
@@ -1358,7 +1364,7 @@ public final class Integer extends Number implements Comparable<Integer> {
     @Native public static final int SIZE = 32;
 
     /**
-     * The number of bytes used to represent a {@code int} value in two's
+     * The number of bytes used to represent an {@code int} value in two's
      * complement binary form.
      *
      * @since 1.8
@@ -1427,6 +1433,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *     is equal to zero.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int numberOfLeadingZeros(int i) {
         // HD, Figure 5-6
         if (i == 0)
@@ -1454,6 +1461,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *     to zero.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int numberOfTrailingZeros(int i) {
         // HD, Figure 5-14
         int y;
@@ -1476,6 +1484,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *     representation of the specified {@code int} value.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int bitCount(int i) {
         // HD, Figure 5-2
         i = i - ((i >>> 1) & 0x55555555);
@@ -1577,6 +1586,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      *     {@code int} value.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int reverseBytes(int i) {
         return ((i >>> 24)           ) |
                ((i >>   8) &   0xFF00) |
