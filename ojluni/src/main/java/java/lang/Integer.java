@@ -718,12 +718,9 @@ public final class Integer extends Number implements Comparable<Integer> {
                                             " greater than Character.MAX_RADIX");
         }
 
-        int result = 0;
         boolean negative = false;
         int i = 0, len = s.length();
         int limit = -Integer.MAX_VALUE;
-        int multmin;
-        int digit;
 
         if (len > 0) {
             char firstChar = s.charAt(0);
@@ -731,21 +728,21 @@ public final class Integer extends Number implements Comparable<Integer> {
                 if (firstChar == '-') {
                     negative = true;
                     limit = Integer.MIN_VALUE;
-                } else if (firstChar != '+')
-                    throw NumberFormatException.forInputString(s);
-
-                if (len == 1) // Cannot have lone "+" or "-"
-                    throw NumberFormatException.forInputString(s);
-                i++;
-            }
-            multmin = limit / radix;
-            while (i < len) {
-                // Accumulating negatively avoids surprises near MAX_VALUE
-                digit = Character.digit(s.charAt(i++),radix);
-                if (digit < 0) {
+                } else if (firstChar != '+') {
                     throw NumberFormatException.forInputString(s);
                 }
-                if (result < multmin) {
+
+                if (len == 1) { // Cannot have lone "+" or "-"
+                    throw NumberFormatException.forInputString(s);
+                }
+                i++;
+            }
+            int multmin = limit / radix;
+            int result = 0;
+            while (i < len) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                int digit = Character.digit(s.charAt(i++), radix);
+                if (digit < 0 || result < multmin) {
                     throw NumberFormatException.forInputString(s);
                 }
                 result *= radix;
@@ -754,10 +751,10 @@ public final class Integer extends Number implements Comparable<Integer> {
                 }
                 result -= digit;
             }
+            return negative ? result : -result;
         } else {
             throw NumberFormatException.forInputString(s);
         }
-        return negative ? result : -result;
     }
 
     /**
