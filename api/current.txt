@@ -3177,8 +3177,8 @@ package java.lang {
   }
 
   public final class Integer extends java.lang.Number implements java.lang.Comparable<java.lang.Integer> {
-    ctor public Integer(int);
-    ctor public Integer(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Integer(int);
+    ctor @Deprecated public Integer(@NonNull String) throws java.lang.NumberFormatException;
     method public static int bitCount(int);
     method public static int compare(int, int);
     method public int compareTo(@NonNull Integer);
