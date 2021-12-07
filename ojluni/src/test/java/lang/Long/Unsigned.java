@@ -260,8 +260,6 @@ public class Unsigned {
                                       "\tconverting back ''%s'' resulted in %d%n",
                                       value, radix, bigString,  longResult));
 
-                // BEGIN Android-removed: Not yet ported.
-                /*
                 // test offset based parse method
                 longResult = Long.parseUnsignedLong("prefix" + bigString + "suffix", "prefix".length(),
                         "prefix".length() + bigString.length(), radix);
@@ -272,8 +270,6 @@ public class Unsigned {
                     String.format("Bad roundtrip conversion of %d in base %d" +
                             "\tconverting back ''%s'' resulted in %d%n",
                             value, radix, bigString,  longResult));
-                 */
-                // END Android-removed: Not yet ported.
             }
         }
 
