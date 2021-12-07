@@ -941,6 +941,68 @@ public final class Integer extends Number implements Comparable<Integer> {
     }
 
     /**
+     * Parses the {@link CharSequence} argument as an unsigned {@code int} in
+     * the specified {@code radix}, beginning at the specified
+     * {@code beginIndex} and extending to {@code endIndex - 1}.
+     *
+     * <p>The method does not take steps to guard against the
+     * {@code CharSequence} being mutated while parsing.
+     *
+     * @param      s   the {@code CharSequence} containing the unsigned
+     *                 {@code int} representation to be parsed
+     * @param      beginIndex   the beginning index, inclusive.
+     * @param      endIndex     the ending index, exclusive.
+     * @param      radix   the radix to be used while parsing {@code s}.
+     * @return     the unsigned {@code int} represented by the subsequence in
+     *             the specified radix.
+     * @throws     NullPointerException  if {@code s} is null.
+     * @throws     IndexOutOfBoundsException  if {@code beginIndex} is
+     *             negative, or if {@code beginIndex} is greater than
+     *             {@code endIndex} or if {@code endIndex} is greater than
+     *             {@code s.length()}.
+     * @throws     NumberFormatException  if the {@code CharSequence} does not
+     *             contain a parsable unsigned {@code int} in the specified
+     *             {@code radix}, or if {@code radix} is either smaller than
+     *             {@link java.lang.Character#MIN_RADIX} or larger than
+     *             {@link java.lang.Character#MAX_RADIX}.
+     * @since  9
+     */
+    public static int parseUnsignedInt(CharSequence s, int beginIndex, int endIndex, int radix)
+                throws NumberFormatException {
+        s = Objects.requireNonNull(s);
+
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > s.length()) {
+            throw new IndexOutOfBoundsException();
+        }
+        int start = beginIndex, len = endIndex - beginIndex;
+
+        if (len > 0) {
+            char firstChar = s.charAt(start);
+            if (firstChar == '-') {
+                throw new
+                    NumberFormatException(String.format("Illegal leading minus sign " +
+                                                       "on unsigned string %s.", s));
+            } else {
+                if (len <= 5 || // Integer.MAX_VALUE in Character.MAX_RADIX is 6 digits
+                        (radix == 10 && len <= 9)) { // Integer.MAX_VALUE in base 10 is 10 digits
+                    return parseInt(s, start, start + len, radix);
+                } else {
+                    long ell = Long.parseLong(s, start, start + len, radix);
+                    if ((ell & 0xffff_ffff_0000_0000L) == 0) {
+                        return (int) ell;
+                    } else {
+                        throw new
+                            NumberFormatException(String.format("String value %s exceeds " +
+                                                                "range of unsigned int.", s));
+                    }
+                }
+            }
+        } else {
+            throw new NumberFormatException("");
+        }
+    }
+
+    /**
      * Parses the string argument as an unsigned decimal integer. The
      * characters in the string must all be decimal digits, except
      * that the first character may be an ASCII plus sign {@code
