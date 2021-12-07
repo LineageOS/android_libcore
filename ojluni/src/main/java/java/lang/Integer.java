@@ -346,35 +346,75 @@ public final class Integer extends Number implements Comparable<Integer> {
         // assert shift > 0 && shift <=5 : "Illegal shift value";
         int mag = Integer.SIZE - Integer.numberOfLeadingZeros(val);
         int chars = Math.max(((mag + (shift - 1)) / shift), 1);
-        char[] buf = new char[chars];
 
-        formatUnsignedInt(val, shift, buf, 0, chars);
 
-        // Android-changed: Use regular constructor instead of one which takes over "buf".
-        // return new String(buf, true);
+        // BEGIN Android-changed: Use single-byte chars.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[chars];
+            formatUnsignedInt(val, shift, buf, 0, chars);
+        /*
+            return new String(buf, LATIN1);
+        } else {
+            byte[] buf = new byte[chars * 2];
+            formatUnsignedIntUTF16(val, shift, buf, 0, chars);
+            return new String(buf, UTF16);
+        }
+         */
         return new String(buf);
+        // END Android-changed: Use single-byte chars.
     }
 
     /**
-     * Format a long (treated as unsigned) into a character buffer.
+     * Format an {@code int} (treated as unsigned) into a character buffer. If
+     * {@code len} exceeds the formatted ASCII representation of {@code val},
+     * {@code buf} will be padded with leading zeroes.
+     *
      * @param val the unsigned int to format
      * @param shift the log2 of the base to format in (4 for hex, 3 for octal, 1 for binary)
      * @param buf the character buffer to write to
      * @param offset the offset in the destination buffer to start at
      * @param len the number of characters to write
-     * @return the lowest character  location used
      */
-     static int formatUnsignedInt(int val, int shift, char[] buf, int offset, int len) {
-        int charPos = len;
+    static void formatUnsignedInt(int val, int shift, char[] buf, int offset, int len) {
+        // assert shift > 0 && shift <=5 : "Illegal shift value";
+        // assert offset >= 0 && offset < buf.length : "illegal offset";
+        // assert len > 0 && (offset + len) <= buf.length : "illegal length";
+        int charPos = offset + len;
         int radix = 1 << shift;
         int mask = radix - 1;
         do {
-            buf[offset + --charPos] = Integer.digits[val & mask];
+            buf[--charPos] = Integer.digits[val & mask];
             val >>>= shift;
-        } while (val != 0 && charPos > 0);
-
-        return charPos;
+        } while (charPos > offset);
     }
+
+    /** byte[]/LATIN1 version    */
+    static void formatUnsignedInt(int val, int shift, byte[] buf, int offset, int len) {
+        int charPos = offset + len;
+        int radix = 1 << shift;
+        int mask = radix - 1;
+        do {
+            buf[--charPos] = (byte)Integer.digits[val & mask];
+            val >>>= shift;
+        } while (charPos > offset);
+    }
+
+    // BEGIN Android-removed: UTF16 version of formatUnsignedInt().
+    /*
+    /** byte[]/UTF16 version    *
+    private static void formatUnsignedIntUTF16(int val, int shift, byte[] buf, int offset, int len) {
+        int charPos = offset + len;
+        int radix = 1 << shift;
+        int mask = radix - 1;
+        do {
+            StringUTF16.putChar(buf, --charPos, Integer.digits[val & mask]);
+            val >>>= shift;
+        } while (charPos > offset);
+    }
+     */
+    // END Android-removed: UTF16 version of formatUnsignedInt().
 
     // BEGIN Android-changed: Cache the toString() result for small values.
     private static final String[] SMALL_NEG_VALUES  = new String[100];
