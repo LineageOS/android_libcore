@@ -994,6 +994,124 @@ public final class Long extends Number implements Comparable<Long> {
     }
 
     /**
+     * Parses the {@link CharSequence} argument as an unsigned {@code long} in
+     * the specified {@code radix}, beginning at the specified
+     * {@code beginIndex} and extending to {@code endIndex - 1}.
+     *
+     * <p>The method does not take steps to guard against the
+     * {@code CharSequence} being mutated while parsing.
+     *
+     * @param      s   the {@code CharSequence} containing the unsigned
+     *                 {@code long} representation to be parsed
+     * @param      beginIndex   the beginning index, inclusive.
+     * @param      endIndex     the ending index, exclusive.
+     * @param      radix   the radix to be used while parsing {@code s}.
+     * @return     the unsigned {@code long} represented by the subsequence in
+     *             the specified radix.
+     * @throws     NullPointerException  if {@code s} is null.
+     * @throws     IndexOutOfBoundsException  if {@code beginIndex} is
+     *             negative, or if {@code beginIndex} is greater than
+     *             {@code endIndex} or if {@code endIndex} is greater than
+     *             {@code s.length()}.
+     * @throws     NumberFormatException  if the {@code CharSequence} does not
+     *             contain a parsable unsigned {@code long} in the specified
+     *             {@code radix}, or if {@code radix} is either smaller than
+     *             {@link java.lang.Character#MIN_RADIX} or larger than
+     *             {@link java.lang.Character#MAX_RADIX}.
+     * @since  9
+     */
+    public static long parseUnsignedLong(CharSequence s, int beginIndex, int endIndex, int radix)
+                throws NumberFormatException {
+        s = Objects.requireNonNull(s);
+
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > s.length()) {
+            throw new IndexOutOfBoundsException();
+        }
+        int start = beginIndex, len = endIndex - beginIndex;
+
+        if (len > 0) {
+            char firstChar = s.charAt(start);
+            if (firstChar == '-') {
+                throw new NumberFormatException(String.format("Illegal leading minus sign " +
+                        "on unsigned string %s.", s.subSequence(start, start + len)));
+            } else {
+                if (len <= 12 || // Long.MAX_VALUE in Character.MAX_RADIX is 13 digits
+                    (radix == 10 && len <= 18) ) { // Long.MAX_VALUE in base 10 is 19 digits
+                    return parseLong(s, start, start + len, radix);
+                }
+
+                // No need for range checks on end due to testing above.
+                long first = parseLong(s, start, start + len - 1, radix);
+                int second = Character.digit(s.charAt(start + len - 1), radix);
+                if (second < 0) {
+                    throw new NumberFormatException("Bad digit at end of " +
+                            s.subSequence(start, start + len));
+                }
+                long result = first * radix + second;
+
+                /*
+                 * Test leftmost bits of multiprecision extension of first*radix
+                 * for overflow. The number of bits needed is defined by
+                 * GUARD_BIT = ceil(log2(Character.MAX_RADIX)) + 1 = 7. Then
+                 * int guard = radix*(int)(first >>> (64 - GUARD_BIT)) and
+                 * overflow is tested by splitting guard in the ranges
+                 * guard < 92, 92 <= guard < 128, and 128 <= guard, where
+                 * 92 = 128 - Character.MAX_RADIX. Note that guard cannot take
+                 * on a value which does not include a prime factor in the legal
+                 * radix range.
+                 */
+                int guard = radix * (int) (first >>> 57);
+                if (guard >= 128 ||
+                        (result >= 0 && guard >= 128 - Character.MAX_RADIX)) {
+                    /*
+                     * For purposes of exposition, the programmatic statements
+                     * below should be taken to be multi-precision, i.e., not
+                     * subject to overflow.
+                     *
+                     * A) Condition guard >= 128:
+                     * If guard >= 128 then first*radix >= 2^7 * 2^57 = 2^64
+                     * hence always overflow.
+                     *
+                     * B) Condition guard < 92:
+                     * Define left7 = first >>> 57.
+                     * Given first = (left7 * 2^57) + (first & (2^57 - 1)) then
+                     * result <= (radix*left7)*2^57 + radix*(2^57 - 1) + second.
+                     * Thus if radix*left7 < 92, radix <= 36, and second < 36,
+                     * then result < 92*2^57 + 36*(2^57 - 1) + 36 = 2^64 hence
+                     * never overflow.
+                     *
+                     * C) Condition 92 <= guard < 128:
+                     * first*radix + second >= radix*left7*2^57 + second
+                     * so that first*radix + second >= 92*2^57 + 0 > 2^63
+                     *
+                     * D) Condition guard < 128:
+                     * radix*first <= (radix*left7) * 2^57 + radix*(2^57 - 1)
+                     * so
+                     * radix*first + second <= (radix*left7) * 2^57 + radix*(2^57 - 1) + 36
+                     * thus
+                     * radix*first + second < 128 * 2^57 + 36*2^57 - radix + 36
+                     * whence
+                     * radix*first + second < 2^64 + 2^6*2^57 = 2^64 + 2^63
+                     *
+                     * E) Conditions C, D, and result >= 0:
+                     * C and D combined imply the mathematical result
+                     * 2^63 < first*radix + second < 2^64 + 2^63. The lower
+                     * bound is therefore negative as a signed long, but the
+                     * upper bound is too small to overflow again after the
+                     * signed long overflows to positive above 2^64 - 1. Hence
+                     * result >= 0 implies overflow given C and D.
+                     */
+                    throw new NumberFormatException(String.format("String value %s exceeds " +
+                            "range of unsigned long.", s.subSequence(start, start + len)));
+                }
+                return result;
+            }
+        } else {
+            throw NumberFormatException.forInputString("");
+        }
+    }
+
+    /**
      * Parses the string argument as an unsigned decimal {@code long}. The
      * characters in the string must all be decimal digits, except
      * that the first character may be an ASCII plus sign {@code
