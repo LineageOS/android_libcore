@@ -59,6 +59,8 @@ public static int parseUnsignedInt(@libcore.util.NonNull java.lang.String s, int
 
 public static int parseUnsignedInt(@libcore.util.NonNull java.lang.String s) throws java.lang.NumberFormatException { throw new RuntimeException("Stub!"); }
 
+public static int parseUnsignedInt(@libcore.util.NonNull java.lang.CharSequence s, int beginIndex, int endIndex, int radix) throws java.lang.NumberFormatException { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public static java.lang.Integer valueOf(@libcore.util.NonNull java.lang.String s, int radix) throws java.lang.NumberFormatException { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public static java.lang.Integer valueOf(@libcore.util.NonNull java.lang.String s) throws java.lang.NumberFormatException { throw new RuntimeException("Stub!"); }
