@@ -139,26 +139,59 @@ public final class Integer extends Number implements Comparable<Integer> {
             return toString(i);
         }
 
-        char buf[] = new char[33];
+        // BEGIN Android-changed: Use single-byte chars.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[33];
+            boolean negative = (i < 0);
+            int charPos = 32;
+
+            if (!negative) {
+                i = -i;
+            }
+
+            while (i <= -radix) {
+                buf[charPos--] = (byte)digits[-(i % radix)];
+                i = i / radix;
+            }
+            buf[charPos] = (byte)digits[-i];
+
+            if (negative) {
+                buf[--charPos] = '-';
+            }
+
+        /*
+            return StringLatin1.newString(buf, charPos, (33 - charPos));
+        }
+        return toStringUTF16(i, radix);
+         */
+        return new String(buf, charPos, (33 - charPos));
+        // END Android-changed: Use single-byte chars.
+    }
+
+    // BEGIN Android-removed: UTF16 version of toString.
+    /*
+    private static String toStringUTF16(int i, int radix) {
+        byte[] buf = new byte[33 * 2];
         boolean negative = (i < 0);
         int charPos = 32;
-
         if (!negative) {
             i = -i;
         }
-
         while (i <= -radix) {
-            buf[charPos--] = digits[-(i % radix)];
+            StringUTF16.putChar(buf, charPos--, digits[-(i % radix)]);
             i = i / radix;
         }
-        buf[charPos] = digits[-i];
+        StringUTF16.putChar(buf, charPos, digits[-i]);
 
         if (negative) {
-            buf[--charPos] = '-';
+            StringUTF16.putChar(buf, --charPos, '-');
         }
-
-        return new String(buf, charPos, (33 - charPos));
+        return StringUTF16.newString(buf, charPos, (33 - charPos));
     }
+     */
+    // END Android-removed: UTF16 version of toString.
 
     /**
      * Returns a string representation of the first argument as an
