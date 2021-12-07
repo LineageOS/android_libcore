@@ -3281,6 +3281,7 @@ package java.lang {
     method public static long parseLong(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static long parseLong(@NonNull String) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static long parseUnsignedLong(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String) throws java.lang.NumberFormatException;
     method public static long remainderUnsigned(long, long);
     method public static long reverse(long);
