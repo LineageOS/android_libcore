@@ -448,8 +448,10 @@ public final class Long extends Number implements Comparable<Long> {
             // really: r = i - (q * 100);
             r = (int)(i - ((q << 6) + (q << 5) + (q << 2)));
             i = q;
-            buf[--charPos] = Integer.DigitOnes[r];
-            buf[--charPos] = Integer.DigitTens[r];
+            // BEGIN Android-changed: Temporarily cast until Long is not updated to 11.
+            buf[--charPos] = (char)Integer.DigitOnes[r];
+            buf[--charPos] = (char)Integer.DigitTens[r];
+            // END Android-changed: Temporarily cast until Long is not updated to 11.
         }
 
         // Get 2 digits/iteration using ints
@@ -460,8 +462,10 @@ public final class Long extends Number implements Comparable<Long> {
             // really: r = i2 - (q * 100);
             r = i2 - ((q2 << 6) + (q2 << 5) + (q2 << 2));
             i2 = q2;
-            buf[--charPos] = Integer.DigitOnes[r];
-            buf[--charPos] = Integer.DigitTens[r];
+            // BEGIN Android-changed: Temporarily cast until Long is not updated to 11.
+            buf[--charPos] = (char)Integer.DigitOnes[r];
+            buf[--charPos] = (char)Integer.DigitTens[r];
+            // END Android-changed: Temporarily cast until Long is not updated to 11.
         }
 
         // Fall thru to fast mode for smaller numbers
