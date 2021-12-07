@@ -21,6 +21,9 @@
  * questions.
  */
 
+// Android-added: package for test.
+package test.java.lang.invoke.VarHandles;
+
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 
