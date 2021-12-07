@@ -396,14 +396,23 @@ public final class Long extends Number implements Comparable<Long> {
      * @return  a string representation of the argument in base&nbsp;10.
      */
     public static String toString(long i) {
-        if (i == Long.MIN_VALUE)
-            return "-9223372036854775808";
-        int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
-        char[] buf = new char[size];
-        getChars(i, size, buf);
-        // Android-changed: Use regular constructor instead of one which takes over "buf".
-        // return new String(buf, true);
+        int size = stringSize(i);
+        // BEGIN Android-changed: Alsways use single-byte buffer.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[size];
+            getChars(i, size, buf);
+        /*
+            return new String(buf, LATIN1);
+        } else {
+            byte[] buf = new byte[size * 2];
+            StringUTF16.getChars(i, size, buf);
+            return new String(buf, UTF16);
+        }
+         */
         return new String(buf);
+        // END Android-changed: Alsways use single-byte buffer.
     }
 
     /**
@@ -431,68 +440,135 @@ public final class Long extends Number implements Comparable<Long> {
      * digit at the specified index (exclusive), and working
      * backwards from there.
      *
-     * Will fail if i == Long.MIN_VALUE
+     * @implNote This method converts positive inputs into negative
+     * values, to cover the Long.MIN_VALUE case. Converting otherwise
+     * (negative to positive) will expose -Long.MIN_VALUE that overflows
+     * long.
+     *
+     * @param i     value to convert
+     * @param index next index, after the least significant digit
+     * @param buf   target buffer, Latin1-encoded
+     * @return index of the most significant digit or minus sign, if present
      */
-    static void getChars(long i, int index, char[] buf) {
+    static int getChars(long i, int index, byte[] buf) {
         long q;
         int r;
         int charPos = index;
-        char sign = 0;
 
-        if (i < 0) {
-            sign = '-';
+        boolean negative = (i < 0);
+        if (!negative) {
             i = -i;
         }
 
         // Get 2 digits/iteration using longs until quotient fits into an int
-        while (i > Integer.MAX_VALUE) {
+        while (i <= Integer.MIN_VALUE) {
             q = i / 100;
-            // really: r = i - (q * 100);
-            r = (int)(i - ((q << 6) + (q << 5) + (q << 2)));
+            r = (int)((q * 100) - i);
             i = q;
-            // BEGIN Android-changed: Temporarily cast until Long is not updated to 11.
-            buf[--charPos] = (char)Integer.DigitOnes[r];
-            buf[--charPos] = (char)Integer.DigitTens[r];
-            // END Android-changed: Temporarily cast until Long is not updated to 11.
+            buf[--charPos] = Integer.DigitOnes[r];
+            buf[--charPos] = Integer.DigitTens[r];
         }
 
         // Get 2 digits/iteration using ints
         int q2;
         int i2 = (int)i;
-        while (i2 >= 65536) {
+        while (i2 <= -100) {
             q2 = i2 / 100;
-            // really: r = i2 - (q * 100);
-            r = i2 - ((q2 << 6) + (q2 << 5) + (q2 << 2));
+            r  = (q2 * 100) - i2;
             i2 = q2;
-            // BEGIN Android-changed: Temporarily cast until Long is not updated to 11.
-            buf[--charPos] = (char)Integer.DigitOnes[r];
-            buf[--charPos] = (char)Integer.DigitTens[r];
-            // END Android-changed: Temporarily cast until Long is not updated to 11.
+            buf[--charPos] = Integer.DigitOnes[r];
+            buf[--charPos] = Integer.DigitTens[r];
         }
 
-        // Fall thru to fast mode for smaller numbers
-        // assert(i2 <= 65536, i2);
-        for (;;) {
-            q2 = (i2 * 52429) >>> (16+3);
-            r = i2 - ((q2 << 3) + (q2 << 1));  // r = i2-(q2*10) ...
-            buf[--charPos] = Integer.digits[r];
-            i2 = q2;
-            if (i2 == 0) break;
+        // We know there are at most two digits left at this point.
+        q2 = i2 / 10;
+        r  = (q2 * 10) - i2;
+        buf[--charPos] = (byte)('0' + r);
+
+        // Whatever left is the remaining digit.
+        if (q2 < 0) {
+            buf[--charPos] = (byte)('0' - q2);
         }
-        if (sign != 0) {
-            buf[--charPos] = sign;
+
+        if (negative) {
+            buf[--charPos] = (byte)'-';
         }
+        return charPos;
     }
 
-    // Requires positive x
-    static int stringSize(long x) {
-        long p = 10;
-        for (int i=1; i<19; i++) {
-            if (x < p)
-                return i;
-            p = 10*p;
+    // BEGIN Android-added: char version of getChars(long i, int index, byte[] buf).
+    // for java.lang.AbstractStringBuilder#append(int).
+    static int getChars(long i, int index, char[] buf) {
+        long q;
+        int r;
+        int charPos = index;
+
+        boolean negative = (i < 0);
+        if (!negative) {
+            i = -i;
         }
-        return 19;
+
+        // Get 2 digits/iteration using longs until quotient fits into an int
+        while (i <= Integer.MIN_VALUE) {
+            q = i / 100;
+            r = (int)((q * 100) - i);
+            i = q;
+            buf[--charPos] = (char)Integer.DigitOnes[r];
+            buf[--charPos] = (char)Integer.DigitTens[r];
+        }
+
+        // Get 2 digits/iteration using ints
+        int q2;
+        int i2 = (int)i;
+        while (i2 <= -100) {
+            q2 = i2 / 100;
+            r  = (q2 * 100) - i2;
+            i2 = q2;
+            buf[--charPos] = (char)Integer.DigitOnes[r];
+            buf[--charPos] = (char)Integer.DigitTens[r];
+        }
+
+        // We know there are at most two digits left at this point.
+        q2 = i2 / 10;
+        r  = (q2 * 10) - i2;
+        buf[--charPos] = (char)('0' + r);
+
+        // Whatever left is the remaining digit.
+        if (q2 < 0) {
+            buf[--charPos] = (char)('0' - q2);
+        }
+
+        if (negative) {
+            buf[--charPos] = (byte)'-';
+        }
+        return charPos;
+    }
+    // END Android-added: char version of getChars(long i, int index, byte[] buf).
+
+    /**
+     * Returns the string representation size for a given long value.
+     *
+     * @param x long value
+     * @return string size
+     *
+     * @implNote There are other ways to compute this: e.g. binary search,
+     * but values are biased heavily towards zero, and therefore linear search
+     * wins. The iteration results are also routinely inlined in the generated
+     * code after loop unrolling.
+     */
+    static int stringSize(long x) {
+        int d = 1;
+        if (x >= 0) {
+            d = 0;
+            x = -x;
+        }
+        long p = -10;
+        for (int i = 1; i < 19; i++) {
+            if (x > p)
+                return i + d;
+            p = 10 * p;
+        }
+        return 19 + d;
     }
 
     /**
