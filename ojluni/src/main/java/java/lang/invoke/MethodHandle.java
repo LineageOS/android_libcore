@@ -1462,6 +1462,11 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
     // BEGIN Android-added: Android specific implementation.
     /** @hide */
     public int getHandleKind() {
+        if (handleKind == INVOKE_VAR_HANDLE_EXACT || handleKind == INVOKE_VAR_HANDLE) {
+            // No need to expose Android implementation detail, avoids larger
+            // MethodHandleInfo changes in revealDirect() code path.
+            return INVOKE_VIRTUAL;
+        }
         return handleKind;
     }
 
