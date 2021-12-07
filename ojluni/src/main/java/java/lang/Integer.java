@@ -421,7 +421,7 @@ public final class Integer extends Number implements Comparable<Integer> {
     private static final String[] SMALL_NONNEG_VALUES = new String[100];
     // END Android-changed: Cache the toString() result for small values.
 
-    final static char [] DigitTens = {
+    static final byte[] DigitTens = {
         '0', '0', '0', '0', '0', '0', '0', '0', '0', '0',
         '1', '1', '1', '1', '1', '1', '1', '1', '1', '1',
         '2', '2', '2', '2', '2', '2', '2', '2', '2', '2',
@@ -434,7 +434,7 @@ public final class Integer extends Number implements Comparable<Integer> {
         '9', '9', '9', '9', '9', '9', '9', '9', '9', '9',
         } ;
 
-    final static char [] DigitOnes = {
+    static final byte[] DigitOnes = {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -447,24 +447,6 @@ public final class Integer extends Number implements Comparable<Integer> {
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
         } ;
 
-        // I use the "invariant division by multiplication" trick to
-        // accelerate Integer.toString.  In particular we want to
-        // avoid division by 10.
-        //
-        // The "trick" has roughly the same performance characteristics
-        // as the "classic" Integer.toString code on a non-JIT VM.
-        // The trick avoids .rem and .div calls but has a longer code
-        // path and is thus dominated by dispatch overhead.  In the
-        // JIT case the dispatch overhead doesn't exist and the
-        // "trick" is considerably faster than the classic code.
-        //
-        // TODO-FIXME: convert (x * 52429) into the equiv shift-add
-        // sequence.
-        //
-        // RE:  Division by Invariant Integers using Multiplication
-        //      T Gralund, P Montgomery
-        //      ACM PLDI 1994
-        //
 
     /**
      * Returns a {@code String} object representing the
@@ -478,11 +460,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      */
     @HotSpotIntrinsicCandidate
     public static String toString(int i) {
-        if (i == Integer.MIN_VALUE)
-            return "-2147483648";
-
         // BEGIN Android-changed: Cache the String for small values.
-        // int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
         boolean negative = i < 0;
         boolean small = negative ? i > -100 : i < 100;
         if (small) {
@@ -492,25 +470,37 @@ public final class Integer extends Number implements Comparable<Integer> {
                 i = -i;
                 if (smallValues[i] == null) {
                     smallValues[i] =
-                        i < 10 ? new String(new char[]{'-', DigitOnes[i]})
-                               : new String(new char[]{'-', DigitTens[i], DigitOnes[i]});
+                        i < 10 ? new String(new byte[]{'-', DigitOnes[i]})
+                               : new String(new byte[]{'-', DigitTens[i], DigitOnes[i]});
                 }
             } else {
                 if (smallValues[i] == null) {
                     smallValues[i] =
-                        i < 10 ? new String(new char[]{DigitOnes[i]})
-                               : new String(new char[]{DigitTens[i], DigitOnes[i]});
+                        i < 10 ? new String(new byte[]{DigitOnes[i]})
+                               : new String(new byte[]{DigitTens[i], DigitOnes[i]});
                 }
             }
             return smallValues[i];
         }
-        int size = negative ? stringSize(-i) + 1 : stringSize(i);
         // END Android-changed: Cache the String for small values.
-        char[] buf = new char[size];
-        getChars(i, size, buf);
-        // Android-changed: Use regular constructor instead of one which takes over "buf".
-        // return new String(buf, true);
+        int size = stringSize(i);
+
+        // BEGIN Android-changed: Use single-byte chars.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[size];
+            getChars(i, size, buf);
+        /*
+            return new String(buf, LATIN1);
+        } else {
+            byte[] buf = new byte[size * 2];
+            StringUTF16.getChars(i, size, buf);
+            return new String(buf, UTF16);
+        }
+         */
         return new String(buf);
+        // END Android-changed: Use single-byte chars.
     }
 
     /**
@@ -538,51 +528,115 @@ public final class Integer extends Number implements Comparable<Integer> {
      * digit at the specified index (exclusive), and working
      * backwards from there.
      *
-     * Will fail if i == Integer.MIN_VALUE
+     * @implNote This method converts positive inputs into negative
+     * values, to cover the Integer.MIN_VALUE case. Converting otherwise
+     * (negative to positive) will expose -Integer.MIN_VALUE that overflows
+     * integer.
+     *
+     * @param i     value to convert
+     * @param index next index, after the least significant digit
+     * @param buf   target buffer, Latin1-encoded
+     * @return index of the most significant digit or minus sign, if present
      */
-    static void getChars(int i, int index, char[] buf) {
+    static int getChars(int i, int index, byte[] buf) {
         int q, r;
         int charPos = index;
-        char sign = 0;
 
-        if (i < 0) {
-            sign = '-';
+        boolean negative = i < 0;
+        if (!negative) {
             i = -i;
         }
 
         // Generate two digits per iteration
-        while (i >= 65536) {
+        while (i <= -100) {
             q = i / 100;
-        // really: r = i - (q * 100);
-            r = i - ((q << 6) + (q << 5) + (q << 2));
+            r = (q * 100) - i;
             i = q;
-            buf [--charPos] = DigitOnes[r];
-            buf [--charPos] = DigitTens[r];
+            buf[--charPos] = DigitOnes[r];
+            buf[--charPos] = DigitTens[r];
         }
 
-        // Fall thru to fast mode for smaller numbers
-        // assert(i <= 65536, i);
-        for (;;) {
-            q = (i * 52429) >>> (16+3);
-            r = i - ((q << 3) + (q << 1));  // r = i-(q*10) ...
-            buf [--charPos] = digits [r];
-            i = q;
-            if (i == 0) break;
+        // We know there are at most two digits left at this point.
+        q = i / 10;
+        r = (q * 10) - i;
+        buf[--charPos] = (byte)('0' + r);
+
+        // Whatever left is the remaining digit.
+        if (q < 0) {
+            buf[--charPos] = (byte)('0' - q);
         }
-        if (sign != 0) {
-            buf [--charPos] = sign;
+
+        if (negative) {
+            buf[--charPos] = (byte)'-';
         }
+        return charPos;
     }
+
+    // BEGIN Android-added: char version of getChars(int i, int index, byte[] buf).
+    // for java.lang.AbstractStringBuilder#append(int).
+    static int getChars(int i, int index, char[] buf) {
+        int q, r;
+        int charPos = index;
+
+        boolean negative = i < 0;
+        if (!negative) {
+            i = -i;
+        }
+
+        // Generate two digits per iteration
+        while (i <= -100) {
+            q = i / 100;
+            r = (q * 100) - i;
+            i = q;
+            buf[--charPos] = (char)DigitOnes[r];
+            buf[--charPos] = (char)DigitTens[r];
+        }
+
+        // We know there are at most two digits left at this point.
+        q = i / 10;
+        r = (q * 10) - i;
+        buf[--charPos] = (char)('0' + r);
+
+        // Whatever left is the remaining digit.
+        if (q < 0) {
+            buf[--charPos] = (char)('0' - q);
+        }
+
+        if (negative) {
+            buf[--charPos] = (byte)'-';
+        }
+        return charPos;
+    }
+    // END Android-added: char version of getChars(int i, int index, byte[] buf).
 
     // Left here for compatibility reasons, see JDK-8143900.
     static final int [] sizeTable = { 9, 99, 999, 9999, 99999, 999999, 9999999,
                                       99999999, 999999999, Integer.MAX_VALUE };
 
-    // Requires positive x
+    /**
+     * Returns the string representation size for a given int value.
+     *
+     * @param x int value
+     * @return string size
+     *
+     * @implNote There are other ways to compute this: e.g. binary search,
+     * but values are biased heavily towards zero, and therefore linear search
+     * wins. The iteration results are also routinely inlined in the generated
+     * code after loop unrolling.
+     */
     static int stringSize(int x) {
-        for (int i=0; ; i++)
-            if (x <= sizeTable[i])
-                return i+1;
+        int d = 1;
+        if (x >= 0) {
+            d = 0;
+            x = -x;
+        }
+        int p = -10;
+        for (int i = 1; i < 10; i++) {
+            if (x > p)
+                return i + d;
+            p = 10 * p;
+        }
+        return 10 + d;
     }
 
     /**
