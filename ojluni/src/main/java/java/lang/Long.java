@@ -125,26 +125,58 @@ public final class Long extends Number implements Comparable<Long> {
             radix = 10;
         if (radix == 10)
             return toString(i);
-        char[] buf = new char[65];
+
+        // BEGIN Android-changed: Use single-byte chars.
+        /*
+        if (COMPACT_STRINGS) {
+         */
+            byte[] buf = new byte[65];
+            int charPos = 64;
+            boolean negative = (i < 0);
+
+            if (!negative) {
+                i = -i;
+            }
+
+            while (i <= -radix) {
+                buf[charPos--] = (byte)Integer.digits[(int)(-(i % radix))];
+                i = i / radix;
+            }
+            buf[charPos] = (byte)Integer.digits[(int)(-i)];
+
+            if (negative) {
+                buf[--charPos] = '-';
+            }
+        /*
+            return StringLatin1.newString(buf, charPos, (65 - charPos));
+        }
+        return toStringUTF16(i, radix);
+         */
+        return new String(buf, charPos, (65 - charPos));
+        // END Android-changed: Use single-byte chars.
+    }
+
+    // BEGIN Android-removed: UTF16 version of toString(long i, int radix).
+    /*
+    private static String toStringUTF16(long i, int radix) {
+        byte[] buf = new byte[65 * 2];
         int charPos = 64;
         boolean negative = (i < 0);
-
         if (!negative) {
             i = -i;
         }
-
         while (i <= -radix) {
-            buf[charPos--] = Integer.digits[(int)(-(i % radix))];
+            StringUTF16.putChar(buf, charPos--, Integer.digits[(int)(-(i % radix))]);
             i = i / radix;
         }
-        buf[charPos] = Integer.digits[(int)(-i)];
-
+        StringUTF16.putChar(buf, charPos, Integer.digits[(int)(-i)]);
         if (negative) {
-            buf[--charPos] = '-';
+            StringUTF16.putChar(buf, --charPos, '-');
         }
-
-        return new String(buf, charPos, (65 - charPos));
+        return StringUTF16.newString(buf, charPos, (65 - charPos));
     }
+     */
+    // END Android-removed: UTF16 version of toString(long i, int radix).
 
     /**
      * Returns a string representation of the first argument as an
