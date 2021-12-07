@@ -572,12 +572,9 @@ public final class Long extends Number implements Comparable<Long> {
                                             " greater than Character.MAX_RADIX");
         }
 
-        long result = 0;
         boolean negative = false;
         int i = 0, len = s.length();
         long limit = -Long.MAX_VALUE;
-        long multmin;
-        int digit;
 
         if (len > 0) {
             char firstChar = s.charAt(0);
@@ -585,21 +582,21 @@ public final class Long extends Number implements Comparable<Long> {
                 if (firstChar == '-') {
                     negative = true;
                     limit = Long.MIN_VALUE;
-                } else if (firstChar != '+')
-                    throw NumberFormatException.forInputString(s);
-
-                if (len == 1) // Cannot have lone "+" or "-"
-                    throw NumberFormatException.forInputString(s);
-                i++;
-            }
-            multmin = limit / radix;
-            while (i < len) {
-                // Accumulating negatively avoids surprises near MAX_VALUE
-                digit = Character.digit(s.charAt(i++),radix);
-                if (digit < 0) {
+                } else if (firstChar != '+') {
                     throw NumberFormatException.forInputString(s);
                 }
-                if (result < multmin) {
+
+                if (len == 1) { // Cannot have lone "+" or "-"
+                    throw NumberFormatException.forInputString(s);
+                }
+                i++;
+            }
+            long multmin = limit / radix;
+            long result = 0;
+            while (i < len) {
+                // Accumulating negatively avoids surprises near MAX_VALUE
+                int digit = Character.digit(s.charAt(i++),radix);
+                if (digit < 0 || result < multmin) {
                     throw NumberFormatException.forInputString(s);
                 }
                 result *= radix;
@@ -608,10 +605,10 @@ public final class Long extends Number implements Comparable<Long> {
                 }
                 result -= digit;
             }
+            return negative ? result : -result;
         } else {
             throw NumberFormatException.forInputString(s);
         }
-        return negative ? result : -result;
     }
 
     /**
