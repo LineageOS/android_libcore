@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -52,7 +52,7 @@ import jdk.internal.HotSpotIntrinsicCandidate;
  * @author  Arthur van Hoff
  * @author  Josh Bloch
  * @author  Joseph D. Darcy
- * @since   JDK1.0
+ * @since   1.0
  */
 public final class Long extends Number implements Comparable<Long> {
     /**
@@ -71,7 +71,7 @@ public final class Long extends Number implements Comparable<Long> {
      * The {@code Class} instance representing the primitive type
      * {@code long}.
      *
-     * @since   JDK1.1
+     * @since   1.1
      */
     @SuppressWarnings("unchecked")
     public static final Class<Long>     TYPE = (Class<Long>) Class.getPrimitiveClass("long");
@@ -269,7 +269,7 @@ public final class Long extends Number implements Comparable<Long> {
      *          (base&nbsp;16).
      * @see #parseUnsignedLong(String, int)
      * @see #toUnsignedString(long, int)
-     * @since   JDK 1.0.2
+     * @since   1.0.2
      */
     public static String toHexString(long i) {
         return toUnsignedString0(i, 4);
@@ -308,7 +308,7 @@ public final class Long extends Number implements Comparable<Long> {
      *          value represented by the argument in octal (base&nbsp;8).
      * @see #parseUnsignedLong(String, int)
      * @see #toUnsignedString(long, int)
-     * @since   JDK 1.0.2
+     * @since   1.0.2
      */
     public static String toOctalString(long i) {
         return toUnsignedString0(i, 3);
@@ -341,7 +341,7 @@ public final class Long extends Number implements Comparable<Long> {
      *          value represented by the argument in binary (base&nbsp;2).
      * @see #parseUnsignedLong(String, int)
      * @see #toUnsignedString(long, int)
-     * @since   JDK 1.0.2
+     * @since   1.0.2
      */
     public static String toBinaryString(long i) {
         return toUnsignedString0(i, 1);
@@ -425,7 +425,7 @@ public final class Long extends Number implements Comparable<Long> {
     }
 
     /**
-     * Places characters representing the integer i into the
+     * Places characters representing the long i into the
      * character array buf. The characters are placed into
      * the buffer backwards starting with the least significant
      * digit at the specified index (exclusive), and working
@@ -826,7 +826,7 @@ public final class Long extends Number implements Comparable<Long> {
     /**
      * Parses the string argument as an unsigned decimal {@code long}. The
      * characters in the string must all be decimal digits, except
-     * that the first character may be an an ASCII plus sign {@code
+     * that the first character may be an ASCII plus sign {@code
      * '+'} ({@code '\u005Cu002B'}). The resulting integer value
      * is returned, exactly as if the argument and the radix 10 were
      * given as arguments to the {@link
@@ -920,15 +920,14 @@ public final class Long extends Number implements Comparable<Long> {
      * significantly better space and time performance by caching
      * frequently requested values.
      *
-     * Note that unlike the {@linkplain Integer#valueOf(int)
-     * corresponding method} in the {@code Integer} class, this method
-     * is <em>not</em> required to cache values within a particular
-     * range.
+     * This method will always cache values in the range -128 to 127,
+     * inclusive, and may cache other values outside of this range.
      *
      * @param  l a long value.
      * @return a {@code Long} instance representing {@code l}.
      * @since  1.5
      */
+    @HotSpotIntrinsicCandidate
     public static Long valueOf(long l) {
         final int offset = 128;
         if (l >= -128 && l <= 127) { // will cache
@@ -1093,6 +1092,7 @@ public final class Long extends Number implements Comparable<Long> {
      * Returns the value of this {@code Long} as a
      * {@code long} value.
      */
+    @HotSpotIntrinsicCandidate
     public long longValue() {
         return value;
     }
@@ -1510,6 +1510,7 @@ public final class Long extends Number implements Comparable<Long> {
      *     is equal to zero.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int numberOfLeadingZeros(long i) {
         // HD, Figure 5-6
          if (i == 0)
@@ -1539,6 +1540,7 @@ public final class Long extends Number implements Comparable<Long> {
      *     to zero.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static int numberOfTrailingZeros(long i) {
         // HD, Figure 5-14
         int x, y;
@@ -1562,8 +1564,9 @@ public final class Long extends Number implements Comparable<Long> {
      *     representation of the specified {@code long} value.
      * @since 1.5
      */
+     @HotSpotIntrinsicCandidate
      public static int bitCount(long i) {
-        // HD, Figure 5-14
+        // HD, Figure 5-2
         i = i - ((i >>> 1) & 0x5555555555555555L);
         i = (i & 0x3333333333333333L) + ((i >>> 2) & 0x3333333333333333L);
         i = (i + (i >>> 4)) & 0x0f0f0f0f0f0f0f0fL;
@@ -1665,6 +1668,7 @@ public final class Long extends Number implements Comparable<Long> {
      *     {@code long} value.
      * @since 1.5
      */
+    @HotSpotIntrinsicCandidate
     public static long reverseBytes(long i) {
         i = (i & 0x00ff00ff00ff00ffL) << 8 | (i >>> 8) & 0x00ff00ff00ff00ffL;
         return (i << 48) | ((i & 0xffff0000L) << 16) |
