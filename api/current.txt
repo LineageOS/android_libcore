@@ -3177,8 +3177,8 @@ package java.lang {
   }
 
   public final class Integer extends java.lang.Number implements java.lang.Comparable<java.lang.Integer> {
-    ctor public Integer(int);
-    ctor public Integer(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Integer(int);
+    ctor @Deprecated public Integer(@NonNull String) throws java.lang.NumberFormatException;
     method public static int bitCount(int);
     method public static int compare(int, int);
     method public int compareTo(@NonNull Integer);
@@ -3200,8 +3200,10 @@ package java.lang {
     method public static int numberOfLeadingZeros(int);
     method public static int numberOfTrailingZeros(int);
     method public static int parseInt(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static int parseInt(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static int parseInt(@NonNull String) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static int parseUnsignedInt(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static int parseUnsignedInt(@NonNull String) throws java.lang.NumberFormatException;
     method public static int remainderUnsigned(int, int);
     method public static int reverse(int);
@@ -3253,8 +3255,8 @@ package java.lang {
   }
 
   public final class Long extends java.lang.Number implements java.lang.Comparable<java.lang.Long> {
-    ctor public Long(long);
-    ctor public Long(@NonNull String) throws java.lang.NumberFormatException;
+    ctor @Deprecated public Long(long);
+    ctor @Deprecated public Long(@NonNull String) throws java.lang.NumberFormatException;
     method public static int bitCount(long);
     method public static int compare(long, long);
     method public int compareTo(@NonNull Long);
@@ -3276,8 +3278,10 @@ package java.lang {
     method public static int numberOfLeadingZeros(long);
     method public static int numberOfTrailingZeros(long);
     method public static long parseLong(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static long parseLong(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static long parseLong(@NonNull String) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String, int) throws java.lang.NumberFormatException;
+    method public static long parseUnsignedLong(@NonNull CharSequence, int, int, int) throws java.lang.NumberFormatException;
     method public static long parseUnsignedLong(@NonNull String) throws java.lang.NumberFormatException;
     method public static long remainderUnsigned(long, long);
     method public static long reverse(long);
