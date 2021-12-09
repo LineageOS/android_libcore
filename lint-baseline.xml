@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 7.1.0-dev" type="baseline" client="" dependencies="true" name="" variant="all" version="7.1.0-dev">
+<issues format="6" by="lint 7.2.0-dev" type="baseline" client="" dependencies="true" name="" variant="all" version="7.2.0-dev">
 
     <issue
         id="NewApi"
@@ -113,6 +113,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="                Cleanable ref = (Cleanable) queue.remove(60 * 1000L);"
+        errorLine2="                                 ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/CleanerImpl.java"
+            line="152"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="class FieldVarHandle extends VarHandle {"
         errorLine2="                             ~~~~~~~~~">
@@ -164,6 +175,17 @@
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
             line="2526"
             column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="        implements Cleaner.Cleanable {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java"
+            line="44"
+            column="20"/>
     </issue>
 
     <issue
@@ -306,6 +328,17 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="                Cleanable ref = (Cleanable) queue.remove(60 * 1000L);"
+        errorLine2="                                 ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/CleanerImpl.java"
+            line="152"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="class FieldVarHandle extends VarHandle {"
         errorLine2="                             ~~~~~~~~~">
@@ -357,6 +390,17 @@
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
             line="2526"
             column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="        implements Cleaner.Cleanable {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java"
+            line="44"
+            column="20"/>
     </issue>
 
     <issue
