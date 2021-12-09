@@ -91,7 +91,7 @@ public class LocaleDataTest {
 
     assertEquals("воскресенье", l.longWeekdayNames[1]);
     assertEquals("вс", l.shortWeekdayNames[1]);
-    assertEquals("вс", l.tinyWeekdayNames[1]);
+    assertEquals("В", l.tinyWeekdayNames[1]);
 
     // Russian stand-alone weekday names have no initial capital since CLDR 28/ICU 56.
     assertEquals("воскресенье", l.longStandAloneWeekdayNames[1]);
