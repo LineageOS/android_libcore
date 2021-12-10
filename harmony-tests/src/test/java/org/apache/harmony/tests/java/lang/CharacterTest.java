@@ -753,7 +753,7 @@ public class CharacterTest extends TestCase {
         assertTrue(Character.getType(0x2FFFF) == Character.UNASSIGNED);
         assertTrue(Character.getType(0x3134B) == Character.UNASSIGNED);
 
-        assertTrue(Character.getType(0x9FFF) == Character.UNASSIGNED);
+        assertTrue(Character.getType(0x9FFF) == Character.OTHER_LETTER);
         assertTrue(Character.getType(0x110000) == Character.UNASSIGNED);
 
         assertTrue(Character.getType(0x0041) == Character.UPPERCASE_LETTER);

@@ -447,17 +447,27 @@ public final class ICU {
     boolean remove_B_and_b = (contains_B || contains_b) && (pattern.indexOf('H') != -1);
 
     if (remove_B_and_b) {
-      pattern = rewriteIcuDateTimePattern(pattern);
+      return removeBFromDateTimePattern(pattern);
     }
+
+    // Non-ideal workaround until http://b/68139386 is implemented.
+    // This workaround may create a pattern that isn't usual / common for the language users.
+    if (pattern.indexOf('h') != -1) {
+      if (contains_b) {
+        pattern = pattern.replace('b', 'a');
+      }
+      if (contains_B) {
+        pattern = pattern.replace('B', 'a');
+      }
+    }
+
     return pattern;
   }
 
   /**
-   * Rewrite pattern with heuristics. It's known to
-   *   - Remove 'b' and 'B' from simple patterns, e.g. "B H:mm" and "dd-MM-yy B HH:mm:ss" only.
-   *   - (Append the new heuristics)
+   * Remove 'b' and 'B' from simple patterns, e.g. "B H:mm" and "dd-MM-yy B HH:mm:ss" only.
    */
-  private static String rewriteIcuDateTimePattern(String pattern) {
+  private static String removeBFromDateTimePattern(String pattern) {
     // The below implementation can likely be replaced by a regular expression via
     // String.replaceAll(). However, it's known that libcore's regex implementation is more
     // memory-intensive, and the below implementation is likely cheaper, but it's not yet measured.

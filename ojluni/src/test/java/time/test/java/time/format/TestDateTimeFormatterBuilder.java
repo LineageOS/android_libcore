@@ -949,22 +949,30 @@ public class TestDateTimeFormatterBuilder {
             {null, FormatStyle.SHORT, JapaneseChronology.INSTANCE, Locale.JAPANESE, "H:mm"},
 
             // Chinese Local and Chronology
-            {FormatStyle.FULL, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE zzzz ah:mm:ss"},
-            {FormatStyle.LONG, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 z ah:mm:ss"},
-            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 ah:mm:ss"},
+            // Android-changed: Since ICU 70, use 24-hour time format
+            // {FormatStyle.FULL, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE zzzz ah:mm:ss"},
+            // {FormatStyle.LONG, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 z ah:mm:ss"},
+            // {FormatStyle.MEDIUM, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 ah:mm:ss"},
+            {FormatStyle.FULL, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE zzzz HH:mm:ss"},
+            {FormatStyle.LONG, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 z HH:mm:ss"},
+            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 HH:mm:ss"},
             // Android-changed: Since ICU 68, use single 'y' to represent year in short form like other format styles
             // {FormatStyle.SHORT, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "Gyy/M/d ah:mm"},
-            {FormatStyle.SHORT, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy/M/d ah:mm"},
+            {FormatStyle.SHORT, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy/M/d HH:mm"},
             {FormatStyle.FULL, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE"},
             {FormatStyle.LONG, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5"},
             {FormatStyle.MEDIUM, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5"},
             // Android-changed: Since ICU 68, use single 'y' to represent year in short form like other format styles
             // {FormatStyle.SHORT, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gyy/M/d"},
+            // {null, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "zzzz ah:mm:ss"},
+            // {null, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "z ah:mm:ss"},
+            // {null, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "ah:mm:ss"},
+            // {null, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "ah:mm"},
             {FormatStyle.SHORT, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy/M/d"},
-            {null, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "zzzz ah:mm:ss"},
-            {null, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "z ah:mm:ss"},
-            {null, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "ah:mm:ss"},
-            {null, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "ah:mm"},
+            {null, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "zzzz HH:mm:ss"},
+            {null, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "z HH:mm:ss"},
+            {null, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "HH:mm:ss"},
+            {null, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "HH:mm"},
         };
     }
 
