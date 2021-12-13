@@ -5854,6 +5854,8 @@ package java.nio {
   }
 
   public abstract class ByteBuffer extends java.nio.Buffer implements java.lang.Comparable<java.nio.ByteBuffer> {
+    method @NonNull public final java.nio.ByteBuffer alignedSlice(int);
+    method public final int alignmentOffset(int, int);
     method @NonNull public static java.nio.ByteBuffer allocate(int);
     method @NonNull public static java.nio.ByteBuffer allocateDirect(int);
     method @NonNull public final byte[] array();
