@@ -200,7 +200,6 @@ java_library {
     },
 
     java_resources: core_resources,
-    java_version: "1.9",
 
     installable: false,
 
@@ -317,7 +316,6 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
-    java_version: "1.9",
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
@@ -857,7 +855,6 @@ droidstubs {
         ":core_oj_api_files",
         ":core_libart_api_files",
     ],
-    java_version: "1.9",
     installable: false,
     sdk_version: "none",
     system_modules: "none",
@@ -951,7 +948,6 @@ java_sdk_library {
         "i18n.module.intra.core.api.stubs",
     ],
     stub_only_static_libs: ["notices-for-stubs-jar"],
-    java_version: "1.9",
 
     // Make dex jars for the stubs available for use by hiddenapi processing.
     compile_dex: true,
@@ -1125,6 +1121,5 @@ java_library {
     srcs: [
         ":api_surface_annotation_files",
     ],
-    java_version: "1.9",
     sdk_version: "core_current",
 }
