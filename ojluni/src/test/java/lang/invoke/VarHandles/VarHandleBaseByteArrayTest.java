@@ -319,8 +319,9 @@ public abstract class VarHandleBaseByteArrayTest extends VarHandleBaseTest {
                                              MemoryMode.ALIGNED, ne, MemoryMode.READ_ONLY);
         bavss.add(dbb_ro);
 
+        // Android-changed: Use ByteBuffer.slice() rather than Buffer.slice().
         ByteBufferSource dbb_offset_aligned =
-                new ByteBufferSource(dbb.s.slice().position(array.length / 4).limit(array.length / 4 + array.length / 2).slice(),
+                new ByteBufferSource(((ByteBuffer) dbb.s.slice().position(array.length / 4).limit(array.length / 4 + array.length / 2)).slice(),
                                      MemoryMode.ALIGNED, ne, MemoryMode.READ_WRITE);
         bavss.add(dbb_offset_aligned);
         ByteBufferReadOnlySource dbb_offset_aligned_ro =
@@ -328,8 +329,9 @@ public abstract class VarHandleBaseByteArrayTest extends VarHandleBaseTest {
                                              MemoryMode.ALIGNED, ne, MemoryMode.READ_ONLY);
         bavss.add(dbb_offset_aligned_ro);
 
+        // Android-changed: Use ByteBuffer.slice() rather than Buffer.slice().
         ByteBufferSource dbb_offset_unaligned =
-                new ByteBufferSource(dbb.s.slice().position(array.length / 4 - 1).limit(array.length / 4 - 1 + array.length / 2).slice(),
+                new ByteBufferSource(((ByteBuffer) dbb.s.slice().position(array.length / 4 - 1).limit(array.length / 4 - 1 + array.length / 2)).slice(),
                                      MemoryMode.UNALIGNED, ne, MemoryMode.READ_WRITE);
         bavss.add(dbb_offset_unaligned);
         ByteBufferReadOnlySource dbb_offset_unaligned_ro =
