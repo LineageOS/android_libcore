@@ -5794,11 +5794,13 @@ package java.net {
     ctor public URLDecoder();
     method @Deprecated public static String decode(String);
     method public static String decode(String, String) throws java.io.UnsupportedEncodingException;
+    method public static String decode(String, java.nio.charset.Charset);
   }
 
   public class URLEncoder {
     method @Deprecated public static String encode(String);
     method public static String encode(String, String) throws java.io.UnsupportedEncodingException;
+    method public static String encode(String, java.nio.charset.Charset);
   }
 
   public abstract class URLStreamHandler {
