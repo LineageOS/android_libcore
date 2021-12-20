@@ -73,10 +73,12 @@ public final class NetworkInterface {
      * If this change is enabled, {@link #getHardwareAddress()} returns null when the hardware
      * address is <a href="#access-restrictions">inaccessible</a>. If the change is disabled, the
      * default MAC address (02:00:00:00:00:00) is returned instead.
+     *
+     * @hide
      */
     @ChangeId
     @EnabledSince(targetSdkVersion=VersionCodes.R)
-    static final long RETURN_NULL_HARDWARE_ADDRESS = 170188668L;
+    public static final long RETURN_NULL_HARDWARE_ADDRESS = 170188668L;
     // The default hardware address is a zeroed-out MAC address with only its
     // locally-administered bit set, returned to apps targeting older API versions if they would
     // otherwise see a null MAC address.
