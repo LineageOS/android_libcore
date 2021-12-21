@@ -20,6 +20,7 @@ import android.icu.util.Calendar;
 import android.icu.util.TimeZone;
 import android.icu.util.ULocale;
 
+import android.icu.util.VersionInfo;
 import java.util.function.BiFunction;
 
 import static android.icu.util.TimeZone.GMT_ZONE;
@@ -36,6 +37,10 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
 
   // These are the old CTS tests for DateIntervalFormat.formatDateRange.
   public void test_formatDateInterval() throws Exception {
+    // Require min ICU version 70 to provide the expected locale data.
+    if (VersionInfo.ICU_VERSION.getMajor() < 70) {
+      return;
+    }
     TimeZone tz = TimeZone.getTimeZone("America/Los_Angeles");
 
     Calendar c = Calendar.getInstance(tz, ULocale.US);

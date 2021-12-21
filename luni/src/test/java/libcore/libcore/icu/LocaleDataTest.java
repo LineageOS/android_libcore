@@ -23,6 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.icu.text.DateTimePatternGenerator;
 
+import android.icu.util.VersionInfo;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormatSymbols;
@@ -35,6 +36,7 @@ import java.util.TimeZone;
 import libcore.icu.LocaleData;
 import libcore.junit.util.SwitchTargetSdkVersionRule;
 
+import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -87,6 +89,7 @@ public class LocaleDataTest {
 
   @Test
   public void test_ru_RU() throws Exception {
+    Assume.assumeTrue("Require min ICU version 70", VersionInfo.ICU_VERSION.getMajor() >= 70);
     LocaleData l = LocaleData.get(new Locale("ru", "RU"));
 
     assertEquals("воскресенье", l.longWeekdayNames[1]);
