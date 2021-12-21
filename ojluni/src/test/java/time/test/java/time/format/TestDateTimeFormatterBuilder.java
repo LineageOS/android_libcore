@@ -67,6 +67,7 @@ import static java.time.temporal.ChronoField.YEAR;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertNotNull;
 
+import android.icu.util.VersionInfo;
 import java.text.ParsePosition;
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -979,6 +980,10 @@ public class TestDateTimeFormatterBuilder {
     @Test(dataProvider="localePatterns")
     public void test_getLocalizedDateTimePattern(FormatStyle dateStyle, FormatStyle timeStyle,
             Chronology chrono, Locale locale, String expected) {
+        // Android-changed: Require ICU 70 to pass the test due to CLDR data change
+        if (VersionInfo.ICU_VERSION.getMajor() < 70) {
+            return;
+        }
         String actual = DateTimeFormatterBuilder.getLocalizedDateTimePattern(dateStyle, timeStyle, chrono, locale);
         assertEquals(actual, expected, "Pattern " + convertNonAscii(actual));
     }
