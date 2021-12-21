@@ -136,6 +136,28 @@
 
     <issue
         id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="288"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="333"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="class FieldVarHandle extends VarHandle {"
         errorLine2="                             ~~~~~~~~~">
@@ -198,6 +220,28 @@
             file="libcore/ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java"
             line="44"
             column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="400"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 33 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="443"
+            column="28"/>
     </issue>
 
     <issue
@@ -362,6 +406,28 @@
 
     <issue
         id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="288"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="333"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
         message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="class FieldVarHandle extends VarHandle {"
         errorLine2="                             ~~~~~~~~~">
@@ -424,6 +490,28 @@
             file="libcore/ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java"
             line="44"
             column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="400"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="443"
+            column="28"/>
     </issue>
 
     <issue

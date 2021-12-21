@@ -5145,6 +5145,7 @@ package java.net {
     method public java.net.InetAddress getLocalAddress();
     method public int getLocalPort();
     method public java.net.SocketAddress getLocalSocketAddress();
+    method public <T> T getOption(java.net.SocketOption<T>) throws java.io.IOException;
     method public int getPort();
     method public int getReceiveBufferSize() throws java.net.SocketException;
     method public java.net.SocketAddress getRemoteSocketAddress();
@@ -5159,11 +5160,13 @@ package java.net {
     method public void send(java.net.DatagramPacket) throws java.io.IOException;
     method public void setBroadcast(boolean) throws java.net.SocketException;
     method public static void setDatagramSocketImplFactory(java.net.DatagramSocketImplFactory) throws java.io.IOException;
+    method public <T> java.net.DatagramSocket setOption(java.net.SocketOption<T>, T) throws java.io.IOException;
     method public void setReceiveBufferSize(int) throws java.net.SocketException;
     method public void setReuseAddress(boolean) throws java.net.SocketException;
     method public void setSendBufferSize(int) throws java.net.SocketException;
     method public void setSoTimeout(int) throws java.net.SocketException;
     method public void setTrafficClass(int) throws java.net.SocketException;
+    method public java.util.Set<java.net.SocketOption<?>> supportedOptions();
   }
 
   public abstract class DatagramSocketImpl implements java.net.SocketOptions {
@@ -5175,6 +5178,7 @@ package java.net {
     method protected void disconnect();
     method protected java.io.FileDescriptor getFileDescriptor();
     method protected int getLocalPort();
+    method protected <T> T getOption(java.net.SocketOption<T>) throws java.io.IOException;
     method @Deprecated protected abstract byte getTTL() throws java.io.IOException;
     method protected abstract int getTimeToLive() throws java.io.IOException;
     method protected abstract void join(java.net.InetAddress) throws java.io.IOException;
@@ -5185,8 +5189,10 @@ package java.net {
     method protected abstract int peekData(java.net.DatagramPacket) throws java.io.IOException;
     method protected abstract void receive(java.net.DatagramPacket) throws java.io.IOException;
     method protected abstract void send(java.net.DatagramPacket) throws java.io.IOException;
+    method protected <T> void setOption(java.net.SocketOption<T>, T) throws java.io.IOException;
     method @Deprecated protected abstract void setTTL(byte) throws java.io.IOException;
     method protected abstract void setTimeToLive(int) throws java.io.IOException;
+    method protected java.util.Set<java.net.SocketOption<?>> supportedOptions();
     field protected java.io.FileDescriptor fd;
     field protected int localPort;
   }
@@ -5507,17 +5513,20 @@ package java.net {
     method public java.net.InetAddress getInetAddress();
     method public int getLocalPort();
     method public java.net.SocketAddress getLocalSocketAddress();
+    method public <T> T getOption(java.net.SocketOption<T>) throws java.io.IOException;
     method public int getReceiveBufferSize() throws java.net.SocketException;
     method public boolean getReuseAddress() throws java.net.SocketException;
     method public int getSoTimeout() throws java.io.IOException;
     method protected final void implAccept(java.net.Socket) throws java.io.IOException;
     method public boolean isBound();
     method public boolean isClosed();
+    method public <T> java.net.ServerSocket setOption(java.net.SocketOption<T>, T) throws java.io.IOException;
     method public void setPerformancePreferences(int, int, int);
     method public void setReceiveBufferSize(int) throws java.net.SocketException;
     method public void setReuseAddress(boolean) throws java.net.SocketException;
     method public void setSoTimeout(int) throws java.net.SocketException;
     method public static void setSocketFactory(java.net.SocketImplFactory) throws java.io.IOException;
+    method public java.util.Set<java.net.SocketOption<?>> supportedOptions();
   }
 
   public class Socket implements java.io.Closeable {
@@ -5542,6 +5551,7 @@ package java.net {
     method public int getLocalPort();
     method public java.net.SocketAddress getLocalSocketAddress();
     method public boolean getOOBInline() throws java.net.SocketException;
+    method public <T> T getOption(java.net.SocketOption<T>) throws java.io.IOException;
     method public java.io.OutputStream getOutputStream() throws java.io.IOException;
     method public int getPort();
     method public int getReceiveBufferSize() throws java.net.SocketException;
@@ -5560,6 +5570,7 @@ package java.net {
     method public void sendUrgentData(int) throws java.io.IOException;
     method public void setKeepAlive(boolean) throws java.net.SocketException;
     method public void setOOBInline(boolean) throws java.net.SocketException;
+    method public <T> java.net.Socket setOption(java.net.SocketOption<T>, T) throws java.io.IOException;
     method public void setPerformancePreferences(int, int, int);
     method public void setReceiveBufferSize(int) throws java.net.SocketException;
     method public void setReuseAddress(boolean) throws java.net.SocketException;
@@ -5571,6 +5582,7 @@ package java.net {
     method public void setTrafficClass(int) throws java.net.SocketException;
     method public void shutdownInput() throws java.io.IOException;
     method public void shutdownOutput() throws java.io.IOException;
+    method public java.util.Set<java.net.SocketOption<?>> supportedOptions();
   }
 
   public abstract class SocketAddress implements java.io.Serializable {
@@ -5596,13 +5608,16 @@ package java.net {
     method protected java.net.InetAddress getInetAddress();
     method protected abstract java.io.InputStream getInputStream() throws java.io.IOException;
     method protected int getLocalPort();
+    method protected <T> T getOption(java.net.SocketOption<T>) throws java.io.IOException;
     method protected abstract java.io.OutputStream getOutputStream() throws java.io.IOException;
     method protected int getPort();
     method protected abstract void listen(int) throws java.io.IOException;
     method protected abstract void sendUrgentData(int) throws java.io.IOException;
+    method protected <T> void setOption(java.net.SocketOption<T>, T) throws java.io.IOException;
     method protected void setPerformancePreferences(int, int, int);
     method protected void shutdownInput() throws java.io.IOException;
     method protected void shutdownOutput() throws java.io.IOException;
+    method protected java.util.Set<java.net.SocketOption<?>> supportedOptions();
     method protected boolean supportsUrgentData();
     field protected java.net.InetAddress address;
     field protected java.io.FileDescriptor fd;
