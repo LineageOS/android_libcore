@@ -192,6 +192,12 @@ java_library {
         ":okhttp_impl_files",
     ],
 
+    // Only add Java11LanguageFeatures if EXPERIMENTAL_TARGET_JAVA_VERSION_11
+    // flag is set to true
+    openjdk11: {
+        srcs: ["luni/src/main/java/libcore/internal/Java11LanguageFeatures.java"],
+    },
+
     sdk_version: "none",
     system_modules: "none",
     patch_module: "java.base",
@@ -316,6 +322,12 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
+
+    // Only add Java11LanguageFeatures if EXPERIMENTAL_TARGET_JAVA_VERSION_11
+    // flag is set to true
+    openjdk11: {
+        srcs: ["luni/src/main/java/libcore/internal/Java11LanguageFeatures.java"],
+    },
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
@@ -565,6 +577,14 @@ filegroup {
     visibility: ["//libcore/luni/src/test/java9language"],
 }
 
+// A filegroup that provides access to a source file for a toolchain test that
+// checks Java 11 language features are handled properly by JarJar.
+filegroup {
+    name: "core-java-11-language-features-source",
+    srcs: ["luni/src/main/java/libcore/internal/Java11LanguageFeatures.java"],
+    visibility: ["//libcore/luni/src/test/java11language"],
+}
+
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
@@ -636,6 +656,7 @@ java_test {
     static_libs: [
         "core-compat-test-rules",
         "core-java-9-language-tests",
+        "core-java-11-language-tests",
         "core-test-rules",
         "core-tests-support",
         "junit-params",
