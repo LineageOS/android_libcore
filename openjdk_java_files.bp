@@ -1503,6 +1503,7 @@ filegroup {
         "ojluni/src/main/java/sun/net/ApplicationProxy.java",
         "ojluni/src/main/java/sun/net/ConnectionResetException.java",
         "ojluni/src/main/java/sun/net/ExtendedOptionsImpl.java",
+        "ojluni/src/main/java/sun/net/ext/ExtendedSocketOptions.java",
         "ojluni/src/main/java/sun/net/ftp/FtpClient.java",
         "ojluni/src/main/java/sun/net/ftp/FtpClientProvider.java",
         "ojluni/src/main/java/sun/net/ftp/FtpDirEntry.java",
