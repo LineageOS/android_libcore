@@ -17016,6 +17016,8 @@ package java.util.stream {
     method public static <T> java.util.stream.Collector<T,?,java.lang.Double> averagingLong(java.util.function.ToLongFunction<? super T>);
     method public static <T, A, R, RR> java.util.stream.Collector<T,A,RR> collectingAndThen(java.util.stream.Collector<T,A,R>, java.util.function.Function<R,RR>);
     method public static <T> java.util.stream.Collector<T,?,java.lang.Long> counting();
+    method public static <T, A, R> java.util.stream.Collector<T,?,R> filtering(java.util.function.Predicate<? super T>, java.util.stream.Collector<? super T,A,R>);
+    method public static <T, U, A, R> java.util.stream.Collector<T,?,R> flatMapping(java.util.function.Function<? super T,? extends java.util.stream.Stream<? extends U>>, java.util.stream.Collector<? super U,A,R>);
     method public static <T, K> java.util.stream.Collector<T,?,java.util.Map<K,java.util.List<T>>> groupingBy(java.util.function.Function<? super T,? extends K>);
     method public static <T, K, A, D> java.util.stream.Collector<T,?,java.util.Map<K,D>> groupingBy(java.util.function.Function<? super T,? extends K>, java.util.stream.Collector<? super T,A,D>);
     method public static <T, K, D, A, M extends java.util.Map<K, D>> java.util.stream.Collector<T,?,M> groupingBy(java.util.function.Function<? super T,? extends K>, java.util.function.Supplier<M>, java.util.stream.Collector<? super T,A,D>);
@@ -17048,6 +17050,10 @@ package java.util.stream {
     method public static <T, K, U> java.util.stream.Collector<T,?,java.util.Map<K,U>> toMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>, java.util.function.BinaryOperator<U>);
     method public static <T, K, U, M extends java.util.Map<K, U>> java.util.stream.Collector<T,?,M> toMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>, java.util.function.BinaryOperator<U>, java.util.function.Supplier<M>);
     method public static <T> java.util.stream.Collector<T,?,java.util.Set<T>> toSet();
+    method public static <T> java.util.stream.Collector<T,?,java.util.List<T>> toUnmodifiableList();
+    method public static <T, K, U> java.util.stream.Collector<T,?,java.util.Map<K,U>> toUnmodifiableMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>);
+    method public static <T, K, U> java.util.stream.Collector<T,?,java.util.Map<K,U>> toUnmodifiableMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>, java.util.function.BinaryOperator<U>);
+    method public static <T> java.util.stream.Collector<T,?,java.util.Set<T>> toUnmodifiableSet();
   }
 
   public interface DoubleStream extends java.util.stream.BaseStream<java.lang.Double,java.util.stream.DoubleStream> {
