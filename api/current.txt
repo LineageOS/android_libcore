@@ -8100,56 +8100,56 @@ package java.security {
 
 package java.security.acl {
 
-  public interface Acl extends java.security.acl.Owner {
-    method public boolean addEntry(java.security.Principal, java.security.acl.AclEntry) throws java.security.acl.NotOwnerException;
-    method public boolean checkPermission(java.security.Principal, java.security.acl.Permission);
-    method public java.util.Enumeration<java.security.acl.AclEntry> entries();
-    method public String getName();
-    method public java.util.Enumeration<java.security.acl.Permission> getPermissions(java.security.Principal);
-    method public boolean removeEntry(java.security.Principal, java.security.acl.AclEntry) throws java.security.acl.NotOwnerException;
-    method public void setName(java.security.Principal, String) throws java.security.acl.NotOwnerException;
-    method public String toString();
+  @Deprecated public interface Acl extends java.security.acl.Owner {
+    method @Deprecated public boolean addEntry(java.security.Principal, java.security.acl.AclEntry) throws java.security.acl.NotOwnerException;
+    method @Deprecated public boolean checkPermission(java.security.Principal, java.security.acl.Permission);
+    method @Deprecated public java.util.Enumeration<java.security.acl.AclEntry> entries();
+    method @Deprecated public String getName();
+    method @Deprecated public java.util.Enumeration<java.security.acl.Permission> getPermissions(java.security.Principal);
+    method @Deprecated public boolean removeEntry(java.security.Principal, java.security.acl.AclEntry) throws java.security.acl.NotOwnerException;
+    method @Deprecated public void setName(java.security.Principal, String) throws java.security.acl.NotOwnerException;
+    method @Deprecated public String toString();
   }
 
-  public interface AclEntry extends java.lang.Cloneable {
-    method public boolean addPermission(java.security.acl.Permission);
-    method public boolean checkPermission(java.security.acl.Permission);
-    method public Object clone();
-    method public java.security.Principal getPrincipal();
-    method public boolean isNegative();
-    method public java.util.Enumeration<java.security.acl.Permission> permissions();
-    method public boolean removePermission(java.security.acl.Permission);
-    method public void setNegativePermissions();
-    method public boolean setPrincipal(java.security.Principal);
-    method public String toString();
+  @Deprecated public interface AclEntry extends java.lang.Cloneable {
+    method @Deprecated public boolean addPermission(java.security.acl.Permission);
+    method @Deprecated public boolean checkPermission(java.security.acl.Permission);
+    method @Deprecated public Object clone();
+    method @Deprecated public java.security.Principal getPrincipal();
+    method @Deprecated public boolean isNegative();
+    method @Deprecated public java.util.Enumeration<java.security.acl.Permission> permissions();
+    method @Deprecated public boolean removePermission(java.security.acl.Permission);
+    method @Deprecated public void setNegativePermissions();
+    method @Deprecated public boolean setPrincipal(java.security.Principal);
+    method @Deprecated public String toString();
   }
 
-  public class AclNotFoundException extends java.lang.Exception {
-    ctor public AclNotFoundException();
+  @Deprecated public class AclNotFoundException extends java.lang.Exception {
+    ctor @Deprecated public AclNotFoundException();
   }
 
-  public interface Group extends java.security.Principal {
-    method public boolean addMember(java.security.Principal);
-    method public boolean isMember(java.security.Principal);
-    method public java.util.Enumeration<? extends java.security.Principal> members();
-    method public boolean removeMember(java.security.Principal);
+  @Deprecated public interface Group extends java.security.Principal {
+    method @Deprecated public boolean addMember(java.security.Principal);
+    method @Deprecated public boolean isMember(java.security.Principal);
+    method @Deprecated public java.util.Enumeration<? extends java.security.Principal> members();
+    method @Deprecated public boolean removeMember(java.security.Principal);
   }
 
-  public class LastOwnerException extends java.lang.Exception {
-    ctor public LastOwnerException();
+  @Deprecated public class LastOwnerException extends java.lang.Exception {
+    ctor @Deprecated public LastOwnerException();
   }
 
-  public class NotOwnerException extends java.lang.Exception {
-    ctor public NotOwnerException();
+  @Deprecated public class NotOwnerException extends java.lang.Exception {
+    ctor @Deprecated public NotOwnerException();
   }
 
-  public interface Owner {
-    method public boolean addOwner(java.security.Principal, java.security.Principal) throws java.security.acl.NotOwnerException;
-    method public boolean deleteOwner(java.security.Principal, java.security.Principal) throws java.security.acl.LastOwnerException, java.security.acl.NotOwnerException;
-    method public boolean isOwner(java.security.Principal);
+  @Deprecated public interface Owner {
+    method @Deprecated public boolean addOwner(java.security.Principal, java.security.Principal) throws java.security.acl.NotOwnerException;
+    method @Deprecated public boolean deleteOwner(java.security.Principal, java.security.Principal) throws java.security.acl.LastOwnerException, java.security.acl.NotOwnerException;
+    method @Deprecated public boolean isOwner(java.security.Principal);
   }
 
-  public interface Permission {
+  @Deprecated public interface Permission {
   }
 
 }
