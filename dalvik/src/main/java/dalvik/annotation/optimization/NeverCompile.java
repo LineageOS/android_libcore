@@ -37,6 +37,12 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <p>
+ * This annotation will have no effect when applied to native methods, as JNI stubs will still be
+ * compiled. In addition, it will not stop overriding methods from being compiled, so applying this
+ * annotation to abstract methods will not do anything.
+ * </p>
+ *
+ * <p>
  * The <code>dumpPackageLPr</code> method in com.android.server.pm can be used as a concrete
  * example. This is a debug method used to dump all of the information about a device's installed
  * packages. When it is compiled, it is included in services.odex. Annotating this method with
