@@ -696,6 +696,8 @@ filegroup {
         "ojluni/src/main/java/java/security/spec/RSAPrivateCrtKeySpec.java",
         "ojluni/src/main/java/java/security/spec/RSAPrivateKeySpec.java",
         "ojluni/src/main/java/java/security/spec/RSAPublicKeySpec.java",
+        "ojluni/src/main/java/java/security/spec/XECPrivateKeySpec.java",
+        "ojluni/src/main/java/java/security/spec/XECPublicKeySpec.java",
         "ojluni/src/main/java/java/security/spec/X509EncodedKeySpec.java",
         "ojluni/src/main/java/java/security/spec/package-info.java",
         "ojluni/src/main/java/java/security/Timestamp.java",

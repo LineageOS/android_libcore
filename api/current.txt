@@ -8975,6 +8975,18 @@ package java.security.spec {
     method public final String getFormat();
   }
 
+  public class XECPrivateKeySpec implements java.security.spec.KeySpec {
+    ctor public XECPrivateKeySpec(java.security.spec.AlgorithmParameterSpec, byte[]);
+    method public java.security.spec.AlgorithmParameterSpec getParams();
+    method public byte[] getScalar();
+  }
+
+  public class XECPublicKeySpec implements java.security.spec.KeySpec {
+    ctor public XECPublicKeySpec(java.security.spec.AlgorithmParameterSpec, java.math.BigInteger);
+    method public java.security.spec.AlgorithmParameterSpec getParams();
+    method public java.math.BigInteger getU();
+  }
+
 }
 
 package java.sql {
