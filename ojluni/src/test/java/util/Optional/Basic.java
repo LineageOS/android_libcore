@@ -33,7 +33,10 @@ package test.java.util.Optional;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
 
@@ -203,4 +206,69 @@ public class Basic {
     public void testStreamPresent() {
         assertEquals(Optional.of("xyzzy").stream().collect(toList()), List.of("xyzzy"));
     }
+
+    // BEGIN Android-added: More tests for coverage http://b/203822442.
+    // Also improves coverage for Optional{Int,Long,Double}
+    private static final Optional<Integer> P = Optional.<Integer>of(3);
+    private static final Optional<Integer> E = Optional.<Integer>empty();
+
+    @Test
+    void testIfPresentOrElse_empty() {
+        AtomicInteger flag = new AtomicInteger(0);
+        E.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        assertEquals(flag.get(), 2);
+    }
+
+    @Test
+    void testIfPresentOrElse_present() {
+        AtomicInteger flag = new AtomicInteger(0);
+        P.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        assertEquals(flag.get(), 1);
+    }
+
+    @Test
+    void testOr_empty() {
+        Optional<Integer> o = E.or(() -> Optional.of(5));
+        assertEquals((int) o.get(), 5);
+    }
+
+    @Test
+    void testOr_present() {
+        Optional<Integer> o = P.or(() -> Optional.of(5));
+        assertEquals((int) o.get(), 3);
+    }
+
+    @Test
+    public void testStream_empty() {
+        Stream<Integer> s = E.stream();
+        assertEquals(s.collect(Collectors.toList()), List.of());
+    }
+
+    @Test
+    public void testStream_present() {
+        Stream<Integer> s = P.stream();
+        assertEquals(s.collect(Collectors.toList()), List.of(3));
+    }
+
+    @Test(expectedExceptions = NoSuchElementException.class)
+    public void testOrElseThrow_empty() {
+        E.orElseThrow();
+    }
+
+    @Test
+    public void testOrElseThrow_present() {
+        assertEquals((int) P.orElseThrow(), 3);
+    }
+
+    @Test
+    public void testIsEmpty_empty() {
+        assertTrue(E.isEmpty());
+    }
+
+    @Test
+    public void testIsEmpty_present() {
+        assertFalse(P.isEmpty());
+    }
+    // END Android-added: More tests for coverage http://b/203822442.
+
 }
