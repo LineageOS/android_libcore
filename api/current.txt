@@ -8912,6 +8912,13 @@ package java.security.spec {
     field public static final java.security.spec.MGF1ParameterSpec SHA512;
   }
 
+  public class NamedParameterSpec implements java.security.spec.AlgorithmParameterSpec {
+    ctor public NamedParameterSpec(@NonNull String);
+    method @NonNull public String getName();
+    field public static final java.security.spec.NamedParameterSpec X25519;
+    field public static final java.security.spec.NamedParameterSpec X448;
+  }
+
   public class PKCS8EncodedKeySpec extends java.security.spec.EncodedKeySpec {
     ctor public PKCS8EncodedKeySpec(byte[]);
     method public final String getFormat();
