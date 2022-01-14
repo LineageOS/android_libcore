@@ -4290,6 +4290,7 @@ package java.lang.invoke {
 
   public abstract class MethodHandle {
     method public java.lang.invoke.MethodHandle asCollector(Class<?>, int);
+    method public java.lang.invoke.MethodHandle asCollector(int, Class<?>, int);
     method public java.lang.invoke.MethodHandle asFixedArity();
     method public java.lang.invoke.MethodHandle asSpreader(Class<?>, int);
     method public java.lang.invoke.MethodHandle asType(java.lang.invoke.MethodType);
