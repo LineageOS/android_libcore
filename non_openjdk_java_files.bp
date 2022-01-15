@@ -156,6 +156,7 @@ filegroup {
         "luni/src/main/java/android/system/StructTimeval.java",
         "luni/src/main/java/android/system/StructUcred.java",
         "luni/src/main/java/android/system/StructUtsname.java",
+        "luni/src/main/java/android/system/SystemCleaner.java",
         "luni/src/main/java/android/system/UnixSocketAddress.java",
         "luni/src/main/java/android/system/VmSocketAddress.java",
         "luni/src/main/java/java/lang/FindBugsSuppressWarnings.java",
