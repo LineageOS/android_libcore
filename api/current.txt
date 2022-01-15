@@ -5610,6 +5610,7 @@ package java.net {
     field public static final int SO_OOBINLINE = 4099; // 0x1003
     field public static final int SO_RCVBUF = 4098; // 0x1002
     field public static final int SO_REUSEADDR = 4; // 0x4
+    field public static final int SO_REUSEPORT = 14; // 0xe
     field public static final int SO_SNDBUF = 4097; // 0x1001
     field public static final int SO_TIMEOUT = 4102; // 0x1006
     field public static final int TCP_NODELAY = 1; // 0x1
@@ -5641,6 +5642,7 @@ package java.net {
     field public static final java.net.SocketOption<java.lang.Integer> SO_LINGER;
     field public static final java.net.SocketOption<java.lang.Integer> SO_RCVBUF;
     field public static final java.net.SocketOption<java.lang.Boolean> SO_REUSEADDR;
+    field public static final java.net.SocketOption<java.lang.Boolean> SO_REUSEPORT;
     field public static final java.net.SocketOption<java.lang.Integer> SO_SNDBUF;
     field public static final java.net.SocketOption<java.lang.Boolean> TCP_NODELAY;
   }
@@ -8973,6 +8975,18 @@ package java.security.spec {
   public class X509EncodedKeySpec extends java.security.spec.EncodedKeySpec {
     ctor public X509EncodedKeySpec(byte[]);
     method public final String getFormat();
+  }
+
+  public class XECPrivateKeySpec implements java.security.spec.KeySpec {
+    ctor public XECPrivateKeySpec(java.security.spec.AlgorithmParameterSpec, byte[]);
+    method public java.security.spec.AlgorithmParameterSpec getParams();
+    method public byte[] getScalar();
+  }
+
+  public class XECPublicKeySpec implements java.security.spec.KeySpec {
+    ctor public XECPublicKeySpec(java.security.spec.AlgorithmParameterSpec, java.math.BigInteger);
+    method public java.security.spec.AlgorithmParameterSpec getParams();
+    method public java.math.BigInteger getU();
   }
 
 }
