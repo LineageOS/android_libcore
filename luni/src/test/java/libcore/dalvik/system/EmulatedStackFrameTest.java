@@ -195,7 +195,7 @@ public class EmulatedStackFrameTest extends TestCase {
         } catch (IllegalArgumentException expected) {
         }
 
-        // Should succeeed.
+        // Should succeed.
         assertFalse(reader.nextBoolean());
 
         // The next attempt should fail.
@@ -215,7 +215,7 @@ public class EmulatedStackFrameTest extends TestCase {
         } catch (IllegalArgumentException expected) {
         }
 
-        // Should succeeed.
+        // Should succeed.
         writer.putNextBoolean(true);
 
         // The next attempt should fail.
@@ -224,5 +224,14 @@ public class EmulatedStackFrameTest extends TestCase {
             fail();
         } catch (IllegalArgumentException expected) {
         }
+    }
+
+    public void testGetSetReference() {
+        EmulatedStackFrame stackFrame = EmulatedStackFrame.create(MethodType.methodType(
+            void.class, new Class<?>[] { Integer.class, boolean.class, String.class }));
+        stackFrame.setReference(0, Integer.valueOf(-1));
+        assertEquals(Integer.valueOf(-1), stackFrame.getReference(0, Integer.class));
+        stackFrame.setReference(2, "Hello");
+        assertEquals("Hello", stackFrame.getReference(2, String.class));
     }
 }
