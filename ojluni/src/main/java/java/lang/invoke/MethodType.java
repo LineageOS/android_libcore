@@ -842,11 +842,12 @@ class MethodType implements java.io.Serializable {
 
     /*non-public*/
     boolean isConvertibleTo(MethodType newType) {
-        MethodTypeForm oldForm = this.form();
-        MethodTypeForm newForm = newType.form();
-        if (oldForm == newForm)
-            // same parameter count, same primitive/object mix
-            return true;
+        // Android-removed: use of MethodTypeForm does not apply to Android implementation.
+        // MethodTypeForm oldForm = this.form();
+        // MethodTypeForm newForm = newType.form();
+        // if (oldForm == newForm)
+        //     // same parameter count, same primitive/object mix
+        //     return true;
         if (!canConvert(returnType(), newType.returnType()))
             return false;
         Class<?>[] srcTypes = newType.ptypes;
@@ -861,13 +862,14 @@ class MethodType implements java.io.Serializable {
                 return false;
             return true;
         }
-        if ((oldForm.primitiveParameterCount() == 0 && oldForm.erasedType == this) ||
-            (newForm.primitiveParameterCount() == 0 && newForm.erasedType == newType)) {
-            // Somewhat complicated test to avoid a loop of 2 or more trips.
-            // If either type has only Object parameters, we know we can convert.
-            assert(canConvertParameters(srcTypes, dstTypes));
-            return true;
-        }
+        // Android-removed: use of MethodTypeForm does not apply to Android implementation.
+        // if ((oldForm.primitiveParameterCount() == 0 && oldForm.erasedType == this) ||
+        //     (newForm.primitiveParameterCount() == 0 && newForm.erasedType == newType)) {
+        //     // Somewhat complicated test to avoid a loop of 2 or more trips.
+        //     // If either type has only Object parameters, we know we can convert.
+        //     assert(canConvertParameters(srcTypes, dstTypes));
+        //     return true;
+        // }
         return canConvertParameters(srcTypes, dstTypes);
     }
 
