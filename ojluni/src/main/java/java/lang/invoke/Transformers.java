@@ -319,6 +319,77 @@ public class Transformers {
         }
     }
 
+    public static class ArrayConstructor extends Transformer {
+        private final Class<?> componentType;
+
+        public ArrayConstructor(Class<?> arrayType) {
+            super(MethodType.methodType(arrayType, int.class));
+            componentType = arrayType.getComponentType();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
+            reader.attach(emulatedStackFrame);
+            final int length = reader.nextInt();
+            final Object array = Array.newInstance(componentType, length);
+            emulatedStackFrame.setReturnValueTo(array);
+        }
+    }
+
+    public static class ArrayLength extends Transformer {
+        private final Class<?> arrayType;
+
+        public ArrayLength(Class<?> arrayType) {
+            super(MethodType.methodType(int.class, arrayType));
+            this.arrayType = arrayType;
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
+            reader.attach(emulatedStackFrame);
+            final Object arrayObject = reader.nextReference(arrayType);
+
+            int length;
+            switch (Wrapper.basicTypeChar(arrayType.getComponentType())) {
+                case 'L':
+                    length = ((Object[]) arrayObject).length;
+                    break;
+                case 'Z':
+                    length = ((boolean[]) arrayObject).length;
+                    break;
+                case 'B':
+                    length = ((byte[]) arrayObject).length;
+                    break;
+                case 'C':
+                    length = ((char[]) arrayObject).length;
+                    break;
+                case 'S':
+                    length = ((short[]) arrayObject).length;
+                    break;
+                case 'I':
+                    length = ((int[]) arrayObject).length;
+                    break;
+                case 'J':
+                    length = ((long[]) arrayObject).length;
+                    break;
+                case 'F':
+                    length = ((float[]) arrayObject).length;
+                    break;
+                case 'D':
+                    length = ((double[]) arrayObject).length;
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported type: " + arrayType);
+            }
+
+            final StackFrameWriter writer = new StackFrameWriter();
+            writer.attach(emulatedStackFrame).makeReturnValueAccessor();
+            writer.putNextInt(length);
+        }
+    }
+
     /** Implementation of MethodHandles.constant. */
     public static class Constant extends Transformer {
         private final Class<?> type;
