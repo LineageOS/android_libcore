@@ -8786,6 +8786,10 @@ package java.security.interfaces {
     field public static final long serialVersionUID = -8727434096241101194L; // 0x86e1ecedeceab676L
   }
 
+  public interface XECKey {
+    method public java.security.spec.AlgorithmParameterSpec getParams();
+  }
+
 }
 
 package java.security.spec {
