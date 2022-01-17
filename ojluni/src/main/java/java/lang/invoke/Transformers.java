@@ -359,36 +359,38 @@ public class Transformers {
         public Constant(Class<?> type, Object value) {
             super(MethodType.methodType(type));
             this.type = type;
+            typeChar = Wrapper.basicTypeChar(type);
 
-            if (!type.isPrimitive()) {
-                asReference = value;
-                typeChar = 'L';
-            } else if (type == int.class) {
-                asInt = (int) value;
-                typeChar = 'I';
-            } else if (type == char.class) {
-                asInt = (int) (char) value;
-                typeChar = 'C';
-            } else if (type == short.class) {
-                asInt = (int) (short) value;
-                typeChar = 'S';
-            } else if (type == byte.class) {
-                asInt = (int) (byte) value;
-                typeChar = 'B';
-            } else if (type == boolean.class) {
-                asInt = ((boolean) value) ? 1 : 0;
-                typeChar = 'Z';
-            } else if (type == long.class) {
-                asLong = (long) value;
-                typeChar = 'J';
-            } else if (type == float.class) {
-                asFloat = (float) value;
-                typeChar = 'F';
-            } else if (type == double.class) {
-                asDouble = (double) value;
-                typeChar = 'D';
-            } else {
-                throw new AssertionError("unknown type: " + typeChar);
+            switch (typeChar) {
+                case 'L':
+                    asReference = value;
+                    break;
+                case 'I':
+                    asInt = (int) value;
+                    break;
+                case 'C':
+                    asInt = (int) (char) value;
+                    break;
+                case 'S':
+                    asInt = (int) (short) value;
+                    break;
+                case 'B':
+                    asInt = (int) (byte) value;
+                    break;
+                case 'Z':
+                    asInt = ((boolean) value) ? 1 : 0;
+                    break;
+                case 'J':
+                    asLong = (long) value;
+                    break;
+                case 'F':
+                    asFloat = (float) value;
+                    break;
+                case 'D':
+                    asDouble = (double) value;
+                    break;
+                default:
+                    throw new AssertionError("unknown type: " + typeChar);
             }
         }
 
@@ -399,15 +401,33 @@ public class Transformers {
             writer.makeReturnValueAccessor();
 
             switch (typeChar) {
-                case 'L' : { writer.putNextReference(asReference, type); break; }
-                case 'I' : { writer.putNextInt(asInt); break; }
-                case 'C' : { writer.putNextChar((char) asInt); break; }
-                case 'S' : { writer.putNextShort((short) asInt); break; }
-                case 'B' : { writer.putNextByte((byte) asInt); break; }
-                case 'Z' : { writer.putNextBoolean(asInt == 1); break; }
-                case 'J' : { writer.putNextLong(asLong); break; }
-                case 'F' : { writer.putNextFloat(asFloat); break; }
-                case 'D' : { writer.putNextDouble(asDouble); break; }
+                case 'L':
+                    writer.putNextReference(asReference, type);
+                    break;
+                case 'I':
+                    writer.putNextInt(asInt);
+                    break;
+                case 'C':
+                    writer.putNextChar((char) asInt);
+                    break;
+                case 'S':
+                    writer.putNextShort((short) asInt);
+                    break;
+                case 'B':
+                    writer.putNextByte((byte) asInt);
+                    break;
+                case 'Z':
+                    writer.putNextBoolean(asInt == 1);
+                    break;
+                case 'J':
+                    writer.putNextLong(asLong);
+                    break;
+                case 'F':
+                    writer.putNextFloat(asFloat);
+                    break;
+                case 'D':
+                    writer.putNextDouble(asDouble);
+                    break;
                 default:
                     throw new AssertionError("Unexpected typeChar: " + typeChar);
             }
@@ -539,25 +559,39 @@ public class Transformers {
             filterWriter.attach(filterFrame);
 
             final Class<?> returnType = target.type().rtype();
-            if (!returnType.isPrimitive()) {
-                filterWriter.putNextReference(returnValueReader.nextReference(returnType),
-                        returnType);
-            } else if (returnType == boolean.class) {
-                filterWriter.putNextBoolean(returnValueReader.nextBoolean());
-            } else if (returnType == byte.class) {
-                filterWriter.putNextByte(returnValueReader.nextByte());
-            } else if (returnType == char.class) {
-                filterWriter.putNextChar(returnValueReader.nextChar());
-            } else if (returnType == short.class) {
-                filterWriter.putNextShort(returnValueReader.nextShort());
-            } else if (returnType == int.class) {
-                filterWriter.putNextInt(returnValueReader.nextInt());
-            } else if (returnType == long.class) {
-                filterWriter.putNextLong(returnValueReader.nextLong());
-            } else if (returnType == float.class) {
-                filterWriter.putNextFloat(returnValueReader.nextFloat());
-            } else if (returnType == double.class) {
-                filterWriter.putNextDouble(returnValueReader.nextDouble());
+            switch (Wrapper.basicTypeChar(returnType)) {
+                case 'L':
+                    filterWriter.putNextReference(
+                            returnValueReader.nextReference(returnType), returnType);
+                    break;
+                case 'Z':
+                    filterWriter.putNextBoolean(returnValueReader.nextBoolean());
+                    break;
+                case 'B':
+                    filterWriter.putNextByte(returnValueReader.nextByte());
+                    break;
+                case 'C':
+                    filterWriter.putNextChar(returnValueReader.nextChar());
+                    break;
+                case 'S':
+                    filterWriter.putNextShort(returnValueReader.nextShort());
+                    break;
+                case 'I':
+                    filterWriter.putNextInt(returnValueReader.nextInt());
+                    break;
+                case 'J':
+                    filterWriter.putNextLong(returnValueReader.nextLong());
+                    break;
+                case 'F':
+                    filterWriter.putNextFloat(returnValueReader.nextFloat());
+                    break;
+                case 'D':
+                    filterWriter.putNextDouble(returnValueReader.nextDouble());
+                    break;
+                case 'V':
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported type: " + returnType);
             }
 
             // Invoke the filter and copy its return value back to the original frame.
@@ -595,26 +629,36 @@ public class Transformers {
             final Class<?>[] ptypes = type().ptypes();
             for (int i = 0; i < ptypes.length; ++i) {
                 final Class<?> ptype = ptypes[i];
-                if (!ptype.isPrimitive()) {
-                    arguments[i] = reader.nextReference(ptype);
-                } else if (ptype == boolean.class) {
-                    arguments[i] = reader.nextBoolean();
-                } else if (ptype == byte.class) {
-                    arguments[i] = reader.nextByte();
-                } else if (ptype == char.class) {
-                    arguments[i] = reader.nextChar();
-                } else if (ptype == short.class) {
-                    arguments[i] = reader.nextShort();
-                } else if (ptype == int.class) {
-                    arguments[i] = reader.nextInt();
-                } else if (ptype == long.class) {
-                    arguments[i] = reader.nextLong();
-                } else if (ptype == float.class) {
-                    arguments[i] = reader.nextFloat();
-                } else if (ptype == double.class) {
-                    arguments[i] = reader.nextDouble();
-                } else {
-                    throw new AssertionError("Unexpected type: " + ptype);
+                switch (Wrapper.basicTypeChar(ptype)) {
+                    case 'L':
+                        arguments[i] = reader.nextReference(ptype);
+                        break;
+                    case 'Z':
+                        arguments[i] = reader.nextBoolean();
+                        break;
+                    case 'B':
+                        arguments[i] = reader.nextByte();
+                        break;
+                    case 'C':
+                        arguments[i] = reader.nextChar();
+                        break;
+                    case 'S':
+                        arguments[i] = reader.nextShort();
+                        break;
+                    case 'I':
+                        arguments[i] = reader.nextInt();
+                        break;
+                    case 'J':
+                        arguments[i] = reader.nextLong();
+                        break;
+                    case 'F':
+                        arguments[i] = reader.nextFloat();
+                        break;
+                    case 'D':
+                        arguments[i] = reader.nextDouble();
+                        break;
+                    default:
+                        throw new AssertionError("Unexpected type: " + ptype);
                 }
             }
 
@@ -626,27 +670,36 @@ public class Transformers {
                 int idx = reorder[i];
                 final Class<?> ptype = ptypes[idx];
                 final Object argument = arguments[idx];
-
-                if (!ptype.isPrimitive()) {
-                    writer.putNextReference(argument, ptype);
-                } else if (ptype == boolean.class) {
-                    writer.putNextBoolean((boolean) argument);
-                } else if (ptype == byte.class) {
-                    writer.putNextByte((byte) argument);
-                } else if (ptype == char.class) {
-                    writer.putNextChar((char) argument);
-                } else if (ptype == short.class) {
-                    writer.putNextShort((short) argument);
-                } else if (ptype == int.class) {
-                    writer.putNextInt((int) argument);
-                } else if (ptype == long.class) {
-                    writer.putNextLong((long) argument);
-                } else if (ptype == float.class) {
-                    writer.putNextFloat((float) argument);
-                } else if (ptype == double.class) {
-                    writer.putNextDouble((double) argument);
-                } else {
-                    throw new AssertionError("Unexpected type: " + ptype);
+                switch (Wrapper.basicTypeChar(ptype)) {
+                    case 'L':
+                        writer.putNextReference(argument, ptype);
+                        break;
+                    case 'Z':
+                        writer.putNextBoolean((boolean) argument);
+                        break;
+                    case 'B':
+                        writer.putNextByte((byte) argument);
+                        break;
+                    case 'C':
+                        writer.putNextChar((char) argument);
+                        break;
+                    case 'S':
+                        writer.putNextShort((short) argument);
+                        break;
+                    case 'I':
+                        writer.putNextInt((int) argument);
+                        break;
+                    case 'J':
+                        writer.putNextLong((long) argument);
+                        break;
+                    case 'F':
+                        writer.putNextFloat((float) argument);
+                        break;
+                    case 'D':
+                        writer.putNextDouble((double) argument);
+                        break;
+                    default:
+                        throw new AssertionError("Unexpected type: " + ptype);
                 }
             }
 
@@ -796,15 +849,33 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 Object o = null;
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { o = reader.nextReference(argumentType); break; }
-                    case 'I': { o = reader.nextInt(); break; }
-                    case 'J': { o = reader.nextLong(); break; }
-                    case 'B': { o = reader.nextByte(); break; }
-                    case 'S': { o = reader.nextShort(); break; }
-                    case 'C': { o = reader.nextChar(); break; }
-                    case 'Z': { o = reader.nextBoolean(); break; }
-                    case 'F': { o = reader.nextFloat(); break; }
-                    case 'D': { o = reader.nextDouble(); break; }
+                    case 'L':
+                        o = reader.nextReference(argumentType);
+                        break;
+                    case 'I':
+                        o = reader.nextInt();
+                        break;
+                    case 'J':
+                        o = reader.nextLong();
+                        break;
+                    case 'B':
+                        o = reader.nextByte();
+                        break;
+                    case 'S':
+                        o = reader.nextShort();
+                        break;
+                    case 'C':
+                        o = reader.nextChar();
+                        break;
+                    case 'Z':
+                        o = reader.nextBoolean();
+                        break;
+                    case 'F':
+                        o = reader.nextFloat();
+                        break;
+                    case 'D':
+                        o = reader.nextDouble();
+                        break;
                 }
                 Array.set(arityArray, i, elementType.cast(o));
             }
@@ -817,13 +888,18 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'I': { arityArray[i] = reader.nextInt(); break; }
-                    case 'S': { arityArray[i] = reader.nextShort(); break; }
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: {
+                    case 'I':
+                        arityArray[i] = reader.nextInt();
+                        break;
+                    case 'S':
+                        arityArray[i] = reader.nextShort();
+                        break;
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
                         arityArray[i] = (Integer) reader.nextReference(argumentType);
                         break;
-                    }
                 }
             }
             return arityArray;
@@ -835,11 +911,21 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'J': { arityArray[i] = reader.nextLong(); break; }
-                    case 'I': { arityArray[i] = reader.nextInt(); break; }
-                    case 'S': { arityArray[i] = reader.nextShort(); break; }
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: { arityArray[i] = (Long) reader.nextReference(argumentType); break; }
+                    case 'J':
+                        arityArray[i] = reader.nextLong();
+                        break;
+                    case 'I':
+                        arityArray[i] = reader.nextInt();
+                        break;
+                    case 'S':
+                        arityArray[i] = reader.nextShort();
+                        break;
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
+                        arityArray[i] = (Long) reader.nextReference(argumentType);
+                        break;
                 }
             }
             return arityArray;
@@ -851,8 +937,12 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: { arityArray[i] = (Byte) reader.nextReference(argumentType); break; }
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
+                        arityArray[i] = (Byte) reader.nextReference(argumentType);
+                        break;
                 }
             }
             return arityArray;
@@ -864,9 +954,15 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'S': { arityArray[i] = reader.nextShort(); break; }
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: { arityArray[i] = (Short) reader.nextReference(argumentType); break; }
+                    case 'S':
+                        arityArray[i] = reader.nextShort();
+                        break;
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
+                        arityArray[i] = (Short) reader.nextReference(argumentType);
+                        break;
                 }
             }
             return arityArray;
@@ -878,11 +974,12 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'C': { arityArray[i] = reader.nextChar(); break; }
-                    default: {
+                    case 'C':
+                        arityArray[i] = reader.nextChar();
+                        break;
+                    default:
                         arityArray[i] = (Character) reader.nextReference(argumentType);
                         break;
-                    }
                 }
             }
             return arityArray;
@@ -894,7 +991,9 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'Z': { arityArray[i] = reader.nextBoolean(); break; }
+                    case 'Z':
+                        arityArray[i] = reader.nextBoolean();
+                        break;
                     default:
                         arityArray[i] = (Boolean) reader.nextReference(argumentType);
                         break;
@@ -909,15 +1008,24 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'F': { arityArray[i] = reader.nextFloat(); break; }
-                    case 'J': { arityArray[i] = reader.nextLong(); break; }
-                    case 'I': { arityArray[i] = reader.nextInt(); break; }
-                    case 'S': { arityArray[i] = reader.nextShort(); break; }
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: {
+                    case 'F':
+                        arityArray[i] = reader.nextFloat();
+                        break;
+                    case 'J':
+                        arityArray[i] = reader.nextLong();
+                        break;
+                    case 'I':
+                        arityArray[i] = reader.nextInt();
+                        break;
+                    case 'S':
+                        arityArray[i] = reader.nextShort();
+                        break;
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
                         arityArray[i] = (Float) reader.nextReference(argumentType);
                         break;
-                    }
                 }
             }
             return arityArray;
@@ -929,16 +1037,27 @@ public class Transformers {
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'D': { arityArray[i] = reader.nextDouble(); break; }
-                    case 'F': { arityArray[i] = reader.nextFloat(); break; }
-                    case 'J': { arityArray[i] = reader.nextLong(); break; }
-                    case 'I': { arityArray[i] = reader.nextInt(); break; }
-                    case 'S': { arityArray[i] = reader.nextShort(); break; }
-                    case 'B': { arityArray[i] = reader.nextByte(); break; }
-                    default: {
+                    case 'D':
+                        arityArray[i] = reader.nextDouble();
+                        break;
+                    case 'F':
+                        arityArray[i] = reader.nextFloat();
+                        break;
+                    case 'J':
+                        arityArray[i] = reader.nextLong();
+                        break;
+                    case 'I':
+                        arityArray[i] = reader.nextInt();
+                        break;
+                    case 'S':
+                        arityArray[i] = reader.nextShort();
+                        break;
+                    case 'B':
+                        arityArray[i] = reader.nextByte();
+                        break;
+                    default:
                         arityArray[i] = (Double) reader.nextReference(argumentType);
                         break;
-                    }
                 }
             }
             return arityArray;
@@ -954,24 +1073,45 @@ public class Transformers {
 
             char elementBasicType = Wrapper.basicTypeChar(elementType);
             switch (elementBasicType) {
-                case 'L': return referenceArray(callerFrameReader, callerPTypes, elementType,
-                                                indexOfArityArray, arityArrayLength);
-                case 'I': return intArray(callerFrameReader, callerPTypes,
-                                          indexOfArityArray, arityArrayLength);
-                case 'J': return longArray(callerFrameReader, callerPTypes,
-                                           indexOfArityArray, arityArrayLength);
-                case 'B': return byteArray(callerFrameReader, callerPTypes,
-                                           indexOfArityArray, arityArrayLength);
-                case 'S': return shortArray(callerFrameReader, callerPTypes,
-                                            indexOfArityArray, arityArrayLength);
-                case 'C': return charArray(callerFrameReader, callerPTypes,
-                                           indexOfArityArray, arityArrayLength);
-                case 'Z': return booleanArray(callerFrameReader, callerPTypes,
-                                              indexOfArityArray, arityArrayLength);
-                case 'F': return floatArray(callerFrameReader, callerPTypes,
-                                            indexOfArityArray, arityArrayLength);
-                case 'D': return doubleArray(callerFrameReader, callerPTypes,
-                                             indexOfArityArray, arityArrayLength);
+                case 'L':
+                    return referenceArray(
+                            callerFrameReader,
+                            callerPTypes,
+                            elementType,
+                            indexOfArityArray,
+                            arityArrayLength);
+                case 'I':
+                    return intArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'J':
+                    return longArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'B':
+                    return byteArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'S':
+                    return shortArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'C':
+                    return charArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'Z':
+                    return booleanArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'F':
+                    return floatArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
+                case 'D':
+                    return doubleArray(
+                            callerFrameReader, callerPTypes,
+                            indexOfArityArray, arityArrayLength);
             }
             throw new InternalError("Unexpected type: " + elementType);
         }
@@ -980,15 +1120,24 @@ public class Transformers {
                                               StackFrameReader reader, Class<?>[] types,
                                               int startIdx, int length) {
             switch (basicComponentType) {
-                case 'L': return referenceArray(reader, types, componentType, startIdx, length);
-                case 'I': return intArray(reader, types, startIdx, length);
-                case 'J': return longArray(reader, types, startIdx, length);
-                case 'B': return byteArray(reader, types, startIdx, length);
-                case 'S': return shortArray(reader, types, startIdx, length);
-                case 'C': return charArray(reader, types, startIdx, length);
-                case 'Z': return booleanArray(reader, types, startIdx, length);
-                case 'F': return floatArray(reader, types, startIdx, length);
-                case 'D': return doubleArray(reader, types, startIdx, length);
+                case 'L':
+                    return referenceArray(reader, types, componentType, startIdx, length);
+                case 'I':
+                    return intArray(reader, types, startIdx, length);
+                case 'J':
+                    return longArray(reader, types, startIdx, length);
+                case 'B':
+                    return byteArray(reader, types, startIdx, length);
+                case 'S':
+                    return shortArray(reader, types, startIdx, length);
+                case 'C':
+                    return charArray(reader, types, startIdx, length);
+                case 'Z':
+                    return booleanArray(reader, types, startIdx, length);
+                case 'F':
+                    return floatArray(reader, types, startIdx, length);
+                case 'D':
+                    return doubleArray(reader, types, startIdx, length);
             }
             throw new InternalError("Unexpected type: " + basicComponentType);
         }
@@ -996,16 +1145,35 @@ public class Transformers {
         private static void copyParameter(StackFrameReader reader, StackFrameWriter writer,
                                           Class<?> ptype) {
             switch (Wrapper.basicTypeChar(ptype)) {
-                case 'L': { writer.putNextReference(reader.nextReference(ptype), ptype); break; }
-                case 'I': { writer.putNextInt(reader.nextInt()); break; }
-                case 'J': { writer.putNextLong(reader.nextLong()); break; }
-                case 'B': { writer.putNextByte(reader.nextByte()); break; }
-                case 'S': { writer.putNextShort(reader.nextShort()); break; }
-                case 'C': { writer.putNextChar(reader.nextChar()); break; }
-                case 'Z': { writer.putNextBoolean(reader.nextBoolean()); break; }
-                case 'F': { writer.putNextFloat(reader.nextFloat()); break; }
-                case 'D': { writer.putNextDouble(reader.nextDouble()); break; }
-                default: throw new InternalError("Unexpected type: " + ptype);
+                case 'L':
+                    writer.putNextReference(reader.nextReference(ptype), ptype);
+                    break;
+                case 'I':
+                    writer.putNextInt(reader.nextInt());
+                    break;
+                case 'J':
+                    writer.putNextLong(reader.nextLong());
+                    break;
+                case 'B':
+                    writer.putNextByte(reader.nextByte());
+                    break;
+                case 'S':
+                    writer.putNextShort(reader.nextShort());
+                    break;
+                case 'C':
+                    writer.putNextChar(reader.nextChar());
+                    break;
+                case 'Z':
+                    writer.putNextBoolean(reader.nextBoolean());
+                    break;
+                case 'F':
+                    writer.putNextFloat(reader.nextFloat());
+                    break;
+                case 'D':
+                    writer.putNextDouble(reader.nextDouble());
+                    break;
+                default:
+                    throw new InternalError("Unexpected type: " + ptype);
             }
         }
 
@@ -1236,7 +1404,6 @@ public class Transformers {
                 case 'D':
                     spreadArray((double[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
                     break;
-
             }
 
             invokeFromTransform(target, targetFrame);
@@ -1250,15 +1417,33 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 Object o = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(o, argumentType); break; }
-                    case 'I': { writer.putNextInt((int) o); break; }
-                    case 'J': { writer.putNextLong((long) o); break; }
-                    case 'B': { writer.putNextByte((byte) o); break; }
-                    case 'S': { writer.putNextShort((short) o); break; }
-                    case 'C': { writer.putNextChar((char) o); break; }
-                    case 'Z': { writer.putNextBoolean((boolean) o); break; }
-                    case 'F': { writer.putNextFloat((float) o); break; }
-                    case 'D': { writer.putNextDouble((double) o); break; }
+                    case 'L':
+                        writer.putNextReference(o, argumentType);
+                        break;
+                    case 'I':
+                        writer.putNextInt((int) o);
+                        break;
+                    case 'J':
+                        writer.putNextLong((long) o);
+                        break;
+                    case 'B':
+                        writer.putNextByte((byte) o);
+                        break;
+                    case 'S':
+                        writer.putNextShort((short) o);
+                        break;
+                    case 'C':
+                        writer.putNextChar((char) o);
+                        break;
+                    case 'Z':
+                        writer.putNextBoolean((boolean) o);
+                        break;
+                    case 'F':
+                        writer.putNextFloat((float) o);
+                        break;
+                    case 'D':
+                        writer.putNextDouble((double) o);
+                        break;
                 }
             }
         }
@@ -1270,12 +1455,23 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 int j = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(j, argumentType); break; }
-                    case 'I': { writer.putNextInt(j); break; }
-                    case 'J': { writer.putNextLong(j); break; }
-                    case 'F': { writer.putNextFloat(j); break; }
-                    case 'D': { writer.putNextDouble(j); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(j, argumentType);
+                        break;
+                    case 'I':
+                        writer.putNextInt(j);
+                        break;
+                    case 'J':
+                        writer.putNextLong(j);
+                        break;
+                    case 'F':
+                        writer.putNextFloat(j);
+                        break;
+                    case 'D':
+                        writer.putNextDouble(j);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1287,11 +1483,20 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 long l = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(l, argumentType); break; }
-                    case 'J': { writer.putNextLong(l); break; }
-                    case 'F': { writer.putNextFloat((float) l); break; }
-                    case 'D': { writer.putNextDouble((double) l); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(l, argumentType);
+                        break;
+                    case 'J':
+                        writer.putNextLong(l);
+                        break;
+                    case 'F':
+                        writer.putNextFloat((float) l);
+                        break;
+                    case 'D':
+                        writer.putNextDouble((double) l);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1304,14 +1509,29 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 byte b = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(b, argumentType); break; }
-                    case 'I': { writer.putNextInt(b); break; }
-                    case 'J': { writer.putNextLong(b); break; }
-                    case 'B': { writer.putNextByte(b); break; }
-                    case 'S': { writer.putNextShort(b); break; }
-                    case 'F': { writer.putNextFloat(b); break; }
-                    case 'D': { writer.putNextDouble(b); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(b, argumentType);
+                        break;
+                    case 'I':
+                        writer.putNextInt(b);
+                        break;
+                    case 'J':
+                        writer.putNextLong(b);
+                        break;
+                    case 'B':
+                        writer.putNextByte(b);
+                        break;
+                    case 'S':
+                        writer.putNextShort(b);
+                        break;
+                    case 'F':
+                        writer.putNextFloat(b);
+                        break;
+                    case 'D':
+                        writer.putNextDouble(b);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1324,13 +1544,26 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 short s = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(s, argumentType); break; }
-                    case 'I': { writer.putNextInt(s); break; }
-                    case 'J': { writer.putNextLong(s); break; }
-                    case 'S': { writer.putNextShort(s); break; }
-                    case 'F': { writer.putNextFloat(s); break; }
-                    case 'D': { writer.putNextDouble(s); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(s, argumentType);
+                        break;
+                    case 'I':
+                        writer.putNextInt(s);
+                        break;
+                    case 'J':
+                        writer.putNextLong(s);
+                        break;
+                    case 'S':
+                        writer.putNextShort(s);
+                        break;
+                    case 'F':
+                        writer.putNextFloat(s);
+                        break;
+                    case 'D':
+                        writer.putNextDouble(s);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1343,13 +1576,26 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 char c = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(c, argumentType); break; }
-                    case 'I': { writer.putNextInt(c); break; }
-                    case 'J': { writer.putNextLong(c); break; }
-                    case 'C': { writer.putNextChar(c); break; }
-                    case 'F': { writer.putNextFloat(c); break; }
-                    case 'D': { writer.putNextDouble(c); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(c, argumentType);
+                        break;
+                    case 'I':
+                        writer.putNextInt(c);
+                        break;
+                    case 'J':
+                        writer.putNextLong(c);
+                        break;
+                    case 'C':
+                        writer.putNextChar(c);
+                        break;
+                    case 'F':
+                        writer.putNextFloat(c);
+                        break;
+                    case 'D':
+                        writer.putNextDouble(c);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1362,9 +1608,14 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 boolean z = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(z, argumentType); break; }
-                    case 'Z': { writer.putNextBoolean(z); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(z, argumentType);
+                        break;
+                    case 'Z':
+                        writer.putNextBoolean(z);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1377,9 +1628,14 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 double d = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(d, argumentType); break; }
-                    case 'D': { writer.putNextDouble(d); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(d, argumentType);
+                        break;
+                    case 'D':
+                        writer.putNextDouble(d);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1391,10 +1647,17 @@ public class Transformers {
                 Class<?> argumentType = ptypes[i + offset];
                 float f = array[i];
                 switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L': { writer.putNextReference(f, argumentType); break; }
-                    case 'D': { writer.putNextDouble((double) f); break; }
-                    case 'F': { writer.putNextFloat(f); break; }
-                    default : { throw new AssertionError(); }
+                    case 'L':
+                        writer.putNextReference(f, argumentType);
+                        break;
+                    case 'D':
+                        writer.putNextDouble((double) f);
+                        break;
+                    case 'F':
+                        writer.putNextFloat(f);
+                        break;
+                    default:
+                        throw new AssertionError();
                 }
             }
         }
@@ -1470,85 +1733,95 @@ public class Transformers {
             reader.attach(callerFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
 
             switch (arrayTypeChar) {
-                case 'L': {
-                    // Reference arrays are the only case where the component type of the
-                    // array we construct might differ from the type of the reference we read
-                    // from the stack frame.
-                    final Class<?> targetType = target.type().ptypes()[arrayOffset];
-                    final Class<?> adapterComponentType = arrayType.getComponentType();
+                case 'L':
+                    {
+                        // Reference arrays are the only case where the component type of the
+                        // array we construct might differ from the type of the reference we read
+                        // from the stack frame.
+                        final Class<?> targetType = target.type().ptypes()[arrayOffset];
+                        final Class<?> adapterComponentType = arrayType.getComponentType();
 
-                    Object[] arr = (Object[]) Array.newInstance(adapterComponentType, numArrayArgs);
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        arr[i] = reader.nextReference(adapterComponentType);
-                    }
+                        Object[] arr =
+                                (Object[]) Array.newInstance(adapterComponentType, numArrayArgs);
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            arr[i] = reader.nextReference(adapterComponentType);
+                        }
 
-                    writer.putNextReference(arr, targetType);
-                    break;
-                }
-                case 'I': {
-                    int[] array = new int[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextInt();
+                        writer.putNextReference(arr, targetType);
+                        break;
                     }
-                    writer.putNextReference(array, int[].class);
-                    break;
-                }
-                case 'J': {
-                    long[] array = new long[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextLong();
+                case 'I':
+                    {
+                        int[] array = new int[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextInt();
+                        }
+                        writer.putNextReference(array, int[].class);
+                        break;
                     }
-                    writer.putNextReference(array, long[].class);
-                    break;
-                }
-                case 'B': {
-                    byte[] array = new byte[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextByte();
+                case 'J':
+                    {
+                        long[] array = new long[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextLong();
+                        }
+                        writer.putNextReference(array, long[].class);
+                        break;
                     }
-                    writer.putNextReference(array, byte[].class);
-                    break;
-                }
-                case 'S': {
-                    short[] array = new short[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextShort();
+                case 'B':
+                    {
+                        byte[] array = new byte[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextByte();
+                        }
+                        writer.putNextReference(array, byte[].class);
+                        break;
                     }
-                    writer.putNextReference(array, short[].class);
-                    break;
-                }
-                case 'C': {
-                    char[] array = new char[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextChar();
+                case 'S':
+                    {
+                        short[] array = new short[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextShort();
+                        }
+                        writer.putNextReference(array, short[].class);
+                        break;
                     }
-                    writer.putNextReference(array, char[].class);
-                    break;
-                }
-                case 'Z': {
-                    boolean[] array = new boolean[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextBoolean();
+                case 'C':
+                    {
+                        char[] array = new char[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextChar();
+                        }
+                        writer.putNextReference(array, char[].class);
+                        break;
                     }
-                    writer.putNextReference(array, boolean[].class);
-                    break;
-                }
-                case 'F': {
-                    float[] array = new float[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextFloat();
+                case 'Z':
+                    {
+                        boolean[] array = new boolean[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextBoolean();
+                        }
+                        writer.putNextReference(array, boolean[].class);
+                        break;
                     }
-                    writer.putNextReference(array, float[].class);
-                    break;
-                }
-                case 'D': {
-                    double[] array = new double[numArrayArgs];
-                    for (int i = 0; i < numArrayArgs; ++i) {
-                        array[i] = reader.nextDouble();
+                case 'F':
+                    {
+                        float[] array = new float[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextFloat();
+                        }
+                        writer.putNextReference(array, float[].class);
+                        break;
                     }
-                    writer.putNextReference(array, double[].class);
-                    break;
-                }
+                case 'D':
+                    {
+                        double[] array = new double[numArrayArgs];
+                        for (int i = 0; i < numArrayArgs; ++i) {
+                            array[i] = reader.nextDouble();
+                        }
+                        writer.putNextReference(array, double[].class);
+                        break;
+                    }
             }
 
             invokeFromTransform(target, targetFrame);
@@ -1837,29 +2110,38 @@ public class Transformers {
             final Class<?>[] ptypes = target.type().ptypes();
             for (int i = 0; i < values.length; ++i) {
                 final Class<?> ptype = ptypes[i + pos];
-                if (ptype.isPrimitive()) {
-                    if (ptype == boolean.class) {
-                        writer.putNextBoolean((boolean) values[i]);
-                    } else if (ptype == byte.class) {
-                        writer.putNextByte((byte) values[i]);
-                    } else if (ptype == char.class) {
-                        writer.putNextChar((char) values[i]);
-                    } else if (ptype == short.class) {
-                        writer.putNextShort((short) values[i]);
-                    } else if (ptype == int.class) {
-                        writer.putNextInt((int) values[i]);
-                    } else if (ptype == long.class) {
-                        writer.putNextLong((long) values[i]);
-                    } else if (ptype == float.class) {
-                        writer.putNextFloat((float) values[i]);
-                    } else if (ptype == double.class) {
-                        writer.putNextDouble((double) values[i]);
-                    }
-
-                    bytesCopied += EmulatedStackFrame.getSize(ptype);
-                } else {
+                final char typeChar = Wrapper.basicTypeChar(ptype);
+                if (typeChar == 'L') {
                     writer.putNextReference(values[i], ptype);
                     referencesCopied++;
+                } else {
+                    switch (typeChar) {
+                        case 'Z':
+                            writer.putNextBoolean((boolean) values[i]);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) values[i]);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) values[i]);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) values[i]);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) values[i]);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) values[i]);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) values[i]);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) values[i]);
+                            break;
+                    }
+                    bytesCopied += EmulatedStackFrame.getSize(ptype);
                 }
             }
 
@@ -2138,46 +2420,26 @@ public class Transformers {
                     final char toBaseType = Wrapper.basicTypeChar(to);
                     switch (fromBaseType) {
                         case 'B':
-                            {
-                                byte value = reader.nextByte();
-                                writePrimitiveByteAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveByteAs(writer, toBaseType, reader.nextByte());
+                            return;
                         case 'S':
-                            {
-                                short value = reader.nextShort();
-                                writePrimitiveShortAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveShortAs(writer, toBaseType, reader.nextShort());
+                            return;
                         case 'C':
-                            {
-                                char value = reader.nextChar();
-                                writePrimitiveCharAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveCharAs(writer, toBaseType, reader.nextChar());
+                            return;
                         case 'I':
-                            {
-                                int value = reader.nextInt();
-                                writePrimitiveIntAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveIntAs(writer, toBaseType, reader.nextInt());
+                            return;
                         case 'J':
-                            {
-                                long value = reader.nextLong();
-                                writePrimitiveLongAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveLongAs(writer, toBaseType, reader.nextLong());
+                            return;
                         case 'F':
-                            {
-                                float value = reader.nextFloat();
-                                writePrimitiveFloatAs(writer, toBaseType, value);
-                                return;
-                            }
+                            writePrimitiveFloatAs(writer, toBaseType, reader.nextFloat());
+                            return;
                         case 'V':
-                            {
-                                writePrimitiveVoidAs(writer, toBaseType);
-                                return;
-                            }
+                            writePrimitiveVoidAs(writer, toBaseType);
+                            return;
                         default:
                             throwWrongMethodTypeException();
                     }
@@ -2359,401 +2621,517 @@ public class Transformers {
             return (value & 1) == 1;
         }
 
-        private static byte readPrimitiveAsByte(final StackFrameReader reader,
-                                                final Class<?> from) {
-            if (from == byte.class) {
-                return (byte) reader.nextByte();
-            } else if (from == char.class) {
-                return (byte) reader.nextChar();
-            } else if (from == short.class) {
-                return (byte) reader.nextShort();
-            } else if (from == int.class) {
-                return (byte) reader.nextInt();
-            } else if (from == long.class) {
-                return (byte) reader.nextLong();
-            } else if (from == float.class) {
-                return (byte) reader.nextFloat();
-            } else if (from == double.class) {
-                return (byte) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? (byte) 1 : (byte) 0;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static byte readPrimitiveAsByte(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (byte) reader.nextByte();
+                case 'C':
+                    return (byte) reader.nextChar();
+                case 'S':
+                    return (byte) reader.nextShort();
+                case 'I':
+                    return (byte) reader.nextInt();
+                case 'J':
+                    return (byte) reader.nextLong();
+                case 'F':
+                    return (byte) reader.nextFloat();
+                case 'D':
+                    return (byte) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? (byte) 1 : (byte) 0;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static char readPrimitiveAsChar(final StackFrameReader reader,
-                                                final Class<?> from) {
-            if (from == byte.class) {
-                return (char) reader.nextByte();
-            } else if (from == char.class) {
-                return (char) reader.nextChar();
-            } else if (from == short.class) {
-                return (char) reader.nextShort();
-            } else if (from == int.class) {
-                return (char) reader.nextInt();
-            } else if (from == long.class) {
-                return (char) reader.nextLong();
-            } else if (from == float.class) {
-                return (char) reader.nextFloat();
-            } else if (from == double.class) {
-                return (char) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? (char) 1 : (char) 0;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static char readPrimitiveAsChar(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (char) reader.nextByte();
+                case 'C':
+                    return (char) reader.nextChar();
+                case 'S':
+                    return (char) reader.nextShort();
+                case 'I':
+                    return (char) reader.nextInt();
+                case 'J':
+                    return (char) reader.nextLong();
+                case 'F':
+                    return (char) reader.nextFloat();
+                case 'D':
+                    return (char) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? (char) 1 : (char) 0;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static short readPrimitiveAsShort(final StackFrameReader reader,
-                                                  final Class<?> from) {
-            if (from == byte.class) {
-                return (short) reader.nextByte();
-            } else if (from == char.class) {
-                return (short) reader.nextChar();
-            } else if (from == short.class) {
-                return (short) reader.nextShort();
-            } else if (from == int.class) {
-                return (short) reader.nextInt();
-            } else if (from == long.class) {
-                return (short) reader.nextLong();
-            } else if (from == float.class) {
-                return (short) reader.nextFloat();
-            } else if (from == double.class) {
-                return (short) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? (short) 1 : (short) 0;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static short readPrimitiveAsShort(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (short) reader.nextByte();
+                case 'C':
+                    return (short) reader.nextChar();
+                case 'S':
+                    return (short) reader.nextShort();
+                case 'I':
+                    return (short) reader.nextInt();
+                case 'J':
+                    return (short) reader.nextLong();
+                case 'F':
+                    return (short) reader.nextFloat();
+                case 'D':
+                    return (short) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? (short) 1 : (short) 0;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static int readPrimitiveAsInt(final StackFrameReader reader,
-                                              final Class<?> from) {
-            if (from == byte.class) {
-                return (int) reader.nextByte();
-            } else if (from == char.class) {
-                return (int) reader.nextChar();
-            } else if (from == short.class) {
-                return (int) reader.nextShort();
-            } else if (from == int.class) {
-                return (int) reader.nextInt();
-            } else if (from == long.class) {
-                return (int) reader.nextLong();
-            } else if (from == float.class) {
-                return (int) reader.nextFloat();
-            } else if (from == double.class) {
-                return (int) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? 1 : 0;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static int readPrimitiveAsInt(final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (int) reader.nextByte();
+                case 'C':
+                    return (int) reader.nextChar();
+                case 'S':
+                    return (int) reader.nextShort();
+                case 'I':
+                    return (int) reader.nextInt();
+                case 'J':
+                    return (int) reader.nextLong();
+                case 'F':
+                    return (int) reader.nextFloat();
+                case 'D':
+                    return (int) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? 1 : 0;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static long readPrimitiveAsLong(final StackFrameReader reader,
-                                                final Class<?> from) {
-            if (from == byte.class) {
-                return (long) reader.nextByte();
-            } else if (from == char.class) {
-                return (long) reader.nextChar();
-            } else if (from == short.class) {
-                return (long) reader.nextShort();
-            } else if (from == int.class) {
-                return (long) reader.nextInt();
-            } else if (from == long.class) {
-                return (long) reader.nextLong();
-            } else if (from == float.class) {
-                return (long) reader.nextFloat();
-            } else if (from == double.class) {
-                return (long) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? 1L : 0L;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static long readPrimitiveAsLong(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (long) reader.nextByte();
+                case 'C':
+                    return (long) reader.nextChar();
+                case 'S':
+                    return (long) reader.nextShort();
+                case 'I':
+                    return (long) reader.nextInt();
+                case 'J':
+                    return (long) reader.nextLong();
+                case 'F':
+                    return (long) reader.nextFloat();
+                case 'D':
+                    return (long) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? 1L : 0L;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static float readPrimitiveAsFloat(final StackFrameReader reader,
-                                                  final Class<?> from) {
-            if (from == byte.class) {
-                return (float) reader.nextByte();
-            } else if (from == char.class) {
-                return (float) reader.nextChar();
-            } else if (from == short.class) {
-                return (float) reader.nextShort();
-            } else if (from == int.class) {
-                return (float) reader.nextInt();
-            } else if (from == long.class) {
-                return (float) reader.nextLong();
-            } else if (from == float.class) {
-                return (float) reader.nextFloat();
-            } else if (from == double.class) {
-                return (float) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? 1.0f : 0.0f;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static float readPrimitiveAsFloat(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (float) reader.nextByte();
+                case 'C':
+                    return (float) reader.nextChar();
+                case 'S':
+                    return (float) reader.nextShort();
+                case 'I':
+                    return (float) reader.nextInt();
+                case 'J':
+                    return (float) reader.nextLong();
+                case 'F':
+                    return (float) reader.nextFloat();
+                case 'D':
+                    return (float) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? 1.0f : 0.0f;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static double readPrimitiveAsDouble(final StackFrameReader reader,
-                                                    final Class<?> from) {
-            if (from == byte.class) {
-                return (double) reader.nextByte();
-            } else if (from == char.class) {
-                return (double) reader.nextChar();
-            } else if (from == short.class) {
-                return (double) reader.nextShort();
-            } else if (from == int.class) {
-                return (double) reader.nextInt();
-            } else if (from == long.class) {
-                return (double) reader.nextLong();
-            } else if (from == float.class) {
-                return (double) reader.nextFloat();
-            } else if (from == double.class) {
-                return (double) reader.nextDouble();
-            } else if (from == boolean.class) {
-                return reader.nextBoolean() ? 1.0 : 0.0;
-            } else {
-                throwUnexpectedType(from);
-                return 0;
+        private static double readPrimitiveAsDouble(
+                final StackFrameReader reader, final Class<?> from) {
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'B':
+                    return (double) reader.nextByte();
+                case 'C':
+                    return (double) reader.nextChar();
+                case 'S':
+                    return (double) reader.nextShort();
+                case 'I':
+                    return (double) reader.nextInt();
+                case 'J':
+                    return (double) reader.nextLong();
+                case 'F':
+                    return (double) reader.nextFloat();
+                case 'D':
+                    return (double) reader.nextDouble();
+                case 'Z':
+                    return reader.nextBoolean() ? 1.0 : 0.0;
+                default:
+                    throwUnexpectedType(from);
+                    return 0;
             }
         }
 
-        private static void explicitCastPrimitives(final StackFrameReader reader,
-                                                   final Class<?> from,
-                                                   final StackFrameWriter writer,
-                                                   final Class<?> to) {
-            if (to == byte.class) {
-                byte value = readPrimitiveAsByte(reader, from);
-                writer.putNextByte(value);
-            } else if (to == char.class) {
-                char value = readPrimitiveAsChar(reader, from);
-                writer.putNextChar(value);
-            } else if (to == short.class) {
-                short value = readPrimitiveAsShort(reader, from);
-                writer.putNextShort(value);
-            } else if (to == int.class) {
-                int value = readPrimitiveAsInt(reader, from);
-                writer.putNextInt(value);
-            } else if (to == long.class) {
-                long value = readPrimitiveAsLong(reader, from);
-                writer.putNextLong(value);
-            } else if (to == float.class) {
-                float value = readPrimitiveAsFloat(reader, from);
-                writer.putNextFloat(value);
-            } else if (to == double.class) {
-                double value = readPrimitiveAsDouble(reader, from);
-                writer.putNextDouble(value);
-            } else if (to == boolean.class) {
-                byte byteValue = readPrimitiveAsByte(reader, from);
-                writer.putNextBoolean(toBoolean(byteValue));
-            } else {
-                throwUnexpectedType(to);
+        private static void explicitCastPrimitives(
+                final StackFrameReader reader,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
+            switch (Wrapper.basicTypeChar(to)) {
+                case 'B':
+                    writer.putNextByte(readPrimitiveAsByte(reader, from));
+                    break;
+                case 'C':
+                    writer.putNextChar(readPrimitiveAsChar(reader, from));
+                    break;
+                case 'S':
+                    writer.putNextShort(readPrimitiveAsShort(reader, from));
+                    break;
+                case 'I':
+                    writer.putNextInt(readPrimitiveAsInt(reader, from));
+                    break;
+                case 'J':
+                    writer.putNextLong(readPrimitiveAsLong(reader, from));
+                    break;
+                case 'F':
+                    writer.putNextFloat(readPrimitiveAsFloat(reader, from));
+                    break;
+                case 'D':
+                    writer.putNextDouble(readPrimitiveAsDouble(reader, from));
+                    break;
+                case 'Z':
+                    writer.putNextBoolean(toBoolean(readPrimitiveAsByte(reader, from)));
+                    break;
+                default:
+                    throwUnexpectedType(to);
+                    break;
             }
         }
 
         private static void unboxNull(final StackFrameWriter writer, final Class<?> to) {
-            if (to == boolean.class) {
-                writer.putNextBoolean(false);
-            } else if (to == byte.class) {
-                writer.putNextByte((byte) 0);
-            } else if (to == char.class) {
-                writer.putNextChar((char) 0);
-            } else if (to == short.class) {
-                writer.putNextShort((short) 0);
-            } else if (to == int.class) {
-                writer.putNextInt((int) 0);
-            } else if (to == long.class) {
-                writer.putNextLong((long) 0);
-            } else if (to == float.class) {
-                writer.putNextFloat((float) 0);
-            } else if (to == double.class) {
-                writer.putNextDouble((double) 0);
-            } else {
-                throwUnexpectedType(to);
+            switch (Wrapper.basicTypeChar(to)) {
+                case 'Z':
+                    writer.putNextBoolean(false);
+                    break;
+                case 'B':
+                    writer.putNextByte((byte) 0);
+                    break;
+                case 'C':
+                    writer.putNextChar((char) 0);
+                    break;
+                case 'S':
+                    writer.putNextShort((short) 0);
+                    break;
+                case 'I':
+                    writer.putNextInt((int) 0);
+                    break;
+                case 'J':
+                    writer.putNextLong((long) 0);
+                    break;
+                case 'F':
+                    writer.putNextFloat((float) 0);
+                    break;
+                case 'D':
+                    writer.putNextDouble((double) 0);
+                    break;
+                default:
+                    throwUnexpectedType(to);
+                    break;
             }
         }
 
-        private static void unboxNonNull(final Object ref, final Class<?> from,
-                                         final StackFrameWriter writer, final Class<?> to) {
-            if (from == Boolean.class) {
-                boolean z = (boolean) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean(z);
-                } else if (to == byte.class) {
-                    writer.putNextByte(z ? (byte) 1 : (byte) 0);
-                } else if (to == short.class) {
-                    writer.putNextShort(z ? (short) 1 : (short) 0);
-                } else if (to == char.class) {
-                    writer.putNextChar(z ? (char) 1 : (char) 0);
-                } else if (to == int.class) {
-                    writer.putNextInt(z ? 1 : 0);
-                } else if (to == long.class) {
-                    writer.putNextLong(z ? 1l : 0l);
-                } else if (to == float.class) {
-                    writer.putNextFloat(z ? 1.0f : 0.0f);
-                } else if (to == double.class) {
-                    writer.putNextDouble(z ? 1.0 : 0.0);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Byte.class) {
-                byte b = (byte) ref;
-                if (to == byte.class) {
-                    writer.putNextByte(b);
-                } else if (to == boolean.class) {
-                    writer.putNextBoolean(toBoolean(b));
-                } else if (to == short.class) {
-                    writer.putNextShort((short) b);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) b);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) b);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) b);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) b);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) b);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Short.class) {
-                short s = (short) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean((s & 1) == 1);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) s);
-                } else if (to == short.class) {
-                    writer.putNextShort(s);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) s);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) s);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) s);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) s);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) s);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Character.class) {
-                char c = (char) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean((c & (char) 1) == (char) 1);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) c);
-                } else if (to == short.class) {
-                    writer.putNextShort((short) c);
-                } else if (to == char.class) {
-                    writer.putNextChar(c);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) c);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) c);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) c);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) c);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Integer.class) {
-                int i = (int) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean((i & 1) == 1);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) i);
-                } else if (to == short.class) {
-                    writer.putNextShort((short) i);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) i);
-                } else if (to == int.class) {
-                    writer.putNextInt(i);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) i);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) i);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) i);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Long.class) {
-                long j = (long) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean((j & 1l) == 1l);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) j);
-                } else if (to == short.class) {
-                    writer.putNextShort((short) j);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) j);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) j);
-                } else if (to == long.class) {
-                    writer.putNextLong(j);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) j);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) j);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Float.class) {
-                float f = (float) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean(((byte) f & 1) != 0);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) f);
-                } else if (to == short.class) {
-                    writer.putNextShort((short) f);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) f);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) f);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) f);
-                } else if (to == float.class) {
-                    writer.putNextFloat(f);
-                } else if (to == double.class) {
-                    writer.putNextDouble((double) f);
-                } else {
-                    badCast(from, to);
-                }
-            } else if (from == Double.class) {
-                double d = (double) ref;
-                if (to == boolean.class) {
-                    writer.putNextBoolean(((byte) d & 1) != 0);
-                } else if (to == byte.class) {
-                    writer.putNextByte((byte) d);
-                } else if (to == short.class) {
-                    writer.putNextShort((short) d);
-                } else if (to == char.class) {
-                    writer.putNextChar((char) d);
-                } else if (to == int.class) {
-                    writer.putNextInt((int) d);
-                } else if (to == long.class) {
-                    writer.putNextLong((long) d);
-                } else if (to == float.class) {
-                    writer.putNextFloat((float) d);
-                } else if (to == double.class) {
-                    writer.putNextDouble(d);
-                } else {
-                    badCast(from, to);
-                }
-            } else {
+        private static void unboxNonNull(
+                final Object ref,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
+            final Class<?> unboxedFromType = Wrapper.asPrimitiveType(from);
+            if (unboxedFromType == from) {
                 badCast(from, to);
+                return;
+            }
+            switch (Wrapper.basicTypeChar(unboxedFromType)) {
+                case 'Z':
+                    boolean z = (boolean) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean(z);
+                            break;
+                        case 'B':
+                            writer.putNextByte(z ? (byte) 1 : (byte) 0);
+                            break;
+                        case 'S':
+                            writer.putNextShort(z ? (short) 1 : (short) 0);
+                            break;
+                        case 'C':
+                            writer.putNextChar(z ? (char) 1 : (char) 0);
+                            break;
+                        case 'I':
+                            writer.putNextInt(z ? 1 : 0);
+                            break;
+                        case 'J':
+                            writer.putNextLong(z ? 1l : 0l);
+                            break;
+                        case 'F':
+                            writer.putNextFloat(z ? 1.0f : 0.0f);
+                            break;
+                        case 'D':
+                            writer.putNextDouble(z ? 1.0 : 0.0);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'B':
+                    byte b = (byte) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'B':
+                            writer.putNextByte(b);
+                            break;
+                        case 'Z':
+                            writer.putNextBoolean(toBoolean(b));
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) b);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) b);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) b);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) b);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) b);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) b);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'S':
+                    short s = (short) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean((s & 1) == 1);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) s);
+                            break;
+                        case 'S':
+                            writer.putNextShort(s);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) s);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) s);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) s);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) s);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) s);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'C':
+                    char c = (char) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean((c & (char) 1) == (char) 1);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) c);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) c);
+                            break;
+                        case 'C':
+                            writer.putNextChar(c);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) c);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) c);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) c);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) c);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'I':
+                    int i = (int) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean((i & 1) == 1);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) i);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) i);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) i);
+                            break;
+                        case 'I':
+                            writer.putNextInt(i);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) i);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) i);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) i);
+                            break;
+                        default:
+                            badCast(from, to);
+                    }
+                    break;
+                case 'J':
+                    long j = (long) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean((j & 1l) == 1l);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) j);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) j);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) j);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) j);
+                            break;
+                        case 'J':
+                            writer.putNextLong(j);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) j);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) j);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'F':
+                    float f = (float) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean(((byte) f & 1) != 0);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) f);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) f);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) f);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) f);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) f);
+                            break;
+                        case 'F':
+                            writer.putNextFloat(f);
+                            break;
+                        case 'D':
+                            writer.putNextDouble((double) f);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                case 'D':
+                    double d = (double) ref;
+                    switch (Wrapper.basicTypeChar(to)) {
+                        case 'Z':
+                            writer.putNextBoolean(((byte) d & 1) != 0);
+                            break;
+                        case 'B':
+                            writer.putNextByte((byte) d);
+                            break;
+                        case 'S':
+                            writer.putNextShort((short) d);
+                            break;
+                        case 'C':
+                            writer.putNextChar((char) d);
+                            break;
+                        case 'I':
+                            writer.putNextInt((int) d);
+                            break;
+                        case 'J':
+                            writer.putNextLong((long) d);
+                            break;
+                        case 'F':
+                            writer.putNextFloat((float) d);
+                            break;
+                        case 'D':
+                            writer.putNextDouble(d);
+                            break;
+                        default:
+                            badCast(from, to);
+                            break;
+                    }
+                    break;
+                default:
+                    badCast(from, to);
+                    break;
             }
         }
 
@@ -2769,24 +3147,34 @@ public class Transformers {
         private static void box(final StackFrameReader reader, final Class<?> from,
                                 final StackFrameWriter writer, final Class<?> to) {
             Object boxed = null;
-            if (from == boolean.class) {
-                boxed = Boolean.valueOf(reader.nextBoolean());
-            } else if (from == byte.class) {
-                boxed = Byte.valueOf(reader.nextByte());
-            } else if (from == char.class) {
-                boxed = Character.valueOf(reader.nextChar());
-            } else if (from == short.class) {
-                boxed = Short.valueOf(reader.nextShort());
-            } else if (from == int.class) {
-                boxed = Integer.valueOf(reader.nextInt());
-            } else if (from == long.class) {
-                boxed = Long.valueOf(reader.nextLong());
-            } else if (from == float.class) {
-                boxed = Float.valueOf(reader.nextFloat());
-            } else if (from == double.class) {
-                boxed = Double.valueOf(reader.nextDouble());
-            } else {
-                throwUnexpectedType(from);
+            switch (Wrapper.basicTypeChar(from)) {
+                case 'Z':
+                    boxed = Boolean.valueOf(reader.nextBoolean());
+                    break;
+                case 'B':
+                    boxed = Byte.valueOf(reader.nextByte());
+                    break;
+                case 'C':
+                    boxed = Character.valueOf(reader.nextChar());
+                    break;
+                case 'S':
+                    boxed = Short.valueOf(reader.nextShort());
+                    break;
+                case 'I':
+                    boxed = Integer.valueOf(reader.nextInt());
+                    break;
+                case 'J':
+                    boxed = Long.valueOf(reader.nextLong());
+                    break;
+                case 'F':
+                    boxed = Float.valueOf(reader.nextFloat());
+                    break;
+                case 'D':
+                    boxed = Double.valueOf(reader.nextDouble());
+                    break;
+                default:
+                    throwUnexpectedType(from);
+                    break;
             }
             writer.putNextReference(to.cast(boxed), to);
         }
