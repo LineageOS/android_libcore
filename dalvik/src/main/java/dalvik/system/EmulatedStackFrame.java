@@ -16,6 +16,8 @@
 
 package dalvik.system;
 
+import sun.invoke.util.Wrapper;
+
 import java.lang.invoke.MethodType;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -400,26 +402,36 @@ public class EmulatedStackFrame {
             }
         }
 
-        public static void copyNext(StackFrameReader reader, StackFrameWriter writer,
-                                    Class<?> type) {
-            if (!type.isPrimitive()) {
-                writer.putNextReference(reader.nextReference(type), type);
-            } else if (type == boolean.class) {
-                writer.putNextBoolean(reader.nextBoolean());
-            } else if (type == byte.class) {
-                writer.putNextByte(reader.nextByte());
-            } else if (type == char.class) {
-                writer.putNextChar(reader.nextChar());
-            } else if (type == short.class) {
-                writer.putNextShort(reader.nextShort());
-            } else if (type == int.class) {
-                writer.putNextInt(reader.nextInt());
-            } else if (type == long.class) {
-                writer.putNextLong(reader.nextLong());
-            } else if (type == float.class) {
-                writer.putNextFloat(reader.nextFloat());
-            } else if (type == double.class) {
-                writer.putNextDouble(reader.nextDouble());
+        public static void copyNext(
+                StackFrameReader reader, StackFrameWriter writer, Class<?> type) {
+            switch (Wrapper.basicTypeChar(type)) {
+                case 'L':
+                    writer.putNextReference(reader.nextReference(type), type);
+                    break;
+                case 'Z':
+                    writer.putNextBoolean(reader.nextBoolean());
+                    break;
+                case 'B':
+                    writer.putNextByte(reader.nextByte());
+                    break;
+                case 'C':
+                    writer.putNextChar(reader.nextChar());
+                    break;
+                case 'S':
+                    writer.putNextShort(reader.nextShort());
+                    break;
+                case 'I':
+                    writer.putNextInt(reader.nextInt());
+                    break;
+                case 'J':
+                    writer.putNextLong(reader.nextLong());
+                    break;
+                case 'F':
+                    writer.putNextFloat(reader.nextFloat());
+                    break;
+                case 'D':
+                    writer.putNextDouble(reader.nextDouble());
+                    break;
             }
         }
     }
