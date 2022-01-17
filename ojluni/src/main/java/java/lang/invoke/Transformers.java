@@ -21,17 +21,20 @@
 
 package java.lang.invoke;
 
+import static dalvik.system.EmulatedStackFrame.StackFrameAccessor.copyNext;
+
 import dalvik.system.EmulatedStackFrame;
 import dalvik.system.EmulatedStackFrame.Range;
 import dalvik.system.EmulatedStackFrame.StackFrameAccessor;
 import dalvik.system.EmulatedStackFrame.StackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameWriter;
+
+import sun.invoke.util.Wrapper;
+import sun.misc.Unsafe;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import sun.invoke.util.Wrapper;
-import sun.misc.Unsafe;
-import static dalvik.system.EmulatedStackFrame.StackFrameAccessor.copyNext;
 
 /**
  * @hide Public for testing only.
@@ -67,6 +70,24 @@ public class Transformers {
         @Override
         public Object clone() throws CloneNotSupportedException {
             return super.clone();
+        }
+
+        protected void invokeFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
+                throws Throwable {
+            if (target instanceof Transformer) {
+                ((Transformer) target).transform(stackFrame);
+            } else {
+                target.invoke(stackFrame);
+            }
+        }
+
+        protected void invokeExactFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
+                throws Throwable {
+            if (target instanceof Transformer) {
+                ((Transformer) target).transform(stackFrame);
+            } else {
+                target.invokeExact(stackFrame);
+            }
         }
     }
 
@@ -138,7 +159,7 @@ public class Transformers {
                         referencesStart, stackFrameStart);
             }
 
-            delegate.invoke(calleeFrame);
+            invokeFromTransform(delegate, calleeFrame);
             calleeFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
@@ -170,7 +191,7 @@ public class Transformers {
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
             try {
-                target.invoke(emulatedStackFrame);
+                invokeFromTransform(target, emulatedStackFrame);
             } catch (Throwable th) {
                 if (th.getClass() == exType) {
                     // We've gotten an exception of the appropriate type, so we need to call
@@ -187,7 +208,7 @@ public class Transformers {
                             1 /* referencesStart */, 0 /* stackFrameStart */);
 
                     // Perform the invoke and return the appropriate value.
-                    handler.invoke(fallback);
+                    invokeFromTransform(handler, fallback);
                     fallback.copyReturnValueTo(emulatedStackFrame);
                 } else {
                     // The exception is not of the expected type, we throw it.
@@ -223,13 +244,16 @@ public class Transformers {
             EmulatedStackFrame testFrame = EmulatedStackFrame.create(test.type());
             emulatedStackFrame.copyRangeTo(testFrame, testArgsRange, 0, 0);
 
-            // We know that the return value for test is going to be boolean.class, so we don't have
-            // to do the copyReturnValue dance.
-            final boolean value = (boolean) test.invoke(testFrame);
-            if (value) {
-                target.invoke(emulatedStackFrame);
+            // We know that the return value for test is going to be boolean.class.
+            StackFrameReader reader = new StackFrameReader();
+            reader.attach(testFrame);
+            reader.makeReturnValueAccessor();
+            invokeFromTransform(test, testFrame);
+            final boolean testResult = (boolean) reader.nextBoolean();
+            if (testResult) {
+                invokeFromTransform(target, emulatedStackFrame);
             } else {
-                fallback.invoke(emulatedStackFrame);
+                invokeFromTransform(fallback, emulatedStackFrame);
             }
         }
     }
@@ -432,7 +456,7 @@ public class Transformers {
                     EmulatedStackFrame.create(constructorHandle.type());
             constructorFrame.setReference(0, receiver);
             emulatedStackFrame.copyRangeTo(constructorFrame, callerRange, 1, 0);
-            constructorHandle.invoke(constructorFrame);
+            invokeExactFromTransform(constructorHandle, constructorFrame);
 
             // Set return result for caller.
             emulatedStackFrame.setReturnValueTo(receiver);
@@ -472,7 +496,7 @@ public class Transformers {
                     1 /* referencesStart */, 0 /* stackFrameStart */);
 
             // Perform the invoke.
-            delegate.invoke(stackFrame);
+            invokeFromTransform(delegate, stackFrame);
             stackFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
@@ -502,7 +526,7 @@ public class Transformers {
             // the same parameter shapes.
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
             emulatedStackFrame.copyRangeTo(targetFrame, allArgs, 0, 0);
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
 
             // Perform the invoke.
             final StackFrameReader returnValueReader = new StackFrameReader();
@@ -537,7 +561,7 @@ public class Transformers {
             }
 
             // Invoke the filter and copy its return value back to the original frame.
-            filter.invoke(filterFrame);
+            invokeFromTransform(filter, filterFrame);
             filterFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
@@ -626,27 +650,29 @@ public class Transformers {
                 }
             }
 
-            target.invoke(calleeFrame);
+            invokeFromTransform(target, calleeFrame);
             calleeFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
 
     /**
-     * Converts methods with a trailing array argument to variable arity
-     * methods. So (A,B,C[])R can be invoked with any number of convertible
-     * arguments after B, e.g. (A,B)R or (A, B, C0)R or (A, B, C0...Cn)R.
+     * Makes a variable-arity adapter that groups trailing varargs arguments into an array.
      *
      * @hide
      */
     /*package*/ static class VarargsCollector extends Transformer {
         final MethodHandle target;
+        private final Class<?> arrayType;
 
         /*package*/ VarargsCollector(MethodHandle target) {
             super(target.type(), MethodHandle.INVOKE_CALLSITE_TRANSFORM);
-            if (!lastParameterTypeIsAnArray(target.type().ptypes())) {
+
+            Class<?>[] parameterTypes = target.type().ptypes();
+            if (!lastParameterTypeIsAnArray(parameterTypes)) {
                 throw new IllegalArgumentException("target does not have array as last parameter");
             }
             this.target = target;
+            this.arrayType = parameterTypes[parameterTypes.length - 1];
         }
 
         private static boolean lastParameterTypeIsAnArray(Class<?>[] parameterTypes) {
@@ -661,6 +687,42 @@ public class Transformers {
         public MethodHandle asFixedArity() { return target; }
 
         @Override
+        MethodHandle asTypeUncached(MethodType newType) {
+            // asType() behavior is specialized per:
+            //
+            // https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/invoke/MethodHandle.html#asVarargsCollector(java.lang.Class)
+            //
+            // "The behavior of asType is also specialized for variable arity adapters, to maintain
+            //  the invariant that plain, inexact invoke is always equivalent to an asType call to
+            //  adjust the target type, followed by invokeExact. Therefore, a variable arity
+            //  adapter responds to an asType request by building a fixed arity collector, if and
+            //  only if the adapter and requested type differ either in arity or trailing argument
+            //  type. The resulting fixed arity collector has its type further adjusted
+            //  (if necessary) to the requested type by pairwise conversion, as if by another
+            //  application of asType."
+            final MethodType currentType = type();
+            final MethodHandle currentFixedArity = asFixedArity();
+            if (currentType.parameterCount() == newType.parameterCount() &&
+                currentType.lastParameterType().isAssignableFrom(newType.lastParameterType())) {
+                return asTypeCache = currentFixedArity.asType(newType);
+            }
+
+            final int arrayLength = newType.parameterCount() - currentType.parameterCount() + 1;
+            if (arrayLength < 0) {
+                // arrayType is definitely array per VarargsCollector constructor.
+                throwWrongMethodTypeException(currentType, newType);
+            }
+
+            MethodHandle collector = null;
+            try {
+                collector = currentFixedArity.asCollector(arrayType, arrayLength).asType(newType);
+            } catch (IllegalArgumentException ex) {
+                throwWrongMethodTypeException(currentType, newType);
+            }
+            return asTypeCache = collector;
+        }
+
+        @Override
         public void transform(EmulatedStackFrame callerFrame) throws Throwable {
             MethodType callerFrameType = callerFrame.getMethodType();
             Class<?>[] callerPTypes = callerFrameType.ptypes();
@@ -672,7 +734,7 @@ public class Transformers {
                 // Caller frame matches target frame in the arity array parameter. Invoke
                 // immediately, and let the invoke() dispatch perform any necessary conversions
                 // on the other parameters present.
-                target.invoke(callerFrame);
+                invokeFromTransform(target, callerFrame);
                 return;
             }
 
@@ -698,7 +760,7 @@ public class Transformers {
             prepareFrame(callerFrame, targetFrame);
 
             // Invoke target.
-            target.invoke(targetFrame);
+            invokeExactFromTransform(target, targetFrame);
 
             // Copy return value to the caller's frame.
             targetFrame.copyReturnValueTo(callerFrame);
@@ -1027,7 +1089,7 @@ public class Transformers {
             emulatedStackFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
 
             // Finally, invoke the handle and copy the return value.
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(emulatedStackFrame);
         }
 
@@ -1079,8 +1141,8 @@ public class Transformers {
         private final MethodHandle target;
 
         /**
-         * The offset of the trailing array argument in the list of arguments to
-         * this transformer. The array argument is always the last argument.
+         * The offset of the trailing array argument in the list of arguments to this transformer.
+         * The array argument is always the last argument.
          */
         private final int arrayOffset;
 
@@ -1141,7 +1203,8 @@ public class Transformers {
                     copyRange.numReferences, this.type().ptypes()[arrayOffset]);
             final int arrayLength = Array.getLength(arrayObj);
             if (arrayLength != numArrayArgs) {
-                throw new IllegalArgumentException("Invalid array length: " + arrayLength);
+                throw new IllegalArgumentException(
+                        "Invalid array length " + arrayLength + " expected " + numArrayArgs);
             }
 
             final MethodType type = target.type();
@@ -1176,7 +1239,7 @@ public class Transformers {
 
             }
 
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(callerFrame);
         }
 
@@ -1356,6 +1419,11 @@ public class Transformers {
         private final int numArrayArgs;
 
         /**
+         * The component type of the array.
+         */
+        private final Class arrayType;
+
+        /**
          * The type char of the component type of the array.
          */
         private final char arrayTypeChar;
@@ -1366,14 +1434,20 @@ public class Transformers {
          */
         private final Range copyRange;
 
-        Collector(MethodHandle delegate, Class<?> arrayType, int length) {
+        Collector(MethodHandle delegate, final Class<?> arrayType, final int length) {
             super(delegate.type().asCollectorType(arrayType, length));
+
+            final Class<?> componentType = arrayType.getComponentType();
+            if (componentType == null) {
+                throw new IllegalArgumentException("arrayType is not an array type");
+            }
 
             target = delegate;
             // Copy all arguments except the last argument (which is the trailing array argument
             // that needs to be spread).
             arrayOffset = delegate.type().parameterCount() - 1;
-            arrayTypeChar = Wrapper.basicTypeChar(arrayType.getComponentType());
+            this.arrayType = arrayType;
+            arrayTypeChar = Wrapper.basicTypeChar(componentType);
             numArrayArgs = length;
 
             // Copy all args except for the last argument.
@@ -1401,10 +1475,9 @@ public class Transformers {
                     // array we construct might differ from the type of the reference we read
                     // from the stack frame.
                     final Class<?> targetType = target.type().ptypes()[arrayOffset];
-                    final Class<?> targetComponentType = targetType.getComponentType();
-                    final Class<?> adapterComponentType = type().lastParameterType();
+                    final Class<?> adapterComponentType = arrayType.getComponentType();
 
-                    Object[] arr = (Object[]) Array.newInstance(targetComponentType, numArrayArgs);
+                    Object[] arr = (Object[]) Array.newInstance(adapterComponentType, numArrayArgs);
                     for (int i = 0; i < numArrayArgs; ++i) {
                         arr[i] = reader.nextReference(adapterComponentType);
                     }
@@ -1478,7 +1551,7 @@ public class Transformers {
                 }
             }
 
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(callerFrame);
         }
     }
@@ -1545,7 +1618,7 @@ public class Transformers {
                     filterWriter.attach(filterFrame);
                     copyNext(reader, filterWriter, filter.type().ptypes()[0]);
 
-                    filter.invoke(filterFrame);
+                    invokeFromTransform(filter, filterFrame);
 
                     // Copy the argument back from the filter frame to the stack frame.
                     final StackFrameReader filterReader = new StackFrameReader();
@@ -1559,7 +1632,7 @@ public class Transformers {
                 }
             }
 
-            target.invoke(transformedFrame);
+            invokeFromTransform(target, transformedFrame);
             transformedFrame.copyReturnValueTo(stackFrame);
         }
     }
@@ -1629,7 +1702,7 @@ public class Transformers {
             // First invoke the collector.
             EmulatedStackFrame filterFrame = EmulatedStackFrame.create(collector.type());
             stackFrame.copyRangeTo(filterFrame, collectorRange, 0, 0);
-            collector.invoke(filterFrame);
+            invokeFromTransform(collector, filterFrame);
 
             // Start constructing the target frame.
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
@@ -1650,7 +1723,7 @@ public class Transformers {
                         range2.numBytes + stackFrameOffset);
             }
 
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(stackFrame);
         }
     }
@@ -1695,7 +1768,7 @@ public class Transformers {
             // First construct the combiner frame and invoke it.
             EmulatedStackFrame combinerFrame = EmulatedStackFrame.create(combiner.type());
             stackFrame.copyRangeTo(combinerFrame, combinerArgs, 0, 0);
-            combiner.invoke(combinerFrame);
+            invokeFromTransform(combiner, combinerFrame);
 
             // Create the stack frame for the target.
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
@@ -1710,7 +1783,7 @@ public class Transformers {
             }
 
             stackFrame.copyRangeTo(targetFrame, targetArgs, referencesOffset, stackFrameOffset);
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
 
             targetFrame.copyReturnValueTo(stackFrame);
         }
@@ -1797,11 +1870,419 @@ public class Transformers {
                         range1.numBytes + bytesCopied);
             }
 
-            target.invoke(calleeFrame);
+            invokeFromTransform(target, calleeFrame);
             calleeFrame.copyReturnValueTo(stackFrame);
         }
     }
 
+    public static class AsTypeAdapter extends Transformer {
+        private final MethodHandle target;
+
+        public AsTypeAdapter(MethodHandle target, MethodType type) {
+            super(type);
+            this.target = target;
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            final EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            final StackFrameReader reader = new StackFrameReader();
+            final StackFrameWriter writer = new StackFrameWriter();
+
+            // Adapt arguments
+            reader.attach(callerFrame);
+            writer.attach(targetFrame);
+            adaptArguments(reader, writer);
+
+            // Invoke target
+            invokeFromTransform(target, targetFrame);
+
+            if (callerFrame.getMethodType().rtype() != void.class) {
+                // Adapt return value
+                reader.attach(targetFrame).makeReturnValueAccessor();
+                writer.attach(callerFrame).makeReturnValueAccessor();
+                adaptReturnValue(reader, writer);
+            }
+        }
+
+        private void adaptArguments(final StackFrameReader reader, final StackFrameWriter writer) {
+            final Class<?>[] fromTypes = type().ptypes();
+            final Class<?>[] toTypes = target.type().ptypes();
+            for (int i = 0; i < fromTypes.length; ++i) {
+                adaptArgument(reader, fromTypes[i], writer, toTypes[i]);
+            }
+        }
+
+        private void adaptReturnValue(
+                final StackFrameReader reader, final StackFrameWriter writer) {
+            final Class<?> fromType = target.type().rtype();
+            final Class<?> toType = type().rtype();
+            adaptArgument(reader, fromType, writer, toType);
+        }
+
+        private void throwWrongMethodTypeException() throws WrongMethodTypeException {
+            throw new WrongMethodTypeException(
+                    "Cannot convert from " + type() + " to " + target.type());
+        }
+
+        private static void throwClassCastException(Class from, Class to)
+                throws ClassCastException {
+            throw new ClassCastException("Cannot cast from " + from + " to " + to);
+        }
+
+        private void writePrimitiveByteAs(final StackFrameWriter writer, char baseType, byte value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'B':
+                    writer.putNextByte(value);
+                    return;
+                case 'S':
+                    writer.putNextShort((short) value);
+                    return;
+                case 'I':
+                    writer.putNextInt((int) value);
+                    return;
+                case 'J':
+                    writer.putNextLong((long) value);
+                    return;
+                case 'F':
+                    writer.putNextFloat((float) value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveShortAs(
+                final StackFrameWriter writer, char baseType, short value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'S':
+                    writer.putNextShort(value);
+                    return;
+                case 'I':
+                    writer.putNextInt((int) value);
+                    return;
+                case 'J':
+                    writer.putNextLong((long) value);
+                    return;
+                case 'F':
+                    writer.putNextFloat((float) value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveCharAs(final StackFrameWriter writer, char baseType, char value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'C':
+                    writer.putNextChar(value);
+                    return;
+                case 'I':
+                    writer.putNextInt((int) value);
+                    return;
+                case 'J':
+                    writer.putNextLong((long) value);
+                    return;
+                case 'F':
+                    writer.putNextFloat((float) value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveIntAs(final StackFrameWriter writer, char baseType, int value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'I':
+                    writer.putNextInt(value);
+                    return;
+                case 'J':
+                    writer.putNextLong((long) value);
+                    return;
+                case 'F':
+                    writer.putNextFloat((float) value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+            throwWrongMethodTypeException();
+        }
+
+        private void writePrimitiveLongAs(final StackFrameWriter writer, char baseType, long value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'J':
+                    writer.putNextLong(value);
+                    return;
+                case 'F':
+                    writer.putNextFloat((float) value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveFloatAs(
+                final StackFrameWriter writer, char baseType, float value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'F':
+                    writer.putNextFloat(value);
+                    return;
+                case 'D':
+                    writer.putNextDouble((double) value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveDoubleAs(
+                final StackFrameWriter writer, char baseType, double value)
+                throws WrongMethodTypeException {
+            switch (baseType) {
+                case 'D':
+                    writer.putNextDouble(value);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private void writePrimitiveVoidAs(final StackFrameWriter writer, char baseType) {
+            switch (baseType) {
+                case 'Z':
+                    writer.putNextBoolean(false);
+                    return;
+                case 'B':
+                    writer.putNextByte((byte) 0);
+                    return;
+                case 'S':
+                    writer.putNextShort((short) 0);
+                    return;
+                case 'C':
+                    writer.putNextChar((char) 0);
+                    return;
+                case 'I':
+                    writer.putNextInt(0);
+                    return;
+                case 'J':
+                    writer.putNextLong(0L);
+                    return;
+                case 'F':
+                    writer.putNextFloat(0.0f);
+                    return;
+                case 'D':
+                    writer.putNextDouble(0.0);
+                    return;
+                default:
+                    throwWrongMethodTypeException();
+            }
+        }
+
+        private static Class getBoxedPrimitiveClass(char baseType) {
+            switch (baseType) {
+                case 'Z':
+                    return Boolean.class;
+                case 'B':
+                    return Byte.class;
+                case 'S':
+                    return Short.class;
+                case 'C':
+                    return Character.class;
+                case 'I':
+                    return Integer.class;
+                case 'J':
+                    return Long.class;
+                case 'F':
+                    return Float.class;
+                case 'D':
+                    return Double.class;
+                default:
+                    return null;
+            }
+        }
+
+        private void adaptArgument(
+                final StackFrameReader reader,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
+            if (from.equals(to)) {
+                StackFrameAccessor.copyNext(reader, writer, from);
+                return;
+            }
+
+            if (to.isPrimitive()) {
+                if (from.isPrimitive()) {
+                    final char fromBaseType = Wrapper.basicTypeChar(from);
+                    final char toBaseType = Wrapper.basicTypeChar(to);
+                    switch (fromBaseType) {
+                        case 'B':
+                            {
+                                byte value = reader.nextByte();
+                                writePrimitiveByteAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'S':
+                            {
+                                short value = reader.nextShort();
+                                writePrimitiveShortAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'C':
+                            {
+                                char value = reader.nextChar();
+                                writePrimitiveCharAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'I':
+                            {
+                                int value = reader.nextInt();
+                                writePrimitiveIntAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'J':
+                            {
+                                long value = reader.nextLong();
+                                writePrimitiveLongAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'F':
+                            {
+                                float value = reader.nextFloat();
+                                writePrimitiveFloatAs(writer, toBaseType, value);
+                                return;
+                            }
+                        case 'V':
+                            {
+                                writePrimitiveVoidAs(writer, toBaseType);
+                                return;
+                            }
+                        default:
+                            throwWrongMethodTypeException();
+                    }
+                } else {
+                    final Object value = reader.nextReference(Object.class);
+                    if (to == void.class) {
+                        return;
+                    }
+                    if (value == null) {
+                        throw new NullPointerException();
+                    }
+                    if (!Wrapper.isWrapperType(value.getClass())) {
+                        throwClassCastException(value.getClass(), to);
+                    }
+                    final Wrapper fromWrapper = Wrapper.forWrapperType(value.getClass());
+                    final Wrapper toWrapper = Wrapper.forPrimitiveType(to);
+                    if (!toWrapper.isConvertibleFrom(fromWrapper)) {
+                        throwClassCastException(from, to);
+                    }
+
+                    final char toChar = toWrapper.basicTypeChar();
+                    switch (fromWrapper.basicTypeChar()) {
+                        case 'Z':
+                            writer.putNextBoolean(((Boolean) value).booleanValue());
+                            return;
+                        case 'B':
+                            writePrimitiveByteAs(writer, toChar, ((Byte) value).byteValue());
+                            return;
+                        case 'S':
+                            writePrimitiveShortAs(writer, toChar, ((Short) value).shortValue());
+                            return;
+                        case 'C':
+                            writePrimitiveCharAs(writer, toChar, ((Character) value).charValue());
+                            return;
+                        case 'I':
+                            writePrimitiveIntAs(writer, toChar, ((Integer) value).intValue());
+                            return;
+                        case 'J':
+                            writePrimitiveLongAs(writer, toChar, ((Long) value).longValue());
+                            return;
+                        case 'F':
+                            writePrimitiveFloatAs(writer, toChar, ((Float) value).floatValue());
+                            return;
+                        case 'D':
+                            writePrimitiveDoubleAs(writer, toChar, ((Double) value).doubleValue());
+                            return;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                }
+            } else {
+                if (from.isPrimitive()) {
+                    // Boxing conversion
+                    final char fromBaseType = Wrapper.basicTypeChar(from);
+                    final Class fromBoxed = getBoxedPrimitiveClass(fromBaseType);
+                    // 'to' maybe a super class of the boxed `from` type, e.g. Number.
+                    if (fromBoxed != null && !to.isAssignableFrom(fromBoxed)) {
+                        throwWrongMethodTypeException();
+                    }
+
+                    Object boxed;
+                    switch (fromBaseType) {
+                        case 'Z':
+                            boxed = Boolean.valueOf(reader.nextBoolean());
+                            break;
+                        case 'B':
+                            boxed = Byte.valueOf(reader.nextByte());
+                            break;
+                        case 'S':
+                            boxed = Short.valueOf(reader.nextShort());
+                            break;
+                        case 'C':
+                            boxed = Character.valueOf(reader.nextChar());
+                            break;
+                        case 'I':
+                            boxed = Integer.valueOf(reader.nextInt());
+                            break;
+                        case 'J':
+                            boxed = Long.valueOf(reader.nextLong());
+                            break;
+                        case 'F':
+                            boxed = Float.valueOf(reader.nextFloat());
+                            break;
+                        case 'D':
+                            boxed = Double.valueOf(reader.nextDouble());
+                            break;
+                        case 'V':
+                            boxed = null;
+                            break;
+                        default:
+                            throw new IllegalStateException();
+                    }
+                    writer.putNextReference(boxed, to);
+                    return;
+                } else {
+                    // Cast
+                    Object value = reader.nextReference(Object.class);
+                    if (value != null && !to.isAssignableFrom(value.getClass())) {
+                        throwClassCastException(value.getClass(), to);
+                    }
+                    writer.putNextReference(value, to);
+                }
+            }
+        }
+    }
 
     /**
      * Implements {@link java.lang.invokeMethodHandles#explicitCastArguments()}.
@@ -1820,7 +2301,7 @@ public class Transformers {
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
 
             explicitCastArguments(callerFrame, targetFrame);
-            target.invoke(targetFrame);
+            invokeFromTransform(target, targetFrame);
             explicitCastReturnValue(callerFrame, targetFrame);
         }
 
