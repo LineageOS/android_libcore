@@ -177,6 +177,20 @@ public class EmulatedStackFrame {
     }
 
     /**
+     * Convert parameter index to index within references array.
+     */
+    int getReferenceIndex(int parameterIndex) {
+        final Class [] ptypes = type.ptypes();
+        int refIndex = 0;
+        for (int i = 0; i < parameterIndex; ++i) {
+            if (!ptypes[i].isPrimitive()) {
+                refIndex += 1;
+            }
+        }
+        return refIndex;
+    }
+
+    /**
      * Sets the {@code idx} to {@code reference}. Type checks are performed.
      */
     public void setReference(int idx, Object reference) {
@@ -184,12 +198,11 @@ public class EmulatedStackFrame {
         if (idx < 0 || idx >= ptypes.length) {
             throw new IllegalArgumentException("Invalid index: " + idx);
         }
-
         if (reference != null && !ptypes[idx].isInstance(reference)) {
             throw new IllegalStateException("reference is not of type: " + type.ptypes()[idx]);
         }
-
-        references[idx] = reference;
+        int referenceIndex = getReferenceIndex(idx);
+        references[referenceIndex] = reference;
     }
 
     /**
@@ -200,8 +213,8 @@ public class EmulatedStackFrame {
             throw new IllegalArgumentException("Argument: " + idx +
                     " is of type " + type.ptypes()[idx] + " expected " + referenceType + "");
         }
-
-        return (T) references[idx];
+        int referenceIndex = getReferenceIndex(idx);
+        return (T) references[referenceIndex];
     }
 
     /**
