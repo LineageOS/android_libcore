@@ -281,8 +281,6 @@ assertEquals("xz", (String) d12.invokeExact("x", 12, true, "z"));
             }}
     }
 
-// Android-removed: dropArguments to match not yet supported (b/191446452).
-/*
     @Test public void testDropArgumentsToMatch() throws Throwable {
         {{
 {} /// JAVADOC
@@ -300,7 +298,7 @@ MethodHandle h3 = guardWithTest(h0, h1, h2);
 assertEquals("xy", h3.invoke("x", "y", 1, "a", "b", "c"));
         }}
     }
-*/
+
     @Test public void testFilterArguments() throws Throwable {
         {{
 {} /// JAVADOC

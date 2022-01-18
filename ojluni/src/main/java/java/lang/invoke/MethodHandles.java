@@ -3048,16 +3048,17 @@ assert((int)twice.invokeExact(21) == 42);
         return oldType.ptypes();
     }
 
+    // Android-changed: inclusive language preference for 'placeholder'.
     /**
-     * Produces a method handle which will discard some dummy arguments
+     * Produces a method handle which will discard some placeholder arguments
      * before calling some other specified <i>target</i> method handle.
      * The type of the new method handle will be the same as the target's type,
-     * except it will also include the dummy argument types,
+     * except it will also include the placeholder argument types,
      * at some given position.
      * <p>
      * The {@code pos} argument may range between zero and <i>N</i>,
      * where <i>N</i> is the arity of the target.
-     * If {@code pos} is zero, the dummy arguments will precede
+     * If {@code pos} is zero, the placeholder arguments will precede
      * the target's real arguments; if {@code pos} is <i>N</i>
      * they will come after.
      * <p>
@@ -3092,21 +3093,29 @@ assertEquals("yz", (String) d0.invokeExact(123, "x", "y", "z"));
      */
     public static
     MethodHandle dropArguments(MethodHandle target, int pos, List<Class<?>> valueTypes) {
-        valueTypes = copyTypes(valueTypes);
-        MethodType oldType = target.type();  // get NPE
-        int dropped = dropArgumentChecks(oldType, pos, valueTypes);
-
-        MethodType newType = oldType.insertParameterTypes(pos, valueTypes);
-        if (dropped == 0) {
-            return target;
-        }
-
-        return new Transformers.DropArguments(newType, target, pos, valueTypes.size());
+        return dropArguments0(target, pos, copyTypes(valueTypes.toArray()));
     }
 
-    private static List<Class<?>> copyTypes(List<Class<?>> types) {
-        Object[] a = types.toArray();
-        return Arrays.asList(Arrays.copyOf(a, a.length, Class[].class));
+    private static List<Class<?>> copyTypes(Object[] array) {
+        return Arrays.asList(Arrays.copyOf(array, array.length, Class[].class));
+    }
+
+    private static
+    MethodHandle dropArguments0(MethodHandle target, int pos, List<Class<?>> valueTypes) {
+        MethodType oldType = target.type();  // get NPE
+        int dropped = dropArgumentChecks(oldType, pos, valueTypes);
+        MethodType newType = oldType.insertParameterTypes(pos, valueTypes);
+        if (dropped == 0)  return target;
+        // Android-changed: transformer implementation.
+        // BoundMethodHandle result = target.rebind();
+        // LambdaForm lform = result.form;
+        // int insertFormArg = 1 + pos;
+        // for (Class<?> ptype : valueTypes) {
+        //     lform = lform.editor().addArgumentForm(insertFormArg++, BasicType.basicType(ptype));
+        // }
+        // result = result.copyWith(newType, lform);
+        // return result;
+        return new Transformers.DropArguments(newType, target, pos, dropped);
     }
 
     private static int dropArgumentChecks(MethodType oldType, int pos, List<Class<?>> valueTypes) {
@@ -3121,20 +3130,20 @@ assertEquals("yz", (String) d0.invokeExact(123, "x", "y", "z"));
         return dropped;
     }
 
+    // Android-changed: inclusive language preference for 'placeholder'.
     /**
-     * Produces a method handle which will discard some dummy arguments
+     * Produces a method handle which will discard some placeholder arguments
      * before calling some other specified <i>target</i> method handle.
      * The type of the new method handle will be the same as the target's type,
-     * except it will also include the dummy argument types,
+     * except it will also include the placeholder argument types,
      * at some given position.
      * <p>
      * The {@code pos} argument may range between zero and <i>N</i>,
      * where <i>N</i> is the arity of the target.
-     * If {@code pos} is zero, the dummy arguments will precede
+     * If {@code pos} is zero, the placeholder arguments will precede
      * the target's real arguments; if {@code pos} is <i>N</i>
      * they will come after.
-     * <p>
-     * <b>Example:</b>
+     * @apiNote
      * <blockquote><pre>{@code
 import static java.lang.invoke.MethodHandles.*;
 import static java.lang.invoke.MethodType.*;
@@ -3170,7 +3179,117 @@ assertEquals("xz", (String) d12.invokeExact("x", 12, true, "z"));
      */
     public static
     MethodHandle dropArguments(MethodHandle target, int pos, Class<?>... valueTypes) {
-        return dropArguments(target, pos, Arrays.asList(valueTypes));
+        return dropArguments0(target, pos, copyTypes(valueTypes));
+    }
+
+    // private version which allows caller some freedom with error handling
+    private static MethodHandle dropArgumentsToMatch(MethodHandle target, int skip, List<Class<?>> newTypes, int pos,
+                                      boolean nullOnFailure) {
+        newTypes = copyTypes(newTypes.toArray());
+        List<Class<?>> oldTypes = target.type().parameterList();
+        int match = oldTypes.size();
+        if (skip != 0) {
+            if (skip < 0 || skip > match) {
+                throw newIllegalArgumentException("illegal skip", skip, target);
+            }
+            oldTypes = oldTypes.subList(skip, match);
+            match -= skip;
+        }
+        List<Class<?>> addTypes = newTypes;
+        int add = addTypes.size();
+        if (pos != 0) {
+            if (pos < 0 || pos > add) {
+                throw newIllegalArgumentException("illegal pos", pos, newTypes);
+            }
+            addTypes = addTypes.subList(pos, add);
+            add -= pos;
+            assert(addTypes.size() == add);
+        }
+        // Do not add types which already match the existing arguments.
+        if (match > add || !oldTypes.equals(addTypes.subList(0, match))) {
+            if (nullOnFailure) {
+                return null;
+            }
+            throw newIllegalArgumentException("argument lists do not match", oldTypes, newTypes);
+        }
+        addTypes = addTypes.subList(match, add);
+        add -= match;
+        assert(addTypes.size() == add);
+        // newTypes:     (   P*[pos], M*[match], A*[add] )
+        // target: ( S*[skip],        M*[match]  )
+        MethodHandle adapter = target;
+        if (add > 0) {
+            adapter = dropArguments0(adapter, skip+ match, addTypes);
+        }
+        // adapter: (S*[skip],        M*[match], A*[add] )
+        if (pos > 0) {
+            adapter = dropArguments0(adapter, skip, newTypes.subList(0, pos));
+        }
+        // adapter: (S*[skip], P*[pos], M*[match], A*[add] )
+        return adapter;
+    }
+
+    // Android-changed: inclusive language preference for 'placeholder'.
+    /**
+     * Adapts a target method handle to match the given parameter type list. If necessary, adds placeholder arguments. Some
+     * leading parameters can be skipped before matching begins. The remaining types in the {@code target}'s parameter
+     * type list must be a sub-list of the {@code newTypes} type list at the starting position {@code pos}. The
+     * resulting handle will have the target handle's parameter type list, with any non-matching parameter types (before
+     * or after the matching sub-list) inserted in corresponding positions of the target's original parameters, as if by
+     * {@link #dropArguments(MethodHandle, int, Class[])}.
+     * <p>
+     * The resulting handle will have the same return type as the target handle.
+     * <p>
+     * In more formal terms, assume these two type lists:<ul>
+     * <li>The target handle has the parameter type list {@code S..., M...}, with as many types in {@code S} as
+     * indicated by {@code skip}. The {@code M} types are those that are supposed to match part of the given type list,
+     * {@code newTypes}.
+     * <li>The {@code newTypes} list contains types {@code P..., M..., A...}, with as many types in {@code P} as
+     * indicated by {@code pos}. The {@code M} types are precisely those that the {@code M} types in the target handle's
+     * parameter type list are supposed to match. The types in {@code A} are additional types found after the matching
+     * sub-list.
+     * </ul>
+     * Given these assumptions, the result of an invocation of {@code dropArgumentsToMatch} will have the parameter type
+     * list {@code S..., P..., M..., A...}, with the {@code P} and {@code A} types inserted as if by
+     * {@link #dropArguments(MethodHandle, int, Class[])}.
+     *
+     * @apiNote
+     * Two method handles whose argument lists are "effectively identical" (i.e., identical in a common prefix) may be
+     * mutually converted to a common type by two calls to {@code dropArgumentsToMatch}, as follows:
+     * <blockquote><pre>{@code
+import static java.lang.invoke.MethodHandles.*;
+import static java.lang.invoke.MethodType.*;
+...
+...
+MethodHandle h0 = constant(boolean.class, true);
+MethodHandle h1 = lookup().findVirtual(String.class, "concat", methodType(String.class, String.class));
+MethodType bigType = h1.type().insertParameterTypes(1, String.class, int.class);
+MethodHandle h2 = dropArguments(h1, 0, bigType.parameterList());
+if (h1.type().parameterCount() < h2.type().parameterCount())
+    h1 = dropArgumentsToMatch(h1, 0, h2.type().parameterList(), 0);  // lengthen h1
+else
+    h2 = dropArgumentsToMatch(h2, 0, h1.type().parameterList(), 0);    // lengthen h2
+MethodHandle h3 = guardWithTest(h0, h1, h2);
+assertEquals("xy", h3.invoke("x", "y", 1, "a", "b", "c"));
+     * }</pre></blockquote>
+     * @param target the method handle to adapt
+     * @param skip number of targets parameters to disregard (they will be unchanged)
+     * @param newTypes the list of types to match {@code target}'s parameter type list to
+     * @param pos place in {@code newTypes} where the non-skipped target parameters must occur
+     * @return a possibly adapted method handle
+     * @throws NullPointerException if either argument is null
+     * @throws IllegalArgumentException if any element of {@code newTypes} is {@code void.class},
+     *         or if {@code skip} is negative or greater than the arity of the target,
+     *         or if {@code pos} is negative or greater than the newTypes list size,
+     *         or if {@code newTypes} does not contain the {@code target}'s non-skipped parameter types at position
+     *         {@code pos}.
+     * @since 9
+     */
+    public static
+    MethodHandle dropArgumentsToMatch(MethodHandle target, int skip, List<Class<?>> newTypes, int pos) {
+        Objects.requireNonNull(target);
+        Objects.requireNonNull(newTypes);
+        return dropArgumentsToMatch(target, skip, newTypes, pos, false);
     }
 
     /**

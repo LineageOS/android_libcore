@@ -115,14 +115,8 @@ public class Transformers {
     /** Implements {@code MethodHandles.dropArguments}. */
     public static class DropArguments extends Transformer {
         private final MethodHandle delegate;
-
         private final EmulatedStackFrame.Range range1;
-
-        /**
-         * Note that {@code range2} will be null if the arguments that are being dropped are the
-         * last {@code n}.
-         */
-        /* @Nullable */ private final EmulatedStackFrame.Range range2;
+        private final EmulatedStackFrame.Range range2;
 
         public DropArguments(MethodType type, MethodHandle delegate, int startPos, int numDropped) {
             super(type);
