@@ -724,6 +724,7 @@ java_test {
     srcs: [
         "ojluni/src/test/java/**/*.java",
         "ojluni/src/test/javax/**/*.java",
+        "ojluni/src/test/sun/**/*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
@@ -782,6 +783,7 @@ java_test {
     srcs: [
         "ojluni/src/test/java/**/*.java",
         "ojluni/src/test/javax/**/*.java",
+        "ojluni/src/test/sun/**/*.java",
     ],
     // Filter out the following:
     // 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
