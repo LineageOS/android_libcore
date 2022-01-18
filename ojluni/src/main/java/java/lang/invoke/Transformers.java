@@ -36,29 +36,28 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-/**
- * @hide Public for testing only.
- */
+/** @hide Public for testing only. */
 public class Transformers {
     private Transformers() {}
 
     static {
         try {
-            TRANSFORM_INTERNAL = MethodHandle.class.getDeclaredMethod("transformInternal",
-                    EmulatedStackFrame.class);
+            TRANSFORM_INTERNAL =
+                    MethodHandle.class.getDeclaredMethod(
+                            "transformInternal", EmulatedStackFrame.class);
         } catch (NoSuchMethodException nsme) {
             throw new AssertionError();
         }
     }
 
     /**
-     * Method reference to the private {@code MethodHandle.transformInternal} method. This is
-     * cached here because it's the point of entry for all transformers.
+     * Method reference to the private {@code MethodHandle.transformInternal} method. This is cached
+     * here because it's the point of entry for all transformers.
      */
     private static final Method TRANSFORM_INTERNAL;
 
     /** @hide */
-    public static abstract class Transformer extends MethodHandle implements Cloneable {
+    public abstract static class Transformer extends MethodHandle implements Cloneable {
         protected Transformer(MethodType type) {
             super(TRANSFORM_INTERNAL.getArtMethod(), MethodHandle.INVOKE_TRANSFORM, type);
         }
@@ -94,15 +93,15 @@ public class Transformers {
     /**
      * A method handle that always throws an exception of a specified type.
      *
-     * The handle declares a nominal return type, which is immaterial to the execution
-     * of the handle because it never returns.
+     * <p>The handle declares a nominal return type, which is immaterial to the execution of the
+     * handle because it never returns.
      *
      * @hide
      */
     public static class AlwaysThrow extends Transformer {
         private final Class<? extends Throwable> exceptionType;
 
-        public AlwaysThrow(Class<?> nominalReturnType, Class<? extends  Throwable> exType) {
+        public AlwaysThrow(Class<?> nominalReturnType, Class<? extends Throwable> exType) {
             super(MethodType.methodType(nominalReturnType, exType));
             this.exceptionType = exType;
         }
@@ -113,22 +112,19 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements {@code MethodHandles.dropArguments}.
-     */
+    /** Implements {@code MethodHandles.dropArguments}. */
     public static class DropArguments extends Transformer {
         private final MethodHandle delegate;
 
         private final EmulatedStackFrame.Range range1;
 
         /**
-         * Note that {@code range2} will be null if the arguments that are being dropped
-         * are the last {@code n}.
+         * Note that {@code range2} will be null if the arguments that are being dropped are the
+         * last {@code n}.
          */
         /* @Nullable */ private final EmulatedStackFrame.Range range2;
 
-        public DropArguments(MethodType type, MethodHandle delegate,
-                             int startPos, int numDropped) {
+        public DropArguments(MethodType type, MethodHandle delegate, int startPos, int numDropped) {
             super(type);
 
             this.delegate = delegate;
@@ -148,15 +144,15 @@ public class Transformers {
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
             EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(delegate.type());
 
-            emulatedStackFrame.copyRangeTo(calleeFrame, range1,
-                    0 /* referencesStart */, 0 /* stackFrameStart */);
+            emulatedStackFrame.copyRangeTo(
+                    calleeFrame, range1, 0 /* referencesStart */, 0 /* stackFrameStart */);
 
             if (range2 != null) {
                 final int referencesStart = range1.numReferences;
                 final int stackFrameStart = range1.numBytes;
 
-                emulatedStackFrame.copyRangeTo(calleeFrame, range2,
-                        referencesStart, stackFrameStart);
+                emulatedStackFrame.copyRangeTo(
+                        calleeFrame, range2, referencesStart, stackFrameStart);
             }
 
             invokeFromTransform(delegate, calleeFrame);
@@ -164,9 +160,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements {@code MethodHandles.catchException}.
-     */
+    /** Implements {@code MethodHandles.catchException}. */
     public static class CatchException extends Transformer {
         private final MethodHandle target;
         private final MethodHandle handler;
@@ -184,8 +178,9 @@ public class Transformers {
             // We only copy the first "count" args, dropping others if required. Note that
             // we subtract one because the first handler arg is the exception thrown by the
             // target.
-            handlerArgsRange = EmulatedStackFrame.Range.of(target.type(), 0,
-                    (handler.type().parameterCount() - 1));
+            handlerArgsRange =
+                    EmulatedStackFrame.Range.of(
+                            target.type(), 0, (handler.type().parameterCount() - 1));
         }
 
         @Override
@@ -204,8 +199,11 @@ public class Transformers {
                     // We then copy other arguments that need to be passed through to the handler.
                     // Note that we might drop arguments at the end, if needed. Note that
                     // referencesStart == 1 because the first argument is the exception type.
-                    emulatedStackFrame.copyRangeTo(fallback, handlerArgsRange,
-                            1 /* referencesStart */, 0 /* stackFrameStart */);
+                    emulatedStackFrame.copyRangeTo(
+                            fallback,
+                            handlerArgsRange,
+                            1 /* referencesStart */,
+                            0 /* stackFrameStart */);
 
                     // Perform the invoke and return the appropriate value.
                     invokeFromTransform(handler, fallback);
@@ -218,9 +216,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements {@code MethodHandles.GuardWithTest}.
-     */
+    /** Implements {@code MethodHandles.GuardWithTest}. */
     public static class GuardWithTest extends Transformer {
         private final MethodHandle test;
         private final MethodHandle target;
@@ -236,7 +232,8 @@ public class Transformers {
             this.fallback = fallback;
 
             // The test method might have a subset of the arguments of the handle / target.
-            testArgsRange = EmulatedStackFrame.Range.of(target.type(), 0, test.type().parameterCount());
+            testArgsRange =
+                    EmulatedStackFrame.Range.of(target.type(), 0, test.type().parameterCount());
         }
 
         @Override
@@ -258,15 +255,14 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implementation of MethodHandles.arrayElementGetter for reference types.
-     */
+    /** Implementation of MethodHandles.arrayElementGetter for reference types. */
     public static class ReferenceArrayElementGetter extends Transformer {
         private final Class<?> arrayClass;
 
         public ReferenceArrayElementGetter(Class<?> arrayClass) {
-            super(MethodType.methodType(arrayClass.getComponentType(),
-                    new Class<?>[]{arrayClass, int.class}));
+            super(
+                    MethodType.methodType(
+                            arrayClass.getComponentType(), new Class<?>[] {arrayClass, int.class}));
             this.arrayClass = arrayClass;
         }
 
@@ -287,15 +283,15 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implementation of MethodHandles.arrayElementSetter for reference types.
-     */
+    /** Implementation of MethodHandles.arrayElementSetter for reference types. */
     public static class ReferenceArrayElementSetter extends Transformer {
         private final Class<?> arrayClass;
 
         public ReferenceArrayElementSetter(Class<?> arrayClass) {
-            super(MethodType.methodType(void.class,
-                    new Class<?>[] { arrayClass, int.class, arrayClass.getComponentType() }));
+            super(
+                    MethodType.methodType(
+                            void.class,
+                            new Class<?>[] {arrayClass, int.class, arrayClass.getComponentType()}));
             this.arrayClass = arrayClass;
         }
 
@@ -313,9 +309,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implementation of MethodHandles.identity() for reference types.
-     */
+    /** Implementation of MethodHandles.identity() for reference types. */
     public static class ReferenceIdentity extends Transformer {
         private final Class<?> type;
 
@@ -336,9 +330,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implementation of MethodHandles.constant.
-     */
+    /** Implementation of MethodHandles.constant. */
     public static class Constant extends Transformer {
         private final Class<?> type;
 
@@ -512,8 +504,8 @@ public class Transformers {
             // The first reference argument must be the receiver.
             stackFrame.setReference(0, receiver);
             // Copy all other arguments.
-            emulatedStackFrame.copyRangeTo(stackFrame, range,
-                    1 /* referencesStart */, 0 /* stackFrameStart */);
+            emulatedStackFrame.copyRangeTo(
+                    stackFrame, range, 1 /* referencesStart */, 0 /* stackFrameStart */);
 
             // Perform the invoke.
             invokeFromTransform(delegate, stackFrame);
@@ -521,9 +513,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandle.filterReturnValue.
-     */
+    /** Implements MethodHandle.filterReturnValue. */
     public static class FilterReturnValue extends Transformer {
         private final MethodHandle target;
         private final MethodHandle filter;
@@ -734,10 +724,14 @@ public class Transformers {
         }
 
         @Override
-        public boolean isVarargsCollector() { return true; }
+        public boolean isVarargsCollector() {
+            return true;
+        }
 
         @Override
-        public MethodHandle asFixedArity() { return target; }
+        public MethodHandle asFixedArity() {
+            return target;
+        }
 
         @Override
         MethodHandle asTypeUncached(MethodType newType) {
@@ -755,8 +749,10 @@ public class Transformers {
             //  application of asType."
             final MethodType currentType = type();
             final MethodHandle currentFixedArity = asFixedArity();
-            if (currentType.parameterCount() == newType.parameterCount() &&
-                currentType.lastParameterType().isAssignableFrom(newType.lastParameterType())) {
+            if (currentType.parameterCount() == newType.parameterCount()
+                    && currentType
+                            .lastParameterType()
+                            .isAssignableFrom(newType.lastParameterType())) {
                 return asTypeCache = currentFixedArity.asType(newType);
             }
 
@@ -782,8 +778,9 @@ public class Transformers {
             Class<?>[] targetPTypes = type().ptypes();
 
             int lastTargetIndex = targetPTypes.length - 1;
-            if (callerPTypes.length == targetPTypes.length &&
-                targetPTypes[lastTargetIndex].isAssignableFrom(callerPTypes[lastTargetIndex])) {
+            if (callerPTypes.length == targetPTypes.length
+                    && targetPTypes[lastTargetIndex].isAssignableFrom(
+                            callerPTypes[lastTargetIndex])) {
                 // Caller frame matches target frame in the arity array parameter. Invoke
                 // immediately, and let the invoke() dispatch perform any necessary conversions
                 // on the other parameters present.
@@ -823,11 +820,11 @@ public class Transformers {
             throw new WrongMethodTypeException("Cannot convert " + from + " to " + to);
         }
 
-        private static boolean arityArgumentsConvertible(Class<?>[] ptypes, int arityStart,
-                                                         Class<?> elementType) {
+        private static boolean arityArgumentsConvertible(
+                Class<?>[] ptypes, int arityStart, Class<?> elementType) {
             if (ptypes.length - 1 == arityStart) {
-                if (ptypes[arityStart].isArray() &&
-                    ptypes[arityStart].getComponentType() == elementType) {
+                if (ptypes[arityStart].isArray()
+                        && ptypes[arityStart].getComponentType() == elementType) {
                     // The last ptype is in the same position as the arity
                     // array and has the same type.
                     return true;
@@ -842,8 +839,12 @@ public class Transformers {
             return true;
         }
 
-        private static Object referenceArray(StackFrameReader reader, Class<?>[] ptypes,
-                                             Class<?> elementType, int offset, int length) {
+        private static Object referenceArray(
+                StackFrameReader reader,
+                Class<?>[] ptypes,
+                Class<?> elementType,
+                int offset,
+                int length) {
             Object arityArray = Array.newInstance(elementType, length);
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -882,8 +883,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object intArray(StackFrameReader reader, Class<?> ptypes[],
-                                       int offset, int length) {
+        private static Object intArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             int[] arityArray = new int[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -905,8 +906,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object longArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object longArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             long[] arityArray = new long[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -931,8 +932,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object byteArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object byteArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             byte[] arityArray = new byte[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -948,8 +949,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object shortArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object shortArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             short[] arityArray = new short[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -968,8 +969,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object charArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object charArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             char[] arityArray = new char[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -985,8 +986,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object booleanArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object booleanArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             boolean[] arityArray = new boolean[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1002,8 +1003,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object floatArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object floatArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             float[] arityArray = new float[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1031,8 +1032,8 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object doubleArray(StackFrameReader reader, Class<?> ptypes[],
-                                        int offset, int length) {
+        private static Object doubleArray(
+                StackFrameReader reader, Class<?> ptypes[], int offset, int length) {
             double[] arityArray = new double[length];
             for (int i = 0; i < length; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1063,10 +1064,11 @@ public class Transformers {
             return arityArray;
         }
 
-        private static Object makeArityArray(MethodType callerFrameType,
-                                             StackFrameReader callerFrameReader,
-                                             int indexOfArityArray,
-                                             Class<?> arityArrayType) {
+        private static Object makeArityArray(
+                MethodType callerFrameType,
+                StackFrameReader callerFrameReader,
+                int indexOfArityArray,
+                Class<?> arityArrayType) {
             int arityArrayLength = callerFrameType.ptypes().length - indexOfArityArray;
             Class<?> elementType = arityArrayType.getComponentType();
             Class<?>[] callerPTypes = callerFrameType.ptypes();
@@ -1116,9 +1118,13 @@ public class Transformers {
             throw new InternalError("Unexpected type: " + elementType);
         }
 
-        public static Object collectArguments(char basicComponentType, Class<?> componentType,
-                                              StackFrameReader reader, Class<?>[] types,
-                                              int startIdx, int length) {
+        public static Object collectArguments(
+                char basicComponentType,
+                Class<?> componentType,
+                StackFrameReader reader,
+                Class<?>[] types,
+                int startIdx,
+                int length) {
             switch (basicComponentType) {
                 case 'L':
                     return referenceArray(reader, types, componentType, startIdx, length);
@@ -1142,8 +1148,8 @@ public class Transformers {
             throw new InternalError("Unexpected type: " + basicComponentType);
         }
 
-        private static void copyParameter(StackFrameReader reader, StackFrameWriter writer,
-                                          Class<?> ptype) {
+        private static void copyParameter(
+                StackFrameReader reader, StackFrameWriter writer, Class<?> ptype) {
             switch (Wrapper.basicTypeChar(ptype)) {
                 case 'L':
                     writer.putNextReference(reader.nextReference(ptype), ptype);
@@ -1177,8 +1183,8 @@ public class Transformers {
             }
         }
 
-        private static void prepareFrame(EmulatedStackFrame callerFrame,
-                                         EmulatedStackFrame targetFrame) {
+        private static void prepareFrame(
+                EmulatedStackFrame callerFrame, EmulatedStackFrame targetFrame) {
             StackFrameWriter targetWriter = new StackFrameWriter();
             targetWriter.attach(targetFrame);
             StackFrameReader callerReader = new StackFrameReader();
@@ -1194,22 +1200,25 @@ public class Transformers {
 
             // Add arity array as last parameter in |targetFrame|.
             Class<?> arityArrayType = targetMethodType.ptypes()[indexOfArityArray];
-            Object arityArray = makeArityArray(callerFrame.getMethodType(), callerReader,
-                                               indexOfArityArray, arityArrayType);
+            Object arityArray =
+                    makeArityArray(
+                            callerFrame.getMethodType(),
+                            callerReader,
+                            indexOfArityArray,
+                            arityArrayType);
             targetWriter.putNextReference(arityArray, arityArrayType);
         }
 
         /**
-         * Computes the frame type to invoke the target method handle with. This
-         * is the same as the caller frame type, but with the trailing argument
-         * being the array type that is the trailing argument in the target method
-         * handle.
+         * Computes the frame type to invoke the target method handle with. This is the same as the
+         * caller frame type, but with the trailing argument being the array type that is the
+         * trailing argument in the target method handle.
          *
-         * Suppose the targetType is (T0, T1, T2[])RT and the callerType is (C0, C1, C2, C3)RC
+         * <p>Suppose the targetType is (T0, T1, T2[])RT and the callerType is (C0, C1, C2, C3)RC
          * then the constructed type is (C0, C1, T2[])RC.
          */
-        private static MethodType makeTargetFrameType(MethodType callerType,
-                                                      MethodType targetType) {
+        private static MethodType makeTargetFrameType(
+                MethodType callerType, MethodType targetType) {
             final int ptypesLength = targetType.ptypes().length;
             final Class<?>[] ptypes = new Class<?>[ptypesLength];
             // Copy types from caller types to new methodType.
@@ -1221,9 +1230,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandles.invoker & MethodHandles.exactInvoker.
-     */
+    /** Implements MethodHandles.invoker & MethodHandles.exactInvoker. */
     static class Invoker extends Transformer {
         private final MethodType targetType;
         private final boolean isExactInvoker;
@@ -1242,10 +1249,10 @@ public class Transformers {
             // can't call invokeExact on the target inside the transformer.
             if (isExactInvoker) {
                 MethodType callsiteType =
-                    emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
+                        emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
                 if (!exactMatch(callsiteType, targetType)) {
-                    throw new WrongMethodTypeException("Wrong type, Expected: " + targetType
-                            + " was: " + callsiteType);
+                    throw new WrongMethodTypeException(
+                            "Wrong type, Expected: " + targetType + " was: " + callsiteType);
                 }
             }
 
@@ -1261,39 +1268,41 @@ public class Transformers {
             targetFrame.copyReturnValueTo(emulatedStackFrame);
         }
 
-         /**
-          * Checks whether two method types are compatible as an exact match. The exact match
-          * is based on the erased form (all reference types treated as Object).
-          * @param callsiteType the MethodType associated with the invocation.
-          * @param targetType the MethodType of the MethodHandle being invoked.
-          * @return true if {@code callsiteType} and {@code targetType} are an exact match.
-          */
-        static private boolean exactMatch(MethodType callsiteType, MethodType targetType) {
+        /**
+         * Checks whether two method types are compatible as an exact match. The exact match is
+         * based on the erased form (all reference types treated as Object).
+         *
+         * @param callsiteType the MethodType associated with the invocation.
+         * @param targetType the MethodType of the MethodHandle being invoked.
+         * @return true if {@code callsiteType} and {@code targetType} are an exact match.
+         */
+        private static boolean exactMatch(MethodType callsiteType, MethodType targetType) {
             final int parameterCount = callsiteType.parameterCount();
             if (callsiteType.parameterCount() != targetType.parameterCount()) {
                 return false;
             }
 
             for (int i = 0; i < parameterCount; ++i) {
-                Class argumentType  = callsiteType.parameterType(i);
+                Class argumentType = callsiteType.parameterType(i);
                 Class parameterType = targetType.parameterType(i);
                 if (!exactMatch(argumentType, parameterType)) {
                     return false;
                 }
             }
             // Check return type, noting it's always okay to discard the return value.
-            return callsiteType.returnType() == Void.TYPE ||
-                exactMatch(callsiteType.returnType(), targetType.returnType());
+            return callsiteType.returnType() == Void.TYPE
+                    || exactMatch(callsiteType.returnType(), targetType.returnType());
         }
 
         /**
-         * Checks whether two types are an exact match. The exact match is based on the erased
-         * types so any two reference types match, but primitive types must be the same.
+         * Checks whether two types are an exact match. The exact match is based on the erased types
+         * so any two reference types match, but primitive types must be the same.
+         *
          * @param lhs first class to compare.
          * @param rhs second class to compare.
          * @return true if both classes satisfy the exact match criteria.
          */
-        static private boolean exactMatch(Class lhs, Class rhs) {
+        private static boolean exactMatch(Class lhs, Class rhs) {
             if (lhs.isPrimitive() || rhs.isPrimitive()) {
                 return lhs == rhs;
             }
@@ -1301,9 +1310,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandle.asSpreader / MethodHandles.spreadInvoker.
-     */
+    /** Implements MethodHandle.asSpreader / MethodHandles.spreadInvoker. */
     static class Spreader extends Transformer {
         /** The method handle we're delegating to. */
         private final MethodHandle target;
@@ -1314,20 +1321,18 @@ public class Transformers {
          */
         private final int arrayOffset;
 
-        /**
-         * The type char of the component type of the array.
-         */
+        /** The type char of the component type of the array. */
         private final char arrayTypeChar;
 
         /**
-         * The number of input arguments that will be present in the array. In other words,
-         * this is the expected array length.
+         * The number of input arguments that will be present in the array. In other words, this is
+         * the expected array length.
          */
         private final int numArrayArgs;
 
         /**
-         * Range of arguments to copy verbatim from the input frame, This will cover all
-         * arguments that aren't a part of the trailing array.
+         * Range of arguments to copy verbatim from the input frame, This will cover all arguments
+         * that aren't a part of the trailing array.
          */
         private final Range copyRange;
 
@@ -1361,14 +1366,12 @@ public class Transformers {
             // Attach the writer, prepare to spread the trailing array arguments into
             // the callee frame.
             StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(targetFrame,
-                    arrayOffset,
-                    copyRange.numReferences,
-                    copyRange.numBytes);
+            writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
 
             // Get the array reference and check that its length is as expected.
-            Object arrayObj = callerFrame.getReference(
-                    copyRange.numReferences, this.type().ptypes()[arrayOffset]);
+            Object arrayObj =
+                    callerFrame.getReference(
+                            copyRange.numReferences, this.type().ptypes()[arrayOffset]);
             final int arrayLength = Array.getLength(arrayObj);
             if (arrayLength != numArrayArgs) {
                 throw new IllegalArgumentException(
@@ -1410,8 +1413,8 @@ public class Transformers {
             targetFrame.copyReturnValueTo(callerFrame);
         }
 
-        public static void spreadArray(Object[] array, StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                Object[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1448,8 +1451,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(int[] array, StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                int[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1476,8 +1479,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(long[] array, StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                long[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1501,9 +1504,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(byte[] array,
-                                       StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                byte[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1536,9 +1538,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(short[] array,
-                                       StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                short[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1568,9 +1569,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(char[] array,
-                                       StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                char[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1600,9 +1600,12 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(boolean[] array,
-                                       StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                boolean[] array,
+                StackFrameWriter writer,
+                MethodType type,
+                int numArgs,
+                int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1620,9 +1623,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(double[] array,
-                                       StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                double[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1640,8 +1642,8 @@ public class Transformers {
             }
         }
 
-        public static void spreadArray(float[] array, StackFrameWriter writer, MethodType type,
-                                       int numArgs, int offset) {
+        public static void spreadArray(
+                float[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
             final Class<?>[] ptypes = type.ptypes();
             for (int i = 0; i < numArgs; ++i) {
                 Class<?> argumentType = ptypes[i + offset];
@@ -1663,37 +1665,31 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandle.asCollector.
-     */
+    /** Implements MethodHandle.asCollector. */
     static class Collector extends Transformer {
         private final MethodHandle target;
 
         /**
-         * The offset of the trailing array argument in the list of arguments to
-         * this transformer. The array argument is always the last argument.
+         * The offset of the trailing array argument in the list of arguments to this transformer.
+         * The array argument is always the last argument.
          */
         private final int arrayOffset;
 
         /**
-         * The number of input arguments that will be present in the array. In other words,
-         * this is the expected array length.
+         * The number of input arguments that will be present in the array. In other words, this is
+         * the expected array length.
          */
         private final int numArrayArgs;
 
-        /**
-         * The component type of the array.
-         */
+        /** The component type of the array. */
         private final Class arrayType;
 
-        /**
-         * The type char of the component type of the array.
-         */
+        /** The type char of the component type of the array. */
         private final char arrayTypeChar;
 
         /**
-         * Range of arguments to copy verbatim from the input frame, This will cover all
-         * arguments that aren't a part of the trailing array.
+         * Range of arguments to copy verbatim from the input frame, This will cover all arguments
+         * that aren't a part of the trailing array.
          */
         private final Range copyRange;
 
@@ -1846,7 +1842,6 @@ public class Transformers {
             this.target = target;
             this.pos = pos;
             this.filters = filters;
-
         }
 
         private static MethodType deriveType(MethodHandle target, int pos, MethodHandle[] filters) {
@@ -1910,9 +1905,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandles.collectArguments.
-     */
+    /** Implements MethodHandles.collectArguments. */
     static class CollectArguments extends Transformer {
         private final MethodHandle target;
         private final MethodHandle collector;
@@ -1922,8 +1915,8 @@ public class Transformers {
         private final Range collectorRange;
 
         /**
-         * The first range of arguments we copy to the target. These are arguments
-         * in the range [0, pos). Note that arg[pos] is the return value of the filter.
+         * The first range of arguments we copy to the target. These are arguments in the range [0,
+         * pos). Note that arg[pos] is the return value of the filter.
          */
         private final Range range1;
 
@@ -1936,8 +1929,8 @@ public class Transformers {
         private final int referencesOffset;
         private final int stackFrameOffset;
 
-        CollectArguments(MethodHandle target, MethodHandle collector, int pos,
-                         MethodType adapterType) {
+        CollectArguments(
+                MethodHandle target, MethodHandle collector, int pos, MethodType adapterType) {
             super(adapterType);
 
             this.target = target;
@@ -1991,7 +1984,9 @@ public class Transformers {
             }
 
             if (range2 != null) {
-                stackFrame.copyRangeTo(targetFrame, range2,
+                stackFrame.copyRangeTo(
+                        targetFrame,
+                        range2,
                         range1.numReferences + referencesOffset,
                         range2.numBytes + stackFrameOffset);
             }
@@ -2001,9 +1996,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandles.foldArguments.
-     */
+    /** Implements MethodHandles.foldArguments. */
     static class FoldArguments extends Transformer {
         private final MethodHandle target;
         private final MethodHandle combiner;
@@ -2070,9 +2063,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements MethodHandles.insertArguments.
-     */
+    /** Implements MethodHandles.insertArguments. */
     static class InsertArguments extends Transformer {
         private final MethodHandle target;
         private final int pos;
@@ -2147,7 +2138,9 @@ public class Transformers {
 
             // Copy all remaining arguments.
             if (range2 != null) {
-                stackFrame.copyRangeTo(calleeFrame, range2,
+                stackFrame.copyRangeTo(
+                        calleeFrame,
+                        range2,
                         range1.numReferences + referencesCopied,
                         range1.numBytes + bytesCopied);
             }
@@ -2546,9 +2539,7 @@ public class Transformers {
         }
     }
 
-    /**
-     * Implements {@link java.lang.invokeMethodHandles#explicitCastArguments()}.
-     */
+    /** Implements {@link java.lang.invokeMethodHandles#explicitCastArguments()}. */
     public static class ExplicitCastArguments extends Transformer {
         private final MethodHandle target;
 
@@ -2567,8 +2558,8 @@ public class Transformers {
             explicitCastReturnValue(callerFrame, targetFrame);
         }
 
-        private void explicitCastArguments(final EmulatedStackFrame callerFrame,
-                                           final EmulatedStackFrame targetFrame) {
+        private void explicitCastArguments(
+                final EmulatedStackFrame callerFrame, final EmulatedStackFrame targetFrame) {
             final StackFrameReader reader = new StackFrameReader();
             reader.attach(callerFrame);
             final StackFrameWriter writer = new StackFrameWriter();
@@ -2581,8 +2572,8 @@ public class Transformers {
             }
         }
 
-        private void explicitCastReturnValue(final EmulatedStackFrame callerFrame,
-                                             final EmulatedStackFrame targetFrame) {
+        private void explicitCastReturnValue(
+                final EmulatedStackFrame callerFrame, final EmulatedStackFrame targetFrame) {
             Class<?> from = target.type().rtype();
             Class<?> to = type().rtype();
             if (to != void.class) {
@@ -2614,8 +2605,8 @@ public class Transformers {
         }
 
         /**
-         * Converts byte value to boolean according to
-         * {@link java.lang.invoke.MethodHandles#explicitCast()}
+         * Converts byte value to boolean according to {@link
+         * java.lang.invoke.MethodHandles#explicitCast()}
          */
         private static boolean toBoolean(byte value) {
             return (value & 1) == 1;
@@ -3135,8 +3126,11 @@ public class Transformers {
             }
         }
 
-        private static void unbox(final Object ref, final Class<?> from,
-                                  final StackFrameWriter writer, final Class<?> to) {
+        private static void unbox(
+                final Object ref,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
             if (ref == null) {
                 unboxNull(writer, to);
             } else {
@@ -3144,8 +3138,11 @@ public class Transformers {
             }
         }
 
-        private static void box(final StackFrameReader reader, final Class<?> from,
-                                final StackFrameWriter writer, final Class<?> to) {
+        private static void box(
+                final StackFrameReader reader,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
             Object boxed = null;
             switch (Wrapper.basicTypeChar(from)) {
                 case 'Z':
@@ -3179,8 +3176,11 @@ public class Transformers {
             writer.putNextReference(to.cast(boxed), to);
         }
 
-        private static void explicitCast(final StackFrameReader reader, final Class<?> from,
-                                         final StackFrameWriter writer, final Class<?> to) {
+        private static void explicitCast(
+                final StackFrameReader reader,
+                final Class<?> from,
+                final StackFrameWriter writer,
+                final Class<?> to) {
             if (from.equals(to)) {
                 StackFrameAccessor.copyNext(reader, writer, from);
                 return;
