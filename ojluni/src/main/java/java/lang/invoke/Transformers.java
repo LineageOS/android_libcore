@@ -816,6 +816,11 @@ public class Transformers {
             targetFrame.copyReturnValueTo(callerFrame);
         }
 
+        @Override
+        public MethodHandle withVarargs(boolean makeVarargs) {
+            return makeVarargs ? this : target;
+        }
+
         private static void throwWrongMethodTypeException(MethodType from, MethodType to) {
             throw new WrongMethodTypeException("Cannot convert " + from + " to " + to);
         }

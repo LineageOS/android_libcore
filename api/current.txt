@@ -4301,6 +4301,7 @@ package java.lang.invoke {
     method public Object invokeWithArguments(java.util.List<?>) throws java.lang.Throwable;
     method public boolean isVarargsCollector();
     method public java.lang.invoke.MethodType type();
+    method public java.lang.invoke.MethodHandle withVarargs(boolean);
   }
 
   public interface MethodHandleInfo {
@@ -4401,6 +4402,7 @@ package java.lang.invoke {
     method public boolean hasWrappers();
     method public java.lang.invoke.MethodType insertParameterTypes(int, Class<?>...);
     method public java.lang.invoke.MethodType insertParameterTypes(int, java.util.List<java.lang.Class<?>>);
+    method public Class<?> lastParameterType();
     method public static java.lang.invoke.MethodType methodType(Class<?>, Class<?>[]);
     method public static java.lang.invoke.MethodType methodType(Class<?>, java.util.List<java.lang.Class<?>>);
     method public static java.lang.invoke.MethodType methodType(Class<?>, Class<?>, Class<?>...);
