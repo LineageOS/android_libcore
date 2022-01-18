@@ -434,34 +434,25 @@ public abstract class MethodHandle {
     // @interface PolymorphicSignature { }
     public @interface PolymorphicSignature { }
 
-    // Android-added: Comment to differentiate between type and nominalType.
     /**
      * The type of this method handle, this corresponds to the exact type of the method
      * being invoked.
-     * 
-     * @see #nominalType
      */
     private final MethodType type;
-    // Android-removed: LambdaForm and customizationCount unused on Android.
+
+    // Android-removed: LambdaForm is unused on Android.
     // They will be substituted with appropriate implementation / delegate classes.
     /*
     /*private* final LambdaForm form;
     // form is not private so that invokers can easily fetch it
-    /*private* MethodHandle asTypeCache;
+    */
+    /*private*/ MethodHandle asTypeCache;
     // asTypeCache is not private so that invokers can easily fetch it
+    /*
+    // Android-removed: customizationCount is unused on Android.
     /*non-public* byte customizationCount;
     // customizationCount should be accessible from invokers
     */
-
-    // BEGIN Android-added: Android specific implementation.
-    // The MethodHandle functionality is tightly coupled with internal details of the runtime and
-    // so Android has a completely different implementation compared to the RI.
-    /**
-     * The nominal type of this method handle, will be non-null if a method handle declares
-     * a different type from its "real" type, which is either the type of the method being invoked
-     * or the type of the emulated stackframe expected by an underyling adapter.
-     */
-    private MethodType nominalType;
 
     /**
      * The spread invoker associated with this type with zero trailing arguments.
@@ -522,11 +513,6 @@ public abstract class MethodHandle {
      * @return the method handle type
      */
     public MethodType type() {
-        // Android-added: Added nominalType field.
-        if (nominalType != null) {
-            return nominalType;
-        }
-
         return type;
     }
 
@@ -715,19 +701,15 @@ public abstract class MethodHandle {
      * @see MethodHandles#spreadInvoker
      */
     public Object invokeWithArguments(Object... arguments) throws Throwable {
+        MethodType invocationType = MethodType.genericMethodType(arguments == null ? 0 : arguments.length);
         // BEGIN Android-changed: Android specific implementation.
-        // MethodType invocationType = MethodType.genericMethodType(arguments == null ? 0 : arguments.length);
         // return invocationType.invokers().spreadInvoker(0).invokeExact(asType(invocationType), arguments);
-        MethodHandle invoker = null;
-        synchronized (this) {
-            if (cachedSpreadInvoker == null) {
-                cachedSpreadInvoker = MethodHandles.spreadInvoker(this.type(), 0);
-            }
-
-            invoker = cachedSpreadInvoker;
+        MethodHandle invoker = cachedSpreadInvoker;
+        if (invoker == null || !invoker.type().equals(invocationType)) {
+            invoker = MethodHandles.spreadInvoker(invocationType, 0);
+            cachedSpreadInvoker = invoker;
         }
-
-        return invoker.invoke(this, arguments);
+        return invoker.invoke(asType(invocationType), arguments);
         // END Android-changed: Android specific implementation.
     }
 
@@ -854,31 +836,26 @@ public abstract class MethodHandle {
     public MethodHandle asType(MethodType newType) {
         // Fast path alternative to a heavyweight {@code asType} call.
         // Return 'this' if the conversion will be a no-op.
-        // Android-changed: Use `type()` rather than `type` due to nominal type.
-        if (newType == type()) {
+        // Android-changed: use equals() rather than = since MethodTypes are not interned.
+        if (newType.equals(type)) {
             return this;
         }
-        // Android-removed: Type conversion memoizing is unsupported on Android.
-        /*
         // Return 'this.asTypeCache' if the conversion is already memoized.
         MethodHandle atc = asTypeCached(newType);
         if (atc != null) {
             return atc;
         }
-        */
         return asTypeUncached(newType);
     }
 
-    // Android-removed: Type conversion memoizing is unsupported on Android.
-    /*
     private MethodHandle asTypeCached(MethodType newType) {
         MethodHandle atc = asTypeCache;
-        if (atc != null && newType == atc.type) {
+        // Android-changed: use equals() rather than = since MethodTypes are not interned.
+        if (atc != null && newType.equals(atc.type)) {
             return atc;
         }
         return null;
     }
-    */
 
     /** Override this to change asType behavior. */
     /*non-public*/ MethodHandle asTypeUncached(MethodType newType) {
@@ -886,9 +863,7 @@ public abstract class MethodHandle {
             throw new WrongMethodTypeException("cannot convert "+this+" to "+newType);
         // BEGIN Android-changed: Android specific implementation.
         // return asTypeCache = MethodHandleImpl.makePairwiseConvert(this, newType, true);
-        MethodHandle mh = duplicate();
-        mh.nominalType = newType;
-        return mh;
+        return asTypeCache = new Transformers.AsTypeAdapter(this, newType);
         // END Android-changed: Android specific implementation.
     }
 
@@ -1415,8 +1390,7 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
      * @see MethodHandles#insertArguments
      */
     public MethodHandle bindTo(Object x) {
-        // Android-changed: use `type()` instead of `type` due to nominal type.
-        x = type().leadingReferenceParameter().cast(x);  // throw CCE if needed
+        x = type.leadingReferenceParameter().cast(x);  // throw CCE if needed
         // Android-changed: Android specific implementation.
         // return bindArgumentL(0, x);
         return new Transformers.BindTo(this, x);
@@ -1444,8 +1418,7 @@ assertEquals("[three, thee, tee]", asListFix.invoke((Object)argv).toString());
         return standardString();
     }
     String standardString() {
-        // Android-changed: use `type()` rather than `type` due to Android's nominal type.
-        return "MethodHandle"+type();
+        return "MethodHandle"+type;
     }
 
     // BEGIN Android-removed: Debugging support unused on Android.
