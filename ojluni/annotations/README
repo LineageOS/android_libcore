@@ -16,7 +16,7 @@ libcore/ojluni/annotations/sdk/nullability:
    will cause the annotations to be validated for correctness and completeness.
  - To add some new files under this directory:
    1. make openjdk-sdk-stubs-no-javadoc
-   2. for FILE in your/package/and/Class.java another/package/AnotherClass.java; do mkdir -p libcore/ojluni/annotations/sdk/nullability/$(dirname ${FILE}) && cp out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/stubsDir/${FILE} libcore/ojluni/annotations/sdk/nullability/${FILE/%.java/.annotated.java}; done
+   2. for FILE in your/package/and/Class.java another/package/AnotherClass.java; do unzip out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/metalava/openjdk-sdk-stubs-no-javadoc-stubs.srcjar ${FILE} -d libcore/ojluni/annotations/sdk/nullability/ && mv libcore/ojluni/annotations/sdk/nullability/$FILE libcore/ojluni/annotations/sdk/nullability/${FILE/%.java/.annotated.java}; done
    3. Add nullability annotations to the new files.
  - To see the effect of the files under this directory:
    1. make api-stubs-docs

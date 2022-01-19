@@ -689,6 +689,7 @@ filegroup {
         "ojluni/src/main/java/java/security/spec/InvalidParameterSpecException.java",
         "ojluni/src/main/java/java/security/spec/KeySpec.java",
         "ojluni/src/main/java/java/security/spec/MGF1ParameterSpec.java",
+        "ojluni/src/main/java/java/security/spec/NamedParameterSpec.java",
         "ojluni/src/main/java/java/security/spec/PKCS8EncodedKeySpec.java",
         "ojluni/src/main/java/java/security/spec/PSSParameterSpec.java",
         "ojluni/src/main/java/java/security/spec/RSAKeyGenParameterSpec.java",
