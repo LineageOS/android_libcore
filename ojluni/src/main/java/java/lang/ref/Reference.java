@@ -116,11 +116,11 @@ public abstract class Reference<T> {
     /**
      * Tests if the referent of this reference object is {@code obj}.
      * Using a {@code null} {@code obj} returns {@code true} if the
-     * reference object has been cleared.
+     * reference object has been cleared. Prefer this to a comparison
+     * with the result of {@code get}.
      *
      * @param  obj the object to compare with this reference object's referent
      * @return {@code true} if {@code obj} is the referent of this reference object
-     * @hide
      */
     public final boolean refersTo(T obj) {
         return refersTo0(obj);
