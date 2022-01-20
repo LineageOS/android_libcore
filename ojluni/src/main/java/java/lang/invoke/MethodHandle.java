@@ -25,6 +25,8 @@
 
 package java.lang.invoke;
 
+import java.util.Arrays;
+import java.util.Objects;
 
 import dalvik.system.EmulatedStackFrame;
 
@@ -1133,12 +1135,58 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * @see #asVarargsCollector
      */
     public MethodHandle asCollector(Class<?> arrayType, int arrayLength) {
-        asCollectorChecks(arrayType, arrayLength);
+        return asCollector(type().parameterCount() - 1, arrayType, arrayLength);
+    }
+
+   /**
+     * Makes an <em>array-collecting</em> method handle, which accepts a given number of positional arguments starting
+     * at a given position, and collects them into an array argument. The new method handle adapts, as its
+     * <i>target</i>, the current method handle. The type of the adapter will be the same as the type of the target,
+     * except that the parameter at the position indicated by {@code collectArgPos} (usually of type {@code arrayType})
+     * is replaced by {@code arrayLength} parameters whose type is element type of {@code arrayType}.
+     * <p>
+     * This method behaves very much like {@link #asCollector(Class, int)}, but differs in that its {@code
+     * collectArgPos} argument indicates at which position in the parameter list arguments should be collected. This
+     * index is zero-based.
+     *
+     * @apiNote Examples:
+     * <blockquote><pre>{@code
+    StringWriter swr = new StringWriter();
+    MethodHandle swWrite = LOOKUP.findVirtual(StringWriter.class, "write", methodType(void.class, char[].class, int.class, int.class)).bindTo(swr);
+    MethodHandle swWrite4 = swWrite.asCollector(0, char[].class, 4);
+    swWrite4.invoke('A', 'B', 'C', 'D', 1, 2);
+    assertEquals("BC", swr.toString());
+    swWrite4.invoke('P', 'Q', 'R', 'S', 0, 4);
+    assertEquals("BCPQRS", swr.toString());
+    swWrite4.invoke('W', 'X', 'Y', 'Z', 3, 1);
+    assertEquals("BCPQRSZ", swr.toString());
+     * }</pre></blockquote>
+     * <p>
+     * <em>Note:</em> The resulting adapter is never a {@linkplain MethodHandle#asVarargsCollector
+     * variable-arity method handle}, even if the original target method handle was.
+     * @param collectArgPos the zero-based position in the parameter list at which to start collecting.
+     * @param arrayType often {@code Object[]}, the type of the array argument which will collect the arguments
+     * @param arrayLength the number of arguments to collect into a new array argument
+     * @return a new method handle which collects some arguments
+     *         into an array, before calling the original method handle
+     * @throws NullPointerException if {@code arrayType} is a null reference
+     * @throws IllegalArgumentException if {@code arrayType} is not an array type
+     *         or {@code arrayType} is not assignable to this method handle's array parameter type,
+     *         or {@code arrayLength} is not a legal array size,
+     *         or {@code collectArgPos} has an illegal value (negative, or greater than the number of arguments),
+     *         or the resulting method handle's type would have
+     *         <a href="MethodHandle.html#maxarity">too many parameters</a>
+     * @throws WrongMethodTypeException if the implied {@code asType} call fails
+     *
+     * @see #asCollector(Class, int)
+     * @since 9
+     */
+    public MethodHandle asCollector(int collectArgPos, Class<?> arrayType, int arrayLength) {
+        asCollectorChecks(arrayType, collectArgPos, arrayLength);
         // BEGIN Android-changed: Android specific implementation.
         /*
-        int collectArgPos = type().parameterCount() - 1;
         BoundMethodHandle mh = rebind();
-        MethodType resultType = type().asCollectorType(arrayType, arrayLength);
+        MethodType resultType = type().asCollectorType(arrayType, collectArgPos, arrayLength);
         MethodHandle newArray = MethodHandleImpl.varargsArray(arrayType, arrayLength);
         LambdaForm lform = mh.editor().collectArgumentArrayForm(1 + collectArgPos, newArray);
         if (lform != null) {
@@ -1147,7 +1195,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
         lform = mh.editor().collectArgumentsForm(1 + collectArgPos, newArray.type().basicType());
         return mh.copyWithExtendL(resultType, lform, newArray);
         */
-        return new Transformers.Collector(this, arrayType, arrayLength);
+        return new Transformers.Collector(this, arrayType, collectArgPos, arrayLength);
         // END Android-changed: Android specific implementation.
     }
 
@@ -1155,15 +1203,18 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * See if {@code asCollector} can be validly called with the given arguments.
      * Return false if the last parameter is not an exact match to arrayType.
      */
-    /*non-public*/ boolean asCollectorChecks(Class<?> arrayType, int arrayLength) {
+    /*non-public*/ boolean asCollectorChecks(Class<?> arrayType, int pos, int arrayLength) {
         spreadArrayChecks(arrayType, arrayLength);
         int nargs = type().parameterCount();
-        if (nargs != 0) {
-            Class<?> lastParam = type().parameterType(nargs-1);
-            if (lastParam == arrayType)  return true;
-            if (lastParam.isAssignableFrom(arrayType))  return false;
+        if (pos < 0 || pos >= nargs) {
+            throw newIllegalArgumentException("bad collect position");
         }
-        throw newIllegalArgumentException("array type not assignable to trailing argument", this, arrayType);
+        if (nargs != 0) {
+            Class<?> param = type().parameterType(pos);
+            if (param == arrayType)  return true;
+            if (param.isAssignableFrom(arrayType))  return false;
+        }
+        throw newIllegalArgumentException("array type not assignable to argument", this, arrayType);
     }
 
     /**
@@ -1176,7 +1227,9 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * {@code invoke} and {@code asType} requests can lead to
      * trailing positional arguments being collected into target's
      * trailing parameter.
-     * Also, the last parameter type of the adapter will be
+     * Also, the
+     * {@linkplain MethodType#lastParameterType last parameter type}
+     * of the adapter will be
      * {@code arrayType}, even if the target has a different
      * last parameter type.
      * <p>
@@ -1257,7 +1310,7 @@ assertEquals("[123]", (String) longsToString.invokeExact((long)123));
      * <p>
      * No method handle transformations produce new method handles with
      * variable arity, unless they are documented as doing so.
-     * Therefore, besides {@code asVarargsCollector},
+     * Therefore, besides {@code asVarargsCollector} and {@code withVarargs},
      * all methods in {@code MethodHandle} and {@code MethodHandles}
      * will return a method handle with fixed arity,
      * except in the cases where they are specified to return their original
@@ -1314,11 +1367,12 @@ assertEquals("[three, thee, tee]", Arrays.toString((Object[])ls.get(0)));
      *         or {@code arrayType} is not assignable to this method handle's trailing parameter type
      * @see #asCollector
      * @see #isVarargsCollector
+     * @see #withVarargs
      * @see #asFixedArity
      */
     public MethodHandle asVarargsCollector(Class<?> arrayType) {
-        arrayType.getClass(); // explicit NPE
-        boolean lastMatch = asCollectorChecks(arrayType, 0);
+        Objects.requireNonNull(arrayType);
+        boolean lastMatch = asCollectorChecks(arrayType, type().parameterCount() - 1, 0);
         if (isVarargsCollector() && lastMatch)
             return this;
         // Android-changed: Android specific implementation.

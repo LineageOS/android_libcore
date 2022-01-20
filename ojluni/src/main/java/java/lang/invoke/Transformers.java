@@ -132,12 +132,7 @@ public class Transformers {
             // We pre-calculate the ranges of values we have to copy through to the delegate
             // handle at the time of instantiation so that the actual invoke is performant.
             this.range1 = EmulatedStackFrame.Range.of(type, 0, startPos);
-            final int numArgs = type.ptypes().length;
-            if (startPos + numDropped < numArgs) {
-                this.range2 = EmulatedStackFrame.Range.of(type, startPos + numDropped, numArgs);
-            } else {
-                this.range2 = null;
-            }
+            this.range2 = EmulatedStackFrame.Range.from(type, startPos + numDropped);
         }
 
         @Override
@@ -146,14 +141,8 @@ public class Transformers {
 
             emulatedStackFrame.copyRangeTo(
                     calleeFrame, range1, 0 /* referencesStart */, 0 /* stackFrameStart */);
-
-            if (range2 != null) {
-                final int referencesStart = range1.numReferences;
-                final int stackFrameStart = range1.numBytes;
-
-                emulatedStackFrame.copyRangeTo(
-                        calleeFrame, range2, referencesStart, stackFrameStart);
-            }
+            emulatedStackFrame.copyRangeTo(
+                    calleeFrame, range2, range1.numReferences, range1.numBytes);
 
             invokeFromTransform(delegate, calleeFrame);
             calleeFrame.copyReturnValueTo(emulatedStackFrame);
@@ -1245,7 +1234,7 @@ public class Transformers {
             super(targetType.insertParameterTypes(0, MethodHandle.class));
             this.targetType = targetType;
             this.isExactInvoker = isExactInvoker;
-            copyRange = EmulatedStackFrame.Range.of(type(), 1, type().parameterCount());
+            copyRange = EmulatedStackFrame.Range.from(type(), 1);
         }
 
         @Override
@@ -1675,64 +1664,60 @@ public class Transformers {
         private final MethodHandle target;
 
         /**
-         * The offset of the trailing array argument in the list of arguments to this transformer.
-         * The array argument is always the last argument.
+         * The array start is the position in the target outputs of the array collecting arguments
+         * and the position in the source inputs where collection starts.
          */
         private final int arrayOffset;
 
         /**
-         * The number of input arguments that will be present in the array. In other words, this is
-         * the expected array length.
+         * The array length is the number of arguments to be collected.
          */
-        private final int numArrayArgs;
+        private final int arrayLength;
 
-        /** The component type of the array. */
+        /** The type of the array. */
         private final Class arrayType;
 
-        /** The type char of the component type of the array. */
-        private final char arrayTypeChar;
+        /**
+         * Range of arguments to copy verbatim from the start of the input frame.
+         */
+        private final Range leadingRange;
 
         /**
-         * Range of arguments to copy verbatim from the input frame, This will cover all arguments
-         * that aren't a part of the trailing array.
+         * Range of arguments to copy verbatim from the end of the input frame.
          */
-        private final Range copyRange;
+        private final Range trailingRange;
 
-        Collector(MethodHandle delegate, final Class<?> arrayType, final int length) {
-            super(delegate.type().asCollectorType(arrayType, length));
-
-            final Class<?> componentType = arrayType.getComponentType();
-            if (componentType == null) {
-                throw new IllegalArgumentException("arrayType is not an array type");
-            }
-
-            target = delegate;
-            // Copy all arguments except the last argument (which is the trailing array argument
-            // that needs to be spread).
-            arrayOffset = delegate.type().parameterCount() - 1;
+        Collector(MethodHandle delegate, Class<?> arrayType, int start, int length) {
+            super(delegate.type().asCollectorType(arrayType, start, length));
+            this.target = delegate;
+            this.arrayOffset = start;
+            this.arrayLength = length;
             this.arrayType = arrayType;
-            arrayTypeChar = Wrapper.basicTypeChar(componentType);
-            numArrayArgs = length;
 
-            // Copy all args except for the last argument.
-            copyRange = EmulatedStackFrame.Range.of(delegate.type(), 0, arrayOffset);
+            // Build ranges of arguments to be copied.
+            leadingRange = EmulatedStackFrame.Range.of(type(), 0, arrayOffset);
+            trailingRange = EmulatedStackFrame.Range.from(type(), arrayOffset + arrayLength);
         }
 
         @Override
         public void transform(EmulatedStackFrame callerFrame) throws Throwable {
             // Create a new stack frame for the callee.
-            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            final EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
 
-            // Copy all arguments except for the trailing array argument.
-            callerFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
+            // Copy arguments before the collector array.
+            callerFrame.copyRangeTo(targetFrame, leadingRange, 0, 0);
 
-            // Attach the writer, prepare to spread the trailing array arguments into
-            // the callee frame.
+            // Copy arguments after the collector array.
+            callerFrame.copyRangeTo(targetFrame, trailingRange,
+                leadingRange.numReferences + 1, leadingRange.numBytes);
+
+            // Collect arguments between arrayOffset and arrayOffset + arrayLength.
             final StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            writer.attach(targetFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
             final StackFrameReader reader = new StackFrameReader();
-            reader.attach(callerFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            reader.attach(callerFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
 
+            final char arrayTypeChar = Wrapper.basicTypeChar(arrayType.getComponentType());
             switch (arrayTypeChar) {
                 case 'L':
                     {
@@ -1740,21 +1725,19 @@ public class Transformers {
                         // array we construct might differ from the type of the reference we read
                         // from the stack frame.
                         final Class<?> targetType = target.type().ptypes()[arrayOffset];
-                        final Class<?> adapterComponentType = arrayType.getComponentType();
-
+                        final Class<?> arrayComponentType = arrayType.getComponentType();
                         Object[] arr =
-                                (Object[]) Array.newInstance(adapterComponentType, numArrayArgs);
-                        for (int i = 0; i < numArrayArgs; ++i) {
-                            arr[i] = reader.nextReference(adapterComponentType);
+                                (Object[]) Array.newInstance(arrayComponentType, arrayLength);
+                        for (int i = 0; i < arrayLength; ++i) {
+                            arr[i] = reader.nextReference(arrayComponentType);
                         }
-
                         writer.putNextReference(arr, targetType);
                         break;
                     }
                 case 'I':
                     {
-                        int[] array = new int[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        int[] array = new int[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextInt();
                         }
                         writer.putNextReference(array, int[].class);
@@ -1762,8 +1745,8 @@ public class Transformers {
                     }
                 case 'J':
                     {
-                        long[] array = new long[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        long[] array = new long[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextLong();
                         }
                         writer.putNextReference(array, long[].class);
@@ -1771,8 +1754,8 @@ public class Transformers {
                     }
                 case 'B':
                     {
-                        byte[] array = new byte[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        byte[] array = new byte[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextByte();
                         }
                         writer.putNextReference(array, byte[].class);
@@ -1780,8 +1763,8 @@ public class Transformers {
                     }
                 case 'S':
                     {
-                        short[] array = new short[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        short[] array = new short[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextShort();
                         }
                         writer.putNextReference(array, short[].class);
@@ -1789,8 +1772,8 @@ public class Transformers {
                     }
                 case 'C':
                     {
-                        char[] array = new char[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        char[] array = new char[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextChar();
                         }
                         writer.putNextReference(array, char[].class);
@@ -1798,8 +1781,8 @@ public class Transformers {
                     }
                 case 'Z':
                     {
-                        boolean[] array = new boolean[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        boolean[] array = new boolean[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextBoolean();
                         }
                         writer.putNextReference(array, boolean[].class);
@@ -1807,8 +1790,8 @@ public class Transformers {
                     }
                 case 'F':
                     {
-                        float[] array = new float[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        float[] array = new float[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextFloat();
                         }
                         writer.putNextReference(array, float[].class);
@@ -1816,8 +1799,8 @@ public class Transformers {
                     }
                 case 'D':
                     {
-                        double[] array = new double[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        double[] array = new double[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextDouble();
                         }
                         writer.putNextReference(array, double[].class);
@@ -1943,15 +1926,10 @@ public class Transformers {
             this.pos = pos;
 
             final int numFilterArgs = collector.type().parameterCount();
-            final int numAdapterArgs = type().parameterCount();
             collectorRange = Range.of(type(), pos, pos + numFilterArgs);
 
             range1 = Range.of(type(), 0, pos);
-            if (pos + numFilterArgs < numAdapterArgs) {
-                this.range2 = Range.of(type(), pos + numFilterArgs, numAdapterArgs);
-            } else {
-                this.range2 = null;
-            }
+            this.range2 = Range.from(type(), pos + numFilterArgs);
 
             // Calculate the number of primitive bytes (or references) we copy to the
             // target frame based on the return value of the combiner.
@@ -1988,13 +1966,11 @@ public class Transformers {
                 copyNext(reader, writer, target.type().ptypes()[0]);
             }
 
-            if (range2 != null) {
-                stackFrame.copyRangeTo(
-                        targetFrame,
-                        range2,
-                        range1.numReferences + referencesOffset,
-                        range2.numBytes + stackFrameOffset);
-            }
+            stackFrame.copyRangeTo(
+                    targetFrame,
+                    range2,
+                    range1.numReferences + referencesOffset,
+                    range2.numBytes + stackFrameOffset);
 
             invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(stackFrame);
