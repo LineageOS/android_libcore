@@ -112,6 +112,8 @@ public class EmulatedStackFrame {
         public final int stackFrameStart;
         public final int numBytes;
 
+        private static Range EMPTY_RANGE = new Range(0, 0, 0, 0);
+
         private Range(int referencesStart, int numReferences, int stackFrameStart, int numBytes) {
             this.referencesStart = referencesStart;
             this.numReferences = numReferences;
@@ -119,18 +121,29 @@ public class EmulatedStackFrame {
             this.numBytes = numBytes;
         }
 
+        /** Creates a {@code Range} spanning all arguments.
+         * @param frameType the type of the frame.
+         */
         public static Range all(MethodType frameType) {
             return of(frameType, 0, frameType.parameterCount());
         }
 
+        /** Creates a {@code Range} spanning specified arguments.
+         * @param frameType the type of the frame.
+         * @param startArg the first argument in the range to be created.
+         * @param endArg the argument ending the range to be created.
+         */
         public static Range of(MethodType frameType, int startArg, int endArg) {
-            final Class<?>[] ptypes = frameType.ptypes();
+            if (startArg >= endArg) {
+                return EMPTY_RANGE;
+            }
 
             int referencesStart = 0;
             int numReferences = 0;
             int stackFrameStart = 0;
             int numBytes = 0;
 
+            final Class<?>[] ptypes = frameType.ptypes();
             for (int i = 0; i < startArg; ++i) {
                 Class<?> cl = ptypes[i];
                 if (!cl.isPrimitive()) {
@@ -150,6 +163,14 @@ public class EmulatedStackFrame {
             }
 
             return new Range(referencesStart, numReferences, stackFrameStart, numBytes);
+        }
+
+        /** Creates a {@code Range} covering all arguments starting from specified position.
+         * @param frameType the type of the frame.
+         * @param startArg the first argument in the range to be created.
+         */
+        public static Range from(MethodType frameType, int startArg) {
+            return of(frameType, startArg, frameType.parameterCount());
         }
     }
 
