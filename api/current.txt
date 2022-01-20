@@ -4548,6 +4548,7 @@ package java.lang.ref {
     method public T get();
     method @Deprecated public boolean isEnqueued();
     method public static void reachabilityFence(Object);
+    method public final boolean refersTo(T);
   }
 
   public class ReferenceQueue<T> {
