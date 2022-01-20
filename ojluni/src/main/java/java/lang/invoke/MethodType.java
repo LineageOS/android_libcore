@@ -473,12 +473,13 @@ class MethodType implements java.io.Serializable {
 
     /** Replace the last arrayLength parameter types with the component type of arrayType.
      * @param arrayType any array type
+     * @param pos position at which to spread
      * @param arrayLength the number of parameter types to change
      * @return the resulting type
      */
-    /*non-public*/ MethodType asSpreaderType(Class<?> arrayType, int arrayLength) {
+    /*non-public*/ MethodType asSpreaderType(Class<?> arrayType, int pos, int arrayLength) {
         assert(parameterCount() >= arrayLength);
-        int spreadPos = ptypes.length - arrayLength;
+        int spreadPos = pos;
         if (arrayLength == 0)  return this;  // nothing to change
         if (arrayType == Object[].class) {
             if (isGeneric())  return this;  // nothing to change
@@ -493,10 +494,10 @@ class MethodType implements java.io.Serializable {
         }
         Class<?> elemType = arrayType.getComponentType();
         assert(elemType != null);
-        for (int i = spreadPos; i < ptypes.length; i++) {
+        for (int i = spreadPos; i < spreadPos + arrayLength; i++) {
             if (ptypes[i] != elemType) {
                 Class<?>[] fixedPtypes = ptypes.clone();
-                Arrays.fill(fixedPtypes, i, ptypes.length, elemType);
+                Arrays.fill(fixedPtypes, i, spreadPos + arrayLength, elemType);
                 return methodType(rtype, fixedPtypes);
             }
         }
