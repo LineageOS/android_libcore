@@ -353,7 +353,6 @@ filegroup {
         "luni/src/main/java/java/net/AddressCache.java",
         "luni/src/main/java/libcore/icu/CollationKeyICU.java",
         "luni/src/main/java/libcore/icu/DateUtilsBridge.java",
-        "luni/src/main/java/libcore/internal/Java11LanguageFeatures.java",
         "luni/src/main/java/libcore/internal/Java9LanguageFeatures.java",
         "luni/src/main/java/libcore/internal/StringPool.java",
         "luni/src/main/java/libcore/io/ClassPathURLStreamHandler.java",
