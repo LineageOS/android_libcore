@@ -516,12 +516,14 @@ class MethodType implements java.io.Serializable {
 
     /** Delete the last parameter type and replace it with arrayLength copies of the component type of arrayType.
      * @param arrayType any array type
+     * @param pos position at which to insert parameters
      * @param arrayLength the number of parameter types to insert
      * @return the resulting type
      */
-    /*non-public*/ MethodType asCollectorType(Class<?> arrayType, int arrayLength) {
+    /*non-public*/ MethodType asCollectorType(Class<?> arrayType, int pos, int arrayLength) {
         assert(parameterCount() >= 1);
-        assert(lastParameterType().isAssignableFrom(arrayType));
+        assert(pos < ptypes.length);
+        assert(ptypes[pos].isAssignableFrom(arrayType));
         MethodType res;
         if (arrayType == Object[].class) {
             res = genericMethodType(arrayLength);
@@ -536,7 +538,11 @@ class MethodType implements java.io.Serializable {
         if (ptypes.length == 1) {
             return res;
         } else {
-            return res.insertParameterTypes(0, parameterList().subList(0, ptypes.length-1));
+            // insert after (if need be), then before
+            if (pos < ptypes.length - 1) {
+                res = res.insertParameterTypes(arrayLength, Arrays.copyOfRange(ptypes, pos + 1, ptypes.length));
+            }
+            return res.insertParameterTypes(0, Arrays.copyOf(ptypes, pos));
         }
     }
 
