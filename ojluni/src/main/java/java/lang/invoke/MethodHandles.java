@@ -2042,6 +2042,61 @@ return mh1;
         throw new IllegalArgumentException(target + " is not a direct handle");
     }
 
+    // Android-removed: unsupported @jvms tag in doc-comment.
+    /**
+     * Produces a method handle constructing arrays of a desired type,
+     * as if by the {@code anewarray} bytecode.
+     * The return type of the method handle will be the array type.
+     * The type of its sole argument will be {@code int}, which specifies the size of the array.
+     *
+     * <p> If the returned method handle is invoked with a negative
+     * array size, a {@code NegativeArraySizeException} will be thrown.
+     *
+     * @param arrayClass an array type
+     * @return a method handle which can create arrays of the given type
+     * @throws NullPointerException if the argument is {@code null}
+     * @throws IllegalArgumentException if {@code arrayClass} is not an array type
+     * @see java.lang.reflect.Array#newInstance(Class, int)
+     * @since 9
+     */
+    public static
+    MethodHandle arrayConstructor(Class<?> arrayClass) throws IllegalArgumentException {
+        if (!arrayClass.isArray()) {
+            throw newIllegalArgumentException("not an array class: " + arrayClass.getName());
+        }
+        // Android-changed: transformer based implementation.
+        // MethodHandle ani = MethodHandleImpl.getConstantHandle(MethodHandleImpl.MH_Array_newInstance).
+        // bindTo(arrayClass.getComponentType());
+        // return ani.asType(ani.type().changeReturnType(arrayClass))
+        return new Transformers.ArrayConstructor(arrayClass);
+    }
+
+    // Android-removed: unsupported @jvms tag in doc-comment.
+    /**
+     * Produces a method handle returning the length of an array,
+     * as if by the {@code arraylength} bytecode.
+     * The type of the method handle will have {@code int} as return type,
+     * and its sole argument will be the array type.
+     *
+     * <p> If the returned method handle is invoked with a {@code null}
+     * array reference, a {@code NullPointerException} will be thrown.
+     *
+     * @param arrayClass an array type
+     * @return a method handle which can retrieve the length of an array of the given array type
+     * @throws NullPointerException if the argument is {@code null}
+     * @throws IllegalArgumentException if arrayClass is not an array type
+     * @since 9
+     */
+    public static
+    MethodHandle arrayLength(Class<?> arrayClass) throws IllegalArgumentException {
+        // Android-changed: transformer based implementation.
+        // return MethodHandleImpl.makeArrayElementAccessor(arrayClass, MethodHandleImpl.ArrayAccess.LENGTH);
+        if (!arrayClass.isArray()) {
+            throw newIllegalArgumentException("not an array class: " + arrayClass.getName());
+        }
+        return new Transformers.ArrayLength(arrayClass);
+    }
+
     // BEGIN Android-added: method to check if a class is an array.
     private static void checkClassIsArray(Class<?> c) {
         if (!c.isArray()) {
