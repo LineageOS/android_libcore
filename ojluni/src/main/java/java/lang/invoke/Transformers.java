@@ -1758,21 +1758,31 @@ public class Transformers {
     static class FoldArguments extends Transformer {
         private final MethodHandle target;
         private final MethodHandle combiner;
+        private final int position;
 
+        /** The range of arguments in our frame passed to the combiner. */
         private final Range combinerArgs;
-        private final Range targetArgs;
+
+        /** The range of arguments in our frame copied to the start of the target frame. */
+        private final Range leadingArgs;
+
+        /** The range of arguments in our frame copied to the end of the target frame. */
+        private final Range trailingArgs;
 
         private final int referencesOffset;
         private final int stackFrameOffset;
 
-        FoldArguments(MethodHandle target, MethodHandle combiner) {
-            super(deriveType(target, combiner));
+        FoldArguments(MethodHandle target, int position, MethodHandle combiner) {
+            super(deriveType(target, position, combiner));
 
             this.target = target;
             this.combiner = combiner;
+            this.position = position;
 
-            combinerArgs = Range.all(combiner.type());
-            targetArgs = Range.all(type());
+            this.combinerArgs =
+                    Range.of(type(), position, position + combiner.type().parameterCount());
+            this.leadingArgs = Range.of(type(), 0, position);
+            this.trailingArgs = Range.from(type(), position);
 
             final Class<?> combinerRType = combiner.type().rtype();
             if (combinerRType == void.class) {
@@ -1782,6 +1792,7 @@ public class Transformers {
                 stackFrameOffset = EmulatedStackFrame.getSize(combinerRType);
                 referencesOffset = 0;
             } else {
+                // combinerRType is a reference.
                 stackFrameOffset = 0;
                 referencesOffset = 1;
             }
@@ -1789,35 +1800,47 @@ public class Transformers {
 
         @Override
         public void transform(EmulatedStackFrame stackFrame) throws Throwable {
-            // First construct the combiner frame and invoke it.
+            // First construct the combiner frame and invoke the combiner.
             EmulatedStackFrame combinerFrame = EmulatedStackFrame.create(combiner.type());
             stackFrame.copyRangeTo(combinerFrame, combinerArgs, 0, 0);
-            invokeFromTransform(combiner, combinerFrame);
+            invokeExactFromTransform(combiner, combinerFrame);
 
-            // Create the stack frame for the target.
+            // Create the stack frame for the target and copy leading arguments to it.
             EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            stackFrame.copyRangeTo(targetFrame, leadingArgs, 0, 0);
 
-            // If one of these offsets is not zero, we have a return value to copy.
+            // If one of these offsets is not zero, we have to slot the return value from the
+            // combiner into the target frame.
             if (referencesOffset != 0 || stackFrameOffset != 0) {
                 final StackFrameReader reader = new StackFrameReader();
                 reader.attach(combinerFrame).makeReturnValueAccessor();
                 final StackFrameWriter writer = new StackFrameWriter();
-                writer.attach(targetFrame);
-                copyNext(reader, writer, target.type().ptypes()[0]);
+                writer.attach(targetFrame,
+                              position,
+                              leadingArgs.numReferences,
+                              leadingArgs.numBytes);
+                copyNext(reader, writer, target.type().ptypes()[position]);
             }
 
-            stackFrame.copyRangeTo(targetFrame, targetArgs, referencesOffset, stackFrameOffset);
-            invokeFromTransform(target, targetFrame);
+            // Copy the arguments provided to the combiner to the tail of the target frame.
+            stackFrame.copyRangeTo(
+                targetFrame,
+                trailingArgs,
+                leadingArgs.numReferences + referencesOffset,
+                leadingArgs.numBytes + stackFrameOffset);
 
+            // Call the target and propagate return value.
+            invokeExactFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(stackFrame);
         }
 
-        private static MethodType deriveType(MethodHandle target, MethodHandle combiner) {
+        private static MethodType deriveType(MethodHandle target,
+                                             int position,
+                                             MethodHandle combiner) {
             if (combiner.type().rtype() == void.class) {
                 return target.type();
             }
-
-            return target.type().dropParameterTypes(0, 1);
+            return target.type().dropParameterTypes(position, position + 1);
         }
     }
 

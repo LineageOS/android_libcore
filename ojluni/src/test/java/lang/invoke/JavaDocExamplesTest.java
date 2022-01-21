@@ -686,14 +686,14 @@ assert(!(boolean) invokeDispatched.invokeExact(y, "hasNext", "[123]+[789]"));
             }}
     }
 
+// BEGIN Android-removed: removed until supported (b/191446452).
+/*
     static int one(int k) { return 1; }
     static int inc(int i, int acc, int k) { return i + 1; }
     static int mult(int i, int acc, int k) { return i * acc; }
     static boolean pred(int i, int acc, int k) { return i < k; }
     static int fin(int i, int acc, int k) { return acc; }
 
-// BEGIN Android-removed: removed until supported (b/191446452).
-/*
     @Test public void testLoop() throws Throwable {
         MethodHandle MH_inc, MH_one, MH_mult, MH_pred, MH_fin;
         Class<?> I = int.class;
@@ -905,6 +905,8 @@ assertEquals(reversedList, (List<String>) loop.invoke(list));
 {}
         }}
     }
+*/
+// END Android-removed: removed until supported (b/191446452).
 
     @Test public void testFoldArguments3() throws Throwable {
         {{
@@ -951,8 +953,7 @@ assertTrue((int) compare2FromArray.invoke(Arrays.copyOfRange(ints, 2, 4), cmp) =
 {}
         }}
     }
-*/
-// END Android-removed: removed until supported (b/191446452).
+
     /* ---- TEMPLATE ----
     @Test public void testFoo() throws Throwable {
         {{

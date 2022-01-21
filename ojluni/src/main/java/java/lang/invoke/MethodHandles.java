@@ -3632,7 +3632,15 @@ MethodHandle catTrace = foldArguments(cat, trace);
 // also prints "boo":
 assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      * }</pre></blockquote>
-     * <p> Here is pseudocode for the resulting adapter:
+     * <p>Here is pseudocode for the resulting adapter. In the code, {@code T}
+     * represents the result type of the {@code target} and resulting adapter.
+     * {@code V}/{@code v} represent the type and value of the parameter and argument
+     * of {@code target} that precedes the folding position; {@code V} also is
+     * the result type of the {@code combiner}. {@code A}/{@code a} denote the
+     * types and values of the {@code N} parameters and arguments at the folding
+     * position. {@code B}/{@code b} represent the types and values of the
+     * {@code target} parameters and arguments that follow the folded parameters
+     * and arguments.
      * <blockquote><pre>{@code
      * // there are N arguments in A...
      * T target(V, A[N]..., B...);
@@ -3649,6 +3657,9 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      *   return target2(a..., b...);
      * }
      * }</pre></blockquote>
+     * <p>
+     * <em>Note:</em> The resulting adapter is never a {@linkplain MethodHandle#asVarargsCollector
+     * variable-arity method handle}, even if the original target method handle was.
      * @param target the method handle to invoke after arguments are combined
      * @param combiner method handle to call initially on the incoming arguments
      * @return method handle which incorporates the specified argument folding logic
@@ -3662,12 +3673,96 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      */
     public static
     MethodHandle foldArguments(MethodHandle target, MethodHandle combiner) {
-        int foldPos = 0;
+        return foldArguments(target, 0, combiner);
+    }
+
+    /**
+     * Adapts a target method handle by pre-processing some of its arguments, starting at a given position, and then
+     * calling the target with the result of the pre-processing, inserted into the original sequence of arguments just
+     * before the folded arguments.
+     * <p>
+     * This method is closely related to {@link #foldArguments(MethodHandle, MethodHandle)}, but allows to control the
+     * position in the parameter list at which folding takes place. The argument controlling this, {@code pos}, is a
+     * zero-based index. The aforementioned method {@link #foldArguments(MethodHandle, MethodHandle)} assumes position
+     * 0.
+     *
+     * @apiNote Example:
+     * <blockquote><pre>{@code
+    import static java.lang.invoke.MethodHandles.*;
+    import static java.lang.invoke.MethodType.*;
+    ...
+    MethodHandle trace = publicLookup().findVirtual(java.io.PrintStream.class,
+    "println", methodType(void.class, String.class))
+    .bindTo(System.out);
+    MethodHandle cat = lookup().findVirtual(String.class,
+    "concat", methodType(String.class, String.class));
+    assertEquals("boojum", (String) cat.invokeExact("boo", "jum"));
+    MethodHandle catTrace = foldArguments(cat, 1, trace);
+    // also prints "jum":
+    assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
+     * }</pre></blockquote>
+     * <p>Here is pseudocode for the resulting adapter. In the code, {@code T}
+     * represents the result type of the {@code target} and resulting adapter.
+     * {@code V}/{@code v} represent the type and value of the parameter and argument
+     * of {@code target} that precedes the folding position; {@code V} also is
+     * the result type of the {@code combiner}. {@code A}/{@code a} denote the
+     * types and values of the {@code N} parameters and arguments at the folding
+     * position. {@code Z}/{@code z} and {@code B}/{@code b} represent the types
+     * and values of the {@code target} parameters and arguments that precede and
+     * follow the folded parameters and arguments starting at {@code pos},
+     * respectively.
+     * <blockquote><pre>{@code
+     * // there are N arguments in A...
+     * T target(Z..., V, A[N]..., B...);
+     * V combiner(A...);
+     * T adapter(Z... z, A... a, B... b) {
+     *   V v = combiner(a...);
+     *   return target(z..., v, a..., b...);
+     * }
+     * // and if the combiner has a void return:
+     * T target2(Z..., A[N]..., B...);
+     * void combiner2(A...);
+     * T adapter2(Z... z, A... a, B... b) {
+     *   combiner2(a...);
+     *   return target2(z..., a..., b...);
+     * }
+     * }</pre></blockquote>
+     * <p>
+     * <em>Note:</em> The resulting adapter is never a {@linkplain MethodHandle#asVarargsCollector
+     * variable-arity method handle}, even if the original target method handle was.
+     *
+     * @param target the method handle to invoke after arguments are combined
+     * @param pos the position at which to start folding and at which to insert the folding result; if this is {@code
+     *            0}, the effect is the same as for {@link #foldArguments(MethodHandle, MethodHandle)}.
+     * @param combiner method handle to call initially on the incoming arguments
+     * @return method handle which incorporates the specified argument folding logic
+     * @throws NullPointerException if either argument is null
+     * @throws IllegalArgumentException if either of the following two conditions holds:
+     *          (1) {@code combiner}'s return type is non-{@code void} and not the same as the argument type at position
+     *              {@code pos} of the target signature;
+     *          (2) the {@code N} argument types at position {@code pos} of the target signature (skipping one matching
+     *              the {@code combiner}'s return type) are not identical with the argument types of {@code combiner}.
+     *
+     * @see #foldArguments(MethodHandle, MethodHandle)
+     * @since 9
+     */
+    public static
+    MethodHandle foldArguments(MethodHandle target, int pos, MethodHandle combiner) {
         MethodType targetType = target.type();
         MethodType combinerType = combiner.type();
-        Class<?> rtype = foldArgumentChecks(foldPos, targetType, combinerType);
+        Class<?> rtype = foldArgumentChecks(pos, targetType, combinerType);
+        // Android-changed: // Android-changed: transformer implementation.
+        // BoundMethodHandle result = target.rebind();
+        // boolean dropResult = rtype == void.class;
+        // LambdaForm lform = result.editor().foldArgumentsForm(1 + pos, dropResult, combinerType.basicType());
+        // MethodType newType = targetType;
+        // if (!dropResult) {
+        //     newType = newType.dropParameterTypes(pos, pos + 1);
+        // }
+        // result = result.copyWithExtendL(newType, lform, combiner);
+        // return result;
 
-        return new Transformers.FoldArguments(target, combiner);
+        return new Transformers.FoldArguments(target, pos, combiner);
     }
 
     private static Class<?> foldArgumentChecks(int foldPos, MethodType targetType, MethodType combinerType) {
@@ -3676,11 +3771,15 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         int foldVals = rtype == void.class ? 0 : 1;
         int afterInsertPos = foldPos + foldVals;
         boolean ok = (targetType.parameterCount() >= afterInsertPos + foldArgs);
-        if (ok && !(combinerType.parameterList()
-                    .equals(targetType.parameterList().subList(afterInsertPos,
-                                                               afterInsertPos + foldArgs))))
-            ok = false;
-        if (ok && foldVals != 0 && combinerType.returnType() != targetType.parameterType(0))
+        if (ok) {
+            for (int i = 0; i < foldArgs; i++) {
+                if (combinerType.parameterType(i) != targetType.parameterType(i + afterInsertPos)) {
+                    ok = false;
+                    break;
+                }
+            }
+        }
+        if (ok && foldVals != 0 && combinerType.returnType() != targetType.parameterType(foldPos))
             ok = false;
         if (!ok)
             throw misMatchedTypes("target and combiner types", targetType, combinerType);
