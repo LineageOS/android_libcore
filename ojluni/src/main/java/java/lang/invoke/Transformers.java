@@ -319,6 +319,17 @@ public class Transformers {
         }
     }
 
+    public static class ZeroValue extends Transformer {
+        public ZeroValue(Class<?> type) {
+            super(MethodType.methodType(type));
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            // Return-value is zero-initialized in emulatedStackFrame.
+        }
+    }
+
     public static class ArrayConstructor extends Transformer {
         private final Class<?> componentType;
 
@@ -389,103 +400,6 @@ public class Transformers {
             writer.putNextInt(length);
         }
     }
-
-    /** Implementation of MethodHandles.constant. */
-    public static class Constant extends Transformer {
-        private final Class<?> type;
-
-        // NOTE: This implementation turned out to be more awkward than expected becuase
-        // of the type system. We could simplify this considerably at the cost of making
-        // the emulated stack frame API uglier or by transitioning into JNI.
-        //
-        // We could consider implementing this in terms of bind() once that's implemented.
-        // This would then just become : MethodHandles.identity(type).bind(value).
-        private int asInt;
-        private long asLong;
-        private float asFloat;
-        private double asDouble;
-        private Object asReference;
-
-        private char typeChar;
-
-        public Constant(Class<?> type, Object value) {
-            super(MethodType.methodType(type));
-            this.type = type;
-            typeChar = Wrapper.basicTypeChar(type);
-
-            switch (typeChar) {
-                case 'L':
-                    asReference = value;
-                    break;
-                case 'I':
-                    asInt = (int) value;
-                    break;
-                case 'C':
-                    asInt = (int) (char) value;
-                    break;
-                case 'S':
-                    asInt = (int) (short) value;
-                    break;
-                case 'B':
-                    asInt = (int) (byte) value;
-                    break;
-                case 'Z':
-                    asInt = ((boolean) value) ? 1 : 0;
-                    break;
-                case 'J':
-                    asLong = (long) value;
-                    break;
-                case 'F':
-                    asFloat = (float) value;
-                    break;
-                case 'D':
-                    asDouble = (double) value;
-                    break;
-                default:
-                    throw new AssertionError("unknown type: " + typeChar);
-            }
-        }
-
-        @Override
-        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
-            final StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(emulatedStackFrame);
-            writer.makeReturnValueAccessor();
-
-            switch (typeChar) {
-                case 'L':
-                    writer.putNextReference(asReference, type);
-                    break;
-                case 'I':
-                    writer.putNextInt(asInt);
-                    break;
-                case 'C':
-                    writer.putNextChar((char) asInt);
-                    break;
-                case 'S':
-                    writer.putNextShort((short) asInt);
-                    break;
-                case 'B':
-                    writer.putNextByte((byte) asInt);
-                    break;
-                case 'Z':
-                    writer.putNextBoolean(asInt == 1);
-                    break;
-                case 'J':
-                    writer.putNextLong(asLong);
-                    break;
-                case 'F':
-                    writer.putNextFloat(asFloat);
-                    break;
-                case 'D':
-                    writer.putNextDouble(asDouble);
-                    break;
-                default:
-                    throw new AssertionError("Unexpected typeChar: " + typeChar);
-            }
-        }
-    }
-
     /*package*/ static class Construct extends Transformer {
         private final MethodHandle constructorHandle;
         private final EmulatedStackFrame.Range callerRange;
