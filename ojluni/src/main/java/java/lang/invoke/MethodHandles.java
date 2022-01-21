@@ -25,18 +25,21 @@
 
 package java.lang.invoke;
 
+import sun.invoke.util.VerifyAccess;
+import sun.invoke.util.Wrapper;
+import sun.reflect.Reflection;
+
 import java.lang.reflect.*;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
-
-import sun.invoke.util.VerifyAccess;
-import sun.invoke.util.Wrapper;
-import sun.reflect.Reflection;
+import java.util.Objects;
 
 import static java.lang.invoke.MethodHandleStatics.*;
+import static java.lang.invoke.MethodHandleStatics.newIllegalArgumentException;
+import static java.lang.invoke.MethodType.methodType;
 
 /**
  * This class consists exclusively of static methods that operate on or return
@@ -2830,9 +2833,14 @@ assert((int)twice.invokeExact(21) == 42);
                 throw newIllegalArgumentException("void type");
             Wrapper w = Wrapper.forPrimitiveType(type);
             value = w.convert(value, type);
+            if (w.zero().equals(value))
+                return zero(w, type);
+            return insertArguments(identity(type), 0, value);
+        } else {
+            if (value == null)
+                return zero(Wrapper.OBJECT, type);
+            return identity(type).bindTo(value);
         }
-
-        return new Transformers.Constant(type, value);
     }
 
     /**
@@ -2844,22 +2852,86 @@ assert((int)twice.invokeExact(21) == 42);
      */
     public static
     MethodHandle identity(Class<?> type) {
-        if (type == null) {
-            throw new NullPointerException("type == null");
+        // Android-added: explicit non-null check.
+        Objects.requireNonNull(type);
+        Wrapper btw = (type.isPrimitive() ? Wrapper.forPrimitiveType(type) : Wrapper.OBJECT);
+        int pos = btw.ordinal();
+        MethodHandle ident = IDENTITY_MHS[pos];
+        if (ident == null) {
+            ident = setCachedMethodHandle(IDENTITY_MHS, pos, makeIdentity(btw.primitiveType()));
         }
+        if (ident.type().returnType() == type)
+            return ident;
+        // something like identity(Foo.class); do not bother to intern these
+        assert (btw == Wrapper.OBJECT);
+        return makeIdentity(type);
+    }
 
-        if (type.isPrimitive()) {
+    /**
+     * Produces a constant method handle of the requested return type which
+     * returns the default value for that type every time it is invoked.
+     * The resulting constant method handle will have no side effects.
+     * <p>The returned method handle is equivalent to {@code empty(methodType(type))}.
+     * It is also equivalent to {@code explicitCastArguments(constant(Object.class, null), methodType(type))},
+     * since {@code explicitCastArguments} converts {@code null} to default values.
+     * @param type the expected return type of the desired method handle
+     * @return a constant method handle that takes no arguments
+     *         and returns the default value of the given type (or void, if the type is void)
+     * @throws NullPointerException if the argument is null
+     * @see MethodHandles#constant
+     * @see MethodHandles#empty
+     * @see MethodHandles#explicitCastArguments
+     * @since 9
+     */
+    public static MethodHandle zero(Class<?> type) {
+        Objects.requireNonNull(type);
+        return type.isPrimitive() ?  zero(Wrapper.forPrimitiveType(type), type) : zero(Wrapper.OBJECT, type);
+    }
+
+    private static MethodHandle identityOrVoid(Class<?> type) {
+        return type == void.class ? zero(type) : identity(type);
+    }
+
+    /**
+     * Produces a method handle of the requested type which ignores any arguments, does nothing,
+     * and returns a suitable default depending on the return type.
+     * That is, it returns a zero primitive value, a {@code null}, or {@code void}.
+     * <p>The returned method handle is equivalent to
+     * {@code dropArguments(zero(type.returnType()), 0, type.parameterList())}.
+     *
+     * @apiNote Given a predicate and target, a useful "if-then" construct can be produced as
+     * {@code guardWithTest(pred, target, empty(target.type())}.
+     * @param type the type of the desired method handle
+     * @return a constant method handle of the given type, which returns a default value of the given return type
+     * @throws NullPointerException if the argument is null
+     * @see MethodHandles#zero
+     * @see MethodHandles#constant
+     * @since 9
+     */
+    public static  MethodHandle empty(MethodType type) {
+        Objects.requireNonNull(type);
+        return dropArguments(zero(type.returnType()), 0, type.parameterList());
+    }
+
+    private static final MethodHandle[] IDENTITY_MHS = new MethodHandle[Wrapper.COUNT];
+    private static MethodHandle makeIdentity(Class<?> ptype) {
+        // Android-changed: Android implementation using identity() functions and transformers.
+        // MethodType mtype = methodType(ptype, ptype);
+        // LambdaForm lform = LambdaForm.identityForm(BasicType.basicType(ptype));
+        // return MethodHandleImpl.makeIntrinsic(mtype, lform, Intrinsic.IDENTITY);
+        if (ptype.isPrimitive()) {
             try {
-                return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class, "identity",
-                        MethodType.methodType(type, type));
+                final MethodType mt = methodType(ptype, ptype);
+                return Lookup.PUBLIC_LOOKUP.findStatic(MethodHandles.class, "identity", mt);
             } catch (NoSuchMethodException | IllegalAccessException e) {
                 throw new AssertionError(e);
             }
+        } else {
+            return new Transformers.ReferenceIdentity(ptype);
         }
-
-        return new Transformers.ReferenceIdentity(type);
     }
 
+    // Android-added: helper methods for identity().
     /** @hide */ public static byte identity(byte val) { return val; }
     /** @hide */ public static boolean identity(boolean val) { return val; }
     /** @hide */ public static char identity(char val) { return val; }
@@ -2868,6 +2940,33 @@ assert((int)twice.invokeExact(21) == 42);
     /** @hide */ public static long identity(long val) { return val; }
     /** @hide */ public static float identity(float val) { return val; }
     /** @hide */ public static double identity(double val) { return val; }
+
+    private static MethodHandle zero(Wrapper btw, Class<?> rtype) {
+        int pos = btw.ordinal();
+        MethodHandle zero = ZERO_MHS[pos];
+        if (zero == null) {
+            zero = setCachedMethodHandle(ZERO_MHS, pos, makeZero(btw.primitiveType()));
+        }
+        if (zero.type().returnType() == rtype)
+            return zero;
+        assert(btw == Wrapper.OBJECT);
+        return makeZero(rtype);
+    }
+    private static final MethodHandle[] ZERO_MHS = new MethodHandle[Wrapper.COUNT];
+    private static MethodHandle makeZero(Class<?> rtype) {
+        // Android-changed: use Android specific implementation.
+        // MethodType mtype = methodType(rtype);
+        // LambdaForm lform = LambdaForm.zeroForm(BasicType.basicType(rtype));
+        // return MethodHandleImpl.makeIntrinsic(mtype, lform, Intrinsic.ZERO);
+        return new Transformers.ZeroValue(rtype);
+    }
+
+    private static synchronized MethodHandle setCachedMethodHandle(MethodHandle[] cache, int pos, MethodHandle value) {
+        // Simulate a CAS, to avoid racy duplication of results.
+        MethodHandle prev = cache[pos];
+        if (prev != null) return prev;
+        return cache[pos] = value;
+    }
 
     /**
      * Provides a target method handle with one or more <em>bound arguments</em>
