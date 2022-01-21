@@ -132,12 +132,7 @@ public class Transformers {
             // We pre-calculate the ranges of values we have to copy through to the delegate
             // handle at the time of instantiation so that the actual invoke is performant.
             this.range1 = EmulatedStackFrame.Range.of(type, 0, startPos);
-            final int numArgs = type.ptypes().length;
-            if (startPos + numDropped < numArgs) {
-                this.range2 = EmulatedStackFrame.Range.of(type, startPos + numDropped, numArgs);
-            } else {
-                this.range2 = null;
-            }
+            this.range2 = EmulatedStackFrame.Range.from(type, startPos + numDropped);
         }
 
         @Override
@@ -146,14 +141,8 @@ public class Transformers {
 
             emulatedStackFrame.copyRangeTo(
                     calleeFrame, range1, 0 /* referencesStart */, 0 /* stackFrameStart */);
-
-            if (range2 != null) {
-                final int referencesStart = range1.numReferences;
-                final int stackFrameStart = range1.numBytes;
-
-                emulatedStackFrame.copyRangeTo(
-                        calleeFrame, range2, referencesStart, stackFrameStart);
-            }
+            emulatedStackFrame.copyRangeTo(
+                    calleeFrame, range2, range1.numReferences, range1.numBytes);
 
             invokeFromTransform(delegate, calleeFrame);
             calleeFrame.copyReturnValueTo(emulatedStackFrame);
@@ -327,6 +316,77 @@ public class Transformers {
             writer.attach(emulatedStackFrame);
             writer.makeReturnValueAccessor();
             writer.putNextReference(reader.nextReference(type), type);
+        }
+    }
+
+    public static class ArrayConstructor extends Transformer {
+        private final Class<?> componentType;
+
+        public ArrayConstructor(Class<?> arrayType) {
+            super(MethodType.methodType(arrayType, int.class));
+            componentType = arrayType.getComponentType();
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
+            reader.attach(emulatedStackFrame);
+            final int length = reader.nextInt();
+            final Object array = Array.newInstance(componentType, length);
+            emulatedStackFrame.setReturnValueTo(array);
+        }
+    }
+
+    public static class ArrayLength extends Transformer {
+        private final Class<?> arrayType;
+
+        public ArrayLength(Class<?> arrayType) {
+            super(MethodType.methodType(int.class, arrayType));
+            this.arrayType = arrayType;
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
+            final StackFrameReader reader = new StackFrameReader();
+            reader.attach(emulatedStackFrame);
+            final Object arrayObject = reader.nextReference(arrayType);
+
+            int length;
+            switch (Wrapper.basicTypeChar(arrayType.getComponentType())) {
+                case 'L':
+                    length = ((Object[]) arrayObject).length;
+                    break;
+                case 'Z':
+                    length = ((boolean[]) arrayObject).length;
+                    break;
+                case 'B':
+                    length = ((byte[]) arrayObject).length;
+                    break;
+                case 'C':
+                    length = ((char[]) arrayObject).length;
+                    break;
+                case 'S':
+                    length = ((short[]) arrayObject).length;
+                    break;
+                case 'I':
+                    length = ((int[]) arrayObject).length;
+                    break;
+                case 'J':
+                    length = ((long[]) arrayObject).length;
+                    break;
+                case 'F':
+                    length = ((float[]) arrayObject).length;
+                    break;
+                case 'D':
+                    length = ((double[]) arrayObject).length;
+                    break;
+                default:
+                    throw new IllegalStateException("Unsupported type: " + arrayType);
+            }
+
+            final StackFrameWriter writer = new StackFrameWriter();
+            writer.attach(emulatedStackFrame).makeReturnValueAccessor();
+            writer.putNextInt(length);
         }
     }
 
@@ -1245,7 +1305,7 @@ public class Transformers {
             super(targetType.insertParameterTypes(0, MethodHandle.class));
             this.targetType = targetType;
             this.isExactInvoker = isExactInvoker;
-            copyRange = EmulatedStackFrame.Range.of(type(), 1, type().parameterCount());
+            copyRange = EmulatedStackFrame.Range.from(type(), 1);
         }
 
         @Override
@@ -1326,8 +1386,8 @@ public class Transformers {
          */
         private final int arrayOffset;
 
-        /** The type char of the component type of the array. */
-        private final char arrayTypeChar;
+        /** The component type of the array. */
+        private final Class<?> componentType;
 
         /**
          * The number of input arguments that will be present in the array. In other words, this is
@@ -1339,334 +1399,132 @@ public class Transformers {
          * Range of arguments to copy verbatim from the input frame, This will cover all arguments
          * that aren't a part of the trailing array.
          */
-        private final Range copyRange;
+        private final Range leadingRange;
+        private final Range trailingRange;
 
-        Spreader(MethodHandle target, MethodType spreaderType, int numArrayArgs) {
+        Spreader(MethodHandle target, MethodType spreaderType, int spreadArgPos, int numArrayArgs) {
             super(spreaderType);
             this.target = target;
-            // Copy all arguments except the last argument (which is the trailing array argument
-            // that needs to be spread).
-            arrayOffset = spreaderType.parameterCount() - 1;
-
-            // Get and cache the component type of the input array.
-            final Class<?> componentType = spreaderType.ptypes()[arrayOffset].getComponentType();
+            arrayOffset = spreadArgPos;
+            componentType = spreaderType.ptypes()[arrayOffset].getComponentType();
             if (componentType == null) {
-                throw new AssertionError("Trailing argument must be an array.");
+                throw new AssertionError("Argument " + spreadArgPos + " must be an array.");
             }
-            arrayTypeChar = Wrapper.basicTypeChar(componentType);
-
             this.numArrayArgs = numArrayArgs;
-            // Copy all args except for the last argument.
-            this.copyRange = EmulatedStackFrame.Range.of(spreaderType, 0, arrayOffset);
+            // Copy all args except the spreader array.
+            leadingRange = EmulatedStackFrame.Range.of(spreaderType, 0, arrayOffset);
+            trailingRange = EmulatedStackFrame.Range.from(spreaderType, arrayOffset + 1);
         }
 
         @Override
         public void transform(EmulatedStackFrame callerFrame) throws Throwable {
-            // Create a new stack frame for the callee.
-            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
-
-            // Copy all arguments except for the trailing array argument.
-            callerFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
-
-            // Attach the writer, prepare to spread the trailing array arguments into
-            // the callee frame.
-            StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
-
             // Get the array reference and check that its length is as expected.
-            Object arrayObj =
-                    callerFrame.getReference(
-                            copyRange.numReferences, this.type().ptypes()[arrayOffset]);
+            final Class<?> arrayType = type().parameterType(arrayOffset);
+            final Object arrayObj = callerFrame.getReference(arrayOffset, arrayType);
             final int arrayLength = Array.getLength(arrayObj);
             if (arrayLength != numArrayArgs) {
                 throw new IllegalArgumentException(
                         "Invalid array length " + arrayLength + " expected " + numArrayArgs);
             }
 
-            final MethodType type = target.type();
-            switch (arrayTypeChar) {
+            // Create a new stack frame for the callee.
+            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+
+            // Copy ranges not affected by the spreading.
+            callerFrame.copyRangeTo(targetFrame, leadingRange, 0, 0);
+            if (componentType.isPrimitive()) {
+                final int elementBytes = EmulatedStackFrame.getSize(componentType);
+                final int spreadBytes = elementBytes * arrayLength;
+                callerFrame.copyRangeTo(targetFrame, trailingRange,
+                    leadingRange.numReferences, leadingRange.numBytes + spreadBytes);
+            } else {
+                callerFrame.copyRangeTo(targetFrame, trailingRange,
+                    leadingRange.numReferences + numArrayArgs, leadingRange.numBytes);
+            }
+
+            // Attach the writer, prepare to spread the trailing array arguments into
+            // the callee frame.
+            StackFrameWriter writer = new StackFrameWriter();
+            writer.attach(targetFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
+
+            final Class<?> componentType = arrayType.getComponentType();
+            switch (Wrapper.basicTypeChar(componentType)) {
                 case 'L':
-                    spreadArray((Object[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final Object[] array = (Object[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextReference(array[i], componentType);
+                    }
                     break;
+                }
                 case 'I':
-                    spreadArray((int[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final int[] array = (int[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextInt(array[i]);
+                    }
                     break;
+                }
                 case 'J':
-                    spreadArray((long[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final long[] array = (long[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextLong(array[i]);
+                    }
                     break;
+                }
                 case 'B':
-                    spreadArray((byte[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final byte[] array = (byte[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextByte(array[i]);
+                    }
                     break;
+                }
                 case 'S':
-                    spreadArray((short[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final short[] array = (short[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextShort(array[i]);
+                    }
                     break;
+                }
                 case 'C':
-                    spreadArray((char[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final char[] array = (char[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextChar(array[i]);
+                    }
                     break;
+                }
                 case 'Z':
-                    spreadArray((boolean[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final boolean[] array = (boolean[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextBoolean(array[i]);
+                    }
                     break;
+                }
                 case 'F':
-                    spreadArray((float[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final float[] array = (float[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextFloat(array[i]);
+                    }
                     break;
+                }
                 case 'D':
-                    spreadArray((double[]) arrayObj, writer, type, numArrayArgs, arrayOffset);
+                {
+                    final double[] array = (double[]) arrayObj;
+                    for (int i = 0; i < array.length; ++i) {
+                        writer.putNextDouble(array[i]);
+                    }
                     break;
+                }
             }
 
-            invokeFromTransform(target, targetFrame);
+            invokeExactFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(callerFrame);
-        }
-
-        public static void spreadArray(
-                Object[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                Object o = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(o, argumentType);
-                        break;
-                    case 'I':
-                        writer.putNextInt((int) o);
-                        break;
-                    case 'J':
-                        writer.putNextLong((long) o);
-                        break;
-                    case 'B':
-                        writer.putNextByte((byte) o);
-                        break;
-                    case 'S':
-                        writer.putNextShort((short) o);
-                        break;
-                    case 'C':
-                        writer.putNextChar((char) o);
-                        break;
-                    case 'Z':
-                        writer.putNextBoolean((boolean) o);
-                        break;
-                    case 'F':
-                        writer.putNextFloat((float) o);
-                        break;
-                    case 'D':
-                        writer.putNextDouble((double) o);
-                        break;
-                }
-            }
-        }
-
-        public static void spreadArray(
-                int[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                int j = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(j, argumentType);
-                        break;
-                    case 'I':
-                        writer.putNextInt(j);
-                        break;
-                    case 'J':
-                        writer.putNextLong(j);
-                        break;
-                    case 'F':
-                        writer.putNextFloat(j);
-                        break;
-                    case 'D':
-                        writer.putNextDouble(j);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                long[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                long l = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(l, argumentType);
-                        break;
-                    case 'J':
-                        writer.putNextLong(l);
-                        break;
-                    case 'F':
-                        writer.putNextFloat((float) l);
-                        break;
-                    case 'D':
-                        writer.putNextDouble((double) l);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                byte[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                byte b = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(b, argumentType);
-                        break;
-                    case 'I':
-                        writer.putNextInt(b);
-                        break;
-                    case 'J':
-                        writer.putNextLong(b);
-                        break;
-                    case 'B':
-                        writer.putNextByte(b);
-                        break;
-                    case 'S':
-                        writer.putNextShort(b);
-                        break;
-                    case 'F':
-                        writer.putNextFloat(b);
-                        break;
-                    case 'D':
-                        writer.putNextDouble(b);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                short[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                short s = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(s, argumentType);
-                        break;
-                    case 'I':
-                        writer.putNextInt(s);
-                        break;
-                    case 'J':
-                        writer.putNextLong(s);
-                        break;
-                    case 'S':
-                        writer.putNextShort(s);
-                        break;
-                    case 'F':
-                        writer.putNextFloat(s);
-                        break;
-                    case 'D':
-                        writer.putNextDouble(s);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                char[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                char c = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(c, argumentType);
-                        break;
-                    case 'I':
-                        writer.putNextInt(c);
-                        break;
-                    case 'J':
-                        writer.putNextLong(c);
-                        break;
-                    case 'C':
-                        writer.putNextChar(c);
-                        break;
-                    case 'F':
-                        writer.putNextFloat(c);
-                        break;
-                    case 'D':
-                        writer.putNextDouble(c);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                boolean[] array,
-                StackFrameWriter writer,
-                MethodType type,
-                int numArgs,
-                int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                boolean z = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(z, argumentType);
-                        break;
-                    case 'Z':
-                        writer.putNextBoolean(z);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                double[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                double d = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(d, argumentType);
-                        break;
-                    case 'D':
-                        writer.putNextDouble(d);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
-        }
-
-        public static void spreadArray(
-                float[] array, StackFrameWriter writer, MethodType type, int numArgs, int offset) {
-            final Class<?>[] ptypes = type.ptypes();
-            for (int i = 0; i < numArgs; ++i) {
-                Class<?> argumentType = ptypes[i + offset];
-                float f = array[i];
-                switch (Wrapper.basicTypeChar(argumentType)) {
-                    case 'L':
-                        writer.putNextReference(f, argumentType);
-                        break;
-                    case 'D':
-                        writer.putNextDouble((double) f);
-                        break;
-                    case 'F':
-                        writer.putNextFloat(f);
-                        break;
-                    default:
-                        throw new AssertionError();
-                }
-            }
         }
     }
 
@@ -1675,64 +1533,60 @@ public class Transformers {
         private final MethodHandle target;
 
         /**
-         * The offset of the trailing array argument in the list of arguments to this transformer.
-         * The array argument is always the last argument.
+         * The array start is the position in the target outputs of the array collecting arguments
+         * and the position in the source inputs where collection starts.
          */
         private final int arrayOffset;
 
         /**
-         * The number of input arguments that will be present in the array. In other words, this is
-         * the expected array length.
+         * The array length is the number of arguments to be collected.
          */
-        private final int numArrayArgs;
+        private final int arrayLength;
 
-        /** The component type of the array. */
+        /** The type of the array. */
         private final Class arrayType;
 
-        /** The type char of the component type of the array. */
-        private final char arrayTypeChar;
+        /**
+         * Range of arguments to copy verbatim from the start of the input frame.
+         */
+        private final Range leadingRange;
 
         /**
-         * Range of arguments to copy verbatim from the input frame, This will cover all arguments
-         * that aren't a part of the trailing array.
+         * Range of arguments to copy verbatim from the end of the input frame.
          */
-        private final Range copyRange;
+        private final Range trailingRange;
 
-        Collector(MethodHandle delegate, final Class<?> arrayType, final int length) {
-            super(delegate.type().asCollectorType(arrayType, length));
-
-            final Class<?> componentType = arrayType.getComponentType();
-            if (componentType == null) {
-                throw new IllegalArgumentException("arrayType is not an array type");
-            }
-
-            target = delegate;
-            // Copy all arguments except the last argument (which is the trailing array argument
-            // that needs to be spread).
-            arrayOffset = delegate.type().parameterCount() - 1;
+        Collector(MethodHandle delegate, Class<?> arrayType, int start, int length) {
+            super(delegate.type().asCollectorType(arrayType, start, length));
+            this.target = delegate;
+            this.arrayOffset = start;
+            this.arrayLength = length;
             this.arrayType = arrayType;
-            arrayTypeChar = Wrapper.basicTypeChar(componentType);
-            numArrayArgs = length;
 
-            // Copy all args except for the last argument.
-            copyRange = EmulatedStackFrame.Range.of(delegate.type(), 0, arrayOffset);
+            // Build ranges of arguments to be copied.
+            leadingRange = EmulatedStackFrame.Range.of(type(), 0, arrayOffset);
+            trailingRange = EmulatedStackFrame.Range.from(type(), arrayOffset + arrayLength);
         }
 
         @Override
         public void transform(EmulatedStackFrame callerFrame) throws Throwable {
             // Create a new stack frame for the callee.
-            EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
+            final EmulatedStackFrame targetFrame = EmulatedStackFrame.create(target.type());
 
-            // Copy all arguments except for the trailing array argument.
-            callerFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
+            // Copy arguments before the collector array.
+            callerFrame.copyRangeTo(targetFrame, leadingRange, 0, 0);
 
-            // Attach the writer, prepare to spread the trailing array arguments into
-            // the callee frame.
+            // Copy arguments after the collector array.
+            callerFrame.copyRangeTo(targetFrame, trailingRange,
+                leadingRange.numReferences + 1, leadingRange.numBytes);
+
+            // Collect arguments between arrayOffset and arrayOffset + arrayLength.
             final StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(targetFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            writer.attach(targetFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
             final StackFrameReader reader = new StackFrameReader();
-            reader.attach(callerFrame, arrayOffset, copyRange.numReferences, copyRange.numBytes);
+            reader.attach(callerFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
 
+            final char arrayTypeChar = Wrapper.basicTypeChar(arrayType.getComponentType());
             switch (arrayTypeChar) {
                 case 'L':
                     {
@@ -1740,21 +1594,19 @@ public class Transformers {
                         // array we construct might differ from the type of the reference we read
                         // from the stack frame.
                         final Class<?> targetType = target.type().ptypes()[arrayOffset];
-                        final Class<?> adapterComponentType = arrayType.getComponentType();
-
+                        final Class<?> arrayComponentType = arrayType.getComponentType();
                         Object[] arr =
-                                (Object[]) Array.newInstance(adapterComponentType, numArrayArgs);
-                        for (int i = 0; i < numArrayArgs; ++i) {
-                            arr[i] = reader.nextReference(adapterComponentType);
+                                (Object[]) Array.newInstance(arrayComponentType, arrayLength);
+                        for (int i = 0; i < arrayLength; ++i) {
+                            arr[i] = reader.nextReference(arrayComponentType);
                         }
-
                         writer.putNextReference(arr, targetType);
                         break;
                     }
                 case 'I':
                     {
-                        int[] array = new int[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        int[] array = new int[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextInt();
                         }
                         writer.putNextReference(array, int[].class);
@@ -1762,8 +1614,8 @@ public class Transformers {
                     }
                 case 'J':
                     {
-                        long[] array = new long[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        long[] array = new long[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextLong();
                         }
                         writer.putNextReference(array, long[].class);
@@ -1771,8 +1623,8 @@ public class Transformers {
                     }
                 case 'B':
                     {
-                        byte[] array = new byte[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        byte[] array = new byte[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextByte();
                         }
                         writer.putNextReference(array, byte[].class);
@@ -1780,8 +1632,8 @@ public class Transformers {
                     }
                 case 'S':
                     {
-                        short[] array = new short[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        short[] array = new short[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextShort();
                         }
                         writer.putNextReference(array, short[].class);
@@ -1789,8 +1641,8 @@ public class Transformers {
                     }
                 case 'C':
                     {
-                        char[] array = new char[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        char[] array = new char[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextChar();
                         }
                         writer.putNextReference(array, char[].class);
@@ -1798,8 +1650,8 @@ public class Transformers {
                     }
                 case 'Z':
                     {
-                        boolean[] array = new boolean[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        boolean[] array = new boolean[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextBoolean();
                         }
                         writer.putNextReference(array, boolean[].class);
@@ -1807,8 +1659,8 @@ public class Transformers {
                     }
                 case 'F':
                     {
-                        float[] array = new float[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        float[] array = new float[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextFloat();
                         }
                         writer.putNextReference(array, float[].class);
@@ -1816,8 +1668,8 @@ public class Transformers {
                     }
                 case 'D':
                     {
-                        double[] array = new double[numArrayArgs];
-                        for (int i = 0; i < numArrayArgs; ++i) {
+                        double[] array = new double[arrayLength];
+                        for (int i = 0; i < arrayLength; ++i) {
                             array[i] = reader.nextDouble();
                         }
                         writer.putNextReference(array, double[].class);
@@ -1943,15 +1795,10 @@ public class Transformers {
             this.pos = pos;
 
             final int numFilterArgs = collector.type().parameterCount();
-            final int numAdapterArgs = type().parameterCount();
             collectorRange = Range.of(type(), pos, pos + numFilterArgs);
 
             range1 = Range.of(type(), 0, pos);
-            if (pos + numFilterArgs < numAdapterArgs) {
-                this.range2 = Range.of(type(), pos + numFilterArgs, numAdapterArgs);
-            } else {
-                this.range2 = null;
-            }
+            this.range2 = Range.from(type(), pos + numFilterArgs);
 
             // Calculate the number of primitive bytes (or references) we copy to the
             // target frame based on the return value of the combiner.
@@ -1988,13 +1835,11 @@ public class Transformers {
                 copyNext(reader, writer, target.type().ptypes()[0]);
             }
 
-            if (range2 != null) {
-                stackFrame.copyRangeTo(
-                        targetFrame,
-                        range2,
-                        range1.numReferences + referencesOffset,
-                        range2.numBytes + stackFrameOffset);
-            }
+            stackFrame.copyRangeTo(
+                    targetFrame,
+                    range2,
+                    range1.numReferences + referencesOffset,
+                    range2.numBytes + stackFrameOffset);
 
             invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(stackFrame);

@@ -192,12 +192,6 @@ java_library {
         ":okhttp_impl_files",
     ],
 
-    // Only add Java11LanguageFeatures if EXPERIMENTAL_TARGET_JAVA_VERSION_11
-    // flag is set to true
-    openjdk11: {
-        srcs: ["luni/src/main/java/libcore/internal/Java11LanguageFeatures.java"],
-    },
-
     sdk_version: "none",
     system_modules: "none",
     patch_module: "java.base",
@@ -322,12 +316,6 @@ java_library {
     hostdex: true,
 
     srcs: [":core_libart_java_files"],
-
-    // Only add Java11LanguageFeatures if EXPERIMENTAL_TARGET_JAVA_VERSION_11
-    // flag is set to true
-    openjdk11: {
-        srcs: ["luni/src/main/java/libcore/internal/Java11LanguageFeatures.java"],
-    },
 
     sdk_version: "none",
     system_modules: "core-all-system-modules",
@@ -724,6 +712,7 @@ java_test {
     srcs: [
         "ojluni/src/test/java/**/*.java",
         "ojluni/src/test/javax/**/*.java",
+        "ojluni/src/test/sun/**/*.java",
     ],
     java_resource_dirs: [
         "ojluni/src/test/java",
@@ -782,6 +771,7 @@ java_test {
     srcs: [
         "ojluni/src/test/java/**/*.java",
         "ojluni/src/test/javax/**/*.java",
+        "ojluni/src/test/sun/**/*.java",
     ],
     // Filter out the following:
     // 1.) DeserializeMethodTest and SerializedLambdaTest, because they depends on stub classes
