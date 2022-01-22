@@ -25,6 +25,7 @@ import static dalvik.system.EmulatedStackFrame.StackFrameAccessor.copyNext;
 
 import dalvik.system.EmulatedStackFrame;
 import dalvik.system.EmulatedStackFrame.Range;
+import dalvik.system.EmulatedStackFrame.RandomOrderStackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameAccessor;
 import dalvik.system.EmulatedStackFrame.StackFrameReader;
 import dalvik.system.EmulatedStackFrame.StackFrameWriter;
@@ -576,89 +577,18 @@ public class Transformers {
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
-            final StackFrameReader reader = new StackFrameReader();
+            final RandomOrderStackFrameReader reader = new RandomOrderStackFrameReader();
             reader.attach(emulatedStackFrame);
 
-            // In the interests of simplicity, we box / unbox arguments while performing
-            // the permutation. We first iterate through the incoming stack frame and box
-            // each argument. We then unbox and write out the argument to the target frame
-            // according to the specified reordering.
-            final Class<?>[] ptypes = type().ptypes();
-            Object[] arguments = new Object[ptypes.length];
-            for (int i = 0; i < ptypes.length; ++i) {
-                final Class<?> ptype = ptypes[i];
-                switch (Wrapper.basicTypeChar(ptype)) {
-                    case 'L':
-                        arguments[i] = reader.nextReference(ptype);
-                        break;
-                    case 'Z':
-                        arguments[i] = reader.nextBoolean();
-                        break;
-                    case 'B':
-                        arguments[i] = reader.nextByte();
-                        break;
-                    case 'C':
-                        arguments[i] = reader.nextChar();
-                        break;
-                    case 'S':
-                        arguments[i] = reader.nextShort();
-                        break;
-                    case 'I':
-                        arguments[i] = reader.nextInt();
-                        break;
-                    case 'J':
-                        arguments[i] = reader.nextLong();
-                        break;
-                    case 'F':
-                        arguments[i] = reader.nextFloat();
-                        break;
-                    case 'D':
-                        arguments[i] = reader.nextDouble();
-                        break;
-                    default:
-                        throw new AssertionError("Unexpected type: " + ptype);
-                }
-            }
-
-            EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(target.type());
+            final EmulatedStackFrame calleeFrame = EmulatedStackFrame.create(target.type());
             final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(calleeFrame);
 
+            final Class<?> [] ptypes = emulatedStackFrame.getMethodType().parameterArray();
             for (int i = 0; i < reorder.length; ++i) {
-                int idx = reorder[i];
-                final Class<?> ptype = ptypes[idx];
-                final Object argument = arguments[idx];
-                switch (Wrapper.basicTypeChar(ptype)) {
-                    case 'L':
-                        writer.putNextReference(argument, ptype);
-                        break;
-                    case 'Z':
-                        writer.putNextBoolean((boolean) argument);
-                        break;
-                    case 'B':
-                        writer.putNextByte((byte) argument);
-                        break;
-                    case 'C':
-                        writer.putNextChar((char) argument);
-                        break;
-                    case 'S':
-                        writer.putNextShort((short) argument);
-                        break;
-                    case 'I':
-                        writer.putNextInt((int) argument);
-                        break;
-                    case 'J':
-                        writer.putNextLong((long) argument);
-                        break;
-                    case 'F':
-                        writer.putNextFloat((float) argument);
-                        break;
-                    case 'D':
-                        writer.putNextDouble((double) argument);
-                        break;
-                    default:
-                        throw new AssertionError("Unexpected type: " + ptype);
-                }
+                final int readerIndex = reorder[i];
+                reader.moveTo(readerIndex);
+                StackFrameAccessor.copyNext(reader, writer, ptypes[readerIndex]);
             }
 
             invokeFromTransform(target, calleeFrame);
