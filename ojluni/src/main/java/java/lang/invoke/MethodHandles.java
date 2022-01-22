@@ -3302,6 +3302,7 @@ assertEquals("xy", h3.invoke("x", "y", 1, "a", "b", "c"));
      * specified in the elements of the {@code filters} array.
      * The first element of the filter array corresponds to the {@code pos}
      * argument of the target, and so on in sequence.
+     * The filter functions are invoked in left to right order.
      * <p>
      * Null arguments in the array are treated as identity functions,
      * and the corresponding arguments left unchanged.
@@ -3336,14 +3337,25 @@ assertEquals("xY", (String) f1.invokeExact("x", "y")); // xY
 MethodHandle f2 = filterArguments(cat, 0, upcase, upcase);
 assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
      * }</pre></blockquote>
-     * <p> Here is pseudocode for the resulting adapter:
+     * <p>Here is pseudocode for the resulting adapter. In the code, {@code T}
+     * denotes the return type of both the {@code target} and resulting adapter.
+     * {@code P}/{@code p} and {@code B}/{@code b} represent the types and values
+     * of the parameters and arguments that precede and follow the filter position
+     * {@code pos}, respectively. {@code A[i]}/{@code a[i]} stand for the types and
+     * values of the filtered parameters and arguments; they also represent the
+     * return types of the {@code filter[i]} handles. The latter accept arguments
+     * {@code v[i]} of type {@code V[i]}, which also appear in the signature of
+     * the resulting adapter.
      * <blockquote><pre>{@code
-     * V target(P... p, A[i]... a[i], B... b);
+     * T target(P... p, A[i]... a[i], B... b);
      * A[i] filter[i](V[i]);
      * T adapter(P... p, V[i]... v[i], B... b) {
-     *   return target(p..., f[i](v[i])..., b...);
+     *   return target(p..., filter[i](v[i])..., b...);
      * }
      * }</pre></blockquote>
+     * <p>
+     * <em>Note:</em> The resulting adapter is never a {@linkplain MethodHandle#asVarargsCollector
+     * variable-arity method handle}, even if the original target method handle was.
      *
      * @param target the method handle to invoke after arguments are filtered
      * @param pos the position of the first argument to filter
@@ -3360,12 +3372,35 @@ assertEquals("XY", (String) f2.invokeExact("x", "y")); // XY
     public static
     MethodHandle filterArguments(MethodHandle target, int pos, MethodHandle... filters) {
         filterArgumentsCheckArity(target, pos, filters);
-
+        MethodHandle adapter = target;
+        // Android-changed: transformer implementation.
+        // process filters in reverse order so that the invocation of
+        // the resulting adapter will invoke the filters in left-to-right order
+        // for (int i = filters.length - 1; i >= 0; --i) {
+        //     MethodHandle filter = filters[i];
+        //     if (filter == null)  continue;  // ignore null elements of filters
+        //     adapter = filterArgument(adapter, pos + i, filter);
+        // }
+        // return adapter;
         for (int i = 0; i < filters.length; ++i) {
             filterArgumentChecks(target, i + pos, filters[i]);
         }
-
         return new Transformers.FilterArguments(target, pos, filters);
+    }
+
+    /*non-public*/ static
+    MethodHandle filterArgument(MethodHandle target, int pos, MethodHandle filter) {
+        filterArgumentChecks(target, pos, filter);
+        // Android-changed: use Transformer implementation.
+        // MethodType targetType = target.type();
+        // MethodType filterType = filter.type();
+        // BoundMethodHandle result = target.rebind();
+        // Class<?> newParamType = filterType.parameterType(0);
+        // LambdaForm lform = result.editor().filterArgumentForm(1 + pos, BasicType.basicType(newParamType));
+        // MethodType newType = targetType.changeParameterType(pos, newParamType);
+        // result = result.copyWithExtendL(newType, lform, filter);
+        // return result;
+        return new Transformers.FilterArguments(target, pos, filter);
     }
 
     private static void filterArgumentsCheckArity(MethodHandle target, int pos, MethodHandle[] filters) {
@@ -3536,29 +3571,36 @@ System.out.println((String) cat.invokeExact("x", "y")); // xy
 MethodHandle f0 = filterReturnValue(cat, length);
 System.out.println((int) f0.invokeExact("x", "y")); // 2
      * }</pre></blockquote>
-     * <p> Here is pseudocode for the resulting adapter:
+     * <p>Here is pseudocode for the resulting adapter. In the code,
+     * {@code T}/{@code t} represent the result type and value of the
+     * {@code target}; {@code V}, the result type of the {@code filter}; and
+     * {@code A}/{@code a}, the types and values of the parameters and arguments
+     * of the {@code target} as well as the resulting adapter.
      * <blockquote><pre>{@code
-     * V target(A...);
-     * T filter(V);
-     * T adapter(A... a) {
-     *   V v = target(a...);
-     *   return filter(v);
+     * T target(A...);
+     * V filter(T);
+     * V adapter(A... a) {
+     *   T t = target(a...);
+     *   return filter(t);
      * }
      * // and if the target has a void return:
      * void target2(A...);
-     * T filter2();
-     * T adapter2(A... a) {
+     * V filter2();
+     * V adapter2(A... a) {
      *   target2(a...);
      *   return filter2();
      * }
      * // and if the filter has a void return:
-     * V target3(A...);
+     * T target3(A...);
      * void filter3(V);
      * void adapter3(A... a) {
-     *   V v = target3(a...);
-     *   filter3(v);
+     *   T t = target3(a...);
+     *   filter3(t);
      * }
      * }</pre></blockquote>
+     * <p>
+     * <em>Note:</em> The resulting adapter is never a {@linkplain MethodHandle#asVarargsCollector
+     * variable-arity method handle}, even if the original target method handle was.
      * @param target the method handle to invoke before filtering the return value
      * @param filter method handle to call on the return value
      * @return method handle which incorporates the specified return value filtering logic
@@ -3571,7 +3613,13 @@ System.out.println((int) f0.invokeExact("x", "y")); // 2
         MethodType targetType = target.type();
         MethodType filterType = filter.type();
         filterReturnValueChecks(targetType, filterType);
-
+        // Android-changed: use a transformer.
+        // BoundMethodHandle result = target.rebind();
+        // BasicType rtype = BasicType.basicType(filterType.returnType());
+        // LambdaForm lform = result.editor().filterReturnForm(rtype, false);
+        // MethodType newType = targetType.changeReturnType(filterType.returnType());
+        // result = result.copyWithExtendL(newType, lform, filter);
+        // return result;
         return new Transformers.FilterReturnValue(target, filter);
     }
 

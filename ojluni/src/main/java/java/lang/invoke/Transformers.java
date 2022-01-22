@@ -507,54 +507,21 @@ public class Transformers {
             emulatedStackFrame.copyRangeTo(targetFrame, allArgs, 0, 0);
             invokeFromTransform(target, targetFrame);
 
-            // Perform the invoke.
-            final StackFrameReader returnValueReader = new StackFrameReader();
-            returnValueReader.attach(targetFrame);
-            returnValueReader.makeReturnValueAccessor();
+            // Create an emulated frame for the filter and move the return value from
+            // target to the argument of the filter.
+            final EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
+            final Class<?> filterArgumentType = target.type().rtype();
+            if (filterArgumentType != void.class) {
+                final StackFrameReader returnValueReader = new StackFrameReader();
+                returnValueReader.attach(targetFrame).makeReturnValueAccessor();
 
-            // Create an emulated frame for the filter and copy all its arguments across.
-            EmulatedStackFrame filterFrame = EmulatedStackFrame.create(filter.type());
-            final StackFrameWriter filterWriter = new StackFrameWriter();
-            filterWriter.attach(filterFrame);
-
-            final Class<?> returnType = target.type().rtype();
-            switch (Wrapper.basicTypeChar(returnType)) {
-                case 'L':
-                    filterWriter.putNextReference(
-                            returnValueReader.nextReference(returnType), returnType);
-                    break;
-                case 'Z':
-                    filterWriter.putNextBoolean(returnValueReader.nextBoolean());
-                    break;
-                case 'B':
-                    filterWriter.putNextByte(returnValueReader.nextByte());
-                    break;
-                case 'C':
-                    filterWriter.putNextChar(returnValueReader.nextChar());
-                    break;
-                case 'S':
-                    filterWriter.putNextShort(returnValueReader.nextShort());
-                    break;
-                case 'I':
-                    filterWriter.putNextInt(returnValueReader.nextInt());
-                    break;
-                case 'J':
-                    filterWriter.putNextLong(returnValueReader.nextLong());
-                    break;
-                case 'F':
-                    filterWriter.putNextFloat(returnValueReader.nextFloat());
-                    break;
-                case 'D':
-                    filterWriter.putNextDouble(returnValueReader.nextDouble());
-                    break;
-                case 'V':
-                    break;
-                default:
-                    throw new IllegalStateException("Unsupported type: " + returnType);
+                final StackFrameWriter filterWriter = new StackFrameWriter();
+                filterWriter.attach(filterFrame);
+                StackFrameAccessor.copyNext(returnValueReader, filterWriter, filterArgumentType);
             }
 
             // Invoke the filter and copy its return value back to the original frame.
-            invokeFromTransform(filter, filterFrame);
+            invokeExactFromTransform(filter, filterFrame);
             filterFrame.copyReturnValueTo(emulatedStackFrame);
         }
     }
@@ -1531,7 +1498,7 @@ public class Transformers {
         /** The list of filters to apply */
         private final MethodHandle[] filters;
 
-        FilterArguments(MethodHandle target, int pos, MethodHandle[] filters) {
+        FilterArguments(MethodHandle target, int pos, MethodHandle... filters) {
             super(deriveType(target, pos, filters));
 
             this.target = target;
