@@ -583,8 +583,8 @@ public class Transformers {
             // the permutation. We first iterate through the incoming stack frame and box
             // each argument. We then unbox and write out the argument to the target frame
             // according to the specified reordering.
-            Object[] arguments = new Object[reorder.length];
             final Class<?>[] ptypes = type().ptypes();
+            Object[] arguments = new Object[ptypes.length];
             for (int i = 0; i < ptypes.length; ++i) {
                 final Class<?> ptype = ptypes[i];
                 switch (Wrapper.basicTypeChar(ptype)) {
@@ -624,7 +624,7 @@ public class Transformers {
             final StackFrameWriter writer = new StackFrameWriter();
             writer.attach(calleeFrame);
 
-            for (int i = 0; i < ptypes.length; ++i) {
+            for (int i = 0; i < reorder.length; ++i) {
                 int idx = reorder[i];
                 final Class<?> ptype = ptypes[idx];
                 final Object argument = arguments[idx];
