@@ -726,6 +726,12 @@ package android.system {
     field public final String version;
   }
 
+  public final class VmSocketAddress extends java.net.SocketAddress {
+    ctor public VmSocketAddress(int, int);
+    method public int getSvmCid();
+    method public int getSvmPort();
+  }
+
 }
 
 package dalvik.annotation {
@@ -4343,6 +4349,7 @@ package java.lang.invoke {
     method public static java.lang.invoke.MethodHandle constant(Class<?>, Object);
     method public static java.lang.invoke.MethodHandle dropArguments(java.lang.invoke.MethodHandle, int, java.util.List<java.lang.Class<?>>);
     method public static java.lang.invoke.MethodHandle dropArguments(java.lang.invoke.MethodHandle, int, Class<?>...);
+    method public static java.lang.invoke.MethodHandle empty(java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle exactInvoker(java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle explicitCastArguments(java.lang.invoke.MethodHandle, java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle filterArguments(java.lang.invoke.MethodHandle, int, java.lang.invoke.MethodHandle...);
@@ -4361,6 +4368,7 @@ package java.lang.invoke {
     method public static java.lang.invoke.MethodHandle throwException(Class<?>, Class<? extends java.lang.Throwable>);
     method public static java.lang.invoke.MethodHandle varHandleExactInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle varHandleInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
+    method public static java.lang.invoke.MethodHandle zero(Class<?>);
   }
 
   public static final class MethodHandles.Lookup {
@@ -4548,6 +4556,7 @@ package java.lang.ref {
     method public T get();
     method @Deprecated public boolean isEnqueued();
     method public static void reachabilityFence(Object);
+    method public final boolean refersTo(T);
   }
 
   public class ReferenceQueue<T> {
