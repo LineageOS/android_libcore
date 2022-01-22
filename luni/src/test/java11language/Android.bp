@@ -69,9 +69,11 @@ java_library {
     name: "core-java-11-language-tests",
     hostdex: true,
     srcs: [
-        "java/**/*.java",
         ":core-gen-test-repackaged-java-11-language-features",
     ],
+    openjdk11: {
+        srcs: ["java/**/*.java"],
+    },
     sdk_version: "none",
     system_modules: "core-all-system-modules",
     static_libs: [
