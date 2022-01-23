@@ -369,13 +369,14 @@ public class EmulatedStackFrame {
 
         public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
                                          int referencesOffset, int frameOffset) {
-            frame = stackFrame;
-            frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
-            numArgs = frame.type.ptypes().length;
-            if (frameOffset != 0) {
-                frameBuf.position(frameOffset);
+            if (frame != stackFrame) {
+                // Re-initialize storage if not re-attaching to the same stackFrame.
+                frame = stackFrame;
+                frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
+                numArgs = frame.type.ptypes().length;
             }
 
+            frameBuf.position(frameOffset);
             this.referencesOffset = referencesOffset;
             this.argumentIdx = argumentIdx;
 

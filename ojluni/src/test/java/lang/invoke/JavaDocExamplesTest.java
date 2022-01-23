@@ -686,8 +686,6 @@ assert(!(boolean) invokeDispatched.invokeExact(y, "hasNext", "[123]+[789]"));
             }}
     }
 
-// BEGIN Android-removed: removed until supported (b/191446452).
-/*
     static int one(int k) { return 1; }
     static int inc(int i, int acc, int k) { return i + 1; }
     static int mult(int i, int acc, int k) { return i * acc; }
@@ -905,8 +903,6 @@ assertEquals(reversedList, (List<String>) loop.invoke(list));
 {}
         }}
     }
-*/
-// END Android-removed: removed until supported (b/191446452).
 
     @Test public void testFoldArguments3() throws Throwable {
         {{

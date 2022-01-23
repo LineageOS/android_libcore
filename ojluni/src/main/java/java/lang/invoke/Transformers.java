@@ -36,6 +36,8 @@ import sun.misc.Unsafe;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /** @hide Public for testing only. */
 public class Transformers {
@@ -2887,6 +2889,168 @@ public class Transformers {
                     writer.putNextReference(to.cast(ref), to);
                 }
             }
+        }
+    }
+
+    /**
+     * Implements transform for use by MethodHandles.loop().
+     */
+    public static class Loop extends Transformer {
+
+        /** Loop variable initialization methods. */
+        final MethodHandle[] inits;
+
+        /** Loop variable step methods. */
+        final MethodHandle[] steps;
+
+        /** Loop variable predicate methods. */
+        final MethodHandle[] preds;
+
+        /** Loop return value calculating methods. */
+        final MethodHandle[] finis;
+
+        /** Synthetic method type for frame used to hold loop variables. */
+        final MethodType loopVarsType;
+
+        /** Range of loop variables in the frame used for loop variables. */
+        final Range loopVarsRange;
+
+        /** Range of suffix variables in the caller frame. */
+        final Range suffixRange;
+
+        public Loop(Class<?> loopReturnType,
+                    List<Class<?>> commonSuffix,
+                    MethodHandle[] finit,
+                    MethodHandle[] fstep,
+                    MethodHandle[] fpred,
+                    MethodHandle[] ffini) {
+            super(MethodType.methodType(loopReturnType, commonSuffix));
+
+            inits = finit;
+            steps = fstep;
+            preds = fpred;
+            finis = ffini;
+
+            loopVarsType = deduceLoopVarsType(finit);
+            loopVarsRange = EmulatedStackFrame.Range.all(loopVarsType);
+            suffixRange = EmulatedStackFrame.Range.all(type());
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            final EmulatedStackFrame loopVarsFrame = EmulatedStackFrame.create(loopVarsType);
+            final StackFrameWriter loopVarsWriter = new StackFrameWriter();
+
+            init(callerFrame, loopVarsFrame, loopVarsWriter);
+
+            for (;;) {
+                loopVarsWriter.attach(loopVarsFrame);
+                for (int i = 0; i < steps.length; ++i) {
+                    // Future optimization opportunity: there is a good deal of StackFrame
+                    // allocation here, one is allocated per MH invocation. Consider caching
+                    // frames <method-type:stack-frame> and passing the cache on the stack.
+                    doStep(steps[i], callerFrame, loopVarsFrame, loopVarsWriter);
+                    boolean keepGoing = doPredicate(preds[i], callerFrame, loopVarsFrame);
+                    if (!keepGoing) {
+                        doFinish(finis[i], callerFrame, loopVarsFrame);
+                        return;
+                    }
+                }
+            }
+        }
+
+        private static MethodType deduceLoopVarsType(final MethodHandle[] inits) {
+            List<Class<?>> loopVarTypes = new ArrayList(inits.length);
+            for (MethodHandle init : inits) {
+                Class<?> returnType = init.type().returnType();
+                if (returnType != void.class) {
+                    loopVarTypes.add(returnType);
+                }
+            }
+            return MethodType.methodType(void.class, loopVarTypes);
+        }
+
+        private void init(final EmulatedStackFrame callerFrame,
+                          final EmulatedStackFrame loopVarsFrame,
+                          final StackFrameWriter loopVarsWriter) throws Throwable {
+            loopVarsWriter.attach(loopVarsFrame);
+            for (MethodHandle init : inits) {
+                EmulatedStackFrame initFrame = EmulatedStackFrame.create(init.type());
+                callerFrame.copyRangeTo(initFrame, suffixRange, 0, 0);
+
+                invokeExactFromTransform(init, initFrame);
+
+                final Class<?> loopVarType = init.type().returnType();
+                if (loopVarType != void.class) {
+                    StackFrameReader initReader = new StackFrameReader();
+                    initReader.attach(initFrame).makeReturnValueAccessor();
+                    copyNext(initReader, loopVarsWriter, loopVarType);
+                }
+            }
+        }
+
+        /**
+         * Creates a frame for invoking a method of specified type.
+         *
+         * The frame arguments are the loop variables followed by the arguments provided to the
+         * loop MethodHandle.
+         *
+         * @param mt the type of the method to be invoked.
+         * @param callerFrame the frame invoking the loop MethodHandle.
+         * @param loopVarsFrame the frame holding loop variables.
+         * @return an EmulatedStackFrame initialized with the required arguments.
+         */
+        private EmulatedStackFrame prepareFrame(final MethodType mt,
+                                                final EmulatedStackFrame callerFrame,
+                                                final EmulatedStackFrame loopVarsFrame) {
+            EmulatedStackFrame frame = EmulatedStackFrame.create(mt);
+
+            // Copy loop variables.
+            loopVarsFrame.copyRangeTo(frame, loopVarsRange, 0, 0);
+
+            // Copy arguments provided in the loop invoke().
+            callerFrame.copyRangeTo(frame,
+                                    suffixRange,
+                                    loopVarsRange.numReferences,
+                                    loopVarsRange.numBytes);
+            return frame;
+        }
+
+        private void doStep(final MethodHandle step,
+                            final EmulatedStackFrame callerFrame,
+                            final EmulatedStackFrame loopVarsFrame,
+                            final StackFrameWriter loopVarsWriter) throws Throwable {
+            final EmulatedStackFrame stepFrame =
+                prepareFrame(step.type(), callerFrame, loopVarsFrame);
+            invokeExactFromTransform(step, stepFrame);
+
+            final Class<?> loopVarType = step.type().returnType();
+            if (loopVarType != void.class) {
+                final StackFrameReader stepReader = new StackFrameReader();
+                stepReader.attach(stepFrame).makeReturnValueAccessor();
+                copyNext(stepReader, loopVarsWriter, loopVarType);
+            }
+        }
+
+        private boolean doPredicate(final MethodHandle pred,
+                                    final EmulatedStackFrame callerFrame,
+                                    final EmulatedStackFrame loopVarsFrame) throws Throwable {
+            final EmulatedStackFrame predFrame =
+                    prepareFrame(pred.type(), callerFrame, loopVarsFrame);
+            invokeExactFromTransform(pred, predFrame);
+
+            final StackFrameReader predReader = new StackFrameReader();
+            predReader.attach(predFrame).makeReturnValueAccessor();
+            return predReader.nextBoolean();
+        }
+
+        private void doFinish(final MethodHandle fini,
+                              final EmulatedStackFrame callerFrame,
+                              final EmulatedStackFrame loopVarsFrame) throws Throwable {
+            final EmulatedStackFrame finiFrame =
+                    prepareFrame(fini.type(), callerFrame, loopVarsFrame);
+            invokeExactFromTransform(fini, finiFrame);
+            finiFrame.copyReturnValueTo(callerFrame);
         }
     }
 }
