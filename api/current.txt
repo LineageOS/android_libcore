@@ -19721,6 +19721,7 @@ package org.json {
     ctor public JSONObject(@NonNull String) throws org.json.JSONException;
     ctor public JSONObject(@NonNull org.json.JSONObject, @NonNull String[]) throws org.json.JSONException;
     method @NonNull public org.json.JSONObject accumulate(@NonNull String, @Nullable Object) throws org.json.JSONException;
+    method @NonNull public org.json.JSONObject append(@NonNull String, @Nullable Object) throws org.json.JSONException;
     method @NonNull public Object get(@NonNull String) throws org.json.JSONException;
     method public boolean getBoolean(@NonNull String) throws org.json.JSONException;
     method public double getDouble(@NonNull String) throws org.json.JSONException;
