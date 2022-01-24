@@ -281,8 +281,6 @@ assertEquals("xz", (String) d12.invokeExact("x", 12, true, "z"));
             }}
     }
 
-// Android-removed: dropArguments to match not yet supported (b/191446452).
-/*
     @Test public void testDropArgumentsToMatch() throws Throwable {
         {{
 {} /// JAVADOC
@@ -300,7 +298,7 @@ MethodHandle h3 = guardWithTest(h0, h1, h2);
 assertEquals("xy", h3.invoke("x", "y", 1, "a", "b", "c"));
         }}
     }
-*/
+
     @Test public void testFilterArguments() throws Throwable {
         {{
 {} /// JAVADOC
@@ -694,8 +692,6 @@ assert(!(boolean) invokeDispatched.invokeExact(y, "hasNext", "[123]+[789]"));
     static boolean pred(int i, int acc, int k) { return i < k; }
     static int fin(int i, int acc, int k) { return acc; }
 
-// BEGIN Android-removed: removed until supported (b/191446452).
-/*
     @Test public void testLoop() throws Throwable {
         MethodHandle MH_inc, MH_one, MH_mult, MH_pred, MH_fin;
         Class<?> I = int.class;
@@ -953,8 +949,7 @@ assertTrue((int) compare2FromArray.invoke(Arrays.copyOfRange(ints, 2, 4), cmp) =
 {}
         }}
     }
-*/
-// END Android-removed: removed until supported (b/191446452).
+
     /* ---- TEMPLATE ----
     @Test public void testFoo() throws Throwable {
         {{

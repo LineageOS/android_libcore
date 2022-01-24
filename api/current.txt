@@ -4347,19 +4347,26 @@ package java.lang.invoke {
     method public static java.lang.invoke.MethodHandle catchException(java.lang.invoke.MethodHandle, Class<? extends java.lang.Throwable>, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle collectArguments(java.lang.invoke.MethodHandle, int, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle constant(Class<?>, Object);
+    method public static java.lang.invoke.MethodHandle countedLoop(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
+    method public static java.lang.invoke.MethodHandle countedLoop(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
+    method public static java.lang.invoke.MethodHandle doWhileLoop(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle dropArguments(java.lang.invoke.MethodHandle, int, java.util.List<java.lang.Class<?>>);
     method public static java.lang.invoke.MethodHandle dropArguments(java.lang.invoke.MethodHandle, int, Class<?>...);
+    method public static java.lang.invoke.MethodHandle dropArgumentsToMatch(java.lang.invoke.MethodHandle, int, java.util.List<java.lang.Class<?>>, int);
     method public static java.lang.invoke.MethodHandle empty(java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle exactInvoker(java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle explicitCastArguments(java.lang.invoke.MethodHandle, java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle filterArguments(java.lang.invoke.MethodHandle, int, java.lang.invoke.MethodHandle...);
     method public static java.lang.invoke.MethodHandle filterReturnValue(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle foldArguments(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
+    method public static java.lang.invoke.MethodHandle foldArguments(java.lang.invoke.MethodHandle, int, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle guardWithTest(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle identity(Class<?>);
     method public static java.lang.invoke.MethodHandle insertArguments(java.lang.invoke.MethodHandle, int, java.lang.Object...);
     method public static java.lang.invoke.MethodHandle invoker(java.lang.invoke.MethodType);
+    method public static java.lang.invoke.MethodHandle iteratedLoop(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandles.Lookup lookup();
+    method public static java.lang.invoke.MethodHandle loop(java.lang.invoke.MethodHandle[]...);
     method public static java.lang.invoke.MethodHandle permuteArguments(java.lang.invoke.MethodHandle, java.lang.invoke.MethodType, int...);
     method public static java.lang.invoke.MethodHandles.Lookup privateLookupIn(Class<?>, java.lang.invoke.MethodHandles.Lookup) throws java.lang.IllegalAccessException;
     method public static java.lang.invoke.MethodHandles.Lookup publicLookup();
@@ -4368,6 +4375,7 @@ package java.lang.invoke {
     method public static java.lang.invoke.MethodHandle throwException(Class<?>, Class<? extends java.lang.Throwable>);
     method public static java.lang.invoke.MethodHandle varHandleExactInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
     method public static java.lang.invoke.MethodHandle varHandleInvoker(java.lang.invoke.VarHandle.AccessMode, java.lang.invoke.MethodType);
+    method public static java.lang.invoke.MethodHandle whileLoop(java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle, java.lang.invoke.MethodHandle);
     method public static java.lang.invoke.MethodHandle zero(Class<?>);
   }
 
