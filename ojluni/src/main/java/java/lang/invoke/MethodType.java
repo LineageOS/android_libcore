@@ -833,6 +833,28 @@ class MethodType implements java.io.Serializable {
         return sb.toString();
     }
 
+    /** True if my parameter list is effectively identical to the given full list,
+     *  after skipping the given number of my own initial parameters.
+     *  In other words, after disregarding {@code skipPos} parameters,
+     *  my remaining parameter list is no longer than the {@code fullList}, and
+     *  is equal to the same-length initial sublist of {@code fullList}.
+     */
+    /*non-public*/
+    boolean effectivelyIdenticalParameters(int skipPos, List<Class<?>> fullList) {
+        int myLen = ptypes.length, fullLen = fullList.size();
+        if (skipPos > myLen || myLen - skipPos > fullLen)
+            return false;
+        List<Class<?>> myList = Arrays.asList(ptypes);
+        if (skipPos != 0) {
+            myList = myList.subList(skipPos, myLen);
+            myLen -= skipPos;
+        }
+        if (fullLen == myLen)
+            return myList.equals(fullList);
+        else
+            return myList.equals(fullList.subList(0, myLen));
+    }
+
     // BEGIN Android-removed: Implementation methods unused on Android.
     /*
     /** True if the old return type can always be viewed (w/o casting) under new return type,
