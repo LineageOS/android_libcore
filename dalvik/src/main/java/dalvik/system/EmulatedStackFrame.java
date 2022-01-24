@@ -369,13 +369,14 @@ public class EmulatedStackFrame {
 
         public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
                                          int referencesOffset, int frameOffset) {
-            frame = stackFrame;
-            frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
-            numArgs = frame.type.ptypes().length;
-            if (frameOffset != 0) {
-                frameBuf.position(frameOffset);
+            if (frame != stackFrame) {
+                // Re-initialize storage if not re-attaching to the same stackFrame.
+                frame = stackFrame;
+                frameBuf = ByteBuffer.wrap(frame.stackFrame).order(ByteOrder.LITTLE_ENDIAN);
+                numArgs = frame.type.ptypes().length;
             }
 
+            frameBuf.position(frameOffset);
             this.referencesOffset = referencesOffset;
             this.argumentIdx = argumentIdx;
 
@@ -574,6 +575,54 @@ public class EmulatedStackFrame {
             checkReadType(expectedType);
             argumentIdx++;
             return (T) frame.references[referencesOffset++];
+        }
+    }
+
+    /**
+     * Provides sequential and non-sequential read access to an emulated stack frame. Allows reads
+     * to argument slots as well as to return value slots.
+     */
+    public static class RandomOrderStackFrameReader extends StackFrameReader {
+        int [] frameOffsets;
+        int [] referencesOffsets;
+
+        private void buildTables(MethodType methodType) {
+            final Class<?> [] ptypes = methodType.parameterArray();
+            frameOffsets = new int [ptypes.length];
+            referencesOffsets = new int [ptypes.length];
+            int frameOffset = 0;
+            int referenceOffset = 0;
+            for (int i = 0; i < ptypes.length; ++i) {
+                frameOffsets[i] = frameOffset;
+                referencesOffsets[i] = referenceOffset;
+
+                final Class<?> ptype = ptypes[i];
+                if (ptype.isPrimitive()) {
+                    frameOffset += getSize(ptype);
+                } else {
+                    referenceOffset += 1;
+                }
+            }
+        }
+
+        @Override
+        public StackFrameAccessor attach(EmulatedStackFrame stackFrame, int argumentIdx,
+                int referencesOffset, int frameOffset) {
+            super.attach(stackFrame, argumentIdx, referencesOffset, frameOffset);
+            buildTables(stackFrame.getMethodType());
+            return this;
+        }
+
+        /**
+         * Position to read argument at specific index.
+         * @param argumentIndex the index of the next argument to be read.
+         * @return this reader.
+         */
+        public RandomOrderStackFrameReader moveTo(int argumentIndex) {
+            referencesOffset = referencesOffsets[argumentIndex];
+            frameBuf.position(frameOffsets[argumentIndex]);
+            argumentIdx = argumentIndex;
+            return this;
         }
     }
 }
