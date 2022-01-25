@@ -726,6 +726,11 @@ package android.system {
     field public final String version;
   }
 
+  public final class SystemCleaner {
+    ctor public SystemCleaner();
+    method @NonNull public static java.lang.ref.Cleaner cleaner();
+  }
+
   public final class VmSocketAddress extends java.net.SocketAddress {
     ctor public VmSocketAddress(int, int);
     method public int getSvmCid();
