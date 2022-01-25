@@ -8817,6 +8817,14 @@ package java.security.interfaces {
     method public java.security.spec.AlgorithmParameterSpec getParams();
   }
 
+  public interface XECPrivateKey extends java.security.interfaces.XECKey java.security.PrivateKey {
+    method public java.util.Optional<byte[]> getScalar();
+  }
+
+  public interface XECPublicKey extends java.security.interfaces.XECKey java.security.PublicKey {
+    method public java.math.BigInteger getU();
+  }
+
 }
 
 package java.security.spec {

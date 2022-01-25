@@ -126,11 +126,11 @@
     <issue
         id="NewApi"
         message="Class requires API level 33 (current min is 31): `java.security.spec.NamedParameterSpec`"
-        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec {"
+        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
-            line="37"
+            line="38"
             column="41"/>
     </issue>
 
@@ -163,7 +163,7 @@
         errorLine2="                               ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="949"
+            line="955"
             column="32"/>
     </issue>
 
@@ -174,7 +174,7 @@
         errorLine2="                        ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2519"
+            line="2580"
             column="25"/>
     </issue>
 
@@ -185,7 +185,7 @@
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2526"
+            line="2587"
             column="62"/>
     </issue>
 
@@ -220,6 +220,28 @@
             file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
             line="135"
             column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPrivateKey extends XECKey, PrivateKey {"
+        errorLine2="                                       ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPrivateKey.java"
+            line="45"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPublicKey extends XECKey, PublicKey {"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPublicKey.java"
+            line="45"
+            column="39"/>
     </issue>
 
     <!-- TODO(b/205570605): The following repeats all the issues above, but with
@@ -352,11 +374,11 @@
     <issue
         id="NewApi"
         message="Class requires API level 32 (current min is 31): `java.security.spec.NamedParameterSpec`"
-        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec {"
+        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
-            line="37"
+            line="38"
             column="41"/>
     </issue>
 
@@ -389,7 +411,7 @@
         errorLine2="                               ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="949"
+            line="955"
             column="32"/>
     </issue>
 
@@ -400,7 +422,7 @@
         errorLine2="                        ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2519"
+            line="2580"
             column="25"/>
     </issue>
 
@@ -411,7 +433,7 @@
         errorLine2="                                                             ~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
-            line="2526"
+            line="2587"
             column="62"/>
     </issue>
 
@@ -446,6 +468,28 @@
             file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
             line="135"
             column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPrivateKey extends XECKey, PrivateKey {"
+        errorLine2="                                       ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPrivateKey.java"
+            line="45"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPublicKey extends XECKey, PublicKey {"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPublicKey.java"
+            line="45"
+            column="39"/>
     </issue>
 
 </issues>
