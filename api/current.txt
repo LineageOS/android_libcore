@@ -8863,9 +8863,8 @@ package java.security.spec {
     method public java.math.BigInteger getP();
   }
 
-  public class ECGenParameterSpec implements java.security.spec.AlgorithmParameterSpec {
+  public class ECGenParameterSpec extends java.security.spec.NamedParameterSpec implements java.security.spec.AlgorithmParameterSpec {
     ctor public ECGenParameterSpec(String);
-    method public String getName();
   }
 
   public class ECParameterSpec implements java.security.spec.AlgorithmParameterSpec {
