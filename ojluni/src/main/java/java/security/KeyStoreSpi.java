@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -380,6 +380,12 @@ public abstract class KeyStoreSpi {
     public void engineLoad(KeyStore.LoadStoreParameter param)
                 throws IOException, NoSuchAlgorithmException,
                 CertificateException {
+        engineLoad(null, param);
+    }
+
+    void engineLoad(InputStream stream, KeyStore.LoadStoreParameter param)
+                throws IOException, NoSuchAlgorithmException,
+                CertificateException {
 
         if (param == null) {
             engineLoad((InputStream)null, (char[])null);
@@ -581,6 +587,31 @@ public abstract class KeyStoreSpi {
         if (entryClass == KeyStore.SecretKeyEntry.class) {
             return engineIsKeyEntry(alias) &&
                         engineGetCertificate(alias) == null;
+        }
+        return false;
+    }
+
+    /**
+     * Probes the specified input stream to determine whether it contains a
+     * keystore that is supported by this implementation, or not.
+     *
+     * @implSpec
+     * This method returns false by default. Keystore implementations should
+     * override this method to peek at the data stream directly or to use other
+     * content detection mechanisms.
+     *
+     * @param  stream the keystore data to be probed
+     *
+     * @return true if the keystore data is supported, otherwise false
+     *
+     * @throws IOException if there is an I/O problem with the keystore data.
+     * @throws NullPointerException if stream is {@code null}.
+     *
+     * @since 9
+     */
+    public boolean engineProbe(InputStream stream) throws IOException {
+        if (stream == null) {
+            throw new NullPointerException("input stream must not be null");
         }
         return false;
     }
