@@ -3908,7 +3908,13 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      * argument and return types, except that handler may omit trailing arguments
      * (similarly to the predicate in {@link #guardWithTest guardWithTest}).
      * Also, the handler must have an extra leading parameter of {@code exType} or a supertype.
-     * <p> Here is pseudocode for the resulting adapter:
+     * <p>
+     * Here is pseudocode for the resulting adapter. In the code, {@code T}
+     * represents the return type of the {@code target} and {@code handler},
+     * and correspondingly that of the resulting adapter; {@code A}/{@code a},
+     * the types and values of arguments to the resulting handle consumed by
+     * {@code handler}; and {@code B}/{@code b}, those of arguments to the
+     * resulting handle discarded by {@code handler}.
      * <blockquote><pre>{@code
      * T target(A..., B...);
      * T handler(ExType, A...);
@@ -3939,6 +3945,7 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
      *          the given exception type, or if the method handle types do
      *          not match in their return types and their
      *          corresponding parameters
+     * @see MethodHandles#tryFinally(MethodHandle, MethodHandle)
      */
     public static
     MethodHandle catchException(MethodHandle target,
@@ -3946,20 +3953,19 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
                                 MethodHandle handler) {
         MethodType ttype = target.type();
         MethodType htype = handler.type();
+        if (!Throwable.class.isAssignableFrom(exType))
+            throw new ClassCastException(exType.getName());
         if (htype.parameterCount() < 1 ||
             !htype.parameterType(0).isAssignableFrom(exType))
             throw newIllegalArgumentException("handler does not accept exception type "+exType);
         if (htype.returnType() != ttype.returnType())
             throw misMatchedTypes("target and handler return types", ttype, htype);
-        List<Class<?>> targs = ttype.parameterList();
-        List<Class<?>> hargs = htype.parameterList();
-        hargs = hargs.subList(1, hargs.size());  // omit leading parameter from handler
-        if (!targs.equals(hargs)) {
-            int hpc = hargs.size(), tpc = targs.size();
-            if (hpc >= tpc || !targs.subList(0, hpc).equals(hargs))
-                throw misMatchedTypes("target and handler types", ttype, htype);
+        handler = dropArgumentsToMatch(handler, 1, ttype.parameterList(), 0, true);
+        if (handler == null) {
+            throw misMatchedTypes("target and handler types", ttype, htype);
         }
-
+        // Android-changed: use Transformer implementation.
+        // return MethodHandleImpl.makeGuardWithCatch(target, exType, handler);
         return new Transformers.CatchException(target, handler, exType);
     }
 
@@ -3979,7 +3985,8 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
     MethodHandle throwException(Class<?> returnType, Class<? extends Throwable> exType) {
         if (!Throwable.class.isAssignableFrom(exType))
             throw new ClassCastException(exType.getName());
-
+        // Android-changed: use Transformer implementation.
+        // return MethodHandleImpl.throwException(methodType(returnType, exType));
         return new Transformers.AlwaysThrow(returnType, exType);
     }
 
@@ -5310,6 +5317,137 @@ assertEquals("boojum", (String) catTrace.invokeExact("boo", "jum"));
         Class<?> ti = types[i]; types[i] = types[j]; types[j] = ti;
         MethodType swapType = methodType(mh.type().returnType(), types);
         return permuteArguments(mh, swapType, order);
+    }
+
+    /**
+     * Makes a method handle that adapts a {@code target} method handle by wrapping it in a {@code try-finally} block.
+     * Another method handle, {@code cleanup}, represents the functionality of the {@code finally} block. Any exception
+     * thrown during the execution of the {@code target} handle will be passed to the {@code cleanup} handle. The
+     * exception will be rethrown, unless {@code cleanup} handle throws an exception first.  The
+     * value returned from the {@code cleanup} handle's execution will be the result of the execution of the
+     * {@code try-finally} handle.
+     * <p>
+     * The {@code cleanup} handle will be passed one or two additional leading arguments.
+     * The first is the exception thrown during the
+     * execution of the {@code target} handle, or {@code null} if no exception was thrown.
+     * The second is the result of the execution of the {@code target} handle, or, if it throws an exception,
+     * a {@code null}, zero, or {@code false} value of the required type is supplied as a placeholder.
+     * The second argument is not present if the {@code target} handle has a {@code void} return type.
+     * (Note that, except for argument type conversions, combinators represent {@code void} values in parameter lists
+     * by omitting the corresponding paradoxical arguments, not by inserting {@code null} or zero values.)
+     * <p>
+     * The {@code target} and {@code cleanup} handles must have the same corresponding argument and return types, except
+     * that the {@code cleanup} handle may omit trailing arguments. Also, the {@code cleanup} handle must have one or
+     * two extra leading parameters:<ul>
+     * <li>a {@code Throwable}, which will carry the exception thrown by the {@code target} handle (if any); and
+     * <li>a parameter of the same type as the return type of both {@code target} and {@code cleanup}, which will carry
+     * the result from the execution of the {@code target} handle.
+     * This parameter is not present if the {@code target} returns {@code void}.
+     * </ul>
+     * <p>
+     * The pseudocode for the resulting adapter looks as follows. In the code, {@code V} represents the result type of
+     * the {@code try/finally} construct; {@code A}/{@code a}, the types and values of arguments to the resulting
+     * handle consumed by the cleanup; and {@code B}/{@code b}, those of arguments to the resulting handle discarded by
+     * the cleanup.
+     * <blockquote><pre>{@code
+     * V target(A..., B...);
+     * V cleanup(Throwable, V, A...);
+     * V adapter(A... a, B... b) {
+     *   V result = (zero value for V);
+     *   Throwable throwable = null;
+     *   try {
+     *     result = target(a..., b...);
+     *   } catch (Throwable t) {
+     *     throwable = t;
+     *     throw t;
+     *   } finally {
+     *     result = cleanup(throwable, result, a...);
+     *   }
+     *   return result;
+     * }
+     * }</pre></blockquote>
+     * <p>
+     * Note that the saved arguments ({@code a...} in the pseudocode) cannot
+     * be modified by execution of the target, and so are passed unchanged
+     * from the caller to the cleanup, if it is invoked.
+     * <p>
+     * The target and cleanup must return the same type, even if the cleanup
+     * always throws.
+     * To create such a throwing cleanup, compose the cleanup logic
+     * with {@link #throwException throwException},
+     * in order to create a method handle of the correct return type.
+     * <p>
+     * Note that {@code tryFinally} never converts exceptions into normal returns.
+     * In rare cases where exceptions must be converted in that way, first wrap
+     * the target with {@link #catchException(MethodHandle, Class, MethodHandle)}
+     * to capture an outgoing exception, and then wrap with {@code tryFinally}.
+     * <p>
+     * It is recommended that the first parameter type of {@code cleanup} be
+     * declared {@code Throwable} rather than a narrower subtype.  This ensures
+     * {@code cleanup} will always be invoked with whatever exception that
+     * {@code target} throws.  Declaring a narrower type may result in a
+     * {@code ClassCastException} being thrown by the {@code try-finally}
+     * handle if the type of the exception thrown by {@code target} is not
+     * assignable to the first parameter type of {@code cleanup}.  Note that
+     * various exception types of {@code VirtualMachineError},
+     * {@code LinkageError}, and {@code RuntimeException} can in principle be
+     * thrown by almost any kind of Java code, and a finally clause that
+     * catches (say) only {@code IOException} would mask any of the others
+     * behind a {@code ClassCastException}.
+     *
+     * @param target the handle whose execution is to be wrapped in a {@code try} block.
+     * @param cleanup the handle that is invoked in the finally block.
+     *
+     * @return a method handle embodying the {@code try-finally} block composed of the two arguments.
+     * @throws NullPointerException if any argument is null
+     * @throws IllegalArgumentException if {@code cleanup} does not accept
+     *          the required leading arguments, or if the method handle types do
+     *          not match in their return types and their
+     *          corresponding trailing parameters
+     *
+     * @see MethodHandles#catchException(MethodHandle, Class, MethodHandle)
+     * @since 9
+     */
+    public static MethodHandle tryFinally(MethodHandle target, MethodHandle cleanup) {
+        List<Class<?>> targetParamTypes = target.type().parameterList();
+        Class<?> rtype = target.type().returnType();
+
+        tryFinallyChecks(target, cleanup);
+
+        // Match parameter lists: if the cleanup has a shorter parameter list than the target, add ignored arguments.
+        // The cleanup parameter list (minus the leading Throwable and result parameters) must be a sublist of the
+        // target parameter list.
+        cleanup = dropArgumentsToMatch(cleanup, (rtype == void.class ? 1 : 2), targetParamTypes, 0);
+
+        // Ensure that the intrinsic type checks the instance thrown by the
+        // target against the first parameter of cleanup
+        cleanup = cleanup.asType(cleanup.type().changeParameterType(0, Throwable.class));
+
+        // Use asFixedArity() to avoid unnecessary boxing of last argument for VarargsCollector case.
+        // Android-changed: use Transformer implementation.
+        // return MethodHandleImpl.makeTryFinally(target.asFixedArity(), cleanup.asFixedArity(), rtype, targetParamTypes);
+        return new Transformers.TryFinally(target.asFixedArity(), cleanup.asFixedArity());
+    }
+
+    private static void tryFinallyChecks(MethodHandle target, MethodHandle cleanup) {
+        Class<?> rtype = target.type().returnType();
+        if (rtype != cleanup.type().returnType()) {
+            throw misMatchedTypes("target and return types", cleanup.type().returnType(), rtype);
+        }
+        MethodType cleanupType = cleanup.type();
+        if (!Throwable.class.isAssignableFrom(cleanupType.parameterType(0))) {
+            throw misMatchedTypes("cleanup first argument and Throwable", cleanup.type(), Throwable.class);
+        }
+        if (rtype != void.class && cleanupType.parameterType(1) != rtype) {
+            throw misMatchedTypes("cleanup second argument and target return type", cleanup.type(), rtype);
+        }
+        // The cleanup parameter list (minus the leading Throwable and result parameters) must be a sublist of the
+        // target parameter list.
+        int cleanupArgIndex = rtype == void.class ? 1 : 2;
+        if (!cleanupType.effectivelyIdenticalParameters(cleanupArgIndex, target.type().parameterList())) {
+            throw misMatchedTypes("cleanup parameters after (Throwable,result) and target parameter list prefix",
+                    cleanup.type(), target.type());
+        }
     }
 
     // BEGIN Android-added: Code from OpenJDK's MethodHandleImpl.
