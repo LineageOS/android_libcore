@@ -270,7 +270,7 @@ public interface SocketOptions {
      * @see ServerSocket#setSoTimeout
      * @see DatagramSocket#setSoTimeout
      */
-    @Native public final static int SO_TIMEOUT = 0x1006;
+    @Native public static final int SO_TIMEOUT = 0x1006;
 
     /**
      * Set a hint the size of the underlying buffers used by the
@@ -287,7 +287,7 @@ public interface SocketOptions {
      * @see DatagramSocket#setSendBufferSize
      * @see DatagramSocket#getSendBufferSize
      */
-    @Native public final static int SO_SNDBUF = 0x1001;
+    @Native public static final int SO_SNDBUF = 0x1001;
 
     /**
      * Set a hint the size of the underlying buffers used by the
