@@ -626,6 +626,8 @@ filegroup {
         "ojluni/src/main/java/java/security/interfaces/RSAPrivateKey.java",
         "ojluni/src/main/java/java/security/interfaces/RSAPublicKey.java",
         "ojluni/src/main/java/java/security/interfaces/XECKey.java",
+        "ojluni/src/main/java/java/security/interfaces/XECPublicKey.java",
+        "ojluni/src/main/java/java/security/interfaces/XECPrivateKey.java",
         "ojluni/src/main/java/java/security/interfaces/package-info.java",
         "ojluni/src/main/java/java/security/InvalidAlgorithmParameterException.java",
         "ojluni/src/main/java/java/security/InvalidKeyException.java",
