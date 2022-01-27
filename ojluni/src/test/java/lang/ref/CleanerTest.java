@@ -122,10 +122,6 @@ public class CleanerTest {
 
         // Pairs
         generateCases(cleaner, c -> c.doClean(), c -> c.clearRef());
-
-        CleanableCase s = setupPhantom(COMMON, cleaner);
-        cleaner = null;
-        checkCleaned(s.getSemaphore(), true, "Cleaner was cleaned:");
     }
 
     /**
