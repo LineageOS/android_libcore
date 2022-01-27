@@ -39,6 +39,7 @@ import java.lang.ReflectiveOperationException;
 public final class ZygoteHooks {
     private static long token;
     private static Method enableMemoryMappedDataMethod;
+    private static boolean inZygoteProcess = true;
 
     /** All methods are static, no need to instantiate. */
     private ZygoteHooks() {
@@ -165,6 +166,9 @@ public final class ZygoteHooks {
     public static void postForkChild(int runtimeFlags, boolean isSystemServer,
             boolean isChildZygote, String instructionSet) {
         nativePostForkChild(token, runtimeFlags, isSystemServer, isChildZygote, instructionSet);
+        if (!isChildZygote) {
+          inZygoteProcess = false;
+        }
 
         Math.setRandomSeedInternal(System.currentTimeMillis());
 
@@ -206,6 +210,14 @@ public final class ZygoteHooks {
     @SystemApi(client = MODULE_LIBRARIES)
     public static boolean isIndefiniteThreadSuspensionSafe() {
         return nativeZygoteLongSuspendOk();
+    }
+
+    /**
+     * Are we still in a zygote?
+     * @hide
+     */
+    public static boolean inZygote() {
+      return inZygoteProcess;
     }
 
     // Hook for SystemServer specific early initialization post-forking.

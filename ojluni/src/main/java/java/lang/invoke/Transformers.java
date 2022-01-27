@@ -202,6 +202,70 @@ public class Transformers {
         }
     }
 
+    /** Implements {@code MethodHandles.tryFinally}. */
+    public static class TryFinally extends Transformer {
+        /** The target handle to try. */
+        private final MethodHandle target;
+
+        /** The cleanup handle to invoke after the target. */
+        private final MethodHandle cleanup;
+
+        public TryFinally(MethodHandle target, MethodHandle cleanup) {
+            super(target.type());
+            this.target = target;
+            this.cleanup = cleanup;
+        }
+
+        @Override
+        protected void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            Throwable throwable = null;
+            try {
+                invokeExactFromTransform(target, callerFrame);
+            } catch (Throwable t) {
+                throwable = t;
+                throw t;
+            } finally {
+                final EmulatedStackFrame cleanupFrame = prepareCleanupFrame(callerFrame, throwable);
+                invokeExactFromTransform(cleanup, cleanupFrame);
+                if (cleanup.type().returnType() != void.class) {
+                    cleanupFrame.copyReturnValueTo(callerFrame);
+                }
+            }
+        }
+
+        /** Prepares the frame used to invoke the cleanup handle. */
+        private EmulatedStackFrame prepareCleanupFrame(final EmulatedStackFrame callerFrame,
+                                                       final Throwable throwable) {
+            final EmulatedStackFrame cleanupFrame = EmulatedStackFrame.create(cleanup.type());
+            final StackFrameWriter cleanupWriter = new StackFrameWriter();
+            cleanupWriter.attach(cleanupFrame);
+
+            // The first argument to `cleanup` is (any) pending exception kind.
+            cleanupWriter.putNextReference(throwable, Throwable.class);
+            int added = 1;
+
+            // The second argument to `cleanup` is the result from `target` (if not void).
+            Class<?> targetReturnType = target.type().returnType();
+            StackFrameReader targetReader = new StackFrameReader();
+            targetReader.attach(callerFrame);
+            if (targetReturnType != void.class) {
+                targetReader.makeReturnValueAccessor();
+                copyNext(targetReader, cleanupWriter, targetReturnType);
+                added += 1;
+                // Reset `targetReader` to reference the arguments in `callerFrame`.
+                targetReader.attach(callerFrame);
+            }
+
+            // The final arguments from the invocation of target. As many are copied as the cleanup
+            // handle expects (it may be fewer than the arguments provided to target).
+            Class<?> [] cleanupTypes = cleanup.type().parameterArray();
+            for (; added != cleanupTypes.length; ++added) {
+                copyNext(targetReader, cleanupWriter, cleanupTypes[added]);
+            }
+            return cleanupFrame;
+        }
+    }
+
     /** Implements {@code MethodHandles.GuardWithTest}. */
     public static class GuardWithTest extends Transformer {
         private final MethodHandle test;
