@@ -453,13 +453,34 @@ public abstract class KeyStoreSpi {
                         KeyStore.ProtectionParameter protParam)
                 throws KeyStoreException, NoSuchAlgorithmException,
                 UnrecoverableEntryException {
-
-        if (!engineContainsAlias(alias)) {
+        // Android-changed: add null check previously always done here inside engineContainsAlias
+        // if (!engineContainsAlias(alias)) {
+        if (alias == null) {
             return null;
         }
 
+        // BEGIN Android-added: Figure out the type of entry once
+        // To avoid many redundant calls that for some providers like
+        // AndroidKeyStoreSpi are costly since it performs
+        // binder transactions everytime we call engineIsKeyEntry or
+        // engineContainsAlias methods and rely on the knowledge
+        // that the only two types of entries are keys or certificates.
+        boolean isCertificateEntry;
+        if (!engineIsKeyEntry(alias)){
+            if (!engineContainsAlias(alias)) {
+                return null;
+            }
+            // If it is not a key then it has to be a certificate
+            isCertificateEntry = true;
+        } else {
+            isCertificateEntry = false;
+        }
+        // END Android-added: Figure out the type of entry once
+
         if (protParam == null) {
-            if (engineIsCertificateEntry(alias)) {
+            // Android-changed: Use cached value
+            // if (engineIsCertificateEntry(alias)) {
+            if (isCertificateEntry) {
                 return new KeyStore.TrustedCertificateEntry
                                 (engineGetCertificate(alias));
             // Android-removed: Allow access to entries with no password.
@@ -471,10 +492,12 @@ public abstract class KeyStoreSpi {
 
         // Android-changed: Add protParam == null to allow access to entries with no password.
         if ((protParam == null) || protParam instanceof KeyStore.PasswordProtection) {
-            if (engineIsCertificateEntry(alias)) {
+            if (isCertificateEntry) {
                 throw new UnsupportedOperationException
                     ("trusted certificate entries are not password-protected");
-            } else if (engineIsKeyEntry(alias)) {
+                // Android-changed: avoid redundant check
+                // else if (engineIsKeyEntry(alias)) {
+            } else {
                 // Android-changed: Allow access to entries with no password.
                 // KeyStore.PasswordProtection pp =
                 //         (KeyStore.PasswordProtection)protParam;
