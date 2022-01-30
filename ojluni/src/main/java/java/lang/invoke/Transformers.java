@@ -74,15 +74,28 @@ public class Transformers {
             return super.clone();
         }
 
+        /**
+         * Performs a MethodHandle.invoke() call with arguments held in an
+         * EmulatedStackFrame.
+         * @param target the method handle to invoke
+         * @param stackFrame the stack frame containing arguments for the invocation
+         */
         protected void invokeFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
                 throws Throwable {
             if (target instanceof Transformer) {
                 ((Transformer) target).transform(stackFrame);
             } else {
-                target.invoke(stackFrame);
+                final MethodHandle adaptedTarget = target.asType(stackFrame.getMethodType());
+                adaptedTarget.invokeExact(stackFrame);
             }
         }
 
+        /**
+         * Performs a MethodHandle.invokeExact() call with arguments held in an
+         * EmulatedStackFrame.
+         * @param target the method handle to invoke
+         * @param stackFrame the stack frame containing arguments for the invocation
+         */
         protected void invokeExactFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
                 throws Throwable {
             if (target instanceof Transformer) {
