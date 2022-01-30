@@ -1569,29 +1569,38 @@ public class OsTest {
 
     @Test
     public void test_socket_setSockoptTimeval_effective() throws Exception {
-        // b/176104885 Older devices can return a few ms early, add a tolerance for them
-        long timeoutTolerance = kernelIsAtLeast(3, 18) ? 0 : 10;
-
-        int timeoutValueMillis = 250;
-        int allowedTimeoutMillis = 3000;
+        final int TIMEOUT_VALUE_MILLIS = 250;
+        final int ALLOWED_TIMEOUT_MILLIS = 3000;
+        final int ROUNDING_ERROR_MILLIS = 10;
 
         FileDescriptor fd = Os.socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
         try {
-            StructTimeval tv = StructTimeval.fromMillis(timeoutValueMillis);
-            Os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, tv);
-            Os.bind(fd, InetAddress.getByName("::1"), 0);
+            // Configure the receive timeout.
+            StructTimeval tvTarget = StructTimeval.fromMillis(TIMEOUT_VALUE_MILLIS);
+            Os.setsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO, tvTarget);
 
+            // Check the system's idea of the receive timeout. Our requested timeout may
+            // be rounded by the kernel (b/176104885, b/216667550).
+            StructTimeval tvActual = Os.getsockoptTimeval(fd, SOL_SOCKET, SO_RCVTIMEO);
+            // The kernel may round the requested value based on the HZ setting. We allow up to
+            // 10ms difference.
+            assertTrue(
+                    "Returned incorrect timeout:" + tvTarget,
+                    Math.abs(tvTarget.toMillis() - tvActual.toMillis()) <= ROUNDING_ERROR_MILLIS);
+
+            // Bind socket and wait for data (and timeout).
+            Os.bind(fd, InetAddress.getByName("::1"), 0);
             byte[] request = new byte[1];
             long startTime = System.nanoTime();
             expectException(() -> Os.read(fd, request, 0, request.length),
                     ErrnoException.class, EAGAIN, "Expected timeout");
             long durationMillis = Duration.ofNanos(System.nanoTime() - startTime).toMillis();
-            assertTrue("Timeout of " + timeoutValueMillis + "ms returned after "
+            assertTrue("Timeout of " + tvActual.toMillis() + "ms returned after "
                     + durationMillis +"ms",
-                durationMillis >= timeoutValueMillis - timeoutTolerance);
-            assertTrue("Timeout of " + timeoutValueMillis + "ms failed to return within "
-                    + allowedTimeoutMillis  + "ms",
-                durationMillis < allowedTimeoutMillis);
+                       durationMillis >= tvActual.toMillis());
+            assertTrue("Timeout of " + TIMEOUT_VALUE_MILLIS + "ms failed to return within "
+                    + ALLOWED_TIMEOUT_MILLIS  + "ms",
+                       durationMillis < ALLOWED_TIMEOUT_MILLIS);
         } finally {
             Os.close(fd);
         }
