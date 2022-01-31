@@ -178,8 +178,7 @@ public class LoopCombinatorTest {
         List<MethodHandle> lvpreds = Arrays.asList(null, LoopWithVirtuals.MH_pred);
         List<MethodHandle> lvfinis = Arrays.asList(null, LoopWithVirtuals.MH_fin);
         return new Object[][] {
-                // Android-removed: failing test case suppressed (b/207844518).
-                // {null, "null or no clauses passed"},
+                {null, "null or no clauses passed"},
                 {new MethodHandle[][]{}, "null or no clauses passed"},
                 {new MethodHandle[][]{{null, Fac.MH_inc}, {Fac.MH_one, null, Fac.MH_mult, Fac.MH_pred, Fac.MH_fin}},
                         "All loop clauses must be represented as MethodHandle arrays with at most 4 elements."},
