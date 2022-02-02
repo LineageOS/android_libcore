@@ -501,8 +501,8 @@ public class ExplicitCastArgumentsTest {
         }
     }
 
-    // Android-added: @Test annotation
-    @Test
+    // Android-added: @Test annotation with invocationCount as the test is non-deterministic.
+    @Test(invocationCount=10)
     /**
      * Tests that MHs.eCA method works correctly with MHs with multiple arguments.
      * @throws Throwable
