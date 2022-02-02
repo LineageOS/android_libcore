@@ -90,8 +90,8 @@ filegroup {
 // different layers of the build tooling. The arguments are wrapped in '' so
 // that the shell doesn't add yet another level of escaping.
 rewrite_openjdk_doc_links = "sed 's" +
-    "!{@docRoot}/\\.\\./\\(\\(platform\\|technotes\\).\\+\\)\">" +
-    "!https://docs.oracle.com/javase/8/docs/\\1\">!' " +
+    "!\\({@docRoot}/\\.\\.\\/\\|[./]\\+\\)\\(\\(platform\\|technotes\\).\\+\\)\">" +
+    "!https://docs.oracle.com/javase/8/docs/\\2\">!' " +
     "$(in) > $(out)"
 
 // OpenJDK source is not annotated with @hide so we need this separate
