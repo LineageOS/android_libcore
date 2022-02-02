@@ -89,52 +89,8 @@ public class LinuxFileSystemTest {
     @Test
     public void test_getFileStores() {
         Iterable<FileStore> fileStores = fileSystem.getFileStores();
-        // The FileSystem should have at least one FileStore
+        // Asserting if the the list has non zero number stores.
         assertTrue(fileStores.iterator().hasNext());
-    }
-
-    // It's difficult to make assumptions that are true across all devices but
-    // in general the root filestore should be full and read-only (it's the system image)
-    // and on a device undergoing CTS /data should be writable and have free space.
-    @Test
-    public void rootFilestore() throws Exception {
-        FileStore filestore = getFilestore("/");
-        assertEquals(0, filestore.getBlockSize() % 512);
-        assertTrue(filestore.getTotalSpace() > 0);
-        assertTrue(filestore.getUnallocatedSpace() > 0);
-        assertEquals(0, filestore.getUsableSpace());
-        assertTrue(filestore.isReadOnly());
-    }
-
-    // See explanation for rootFilestore()
-    @Test
-    public void dataFilestore() throws Exception {
-        FileStore filestore = getFilestore("/data");
-        assertEquals(0, filestore.getBlockSize() % 512);
-        assertTrue(filestore.getTotalSpace() > 0);
-        assertTrue(filestore.getUnallocatedSpace() > 0);
-        assertTrue(filestore.getUsableSpace() > 0);
-        assertFalse(filestore.isReadOnly());
-    }
-
-    // File.getFileStore(path) throws a SecurityException on Android, so we
-    // iterate over all file stores until we find a matching mount point.
-    private FileStore getFilestore(String mountPoint) throws IOException {
-        for (FileStore filestore : fileSystem.getFileStores()) {
-            if (mountPoint.equals(getMountPoint(filestore))) {
-                return filestore;
-            }
-        }
-        fail("Unable to find FileStore for " + mountPoint);
-        return null;
-    }
-
-    // Naturally there is no official API to get the mount point for a FileStore,
-    // so we rely on the fact that the string representation is always "<mountpoint> (<device>)"
-    private String getMountPoint(FileStore fileStore) {
-        String description = fileStore.toString();
-        int index = description.indexOf(" (");
-        return description.substring(0, index);
     }
 
     @Test
