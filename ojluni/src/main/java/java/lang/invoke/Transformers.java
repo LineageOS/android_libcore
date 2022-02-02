@@ -2600,14 +2600,10 @@ public class Transformers {
 
         private static void unboxNonNull(
                 final Object ref,
-                final Class<?> from,
                 final StackFrameWriter writer,
                 final Class<?> to) {
+            final Class<?> from = ref.getClass();
             final Class<?> unboxedFromType = Wrapper.asPrimitiveType(from);
-            if (unboxedFromType == from) {
-                badCast(from, to);
-                return;
-            }
             switch (Wrapper.basicTypeChar(unboxedFromType)) {
                 case 'Z':
                     boolean z = (boolean) ref;
@@ -2872,13 +2868,12 @@ public class Transformers {
 
         private static void unbox(
                 final Object ref,
-                final Class<?> from,
                 final StackFrameWriter writer,
                 final Class<?> to) {
             if (ref == null) {
                 unboxNull(writer, to);
             } else {
-                unboxNonNull(ref, from, writer, to);
+                unboxNonNull(ref, writer, to);
             }
         }
 
@@ -2943,7 +2938,7 @@ public class Transformers {
                 Object ref = reader.nextReference(from);
                 if (to.isPrimitive()) {
                     // |from| is a reference type, |to| is a primitive type,
-                    unbox(ref, from, writer, to);
+                    unbox(ref, writer, to);
                 } else if (to.isInterface()) {
                     // Pass from without a cast according to description for
                     // {@link java.lang.invoke.MethodHandles#explicitCastArguments()}.
