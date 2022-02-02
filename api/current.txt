@@ -8799,6 +8799,18 @@ package java.security.interfaces {
     field public static final long serialVersionUID = -3314988629879632826L; // 0xd1fecb679990cc46L
   }
 
+  public interface EdECKey {
+    method public java.security.spec.NamedParameterSpec getParams();
+  }
+
+  public interface EdECPrivateKey extends java.security.interfaces.EdECKey java.security.PrivateKey {
+    method public java.util.Optional<byte[]> getBytes();
+  }
+
+  public interface EdECPublicKey extends java.security.interfaces.EdECKey java.security.PublicKey {
+    method public java.security.spec.EdECPoint getPoint();
+  }
+
   public interface RSAKey {
     method public java.math.BigInteger getModulus();
   }
@@ -8927,6 +8939,24 @@ package java.security.spec {
     method public java.security.spec.ECPoint getW();
   }
 
+  public final class EdECPoint {
+    ctor public EdECPoint(boolean, @NonNull java.math.BigInteger);
+    method @NonNull public java.math.BigInteger getY();
+    method public boolean isXOdd();
+  }
+
+  public final class EdECPrivateKeySpec implements java.security.spec.KeySpec {
+    ctor public EdECPrivateKeySpec(@NonNull java.security.spec.NamedParameterSpec, @NonNull byte[]);
+    method @NonNull public byte[] getBytes();
+    method @NonNull public java.security.spec.NamedParameterSpec getParams();
+  }
+
+  public final class EdECPublicKeySpec implements java.security.spec.KeySpec {
+    ctor public EdECPublicKeySpec(@NonNull java.security.spec.NamedParameterSpec, @NonNull java.security.spec.EdECPoint);
+    method @NonNull public java.security.spec.NamedParameterSpec getParams();
+    method @NonNull public java.security.spec.EdECPoint getPoint();
+  }
+
   public class EllipticCurve {
     ctor public EllipticCurve(java.security.spec.ECField, java.math.BigInteger, java.math.BigInteger);
     ctor public EllipticCurve(java.security.spec.ECField, java.math.BigInteger, java.math.BigInteger, byte[]);
@@ -8970,6 +9000,8 @@ package java.security.spec {
   public class NamedParameterSpec implements java.security.spec.AlgorithmParameterSpec {
     ctor public NamedParameterSpec(@NonNull String);
     method @NonNull public String getName();
+    field public static final java.security.spec.NamedParameterSpec ED25519;
+    field public static final java.security.spec.NamedParameterSpec ED448;
     field public static final java.security.spec.NamedParameterSpec X25519;
     field public static final java.security.spec.NamedParameterSpec X448;
   }
