@@ -125,17 +125,6 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 33 (current min is 31): `java.security.spec.NamedParameterSpec`"
-        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
-            line="38"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Field requires API level 33 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -154,6 +143,39 @@
             file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
             line="333"
             column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.spec.NamedParameterSpec`"
+        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
+            line="38"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPrivateKey extends EdECKey, PrivateKey {"
+        errorLine2="                                        ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPrivateKey.java"
+            line="44"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 33 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPublicKey extends EdECKey, PublicKey {"
+        errorLine2="                                       ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPublicKey.java"
+            line="42"
+            column="40"/>
     </issue>
 
     <issue
@@ -417,17 +439,6 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.spec.NamedParameterSpec`"
-        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
-            line="38"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -446,6 +457,39 @@
             file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
             line="333"
             column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.spec.NamedParameterSpec`"
+        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
+            line="38"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPrivateKey extends EdECKey, PrivateKey {"
+        errorLine2="                                        ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPrivateKey.java"
+            line="44"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPublicKey extends EdECKey, PublicKey {"
+        errorLine2="                                       ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPublicKey.java"
+            line="42"
+            column="40"/>
     </issue>
 
     <issue

@@ -1292,7 +1292,10 @@ public class Transformers {
             // Get the array reference and check that its length is as expected.
             final Class<?> arrayType = type().parameterType(arrayOffset);
             final Object arrayObj = callerFrame.getReference(arrayOffset, arrayType);
-            final int arrayLength = Array.getLength(arrayObj);
+
+            // The incoming array may be null if the expected number of array arguments is zero.
+            final int arrayLength =
+                (numArrayArgs == 0 && arrayObj == null) ? 0 : Array.getLength(arrayObj);
             if (arrayLength != numArrayArgs) {
                 throw new IllegalArgumentException(
                         "Invalid array length " + arrayLength + " expected " + numArrayArgs);
@@ -1313,11 +1316,20 @@ public class Transformers {
                     leadingRange.numReferences + numArrayArgs, leadingRange.numBytes);
             }
 
-            // Attach the writer, prepare to spread the trailing array arguments into
-            // the callee frame.
-            StackFrameWriter writer = new StackFrameWriter();
-            writer.attach(targetFrame, arrayOffset, leadingRange.numReferences, leadingRange.numBytes);
+            if (arrayLength != 0) {
+                StackFrameWriter writer = new StackFrameWriter();
+                writer.attach(targetFrame,
+                              arrayOffset,
+                              leadingRange.numReferences,
+                              leadingRange.numBytes);
+                spreadArray(arrayType, arrayObj, writer);
+            }
 
+            invokeExactFromTransform(target, targetFrame);
+            targetFrame.copyReturnValueTo(callerFrame);
+        }
+
+        private void spreadArray(Class<?> arrayType, Object arrayObj, StackFrameWriter writer) {
             final Class<?> componentType = arrayType.getComponentType();
             switch (Wrapper.basicTypeChar(componentType)) {
                 case 'L':
@@ -1393,9 +1405,6 @@ public class Transformers {
                     break;
                 }
             }
-
-            invokeExactFromTransform(target, targetFrame);
-            targetFrame.copyReturnValueTo(callerFrame);
         }
     }
 
