@@ -186,6 +186,8 @@ class Socket implements java.io.Closeable {
     }
 
     private static Void checkPermission(SocketImpl impl) {
+        // BEGIN Android-removed: SM is no-op.
+        /*
         if (impl == null) {
             return null;
         }
@@ -193,6 +195,8 @@ class Socket implements java.io.Closeable {
         if (sm != null) {
             sm.checkPermission(SecurityConstants.SET_SOCKETIMPL_PERMISSION);
         }
+        */
+        // END Android-removed: SM is no-op.
         return null;
     }
 
