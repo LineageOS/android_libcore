@@ -727,7 +727,6 @@ package android.system {
   }
 
   public final class SystemCleaner {
-    ctor public SystemCleaner();
     method @NonNull public static java.lang.ref.Cleaner cleaner();
   }
 
