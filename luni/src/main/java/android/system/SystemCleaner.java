@@ -42,6 +42,8 @@ import libcore.util.NonNull;
  */
 public final class SystemCleaner {
 
+    private SystemCleaner() {}
+
     /**
      * Return a single Cleaner that's shared across the entire process. Thread-safe.
      */
