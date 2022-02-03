@@ -74,15 +74,28 @@ public class Transformers {
             return super.clone();
         }
 
+        /**
+         * Performs a MethodHandle.invoke() call with arguments held in an
+         * EmulatedStackFrame.
+         * @param target the method handle to invoke
+         * @param stackFrame the stack frame containing arguments for the invocation
+         */
         protected void invokeFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
                 throws Throwable {
             if (target instanceof Transformer) {
                 ((Transformer) target).transform(stackFrame);
             } else {
-                target.invoke(stackFrame);
+                final MethodHandle adaptedTarget = target.asType(stackFrame.getMethodType());
+                adaptedTarget.invokeExact(stackFrame);
             }
         }
 
+        /**
+         * Performs a MethodHandle.invokeExact() call with arguments held in an
+         * EmulatedStackFrame.
+         * @param target the method handle to invoke
+         * @param stackFrame the stack frame containing arguments for the invocation
+         */
         protected void invokeExactFromTransform(MethodHandle target, EmulatedStackFrame stackFrame)
                 throws Throwable {
             if (target instanceof Transformer) {
@@ -639,7 +652,7 @@ public class Transformers {
         private final Class<?> arrayType;
 
         /*package*/ VarargsCollector(MethodHandle target) {
-            super(target.type(), MethodHandle.INVOKE_CALLSITE_TRANSFORM);
+            super(target.type());
 
             Class<?>[] parameterTypes = target.type().ptypes();
             if (!lastParameterTypeIsAnArray(parameterTypes)) {
@@ -1181,17 +1194,6 @@ public class Transformers {
 
         @Override
         public void transform(EmulatedStackFrame emulatedStackFrame) throws Throwable {
-            // We need to artificially throw a WrongMethodTypeException here because we
-            // can't call invokeExact on the target inside the transformer.
-            if (isExactInvoker) {
-                MethodType callsiteType =
-                        emulatedStackFrame.getCallsiteType().dropParameterTypes(0, 1);
-                if (!exactMatch(callsiteType, targetType)) {
-                    throw new WrongMethodTypeException(
-                            "Wrong type, Expected: " + targetType + " was: " + callsiteType);
-                }
-            }
-
             // The first argument to the stack frame is the handle that needs to be invoked.
             MethodHandle target = emulatedStackFrame.getReference(0, MethodHandle.class);
 
@@ -1200,7 +1202,11 @@ public class Transformers {
             emulatedStackFrame.copyRangeTo(targetFrame, copyRange, 0, 0);
 
             // Finally, invoke the handle and copy the return value.
-            invokeFromTransform(target, targetFrame);
+            if (isExactInvoker) {
+                invokeExactFromTransform(target, targetFrame);
+            } else {
+                invokeFromTransform(target, targetFrame);
+            }
             targetFrame.copyReturnValueTo(emulatedStackFrame);
         }
 
