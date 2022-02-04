@@ -89,10 +89,14 @@ class ServerSocket implements java.io.Closeable {
     }
 
     private static Void checkPermission() {
+        // BEGIN Android-removed: SM is no-op.
+        /*
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             sm.checkPermission(SecurityConstants.SET_SOCKETIMPL_PERMISSION);
         }
+        */
+        // END Android-removed: SM is no-op.
         return null;
     }
 
