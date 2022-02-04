@@ -22,6 +22,11 @@
  */
 package test.java.lang.String;
 
+// Android-added: support for wrapper to avoid d8 backporting of String.isBlank (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import java.util.stream.IntStream;
 
 import org.testng.annotations.Test;
@@ -66,7 +71,21 @@ public class IsBlank {
      * Raise an exception if the two inputs are not equivalent.
      */
     static void test(String input, boolean expected) {
-        assertEquals(input.isBlank(), expected,
+        // Android-changed: use wrapper to avoid d8 backporting (b/191859202).
+        // assertEquals(input.isBlank(), expected,
+        assertEquals(String_isBlank(input), expected,
             String.format("Failed test, Input: %s, Expected: %b%n", input, expected));
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String.isBlank (b/191859202).
+    private static boolean String_isBlank(String input) {
+        try {
+            MethodType isBlankType = MethodType.methodType(boolean.class);
+            MethodHandle isBlank =
+                    MethodHandles.lookup().findVirtual(String.class, "isBlank", isBlankType);
+            return (boolean) isBlank.invokeExact(input);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 }
