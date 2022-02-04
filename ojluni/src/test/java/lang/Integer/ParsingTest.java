@@ -33,6 +33,12 @@ import java.lang.IndexOutOfBoundsException;
 import java.lang.NullPointerException;
 import java.lang.RuntimeException;
 
+// Android-added: support for wrapper to avoid d8 backporting of Integer.parseInt (b/215435866).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.invoke.WrongMethodTypeException;
+
 import org.testng.annotations.Test;
 import org.testng.Assert;
 
@@ -136,7 +142,9 @@ public class ParsingTest {
     private static void checkNumberFormatException(String val, int start, int end, int radix) {
         int n = 0;
         try {
-            n = Integer.parseInt(val, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backports (b/215435866).
+            // n = Integer.parseInt(val, start, end, radix);
+            n = Integer_parseInt(val, start, end, radix);
             System.err.println("parseInt(" + val + ", " + start + ", " + end + ", " + radix +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -148,7 +156,9 @@ public class ParsingTest {
     private static void checkIndexOutOfBoundsException(String val, int start, int end, int radix) {
         int n = 0;
         try {
-            n = Integer.parseInt(val, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backports (b/215435866).
+            // n = Integer.parseInt(val, start, end, radix);
+            n = Integer_parseInt(val, start, end, radix);
             System.err.println("parseInt(" + val + ", " + start + ", " + end + ", " + radix  +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -160,7 +170,9 @@ public class ParsingTest {
     private static void checkNull(int start, int end, int radix) {
         int n = 0;
         try {
-            n = Integer.parseInt(null, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backports (b/215435866).
+            // n = Integer.parseInt(null, start, end, radix);
+            n = Integer_parseInt(null, start, end, radix);
             System.err.println("parseInt(null, " + start + ", " + end + ", " + radix +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -170,9 +182,31 @@ public class ParsingTest {
     }
 
     private static void check(int expected, String val, int start, int end, int radix) {
-        int n = Integer.parseInt(val, start, end, radix);
+        // Android-changed: call wrapper to avoid d8 backports (b/215435866).
+        // int n = Integer.parseInt(val, start, end, radix);
+        int n = Integer_parseInt(val, start, end, radix);
         if (n != expected)
             throw new RuntimeException("Integer.parsedInt failed. Expected: " + expected + " String: \"" +
                     val + "\", start: " + start + ", end: " + end + ", radix: " + radix + " Result:" + n);
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Integer.parseInt (b/215435866).
+    private static int Integer_parseInt(String val, int start, int end, int radix) {
+        try {
+            MethodType parseIntType = MethodType.methodType(int.class,
+                                                            CharSequence.class,
+                                                            int.class,
+                                                            int.class,
+                                                            int.class);
+            MethodHandle parseInt =
+                    MethodHandles.lookup().findStatic(Integer.class, "parseInt", parseIntType);
+            return (int) parseInt.invokeExact((CharSequence) val, start, end, radix);
+        } catch (IndexOutOfBoundsException | NullPointerException | NumberFormatException e) {
+            // Expected exceptions from the target method during the tests here.
+            throw e;
+        } catch (Throwable t) {
+            // Everything else.
+            throw new RuntimeException(t);
+        }
     }
 }
