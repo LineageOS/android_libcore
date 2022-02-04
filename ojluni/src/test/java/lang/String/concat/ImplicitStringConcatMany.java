@@ -137,6 +137,10 @@ public class ImplicitStringConcatMany {
         for (Field f : ImplicitStringConcatMany.class.getDeclaredFields()) {
             if (Modifier.isStatic(f.getModifiers())) {
                 String name = f.getName();
+                // Android-added: jacoco injects static fields and crashes (b/203822631).
+                if (f.getType() != String.class || !isConcatStringFieldName(name)) {
+                    continue;
+                }
                 try {
                     f.set(null, name);
                 } catch (IllegalAccessException e) {
@@ -144,6 +148,17 @@ public class ImplicitStringConcatMany {
                 }
             }
         }
+    }
+
+
+    // Android-added: jacoco injects static fields and crashes (b/203822631).
+    static boolean isConcatStringFieldName(String name) {
+        // String fields in the test are named 's[0-9]{3}'
+        return (name.length() == 4 &&
+                name.charAt(0) == 's' &&
+                Character.isDigit(name.charAt(1)) &&
+                Character.isDigit(name.charAt(2)) &&
+                Character.isDigit(name.charAt(3)));
     }
 
     @Test
