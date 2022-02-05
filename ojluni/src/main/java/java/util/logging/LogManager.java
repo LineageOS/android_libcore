@@ -759,8 +759,7 @@ public class LogManager {
             }
             LoggerWeakRef ref = namedLoggers.get(name);
             if (ref != null) {
-                // Android-changed: Use refersTo().
-                if (ref.refersTo(null)) {
+                if (ref.get() == null) {
                     // It's possible that the Logger was GC'ed after a
                     // drainLoggerRefQueueBounded() call above so allow
                     // a new one to be registered.
