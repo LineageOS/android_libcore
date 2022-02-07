@@ -30,6 +30,13 @@
  */
 package test.java.util.Optional;
 
+// Android-added: support for wrapper to avoid d8 backporting of Optional methods (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -56,13 +63,17 @@ public class Basic {
         assertFalse(empty.equals("unexpected"));
 
         assertFalse(empty.isPresent());
-        assertTrue(empty.isEmpty());
+        // Android-changed: use Optional_isEmpty() to a void d8 backporting (b/191859202).
+        // assertTrue(empty.isEmpty());
+        assertTrue(Optional_isEmpty(empty));
         assertEquals(empty.hashCode(), 0);
         assertEquals(empty.orElse("x"), "x");
         assertEquals(empty.orElseGet(() -> "y"), "y");
 
         assertThrows(NoSuchElementException.class, () -> empty.get());
-        assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        // Android-changed: use Optional_orElseThrow() to a void d8 backporting (b/191859202).
+        // assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> Optional_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
         AtomicBoolean b = new AtomicBoolean();
@@ -71,7 +82,9 @@ public class Basic {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
+        // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        Optional_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
         assertFalse(b1.get());
         assertTrue(b2.get());
 
@@ -92,13 +105,17 @@ public class Basic {
         assertFalse(opt.equals("unexpected"));
 
         assertTrue(opt.isPresent());
-        assertFalse(opt.isEmpty());
+        // Android-changed: use Optional_isEmpty() to a void d8 backporting (b/191859202).
+        //assertFalse(opt.isEmpty());
+        assertFalse(Optional_isEmpty(opt));
         assertEquals(opt.hashCode(), expected.hashCode());
         assertEquals(opt.orElse("unexpected"), expected);
         assertEquals(opt.orElseGet(() -> "unexpected"), expected);
 
         assertEquals(opt.get(), expected);
-        assertEquals(opt.orElseThrow(), expected);
+        // Android-changed: use Optional_orElseThrow() to a void d8 backporting (b/191859202).
+        // assertEquals(opt.orElseThrow(), expected);
+        assertEquals(Optional_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
         AtomicBoolean b = new AtomicBoolean(false);
@@ -107,7 +124,9 @@ public class Basic {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
+        // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        Optional_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
         assertTrue(b1.get());
         assertFalse(b2.get());
 
@@ -184,27 +203,37 @@ public class Basic {
 
     @Test
     public void testOrEmptyEmpty() {
-        checkEmpty(Optional.<String>empty().or(() -> Optional.empty()));
+        // Android-changed: use Optional_or() to a void d8 backporting (b/191859202).
+        // checkEmpty(Optional.<String>empty().or(() -> Optional.empty()));
+        checkEmpty(Optional_or(Optional.<String>empty(), () -> Optional.empty()));
     }
 
     @Test
     public void testOrEmptyPresent() {
-        checkPresent(Optional.<String>empty().or(() -> Optional.of("plugh")), "plugh");
+        // Android-changed: use Optional_or() to a void d8 backporting (b/191859202).
+        // checkPresent(Optional.<String>empty().or(() -> Optional.of("plugh")), "plugh");
+        checkPresent(Optional_or(Optional.<String>empty(), () -> Optional.of("plugh")), "plugh");
     }
 
     @Test
     public void testOrPresentDontCare() {
-        checkPresent(Optional.of("xyzzy").or(() -> { fail(); return Optional.of("plugh"); }), "xyzzy");
+        // Android-changed: use Optional_or() to a void d8 backporting (b/191859202).
+        // checkPresent(Optional.of("xyzzy").or(() -> { fail(); return Optional.of("plugh"); }), "xyzzy");
+        checkPresent(Optional_or(Optional.of("xyzzy"), () -> { fail(); return Optional.of("plugh"); }), "xyzzy");
     }
 
     @Test
     public void testStreamEmpty() {
-        assertEquals(Optional.empty().stream().collect(toList()), List.of());
+        // Android-changed: use Optional_stream() to a void d8 backporting (b/191859202).
+        // assertEquals(Optional.empty().stream().collect(toList()), List.of());
+        assertEquals(Optional_stream(Optional.empty()).collect(toList()), List.of());
     }
 
     @Test
     public void testStreamPresent() {
-        assertEquals(Optional.of("xyzzy").stream().collect(toList()), List.of("xyzzy"));
+        // Android-changed: use Optional_stream() to a void d8 backporting (b/191859202).
+        // assertEquals(Optional.of("xyzzy").stream().collect(toList()), List.of("xyzzy"));
+        assertEquals(Optional_stream(Optional.of("xyzzy")).collect(toList()), List.of("xyzzy"));
     }
 
     // BEGIN Android-added: More tests for coverage http://b/203822442.
@@ -215,60 +244,139 @@ public class Basic {
     @Test
     void testIfPresentOrElse_empty() {
         AtomicInteger flag = new AtomicInteger(0);
-        E.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        // Note use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
+        // E.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        Optional_ifPresentOrElse(E, integer -> flag.set(1), () -> flag.set(2));
         assertEquals(flag.get(), 2);
     }
 
     @Test
     void testIfPresentOrElse_present() {
         AtomicInteger flag = new AtomicInteger(0);
-        P.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        // Note use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
+        // P.ifPresentOrElse(integer -> flag.set(1), () -> flag.set(2));
+        Optional_ifPresentOrElse(P, integer -> flag.set(1), () -> flag.set(2));
         assertEquals(flag.get(), 1);
     }
 
     @Test
     void testOr_empty() {
-        Optional<Integer> o = E.or(() -> Optional.of(5));
+        // Note use Optional_or() to a void d8 backporting (b/191859202).
+        Optional<Integer> o = Optional_or(E, () -> Optional.of(5));
         assertEquals((int) o.get(), 5);
     }
 
     @Test
     void testOr_present() {
-        Optional<Integer> o = P.or(() -> Optional.of(5));
+        // Note use Optional_or() to a void d8 backporting (b/191859202).
+        // Optional<Integer> o = P.or(() -> Optional.of(5));
+        Optional<Integer> o = Optional_or(P, () -> Optional.of(5));
         assertEquals((int) o.get(), 3);
     }
 
     @Test
     public void testStream_empty() {
-        Stream<Integer> s = E.stream();
+        // Not use Optional_stream() to a void d8 backporting (b/191859202).
+        // Stream<Integer> s = E.stream();
+        Stream<Integer> s = Optional_stream(E);
         assertEquals(s.collect(Collectors.toList()), List.of());
     }
 
     @Test
     public void testStream_present() {
-        Stream<Integer> s = P.stream();
+        // Not use Optional_stream() to a void d8 backporting (b/191859202).
+        // Stream<Integer> s = P.stream();
+        Stream<Integer> s = Optional_stream(P);
         assertEquals(s.collect(Collectors.toList()), List.of(3));
     }
 
     @Test(expectedExceptions = NoSuchElementException.class)
     public void testOrElseThrow_empty() {
-        E.orElseThrow();
+        // Note use Optional_orElseThrow() to a void d8 backporting (b/191859202).
+        // E.orElseThrow();
+        Optional_orElseThrow(E);
     }
 
     @Test
     public void testOrElseThrow_present() {
-        assertEquals((int) P.orElseThrow(), 3);
+        // Note use Optional_orElseThrow() to a void d8 backporting (b/191859202).
+        // assertEquals((int) P.orElseThrow(), 3);
+        assertEquals((int) Optional_orElseThrow(P), 3);
     }
 
     @Test
     public void testIsEmpty_empty() {
-        assertTrue(E.isEmpty());
+        // Note use Optional_isEmpty() to a void d8 backporting (b/191859202).
+        // assertTrue(E.isEmpty());
+        assertTrue(Optional_isEmpty(E));
     }
 
     @Test
     public void testIsEmpty_present() {
-        assertFalse(P.isEmpty());
+        // Note use Optional_isEmpty() to a void d8 backporting (b/191859202).
+        // assertFalse(P.isEmpty());
+        assertFalse(Optional_isEmpty(P));
     }
     // END Android-added: More tests for coverage http://b/203822442.
 
+    // Android-added: wrapper to avoid d8 backporting of Optional.ifPresentOrElse() (b/191859202).
+    private static <T> void Optional_ifPresentOrElse(
+            Optional<T> receiver, Consumer<? super T> action, Runnable emptyAction) {
+        try {
+            MethodType type = MethodType.methodType(void.class, Consumer.class, Runnable.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(Optional.class, "ifPresentOrElse", type);
+            mh.invokeExact(receiver, action, emptyAction);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Optional.isEmpty() (b/191859202).
+    private static <T> boolean Optional_isEmpty(Optional<T> receiver) {
+        try {
+            MethodType type = MethodType.methodType(boolean.class);
+            MethodHandle mh = MethodHandles.lookup().findVirtual(Optional.class, "isEmpty", type);
+            return (boolean) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Optional.or(Supplier) (b/191859202).
+    private static <T> Optional<T> Optional_or(Optional<T> receiver,
+                                               Supplier<? extends Optional<? extends T>> supplier) {
+        try {
+            MethodType type = MethodType.methodType(Optional.class, Supplier.class);
+            MethodHandle mh = MethodHandles.lookup().findVirtual(Optional.class, "or", type);
+            return (Optional<T>) mh.invokeExact(receiver, supplier);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Optional.orElseThrow() (b/191859202).
+    private static <T> T Optional_orElseThrow(Optional<T> receiver) {
+        try {
+            MethodType type = MethodType.methodType(Object.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(Optional.class, "orElseThrow", type);
+            return (T) mh.invokeExact(receiver);
+        } catch (NoSuchElementException expected) {
+            throw expected;  // Underlying method may throw NoSuchElementException
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Optional.stream() (b/191859202).
+    private static <T> Stream<T> Optional_stream(Optional<T> receiver) {
+        try {
+            MethodType type = MethodType.methodType(Stream.class);
+            MethodHandle mh = MethodHandles.lookup().findVirtual(Optional.class, "stream", type);
+            return (Stream<T>) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
 }

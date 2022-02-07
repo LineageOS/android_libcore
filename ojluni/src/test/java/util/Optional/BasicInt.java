@@ -30,6 +30,13 @@
  */
 package test.java.util.Optional;
 
+// Android-added: support for wrapper to avoid d8 backporting of Optional methods (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.function.IntConsumer;
+import java.util.stream.IntStream;
+
 import java.util.NoSuchElementException;
 import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -53,13 +60,17 @@ public class BasicInt {
         assertFalse(empty.equals("unexpected"));
 
         assertFalse(empty.isPresent());
-        assertTrue(empty.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty() (b/191859202).
+        // assertTrue(empty.isEmpty());
+        assertTrue(OptionalInt_isEmpty(empty));
         assertEquals(empty.hashCode(), 0);
         assertEquals(empty.orElse(UNEXPECTED), UNEXPECTED);
         assertEquals(empty.orElseGet(() -> UNEXPECTED), UNEXPECTED);
 
         assertThrows(NoSuchElementException.class, () -> empty.getAsInt());
-        assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        // Android-changed: Avoid backporting of orElseThrow() (b/191859202).
+        // assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> OptionalInt_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
         AtomicBoolean b = new AtomicBoolean();
@@ -68,7 +79,9 @@ public class BasicInt {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalInt_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
         assertFalse(b1.get());
         assertTrue(b2.get());
 
@@ -89,13 +102,16 @@ public class BasicInt {
         assertFalse(opt.equals("unexpected"));
 
         assertTrue(opt.isPresent());
-        assertFalse(opt.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty() (b/191859202).
+        // assertFalse(opt.isEmpty());
+        assertFalse(OptionalInt_isEmpty(opt));
         assertEquals(opt.hashCode(), Integer.hashCode(expected));
         assertEquals(opt.orElse(UNEXPECTED), expected);
         assertEquals(opt.orElseGet(() -> UNEXPECTED), expected);
 
         assertEquals(opt.getAsInt(), expected);
-        assertEquals(opt.orElseThrow(), expected);
+        // Android-changed: Avoid backporting of orElseThrow() (b/191859202).
+        assertEquals(OptionalInt_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
         AtomicBoolean b = new AtomicBoolean(false);
@@ -104,7 +120,9 @@ public class BasicInt {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalInt_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
         assertTrue(b1.get());
         assertFalse(b2.get());
 
@@ -123,11 +141,66 @@ public class BasicInt {
 
     @Test
     public void testStreamEmpty() {
-        assertEquals(OptionalInt.empty().stream().toArray(), new int[] { });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalInt.empty().stream().toArray(), new int[] { });
+        assertEquals(OptionalInt_stream(OptionalInt.empty()).toArray(), new int[] { });
     }
 
     @Test
     public void testStreamPresent() {
-        assertEquals(OptionalInt.of(INTVAL).stream().toArray(), new int[] { INTVAL });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalInt.of(INTVAL).stream().toArray(), new int[] { INTVAL });
+        assertEquals(OptionalInt_stream(OptionalInt.of(INTVAL)).toArray(), new int[] { INTVAL });
+    }
+
+        // Android-added: wrapper for d8 backport of OptionalInt.ifPresentOrElse() (b/191859202).
+    private static void OptionalInt_ifPresentOrElse(
+            OptionalInt receiver, IntConsumer action, Runnable emptyAction) {
+        try {
+            MethodType type = MethodType.methodType(void.class, IntConsumer.class, Runnable.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalInt.class, "ifPresentOrElse", type);
+            mh.invokeExact(receiver, action, emptyAction);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalInt.isEmpty() (b/191859202).
+    private static boolean OptionalInt_isEmpty(OptionalInt receiver) {
+        try {
+            MethodType type = MethodType.methodType(boolean.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalInt.class, "isEmpty", type);
+            return (boolean) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalInt.orElseThrow() (b/191859202).
+    private static int OptionalInt_orElseThrow(OptionalInt receiver) {
+        try {
+            MethodType type = MethodType.methodType(int.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalInt.class, "orElseThrow", type);
+            return (int) mh.invokeExact(receiver);
+        } catch (NoSuchElementException expected) {
+            throw expected;  // Underlying method may throw NoSuchElementException
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalInt.stream() (b/191859202).
+    private static IntStream OptionalInt_stream(OptionalInt receiver) {
+        try {
+            MethodType type = MethodType.methodType(IntStream.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalInt.class, "stream", type);
+            return (IntStream) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 }

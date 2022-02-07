@@ -30,6 +30,13 @@
  */
 package test.java.util.Optional;
 
+// Android-added: support for wrapper to avoid d8 backporting of Optional methods (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.function.DoubleConsumer;
+import java.util.stream.DoubleStream;
+
 import java.util.NoSuchElementException;
 import java.util.OptionalDouble;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,13 +59,17 @@ public class BasicDouble {
         assertFalse(empty.equals("unexpected"));
 
         assertFalse(empty.isPresent());
-        assertTrue(empty.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty() (b/191859202).
+        // assertTrue(empty.isEmpty());
+        assertTrue(OptionalDouble_isEmpty(empty));
         assertEquals(empty.hashCode(), 0);
         assertEquals(empty.orElse(UNEXPECTED), UNEXPECTED);
         assertEquals(empty.orElseGet(() -> UNEXPECTED), UNEXPECTED);
 
         assertThrows(NoSuchElementException.class, () -> empty.getAsDouble());
-        assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        // Android-changed: Avoid backporting of orElseThrow() (b/191859202).
+        // assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> OptionalDouble_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
         AtomicBoolean b = new AtomicBoolean();
@@ -67,7 +78,9 @@ public class BasicDouble {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalDouble_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
         assertFalse(b1.get());
         assertTrue(b2.get());
 
@@ -88,13 +101,17 @@ public class BasicDouble {
         assertFalse(opt.equals("unexpected"));
 
         assertTrue(opt.isPresent());
-        assertFalse(opt.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty() (b/191859202).
+        // assertFalse(opt.isEmpty());
+        assertFalse(OptionalDouble_isEmpty(opt));
         assertEquals(opt.hashCode(), Double.hashCode(expected));
         assertEquals(opt.orElse(UNEXPECTED), expected);
         assertEquals(opt.orElseGet(() -> UNEXPECTED), expected);
 
         assertEquals(opt.getAsDouble(), expected);
-        assertEquals(opt.orElseThrow(), expected);
+        // Android-changed: Avoid backporting of orElseThrow() (b/191859202).
+        // assertEquals(opt.orElseThrow(), expected);
+        assertEquals(OptionalDouble_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
         AtomicBoolean b = new AtomicBoolean(false);
@@ -103,7 +120,9 @@ public class BasicDouble {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalDouble_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
         assertTrue(b1.get());
         assertFalse(b2.get());
 
@@ -122,11 +141,69 @@ public class BasicDouble {
 
     @Test
     public void testStreamEmpty() {
-        assertEquals(OptionalDouble.empty().stream().toArray(), new double[] { });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalDouble.empty().stream().toArray(), new double[] { });
+        assertEquals(OptionalDouble_stream(OptionalDouble.empty()).toArray(), new double[] { });
     }
 
     @Test
     public void testStreamPresent() {
-        assertEquals(OptionalDouble.of(DOUBLEVAL).stream().toArray(), new double[] { DOUBLEVAL });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalDouble.of(DOUBLEVAL).stream().toArray(), new double[] { DOUBLEVAL });
+        assertEquals(OptionalDouble_stream(OptionalDouble.of(DOUBLEVAL)).toArray(),
+                     new double[] { DOUBLEVAL });
+    }
+
+    // Android-added: wrapper for d8 backport of OptionalDouble.ifPresentOrElse() (b/191859202).
+    private static void OptionalDouble_ifPresentOrElse(
+            OptionalDouble receiver, DoubleConsumer action, Runnable emptyAction) {
+        try {
+            MethodType type =
+                    MethodType.methodType(void.class, DoubleConsumer.class, Runnable.class);
+            MethodHandle mh = MethodHandles.lookup().findVirtual(OptionalDouble.class,
+                                                                 "ifPresentOrElse",
+                                                                 type);
+            mh.invokeExact(receiver, action, emptyAction);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalDouble.isEmpty() (b/191859202).
+    private static boolean OptionalDouble_isEmpty(OptionalDouble receiver) {
+        try {
+            MethodType type = MethodType.methodType(boolean.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalDouble.class, "isEmpty", type);
+            return (boolean) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalDouble.orElseThrow() (b/191859202).
+    private static double OptionalDouble_orElseThrow(OptionalDouble receiver) {
+        try {
+            MethodType type = MethodType.methodType(double.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalDouble.class, "orElseThrow", type);
+            return (double) mh.invokeExact(receiver);
+        } catch (NoSuchElementException expected) {
+            throw expected;  // Underlying method may throw NoSuchElementException
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalDouble.stream() (b/191859202).
+    private static DoubleStream OptionalDouble_stream(OptionalDouble receiver) {
+        try {
+            MethodType type = MethodType.methodType(DoubleStream.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalDouble.class, "stream", type);
+            return (DoubleStream) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 }
