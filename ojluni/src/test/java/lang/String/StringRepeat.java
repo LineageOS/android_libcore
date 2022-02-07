@@ -28,6 +28,11 @@
  */
 package test.java.lang.String;
 
+// Android-added: support for wrapper to avoid d8 backporting of String.isBlank (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -66,7 +71,9 @@ public class StringRepeat {
                     break;
                 }
 
-                verify(string.repeat(repeat), string, repeat);
+                // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+                // verify(string.repeat(repeat), string, repeat);
+                verify(String_repeat(string, repeat), string, repeat);
             }
         }
     }
@@ -77,14 +84,18 @@ public class StringRepeat {
     @Test
     public void test2() {
         try {
-            "abc".repeat(-1);
+            // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+            // "abc".repeat(-1);
+            String_repeat("abc", -1);
             throw new RuntimeException("No exception for negative repeat count");
         } catch (IllegalArgumentException ex) {
             // Correct
         }
 
         try {
-            "abc".repeat(Integer.MAX_VALUE - 1);
+            // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+            // "abc".repeat(Integer.MAX_VALUE - 1);
+            String_repeat("abc", Integer.MAX_VALUE - 1);
             throw new RuntimeException("No exception for large repeat count");
         } catch (OutOfMemoryError ex) {
             // Correct
@@ -94,31 +105,52 @@ public class StringRepeat {
     // Android-added: more tests
     @Test
     public void testEdgeCases() {
-        Assert.assertThrows(IllegalArgumentException.class, () -> "a".repeat(-1));
-        Assert.assertThrows(IllegalArgumentException.class, () -> "\u03B1".repeat(-1));
-        Assert.assertThrows(OutOfMemoryError.class, () -> "\u03B1\u03B2".repeat(Integer.MAX_VALUE));
+        // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+        // Assert.assertThrows(IllegalArgumentException.class, () -> "a".repeat(-1));
+        // Assert.assertThrows(IllegalArgumentException.class, () -> "\u03B1".repeat(-1));
+        // Assert.assertThrows(OutOfMemoryError.class, () -> "\u03B1\u03B2".repeat(Integer.MAX_VALUE));
+        Assert.assertThrows(IllegalArgumentException.class, () -> String_repeat("a", -1));
+        Assert.assertThrows(IllegalArgumentException.class, () -> String_repeat("\u03B1", -1));
+        Assert.assertThrows(OutOfMemoryError.class,
+                            () -> String_repeat("\u03B1\u03B2", Integer.MAX_VALUE));
     }
 
     @Test
     public void testCompressed() {
-        Assert.assertEquals("a".repeat(0), "");
-        Assert.assertEquals("a".repeat(1), "a");
-        Assert.assertEquals("a".repeat(5), "aaaaa");
+        // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+        // Assert.assertEquals("a".repeat(0), "");
+        // Assert.assertEquals("a".repeat(1), "a");
+        // Assert.assertEquals("a".repeat(5), "aaaaa");
+        Assert.assertEquals(String_repeat("a", 0), "");
+        Assert.assertEquals(String_repeat("a", 1), "a");
+        Assert.assertEquals(String_repeat("a", 5), "aaaaa");
 
-        Assert.assertEquals("abc".repeat(0), "");
-        Assert.assertEquals("abc".repeat(1), "abc");
-        Assert.assertEquals("abc".repeat(5), "abcabcabcabcabc");
+        // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+        // Assert.assertEquals("abc".repeat(0), "");
+        // Assert.assertEquals("abc".repeat(1), "abc");
+        // Assert.assertEquals("abc".repeat(5), "abcabcabcabcabc");
+        Assert.assertEquals(String_repeat("abc", 0), "");
+        Assert.assertEquals(String_repeat("abc", 1), "abc");
+        Assert.assertEquals(String_repeat("abc", 5), "abcabcabcabcabc");
     }
 
     @Test
     public void testUncompressed() {
-        Assert.assertEquals("\u2022".repeat(0), "");
-        Assert.assertEquals("\u2022".repeat(1), "\u2022");
-        Assert.assertEquals("\u2022".repeat(5), "\u2022\u2022\u2022\u2022\u2022");
+        // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+        // Assert.assertEquals("\u2022".repeat(0), "");
+        // Assert.assertEquals("\u2022".repeat(1), "\u2022");
+        // Assert.assertEquals("\u2022".repeat(5), "\u2022\u2022\u2022\u2022\u2022");
+        Assert.assertEquals(String_repeat("\u2022", 0), "");
+        Assert.assertEquals(String_repeat("\u2022", 1), "\u2022");
+        Assert.assertEquals(String_repeat("\u2022", 5), "\u2022\u2022\u2022\u2022\u2022");
 
-        Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(0), "");
-        Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(1), "αβγ");
-        Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(5), "αβγαβγαβγαβγαβγ");
+        // Android-changed: call wrappered repeat() to avoid d8 backport (b/191859202).
+        // Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(0), "");
+        // Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(1), "αβγ");
+        // Assert.assertEquals("\u03B1\u03B2\u03B3".repeat(5), "αβγαβγαβγαβγαβγ");
+        Assert.assertEquals(String_repeat("\u03B1\u03B2\u03B3", 0), "");
+        Assert.assertEquals(String_repeat("\u03B1\u03B2\u03B3", 1), "αβγ");
+        Assert.assertEquals(String_repeat("\u03B1\u03B2\u03B3", 5), "αβγαβγαβγαβγαβγ");
     }
 
     static String truncate(String string) {
@@ -160,6 +192,19 @@ public class StringRepeat {
                         String.format("Repeat count expected to be %d, found %d%n", repeat, count);
                 Assert.fail(message);
             }
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String.isBlank (b/191859202).
+    private static String String_repeat(String input, int count) {
+        try {
+            MethodType type = MethodType.methodType(String.class, int.class);
+            MethodHandle repeat = MethodHandles.lookup().findVirtual(String.class, "repeat", type);
+            return (String) repeat.invokeExact(input, count);
+        } catch (IllegalArgumentException | OutOfMemoryError expected) {
+            throw expected;
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
     }
 }

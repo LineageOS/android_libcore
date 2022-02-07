@@ -46,6 +46,11 @@
  */
 package test.java.lang.Long;
 
+// Android-added: support for wrapper to avoid d8 backporting of Integer.parseInt (b/215435867).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import org.testng.annotations.Test;
 
 public class ParsingTest {
@@ -129,7 +134,9 @@ public class ParsingTest {
     private static void checkNumberFormatException(String val, int start, int end, int radix) {
         long n = 0;
         try {
-            n = Long.parseLong(val, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backporting Long.parseLong (b/215435867).
+            // n = Long.parseLong(val, start, end, radix);
+            n = Long_parseLong(val, start, end, radix);
             System.err.println("parseLong(" + val + ", " + start + ", " + end + ", " + radix +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -141,7 +148,9 @@ public class ParsingTest {
     private static void checkIndexOutOfBoundsException(String val, int start, int end, int radix) {
         long n = 0;
         try {
-            n = Long.parseLong(val, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backporting Long.parseLong (b/215435867).
+            // n = Long.parseLong(val, start, end, radix);
+            n = Long_parseLong(val, start, end, radix);
             System.err.println("parseLong(" + val + ", " + start + ", " + end + ", " + radix +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -153,7 +162,9 @@ public class ParsingTest {
     private static void checkNull(int start, int end, int radix) {
         long n = 0;
         try {
-            n = Long.parseLong(null, start, end, radix);
+            // Android-changed: call wrapper to avoid d8 backporting Long.parseLong (b/215435867).
+            // n = Long.parseLong(null, start, end, radix);
+            n = Long_parseLong(null, start, end, radix);
             System.err.println("parseLong(null, " + start + ", " + end + ", " + radix +
                     ") incorrectly returned " + n);
             throw new RuntimeException();
@@ -163,9 +174,31 @@ public class ParsingTest {
     }
 
     private static void check(long expected, String val, int start, int end, int radix) {
-        long n = Long.parseLong(val, start, end, radix);
+        // Android-changed: call wrapper to avoid d8 backporting Long.parseLong (b/215435867).
+        // long n = Long.parseLong(val, start, end, radix);
+        long n = Long_parseLong(val, start, end, radix);
         if (n != expected)
             throw new RuntimeException("Long.parseLong failed. Expexted: " + expected + " String: \"" +
                     val + "\", start: " + start + ", end: " + end + " radix: " + radix + " Result: " + n);
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Long.parseLong (b/215435867).
+    private static long Long_parseLong(String val, int start, int end, int radix) {
+        try {
+            MethodType parseType = MethodType.methodType(long.class,
+                                                         CharSequence.class,
+                                                         int.class,
+                                                         int.class,
+                                                         int.class);
+            MethodHandle parse =
+                    MethodHandles.lookup().findStatic(Long.class, "parseLong", parseType);
+            return (long) parse.invokeExact((CharSequence) val, start, end, radix);
+        } catch (IndexOutOfBoundsException | NullPointerException | NumberFormatException e) {
+            // Expected exceptions from the target method during the tests here.
+            throw e;
+        } catch (Throwable t) {
+            // Everything else.
+            throw new RuntimeException(t);
+        }
     }
 }
