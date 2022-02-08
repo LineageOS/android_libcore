@@ -56,6 +56,7 @@ import java.time.temporal.ChronoField;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
 
+import libcore.icu.DecimalFormatData;
 import libcore.icu.LocaleData;
 import jdk.internal.math.DoubleConsts;
 import jdk.internal.math.FormattedFloatingDecimal;
@@ -2286,8 +2287,8 @@ public final class Formatter implements Closeable, Flushable {
             // Android-changed: Improve the performance by 10x http://b/197788756
             // Unclear if this mapping is needed but inherited from DecimalFormatSymbols
             l = LocaleData.mapInvalidAndNullLocales(l);
-            LocaleData localeData = LocaleData.get(l);
-            return localeData.zeroDigit;
+            DecimalFormatData decimalFormatData = DecimalFormatData.getInstance(l);
+            return decimalFormatData.getZeroDigit();
             // DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
             //  return dfs.getZeroDigit();
         } else {
@@ -3380,10 +3381,10 @@ public final class Formatter implements Closeable, Flushable {
 
                 // BEGIN Android-changed: Use localized exponent separator for %e.
                 Locale separatorLocale = (l != null) ? l : Locale.getDefault();
-                LocaleData localeData = LocaleData.get(separatorLocale);
+                DecimalFormatData formatData = DecimalFormatData.getInstance(separatorLocale);
                 sb.append(f.contains(Flags.UPPERCASE) ?
-                        localeData.exponentSeparator.toUpperCase(separatorLocale) :
-                        localeData.exponentSeparator.toLowerCase(separatorLocale));
+                        formatData.getExponentSeparator().toUpperCase(separatorLocale) :
+                        formatData.getExponentSeparator().toLowerCase(separatorLocale));
                 // END Android-changed: Use localized exponent separator for %e.
 
                 Flags flags = f.dup().remove(Flags.GROUP);
@@ -4412,8 +4413,8 @@ public final class Formatter implements Closeable, Flushable {
                 // Android-changed: Improve the performance by 10x http://b/197788756
                 // Unclear if this mapping is needed but inherited from DecimalFormatSymbols
                 l = LocaleData.mapInvalidAndNullLocales(l);
-                LocaleData localeData = LocaleData.get(l);
-                return localeData.zeroDigit;
+                DecimalFormatData decimalFormatData = DecimalFormatData.getInstance(l);
+                return decimalFormatData.getZeroDigit();
                 //  DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance(l);
                 //  return dfs.getZeroDigit();
             }
