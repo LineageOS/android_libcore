@@ -83,24 +83,11 @@ public class OptionsTest {
     };
 
     static TestClass[] mcSocketTests = new TestClass[] {
-            TestClass.create(StandardSocketOptions.IP_MULTICAST_IF, getNetworkInterface()),
+            // Android-removed: unused in Android
+            // TestClass.create(StandardSocketOptions.IP_MULTICAST_IF, getNetworkInterface()),
             TestClass.create(StandardSocketOptions.IP_MULTICAST_TTL, Integer.valueOf(10)),
             TestClass.create(StandardSocketOptions.IP_MULTICAST_LOOP, Boolean.TRUE)
     };
-
-    static NetworkInterface getNetworkInterface() {
-        try {
-            Enumeration<NetworkInterface> nifs = NetworkInterface.getNetworkInterfaces();
-            while (nifs.hasMoreElements()) {
-                NetworkInterface ni = (NetworkInterface)nifs.nextElement();
-                if (ni.supportsMulticast()) {
-                    return ni;
-                }
-            }
-        } catch (Exception e) {
-        }
-        return null;
-    }
 
     static void doSocketTests() throws Exception {
         try (
@@ -283,7 +270,7 @@ public class OptionsTest {
     }
 
     @Test
-    public void testOptions(String args[]) throws Exception {
+    public void testOptions() throws Exception {
         doSocketTests();
         doServerSocketTests();
         doDgSocketTests();
