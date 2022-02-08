@@ -52,6 +52,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import libcore.icu.DecimalFormatData;
 import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 
@@ -884,10 +885,10 @@ public abstract class NumberFormat extends Format  {
                                        desiredLocale, choice);
         */
         String[] numberPatterns = new String[3];
-        LocaleData data = LocaleData.get(desiredLocale);
-        numberPatterns[NUMBERSTYLE] = data.numberPattern;
-        numberPatterns[CURRENCYSTYLE] = data.currencyPattern;
-        numberPatterns[PERCENTSTYLE] = data.percentPattern;
+        DecimalFormatData data = DecimalFormatData.getInstance(desiredLocale);
+        numberPatterns[NUMBERSTYLE] = data.getNumberPattern();
+        numberPatterns[CURRENCYSTYLE] = data.getCurrencyPattern();
+        numberPatterns[PERCENTSTYLE] = data.getPercentPattern();
 
         // Note: the following lines are from NumberFormatProviderImpl upstream.
         DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(desiredLocale);

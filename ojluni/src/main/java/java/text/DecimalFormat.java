@@ -51,6 +51,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import libcore.icu.DecimalFormatData;
 import libcore.icu.LocaleData;
 import android.icu.math.MathContext;
 
@@ -420,7 +421,7 @@ public class DecimalFormat extends NumberFormat {
         }
         String[] all = adapter.getLocaleResources(def).getNumberPatterns();
         */
-        String pattern = LocaleData.get(def).numberPattern;
+        String pattern = DecimalFormatData.getInstance(def).getNumberPattern();
         // END Android-changed: Use ICU LocaleData. Remove SPI LocaleProviderAdapter.
 
         // Always applyPattern after the symbols are set
