@@ -422,7 +422,10 @@ public class TimeZoneTest extends TestCaseWithRules {
             TimeZone.getTimeZone("GMT+08:00");
         } finally {
             RuntimeHooks.clearTimeZoneIdSupplier();
-            RuntimeHooks.setTimeZoneIdSupplier(originalTimeZoneSupplier);
+            // If the process was forked from Zygote, originalTimeZoneSupplier shouldn't be null.
+            if (originalTimeZoneSupplier != null) {
+                RuntimeHooks.setTimeZoneIdSupplier(originalTimeZoneSupplier);
+            }
         }
     }
 
@@ -438,7 +441,10 @@ public class TimeZoneTest extends TestCaseWithRules {
             TimeZone.getTimeZone("GMT+08:00");
         } finally {
             RuntimeHooks.clearTimeZoneIdSupplier();
-            RuntimeHooks.setTimeZoneIdSupplier(originalTimeZoneSupplier);
+            // If the process was forked from Zygote, originalTimeZoneSupplier shouldn't be null.
+            if (originalTimeZoneSupplier != null) {
+                RuntimeHooks.setTimeZoneIdSupplier(originalTimeZoneSupplier);
+            }
         }
     }
 
