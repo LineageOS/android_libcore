@@ -29,6 +29,11 @@
  */
 package test.java.lang.Long;
 
+// Android-added: support for wrapper to avoid d8 backporting of Integer.parseInt (b/215435867).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import java.math.*;
 
 import org.testng.annotations.Test;
@@ -261,7 +266,10 @@ public class Unsigned {
                                       value, radix, bigString,  longResult));
 
                 // test offset based parse method
-                longResult = Long.parseUnsignedLong("prefix" + bigString + "suffix", "prefix".length(),
+                // Android-changed: avoid d8 backporting Long.parseUnsignedLong (b/215435867).
+                // longResult = Long.parseUnsignedLong("prefix" + bigString + "suffix", "prefix".length(),
+                //        "prefix".length() + bigString.length(), radix);
+                longResult = Long_parseUnsignedLong("prefix" + bigString + "suffix", "prefix".length(),
                         "prefix".length() + bigString.length(), radix);
 
                 Assert.assertEquals(
@@ -405,6 +413,26 @@ public class Unsigned {
                                           Long.toUnsignedString(divisor.longValue())));
                 }
             }
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of Long.parseUnsignedLong(JIII) (b/215435867).
+    private static long Long_parseUnsignedLong(String val, int start, int end, int radix) {
+        try {
+            MethodType parseType = MethodType.methodType(long.class,
+                                                         CharSequence.class,
+                                                         int.class,
+                                                         int.class,
+                                                         int.class);
+            MethodHandle parse =
+                    MethodHandles.lookup().findStatic(Long.class, "parseUnsignedLong", parseType);
+            return (long) parse.invokeExact((CharSequence) val, start, end, radix);
+        } catch (IndexOutOfBoundsException | NullPointerException | NumberFormatException e) {
+            // Expected exceptions from the target method during the tests here.
+            throw e;
+        } catch (Throwable t) {
+            // Everything else.
+            throw new RuntimeException(t);
         }
     }
 }
