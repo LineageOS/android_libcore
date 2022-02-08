@@ -22,6 +22,11 @@
  */
 package test.java.lang.String;
 
+// Android-added: support for wrapper to avoid d8 backporting of String.isBlank (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,18 +46,31 @@ public class Strip {
      */
     @Test
     public void testStrip() {
-        equal("   abc   ".strip(), "abc");
-        equal("   abc   ".stripLeading(), "abc   ");
-        equal("   abc   ".stripTrailing(), "   abc");
-        equal("   abc\u2022   ".strip(), "abc\u2022");
-        equal("   abc\u2022   ".stripLeading(), "abc\u2022   ");
-        equal("   abc\u2022   ".stripTrailing(), "   abc\u2022");
-        equal("".strip(), "");
-        equal("".stripLeading(), "");
-        equal("".stripTrailing(), "");
-        equal("\b".strip(), "\b");
-        equal("\b".stripLeading(), "\b");
-        equal("\b".stripTrailing(), "\b");
+        // Android-changed: call wrappered string methods to avoid d8 backport (b/191859202).
+        // equal("   abc   ".strip(), "abc");
+        // equal("   abc   ".stripLeading(), "abc   ");
+        // equal("   abc   ".stripTrailing(), "   abc");
+        // equal("   abc\u2022   ".strip(), "abc\u2022");
+        // equal("   abc\u2022   ".stripLeading(), "abc\u2022   ");
+        // equal("   abc\u2022   ".stripTrailing(), "   abc\u2022");
+        // equal("".strip(), "");
+        // equal("".stripLeading(), "");
+        // equal("".stripTrailing(), "");
+        // equal("\b".strip(), "\b");
+        // equal("\b".stripLeading(), "\b");
+        // equal("\b".stripTrailing(), "\b");
+        equal(String_strip("   abc   "), "abc");
+        equal(String_stripLeading("   abc   "), "abc   ");
+        equal(String_stripTrailing("   abc   "), "   abc");
+        equal(String_strip("   abc\u2022   "), "abc\u2022");
+        equal(String_stripLeading("   abc\u2022   "), "abc\u2022   ");
+        equal(String_stripTrailing("   abc\u2022   "), "   abc\u2022");
+        equal(String_strip(""), "");
+        equal(String_stripLeading(""), "");
+        equal(String_stripTrailing(""), "");
+        equal(String_strip("\b"), "\b");
+        equal(String_stripLeading("\b"), "\b");
+        equal(String_stripTrailing("\b"), "\b");
     }
 
     /*
@@ -66,9 +84,13 @@ public class Strip {
         String whiteSpace = sb.toString();
 
         String testString = whiteSpace + "abc" + whiteSpace;
-        equal(testString.strip(), "abc");
-        equal(testString.stripLeading(), "abc"  + whiteSpace);
-        equal(testString.stripTrailing(), whiteSpace + "abc");
+        // Android-changed: call wrappered string methods to avoid d8 backport (b/191859202).
+        // equal(testString.strip(), "abc");
+        // equal(testString.stripLeading(), "abc"  + whiteSpace);
+        // equal(testString.stripTrailing(), whiteSpace + "abc");
+        equal(String_strip(testString), "abc");
+        equal(String_stripLeading(testString), "abc"  + whiteSpace);
+        equal(String_stripTrailing(testString), whiteSpace + "abc");
     }
 
     /*
@@ -97,5 +119,31 @@ public class Strip {
         if (input == null || expected == null || !expected.equals(input)) {
             report("Failed equal", "Input:", input, "Expected:", expected);
         }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String strip methods (b/191859202).
+    private static String String_stripCommon(String method, String input) {
+        try {
+            MethodType type = MethodType.methodType(String.class);
+            MethodHandle strip = MethodHandles.lookup().findVirtual(String.class, method, type);
+            return (String) strip.invokeExact(input);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String.strip()(b/191859202).
+    private static String String_strip(String input) {
+        return String_stripCommon("strip", input);
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String.stripLeading() (b/191859202).
+    private static String String_stripLeading(String input) {
+        return String_stripCommon("stripLeading", input);
+    }
+
+    // Android-added: wrapper to avoid d8 backporting of String.stripTrailing() (b/191859202).
+    private static String String_stripTrailing(String input) {
+        return String_stripCommon("stripTrailing", input);
     }
 }
