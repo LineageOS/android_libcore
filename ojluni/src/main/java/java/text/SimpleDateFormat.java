@@ -58,8 +58,8 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import libcore.icu.LocaleData;
 
+import libcore.icu.SimpleDateFormatData;
 import sun.util.calendar.CalendarUtils;
 
 import static java.text.DateFormatSymbols.*;
@@ -642,17 +642,17 @@ public class SimpleDateFormat extends DateFormat {
     }
 
     private static String getDateTimeFormat(int timeStyle, int dateStyle, Locale locale) {
-        LocaleData localeData = LocaleData.get(locale);
+        SimpleDateFormatData data = SimpleDateFormatData.getInstance(locale);
         if ((timeStyle >= 0) && (dateStyle >= 0)) {
             Object[] dateTimeArgs = {
-                localeData.getDateFormat(dateStyle),
-                localeData.getTimeFormat(timeStyle),
+                    data.getDateFormat(dateStyle),
+                    data.getTimeFormat(timeStyle),
             };
             return MessageFormat.format("{0} {1}", dateTimeArgs);
         } else if (timeStyle >= 0) {
-            return localeData.getTimeFormat(timeStyle);
+            return data.getTimeFormat(timeStyle);
         } else if (dateStyle >= 0) {
-            return localeData.getDateFormat(dateStyle);
+            return data.getDateFormat(dateStyle);
         } else {
             throw new IllegalArgumentException("No date or time style specified");
         }
