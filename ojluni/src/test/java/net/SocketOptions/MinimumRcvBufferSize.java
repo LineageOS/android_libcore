@@ -37,7 +37,7 @@ import static org.junit.Assert.fail;
 public class MinimumRcvBufferSize {
 
     @Test
-    public void testBufferSize(String args[]) throws Exception {
+    public void testBufferSize() throws Exception {
         boolean error = false;
         ServerSocketChannel channel = ServerSocketChannel.open();
         int before = channel.getOption(StandardSocketOptions.SO_RCVBUF);
