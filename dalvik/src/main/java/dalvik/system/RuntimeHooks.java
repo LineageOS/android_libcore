@@ -69,6 +69,14 @@ public final class RuntimeHooks {
     }
 
     /**
+     * @hide
+     */
+    // VisibleForTesting
+    public static void clearTimeZoneIdSupplier() {
+        RuntimeHooks.zoneIdSupplier = null;
+    }
+
+    /**
      * Returns the {@link Supplier} that should be used to discover the time zone.
      *
      * @hide

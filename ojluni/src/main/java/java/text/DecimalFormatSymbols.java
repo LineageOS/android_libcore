@@ -46,6 +46,7 @@ import java.io.ObjectStreamField;
 import java.io.Serializable;
 import java.util.Currency;
 import java.util.Locale;
+import libcore.icu.DecimalFormatData;
 import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 
@@ -675,19 +676,19 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
             throw new NullPointerException("locale");
         }
         locale = LocaleData.mapInvalidAndNullLocales(locale);
-        LocaleData localeData = LocaleData.get(locale);
+        DecimalFormatData decimalFormatData = DecimalFormatData.getInstance(locale);
         String[] values = new String[11];
-        values[0] = String.valueOf(localeData.decimalSeparator);
-        values[1] = String.valueOf(localeData.groupingSeparator);
-        values[2] = String.valueOf(localeData.patternSeparator);
-        values[3] = localeData.percent;
-        values[4] = String.valueOf(localeData.zeroDigit);
+        values[0] = String.valueOf(decimalFormatData.getDecimalSeparator());
+        values[1] = String.valueOf(decimalFormatData.getGroupingSeparator());
+        values[2] = String.valueOf(decimalFormatData.getPatternSeparator());
+        values[3] = decimalFormatData.getPercent();
+        values[4] = String.valueOf(decimalFormatData.getZeroDigit());
         values[5] = "#";
-        values[6] = localeData.minusSign;
-        values[7] = localeData.exponentSeparator;
-        values[8] = localeData.perMill;
-        values[9] = localeData.infinity;
-        values[10] = localeData.NaN;
+        values[6] = decimalFormatData.getMinusSign();
+        values[7] = decimalFormatData.getExponentSeparator();
+        values[8] = decimalFormatData.getPerMill();
+        values[9] = decimalFormatData.getInfinity();
+        values[10] = decimalFormatData.getNaN();
         String[] numberElements = values;
         // END Android-changed: Removed use of DecimalFormatSymbolsProvider. Switched to ICU.
 

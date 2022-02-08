@@ -16,10 +16,11 @@
 
 package libcore.highmemorytest.libcore.icu;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
-import libcore.icu.LocaleData;
+import java.text.DateFormat;
 
+import libcore.icu.SimpleDateFormatData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -27,7 +28,7 @@ import org.junit.runners.Parameterized;
 import java.util.Locale;
 
 @RunWith(Parameterized.class)
-public class LocaleDataTest {
+public class SimpleDateFormatDataTest {
 
     @Parameterized.Parameters(name = "{0}")
     public static Locale[] getAllLocales() {
@@ -39,10 +40,16 @@ public class LocaleDataTest {
 
     @Test
     public void testLongDateTimeFormat() {
-        LocaleData d = LocaleData.get(locale);
-        int dateLength = d.longDateFormat.length();
-        assertTrue("LocaleData.longDateFormat has zero length: " + dateLength, dateLength != 0);
-        int timeLength = d.longTimeFormat.length();
-        assertTrue("LocaleData.longTimeFormat has zero length: " + timeLength, timeLength != 0);
+        SimpleDateFormatData d = SimpleDateFormatData.getInstance(locale);
+
+        assertNotEquals(0, d.getDateFormat(DateFormat.FULL).length());
+        assertNotEquals(0, d.getDateFormat(DateFormat.LONG).length());
+        assertNotEquals(0, d.getDateFormat(DateFormat.MEDIUM).length());
+        assertNotEquals(0, d.getDateFormat(DateFormat.SHORT).length());
+
+        assertNotEquals(0, d.getTimeFormat(DateFormat.FULL).length());
+        assertNotEquals(0, d.getTimeFormat(DateFormat.LONG).length());
+        assertNotEquals(0, d.getTimeFormat(DateFormat.MEDIUM).length());
+        assertNotEquals(0, d.getTimeFormat(DateFormat.SHORT).length());
     }
 }
