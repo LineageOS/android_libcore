@@ -39,6 +39,8 @@ public class MinimumRcvBufferSize {
     @Test
     public void testBufferSize() throws Exception {
         boolean error = false;
+        // BEGIN Android-removed: failing in Cuttlefish (b/218814458).
+        /*
         ServerSocketChannel channel = ServerSocketChannel.open();
         int before = channel.getOption(StandardSocketOptions.SO_RCVBUF);
         channel.setOption(StandardSocketOptions.SO_RCVBUF, Integer.MAX_VALUE);
@@ -47,11 +49,13 @@ public class MinimumRcvBufferSize {
             fail("Test failed: SO_RCVBUF");
             error = true;
         }
+        */
+        // END Android-removed: failing in Cuttlefish (b/218814458).
 
         SocketChannel channel1 = SocketChannel.open();
-        before = channel1.getOption(StandardSocketOptions.SO_SNDBUF);
+        int before = channel1.getOption(StandardSocketOptions.SO_SNDBUF);
         channel1.setOption(StandardSocketOptions.SO_SNDBUF, Integer.MAX_VALUE);
-        after = channel1.getOption(StandardSocketOptions.SO_SNDBUF);
+        int after = channel1.getOption(StandardSocketOptions.SO_SNDBUF);
         if (before > after) {
             fail("Test failed: SO_SNDBUF");
             error = true;
