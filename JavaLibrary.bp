@@ -158,6 +158,7 @@ java_defaults {
         javacflags: [
             "-Xep:MissingOverride:OFF", // Ignore missing @Override.
             "-Xep:ConstantOverflow:WARN", // Known constant overflow in SplittableRandom
+            "-Xep:UnicodeInCode:WARN", // XML parser uses line feeds in whitespace
         ],
     },
     min_sdk_version: "31",
