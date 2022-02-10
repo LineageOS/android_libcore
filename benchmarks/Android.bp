@@ -33,6 +33,9 @@ java_test {
         "caliper-api-target",
         "android.test.base",
     ],
+    errorprone: {
+        javacflags: ["-Xep:EqualsNull:WARN"],
+    },
 }
 
 android_test {
