@@ -31,6 +31,9 @@ import java.lang.NoSuchMethodException;
 import java.lang.ReflectiveOperationException;
 import libcore.icu.SimpleDateFormatData;
 
+import sun.util.locale.BaseLocale;
+import java.util.Locale;
+
 /**
  * Provides hooks for the zygote to call back into the runtime to perform
  * parent or child specific initialization..
@@ -99,6 +102,16 @@ public final class ZygoteHooks {
     }
 
     /**
+     * Called after GC but before fork, it cleans stale cache entries in
+     * BaseLocale and Locale, so to avoid the cleaning to happen in every
+     * child process.
+     */
+    private static void cleanLocaleCaches() {
+        BaseLocale.cleanCache();
+        Locale.cleanCache();
+    }
+
+    /**
      * Runs several special GCs to try to clean up a few generations of
      * softly- and final-reachable objects, along with any other garbage.
      * This is only useful just before a fork().
@@ -114,6 +127,7 @@ public final class ZygoteHooks {
          */
         System.gc();
         runtime.runFinalizationSync();
+        cleanLocaleCaches();
         System.gc();
     }
 
