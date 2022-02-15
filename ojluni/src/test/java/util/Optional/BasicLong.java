@@ -30,6 +30,13 @@
  */
 package test.java.util.Optional;
 
+// Android-added: support for wrapper to avoid d8 backporting of Optional methods (b/191859202).
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.function.LongConsumer;
+import java.util.stream.LongStream;
+
 import java.util.NoSuchElementException;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -52,13 +59,17 @@ public class BasicLong {
         assertFalse(empty.equals("unexpected"));
 
         assertFalse(empty.isPresent());
-        assertTrue(empty.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty()) (b/191859202).
+        // assertTrue(empty.isEmpty());
+        assertTrue(OptionalLong_isEmpty(empty));
         assertEquals(empty.hashCode(), 0);
         assertEquals(empty.orElse(UNEXPECTED), UNEXPECTED);
         assertEquals(empty.orElseGet(() -> UNEXPECTED), UNEXPECTED);
 
         assertThrows(NoSuchElementException.class, () -> empty.getAsLong());
-        assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        // Android-changed: Avoid backporting of orElseThrow()) (b/191859202).
+        // assertThrows(NoSuchElementException.class, () -> empty.orElseThrow());
+        assertThrows(NoSuchElementException.class, () -> OptionalLong_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
         AtomicBoolean b = new AtomicBoolean();
@@ -67,7 +78,9 @@ public class BasicLong {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalLong_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
         assertFalse(b1.get());
         assertTrue(b2.get());
 
@@ -88,13 +101,17 @@ public class BasicLong {
         assertFalse(opt.equals("unexpected"));
 
         assertTrue(opt.isPresent());
-        assertFalse(opt.isEmpty());
+        // Android-changed: Avoid backporting of isEmpty()) (b/191859202).
+        // assertFalse(opt.isEmpty());
+        assertFalse(OptionalLong_isEmpty(opt));
         assertEquals(opt.hashCode(), Long.hashCode(expected));
         assertEquals(opt.orElse(UNEXPECTED), expected);
         assertEquals(opt.orElseGet(() -> UNEXPECTED), expected);
 
         assertEquals(opt.getAsLong(), expected);
-        assertEquals(opt.orElseThrow(), expected);
+        // Android-changed: Avoid backporting of orElseThrow()) (b/191859202).
+        // assertEquals(opt.orElseThrow(), expected);
+        assertEquals(OptionalLong_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
         AtomicBoolean b = new AtomicBoolean(false);
@@ -103,7 +120,9 @@ public class BasicLong {
 
         AtomicBoolean b1 = new AtomicBoolean(false);
         AtomicBoolean b2 = new AtomicBoolean(false);
-        opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
+        // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
+        OptionalLong_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
         assertTrue(b1.get());
         assertFalse(b2.get());
 
@@ -122,11 +141,68 @@ public class BasicLong {
 
     @Test
     public void testStreamEmpty() {
-        assertEquals(OptionalLong.empty().stream().toArray(), new long[] { });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalLong.empty().stream().toArray(), new long[] { });
+        assertEquals(OptionalLong_stream(OptionalLong.empty()).toArray(), new long[] { });
     }
 
     @Test
     public void testStreamPresent() {
-        assertEquals(OptionalLong.of(LONGVAL).stream().toArray(), new long[] { LONGVAL });
+        // Android-changed: Avoid backporting of stream() (b/191859202).
+        // assertEquals(OptionalLong.of(LONGVAL).stream().toArray(), new long[] { LONGVAL });
+        assertEquals(OptionalLong_stream(OptionalLong.of(LONGVAL)).toArray(),
+                     new long[] { LONGVAL });
+    }
+
+    // Android-added: wrapper for d8 backport of OptionalLong.ifPresentOrElse() (b/191859202).
+    private static void OptionalLong_ifPresentOrElse(
+            OptionalLong receiver, LongConsumer action, Runnable emptyAction) {
+        try {
+            MethodType type =
+                    MethodType.methodType(void.class, LongConsumer.class, Runnable.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalLong.class, "ifPresentOrElse", type);
+            mh.invokeExact(receiver, action, emptyAction);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalLong.isEmpty() (b/191859202).
+    private static boolean OptionalLong_isEmpty(OptionalLong receiver) {
+        try {
+            MethodType type = MethodType.methodType(boolean.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalLong.class, "isEmpty", type);
+            return (boolean) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalLong.orElseThrow() (b/191859202).
+    private static long OptionalLong_orElseThrow(OptionalLong receiver) {
+        try {
+            MethodType type = MethodType.methodType(long.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalLong.class, "orElseThrow", type);
+            return (long) mh.invokeExact(receiver);
+        } catch (NoSuchElementException expected) {
+            throw expected;  // Underlying method may throw NoSuchElementException
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    // Android-added: wrapper to avoid d8 backport of OptionalLong.stream() (b/191859202).
+    private static LongStream OptionalLong_stream(OptionalLong receiver) {
+        try {
+            MethodType type = MethodType.methodType(LongStream.class);
+            MethodHandle mh =
+                    MethodHandles.lookup().findVirtual(OptionalLong.class, "stream", type);
+            return (LongStream) mh.invokeExact(receiver);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
     }
 }

@@ -22,6 +22,8 @@
  */
 package test.java.lang.ref;
 
+import android.system.SystemCleaner;
+
 import java.lang.ref.Cleaner;
 import java.lang.ref.Reference;
 import java.lang.ref.PhantomReference;
@@ -103,6 +105,23 @@ public class CleanerTest {
         CleanableCase s = setupPhantom(COMMON, cleaner);
         cleaner = null;
         checkCleaned(s.getSemaphore(), true, "Cleaner was cleaned:");
+    }
+
+    // Android-added: Test (trivially) SystemCleaner by repeating above.
+    /**
+     * Check that SystemCleaner.cleaner() also behaves as above.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testSystemCleanerActions() {
+        Cleaner cleaner = SystemCleaner.cleaner();
+
+        // Individually
+        generateCases(cleaner, c -> c.clearRef());
+        generateCases(cleaner, c -> c.doClean());
+
+        // Pairs
+        generateCases(cleaner, c -> c.doClean(), c -> c.clearRef());
     }
 
     /**

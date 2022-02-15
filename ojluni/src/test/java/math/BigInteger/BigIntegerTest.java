@@ -648,7 +648,7 @@ public class BigIntegerTest {
         }
     }
 
-    private static void stringConv() {
+    private static void stringConv_generic() {
         // Generic string conversion.
         for (int i=0; i<100; i++) {
             byte[] xBytes = new byte[Math.abs(random.nextInt())%100+1];
@@ -662,24 +662,24 @@ public class BigIntegerTest {
                         "BigInteger toString: "+x+" Test: "+test+" radix: " + radix);
             }
         }
+    }
 
+    private static void stringConv_schoenhage(int k, int samples) {
         // String conversion straddling the Schoenhage algorithm crossover
         // threshold, and at twice and four times the threshold.
-        for (int k = 0; k <= 2; k++) {
-            int factor = 1 << k;
-            int upper = factor * BITS_SCHOENHAGE_BASE + 33;
-            int lower = upper - 35;
+        int factor = 1 << k;
+        int upper = factor * BITS_SCHOENHAGE_BASE + 33;
+        int lower = upper - 35;
 
-            for (int bits = upper; bits >= lower; bits--) {
-                for (int i = 0; i < 50; i++) {
-                    BigInteger x = BigInteger.ONE.shiftLeft(bits - 1).or(new BigInteger(bits - 2, random));
+        for (int bits = upper; bits >= lower; bits--) {
+            for (int i = 0; i < samples; i++) {
+                BigInteger x = BigInteger.ONE.shiftLeft(bits - 1).or(new BigInteger(bits - 2, random));
 
-                    for (int radix = Character.MIN_RADIX; radix < Character.MAX_RADIX; radix++) {
-                        String result = x.toString(radix);
-                        BigInteger test = new BigInteger(result, radix);
-                        Assert.assertEquals(test, x,
-                                "BigInteger toString: "+x+" Test: "+test+" radix: " + radix);
-                    }
+                for (int radix = Character.MIN_RADIX; radix < Character.MAX_RADIX; radix++) {
+                    String result = x.toString(radix);
+                    BigInteger test = new BigInteger(result, radix);
+                    Assert.assertEquals(test, x,
+                            "BigInteger toString: "+x+" Test: "+test+" radix: " + radix);
                 }
             }
         }
@@ -1069,8 +1069,29 @@ public class BigIntegerTest {
     }
 
     @Test
-    public void testStringConv() {
-        stringConv();
+    public void testStringConv_generic() {
+        stringConv_generic();
+    }
+
+    // String conversion straddling the Schoenhage algorithm crossover
+    // threshold.
+    @Test
+    public void testStringConv_schoenhage_threshold_pow0() {
+        stringConv_schoenhage(0, 50);
+    }
+
+    // String conversion straddling the Schoenhage algorithm crossover
+    // at twice times the threshold.
+    @Test
+    public void testStringConv_schoenhage_threshold_pow1() {
+        stringConv_schoenhage(1, 50);
+    }
+
+    // String conversion straddling the Schoenhage algorithm crossover
+    // at four times the threshold.
+    @Test
+    public void testStringConv_schoenhage_threshold_pow2() {
+        stringConv_schoenhage(2, 15);
     }
 
     @Test

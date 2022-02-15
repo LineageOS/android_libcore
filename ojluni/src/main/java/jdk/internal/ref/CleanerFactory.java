@@ -25,6 +25,8 @@
 
 package jdk.internal.ref;
 
+import dalvik.system.ZygoteHooks;
+
 import jdk.internal.misc.InnocuousThread;
 
 import java.lang.ref.Cleaner;
@@ -42,6 +44,11 @@ public final class CleanerFactory {
     private final static Cleaner commonCleaner = Cleaner.create(new ThreadFactory() {
         @Override
         public Thread newThread(Runnable r) {
+            // Android-added: Fail immediately if we try this in the zygote, where we are
+            // not allowed to create additional threads.
+            if (ZygoteHooks.inZygote()) {
+                throw new AssertionError("Erroneously trying to create Cleaner in zygote");
+            }
             return AccessController.doPrivileged(new PrivilegedAction<>() {
                 @Override
                 public Thread run() {

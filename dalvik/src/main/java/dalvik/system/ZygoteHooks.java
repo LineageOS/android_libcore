@@ -20,6 +20,7 @@ import static android.annotation.SystemApi.Client.MODULE_LIBRARIES;
 
 import android.annotation.SystemApi;
 
+import libcore.icu.DecimalFormatData;
 import libcore.icu.ICU;
 
 import java.io.File;
@@ -28,6 +29,10 @@ import java.lang.reflect.Method;
 import java.lang.ClassNotFoundException;
 import java.lang.NoSuchMethodException;
 import java.lang.ReflectiveOperationException;
+import libcore.icu.SimpleDateFormatData;
+
+import sun.util.locale.BaseLocale;
+import java.util.Locale;
 
 /**
  * Provides hooks for the zygote to call back into the runtime to perform
@@ -39,6 +44,7 @@ import java.lang.ReflectiveOperationException;
 public final class ZygoteHooks {
     private static long token;
     private static Method enableMemoryMappedDataMethod;
+    private static boolean inZygoteProcess = true;
 
     /** All methods are static, no need to instantiate. */
     private ZygoteHooks() {
@@ -63,6 +69,8 @@ public final class ZygoteHooks {
         com.android.i18n.system.ZygoteHooks.onBeginPreload();
 
         ICU.initializeCacheInZygote();
+        DecimalFormatData.initializeCacheInZygote();
+        SimpleDateFormatData.initializeCacheInZygote();
 
         // Look up JaCoCo on the boot classpath, if it exists. This will be used later for enabling
         // memory-mapped Java coverage.
@@ -94,6 +102,16 @@ public final class ZygoteHooks {
     }
 
     /**
+     * Called after GC but before fork, it cleans stale cache entries in
+     * BaseLocale and Locale, so to avoid the cleaning to happen in every
+     * child process.
+     */
+    private static void cleanLocaleCaches() {
+        BaseLocale.cleanCache();
+        Locale.cleanCache();
+    }
+
+    /**
      * Runs several special GCs to try to clean up a few generations of
      * softly- and final-reachable objects, along with any other garbage.
      * This is only useful just before a fork().
@@ -109,6 +127,7 @@ public final class ZygoteHooks {
          */
         System.gc();
         runtime.runFinalizationSync();
+        cleanLocaleCaches();
         System.gc();
     }
 
@@ -165,6 +184,9 @@ public final class ZygoteHooks {
     public static void postForkChild(int runtimeFlags, boolean isSystemServer,
             boolean isChildZygote, String instructionSet) {
         nativePostForkChild(token, runtimeFlags, isSystemServer, isChildZygote, instructionSet);
+        if (!isChildZygote) {
+          inZygoteProcess = false;
+        }
 
         Math.setRandomSeedInternal(System.currentTimeMillis());
 
@@ -206,6 +228,14 @@ public final class ZygoteHooks {
     @SystemApi(client = MODULE_LIBRARIES)
     public static boolean isIndefiniteThreadSuspensionSafe() {
         return nativeZygoteLongSuspendOk();
+    }
+
+    /**
+     * Are we still in a zygote?
+     * @hide
+     */
+    public static boolean inZygote() {
+      return inZygoteProcess;
     }
 
     // Hook for SystemServer specific early initialization post-forking.
