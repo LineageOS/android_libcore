@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package libcore.sun.security.jca;
+package test.java.security.Provider;
 
 import com.android.org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import dalvik.system.VMRuntime;
 
@@ -52,6 +49,7 @@ import sun.security.jca.Providers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
+import org.testng.annotations.Test;
 
 /**
  * Tests that the deprecation of algorithms from the BC provider works as expected.  Requests
@@ -59,7 +57,6 @@ import static org.junit.Assert.fail;
  * but those targeting an API level after the deprecation should cause an exception.  Tests
  * a representative sample of services and algorithms and various ways of naming them.
  */
-@RunWith(JUnit4.class)
 public class ProvidersTest {
 
     /**
