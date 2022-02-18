@@ -1639,11 +1639,9 @@ static jbyteArray Linux_getxattr(JNIEnv* env, jobject, jstring javaPath,
 }
 
 static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
-    static jmethodID ctor = env->GetMethodID(JniConstants::GetStructIfaddrsClass(env), "<init>",
+    jmethodID ctor = env->GetMethodID(JniConstants::GetStructIfaddrsClass(env), "<init>",
             "(Ljava/lang/String;ILjava/net/InetAddress;Ljava/net/InetAddress;Ljava/net/InetAddress;[B)V");
-    if (ctor == NULL) {
-        return NULL;
-    }
+    CHECK(ctor != NULL);
 
     ifaddrs* ifaddr;
     int rc = TEMP_FAILURE_RETRY(getifaddrs(&ifaddr));
@@ -1660,8 +1658,10 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
     }
 
     // Prepare output array.
-    jobjectArray result = env->NewObjectArray(ifCount, JniConstants::GetStructIfaddrsClass(env), NULL);
+    jclass ifAddrsClass = JniConstants::GetStructIfaddrsClass(env);
+    jobjectArray result = env->NewObjectArray(ifCount, ifAddrsClass, NULL);
     if (result == NULL) {
+        DCHECK(env->ExceptionCheck());
         return NULL;
     }
 
@@ -1670,12 +1670,9 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
     for (ifaddrs* ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next, ++index) {
         TO_JAVA_STRING(name, ifa->ifa_name);
         jint flags = ifa->ifa_flags;
-        sockaddr_storage* interfaceAddr =
-            reinterpret_cast<sockaddr_storage*>(ifa->ifa_addr);
-        sockaddr_storage* netmaskAddr =
-            reinterpret_cast<sockaddr_storage*>(ifa->ifa_netmask);
-        sockaddr_storage* broadAddr =
-            reinterpret_cast<sockaddr_storage*>(ifa->ifa_broadaddr);
+        sockaddr_storage* interfaceAddr = reinterpret_cast<sockaddr_storage*>(ifa->ifa_addr);
+        sockaddr_storage* netmaskAddr = reinterpret_cast<sockaddr_storage*>(ifa->ifa_netmask);
+        sockaddr_storage* broadAddr = reinterpret_cast<sockaddr_storage*>(ifa->ifa_broadaddr);
 
         jobject addr, netmask, broad;
         jbyteArray hwaddr = NULL;
@@ -1685,14 +1682,18 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
             case AF_INET6:
                 // IPv4 / IPv6.
                 // interfaceAddr and netmaskAddr are never null.
+                // sockaddrToInetAddress is not expected to return null.
                 if ((addr = sockaddrToInetAddress(env, *interfaceAddr, NULL)) == NULL) {
+                    DCHECK(env->ExceptionCheck());
                     return NULL;
                 }
                 if ((netmask = sockaddrToInetAddress(env, *netmaskAddr, NULL)) == NULL) {
+                    DCHECK(env->ExceptionCheck());
                     return NULL;
                 }
                 if (broadAddr != NULL && (ifa->ifa_flags & IFF_BROADCAST)) {
                     if ((broad = sockaddrToInetAddress(env, *broadAddr, NULL)) == NULL) {
+                        DCHECK(env->ExceptionCheck());
                         return NULL;
                     }
                 } else {
@@ -1714,6 +1715,7 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
                 if (!allZero) {
                     hwaddr = env->NewByteArray(sll->sll_halen);
                     if (hwaddr == NULL) {
+                        DCHECK(env->ExceptionCheck());
                         return NULL;
                     }
                     env->SetByteArrayRegion(hwaddr, 0, sll->sll_halen,
@@ -1728,9 +1730,9 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
             addr = netmask = broad = NULL;
         }
 
-        jobject o = env->NewObject(JniConstants::GetStructIfaddrsClass(env), ctor, name, flags,
-                                   addr, netmask, broad, hwaddr);
+        jobject o = env->NewObject(ifAddrsClass, ctor, name, flags, addr, netmask, broad, hwaddr);
         if (o == NULL) {
+            DCHECK(env->ExceptionCheck());
             return NULL;
         }
         env->SetObjectArrayElement(result, index, o);
