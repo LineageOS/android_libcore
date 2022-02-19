@@ -103,7 +103,7 @@ gensrcs {
     output_extension: "java",
 }
 
-// The source files that go into core-libart.
+// The source files that go into core-libart.l
 filegroup {
     name: "core_libart_java_files",
     visibility: [
@@ -684,6 +684,7 @@ java_test {
         "luni/src/test/java/libcore/javax/crypto/**/*.java",
         "luni/src/test/java/libcore/javax/net/ssl/**/*.java",
         "luni/src/test/java/libcore/libcore/util/SerializationTester.java",
+        "luni/src/test/java/libcore/sun/security/**/*.java",
         "luni/src/test/java/org/apache/harmony/crypto/**/*.java",
     ],
 
