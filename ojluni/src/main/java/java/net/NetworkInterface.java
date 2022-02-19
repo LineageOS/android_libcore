@@ -457,6 +457,10 @@ public final class NetworkInterface {
         StructIfaddrs[] ifaddrs;
         try {
             ifaddrs = Libcore.os.getifaddrs();
+            // Defensive check for b/217749090: ifaddrs should never be null.
+            if (ifaddrs == null) {
+                throw new SocketException("Failed to query network interfaces.");
+            }
         } catch (ErrnoException e) {
             throw e.rethrowAsSocketException();
         }
