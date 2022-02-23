@@ -115,14 +115,6 @@ public class NetworkInterfaceTest extends TestCase {
         }
     }
 
-    @EnableCompatChanges({NetworkInterface.RETURN_NULL_HARDWARE_ADDRESS})
-    public void testGetHardwareAddress_returnsNull() throws Exception {
-        // Hardware addresses should be unavailable to non-system apps.
-        for (NetworkInterface nif : Collections.list(getNetworkInterfaces())) {
-            assertNull(nif.getHardwareAddress());
-        }
-    }
-
     public void testLoopback() throws Exception {
         NetworkInterface lo = NetworkInterface.getByName("lo");
         assertNull(lo.getHardwareAddress());
