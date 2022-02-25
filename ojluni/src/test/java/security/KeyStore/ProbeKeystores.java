@@ -41,6 +41,7 @@ public class ProbeKeystores {
     // BEGIN Android-changed: adjusted tests to account for multiple implementation details.
 
     private static final char[] PASSWORD = "changeit".toCharArray();
+    private static final char[] BAD_PASSWORD = "badpasword".toCharArray();
     private static final LoadStoreParameter LOAD_STORE_PARAM =
             new MyLoadStoreParameter(new PasswordProtection(PASSWORD));
 
@@ -73,24 +74,24 @@ public class ProbeKeystores {
         loadNonCompat(bcFile, "PKCS12"); // test compatibility mode
         loadNonCompat(p12File, "BouncyCastle"); // test compatibility mode
 
-        probe(bcFile);
-        probe(p12File);
+        probe(bcFile, "BOUNCYCASTLE");
+        probeFails(p12File);
 
-        build(bcFile, true);
-        build(bcFile, false);
-        build(p12File, true);
-        build(p12File, false);
+        build(bcFile, "BOUNCYCASTLE", true);
+        build(bcFile, "BOUNCYCASTLE", false);
+        // engineProbe does not work for PKCS12
 
+        // PKCS12 does not support keys
         File onekeyBcFile = File.createTempFile("onekey", "bc");
         SecretKey key = generateSecretKey("AES", 128);
         init(onekeyBcFile, "BouncyCastle", key);
 
         load(onekeyBcFile, "BouncyCastle");
 
-        probe(onekeyBcFile);
+        probe(onekeyBcFile, "BOUNCYCASTLE");
 
-        build(onekeyBcFile, true);
-        build(onekeyBcFile, false);
+        build(onekeyBcFile, "BOUNCYCASTLE", true);
+        build(onekeyBcFile, "BOUNCYCASTLE", false);
     }
 
     // Instantiate an empty keystore using the supplied keystore type
@@ -115,24 +116,45 @@ public class ProbeKeystores {
     }
 
     // Instantiate a keystore by probing the supplied file for the keystore type
-    private static void probe(File file) throws Exception {
+    private static void probe(File file, String type) throws Exception {
         KeyStore ks;
+        // First try with the correct password
+        ks = KeyStore.getInstance(file, PASSWORD);
+        if (!type.equalsIgnoreCase(ks.getType())) {
+            throw new Exception("ERROR: expected a " + type + " keystore, " +
+                    "got a " + ks.getType() + " keystore instead");
+        }
+
+        // Next try with an incorrect password
+        try {
+            ks = KeyStore.getInstance(file, BAD_PASSWORD);
+            fail("ERROR: expected an exception but got success");
+        } catch (IOException e) {
+            // Expected
+        }
+
+        // Next try with a password within a LoadStoreParameter (still unsupported)
+        try {
+            ks = KeyStore.getInstance(file, LOAD_STORE_PARAM);
+            fail("ERROR: expected an exception but got success");
+        } catch (UnsupportedOperationException e) {
+            // Expected
+        }
+    }
+    // Instantiate a keystore by probing the supplied file for the keystore type
+    private static void probeFails(File file) throws Exception {
+        KeyStore ks;
+        // Next try with an incorrect password
         try {
             ks = KeyStore.getInstance(file, PASSWORD);
             fail("ERROR: expected an exception but got success");
         } catch (KeyStoreException e) {
             // Expected
         }
-
-        try {
-            ks = KeyStore.getInstance(file, LOAD_STORE_PARAM);
-            fail("ERROR: expected an exception but got success");
-        } catch (KeyStoreException e) {
-            // Expected
-        }
     }
+
     // Instantiate a keystore by probing the supplied file for the keystore type
-    private static void build(File file, boolean usePassword) throws Exception {
+    private static void build(File file, String type, boolean usePassword) throws Exception {
         Builder builder;
         if (usePassword) {
             builder = Builder.newInstance(file,
@@ -141,10 +163,10 @@ public class ProbeKeystores {
             builder = Builder.newInstance(file,
                     new CallbackHandlerProtection(new DummyHandler()));
         }
-        try {
-            KeyStore ks = builder.getKeyStore();
-        } catch (KeyStoreException e) {
-            // Expected
+        KeyStore ks = builder.getKeyStore();
+        if (!type.equalsIgnoreCase(ks.getType())) {
+            throw new Exception("ERROR: expected a " + type + " keystore, " +
+                    "got a " + ks.getType() + " keystore instead");
         }
     }
 
@@ -181,7 +203,6 @@ public class ProbeKeystores {
     private static class DummyHandler implements CallbackHandler {
         public void handle(Callback[] callbacks)
                 throws IOException, UnsupportedCallbackException {
-            System.out.println("** Callbackhandler invoked");
             for (int i = 0; i < callbacks.length; i++) {
                 Callback cb = callbacks[i];
                 if (cb instanceof PasswordCallback) {
