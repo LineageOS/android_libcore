@@ -56,6 +56,15 @@ public class SocketTest extends TestCaseWithRules {
     // This hostname is required to resolve to 127.0.0.1 and ::1 for all tests to pass.
     private static final String ALL_LOOPBACK_HOSTNAME = "loopback46.unittest.grpc.io";
 
+    private static final InetAddress[] ALL_LOOPBACK_ADDRESSES = {
+        Inet4Address.LOOPBACK,
+        Inet6Address.LOOPBACK
+    };
+
+    {
+        sortAddresses(ALL_LOOPBACK_ADDRESSES);
+    }
+
     // From net/inet_ecn.h
     private static final int INET_ECN_MASK = 0x3;
 
@@ -596,17 +605,15 @@ public class SocketTest extends TestCaseWithRules {
 
     // b/30007735
     public void testSocketTestAllAddresses() throws Exception {
+        checkLoopbackHost();
+
         // Socket Ctor should try all sockets.
         //
         // This test creates server sockets bound to 127.0.0.1 and ::1, and connects using a
         // hostname that resolves to both addresses. We should be able to connect to the server
         // socket in either setup.
-        final String loopbackHost = ALL_LOOPBACK_HOSTNAME;
-
-        checkLoopbackHost(loopbackHost);
-
         final int port = 9999;
-        for (InetAddress addr : new InetAddress[]{ Inet4Address.LOOPBACK, Inet6Address.LOOPBACK }) {
+        for (InetAddress addr : ALL_LOOPBACK_ADDRESSES) {
             try (ServerSocket ss = new ServerSocket(port, 0, addr)) {
                 new Thread(() -> {
                     try {
@@ -616,21 +623,51 @@ public class SocketTest extends TestCaseWithRules {
                     }
                 }).start();
 
-                assertTrue(canConnect(loopbackHost, port));
+                assertTrue(canConnect(ALL_LOOPBACK_HOSTNAME, port));
             }
         }
     }
 
+    private static int compareInetAddress(InetAddress lhs, InetAddress rhs) {
+        return Arrays.compare(lhs.getAddress(), rhs.getAddress());
+    }
+
+    private static void sortAddresses(InetAddress[] addresses) {
+        Arrays.sort(addresses, (InetAddress lhs, InetAddress rhs) -> compareInetAddress(lhs, rhs));
+    }
+
+    private static boolean allUniqueLoopbackAddresses(InetAddress[] addresses) {
+        for (InetAddress a : addresses) {
+            if (!a.isLoopbackAddress()) {
+                return false;
+            }
+        }
+        return addresses.length <= 1 || (addresses.length == 2 && addresses[0] != addresses[1]);
+    }
+
     /** Confirm the supplied hostname maps to only loopback addresses, both IPv4 and IPv6. */
-    private static void checkLoopbackHost(String host) throws UnknownHostException {
-        InetAddress[] addrArray = InetAddress.getAllByName(host);
-        final String addressesString = Arrays.toString(addrArray);
-        List<InetAddress> addrs = Arrays.asList(addrArray);
-        final String msg = ALL_LOOPBACK_HOSTNAME
-                + " must only return loopback addresses, both IPv4 and IPv6. Got: "
-                + addressesString;
-        assertTrue(msg, addrs.stream().allMatch(InetAddress::isLoopbackAddress)
-                && addrs.contains(Inet4Address.LOOPBACK) && addrs.contains(Inet6Address.LOOPBACK));
+    private static void checkLoopbackHost() throws UnknownHostException {
+        // b/202426043 retry a few times since DNS maybe prone to being dropped or slow in
+        // responding and we have no control over the query or cache timeouts here.
+        final int WAIT_MILLIS = 2000;
+        for (int triesLeft = 2; triesLeft >= 0; --triesLeft) {
+            InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
+            sortAddresses(addresses);
+            if (Arrays.equals(ALL_LOOPBACK_ADDRESSES, addresses)) {
+                return;
+            }
+
+            if (triesLeft == 0 || addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
+                fail("Expected " + Arrays.toString(ALL_LOOPBACK_ADDRESSES) +
+                     ", got " + Arrays.toString(addresses));
+            }
+
+            try {
+                Thread.sleep(WAIT_MILLIS);
+            } catch (InterruptedException e) {
+                fail("Test interrupted");
+            }
+        }
     }
 
     private static boolean canConnect(String host, int port) {
