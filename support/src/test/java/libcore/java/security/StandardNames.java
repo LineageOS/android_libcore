@@ -594,6 +594,8 @@ public final class StandardNames {
 
             // Android's CA store
             provide("KeyStore", "AndroidCAStore");
+            provide("KeyFactory", "1.3.101.112");
+            provide("KeyPairGenerator", "1.3.101.112");
 
             // Android's KeyStore provider
             if (Security.getProvider("AndroidKeyStore") != null) {
