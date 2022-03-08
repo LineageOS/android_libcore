@@ -987,9 +987,12 @@ public class KeyStore {
     public static KeyStore getInstance(String type, Provider provider)
         throws KeyStoreException
     {
-        Objects.requireNonNull(type, "null type name");
+        // Android-removed: move non-null check to after provider == null check (b/216552850)
+        // Objects.requireNonNull(type, "null type name");
         if (provider == null)
             throw new IllegalArgumentException("missing provider");
+        // Android-added: move non-null check to after provider == null check (b/216552850)
+        Objects.requireNonNull(type, "null type name");
         try {
             Object[] objs = Security.getImpl(type, "KeyStore", provider);
             return new KeyStore((KeyStoreSpi)objs[0], (Provider)objs[1], type);
