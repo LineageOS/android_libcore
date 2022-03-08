@@ -32,6 +32,9 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketImpl;
+import java.net.SocketOption;
+import java.net.SocketOptions;
+import java.net.StandardSocketOptions;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.nio.channels.ServerSocketChannel;
@@ -200,47 +203,51 @@ public class SocketTest extends TestCaseWithRules {
         assertEquals(outLocalAddress.getPort(), outLocalAddressAfterClose.getPort());
     }
 
+    private static class MySocketImpl extends SocketImpl {
+        public int option;
+        public Object value;
+
+        public boolean createCalled;
+        public boolean createStream;
+
+        public MySocketImpl() { super(); }
+        @Override protected void accept(SocketImpl arg0) throws IOException { }
+        @Override protected int available() throws IOException { return 0; }
+        @Override protected void bind(InetAddress arg0, int arg1) throws IOException { }
+        @Override protected void close() throws IOException { }
+        @Override protected void connect(String arg0, int arg1) throws IOException { }
+        @Override protected void connect(InetAddress arg0, int arg1) throws IOException { }
+        @Override protected void connect(SocketAddress arg0, int arg1) throws IOException { }
+        @Override protected InputStream getInputStream() throws IOException { return null; }
+        @Override protected OutputStream getOutputStream() throws IOException { return null; }
+        @Override protected void listen(int arg0) throws IOException { }
+        @Override protected void sendUrgentData(int arg0) throws IOException { }
+        public Object getOption(int arg0) throws SocketException { return null; }
+
+        @Override protected void create(boolean isStream) throws IOException {
+            this.createCalled = true;
+            this.createStream = isStream;
+        }
+
+        public void setOption(int option, Object value) throws SocketException {
+            this.option = option;
+            this.value = value;
+        }
+
+        public <T> void setSuperOption(SocketOption<T> option, T value) throws IOException {
+            super.setOption(option, value);
+        }
+    }
+
+    private static class MySocket extends Socket {
+        public MySocket(SocketImpl impl) throws SocketException {
+            super(impl);
+        }
+    }
+
     // SocketOptions.setOption has weird behavior for setSoLinger/SO_LINGER.
     // This test ensures we do what the RI does.
     public void test_SocketOptions_setOption() throws Exception {
-        class MySocketImpl extends SocketImpl {
-            public int option;
-            public Object value;
-
-            public boolean createCalled;
-            public boolean createStream;
-
-            public MySocketImpl() { super(); }
-            @Override protected void accept(SocketImpl arg0) throws IOException { }
-            @Override protected int available() throws IOException { return 0; }
-            @Override protected void bind(InetAddress arg0, int arg1) throws IOException { }
-            @Override protected void close() throws IOException { }
-            @Override protected void connect(String arg0, int arg1) throws IOException { }
-            @Override protected void connect(InetAddress arg0, int arg1) throws IOException { }
-            @Override protected void connect(SocketAddress arg0, int arg1) throws IOException { }
-            @Override protected InputStream getInputStream() throws IOException { return null; }
-            @Override protected OutputStream getOutputStream() throws IOException { return null; }
-            @Override protected void listen(int arg0) throws IOException { }
-            @Override protected void sendUrgentData(int arg0) throws IOException { }
-            public Object getOption(int arg0) throws SocketException { return null; }
-
-            @Override protected void create(boolean isStream) throws IOException {
-                this.createCalled = true;
-                this.createStream = isStream;
-            }
-
-            public void setOption(int option, Object value) throws SocketException {
-                this.option = option;
-                this.value = value;
-            }
-        }
-
-        class MySocket extends Socket {
-            public MySocket(SocketImpl impl) throws SocketException {
-                super(impl);
-            }
-        }
-
         MySocketImpl impl = new MySocketImpl();
         Socket s = new MySocket(impl);
 
@@ -262,6 +269,30 @@ public class SocketTest extends TestCaseWithRules {
         assertEquals(Integer.valueOf(0), (Integer) impl.value);
         s.setSoLinger(true, 1);
         assertEquals(Integer.valueOf(1), (Integer) impl.value);
+
+        // API test for SocketImpl.setOption(SocketOption, Object).
+        // The value isn't sent to the kernel, because the mock intercepts the value in this test.
+        setAndAssertOption(impl, StandardSocketOptions.SO_KEEPALIVE,
+                SocketOptions.SO_KEEPALIVE, true);
+        setAndAssertOption(impl, StandardSocketOptions.SO_SNDBUF,
+                SocketOptions.SO_SNDBUF, 1);
+        setAndAssertOption(impl, StandardSocketOptions.SO_RCVBUF,
+                SocketOptions.SO_RCVBUF, 2);
+        setAndAssertOption(impl, StandardSocketOptions.SO_REUSEADDR,
+                SocketOptions.SO_REUSEADDR, true);
+        setAndAssertOption(impl, StandardSocketOptions.SO_LINGER,
+                SocketOptions.SO_LINGER, 3);
+        setAndAssertOption(impl, StandardSocketOptions.IP_TOS,
+                SocketOptions.IP_TOS, 4);
+        setAndAssertOption(impl, StandardSocketOptions.TCP_NODELAY,
+                SocketOptions.TCP_NODELAY, true);
+    }
+
+    private static void setAndAssertOption(MySocketImpl sockImpl, SocketOption option,
+            int optionInt, Object value) throws IOException {
+        sockImpl.setSuperOption(option, value);
+        assertEquals(sockImpl.option, optionInt);
+        assertEquals(sockImpl.value, value);
     }
 
     public void test_setTrafficClass() throws Exception {
