@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 """Generate annotated_java_files.bp from a jaif file."""
 import os
