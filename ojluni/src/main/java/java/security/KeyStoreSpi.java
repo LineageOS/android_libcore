@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -360,6 +360,22 @@ public abstract class KeyStoreSpi {
      *          that specifies how to load the keystore,
      *          which may be {@code null}
      *
+     * @implSpec
+     * The default implementation examines {@code KeyStore.LoadStoreParameter}
+     * to extract its password and pass it to
+     * {@link KeyStoreSpi#engineLoad(InputStream, char[])} along with a
+     * {@code null} {@code InputStream}.
+     * <p>
+     * If {@code KeyStore.LoadStoreParameter} is {@code null} then
+     * the password parameter will also be {@code null}.
+     * Otherwise the {@code KeyStore.ProtectionParameter} of
+     * {@code KeyStore.LoadStoreParameter} must be either a
+     * {@code KeyStore.PasswordProtection} or a
+     * {@code KeyStore.CallbackHandlerProtection} that supports
+     * {@code PasswordCallback} so that the password parameter can be
+     * extracted. If the {@code KeyStore.ProtectionParameter} is neither
+     * of those classes then a {@code NoSuchAlgorithmException} is thrown.
+     *
      * @exception IllegalArgumentException if the given
      *          {@code KeyStore.LoadStoreParameter}
      *          input is not recognized
@@ -379,43 +395,44 @@ public abstract class KeyStoreSpi {
     public void engineLoad(KeyStore.LoadStoreParameter param)
                 throws IOException, NoSuchAlgorithmException,
                 CertificateException {
+        engineLoad(null, param);
+    }
+
+    void engineLoad(InputStream stream, KeyStore.LoadStoreParameter param)
+                throws IOException, NoSuchAlgorithmException,
+                CertificateException {
 
         if (param == null) {
             engineLoad((InputStream)null, (char[])null);
             return;
         }
 
-        if (param instanceof KeyStore.SimpleLoadStoreParameter) {
-            ProtectionParameter protection = param.getProtectionParameter();
-            char[] password;
-            if (protection instanceof PasswordProtection) {
-                password = ((PasswordProtection)protection).getPassword();
-            } else if (protection instanceof CallbackHandlerProtection) {
-                CallbackHandler handler =
-                    ((CallbackHandlerProtection)protection).getCallbackHandler();
-                PasswordCallback callback =
-                    new PasswordCallback("Password: ", false);
-                try {
-                    handler.handle(new Callback[] {callback});
-                } catch (UnsupportedCallbackException e) {
-                    throw new NoSuchAlgorithmException
-                        ("Could not obtain password", e);
-                }
-                password = callback.getPassword();
-                callback.clearPassword();
-                if (password == null) {
-                    throw new NoSuchAlgorithmException
-                        ("No password provided");
-                }
-            } else {
-                throw new NoSuchAlgorithmException("ProtectionParameter must"
-                    + " be PasswordProtection or CallbackHandlerProtection");
+        ProtectionParameter protection = param.getProtectionParameter();
+        char[] password;
+        if (protection instanceof PasswordProtection) {
+            password = ((PasswordProtection)protection).getPassword();
+        } else if (protection instanceof CallbackHandlerProtection) {
+            CallbackHandler handler =
+                ((CallbackHandlerProtection)protection).getCallbackHandler();
+            PasswordCallback callback =
+                new PasswordCallback("Password: ", false);
+            try {
+                handler.handle(new Callback[] {callback});
+            } catch (UnsupportedCallbackException e) {
+                throw new NoSuchAlgorithmException
+                    ("Could not obtain password", e);
             }
-            engineLoad(null, password);
-            return;
+            password = callback.getPassword();
+            callback.clearPassword();
+            if (password == null) {
+                throw new NoSuchAlgorithmException("No password provided");
+            }
+        } else {
+            throw new NoSuchAlgorithmException("ProtectionParameter must"
+                + " be PasswordProtection or CallbackHandlerProtection");
         }
-
-        throw new UnsupportedOperationException();
+        engineLoad(stream, password);
+        return;
     }
 
     /**
@@ -468,6 +485,10 @@ public abstract class KeyStoreSpi {
             } else if (engineIsKeyEntry(alias)) {
                 KeyStore.PasswordProtection pp =
                         (KeyStore.PasswordProtection)protParam;
+                if (pp.getProtectionAlgorithm() != null) {
+                    throw new KeyStoreException(
+                        "unsupported password protection algorithm");
+                }
                 char[] password = pp.getPassword();
 
                 Key key = engineGetKey(alias, password);
@@ -513,6 +534,10 @@ public abstract class KeyStoreSpi {
         KeyStore.PasswordProtection pProtect = null;
         if (protParam != null) {
             pProtect = (KeyStore.PasswordProtection)protParam;
+            if (pProtect.getProtectionAlgorithm() != null) {
+                throw new KeyStoreException(
+                    "unsupported password protection algorithm");
+            }
         }
 
         // set entry
@@ -587,6 +612,31 @@ public abstract class KeyStoreSpi {
         if (entryClass == KeyStore.SecretKeyEntry.class) {
             return engineIsKeyEntry(alias) &&
                         engineGetCertificate(alias) == null;
+        }
+        return false;
+    }
+
+    /**
+     * Probes the specified input stream to determine whether it contains a
+     * keystore that is supported by this implementation, or not.
+     *
+     * @implSpec
+     * This method returns false by default. Keystore implementations should
+     * override this method to peek at the data stream directly or to use other
+     * content detection mechanisms.
+     *
+     * @param  stream the keystore data to be probed
+     *
+     * @return true if the keystore data is supported, otherwise false
+     *
+     * @throws IOException if there is an I/O problem with the keystore data.
+     * @throws NullPointerException if stream is {@code null}.
+     *
+     * @since 9
+     */
+    public boolean engineProbe(InputStream stream) throws IOException {
+        if (stream == null) {
+            throw new NullPointerException("input stream must not be null");
         }
         return false;
     }
