@@ -43,7 +43,7 @@ class UnixAsynchronousServerSocketChannelImpl
     extends AsynchronousServerSocketChannelImpl
     implements Port.PollableChannel
 {
-    private final static NativeDispatcher nd = new SocketDispatcher();
+    private static final NativeDispatcher nd = new SocketDispatcher();
 
     private final Port port;
     private final int fdVal;
@@ -216,7 +216,7 @@ class UnixAsynchronousServerSocketChannelImpl
         // permission check must always be in initiator's context
         try {
             if (acc != null) {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+                AccessController.doPrivileged(new PrivilegedAction<>() {
                     public Void run() {
                         SecurityManager sm = System.getSecurityManager();
                         if (sm != null) {
@@ -287,7 +287,7 @@ class UnixAsynchronousServerSocketChannelImpl
                 synchronized (updateLock) {
                     if (handler == null) {
                         this.acceptHandler = null;
-                        result = new PendingFuture<AsynchronousSocketChannel,Object>(this);
+                        result = new PendingFuture<>(this);
                         this.acceptFuture = result;
                     } else {
                         this.acceptHandler = handler;
