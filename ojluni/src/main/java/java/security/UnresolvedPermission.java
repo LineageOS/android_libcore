@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,12 +25,16 @@
 
 package java.security;
 
+import sun.security.util.IOUtils;
+
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
+import java.security.cert.Certificate;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.lang.reflect.*;
 import java.security.cert.*;
+import java.util.List;
 
 /**
  * The UnresolvedPermission class is used to hold Permissions that
@@ -96,6 +100,7 @@ import java.security.cert.*;
  *
  *
  * @author Roland Schemers
+ * @since 1.2
  */
 
 public final class UnresolvedPermission extends Permission
@@ -130,7 +135,7 @@ implements java.io.Serializable
      */
     private String actions;
 
-    private transient java.security.cert.Certificate certs[];
+    private transient java.security.cert.Certificate[] certs;
 
     /**
      * Creates a new UnresolvedPermission containing the permission
@@ -152,7 +157,7 @@ implements java.io.Serializable
     public UnresolvedPermission(String type,
                                 String name,
                                 String actions,
-                                java.security.cert.Certificate certs[])
+                                java.security.cert.Certificate[] certs)
     {
         super(type);
 
@@ -216,15 +221,15 @@ implements java.io.Serializable
     }
 
 
-    private static final Class[] PARAMS0 = { };
-    private static final Class[] PARAMS1 = { String.class };
-    private static final Class[] PARAMS2 = { String.class, String.class };
+    private static final Class<?>[] PARAMS0 = { };
+    private static final Class<?>[] PARAMS1 = { String.class };
+    private static final Class<?>[] PARAMS2 = { String.class, String.class };
 
     /**
      * try and resolve this permission using the class loader of the permission
      * that was passed in.
      */
-    Permission resolve(Permission p, java.security.cert.Certificate certs[]) {
+    Permission resolve(Permission p, java.security.cert.Certificate[] certs) {
         if (this.certs != null) {
             // if p wasn't signed, we don't have a match
             if (certs == null) {
@@ -310,7 +315,7 @@ implements java.io.Serializable
 
     /**
      * Checks two UnresolvedPermission objects for equality.
-     * Checks that <i>obj</i> is an UnresolvedPermission, and has
+     * Checks that {@code obj} is an UnresolvedPermission, and has
      * the same type (class) name, permission name, actions, and
      * certificates as this object.
      *
@@ -491,7 +496,7 @@ implements java.io.Serializable
     /**
      * Returns a new PermissionCollection object for storing
      * UnresolvedPermission  objects.
-     * <p>
+     *
      * @return a new PermissionCollection object suitable for
      * storing UnresolvedPermissions.
      */
@@ -549,6 +554,7 @@ implements java.io.Serializable
     {
         CertificateFactory cf;
         Hashtable<String, CertificateFactory> cfs = null;
+        List<Certificate> certList = null;
 
         ois.defaultReadObject();
 
@@ -560,8 +566,10 @@ implements java.io.Serializable
         if (size > 0) {
             // we know of 3 different cert types: X.509, PGP, SDSI, which
             // could all be present in the stream at the same time
-            cfs = new Hashtable<String, CertificateFactory>(3);
-            this.certs = new java.security.cert.Certificate[size];
+            cfs = new Hashtable<>(3);
+            certList = new ArrayList<>(size > 20 ? 20 : size);
+        } else if (size < 0) {
+            throw new IOException("size cannot be negative");
         }
 
         for (int i=0; i<size; i++) {
@@ -583,20 +591,18 @@ implements java.io.Serializable
                 cfs.put(certType, cf);
             }
             // parse the certificate
-            byte[] encoded=null;
-            try {
-                encoded = new byte[ois.readInt()];
-            } catch (OutOfMemoryError oome) {
-                throw new IOException("Certificate too big");
-            }
-            ois.readFully(encoded);
+            byte[] encoded = IOUtils.readExactlyNBytes(ois, ois.readInt());
             ByteArrayInputStream bais = new ByteArrayInputStream(encoded);
             try {
-                this.certs[i] = cf.generateCertificate(bais);
+                certList.add(cf.generateCertificate(bais));
             } catch (CertificateException ce) {
                 throw new IOException(ce.getMessage());
             }
             bais.close();
+        }
+        if (certList != null) {
+            this.certs = certList.toArray(
+                    new java.security.cert.Certificate[size]);
         }
     }
 }
