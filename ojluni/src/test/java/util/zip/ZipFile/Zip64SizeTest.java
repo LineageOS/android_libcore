@@ -20,6 +20,10 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+package test.java.util.zip.ZipFile;
+
+import java.nio.file.FileSystems;
+import java.nio.file.Paths;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -46,14 +50,21 @@ public class Zip64SizeTest {
 
     private static final int BUFFER_SIZE = 2048;
     // ZIP file to create
-    private static final String ZIP_FILE_NAME = "Zip64SizeTest.zip";
+    // Android-changed: Create file in a temp dir.
+    // private static final String ZIP_FILE_NAME = "Zip64SizeTest.zip";
+    private static final String TMPDIR = System.getProperty("java.io.tmpdir");
+    private static final String ZIP_FILE_NAME = Paths.get(TMPDIR, "Zip64SizeTest.zip").toString();
+    private static final String LARGE_FILE = Paths.get(TMPDIR, "LargeZipEntry.txt").toString();
+    private static final String SMALL_FILE = Paths.get(TMPDIR, "SmallZipEntry.txt").toString();
     // File that will be created with a size greater than 0xFFFFFFFF
     private static final String LARGE_FILE_NAME = "LargeZipEntry.txt";
     // File that will be created with a size less than 0xFFFFFFFF
     private static final String SMALL_FILE_NAME = "SmallZipEntry.txt";
     // List of files to be added to the ZIP file
-    private static final List<String> ZIP_ENTRIES = List.of(LARGE_FILE_NAME,
-            SMALL_FILE_NAME);
+    // Android-changed: Create file in a temp dir.
+    // private static final List<String> ZIP_ENTRIES = List.of(LARGE_FILE_NAME,
+    //         SMALL_FILE_NAME);
+    private static final List<String> ZIP_ENTRIES = List.of(LARGE_FILE, SMALL_FILE);
     private static final long LARGE_FILE_SIZE = 5L * 1024L * 1024L * 1024L; // 5GB
     private static final long SMALL_FILE_SIZE = 0x100000L; // 1024L x 1024L;
 
@@ -63,7 +74,9 @@ public class Zip64SizeTest {
      * @throws IOException
      */
     @Test
-    private static void validateZipEntrySizes() throws IOException {
+    // Android-changed: The test method needs to be public.
+    // private static void validateZipEntrySizes() throws IOException {
+    public void validateZipEntrySizes() throws IOException {
         createFiles();
         createZipFile();
         System.out.println("Validating Zip Entry Sizes");
@@ -83,9 +96,13 @@ public class Zip64SizeTest {
      * @throws IOException if an error occurs deleting the files
      */
     private static void deleteFiles() throws IOException {
-        Files.deleteIfExists(Path.of(ZIP_FILE_NAME));
-        Files.deleteIfExists(Path.of(LARGE_FILE_NAME));
-        Files.deleteIfExists(Path.of(SMALL_FILE_NAME));
+        // Android-changed: Path.of() isn't supported yet.
+        // Files.deleteIfExists(Path.of(ZIP_FILE_NAME));
+        // Files.deleteIfExists(Path.of(LARGE_FILE_NAME));
+        // Files.deleteIfExists(Path.of(SMALL_FILE_NAME));
+        Files.deleteIfExists(FileSystems.getDefault().getPath(ZIP_FILE_NAME));
+        Files.deleteIfExists(FileSystems.getDefault().getPath(LARGE_FILE));
+        Files.deleteIfExists(FileSystems.getDefault().getPath(SMALL_FILE));
     }
 
     /**
@@ -118,8 +135,11 @@ public class Zip64SizeTest {
      * @throws IOException if there is a problem  creating the files
      */
     private static void createFiles() throws IOException {
-        try (RandomAccessFile largeFile = new RandomAccessFile(LARGE_FILE_NAME, "rw");
-             RandomAccessFile smallFile = new RandomAccessFile(SMALL_FILE_NAME, "rw")) {
+        // Android-changed: Create file in a temp dir.
+        // try (RandomAccessFile largeFile = new RandomAccessFile(LARGE_FILE_NAME, "rw");
+        //     RandomAccessFile smallFile = new RandomAccessFile(SMALL_FILE_NAME, "rw")) {
+        try (RandomAccessFile largeFile = new RandomAccessFile(LARGE_FILE, "rw");
+             RandomAccessFile smallFile = new RandomAccessFile(SMALL_FILE, "rw")) {
             System.out.printf("Creating %s%n", LARGE_FILE_NAME);
             largeFile.setLength(LARGE_FILE_SIZE);
             System.out.printf("Creating %s%n", SMALL_FILE_NAME);
