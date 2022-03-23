@@ -147,13 +147,14 @@ public interface SSLSessionContext {
     public void setSessionCacheSize(int size)
                  throws IllegalArgumentException;
 
+    // Android-changed: Modified unsupported @systemProperty javadoc tag.
     /**
      * Returns the size of the cache used for storing <code>SSLSession</code>
      * objects grouped under this <code>SSLSessionContext</code>.
      *
      * @implNote The JDK implementation returns the cache size as set by
      *           the {@code setSessionCacheSize} method, or if not set, the
-     *           value of the {@systemProperty javax.net.ssl.sessionCacheSize}
+     *           value of the {@code javax.net.ssl.sessionCacheSize}
      *           system property.  If neither is set, it returns a default
      *           value of 20480.
      *
