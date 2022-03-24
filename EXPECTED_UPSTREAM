@@ -1883,3 +1883,4 @@ ojluni/src/test/java/security/cert/CertPathEncodingTest.java,jdk11u/jdk-11.0.13-
 ojluni/src/test/java/security/cert/GetInstance.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/GetInstance.java
 ojluni/src/test/java/security/cert/URICertStoreParameters/TestBasic.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/URICertStoreParameters/TestBasic.java
 ojluni/src/test/java/security/cert/X509CertSelectorTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/X509CertSelectorTest.java
+ojluni/src/test/java/util/zip/ZipFile/Zip64SizeTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/zip/ZipFile/Zip64SizeTest.java
