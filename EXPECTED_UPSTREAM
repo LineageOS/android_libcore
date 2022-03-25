@@ -159,12 +159,12 @@ ojluni/src/main/java/java/lang/IndexOutOfBoundsException.java,jdk11u/jdk-11.0.13
 ojluni/src/main/java/java/lang/InheritableThreadLocal.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InheritableThreadLocal.java
 ojluni/src/main/java/java/lang/InstantiationError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InstantiationError.java
 ojluni/src/main/java/java/lang/InstantiationException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InstantiationException.java
-ojluni/src/main/java/java/lang/Integer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Integer.java
+ojluni/src/main/java/java/lang/Integer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Integer.java
 ojluni/src/main/java/java/lang/InternalError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InternalError.java
 ojluni/src/main/java/java/lang/InterruptedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InterruptedException.java
 ojluni/src/main/java/java/lang/Iterable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Iterable.java
 ojluni/src/main/java/java/lang/LinkageError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/LinkageError.java
-ojluni/src/main/java/java/lang/Long.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Long.java
+ojluni/src/main/java/java/lang/Long.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Long.java
 ojluni/src/main/java/java/lang/Math.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Math.java
 ojluni/src/main/java/java/lang/NegativeArraySizeException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/NegativeArraySizeException.java
 ojluni/src/main/java/java/lang/NoClassDefFoundError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/NoClassDefFoundError.java
@@ -196,7 +196,7 @@ ojluni/src/main/java/java/lang/Short.java,jdk11u/jdk-11.0.13-ga,src/java.base/sh
 ojluni/src/main/java/java/lang/StackOverflowError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StackOverflowError.java
 ojluni/src/main/java/java/lang/StackTraceElement.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StackTraceElement.java
 ojluni/src/main/java/java/lang/StrictMath.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StrictMath.java
-ojluni/src/main/java/java/lang/String.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/String.java
+ojluni/src/main/java/java/lang/String.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/String.java
 ojluni/src/main/java/java/lang/StringBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuffer.java
 ojluni/src/main/java/java/lang/StringBuilder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuilder.java
 ojluni/src/main/java/java/lang/StringIndexOutOfBoundsException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StringIndexOutOfBoundsException.java
