@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ package java.lang;
 
 import java.io.ObjectStreamField;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Native;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,10 +35,16 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Spliterator;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import jdk.internal.HotSpotIntrinsicCandidate;
+import jdk.internal.vm.annotation.Stable;
 
 /**
  * The {@code String} class represents character strings. All
@@ -73,16 +80,10 @@ import java.util.regex.PatternSyntaxException;
  * <p>
  * The Java language provides special support for the string
  * concatenation operator (&nbsp;+&nbsp;), and for conversion of
- * other objects to strings. String concatenation is implemented
- * through the {@code StringBuilder}(or {@code StringBuffer})
- * class and its {@code append} method.
- * String conversions are implemented through the method
- * {@code toString}, defined by {@code Object} and
- * inherited by all classes in Java. For additional information on
- * string concatenation and conversion, see Gosling, Joy, and Steele,
- * <i>The Java Language Specification</i>.
+ * other objects to strings. For additional information on string
+ * concatenation and conversion, see <i>The Java&trade; Language Specification</i>.
  *
- * <p> Unless otherwise noted, passing a <tt>null</tt> argument to a constructor
+ * <p> Unless otherwise noted, passing a {@code null} argument to a constructor
  * or method in this class will cause a {@link NullPointerException} to be
  * thrown.
  *
@@ -97,6 +98,18 @@ import java.util.regex.PatternSyntaxException;
  * Unicode code points (i.e., characters), in addition to those for
  * dealing with Unicode code units (i.e., {@code char} values).
  *
+ * <p>Unless otherwise noted, methods for comparing Strings do not take locale
+ * into account.  The {@link java.text.Collator} class provides methods for
+ * finer-grain, locale-sensitive String comparison.
+ *
+ * @implNote The implementation of the string concatenation operator is left to
+ * the discretion of a Java compiler, as long as the compiler ultimately conforms
+ * to <i>The Java&trade; Language Specification</i>. For example, the {@code javac} compiler
+ * may implement the operator with {@code StringBuffer}, {@code StringBuilder},
+ * or {@code java.lang.invoke.StringConcatFactory} depending on the JDK version. The
+ * implementation of string conversion is typically through the method {@code toString},
+ * defined by {@code Object} and inherited by all classes in Java.
+ *
  * @author  Lee Boynton
  * @author  Arthur van Hoff
  * @author  Martin Buchholz
@@ -105,13 +118,39 @@ import java.util.regex.PatternSyntaxException;
  * @see     java.lang.StringBuffer
  * @see     java.lang.StringBuilder
  * @see     java.nio.charset.Charset
- * @since   JDK1.0
+ * @since   1.0
+ * @jls     15.18.1 String Concatenation Operator +
  */
 
 public final class String
     implements java.io.Serializable, Comparable<String>, CharSequence {
-    /** The value is used for character storage. */
-    private final char value[];
+
+    /**
+     * The value is used for character storage.
+     *
+     * @implNote This field is trusted by the VM, and is a subject to
+     * constant folding if String instance is constant. Overwriting this
+     * field after construction will cause problems.
+     *
+     * Additionally, it is marked with {@link Stable} to trust the contents
+     * of the array. No other facility in JDK provides this functionality (yet).
+     * {@link Stable} is safe here, because value is never null.
+     */
+    @Stable
+    private final byte[] value;
+
+    /**
+     * The identifier of the encoding used to encode the bytes in
+     * {@code value}. The supported values in this implementation are
+     *
+     * LATIN1
+     * UTF16
+     *
+     * @implNote This field is trusted by the VM, and is a subject to
+     * constant folding if String instance is constant. Overwriting this
+     * field after construction will cause problems.
+     */
+    private final byte coder;
 
     /** Cache the hash code for the string */
     private int hash; // Default to 0
@@ -120,10 +159,53 @@ public final class String
     private static final long serialVersionUID = -6849794470754667710L;
 
     /**
+     * If String compaction is disabled, the bytes in {@code value} are
+     * always encoded in UTF16.
+     *
+     * For methods with several possible implementation paths, when String
+     * compaction is disabled, only one code path is taken.
+     *
+     * The instance field value is generally opaque to optimizing JIT
+     * compilers. Therefore, in performance-sensitive place, an explicit
+     * check of the static boolean {@code COMPACT_STRINGS} is done first
+     * before checking the {@code coder} field since the static boolean
+     * {@code COMPACT_STRINGS} would be constant folded away by an
+     * optimizing JIT compiler. The idioms for these cases are as follows.
+     *
+     * For code such as:
+     *
+     *    if (coder == LATIN1) { ... }
+     *
+     * can be written more optimally as
+     *
+     *    if (coder() == LATIN1) { ... }
+     *
+     * or:
+     *
+     *    if (COMPACT_STRINGS && coder == LATIN1) { ... }
+     *
+     * An optimizing JIT compiler can fold the above conditional as:
+     *
+     *    COMPACT_STRINGS == true  => if (coder == LATIN1) { ... }
+     *    COMPACT_STRINGS == false => if (false)           { ... }
+     *
+     * @implNote
+     * The actual value for this field is injected by JVM. The static
+     * initialization block is used to set the value here to communicate
+     * that this static final field is not statically foldable, and to
+     * avoid any possible circular dependency during vm initialization.
+     */
+    static final boolean COMPACT_STRINGS;
+
+    static {
+        COMPACT_STRINGS = true;
+    }
+
+    /**
      * Class String is special cased within the Serialization Stream Protocol.
      *
      * A String instance is written into an ObjectOutputStream according to
-     * <a href="{@docRoot}/../platform/serialization/spec/output.html">
+     * <a href="{@docRoot}/../specs/serialization/protocol.html#stream-elements">
      * Object Serialization Specification, Section 6.2, "Stream Elements"</a>
      */
     private static final ObjectStreamField[] serialPersistentFields =
@@ -136,6 +218,7 @@ public final class String
      */
     public String() {
         this.value = "".value;
+        this.coder = "".coder;
     }
 
     /**
@@ -148,8 +231,10 @@ public final class String
      * @param  original
      *         A {@code String}
      */
+    @HotSpotIntrinsicCandidate
     public String(String original) {
         this.value = original.value;
+        this.coder = original.coder;
         this.hash = original.hash;
     }
 
@@ -163,7 +248,7 @@ public final class String
      *         The initial value of the string
      */
     public String(char value[]) {
-        this.value = Arrays.copyOf(value, value.length);
+        this(value, 0, value.length, null);
     }
 
     /**
@@ -184,27 +269,16 @@ public final class String
      *         The length
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code count} arguments index
-     *          characters outside the bounds of the {@code value} array
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code value.length - count}
      */
     public String(char value[], int offset, int count) {
-        if (offset < 0) {
-            throw new StringIndexOutOfBoundsException(offset);
-        }
-        if (count <= 0) {
-            if (count < 0) {
-                throw new StringIndexOutOfBoundsException(count);
-            }
-            if (offset <= value.length) {
-                this.value = "".value;
-                return;
-            }
-        }
-        // Note: offset or count might be near -1>>>1.
-        if (offset > value.length - count) {
-            throw new StringIndexOutOfBoundsException(offset + count);
-        }
-        this.value = Arrays.copyOfRange(value, offset, offset+count);
+        this(value, offset, count, rangeCheck(value, offset, count));
+    }
+
+    private static Void rangeCheck(char[] value, int offset, int count) {
+        checkBoundsOffCount(offset, count, value.length);
+        return null;
     }
 
     /**
@@ -230,54 +304,28 @@ public final class String
      *          codePoints}
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code count} arguments index
-     *          characters outside the bounds of the {@code codePoints} array
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code codePoints.length - count}
      *
      * @since  1.5
      */
     public String(int[] codePoints, int offset, int count) {
-        if (offset < 0) {
-            throw new StringIndexOutOfBoundsException(offset);
+        checkBoundsOffCount(offset, count, codePoints.length);
+        if (count == 0) {
+            this.value = "".value;
+            this.coder = "".coder;
+            return;
         }
-        if (count <= 0) {
-            if (count < 0) {
-                throw new StringIndexOutOfBoundsException(count);
-            }
-            if (offset <= codePoints.length) {
-                this.value = "".value;
+        if (COMPACT_STRINGS) {
+            byte[] val = StringLatin1.toBytes(codePoints, offset, count);
+            if (val != null) {
+                this.coder = LATIN1;
+                this.value = val;
                 return;
             }
         }
-        // Note: offset or count might be near -1>>>1.
-        if (offset > codePoints.length - count) {
-            throw new StringIndexOutOfBoundsException(offset + count);
-        }
-
-        final int end = offset + count;
-
-        // Pass 1: Compute precise size of char[]
-        int n = count;
-        for (int i = offset; i < end; i++) {
-            int c = codePoints[i];
-            if (Character.isBmpCodePoint(c))
-                continue;
-            else if (Character.isValidCodePoint(c))
-                n++;
-            else throw new IllegalArgumentException(Integer.toString(c));
-        }
-
-        // Pass 2: Allocate and fill in char[]
-        final char[] v = new char[n];
-
-        for (int i = offset, j = 0; i < end; i++, j++) {
-            int c = codePoints[i];
-            if (Character.isBmpCodePoint(c))
-                v[j] = (char)c;
-            else
-                Character.toSurrogates(c, v, j++);
-        }
-
-        this.value = v;
+        this.coder = UTF16;
+        this.value = StringUTF16.toBytes(codePoints, offset, count);
     }
 
     /**
@@ -289,7 +337,7 @@ public final class String
      * subarray.
      *
      * <p> Each {@code byte} in the subarray is converted to a {@code char} as
-     * specified in the method above.
+     * specified in the {@link #String(byte[],int) String(byte[],int)} constructor.
      *
      * @deprecated This method does not properly convert bytes into characters.
      * As of JDK&nbsp;1.1, the preferred way to do this is via the
@@ -309,7 +357,8 @@ public final class String
      *         The length
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} or {@code count} argument is invalid
+     *          If {@code offset} is negative, {@code count} is negative, or
+     *          {@code offset} is greater than {@code ascii.length - count}
      *
      * @see  #String(byte[], int)
      * @see  #String(byte[], int, int, java.lang.String)
@@ -319,27 +368,31 @@ public final class String
      * @see  #String(byte[], java.nio.charset.Charset)
      * @see  #String(byte[])
      */
-    @Deprecated
+    @Deprecated(since="1.1")
     public String(byte ascii[], int hibyte, int offset, int count) {
-        checkBounds(ascii, offset, count);
-        char value[] = new char[count];
-
-        if (hibyte == 0) {
-            for (int i = count; i-- > 0;) {
-                value[i] = (char)(ascii[i + offset] & 0xff);
-            }
+        checkBoundsOffCount(offset, count, ascii.length);
+        if (count == 0) {
+            this.value = "".value;
+            this.coder = "".coder;
+            return;
+        }
+        if (COMPACT_STRINGS && (byte)hibyte == 0) {
+            this.value = Arrays.copyOfRange(ascii, offset, offset + count);
+            this.coder = LATIN1;
         } else {
             hibyte <<= 8;
-            for (int i = count; i-- > 0;) {
-                value[i] = (char)(hibyte | (ascii[i + offset] & 0xff));
+            byte[] val = StringUTF16.newBytesFor(count);
+            for (int i = 0; i < count; i++) {
+                StringUTF16.putChar(val, i, hibyte | (ascii[offset++] & 0xff));
             }
+            this.value = val;
+            this.coder = UTF16;
         }
-        this.value = value;
     }
 
     /**
      * Allocates a new {@code String} containing characters constructed from
-     * an array of 8-bit integer values. Each character <i>c</i>in the
+     * an array of 8-bit integer values. Each character <i>c</i> in the
      * resulting string is constructed from the corresponding component
      * <i>b</i> in the byte array such that:
      *
@@ -367,22 +420,9 @@ public final class String
      * @see  #String(byte[], java.nio.charset.Charset)
      * @see  #String(byte[])
      */
-    @Deprecated
+    @Deprecated(since="1.1")
     public String(byte ascii[], int hibyte) {
         this(ascii, hibyte, 0, ascii.length);
-    }
-
-    /* Common private utility method used to bounds check the byte array
-     * and requested offset & length values used by the String(byte[],..)
-     * constructors.
-     */
-    private static void checkBounds(byte[] bytes, int offset, int length) {
-        if (length < 0)
-            throw new StringIndexOutOfBoundsException(length);
-        if (offset < 0)
-            throw new StringIndexOutOfBoundsException(offset);
-        if (offset > bytes.length - length)
-            throw new StringIndexOutOfBoundsException(offset + length);
     }
 
     /**
@@ -413,17 +453,20 @@ public final class String
      *          If the named charset is not supported
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], int offset, int length, String charsetName)
             throws UnsupportedEncodingException {
         if (charsetName == null)
             throw new NullPointerException("charsetName");
-        checkBounds(bytes, offset, length);
-        this.value = StringCoding.decode(charsetName, bytes, offset, length);
+        checkBoundsOffCount(offset, length, bytes.length);
+        StringCoding.Result ret =
+            StringCoding.decode(charsetName, bytes, offset, length);
+        this.value = ret.value;
+        this.coder = ret.coder;
     }
 
     /**
@@ -451,16 +494,19 @@ public final class String
      *         decode the {@code bytes}
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
      * @since  1.6
      */
     public String(byte bytes[], int offset, int length, Charset charset) {
         if (charset == null)
             throw new NullPointerException("charset");
-        checkBounds(bytes, offset, length);
-        this.value =  StringCoding.decode(charset, bytes, offset, length);
+        checkBoundsOffCount(offset, length, bytes.length);
+        StringCoding.Result ret =
+            StringCoding.decode(charset, bytes, offset, length);
+        this.value = ret.value;
+        this.coder = ret.coder;
     }
 
     /**
@@ -484,7 +530,7 @@ public final class String
      * @throws  UnsupportedEncodingException
      *          If the named charset is not supported
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], String charsetName)
             throws UnsupportedEncodingException {
@@ -536,14 +582,16 @@ public final class String
      *         The number of bytes to decode
      *
      * @throws  IndexOutOfBoundsException
-     *          If the {@code offset} and the {@code length} arguments index
-     *          characters outside the bounds of the {@code bytes} array
+     *          If {@code offset} is negative, {@code length} is negative, or
+     *          {@code offset} is greater than {@code bytes.length - length}
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public String(byte bytes[], int offset, int length) {
-        checkBounds(bytes, offset, length);
-        this.value = StringCoding.decode(bytes, offset, length);
+        checkBoundsOffCount(offset, length, bytes.length);
+        StringCoding.Result ret = StringCoding.decode(bytes, offset, length);
+        this.value = ret.value;
+        this.coder = ret.coder;
     }
 
     /**
@@ -560,9 +608,9 @@ public final class String
      * @param  bytes
      *         The bytes to be decoded into characters
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
-    public String(byte bytes[]) {
+    public String(byte[] bytes) {
         this(bytes, 0, bytes.length);
     }
 
@@ -576,9 +624,7 @@ public final class String
      *         A {@code StringBuffer}
      */
     public String(StringBuffer buffer) {
-        synchronized(buffer) {
-            this.value = Arrays.copyOf(buffer.getValue(), buffer.length());
-        }
+        this(buffer.toString());
     }
 
     /**
@@ -597,18 +643,7 @@ public final class String
      * @since  1.5
      */
     public String(StringBuilder builder) {
-        this.value = Arrays.copyOf(builder.getValue(), builder.length());
-    }
-
-    /*
-    * Package private constructor which shares value array for speed.
-    * this constructor is always expected to be called with share==true.
-    * a separate constructor is needed because we already have a public
-    * String(char[]) constructor that makes a copy of the given char[].
-    */
-    String(char[] value, boolean share) {
-        // assert share : "unshared not supported";
-        this.value = value;
+        this(builder, null);
     }
 
     /**
@@ -620,7 +655,7 @@ public final class String
      *          object.
      */
     public int length() {
-        return value.length;
+        return value.length >> coder();
     }
 
     /**
@@ -654,10 +689,11 @@ public final class String
      *             string.
      */
     public char charAt(int index) {
-        if ((index < 0) || (index >= value.length)) {
-            throw new StringIndexOutOfBoundsException(index);
+        if (isLatin1()) {
+            return StringLatin1.charAt(value, index);
+        } else {
+            return StringUTF16.charAt(value, index);
         }
-        return value[index];
     }
 
     /**
@@ -683,10 +719,13 @@ public final class String
      * @since      1.5
      */
     public int codePointAt(int index) {
-        if ((index < 0) || (index >= value.length)) {
-            throw new StringIndexOutOfBoundsException(index);
+        if (isLatin1()) {
+            checkIndex(index, value.length);
+            return value[index] & 0xff;
         }
-        return Character.codePointAtImpl(value, index, value.length);
+        int length = value.length >> 1;
+        checkIndex(index, length);
+        return StringUTF16.codePointAt(value, index, length);
     }
 
     /**
@@ -713,10 +752,13 @@ public final class String
      */
     public int codePointBefore(int index) {
         int i = index - 1;
-        if ((i < 0) || (i >= value.length)) {
+        if (i < 0 || i >= length()) {
             throw new StringIndexOutOfBoundsException(index);
         }
-        return Character.codePointBeforeImpl(value, index, 0);
+        if (isLatin1()) {
+            return (value[i] & 0xff);
+        }
+        return StringUTF16.codePointBefore(value, index);
     }
 
     /**
@@ -741,10 +783,14 @@ public final class String
      * @since  1.5
      */
     public int codePointCount(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || endIndex > value.length || beginIndex > endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex ||
+            endIndex > length()) {
             throw new IndexOutOfBoundsException();
         }
-        return Character.codePointCountImpl(value, beginIndex, endIndex - beginIndex);
+        if (isLatin1()) {
+            return endIndex - beginIndex;
+        }
+        return StringUTF16.codePointCount(value, beginIndex, endIndex);
     }
 
     /**
@@ -768,19 +814,10 @@ public final class String
      * @since 1.5
      */
     public int offsetByCodePoints(int index, int codePointOffset) {
-        if (index < 0 || index > value.length) {
+        if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException();
         }
-        return Character.offsetByCodePointsImpl(value, 0, value.length,
-                index, codePointOffset);
-    }
-
-    /**
-     * Copy characters from this string into dst starting at dstBegin.
-     * This method doesn't perform any range checking.
-     */
-    void getChars(char dst[], int dstBegin) {
-        System.arraycopy(value, 0, dst, dstBegin, value.length);
+        return Character.offsetByCodePoints(this, index, codePointOffset);
     }
 
     /**
@@ -814,16 +851,13 @@ public final class String
      *                {@code dst.length}</ul>
      */
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
-        if (srcBegin < 0) {
-            throw new StringIndexOutOfBoundsException(srcBegin);
+        checkBoundsBeginEnd(srcBegin, srcEnd, length());
+        checkBoundsOffCount(dstBegin, srcEnd - srcBegin, dst.length);
+        if (isLatin1()) {
+            StringLatin1.getChars(value, srcBegin, srcEnd, dst, dstBegin);
+        } else {
+            StringUTF16.getChars(value, srcBegin, srcEnd, dst, dstBegin);
         }
-        if (srcEnd > value.length) {
-            throw new StringIndexOutOfBoundsException(srcEnd);
-        }
-        if (srcBegin > srcEnd) {
-            throw new StringIndexOutOfBoundsException(srcEnd - srcBegin);
-        }
-        System.arraycopy(value, srcBegin, dst, dstBegin, srcEnd - srcBegin);
     }
 
     /**
@@ -869,26 +903,15 @@ public final class String
      *                 dst.length}
      *          </ul>
      */
-    @Deprecated
+    @Deprecated(since="1.1")
     public void getBytes(int srcBegin, int srcEnd, byte dst[], int dstBegin) {
-        if (srcBegin < 0) {
-            throw new StringIndexOutOfBoundsException(srcBegin);
-        }
-        if (srcEnd > value.length) {
-            throw new StringIndexOutOfBoundsException(srcEnd);
-        }
-        if (srcBegin > srcEnd) {
-            throw new StringIndexOutOfBoundsException(srcEnd - srcBegin);
-        }
+        checkBoundsBeginEnd(srcBegin, srcEnd, length());
         Objects.requireNonNull(dst);
-
-        int j = dstBegin;
-        int n = srcEnd;
-        int i = srcBegin;
-        char[] val = value;   /* avoid getfield opcode */
-
-        while (i < n) {
-            dst[j++] = (byte)val[i++];
+        checkBoundsOffCount(dstBegin, srcEnd - srcBegin, dst.length);
+        if (isLatin1()) {
+            StringLatin1.getBytes(value, srcBegin, srcEnd, dst, dstBegin);
+        } else {
+            StringUTF16.getBytes(value, srcBegin, srcEnd, dst, dstBegin);
         }
     }
 
@@ -910,12 +933,12 @@ public final class String
      * @throws  UnsupportedEncodingException
      *          If the named charset is not supported
      *
-     * @since  JDK1.1
+     * @since  1.1
      */
     public byte[] getBytes(String charsetName)
             throws UnsupportedEncodingException {
         if (charsetName == null) throw new NullPointerException();
-        return StringCoding.encode(charsetName, value, 0, value.length);
+        return StringCoding.encode(charsetName, coder(), value);
     }
 
     /**
@@ -938,8 +961,8 @@ public final class String
      */
     public byte[] getBytes(Charset charset) {
         if (charset == null) throw new NullPointerException();
-        return StringCoding.encode(charset, value, 0, value.length);
-    }
+        return StringCoding.encode(charset, coder(), value);
+     }
 
     /**
      * Encodes this {@code String} into a sequence of bytes using the
@@ -952,10 +975,10 @@ public final class String
      *
      * @return  The resultant byte array
      *
-     * @since      JDK1.1
+     * @since      1.1
      */
     public byte[] getBytes() {
-        return StringCoding.encode(value, 0, value.length);
+        return StringCoding.encode(coder(), value);
     }
 
     /**
@@ -963,6 +986,9 @@ public final class String
      * true} if and only if the argument is not {@code null} and is a {@code
      * String} object that represents the same sequence of characters as this
      * object.
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param  anObject
      *         The object to compare this {@code String} against
@@ -978,18 +1004,10 @@ public final class String
             return true;
         }
         if (anObject instanceof String) {
-            String anotherString = (String)anObject;
-            int n = value.length;
-            if (n == anotherString.value.length) {
-                char v1[] = value;
-                char v2[] = anotherString.value;
-                int i = 0;
-                while (n-- != 0) {
-                    if (v1[i] != v2[i])
-                        return false;
-                    i++;
-                }
-                return true;
+            String aString = (String)anObject;
+            if (coder() == aString.coder()) {
+                return isLatin1() ? StringLatin1.equals(value, aString.value)
+                                  : StringUTF16.equals(value, aString.value);
             }
         }
         return false;
@@ -1000,6 +1018,9 @@ public final class String
      * is {@code true} if and only if this {@code String} represents the same
      * sequence of characters as the specified {@code StringBuffer}. This method
      * synchronizes on the {@code StringBuffer}.
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param  sb
      *         The {@code StringBuffer} to compare this {@code String} against
@@ -1015,16 +1036,24 @@ public final class String
     }
 
     private boolean nonSyncContentEquals(AbstractStringBuilder sb) {
-        char v1[] = value;
-        char v2[] = sb.getValue();
-        int n = v1.length;
-        if (n != sb.length()) {
+        int len = length();
+        if (len != sb.length()) {
             return false;
         }
-        for (int i = 0; i < n; i++) {
-            if (v1[i] != v2[i]) {
+        byte v1[] = value;
+        byte v2[] = sb.getValue();
+        if (coder() == sb.getCoder()) {
+            int n = v1.length;
+            for (int i = 0; i < n; i++) {
+                if (v1[i] != v2[i]) {
+                    return false;
+                }
+            }
+        } else {
+            if (!isLatin1()) {  // utf16 str and latin1 abs can never be "equal"
                 return false;
             }
+            return StringUTF16.contentEquals(v1, v2, len);
         }
         return true;
     }
@@ -1035,6 +1064,9 @@ public final class String
      * same sequence of char values as the specified sequence. Note that if the
      * {@code CharSequence} is a {@code StringBuffer} then the method
      * synchronizes on it.
+     *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
      *
      * @param  cs
      *         The sequence to compare this {@code String} against
@@ -1061,13 +1093,19 @@ public final class String
             return equals(cs);
         }
         // Argument is a generic CharSequence
-        char v1[] = value;
-        int n = v1.length;
-        if (n != cs.length()) {
+        int n = cs.length();
+        if (n != length()) {
             return false;
         }
-        for (int i = 0; i < n; i++) {
-            if (v1[i] != cs.charAt(i)) {
+        byte[] val = this.value;
+        if (isLatin1()) {
+            for (int i = 0; i < n; i++) {
+                if ((val[i] & 0xff) != cs.charAt(i)) {
+                    return false;
+                }
+            }
+        } else {
+            if (!StringUTF16.contentEquals(val, cs, n)) {
                 return false;
             }
         }
@@ -1085,13 +1123,13 @@ public final class String
      * <ul>
      *   <li> The two characters are the same (as compared by the
      *        {@code ==} operator)
-     *   <li> Applying the method {@link
-     *        java.lang.Character#toUpperCase(char)} to each character
-     *        produces the same result
-     *   <li> Applying the method {@link
-     *        java.lang.Character#toLowerCase(char)} to each character
-     *        produces the same result
+     *   <li> Calling {@code Character.toLowerCase(Character.toUpperCase(char))}
+     *        on each character produces the same result
      * </ul>
+     *
+     * <p>Note that this method does <em>not</em> take locale into account, and
+     * will result in unsatisfactory results for certain locales.  The
+     * {@link java.text.Collator} class provides locale-sensitive comparison.
      *
      * @param  anotherString
      *         The {@code String} to compare this {@code String} against
@@ -1105,8 +1143,8 @@ public final class String
     public boolean equalsIgnoreCase(String anotherString) {
         return (this == anotherString) ? true
                 : (anotherString != null)
-                && (anotherString.value.length == value.length)
-                && regionMatches(true, 0, anotherString, 0, value.length);
+                && (anotherString.length() == length())
+                && regionMatches(true, 0, anotherString, 0, length());
     }
 
     /**
@@ -1128,7 +1166,7 @@ public final class String
      * or both. If they have different characters at one or more index
      * positions, let <i>k</i> be the smallest such index; then the string
      * whose character at position <i>k</i> has the smaller value, as
-     * determined by using the &lt; operator, lexicographically precedes the
+     * determined by using the {@code <} operator, lexicographically precedes the
      * other string. In this case, {@code compareTo} returns the
      * difference of the two character values at position {@code k} in
      * the two string -- that is, the value:
@@ -1143,6 +1181,9 @@ public final class String
      * this.length()-anotherString.length()
      * </pre></blockquote>
      *
+     * <p>For finer-grained String comparison, refer to
+     * {@link java.text.Collator}.
+     *
      * @param   anotherString   the {@code String} to be compared.
      * @return  the value {@code 0} if the argument string is equal to
      *          this string; a value less than {@code 0} if this string
@@ -1151,23 +1192,15 @@ public final class String
      *          lexicographically greater than the string argument.
      */
     public int compareTo(String anotherString) {
-        int len1 = value.length;
-        int len2 = anotherString.value.length;
-        int lim = Math.min(len1, len2);
-        char v1[] = value;
-        char v2[] = anotherString.value;
-
-        int k = 0;
-        while (k < lim) {
-            char c1 = v1[k];
-            char c2 = v2[k];
-            if (c1 != c2) {
-                return c1 - c2;
-            }
-            k++;
+        byte v1[] = value;
+        byte v2[] = anotherString.value;
+        if (coder() == anotherString.coder()) {
+            return isLatin1() ? StringLatin1.compareTo(v1, v2)
+                              : StringUTF16.compareTo(v1, v2);
         }
-        return len1 - len2;
-    }
+        return isLatin1() ? StringLatin1.compareToUTF16(v1, v2)
+                          : StringUTF16.compareToLatin1(v1, v2);
+     }
 
     /**
      * A Comparator that orders {@code String} objects as by
@@ -1175,10 +1208,9 @@ public final class String
      * <p>
      * Note that this Comparator does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
-     * The java.text package provides <em>Collators</em> to allow
-     * locale-sensitive ordering.
+     * The {@link java.text.Collator} class provides locale-sensitive comparison.
      *
-     * @see     java.text.Collator#compare(String, String)
+     * @see     java.text.Collator
      * @since   1.2
      */
     public static final Comparator<String> CASE_INSENSITIVE_ORDER
@@ -1189,26 +1221,14 @@ public final class String
         private static final long serialVersionUID = 8575799808933029326L;
 
         public int compare(String s1, String s2) {
-            int n1 = s1.length();
-            int n2 = s2.length();
-            int min = Math.min(n1, n2);
-            for (int i = 0; i < min; i++) {
-                char c1 = s1.charAt(i);
-                char c2 = s2.charAt(i);
-                if (c1 != c2) {
-                    c1 = Character.toUpperCase(c1);
-                    c2 = Character.toUpperCase(c2);
-                    if (c1 != c2) {
-                        c1 = Character.toLowerCase(c1);
-                        c2 = Character.toLowerCase(c2);
-                        if (c1 != c2) {
-                            // No overflow because of numeric promotion
-                            return c1 - c2;
-                        }
-                    }
-                }
+            byte v1[] = s1.value;
+            byte v2[] = s2.value;
+            if (s1.coder() == s2.coder()) {
+                return s1.isLatin1() ? StringLatin1.compareToCI(v1, v2)
+                                     : StringUTF16.compareToCI(v1, v2);
             }
-            return n1 - n2;
+            return s1.isLatin1() ? StringLatin1.compareToCI_UTF16(v1, v2)
+                                 : StringUTF16.compareToCI_Latin1(v1, v2);
         }
 
         /** Replaces the de-serialized object. */
@@ -1225,14 +1245,13 @@ public final class String
      * <p>
      * Note that this method does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
-     * The java.text package provides <em>collators</em> to allow
-     * locale-sensitive ordering.
+     * The {@link java.text.Collator} class provides locale-sensitive comparison.
      *
      * @param   str   the {@code String} to be compared.
      * @return  a negative integer, zero, or a positive integer as the
      *          specified String is greater than, equal to, or less
      *          than this String, ignoring case considerations.
-     * @see     java.text.Collator#compare(String, String)
+     * @see     java.text.Collator
      * @since   1.2
      */
     public int compareToIgnoreCase(String str) {
@@ -1262,6 +1281,9 @@ public final class String
      * <i>k</i>{@code )}
      * </ul>
      *
+     * <p>Note that this method does <em>not</em> take locale into account.  The
+     * {@link java.text.Collator} class provides locale-sensitive comparison.
+     *
      * @param   toffset   the starting offset of the subregion in this string.
      * @param   other     the string argument.
      * @param   ooffset   the starting offset of the subregion in the string
@@ -1271,21 +1293,41 @@ public final class String
      *          exactly matches the specified subregion of the string argument;
      *          {@code false} otherwise.
      */
-    public boolean regionMatches(int toffset, String other, int ooffset,
-            int len) {
-        char ta[] = value;
-        int to = toffset;
-        char pa[] = other.value;
-        int po = ooffset;
+    public boolean regionMatches(int toffset, String other, int ooffset, int len) {
+        byte tv[] = value;
+        byte ov[] = other.value;
         // Note: toffset, ooffset, or len might be near -1>>>1.
-        if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long)value.length - len)
-                || (ooffset > (long)other.value.length - len)) {
+        if ((ooffset < 0) || (toffset < 0) ||
+             (toffset > (long)length() - len) ||
+             (ooffset > (long)other.length() - len)) {
             return false;
         }
-        while (len-- > 0) {
-            if (ta[to++] != pa[po++]) {
-                return false;
+        if (coder() == other.coder()) {
+            if (!isLatin1() && (len > 0)) {
+                toffset = toffset << 1;
+                ooffset = ooffset << 1;
+                len = len << 1;
+            }
+            while (len-- > 0) {
+                if (tv[toffset++] != ov[ooffset++]) {
+                    return false;
+                }
+            }
+        } else {
+            if (coder() == LATIN1) {
+                while (len-- > 0) {
+                    if (StringLatin1.getChar(tv, toffset++) !=
+                        StringUTF16.getChar(ov, ooffset++)) {
+                        return false;
+                    }
+                }
+            } else {
+                while (len-- > 0) {
+                    if (StringUTF16.getChar(tv, toffset++) !=
+                        StringLatin1.getChar(ov, ooffset++)) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
@@ -1317,15 +1359,15 @@ public final class String
      * <li>{@code ignoreCase} is {@code true} and there is some nonnegative
      * integer <i>k</i> less than {@code len} such that:
      * <blockquote><pre>
-     * Character.toLowerCase(this.charAt(toffset+k)) !=
-     Character.toLowerCase(other.charAt(ooffset+k))
-     * </pre></blockquote>
-     * and:
-     * <blockquote><pre>
-     * Character.toUpperCase(this.charAt(toffset+k)) !=
-     *         Character.toUpperCase(other.charAt(ooffset+k))
+     * Character.toLowerCase(Character.toUpperCase(this.charAt(toffset+k))) !=
+     Character.toLowerCase(Character.toUpperCase(other.charAt(ooffset+k)))
      * </pre></blockquote>
      * </ul>
+     *
+     * <p>Note that this method does <em>not</em> take locale into account,
+     * and will result in unsatisfactory results for certain locales when
+     * {@code ignoreCase} is {@code true}.  The {@link java.text.Collator} class
+     * provides locale-sensitive comparison.
      *
      * @param   ignoreCase   if {@code true}, ignore case when comparing
      *                       characters.
@@ -1343,43 +1385,25 @@ public final class String
      */
     public boolean regionMatches(boolean ignoreCase, int toffset,
             String other, int ooffset, int len) {
-        char ta[] = value;
-        int to = toffset;
-        char pa[] = other.value;
-        int po = ooffset;
+        if (!ignoreCase) {
+            return regionMatches(toffset, other, ooffset, len);
+        }
         // Note: toffset, ooffset, or len might be near -1>>>1.
         if ((ooffset < 0) || (toffset < 0)
-                || (toffset > (long)value.length - len)
-                || (ooffset > (long)other.value.length - len)) {
+                || (toffset > (long)length() - len)
+                || (ooffset > (long)other.length() - len)) {
             return false;
         }
-        while (len-- > 0) {
-            char c1 = ta[to++];
-            char c2 = pa[po++];
-            if (c1 == c2) {
-                continue;
-            }
-            if (ignoreCase) {
-                // If characters don't match but case may be ignored,
-                // try converting both characters to uppercase.
-                // If the results match, then the comparison scan should
-                // continue.
-                char u1 = Character.toUpperCase(c1);
-                char u2 = Character.toUpperCase(c2);
-                if (u1 == u2) {
-                    continue;
-                }
-                // Unfortunately, conversion to uppercase does not work properly
-                // for the Georgian alphabet, which has strange rules about case
-                // conversion.  So we need to make one last check before
-                // exiting.
-                if (Character.toLowerCase(u1) == Character.toLowerCase(u2)) {
-                    continue;
-                }
-            }
-            return false;
+        byte tv[] = value;
+        byte ov[] = other.value;
+        if (coder() == other.coder()) {
+            return isLatin1()
+              ? StringLatin1.regionMatchesCI(tv, toffset, ov, ooffset, len)
+              : StringUTF16.regionMatchesCI(tv, toffset, ov, ooffset, len);
         }
-        return true;
+        return isLatin1()
+              ? StringLatin1.regionMatchesCI_UTF16(tv, toffset, ov, ooffset, len)
+              : StringUTF16.regionMatchesCI_Latin1(tv, toffset, ov, ooffset, len);
     }
 
     /**
@@ -1400,18 +1424,30 @@ public final class String
      *          </pre>
      */
     public boolean startsWith(String prefix, int toffset) {
-        char ta[] = value;
-        int to = toffset;
-        char pa[] = prefix.value;
-        int po = 0;
-        int pc = prefix.value.length;
         // Note: toffset might be near -1>>>1.
-        if ((toffset < 0) || (toffset > value.length - pc)) {
+        if (toffset < 0 || toffset > length() - prefix.length()) {
             return false;
         }
-        while (--pc >= 0) {
-            if (ta[to++] != pa[po++]) {
+        byte ta[] = value;
+        byte pa[] = prefix.value;
+        int po = 0;
+        int pc = pa.length;
+        if (coder() == prefix.coder()) {
+            int to = isLatin1() ? toffset : toffset << 1;
+            while (po < pc) {
+                if (ta[to++] != pa[po++]) {
+                    return false;
+                }
+            }
+        } else {
+            if (isLatin1()) {  // && pcoder == UTF16
                 return false;
+            }
+            // coder == UTF16 && pcoder == LATIN1)
+            while (po < pc) {
+                if (StringUTF16.getChar(ta, toffset++) != (pa[po++] & 0xff)) {
+                    return false;
+               }
             }
         }
         return true;
@@ -1428,7 +1464,7 @@ public final class String
      *          argument is an empty string or is equal to this
      *          {@code String} object as determined by the
      *          {@link #equals(Object)} method.
-     * @since   1. 0
+     * @since   1.0
      */
     public boolean startsWith(String prefix) {
         return startsWith(prefix, 0);
@@ -1446,7 +1482,7 @@ public final class String
      *          as determined by the {@link #equals(Object)} method.
      */
     public boolean endsWith(String suffix) {
-        return startsWith(suffix, value.length - suffix.value.length);
+        return startsWith(suffix, length() - suffix.length());
     }
 
     /**
@@ -1465,12 +1501,8 @@ public final class String
     public int hashCode() {
         int h = hash;
         if (h == 0 && value.length > 0) {
-            char val[] = value;
-
-            for (int i = 0; i < value.length; i++) {
-                h = 31 * h + val[i];
-            }
-            hash = h;
+            hash = h = isLatin1() ? StringLatin1.hashCode(value)
+                                  : StringUTF16.hashCode(value);
         }
         return h;
     }
@@ -1543,45 +1575,8 @@ public final class String
      *          if the character does not occur.
      */
     public int indexOf(int ch, int fromIndex) {
-        final int max = value.length;
-        if (fromIndex < 0) {
-            fromIndex = 0;
-        } else if (fromIndex >= max) {
-            // Note: fromIndex might be near -1>>>1.
-            return -1;
-        }
-
-        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-            // handle most cases here (ch is a BMP code point or a
-            // negative value (invalid code point))
-            final char[] value = this.value;
-            for (int i = fromIndex; i < max; i++) {
-                if (value[i] == ch) {
-                    return i;
-                }
-            }
-            return -1;
-        } else {
-            return indexOfSupplementary(ch, fromIndex);
-        }
-    }
-
-    /**
-     * Handles (rare) calls of indexOf with a supplementary character.
-     */
-    private int indexOfSupplementary(int ch, int fromIndex) {
-        if (Character.isValidCodePoint(ch)) {
-            final char[] value = this.value;
-            final char hi = Character.highSurrogate(ch);
-            final char lo = Character.lowSurrogate(ch);
-            final int max = value.length - 1;
-            for (int i = fromIndex; i < max; i++) {
-                if (value[i] == hi && value[i + 1] == lo) {
-                    return i;
-                }
-            }
-        }
-        return -1;
+        return isLatin1() ? StringLatin1.indexOf(value, ch, fromIndex)
+                          : StringUTF16.indexOf(value, ch, fromIndex);
     }
 
     /**
@@ -1608,7 +1603,7 @@ public final class String
      *          {@code -1} if the character does not occur.
      */
     public int lastIndexOf(int ch) {
-        return lastIndexOf(ch, value.length - 1);
+        return lastIndexOf(ch, length() - 1);
     }
 
     /**
@@ -1646,67 +1641,45 @@ public final class String
      *          if the character does not occur before that point.
      */
     public int lastIndexOf(int ch, int fromIndex) {
-        if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
-            // handle most cases here (ch is a BMP code point or a
-            // negative value (invalid code point))
-            final char[] value = this.value;
-            int i = Math.min(fromIndex, value.length - 1);
-            for (; i >= 0; i--) {
-                if (value[i] == ch) {
-                    return i;
-                }
-            }
-            return -1;
-        } else {
-            return lastIndexOfSupplementary(ch, fromIndex);
-        }
-    }
-
-    /**
-     * Handles (rare) calls of lastIndexOf with a supplementary character.
-     */
-    private int lastIndexOfSupplementary(int ch, int fromIndex) {
-        if (Character.isValidCodePoint(ch)) {
-            final char[] value = this.value;
-            char hi = Character.highSurrogate(ch);
-            char lo = Character.lowSurrogate(ch);
-            int i = Math.min(fromIndex, value.length - 2);
-            for (; i >= 0; i--) {
-                if (value[i] == hi && value[i + 1] == lo) {
-                    return i;
-                }
-            }
-        }
-        return -1;
+        return isLatin1() ? StringLatin1.lastIndexOf(value, ch, fromIndex)
+                          : StringUTF16.lastIndexOf(value, ch, fromIndex);
     }
 
     /**
      * Returns the index within this string of the first occurrence of the
      * specified substring.
      *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the smallest value {@code k} for which:
+     * <pre>{@code
+     * this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str   the substring to search for.
      * @return  the index of the first occurrence of the specified substring,
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str) {
-        return indexOf(str, 0);
+        if (coder() == str.coder()) {
+            return isLatin1() ? StringLatin1.indexOf(value, str.value)
+                              : StringUTF16.indexOf(value, str.value);
+        }
+        if (coder() == LATIN1) {  // str.coder == UTF16
+            return -1;
+        }
+        return StringUTF16.indexOfLatin1(value, str.value);
     }
 
     /**
      * Returns the index within this string of the first occurrence of the
      * specified substring, starting at the specified index.
      *
-     * <p>The returned index is the smallest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> &gt;= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the smallest value {@code k} for which:
+     * <pre>{@code
+     *     k >= Math.min(fromIndex, this.length()) &&
+     *                   this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index from which to start the search.
@@ -1715,8 +1688,7 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str, int fromIndex) {
-        return indexOf(value, 0, value.length,
-                str.value, 0, str.value.length, fromIndex);
+        return indexOf(value, coder(), length(), str, fromIndex);
     }
 
     /**
@@ -1724,68 +1696,40 @@ public final class String
      * source is the character array being searched, and the target
      * is the string being searched for.
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   fromIndex    the index to begin searching from.
+     * @param   src       the characters being searched.
+     * @param   srcCoder  the coder of the source string.
+     * @param   srcCount  length of the source string.
+     * @param   tgtStr    the characters being searched for.
+     * @param   fromIndex the index to begin searching from.
      */
-    static int indexOf(char[] source, int sourceOffset, int sourceCount,
-            String target, int fromIndex) {
-        return indexOf(source, sourceOffset, sourceCount,
-                       target.value, 0, target.value.length,
-                       fromIndex);
-    }
+    static int indexOf(byte[] src, byte srcCoder, int srcCount,
+                       String tgtStr, int fromIndex) {
+        byte[] tgt    = tgtStr.value;
+        byte tgtCoder = tgtStr.coder();
+        int tgtCount  = tgtStr.length();
 
-    /**
-     * Code shared by String and StringBuffer to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
-     *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   targetOffset offset of the target string.
-     * @param   targetCount  count of the target string.
-     * @param   fromIndex    the index to begin searching from.
-     */
-    static int indexOf(char[] source, int sourceOffset, int sourceCount,
-            char[] target, int targetOffset, int targetCount,
-            int fromIndex) {
-        if (fromIndex >= sourceCount) {
-            return (targetCount == 0 ? sourceCount : -1);
+        if (fromIndex >= srcCount) {
+            return (tgtCount == 0 ? srcCount : -1);
         }
         if (fromIndex < 0) {
             fromIndex = 0;
         }
-        if (targetCount == 0) {
+        if (tgtCount == 0) {
             return fromIndex;
         }
-
-        char first = target[targetOffset];
-        int max = sourceOffset + (sourceCount - targetCount);
-
-        for (int i = sourceOffset + fromIndex; i <= max; i++) {
-            /* Look for first character. */
-            if (source[i] != first) {
-                while (++i <= max && source[i] != first);
-            }
-
-            /* Found first character, now look at the rest of v2 */
-            if (i <= max) {
-                int j = i + 1;
-                int end = j + targetCount - 1;
-                for (int k = targetOffset + 1; j < end && source[j]
-                        == target[k]; j++, k++);
-
-                if (j == end) {
-                    /* Found whole string. */
-                    return i - sourceOffset;
-                }
-            }
+        if (tgtCount > srcCount) {
+            return -1;
         }
-        return -1;
+        if (srcCoder == tgtCoder) {
+            return srcCoder == LATIN1
+                ? StringLatin1.indexOf(src, srcCount, tgt, tgtCount, fromIndex)
+                : StringUTF16.indexOf(src, srcCount, tgt, tgtCount, fromIndex);
+        }
+        if (srcCoder == LATIN1) {    //  && tgtCoder == UTF16
+            return -1;
+        }
+        // srcCoder == UTF16 && tgtCoder == LATIN1) {
+        return StringUTF16.indexOfLatin1(src, srcCount, tgt, tgtCount, fromIndex);
     }
 
     /**
@@ -1793,29 +1737,30 @@ public final class String
      * specified substring.  The last occurrence of the empty string ""
      * is considered to occur at the index value {@code this.length()}.
      *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the largest value {@code k} for which:
+     * <pre>{@code
+     * this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str   the substring to search for.
      * @return  the index of the last occurrence of the specified substring,
      *          or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(String str) {
-        return lastIndexOf(str, value.length);
+        return lastIndexOf(str, length());
     }
 
     /**
      * Returns the index within this string of the last occurrence of the
      * specified substring, searching backward starting at the specified index.
      *
-     * <p>The returned index is the largest value <i>k</i> for which:
-     * <blockquote><pre>
-     * <i>k</i> {@code <=} fromIndex {@code &&} this.startsWith(str, <i>k</i>)
-     * </pre></blockquote>
-     * If no such value of <i>k</i> exists, then {@code -1} is returned.
+     * <p>The returned index is the largest value {@code k} for which:
+     * <pre>{@code
+     *     k <= Math.min(fromIndex, this.length()) &&
+     *                   this.startsWith(str, k)
+     * }</pre>
+     * If no such value of {@code k} exists, then {@code -1} is returned.
      *
      * @param   str         the substring to search for.
      * @param   fromIndex   the index to start the search from.
@@ -1824,8 +1769,7 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int lastIndexOf(String str, int fromIndex) {
-        return lastIndexOf(value, 0, value.length,
-                str.value, 0, str.value.length, fromIndex);
+        return lastIndexOf(value, coder(), length(), str, fromIndex);
     }
 
     /**
@@ -1833,76 +1777,42 @@ public final class String
      * source is the character array being searched, and the target
      * is the string being searched for.
      *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   fromIndex    the index to begin searching from.
+     * @param   src         the characters being searched.
+     * @param   srcCoder    coder handles the mapping between bytes/chars
+     * @param   srcCount    count of the source string.
+     * @param   tgt         the characters being searched for.
+     * @param   fromIndex   the index to begin searching from.
      */
-    static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
-            String target, int fromIndex) {
-        return lastIndexOf(source, sourceOffset, sourceCount,
-                       target.value, 0, target.value.length,
-                       fromIndex);
-    }
-
-    /**
-     * Code shared by String and StringBuffer to do searches. The
-     * source is the character array being searched, and the target
-     * is the string being searched for.
-     *
-     * @param   source       the characters being searched.
-     * @param   sourceOffset offset of the source string.
-     * @param   sourceCount  count of the source string.
-     * @param   target       the characters being searched for.
-     * @param   targetOffset offset of the target string.
-     * @param   targetCount  count of the target string.
-     * @param   fromIndex    the index to begin searching from.
-     */
-    static int lastIndexOf(char[] source, int sourceOffset, int sourceCount,
-            char[] target, int targetOffset, int targetCount,
-            int fromIndex) {
+    static int lastIndexOf(byte[] src, byte srcCoder, int srcCount,
+                           String tgtStr, int fromIndex) {
+        byte[] tgt = tgtStr.value;
+        byte tgtCoder = tgtStr.coder();
+        int tgtCount = tgtStr.length();
         /*
          * Check arguments; return immediately where possible. For
          * consistency, don't check for null str.
          */
-        int rightIndex = sourceCount - targetCount;
-        if (fromIndex < 0) {
-            return -1;
-        }
+        int rightIndex = srcCount - tgtCount;
         if (fromIndex > rightIndex) {
             fromIndex = rightIndex;
         }
+        if (fromIndex < 0) {
+            return -1;
+        }
         /* Empty string always matches. */
-        if (targetCount == 0) {
+        if (tgtCount == 0) {
             return fromIndex;
         }
-
-        int strLastIndex = targetOffset + targetCount - 1;
-        char strLastChar = target[strLastIndex];
-        int min = sourceOffset + targetCount - 1;
-        int i = min + fromIndex;
-
-    startSearchForLastChar:
-        while (true) {
-            while (i >= min && source[i] != strLastChar) {
-                i--;
-            }
-            if (i < min) {
-                return -1;
-            }
-            int j = i - 1;
-            int start = j - (targetCount - 1);
-            int k = strLastIndex - 1;
-
-            while (j > start) {
-                if (source[j--] != target[k--]) {
-                    i--;
-                    continue startSearchForLastChar;
-                }
-            }
-            return start - sourceOffset + 1;
+        if (srcCoder == tgtCoder) {
+            return srcCoder == LATIN1
+                ? StringLatin1.lastIndexOf(src, srcCount, tgt, tgtCount, fromIndex)
+                : StringUTF16.lastIndexOf(src, srcCount, tgt, tgtCount, fromIndex);
         }
+        if (srcCoder == LATIN1) {    // && tgtCoder == UTF16
+            return -1;
+        }
+        // srcCoder == UTF16 && tgtCoder == LATIN1
+        return StringUTF16.lastIndexOfLatin1(src, srcCount, tgt, tgtCount, fromIndex);
     }
 
     /**
@@ -1926,11 +1836,15 @@ public final class String
         if (beginIndex < 0) {
             throw new StringIndexOutOfBoundsException(beginIndex);
         }
-        int subLen = value.length - beginIndex;
+        int subLen = length() - beginIndex;
         if (subLen < 0) {
             throw new StringIndexOutOfBoundsException(subLen);
         }
-        return (beginIndex == 0) ? this : new String(value, beginIndex, subLen);
+        if (beginIndex == 0) {
+            return this;
+        }
+        return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
+                          : StringUTF16.newString(value, beginIndex, subLen);
     }
 
     /**
@@ -1956,18 +1870,14 @@ public final class String
      *             {@code endIndex}.
      */
     public String substring(int beginIndex, int endIndex) {
-        if (beginIndex < 0) {
-            throw new StringIndexOutOfBoundsException(beginIndex);
-        }
-        if (endIndex > value.length) {
-            throw new StringIndexOutOfBoundsException(endIndex);
-        }
+        int length = length();
+        checkBoundsBeginEnd(beginIndex, endIndex, length);
         int subLen = endIndex - beginIndex;
-        if (subLen < 0) {
-            throw new StringIndexOutOfBoundsException(subLen);
+        if (beginIndex == 0 && endIndex == length) {
+            return this;
         }
-        return ((beginIndex == 0) && (endIndex == value.length)) ? this
-                : new String(value, beginIndex, subLen);
+        return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
+                          : StringUTF16.newString(value, beginIndex, subLen);
     }
 
     /**
@@ -2024,14 +1934,23 @@ public final class String
      *          characters followed by the string argument's characters.
      */
     public String concat(String str) {
-        int otherLen = str.length();
-        if (otherLen == 0) {
+        int olen = str.length();
+        if (olen == 0) {
             return this;
         }
-        int len = value.length;
-        char buf[] = Arrays.copyOf(value, len + otherLen);
-        str.getChars(buf, len);
-        return new String(buf, true);
+        if (coder() == str.coder()) {
+            byte[] val = this.value;
+            byte[] oval = str.value;
+            int len = val.length + oval.length;
+            byte[] buf = Arrays.copyOf(val, len);
+            System.arraycopy(oval, 0, buf, val.length, oval.length);
+            return new String(buf, coder);
+        }
+        int len = length();
+        byte[] buf = StringUTF16.newBytesFor(len + olen);
+        getBytes(buf, 0, UTF16);
+        str.getBytes(buf, len, UTF16);
+        return new String(buf, UTF16);
     }
 
     /**
@@ -2065,26 +1984,10 @@ public final class String
      */
     public String replace(char oldChar, char newChar) {
         if (oldChar != newChar) {
-            int len = value.length;
-            int i = -1;
-            char[] val = value; /* avoid getfield opcode */
-
-            while (++i < len) {
-                if (val[i] == oldChar) {
-                    break;
-                }
-            }
-            if (i < len) {
-                char buf[] = new char[len];
-                for (int j = 0; j < i; j++) {
-                    buf[j] = val[j];
-                }
-                while (i < len) {
-                    char c = val[i];
-                    buf[i] = (c == oldChar) ? newChar : c;
-                    i++;
-                }
-                return new String(buf, true);
+            String ret = isLatin1() ? StringLatin1.replace(value, oldChar, newChar)
+                                    : StringUTF16.replace(value, oldChar, newChar);
+            if (ret != null) {
+                return ret;
             }
         }
         return this;
@@ -2130,7 +2033,7 @@ public final class String
      * @since 1.5
      */
     public boolean contains(CharSequence s) {
-        return indexOf(s.toString()) > -1;
+        return indexOf(s.toString()) >= 0;
     }
 
     /**
@@ -2236,8 +2139,27 @@ public final class String
      * @since 1.5
      */
     public String replace(CharSequence target, CharSequence replacement) {
-        return Pattern.compile(target.toString(), Pattern.LITERAL).matcher(
-                this).replaceAll(Matcher.quoteReplacement(replacement.toString()));
+        String tgtStr = target.toString();
+        String replStr = replacement.toString();
+        int j = indexOf(tgtStr);
+        if (j < 0) {
+            return this;
+        }
+        int tgtLen = tgtStr.length();
+        int tgtLen1 = Math.max(tgtLen, 1);
+        int thisLen = length();
+
+        int newLenHint = thisLen - tgtLen + replStr.length();
+        if (newLenHint < 0) {
+            throw new OutOfMemoryError();
+        }
+        StringBuilder sb = new StringBuilder(newLenHint);
+        int i = 0;
+        do {
+            sb.append(this, i, j).append(replStr);
+            i = j + tgtLen;
+        } while (j < thisLen && (j = indexOf(tgtStr, j + tgtLen1)) > 0);
+        return sb.append(this, i, thisLen).toString();
     }
 
     /**
@@ -2258,42 +2180,56 @@ public final class String
      *
      * <p> The {@code limit} parameter controls the number of times the
      * pattern is applied and therefore affects the length of the resulting
-     * array.  If the limit <i>n</i> is greater than zero then the pattern
-     * will be applied at most <i>n</i>&nbsp;-&nbsp;1 times, the array's
-     * length will be no greater than <i>n</i>, and the array's last entry
-     * will contain all input beyond the last matched delimiter.  If <i>n</i>
-     * is non-positive then the pattern will be applied as many times as
-     * possible and the array can have any length.  If <i>n</i> is zero then
-     * the pattern will be applied as many times as possible, the array can
-     * have any length, and trailing empty strings will be discarded.
+     * array.
+     * <ul>
+     *    <li><p>
+     *    If the <i>limit</i> is positive then the pattern will be applied
+     *    at most <i>limit</i>&nbsp;-&nbsp;1 times, the array's length will be
+     *    no greater than <i>limit</i>, and the array's last entry will contain
+     *    all input beyond the last matched delimiter.</p></li>
+     *
+     *    <li><p>
+     *    If the <i>limit</i> is zero then the pattern will be applied as
+     *    many times as possible, the array can have any length, and trailing
+     *    empty strings will be discarded.</p></li>
+     *
+     *    <li><p>
+     *    If the <i>limit</i> is negative then the pattern will be applied
+     *    as many times as possible and the array can have any length.</p></li>
+     * </ul>
      *
      * <p> The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
      *
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split example showing regex, limit, and result">
+     * <blockquote><table class="plain">
+     * <caption style="display:none">Split example showing regex, limit, and result</caption>
+     * <thead>
      * <tr>
-     *     <th>Regex</th>
-     *     <th>Limit</th>
-     *     <th>Result</th>
+     *     <th scope="col">Regex</th>
+     *     <th scope="col">Limit</th>
+     *     <th scope="col">Result</th>
      * </tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>2</td>
+     * </thead>
+     * <tbody>
+     * <tr><th scope="row" rowspan="3" style="font-weight:normal">:</th>
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">2</th>
      *     <td>{@code { "boo", "and:foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>5</td>
+     * <tr><!-- : -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">5</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     *     <td align=center>-2</td>
+     * <tr><!-- : -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">-2</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>5</td>
+     * <tr><th scope="row" rowspan="3" style="font-weight:normal">o</th>
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">5</th>
      *     <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>-2</td>
+     * <tr><!-- o -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">-2</th>
      *     <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     *     <td align=center>0</td>
+     * <tr><!-- o -->
+     *     <th scope="row" style="font-weight:normal; text-align:right; padding-right:1em">0</th>
      *     <td>{@code { "b", "", ":and:f" }}</td></tr>
+     * </tbody>
      * </table></blockquote>
      *
      * <p> An invocation of this method of the form
@@ -2334,7 +2270,7 @@ public final class String
             the second is not the ascii digit or ascii letter.
          */
         char ch = 0;
-        if (((regex.value.length == 1 &&
+        if (((regex.length() == 1 &&
              ".$|()[{^?*+\\".indexOf(ch = regex.charAt(0)) == -1) ||
              (regex.length() == 2 &&
               regex.charAt(0) == '\\' &&
@@ -2354,8 +2290,9 @@ public final class String
                     off = next + 1;
                 } else {    // last one
                     //assert (list.size() == limit - 1);
-                    list.add(substring(off, value.length));
-                    off = value.length;
+                    int last = length();
+                    list.add(substring(off, last));
+                    off = last;
                     break;
                 }
             }
@@ -2365,7 +2302,7 @@ public final class String
 
             // Add remaining segment
             if (!limited || list.size() < limit)
-                list.add(substring(off, value.length));
+                list.add(substring(off, length()));
 
             // Construct result
             int resultSize = list.size();
@@ -2392,15 +2329,20 @@ public final class String
      * <p> The string {@code "boo:and:foo"}, for example, yields the following
      * results with these expressions:
      *
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split examples showing regex and result">
+     * <blockquote><table class="plain">
+     * <caption style="display:none">Split examples showing regex and result</caption>
+     * <thead>
      * <tr>
-     *  <th>Regex</th>
-     *  <th>Result</th>
+     *  <th scope="col">Regex</th>
+     *  <th scope="col">Result</th>
      * </tr>
-     * <tr><td align=center>:</td>
+     * </thead>
+     * <tbody>
+     * <tr><th scope="row" style="text-weight:normal">:</th>
      *     <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>o</td>
+     * <tr><th scope="row" style="text-weight:normal">o</th>
      *     <td>{@code { "b", "", ":and:f" }}</td></tr>
+     * </tbody>
      * </table></blockquote>
      *
      *
@@ -2465,15 +2407,12 @@ public final class String
      *
      * <blockquote>For example,
      * <pre>{@code
-     *     List<String> strings = new LinkedList<>();
-     *     strings.add("Java");strings.add("is");
-     *     strings.add("cool");
+     *     List<String> strings = List.of("Java", "is", "cool");
      *     String message = String.join(" ", strings);
      *     //message returned is: "Java is cool"
      *
-     *     Set<String> strings = new LinkedHashSet<>();
-     *     strings.add("Java"); strings.add("is");
-     *     strings.add("very"); strings.add("cool");
+     *     Set<String> strings =
+     *         new LinkedHashSet<>(List.of("Java", "is", "very", "cool"));
      *     String message = String.join("-", strings);
      *     //message returned is: "Java-is-very-cool"
      * }</pre></blockquote>
@@ -2514,41 +2453,43 @@ public final class String
      * {@code String} may be a different length than the original {@code String}.
      * <p>
      * Examples of lowercase  mappings are in the following table:
-     * <table border="1" summary="Lowercase mapping examples showing language code of locale, upper case, lower case, and description">
+     * <table class="plain">
+     * <caption style="display:none">Lowercase mapping examples showing language code of locale, upper case, lower case, and description</caption>
+     * <thead>
      * <tr>
-     *   <th>Language Code of Locale</th>
-     *   <th>Upper Case</th>
-     *   <th>Lower Case</th>
-     *   <th>Description</th>
+     *   <th scope="col">Language Code of Locale</th>
+     *   <th scope="col">Upper Case</th>
+     *   <th scope="col">Lower Case</th>
+     *   <th scope="col">Description</th>
      * </tr>
+     * </thead>
+     * <tbody>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0130</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0130</th>
      *   <td>&#92;u0069</td>
      *   <td>capital letter I with dot above -&gt; small letter i</td>
      * </tr>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0049</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0049</th>
      *   <td>&#92;u0131</td>
      *   <td>capital letter I -&gt; small letter dotless i </td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>French Fries</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">French Fries</th>
      *   <td>french fries</td>
      *   <td>lowercased all chars in String</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td><img src="doc-files/capiota.gif" alt="capiota"><img src="doc-files/capchi.gif" alt="capchi">
-     *       <img src="doc-files/captheta.gif" alt="captheta"><img src="doc-files/capupsil.gif" alt="capupsil">
-     *       <img src="doc-files/capsigma.gif" alt="capsigma"></td>
-     *   <td><img src="doc-files/iota.gif" alt="iota"><img src="doc-files/chi.gif" alt="chi">
-     *       <img src="doc-files/theta.gif" alt="theta"><img src="doc-files/upsilon.gif" alt="upsilon">
-     *       <img src="doc-files/sigma1.gif" alt="sigma"></td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">
+     *       &Iota;&Chi;&Theta;&Upsilon;&Sigma;</th>
+     *   <td>&iota;&chi;&theta;&upsilon;&sigma;</td>
      *   <td>lowercased all chars in String</td>
      * </tr>
+     * </tbody>
      * </table>
      *
      * @param locale use the case transformation rules for this locale
@@ -2559,92 +2500,8 @@ public final class String
      * @since   1.1
      */
     public String toLowerCase(Locale locale) {
-        if (locale == null) {
-            throw new NullPointerException();
-        }
-
-        int firstUpper;
-        final int len = value.length;
-
-        /* Now check if there are any characters that need to be changed. */
-        scan: {
-            for (firstUpper = 0 ; firstUpper < len; ) {
-                char c = value[firstUpper];
-                if ((c >= Character.MIN_HIGH_SURROGATE)
-                        && (c <= Character.MAX_HIGH_SURROGATE)) {
-                    int supplChar = codePointAt(firstUpper);
-                    if (supplChar != Character.toLowerCase(supplChar)) {
-                        break scan;
-                    }
-                    firstUpper += Character.charCount(supplChar);
-                } else {
-                    if (c != Character.toLowerCase(c)) {
-                        break scan;
-                    }
-                    firstUpper++;
-                }
-            }
-            return this;
-        }
-
-        char[] result = new char[len];
-        int resultOffset = 0;  /* result may grow, so i+resultOffset
-                                * is the write location in result */
-
-        /* Just copy the first few lowerCase characters. */
-        System.arraycopy(value, 0, result, 0, firstUpper);
-
-        String lang = locale.getLanguage();
-        boolean localeDependent =
-                (lang == "tr" || lang == "az" || lang == "lt");
-        char[] lowerCharArray;
-        int lowerChar;
-        int srcChar;
-        int srcCount;
-        for (int i = firstUpper; i < len; i += srcCount) {
-            srcChar = (int)value[i];
-            if ((char)srcChar >= Character.MIN_HIGH_SURROGATE
-                    && (char)srcChar <= Character.MAX_HIGH_SURROGATE) {
-                srcChar = codePointAt(i);
-                srcCount = Character.charCount(srcChar);
-            } else {
-                srcCount = 1;
-            }
-            if (localeDependent ||
-                srcChar == '\u03A3' || // GREEK CAPITAL LETTER SIGMA
-                srcChar == '\u0130') { // LATIN CAPITAL LETTER I WITH DOT ABOVE
-                lowerChar = ConditionalSpecialCasing.toLowerCaseEx(this, i, locale);
-            } else {
-                lowerChar = Character.toLowerCase(srcChar);
-            }
-            if ((lowerChar == Character.ERROR)
-                    || (lowerChar >= Character.MIN_SUPPLEMENTARY_CODE_POINT)) {
-                if (lowerChar == Character.ERROR) {
-                    lowerCharArray =
-                            ConditionalSpecialCasing.toLowerCaseCharArray(this, i, locale);
-                } else if (srcCount == 2) {
-                    resultOffset += Character.toChars(lowerChar, result, i + resultOffset) - srcCount;
-                    continue;
-                } else {
-                    lowerCharArray = Character.toChars(lowerChar);
-                }
-
-                /* Grow result if needed */
-                int mapLen = lowerCharArray.length;
-                if (mapLen > srcCount) {
-                    char[] result2 = new char[result.length + mapLen - srcCount];
-                    System.arraycopy(result, 0, result2, 0, i + resultOffset);
-                    result = result2;
-                }
-                for (int x = 0; x < mapLen; ++x) {
-                    result[i + resultOffset + x] = lowerCharArray[x];
-                }
-                resultOffset += (mapLen - srcCount);
-            } else {
-                result[i + resultOffset] = (char)lowerChar;
-            }
-        }
-        return new String(result, 0, len + resultOffset);
+        return isLatin1() ? StringLatin1.toLowerCase(this, value, locale)
+                          : StringUTF16.toLowerCase(this, value, locale);
     }
 
     /**
@@ -2662,7 +2519,7 @@ public final class String
      * LATIN SMALL LETTER DOTLESS I character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toLowerCase(Locale.ROOT)}.
-     * <p>
+     *
      * @return  the {@code String}, converted to lowercase.
      * @see     java.lang.String#toLowerCase(Locale)
      */
@@ -2679,37 +2536,42 @@ public final class String
      * <p>
      * Examples of locale-sensitive and 1:M case mappings are in the following table.
      *
-     * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
+     * <table class="plain">
+     * <caption style="display:none">Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.</caption>
+     * <thead>
      * <tr>
-     *   <th>Language Code of Locale</th>
-     *   <th>Lower Case</th>
-     *   <th>Upper Case</th>
-     *   <th>Description</th>
+     *   <th scope="col">Language Code of Locale</th>
+     *   <th scope="col">Lower Case</th>
+     *   <th scope="col">Upper Case</th>
+     *   <th scope="col">Description</th>
      * </tr>
+     * </thead>
+     * <tbody>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0069</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0069</th>
      *   <td>&#92;u0130</td>
      *   <td>small letter i -&gt; capital letter I with dot above</td>
      * </tr>
      * <tr>
      *   <td>tr (Turkish)</td>
-     *   <td>&#92;u0131</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u0131</th>
      *   <td>&#92;u0049</td>
      *   <td>small letter dotless i -&gt; capital letter I</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>&#92;u00df</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">&#92;u00df</th>
      *   <td>&#92;u0053 &#92;u0053</td>
      *   <td>small letter sharp s -&gt; two letters: SS</td>
      * </tr>
      * <tr>
      *   <td>(all)</td>
-     *   <td>Fahrvergn&uuml;gen</td>
+     *   <th scope="row" style="font-weight:normal; text-align:left">Fahrvergn&uuml;gen</th>
      *   <td>FAHRVERGN&Uuml;GEN</td>
      *   <td></td>
      * </tr>
+     * </tbody>
      * </table>
      * @param locale use the case transformation rules for this locale
      * @return the {@code String}, converted to uppercase.
@@ -2719,95 +2581,8 @@ public final class String
      * @since   1.1
      */
     public String toUpperCase(Locale locale) {
-        if (locale == null) {
-            throw new NullPointerException();
-        }
-
-        int firstLower;
-        final int len = value.length;
-
-        /* Now check if there are any characters that need to be changed. */
-        scan: {
-            for (firstLower = 0 ; firstLower < len; ) {
-                int c = (int)value[firstLower];
-                int srcCount;
-                if ((c >= Character.MIN_HIGH_SURROGATE)
-                        && (c <= Character.MAX_HIGH_SURROGATE)) {
-                    c = codePointAt(firstLower);
-                    srcCount = Character.charCount(c);
-                } else {
-                    srcCount = 1;
-                }
-                int upperCaseChar = Character.toUpperCaseEx(c);
-                if ((upperCaseChar == Character.ERROR)
-                        || (c != upperCaseChar)) {
-                    break scan;
-                }
-                firstLower += srcCount;
-            }
-            return this;
-        }
-
-        /* result may grow, so i+resultOffset is the write location in result */
-        int resultOffset = 0;
-        char[] result = new char[len]; /* may grow */
-
-        /* Just copy the first few upperCase characters. */
-        System.arraycopy(value, 0, result, 0, firstLower);
-
-        String lang = locale.getLanguage();
-        boolean localeDependent =
-                (lang == "tr" || lang == "az" || lang == "lt");
-        char[] upperCharArray;
-        int upperChar;
-        int srcChar;
-        int srcCount;
-        for (int i = firstLower; i < len; i += srcCount) {
-            srcChar = (int)value[i];
-            if ((char)srcChar >= Character.MIN_HIGH_SURROGATE &&
-                (char)srcChar <= Character.MAX_HIGH_SURROGATE) {
-                srcChar = codePointAt(i);
-                srcCount = Character.charCount(srcChar);
-            } else {
-                srcCount = 1;
-            }
-            if (localeDependent) {
-                upperChar = ConditionalSpecialCasing.toUpperCaseEx(this, i, locale);
-            } else {
-                upperChar = Character.toUpperCaseEx(srcChar);
-            }
-            if ((upperChar == Character.ERROR)
-                    || (upperChar >= Character.MIN_SUPPLEMENTARY_CODE_POINT)) {
-                if (upperChar == Character.ERROR) {
-                    if (localeDependent) {
-                        upperCharArray =
-                                ConditionalSpecialCasing.toUpperCaseCharArray(this, i, locale);
-                    } else {
-                        upperCharArray = Character.toUpperCaseCharArray(srcChar);
-                    }
-                } else if (srcCount == 2) {
-                    resultOffset += Character.toChars(upperChar, result, i + resultOffset) - srcCount;
-                    continue;
-                } else {
-                    upperCharArray = Character.toChars(upperChar);
-                }
-
-                /* Grow result if needed */
-                int mapLen = upperCharArray.length;
-                if (mapLen > srcCount) {
-                    char[] result2 = new char[result.length + mapLen - srcCount];
-                    System.arraycopy(result, 0, result2, 0, i + resultOffset);
-                    result = result2;
-                }
-                for (int x = 0; x < mapLen; ++x) {
-                    result[i + resultOffset + x] = upperCharArray[x];
-                }
-                resultOffset += (mapLen - srcCount);
-            } else {
-                result[i + resultOffset] = (char)upperChar;
-            }
-        }
-        return new String(result, 0, len + resultOffset);
+        return isLatin1() ? StringLatin1.toUpperCase(this, value, locale)
+                          : StringUTF16.toUpperCase(this, value, locale);
     }
 
     /**
@@ -2825,7 +2600,7 @@ public final class String
      * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toUpperCase(Locale.ROOT)}.
-     * <p>
+     *
      * @return  the {@code String}, converted to uppercase.
      * @see     java.lang.String#toUpperCase(Locale)
      */
@@ -2834,48 +2609,193 @@ public final class String
     }
 
     /**
-     * Returns a string whose value is this string, with any leading and trailing
-     * whitespace removed.
+     * Returns a string whose value is this string, with all leading
+     * and trailing space removed, where space is defined
+     * as any character whose codepoint is less than or equal to
+     * {@code 'U+0020'} (the space character).
      * <p>
      * If this {@code String} object represents an empty character
      * sequence, or the first and last characters of character sequence
      * represented by this {@code String} object both have codes
-     * greater than {@code '\u005Cu0020'} (the space character), then a
+     * that are not space (as defined above), then a
      * reference to this {@code String} object is returned.
      * <p>
-     * Otherwise, if there is no character with a code greater than
-     * {@code '\u005Cu0020'} in the string, then a
-     * {@code String} object representing an empty string is
-     * returned.
+     * Otherwise, if all characters in this string are space (as
+     * defined above), then a  {@code String} object representing an
+     * empty string is returned.
      * <p>
      * Otherwise, let <i>k</i> be the index of the first character in the
-     * string whose code is greater than {@code '\u005Cu0020'}, and let
+     * string whose code is not a space (as defined above) and let
      * <i>m</i> be the index of the last character in the string whose code
-     * is greater than {@code '\u005Cu0020'}. A {@code String}
+     * is not a space (as defined above). A {@code String}
      * object is returned, representing the substring of this string that
      * begins with the character at index <i>k</i> and ends with the
      * character at index <i>m</i>-that is, the result of
      * {@code this.substring(k, m + 1)}.
      * <p>
-     * This method may be used to trim whitespace (as defined above) from
+     * This method may be used to trim space (as defined above) from
      * the beginning and end of a string.
      *
-     * @return  A string whose value is this string, with any leading and trailing white
-     *          space removed, or this string if it has no leading or
-     *          trailing white space.
+     * @return  a string whose value is this string, with all leading
+     *          and trailing space removed, or this string if it
+     *          has no leading or trailing space.
      */
     public String trim() {
-        int len = value.length;
-        int st = 0;
-        char[] val = value;    /* avoid getfield opcode */
+        String ret = isLatin1() ? StringLatin1.trim(value)
+                                : StringUTF16.trim(value);
+        return ret == null ? this : ret;
+    }
 
-        while ((st < len) && (val[st] <= ' ')) {
-            st++;
+    /**
+     * Returns a string whose value is this string, with all leading
+     * and trailing {@link Character#isWhitespace(int) white space}
+     * removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all code points in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point that is not a {@link Character#isWhitespace(int) white space}
+     * up to and including the last code point that is not a
+     * {@link Character#isWhitespace(int) white space}.
+     * <p>
+     * This method may be used to strip
+     * {@link Character#isWhitespace(int) white space} from
+     * the beginning and end of a string.
+     *
+     * @return  a string whose value is this string, with all leading
+     *          and trailing white space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String strip() {
+        String ret = isLatin1() ? StringLatin1.strip(value)
+                                : StringUTF16.strip(value);
+        return ret == null ? this : ret;
+    }
+
+    /**
+     * Returns a string whose value is this string, with all leading
+     * {@link Character#isWhitespace(int) white space} removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all code points in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point that is not a {@link Character#isWhitespace(int) white space}
+     * up to to and including the last code point of this string.
+     * <p>
+     * This method may be used to trim
+     * {@link Character#isWhitespace(int) white space} from
+     * the beginning of a string.
+     *
+     * @return  a string whose value is this string, with all leading white
+     *          space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String stripLeading() {
+        String ret = isLatin1() ? StringLatin1.stripLeading(value)
+                                : StringUTF16.stripLeading(value);
+        return ret == null ? this : ret;
+    }
+
+    /**
+     * Returns a string whose value is this string, with all trailing
+     * {@link Character#isWhitespace(int) white space} removed.
+     * <p>
+     * If this {@code String} object represents an empty string,
+     * or if all characters in this string are
+     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * is returned.
+     * <p>
+     * Otherwise, returns a substring of this string beginning with the first
+     * code point of this string up to and including the last code point
+     * that is not a {@link Character#isWhitespace(int) white space}.
+     * <p>
+     * This method may be used to trim
+     * {@link Character#isWhitespace(int) white space} from
+     * the end of a string.
+     *
+     * @return  a string whose value is this string, with all trailing white
+     *          space removed
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public String stripTrailing() {
+        String ret = isLatin1() ? StringLatin1.stripTrailing(value)
+                                : StringUTF16.stripTrailing(value);
+        return ret == null ? this : ret;
+    }
+
+    /**
+     * Returns {@code true} if the string is empty or contains only
+     * {@link Character#isWhitespace(int) white space} codepoints,
+     * otherwise {@code false}.
+     *
+     * @return {@code true} if the string is empty or contains only
+     *         {@link Character#isWhitespace(int) white space} codepoints,
+     *         otherwise {@code false}
+     *
+     * @see Character#isWhitespace(int)
+     *
+     * @since 11
+     */
+    public boolean isBlank() {
+        return indexOfNonWhitespace() == length();
+    }
+
+    private int indexOfNonWhitespace() {
+        if (isLatin1()) {
+            return StringLatin1.indexOfNonWhitespace(value);
+        } else {
+            return StringUTF16.indexOfNonWhitespace(value);
         }
-        while ((st < len) && (val[len - 1] <= ' ')) {
-            len--;
-        }
-        return ((st > 0) || (len < value.length)) ? substring(st, len) : this;
+    }
+
+    /**
+     * Returns a stream of lines extracted from this string,
+     * separated by line terminators.
+     * <p>
+     * A <i>line terminator</i> is one of the following:
+     * a line feed character {@code "\n"} (U+000A),
+     * a carriage return character {@code "\r"} (U+000D),
+     * or a carriage return followed immediately by a line feed
+     * {@code "\r\n"} (U+000D U+000A).
+     * <p>
+     * A <i>line</i> is either a sequence of zero or more characters
+     * followed by a line terminator, or it is a sequence of one or
+     * more characters followed by the end of the string. A
+     * line does not include the line terminator.
+     * <p>
+     * The stream returned by this method contains the lines from
+     * this string in the order in which they occur.
+     *
+     * @apiNote This definition of <i>line</i> implies that an empty
+     *          string has zero lines and that there is no empty line
+     *          following a line terminator at the end of a string.
+     *
+     * @implNote This method provides better performance than
+     *           split("\R") by supplying elements lazily and
+     *           by faster search of new line terminators.
+     *
+     * @return  the stream of lines extracted from this string
+     *
+     * @since 11
+     */
+    public Stream<String> lines() {
+        return isLatin1() ? StringLatin1.lines(value)
+                          : StringUTF16.lines(value);
     }
 
     /**
@@ -2888,6 +2808,43 @@ public final class String
     }
 
     /**
+     * Returns a stream of {@code int} zero-extending the {@code char} values
+     * from this sequence.  Any char which maps to a <a
+     * href="{@docRoot}/java.base/java/lang/Character.html#unicode">surrogate code
+     * point</a> is passed through uninterpreted.
+     *
+     * @return an IntStream of char values from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream chars() {
+        return StreamSupport.intStream(
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CharsSpliterator(value, Spliterator.IMMUTABLE),
+            false);
+    }
+
+
+    /**
+     * Returns a stream of code point values from this sequence.  Any surrogate
+     * pairs encountered in the sequence are combined as if by {@linkplain
+     * Character#toCodePoint Character.toCodePoint} and the result is passed
+     * to the stream. Any other code units, including ordinary BMP characters,
+     * unpaired surrogates, and undefined code units, are zero-extended to
+     * {@code int} values which are then passed to the stream.
+     *
+     * @return an IntStream of Unicode code points from this sequence
+     * @since 9
+     */
+    @Override
+    public IntStream codePoints() {
+        return StreamSupport.intStream(
+            isLatin1() ? new StringLatin1.CharsSpliterator(value, Spliterator.IMMUTABLE)
+                       : new StringUTF16.CodePointsSpliterator(value, Spliterator.IMMUTABLE),
+            false);
+    }
+
+    /**
      * Converts this string to a new character array.
      *
      * @return  a newly allocated character array whose length is the length
@@ -2895,10 +2852,8 @@ public final class String
      *          the character sequence represented by this string.
      */
     public char[] toCharArray() {
-        // Cannot use Arrays.copyOf because of class initialization order issues
-        char result[] = new char[value.length];
-        System.arraycopy(value, 0, result, 0, value.length);
-        return result;
+        return isLatin1() ? StringLatin1.toChars(value)
+                          : StringUTF16.toChars(value);
     }
 
     /**
@@ -2906,7 +2861,9 @@ public final class String
      * arguments.
      *
      * <p> The locale always used is the one returned by {@link
-     * java.util.Locale#getDefault() Locale.getDefault()}.
+     * java.util.Locale#getDefault(java.util.Locale.Category)
+     * Locale.getDefault(Locale.Category)} with
+     * {@link java.util.Locale.Category#FORMAT FORMAT} category specified.
      *
      * @param  format
      *         A <a href="../util/Formatter.html#syntax">format string</a>
@@ -3081,8 +3038,10 @@ public final class String
      *          as its single character the argument {@code c}.
      */
     public static String valueOf(char c) {
-        char data[] = {c};
-        return new String(data, true);
+        if (COMPACT_STRINGS && StringLatin1.canEncode(c)) {
+            return new String(StringLatin1.toBytes(c), LATIN1);
+        }
+        return new String(StringUTF16.toBytes(c), UTF16);
     }
 
     /**
@@ -3163,6 +3122,226 @@ public final class String
      *
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
+     * @jls 3.10.5 String Literals
      */
     public native String intern();
+
+    /**
+     * Returns a string whose value is the concatenation of this
+     * string repeated {@code count} times.
+     * <p>
+     * If this string is empty or count is zero then the empty
+     * string is returned.
+     *
+     * @param   count number of times to repeat
+     *
+     * @return  A string composed of this string repeated
+     *          {@code count} times or the empty string if this
+     *          string is empty or count is zero
+     *
+     * @throws  IllegalArgumentException if the {@code count} is
+     *          negative.
+     *
+     * @since 11
+     */
+    public String repeat(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count is negative: " + count);
+        }
+        if (count == 1) {
+            return this;
+        }
+        final int len = value.length;
+        if (len == 0 || count == 0) {
+            return "";
+        }
+        if (len == 1) {
+            final byte[] single = new byte[count];
+            Arrays.fill(single, value[0]);
+            return new String(single, coder);
+        }
+        if (Integer.MAX_VALUE / count < len) {
+            throw new OutOfMemoryError("Repeating " + len + " bytes String " + count +
+                    " times will produce a String exceeding maximum size.");
+        }
+        final int limit = len * count;
+        final byte[] multiple = new byte[limit];
+        System.arraycopy(value, 0, multiple, 0, len);
+        int copied = len;
+        for (; copied < limit - copied; copied <<= 1) {
+            System.arraycopy(multiple, 0, multiple, copied, copied);
+        }
+        System.arraycopy(multiple, 0, multiple, copied, limit - copied);
+        return new String(multiple, coder);
+    }
+
+    ////////////////////////////////////////////////////////////////
+
+    /**
+     * Copy character bytes from this string into dst starting at dstBegin.
+     * This method doesn't perform any range checking.
+     *
+     * Invoker guarantees: dst is in UTF16 (inflate itself for asb), if two
+     * coders are different, and dst is big enough (range check)
+     *
+     * @param dstBegin  the char index, not offset of byte[]
+     * @param coder     the coder of dst[]
+     */
+    void getBytes(byte dst[], int dstBegin, byte coder) {
+        if (coder() == coder) {
+            System.arraycopy(value, 0, dst, dstBegin << coder, value.length);
+        } else {    // this.coder == LATIN && coder == UTF16
+            StringLatin1.inflate(value, 0, dst, dstBegin, value.length);
+        }
+    }
+
+    /*
+     * Package private constructor. Trailing Void argument is there for
+     * disambiguating it against other (public) constructors.
+     *
+     * Stores the char[] value into a byte[] that each byte represents
+     * the8 low-order bits of the corresponding character, if the char[]
+     * contains only latin1 character. Or a byte[] that stores all
+     * characters in their byte sequences defined by the {@code StringUTF16}.
+     */
+    String(char[] value, int off, int len, Void sig) {
+        if (len == 0) {
+            this.value = "".value;
+            this.coder = "".coder;
+            return;
+        }
+        if (COMPACT_STRINGS) {
+            byte[] val = StringUTF16.compress(value, off, len);
+            if (val != null) {
+                this.value = val;
+                this.coder = LATIN1;
+                return;
+            }
+        }
+        this.coder = UTF16;
+        this.value = StringUTF16.toBytes(value, off, len);
+    }
+
+    /*
+     * Package private constructor. Trailing Void argument is there for
+     * disambiguating it against other (public) constructors.
+     */
+    String(AbstractStringBuilder asb, Void sig) {
+        byte[] val = asb.getValue();
+        int length = asb.length();
+        if (asb.isLatin1()) {
+            this.coder = LATIN1;
+            this.value = Arrays.copyOfRange(val, 0, length);
+        } else {
+            if (COMPACT_STRINGS) {
+                byte[] buf = StringUTF16.compress(val, 0, length);
+                if (buf != null) {
+                    this.coder = LATIN1;
+                    this.value = buf;
+                    return;
+                }
+            }
+            this.coder = UTF16;
+            this.value = Arrays.copyOfRange(val, 0, length << 1);
+        }
+    }
+
+   /*
+    * Package private constructor which shares value array for speed.
+    */
+    String(byte[] value, byte coder) {
+        this.value = value;
+        this.coder = coder;
+    }
+
+    byte coder() {
+        return COMPACT_STRINGS ? coder : UTF16;
+    }
+
+    byte[] value() {
+        return value;
+    }
+
+    private boolean isLatin1() {
+        return COMPACT_STRINGS && coder == LATIN1;
+    }
+
+    @Native static final byte LATIN1 = 0;
+    @Native static final byte UTF16  = 1;
+
+    /*
+     * StringIndexOutOfBoundsException  if {@code index} is
+     * negative or greater than or equal to {@code length}.
+     */
+    static void checkIndex(int index, int length) {
+        if (index < 0 || index >= length) {
+            throw new StringIndexOutOfBoundsException("index " + index +
+                                                      ",length " + length);
+        }
+    }
+
+    /*
+     * StringIndexOutOfBoundsException  if {@code offset}
+     * is negative or greater than {@code length}.
+     */
+    static void checkOffset(int offset, int length) {
+        if (offset < 0 || offset > length) {
+            throw new StringIndexOutOfBoundsException("offset " + offset +
+                                                      ",length " + length);
+        }
+    }
+
+    /*
+     * Check {@code offset}, {@code count} against {@code 0} and {@code length}
+     * bounds.
+     *
+     * @throws  StringIndexOutOfBoundsException
+     *          If {@code offset} is negative, {@code count} is negative,
+     *          or {@code offset} is greater than {@code length - count}
+     */
+    static void checkBoundsOffCount(int offset, int count, int length) {
+        if (offset < 0 || count < 0 || offset > length - count) {
+            throw new StringIndexOutOfBoundsException(
+                "offset " + offset + ", count " + count + ", length " + length);
+        }
+    }
+
+    /*
+     * Check {@code begin}, {@code end} against {@code 0} and {@code length}
+     * bounds.
+     *
+     * @throws  StringIndexOutOfBoundsException
+     *          If {@code begin} is negative, {@code begin} is greater than
+     *          {@code end}, or {@code end} is greater than {@code length}.
+     */
+    static void checkBoundsBeginEnd(int begin, int end, int length) {
+        if (begin < 0 || begin > end || end > length) {
+            throw new StringIndexOutOfBoundsException(
+                "begin " + begin + ", end " + end + ", length " + length);
+        }
+    }
+
+    /**
+     * Returns the string representation of the {@code codePoint}
+     * argument.
+     *
+     * @param   codePoint a {@code codePoint}.
+     * @return  a string of length {@code 1} or {@code 2} containing
+     *          as its single character the argument {@code codePoint}.
+     * @throws IllegalArgumentException if the specified
+     *          {@code codePoint} is not a {@linkplain Character#isValidCodePoint
+     *          valid Unicode code point}.
+     */
+    static String valueOfCodePoint(int codePoint) {
+        if (COMPACT_STRINGS && StringLatin1.canEncode(codePoint)) {
+            return new String(StringLatin1.toBytes((char)codePoint), LATIN1);
+        } else if (Character.isBmpCodePoint(codePoint)) {
+            return new String(StringUTF16.toBytes((char)codePoint), UTF16);
+        } else if (Character.isSupplementaryCodePoint(codePoint)) {
+            return new String(StringUTF16.toBytesSupplementary(codePoint), UTF16);
+        }
+
+        throw new IllegalArgumentException(
+            format("Not a valid Unicode code point: 0x%X", codePoint));
+    }
 }
