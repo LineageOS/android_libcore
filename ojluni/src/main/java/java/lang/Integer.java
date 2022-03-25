@@ -1113,7 +1113,8 @@ public final class Integer extends Number implements Comparable<Integer> {
             high = h;
 
             // Load IntegerCache.archivedCache from archive, if possible
-            VM.initializeFromArchive(IntegerCache.class);
+            // Android-removed: VM.initializeFromArchive isn't supported yet.
+            // VM.initializeFromArchive(IntegerCache.class);
             int size = (high - low) + 1;
 
             // Use the archived cache if it exists and is large enough
