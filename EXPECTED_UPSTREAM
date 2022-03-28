@@ -243,7 +243,7 @@ ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java,jdk8u/jdk8u121-b13,jdk
 ojluni/src/main/java/java/lang/invoke/MutableCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MutableCallSite.java
 ojluni/src/main/java/java/lang/invoke/Stable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/Stable.java
 # java.lang.invoke.Transformers isn't in the upstream OpenJDK
-ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk9/jdk-9+181,jdk/src/java.base/share/classes/java/lang/invoke/VarHandle.java
+ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/VarHandle.java
 ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/VolatileCallSite.java
 ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/WrongMethodTypeException.java
 ojluni/src/main/java/java/lang/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/package-info.java
@@ -917,8 +917,8 @@ ojluni/src/main/java/java/util/Map.java,jdk11u/jdk-11.0.13-ga,src/java.base/shar
 ojluni/src/main/java/java/util/MissingFormatArgumentException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingFormatArgumentException.java
 ojluni/src/main/java/java/util/MissingFormatWidthException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingFormatWidthException.java
 ojluni/src/main/java/java/util/MissingResourceException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingResourceException.java
-ojluni/src/main/java/java/util/NavigableMap.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/NavigableMap.java
-ojluni/src/main/java/java/util/NavigableSet.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/NavigableSet.java
+ojluni/src/main/java/java/util/NavigableMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NavigableMap.java
+ojluni/src/main/java/java/util/NavigableSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NavigableSet.java
 ojluni/src/main/java/java/util/NoSuchElementException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NoSuchElementException.java
 ojluni/src/main/java/java/util/Objects.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Objects.java
 ojluni/src/main/java/java/util/Observable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Observable.java
