@@ -200,6 +200,7 @@ ojluni/src/main/java/java/lang/String.java,jdk11u/jdk-11.0.13-ga,src/java.base/s
 ojluni/src/main/java/java/lang/StringBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuffer.java
 ojluni/src/main/java/java/lang/StringBuilder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuilder.java
 ojluni/src/main/java/java/lang/StringIndexOutOfBoundsException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StringIndexOutOfBoundsException.java
+ojluni/src/main/java/java/lang/StringUTF16.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StringUTF16.java
 ojluni/src/main/java/java/lang/SuppressWarnings.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/SuppressWarnings.java
 ojluni/src/main/java/java/lang/System.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/System.java
 ojluni/src/main/java/java/lang/Thread.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Thread.java
@@ -243,10 +244,11 @@ ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java,jdk8u/jdk8u121-b13,jdk
 ojluni/src/main/java/java/lang/invoke/MutableCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MutableCallSite.java
 ojluni/src/main/java/java/lang/invoke/Stable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/Stable.java
 # java.lang.invoke.Transformers isn't in the upstream OpenJDK
-ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk9/jdk-9+181,jdk/src/java.base/share/classes/java/lang/invoke/VarHandle.java
+ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/VarHandle.java
 ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/VolatileCallSite.java
 ojluni/src/main/java/java/lang/invoke/WrongMethodTypeException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/WrongMethodTypeException.java
 ojluni/src/main/java/java/lang/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/package-info.java
+ojluni/src/main/java/java/lang/ref/Cleaner.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ref/Cleaner.java
 ojluni/src/main/java/java/lang/ref/PhantomReference.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ref/PhantomReference.java
 ojluni/src/main/java/java/lang/ref/Reference.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/ref/Reference.java
 ojluni/src/main/java/java/lang/ref/ReferenceQueue.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/ref/ReferenceQueue.java
@@ -917,8 +919,8 @@ ojluni/src/main/java/java/util/Map.java,jdk11u/jdk-11.0.13-ga,src/java.base/shar
 ojluni/src/main/java/java/util/MissingFormatArgumentException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingFormatArgumentException.java
 ojluni/src/main/java/java/util/MissingFormatWidthException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingFormatWidthException.java
 ojluni/src/main/java/java/util/MissingResourceException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/MissingResourceException.java
-ojluni/src/main/java/java/util/NavigableMap.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/NavigableMap.java
-ojluni/src/main/java/java/util/NavigableSet.java,jdk9/jdk-9+113,jdk/src/java.base/share/classes/java/util/NavigableSet.java
+ojluni/src/main/java/java/util/NavigableMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NavigableMap.java
+ojluni/src/main/java/java/util/NavigableSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NavigableSet.java
 ojluni/src/main/java/java/util/NoSuchElementException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/NoSuchElementException.java
 ojluni/src/main/java/java/util/Objects.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Objects.java
 ojluni/src/main/java/java/util/Observable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Observable.java
@@ -1017,6 +1019,7 @@ ojluni/src/main/java/java/util/concurrent/ScheduledExecutorService.java,jdk11u/j
 ojluni/src/main/java/java/util/concurrent/ScheduledFuture.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/ScheduledFuture.java
 ojluni/src/main/java/java/util/concurrent/ScheduledThreadPoolExecutor.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/ScheduledThreadPoolExecutor.java
 ojluni/src/main/java/java/util/concurrent/Semaphore.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/Semaphore.java
+ojluni/src/main/java/java/util/concurrent/SubmissionPublisher.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/SubmissionPublisher.java
 ojluni/src/main/java/java/util/concurrent/SynchronousQueue.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/SynchronousQueue.java
 ojluni/src/main/java/java/util/concurrent/ThreadFactory.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/ThreadFactory.java
 ojluni/src/main/java/java/util/concurrent/ThreadLocalRandom.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/ThreadLocalRandom.java
@@ -1052,6 +1055,8 @@ ojluni/src/main/java/java/util/concurrent/locks/ReadWriteLock.java,jdk11u/jdk-11
 ojluni/src/main/java/java/util/concurrent/locks/ReentrantLock.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/ReentrantLock.java
 ojluni/src/main/java/java/util/concurrent/locks/ReentrantReadWriteLock.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/ReentrantReadWriteLock.java
 ojluni/src/main/java/java/util/concurrent/locks/StampedLock.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/StampedLock.java
+ojluni/src/main/java/java/util/concurrent/locks/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/locks/package-info.java
+ojluni/src/main/java/java/util/concurrent/package-info.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/concurrent/package-info.java
 ojluni/src/main/java/java/util/function/BiConsumer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/function/BiConsumer.java
 ojluni/src/main/java/java/util/function/BiFunction.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/function/BiFunction.java
 ojluni/src/main/java/java/util/function/BiPredicate.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/function/BiPredicate.java
@@ -1341,13 +1346,19 @@ ojluni/src/main/java/jdk/internal/math/FDBigInteger.java,jdk11u/jdk-11.0.13-ga,s
 ojluni/src/main/java/jdk/internal/math/FloatConsts.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/math/FloatConsts.java
 ojluni/src/main/java/jdk/internal/math/FloatingDecimal.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/math/FloatingDecimal.java
 ojluni/src/main/java/jdk/internal/math/FormattedFloatingDecimal.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/math/FormattedFloatingDecimal.java
+ojluni/src/main/java/jdk/internal/misc/InnocuousThread.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/InnocuousThread.java
 ojluni/src/main/java/jdk/internal/misc/JavaIOFileDescriptorAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/JavaIOFileDescriptorAccess.java
 ojluni/src/main/java/jdk/internal/misc/JavaObjectInputStreamAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/JavaObjectInputStreamAccess.java
 ojluni/src/main/java/jdk/internal/misc/SharedSecrets.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/SharedSecrets.java
 ojluni/src/main/java/jdk/internal/misc/Unsafe.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/Unsafe.java
 ojluni/src/main/java/jdk/internal/misc/VM.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/VM.java
+ojluni/src/main/java/jdk/internal/ref/Cleaner.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/ref/Cleaner.java
+ojluni/src/main/java/jdk/internal/ref/CleanerFactory.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/ref/CleanerFactory.java
+ojluni/src/main/java/jdk/internal/ref/CleanerImpl.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/ref/CleanerImpl.java
+ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/ref/PhantomCleanable.java
 ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/reflect/CallerSensitive.java
 ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
+ojluni/src/main/java/jdk/internal/util/ArraysSupport.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/util/ArraysSupport.java
 ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/util/Preconditions.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Contended.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Contended.java
 ojluni/src/main/java/jdk/internal/vm/annotation/ReservedStackAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/vm/annotation/ReservedStackAccess.java
@@ -1403,6 +1414,7 @@ ojluni/src/main/java/sun/net/SocksProxy.java,jdk11u/jdk-11.0.13-ga,src/java.base
 ojluni/src/main/java/sun/net/TelnetInputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/net/TelnetInputStream.java
 ojluni/src/main/java/sun/net/TelnetOutputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/net/TelnetOutputStream.java
 ojluni/src/main/java/sun/net/TelnetProtocolException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/net/TelnetProtocolException.java
+ojluni/src/main/java/sun/net/ext/ExtendedSocketOptions.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/net/ext/ExtendedSocketOptions.java
 ojluni/src/main/java/sun/net/ftp/FtpClient.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/net/ftp/FtpClient.java
 ojluni/src/main/java/sun/net/ftp/FtpClientProvider.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/net/ftp/FtpClientProvider.java
 ojluni/src/main/java/sun/net/ftp/FtpDirEntry.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/net/ftp/FtpDirEntry.java
@@ -1604,6 +1616,7 @@ ojluni/src/main/java/sun/security/provider/certpath/URICertStore.java,jdk8u/jdk8
 ojluni/src/main/java/sun/security/provider/certpath/Vertex.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/provider/certpath/Vertex.java
 ojluni/src/main/java/sun/security/provider/certpath/X509CertPath.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/security/provider/certpath/X509CertPath.java
 ojluni/src/main/java/sun/security/provider/certpath/X509CertificatePair.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/security/provider/certpath/X509CertificatePair.java
+ojluni/src/main/java/sun/security/timestamp/TimestampToken.java,jdk8u/jdk8u60-b31,jdk/src/share/classes/sun/security/timestamp/TimestampToken.java
 ojluni/src/main/java/sun/security/util/AbstractAlgorithmConstraints.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/AbstractAlgorithmConstraints.java
 ojluni/src/main/java/sun/security/util/AlgorithmDecomposer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/AlgorithmDecomposer.java
 ojluni/src/main/java/sun/security/util/AnchorCertificates.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/AnchorCertificates.java
