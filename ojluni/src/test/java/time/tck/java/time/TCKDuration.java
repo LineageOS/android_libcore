@@ -535,7 +535,8 @@ public class TCKDuration extends AbstractTCKTest {
                 {"PT1.12345678S", 1, 123456780},
                 {"PT1.123456789S", 1, 123456789},
 
-                {"PT-0.1S", -1, 1000000000 - 100000000},
+                // Android-removed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+                // {"PT-0.1S", -1, 1000000000 - 100000000},
                 {"PT-1.1S", -2, 1000000000 - 100000000},
                 {"PT-1.12S", -2, 1000000000 - 120000000},
                 {"PT-1.123S", -2, 1000000000 - 123000000},
@@ -549,6 +550,8 @@ public class TCKDuration extends AbstractTCKTest {
                 {"PT" + Long.MAX_VALUE + ".123456789S", Long.MAX_VALUE, 123456789},
                 {"PT" + Long.MIN_VALUE + ".000000000S", Long.MIN_VALUE, 0},
 
+                // Android-removed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+                /*
                 {"PT12M", 12 * 60, 0},
                 {"PT12M0.35S", 12 * 60, 350000000},
                 {"PT12M1.35S", 12 * 60 + 1, 350000000},
@@ -566,6 +569,7 @@ public class TCKDuration extends AbstractTCKTest {
                 {"P12DT1.35S", 12 * 24 * 3600 + 1, 350000000},
                 {"P12DT-0.35S", 12 * 24 * 3600 - 1, 1000000000 - 350000000},
                 {"P12DT-1.35S", 12 * 24 * 3600 - 2, 1000000000 - 350000000},
+                 */
 
                 {"PT01S", 1, 0},
                 {"PT001S", 1, 0},
@@ -2623,7 +2627,8 @@ public class TCKDuration extends AbstractTCKTest {
     //-----------------------------------------------------------------------
     // toNanos()
     //-----------------------------------------------------------------------
-    @Test
+    // Android-changed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+    @Test(enabled = false)
     public void test_toNanos() {
         assertEquals(Duration.ofSeconds(321, 123456789).toNanos(), 321123456789L);
         assertEquals(Duration.ofNanos(Long.MAX_VALUE).toNanos(), 9223372036854775807L);
@@ -2642,7 +2647,8 @@ public class TCKDuration extends AbstractTCKTest {
         test.toNanos();
     }
 
-    @Test
+    // Android-changed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+    @Test(enabled = false)
     public void test_toNanos_min() {
         Duration test = Duration.ofSeconds(0, Long.MIN_VALUE);
         assertEquals(test.toNanos(), Long.MIN_VALUE);
@@ -2657,7 +2663,8 @@ public class TCKDuration extends AbstractTCKTest {
     //-----------------------------------------------------------------------
     // toMillis()
     //-----------------------------------------------------------------------
-    @Test
+    // Android-changed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+    @Test(enabled = false)
     public void test_toMillis() {
         assertEquals(Duration.ofSeconds(321, 123456789).toMillis(), 321000 + 123);
         assertEquals(Duration.ofMillis(Long.MAX_VALUE).toMillis(), 9223372036854775807L);
@@ -2676,7 +2683,8 @@ public class TCKDuration extends AbstractTCKTest {
         test.toMillis();
     }
 
-    @Test
+    // Android-changed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+    @Test(enabled = false)
     public void test_toMillis_min() {
         Duration test = Duration.ofSeconds(Long.MIN_VALUE / 1000, (Long.MIN_VALUE % 1000) * 1000000);
         assertEquals(test.toMillis(), Long.MIN_VALUE);
@@ -3048,9 +3056,10 @@ public class TCKDuration extends AbstractTCKTest {
             {-1, 0, "PT-1S"},
             {-1, 1000, "PT-0.999999S"},
             {-1, 900000000, "PT-0.1S"},
-            {-60, 100_000_000, "PT-59.9S"},
-            {-59, -900_000_000, "PT-59.9S"},
-            {-60, -100_000_000, "PT-1M-0.1S"},
+            // Android-removed: Disable this OpenJDK 11 test until java.time synced to 11. http://b/180577079
+            // {-60, 100_000_000, "PT-59.9S"},
+            // {-59, -900_000_000, "PT-59.9S"},
+            // {-60, -100_000_000, "PT-1M-0.1S"},
             {Long.MAX_VALUE, 0, "PT" + (Long.MAX_VALUE / 3600) + "H" +
                     ((Long.MAX_VALUE % 3600) / 60) + "M" + (Long.MAX_VALUE % 60) + "S"},
             {Long.MIN_VALUE, 0, "PT" + (Long.MIN_VALUE / 3600) + "H" +
