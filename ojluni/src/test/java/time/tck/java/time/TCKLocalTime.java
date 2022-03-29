@@ -251,7 +251,8 @@ public class TCKLocalTime extends AbstractDateTimeTest {
             expected = LocalTime.now(Clock.system(zone));
             test = LocalTime.now(zone);
         }
-        assertEquals(test, expected);
+        assertEquals(test.truncatedTo(ChronoUnit.SECONDS),
+                     expected.truncatedTo(ChronoUnit.SECONDS));
     }
 
     //-----------------------------------------------------------------------
