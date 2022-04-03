@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -42,14 +42,14 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 import java.util.TimeZone;
-import jdk.testlibrary.RandomFactory;
+import jdk.test.lib.RandomFactory;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /*
  * @test
- * @bug 8081022
+ * @bug 8081022 8151876 8166875 8189784 8206980
  * @key randomness
  */
 
@@ -84,6 +84,14 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
                 TimeZone tz = TimeZone.getTimeZone(zid);
                 boolean isDST = tz.inDaylightTime(new Date(zdt.toInstant().toEpochMilli()));
                 for (Locale locale : locales) {
+                    String longDisplayName = tz.getDisplayName(isDST, TimeZone.LONG, locale);
+                    String shortDisplayName = tz.getDisplayName(isDST, TimeZone.SHORT, locale);
+                    if ((longDisplayName.startsWith("GMT+") && shortDisplayName.startsWith("GMT+"))
+                            || (longDisplayName.startsWith("GMT-") && shortDisplayName.startsWith("GMT-"))) {
+                        printText(locale, zdt, TextStyle.FULL, tz, tz.getID());
+                        printText(locale, zdt, TextStyle.SHORT, tz, tz.getID());
+                        continue;
+                    }
                     printText(locale, zdt, TextStyle.FULL, tz,
                             tz.getDisplayName(isDST, TimeZone.LONG, locale));
                     printText(locale, zdt, TextStyle.SHORT, tz,
@@ -121,6 +129,7 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
     private static Set<ZoneId> preferred = new HashSet<>(Arrays.asList(new ZoneId[] {
         ZoneId.of("EST", ZoneId.SHORT_IDS),
         ZoneId.of("Asia/Taipei"),
+        ZoneId.of("Asia/Macau"),
         ZoneId.of("CET"),
     }));
 
@@ -140,14 +149,22 @@ public class TestZoneTextPrinterParser extends AbstractTestPrinterParser {
             {"America/New_York", "Eastern Standard Time", none,      Locale.ENGLISH, TextStyle.FULL},
 //          {"EST",              "Eastern Standard Time", preferred, Locale.ENGLISH, TextStyle.FULL},
             {"Europe/Paris",     "Central European Time", none,      Locale.ENGLISH, TextStyle.FULL},
-            {"CET",              "Central European Time", preferred, Locale.ENGLISH, TextStyle.FULL},
+//          {"CET",              "Central European Time", preferred, Locale.ENGLISH, TextStyle.FULL}, no three-letter ID in CLDR
             {"Asia/Shanghai",    "China Standard Time",   none,      Locale.ENGLISH, TextStyle.FULL},
-            {"Asia/Taipei",      "China Standard Time",   preferred, Locale.ENGLISH, TextStyle.FULL},
+            {"Asia/Macau",       "China Standard Time",   preferred, Locale.ENGLISH, TextStyle.FULL},
+            {"Asia/Taipei",      "Taipei Standard Time",  preferred, Locale.ENGLISH, TextStyle.FULL},
             {"America/Chicago",  "CST",                   none,      Locale.ENGLISH, TextStyle.SHORT},
             {"Asia/Taipei",      "CST",                   preferred, Locale.ENGLISH, TextStyle.SHORT},
             {"Australia/South",  "ACST",                  preferred_s, Locale.ENGLISH, TextStyle.SHORT},
-            {"America/Chicago",  "CDT",                   none,        Locale.ENGLISH, TextStyle.SHORT},
+            {"America/Chicago",  "CDT",                   none,      Locale.ENGLISH, TextStyle.SHORT},
             {"Asia/Shanghai",    "CDT",                   preferred_s, Locale.ENGLISH, TextStyle.SHORT},
+            {"America/Juneau",   "AKST",                  none,      Locale.ENGLISH, TextStyle.SHORT},
+            {"America/Juneau",   "AKDT",                  none,      Locale.ENGLISH, TextStyle.SHORT},
+            {"Pacific/Honolulu", "HST",                   none,      Locale.ENGLISH, TextStyle.SHORT},
+            {"America/Halifax",  "AST",                   none,      Locale.ENGLISH, TextStyle.SHORT},
+            {"Z",                "Z",                     none,      Locale.ENGLISH, TextStyle.SHORT},
+            {"Z",                "Z",                     none,      Locale.US,      TextStyle.SHORT},
+            {"Z",                "Z",                     none,      Locale.CANADA,  TextStyle.SHORT},
        };
     }
 
