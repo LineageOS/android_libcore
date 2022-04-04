@@ -96,8 +96,9 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import sun.util.locale.provider.TimeZoneNameUtility;
+import libcore.icu.ICU;
 
 /**
  * Formatter for printing and parsing date-time objects.
@@ -1438,6 +1439,7 @@ public final class DateTimeFormatter {
         return locale;
     }
 
+    // Android-changed: Remove javadoc reference to #localizedBy(Locale)
     /**
      * Returns a copy of this formatter with a new locale.
      * <p>
@@ -1445,16 +1447,11 @@ public final class DateTimeFormatter {
      * localization, such as the text or localized pattern.
      * <p>
      * The locale is stored as passed in, without further processing.
-     * If the locale has <a href="../../util/Locale.html#def_locale_extension">
-     * Unicode extensions</a>, they may be used later in text
-     * processing. To set the chronology, time-zone and decimal style from
-     * unicode extensions, see {@link #localizedBy localizedBy()}.
      * <p>
      * This instance is immutable and unaffected by this method call.
      *
      * @param locale  the new locale, not null
      * @return a formatter based on this formatter with the requested locale, not null
-     * @see #localizedBy(Locale)
      */
     public DateTimeFormatter withLocale(Locale locale) {
         if (this.locale.equals(locale)) {
@@ -1502,7 +1499,9 @@ public final class DateTimeFormatter {
                        DecimalStyle.of(locale) : decimalStyle;
         String tzType = locale.getUnicodeLocaleType("tz");
         ZoneId z  = tzType != null ?
-                    TimeZoneNameUtility.convertLDMLShortID(tzType)
+                    // Android changed: Use ICU on Android.
+                    // TimeZoneNameUtility.convertLDMLShortID(tzType)
+                    Optional.ofNullable(ICU.convertToTzId(tzType))
                         .map(ZoneId::of)
                         .orElse(zone) :
                     zone;

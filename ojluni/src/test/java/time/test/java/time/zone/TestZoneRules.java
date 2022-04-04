@@ -107,7 +107,8 @@ public class TestZoneRules {
         };
     }
 
-    @Test(dataProvider="negativeDST")
+    // Android-changed: Android doesn't support negative DST yet.
+    @Test(dataProvider="negativeDST", enabled = false)
     public void test_NegativeDST(ZoneId zid, LocalDate ld, ZoneOffset offset, ZoneOffset stdOffset, boolean isDST) {
         Instant i = Instant.from(ZonedDateTime.of(ld, LocalTime.MIN, zid));
         ZoneRules zr = zid.getRules();

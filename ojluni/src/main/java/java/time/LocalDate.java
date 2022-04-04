@@ -74,6 +74,7 @@ import static java.time.temporal.ChronoField.MONTH_OF_YEAR;
 import static java.time.temporal.ChronoField.PROLEPTIC_MONTH;
 import static java.time.temporal.ChronoField.YEAR;
 
+import dalvik.annotation.codegen.CovariantReturnType;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
@@ -81,6 +82,7 @@ import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.chrono.ChronoLocalDate;
+import java.time.chrono.Era;
 import java.time.chrono.IsoEra;
 import java.time.chrono.IsoChronology;
 import java.time.format.DateTimeFormatter;
@@ -738,7 +740,9 @@ public final class LocalDate
      * @return the IsoEra applicable at this date, not null
      */
     @Override // override for Javadoc
-    public IsoEra getEra() {
+    // Android-changed: To match OpenJDK 11 API, this API returns IsoEra type after Android T.
+    @CovariantReturnType(returnType = java.time.chrono.IsoEra.class, presentAfter = 33)
+    public Era getEra() {
         return (getYear() >= 1 ? IsoEra.CE : IsoEra.BCE);
     }
 

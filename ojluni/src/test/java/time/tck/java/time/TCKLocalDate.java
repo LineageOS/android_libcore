@@ -101,6 +101,7 @@ import java.time.Year;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.chrono.Era;
 import java.time.chrono.IsoChronology;
 import java.time.chrono.IsoEra;
 import java.time.format.DateTimeFormatter;
@@ -2386,7 +2387,9 @@ public class TCKLocalDate extends AbstractDateTimeTest {
     // ----------------------------------------------------------------
     @Test
     public void test_getEra() {
-        IsoEra isoEra = LocalDate.MAX.getEra();
+        // Android-changed: getEra() returns Era for backward compatibility.
+        // IsoEra isoEra = LocalDate.MAX.getEra();
+        Era isoEra = LocalDate.MAX.getEra();
         assertSame(isoEra,IsoEra.CE);
         assertSame(LocalDate.MIN.getEra(),IsoEra.BCE);
     }
@@ -2463,14 +2466,20 @@ public class TCKLocalDate extends AbstractDateTimeTest {
     @DataProvider(name="datesUntil")
     public Object[][] provider_datesUntil() {
         return new Object[][] {
+                // Android-removed: The range to max date takes too much memory and time.
+                /*
                 {MIN_DATE, MIN_DATE},
                 {MIN_DATE, MAX_DATE},
                 {MAX_DATE, MAX_DATE},
+                */
                 {date(2015,10,1), date(2015,10,2)},
                 {date(2015,10,1), date(2015,11,1)},
                 {date(2015,10,31), date(2015,11,1)},
+                // Android-removed: The range to max date takes too much memory and time.
+                /*
                 {date(2015,10,1), MAX_DATE},
                 {MIN_DATE, date(2015,10,1)}
+                */
         };
     }
 
@@ -2484,6 +2493,8 @@ public class TCKLocalDate extends AbstractDateTimeTest {
     @DataProvider(name="datesUntilSteps")
     public Object[][] provider_datesUntil_steps() {
         List<Object[]> data = new ArrayList<>(Arrays.asList(new Object[][] {
+            // Android-removed: The range to max date takes too much memory and time.
+            /*
             {MIN_DATE, MAX_DATE, Period.ofYears(Year.MAX_VALUE)},
             {MIN_DATE, MAX_DATE, Period.ofDays(2)},
             {MIN_DATE, MAX_DATE, Period.of(1,2,3)},
@@ -2496,6 +2507,7 @@ public class TCKLocalDate extends AbstractDateTimeTest {
             {MIN_DATE, MAX_DATE.minusYears(1), Period.ofYears(Year.MAX_VALUE)},
             {MAX_DATE.minusMonths(1), MAX_DATE, Period.ofMonths(1)},
             {date(Year.MAX_VALUE, 2, 20), MAX_DATE, Period.of(0, 1, 1)},
+            */
             {date(2015,1,1), date(2016,1,1), Period.ofYears(1)},
             {date(2015,1,1), date(2016,1,1), Period.ofDays(365)},
             {date(2015,1,1), date(2016,1,1), Period.ofDays(366)},
@@ -2517,12 +2529,15 @@ public class TCKLocalDate extends AbstractDateTimeTest {
             {date(2015,1,31), date(2043,1,31), Period.of(0,0,1460)},
             {date(2015,1,31), date(2043,1,31), Period.of(0,0,1461)},
             {date(2015,1,31), date(2043,2,1), Period.of(0,0,1461)},
+            // Android-removed: The range to max date takes too much memory and time.
+            /*
             {date(2015,1,31), MAX_DATE, Period.of(10,100,1000)},
             {date(2015,1,31), MAX_DATE, Period.of(1000000,10000,100000)},
             {date(2015,1,31), MAX_DATE, Period.ofDays(10000000)},
             {date(2015,1,31), MAX_DATE, Period.ofDays(Integer.MAX_VALUE)},
             {date(2015,1,31), MAX_DATE, Period.ofMonths(Integer.MAX_VALUE)},
             {date(2015,1,31), MAX_DATE, Period.ofYears(Integer.MAX_VALUE)}
+            */
         }));
         LocalDate start = date(2014, 1, 15);
         LocalDate end = date(2015, 3, 4);

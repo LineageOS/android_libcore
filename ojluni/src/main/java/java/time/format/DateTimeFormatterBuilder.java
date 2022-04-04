@@ -698,7 +698,7 @@ public final class DateTimeFormatterBuilder {
      * the minimum and maximum width. In strict mode, if the minimum and maximum widths
      * are equal and there is no decimal point then the parser will
      * participate in adjacent value parsing, see
-     * {@link appendValue(java.time.temporal.TemporalField, int)}. When parsing in lenient mode,
+     * {@link #appendValue(java.time.temporal.TemporalField, int)}. When parsing in lenient mode,
      * the minimum width is considered to be zero and the maximum is nine.
      * <p>
      * If the value cannot be obtained then an exception will be thrown.
