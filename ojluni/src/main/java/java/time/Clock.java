@@ -522,8 +522,6 @@ public abstract class Clock {
         }
         @Override
         public Instant instant() {
-            // BEGIN Android-changed: Use OpenJDK 8 implementation until getNanoTimeAdjustment() is supported.
-            /*
             // Take a local copy of offset. offset can be updated concurrently
             // by other threads (even if we haven't made it volatile) so we will
             // work with a local copy.
@@ -558,9 +556,6 @@ public abstract class Clock {
                 }
             }
             return Instant.ofEpochSecond(localOffset, adjustment);
-             */
-            return Instant.ofEpochMilli(millis());
-            // END Android-changed: Use OpenJDK 8 implementation until getNanoTimeAdjustment() is supported.
         }
         @Override
         public boolean equals(Object obj) {
