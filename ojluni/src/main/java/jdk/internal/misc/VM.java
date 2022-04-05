@@ -26,6 +26,8 @@
 package jdk.internal.misc;
 
 import static java.lang.Thread.State.*;
+
+import dalvik.annotation.optimization.CriticalNative;
 import java.util.Properties;
 import java.util.HashMap;
 import java.util.Map;
@@ -402,6 +404,38 @@ public class VM {
     private final static int JVMTI_THREAD_STATE_BLOCKED_ON_MONITOR_ENTER = 0x0400;
     private final static int JVMTI_THREAD_STATE_WAITING_INDEFINITELY = 0x0010;
     private final static int JVMTI_THREAD_STATE_WAITING_WITH_TIMEOUT = 0x0020;
+
+    // Android-changed: Add @CriticalNative for performance to be consistent with System.currentTimeMillis().
+    /**
+     * Get a nanosecond time stamp adjustment in the form of a single long.
+     *
+     * This value can be used to create an instant using
+     * {@link java.time.Instant#ofEpochSecond(long, long)
+     *  java.time.Instant.ofEpochSecond(offsetInSeconds,
+     *  getNanoTimeAdjustment(offsetInSeconds))}.
+     * <p>
+     * The value returned has the best resolution available to the JVM on
+     * the current system.
+     * This is usually down to microseconds - or tenth of microseconds -
+     * depending on the OS/Hardware and the JVM implementation.
+     *
+     * @param offsetInSeconds The offset in seconds from which the nanosecond
+     *        time stamp should be computed.
+     *
+     * @apiNote The offset should be recent enough - so that
+     *         {@code offsetInSeconds} is within {@code +/- 2^32} seconds of the
+     *         current UTC time. If the offset is too far off, {@code -1} will be
+     *         returned. As such, {@code -1} must not be considered as a valid
+     *         nano time adjustment, but as an exception value indicating
+     *         that an offset closer to the current time should be used.
+     *
+     * @return A nanosecond time stamp adjustment in the form of a single long.
+     *     If the offset is too far off the current time, this method returns -1.
+     *     In that case, the caller should call this method again, passing a
+     *     more accurate offset.
+     */
+    @CriticalNative
+    public static native long getNanoTimeAdjustment(long offsetInSeconds);
 
     // BEGIN Android-removed: latestUserDefinedLoader()/initialize() not supported.
     // /*

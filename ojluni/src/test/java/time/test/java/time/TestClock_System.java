@@ -126,8 +126,6 @@ public class TestClock_System {
                         + time.getNano();
     }
 
-    // Android-changed: Disable the test until the SystemClock has higher resolution.
-    @Test(enabled = false)
     public void test_ClockResolution() {
         Clock highestUTC = Clock.systemUTC();
 
@@ -396,8 +394,6 @@ public class TestClock_System {
                 System.currentTimeMillis()/1000 + 1024);
     }
 
-    // Android-changed: Disable the test until the SystemClock has higher resolution.
-    @Test(enabled = false)
     public void test_OffsetLimits() throws IllegalAccessException {
         System.out.println("*** Testing limits ***");
         SystemClockOffset.testWithOffset("System.currentTimeMillis()/1000 - MAX_OFFSET + 1",
