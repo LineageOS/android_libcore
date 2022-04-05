@@ -1818,5 +1818,37 @@
     "test.java.util.concurrent.tck.ThreadPoolExecutorTest#testPoolSizeInvariants",
     "test.java.util.concurrent.tck.ThreadTest#testGetAndSetDefaultUncaughtExceptionHandler"
  ]
+},
+{
+  description: "java.lang.ref.Cleaner work on device only",
+  result: UNSUPPORTED,
+  modes: [host],
+  bug: 228187357,
+  names: ["test.java.lang.ref.CleanerTest"]
+},
+{
+  description: "libcore.android.system.OsTest socket tests work on device only",
+  result: EXEC_FAILED,
+  modes: [host],
+  names: ["libcore.android.system.OsTest#test_sendmsg_af_inet6_4K",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet6_4K_directBuffer",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet_16K_receiveall_without_recv_msgname",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet_16K_reciveall",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet_16K_recvparts",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet_16K_without_send_msgcontrl",
+          "libcore.android.system.OsTest#test_sendmsg_af_inet_4K",
+          "libcore.android.system.OsTest#test_socket_udpGro_setAndGet",
+          "libcore.android.system.OsTest#test_socket_udpGso_set",
+          "libcore.android.system.OsTest#testUnixDomainSocket_abstract_name"]
+},
+{
+  description: "java.lang.Math sin/cos/cbrt on host differs from device",
+  result: ERROR,
+  modes: [host],
+  bug: 228174249,
+  names: ["test.java.lang.Math.SinCosCornerCasesTests#testCornerCasesCos",
+          "test.java.lang.Math.SinCosCornerCasesTests#testCornerCasesSin",
+          "test.java.lang.Math.CubeRootTests#testCubeRoot",
+          "org.apache.harmony.tests.java.lang.MathTest#test_cbrt_D"]
 }
 ]
