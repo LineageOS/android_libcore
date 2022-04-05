@@ -48,7 +48,9 @@ import static org.testng.Assert.assertTrue;
  */
 public class Zip64SizeTest {
 
-    private static final int BUFFER_SIZE = 2048;
+    // Android-changed: Speed up the test with a larger buffer
+    // private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 1024 * 1024; // 1MB
     // ZIP file to create
     // Android-changed: Create file in a temp dir.
     // private static final String ZIP_FILE_NAME = "Zip64SizeTest.zip";
