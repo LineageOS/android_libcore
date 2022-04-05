@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -484,8 +484,6 @@ public class TestDateTimeFormatterBuilder {
             {"HH:MM:ss"},
             {"HHMMSS"},
             {"HH:MM:SS"},
-            {"+H"},
-            {"+HMM"},
             {"+HHM"},
             {"+A"},
         };
@@ -684,7 +682,7 @@ public class TestDateTimeFormatterBuilder {
             {"LLLLL", "Text(MonthOfYear,NARROW_STANDALONE)"},
 
             {"D", "Value(DayOfYear)"},
-            {"DD", "Value(DayOfYear,2)"},
+            {"DD", "Value(DayOfYear,2,3,NOT_NEGATIVE)"},
             {"DDD", "Value(DayOfYear,3)"},
 
             {"d", "Value(DayOfMonth)"},
@@ -746,17 +744,17 @@ public class TestDateTimeFormatterBuilder {
             {"SSS", "Fraction(NanoOfSecond,3,3)"},
             {"SSSSSSSSS", "Fraction(NanoOfSecond,9,9)"},
 
-            {"A", "Value(MilliOfDay)"},
-            {"AA", "Value(MilliOfDay,2)"},
-            {"AAA", "Value(MilliOfDay,3)"},
+            {"A", "Value(MilliOfDay,1,19,NOT_NEGATIVE)"},
+            {"AA", "Value(MilliOfDay,2,19,NOT_NEGATIVE)"},
+            {"AAA", "Value(MilliOfDay,3,19,NOT_NEGATIVE)"},
 
-            {"n", "Value(NanoOfSecond)"},
-            {"nn", "Value(NanoOfSecond,2)"},
-            {"nnn", "Value(NanoOfSecond,3)"},
+            {"n", "Value(NanoOfSecond,1,19,NOT_NEGATIVE)"},
+            {"nn", "Value(NanoOfSecond,2,19,NOT_NEGATIVE)"},
+            {"nnn", "Value(NanoOfSecond,3,19,NOT_NEGATIVE)"},
 
-            {"N", "Value(NanoOfDay)"},
-            {"NN", "Value(NanoOfDay,2)"},
-            {"NNN", "Value(NanoOfDay,3)"},
+            {"N", "Value(NanoOfDay,1,19,NOT_NEGATIVE)"},
+            {"NN", "Value(NanoOfDay,2,19,NOT_NEGATIVE)"},
+            {"NNN", "Value(NanoOfDay,3,19,NOT_NEGATIVE)"},
 
             {"z", "ZoneText(SHORT)"},
             {"zz", "ZoneText(SHORT)"},
@@ -782,7 +780,7 @@ public class TestDateTimeFormatterBuilder {
             {"xxxxx", "Offset(+HH:MM:ss,'+00:00')"},  // LDML
 
             {"ppH", "Pad(Value(HourOfDay),2)"},
-            {"pppDD", "Pad(Value(DayOfYear,2),3)"},
+            {"pppDD", "Pad(Value(DayOfYear,2,3,NOT_NEGATIVE),3)"},
 
             {"yyyy[-MM[-dd", "Value(YearOfEra,4,19,EXCEEDS_PAD)['-'Value(MonthOfYear,2)['-'Value(DayOfMonth,2)]]"},
             {"yyyy[-MM[-dd]]", "Value(YearOfEra,4,19,EXCEEDS_PAD)['-'Value(MonthOfYear,2)['-'Value(DayOfMonth,2)]]"},
@@ -882,82 +880,21 @@ public class TestDateTimeFormatterBuilder {
     }
 
     //-----------------------------------------------------------------------
-    @DataProvider(name="patternPrint")
-    Object[][] data_patternPrint() {
-        return new Object[][] {
-            {"Q", date(2012, 2, 10), "1"},
-            {"QQ", date(2012, 2, 10), "01"},
-            {"QQQ", date(2012, 2, 10), "Q1"},
-            {"QQQQ", date(2012, 2, 10), "1st quarter"},
-            {"QQQQQ", date(2012, 2, 10), "1"},
-        };
-    }
-
-    @Test(dataProvider="patternPrint")
-    public void test_appendPattern_patternPrint(String input, Temporal temporal, String expected) throws Exception {
-        DateTimeFormatter f = builder.appendPattern(input).toFormatter(Locale.UK);
-        String test = f.format(temporal);
-        assertEquals(test, expected);
-    }
-
-    //-----------------------------------------------------------------------
     @DataProvider(name="localePatterns")
     Object[][] localizedDateTimePatterns() {
         return new Object[][] {
-            {FormatStyle.FULL, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.US, "EEEE, MMMM d, yyyy h:mm:ss a z"},
-            {FormatStyle.LONG, FormatStyle.LONG, IsoChronology.INSTANCE, Locale.US, "MMMM d, yyyy h:mm:ss a z"},
-            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, IsoChronology.INSTANCE, Locale.US, "MMM d, yyyy h:mm:ss a"},
-            {FormatStyle.SHORT, FormatStyle.SHORT, IsoChronology.INSTANCE, Locale.US, "M/d/yy h:mm a"},
-            {FormatStyle.FULL, null, IsoChronology.INSTANCE, Locale.US, "EEEE, MMMM d, yyyy"},
-            {FormatStyle.LONG, null, IsoChronology.INSTANCE, Locale.US, "MMMM d, yyyy"},
-            {FormatStyle.MEDIUM, null, IsoChronology.INSTANCE, Locale.US, "MMM d, yyyy"},
+            {FormatStyle.FULL, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.US, "EEEE, MMMM d, y 'at' h:mm:ss a zzzz"},
+            {FormatStyle.LONG, FormatStyle.LONG, IsoChronology.INSTANCE, Locale.US, "MMMM d, y 'at' h:mm:ss a z"},
+            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, IsoChronology.INSTANCE, Locale.US, "MMM d, y, h:mm:ss a"},
+            {FormatStyle.SHORT, FormatStyle.SHORT, IsoChronology.INSTANCE, Locale.US, "M/d/yy, h:mm a"},
+            {FormatStyle.FULL, null, IsoChronology.INSTANCE, Locale.US, "EEEE, MMMM d, y"},
+            {FormatStyle.LONG, null, IsoChronology.INSTANCE, Locale.US, "MMMM d, y"},
+            {FormatStyle.MEDIUM, null, IsoChronology.INSTANCE, Locale.US, "MMM d, y"},
             {FormatStyle.SHORT, null, IsoChronology.INSTANCE, Locale.US, "M/d/yy"},
-            {null, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.US, "h:mm:ss a z"},
+            {null, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.US, "h:mm:ss a zzzz"},
             {null, FormatStyle.LONG, IsoChronology.INSTANCE, Locale.US, "h:mm:ss a z"},
             {null, FormatStyle.MEDIUM, IsoChronology.INSTANCE, Locale.US, "h:mm:ss a"},
             {null, FormatStyle.SHORT, IsoChronology.INSTANCE, Locale.US, "h:mm a"},
-
-            // French Locale and ISO Chronology
-            {FormatStyle.FULL, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.FRENCH, "EEEE d MMMM yyyy HH' h 'mm z"},
-            {FormatStyle.LONG, FormatStyle.LONG, IsoChronology.INSTANCE, Locale.FRENCH, "d MMMM yyyy HH:mm:ss z"},
-            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, IsoChronology.INSTANCE, Locale.FRENCH, "d MMM yyyy HH:mm:ss"},
-            {FormatStyle.SHORT, FormatStyle.SHORT, IsoChronology.INSTANCE, Locale.FRENCH, "dd/MM/yy HH:mm"},
-            {FormatStyle.FULL, null, IsoChronology.INSTANCE, Locale.FRENCH, "EEEE d MMMM yyyy"},
-            {FormatStyle.LONG, null, IsoChronology.INSTANCE, Locale.FRENCH, "d MMMM yyyy"},
-            {FormatStyle.MEDIUM, null, IsoChronology.INSTANCE, Locale.FRENCH, "d MMM yyyy"},
-            {FormatStyle.SHORT, null, IsoChronology.INSTANCE, Locale.FRENCH, "dd/MM/yy"},
-            {null, FormatStyle.FULL, IsoChronology.INSTANCE, Locale.FRENCH, "HH' h 'mm z"},
-            {null, FormatStyle.LONG, IsoChronology.INSTANCE, Locale.FRENCH, "HH:mm:ss z"},
-            {null, FormatStyle.MEDIUM, IsoChronology.INSTANCE, Locale.FRENCH, "HH:mm:ss"},
-            {null, FormatStyle.SHORT, IsoChronology.INSTANCE, Locale.FRENCH, "HH:mm"},
-
-            // Japanese Locale and JapaneseChronology
-            {FormatStyle.FULL, FormatStyle.FULL, JapaneseChronology.INSTANCE, Locale.JAPANESE, "Gy'\u5e74'M'\u6708'd'\u65e5' H'\u6642'mm'\u5206'ss'\u79d2' z"},
-            {FormatStyle.LONG, FormatStyle.LONG, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd H:mm:ss z"},
-            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd H:mm:ss"},
-            {FormatStyle.SHORT, FormatStyle.SHORT, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd H:mm"},
-            {FormatStyle.FULL, null, JapaneseChronology.INSTANCE, Locale.JAPANESE, "Gy'\u5e74'M'\u6708'd'\u65e5'"},
-            {FormatStyle.LONG, null, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd"},
-            {FormatStyle.MEDIUM, null, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd"},
-            {FormatStyle.SHORT, null, JapaneseChronology.INSTANCE, Locale.JAPANESE, "GGGGGy.MM.dd"},
-            {null, FormatStyle.FULL, JapaneseChronology.INSTANCE, Locale.JAPANESE, "H'\u6642'mm'\u5206'ss'\u79d2' z"},
-            {null, FormatStyle.LONG, JapaneseChronology.INSTANCE, Locale.JAPANESE, "H:mm:ss z"},
-            {null, FormatStyle.MEDIUM, JapaneseChronology.INSTANCE, Locale.JAPANESE, "H:mm:ss"},
-            {null, FormatStyle.SHORT, JapaneseChronology.INSTANCE, Locale.JAPANESE, "H:mm"},
-
-            // Chinese Local and Chronology
-            {FormatStyle.FULL, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE ahh'\u65f6'mm'\u5206'ss'\u79d2' z"},
-            {FormatStyle.LONG, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5 ahh'\u65f6'mm'\u5206'ss'\u79d2'"},
-            {FormatStyle.MEDIUM, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy-M-d H:mm:ss"},
-            {FormatStyle.SHORT, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy-M-d ah:mm"},
-            {FormatStyle.FULL, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5EEEE"},
-            {FormatStyle.LONG, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy\u5e74M\u6708d\u65e5"},
-            {FormatStyle.MEDIUM, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy-M-d"},
-            {FormatStyle.SHORT, null, MinguoChronology.INSTANCE, Locale.CHINESE, "Gy-M-d"},
-            {null, FormatStyle.FULL, MinguoChronology.INSTANCE, Locale.CHINESE, "ahh'\u65f6'mm'\u5206'ss'\u79d2' z"},
-            {null, FormatStyle.LONG, MinguoChronology.INSTANCE, Locale.CHINESE, "ahh'\u65f6'mm'\u5206'ss'\u79d2'"},
-            {null, FormatStyle.MEDIUM, MinguoChronology.INSTANCE, Locale.CHINESE, "H:mm:ss"},
-            {null, FormatStyle.SHORT, MinguoChronology.INSTANCE, Locale.CHINESE, "ah:mm"},
         };
     }
 
@@ -1006,5 +943,4 @@ public class TestDateTimeFormatterBuilder {
     private static Temporal date(int y, int m, int d) {
         return LocalDate.of(y, m, d);
     }
-
 }

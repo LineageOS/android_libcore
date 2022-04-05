@@ -624,7 +624,7 @@ public class TestUmmAlQuraChronology {
     @Test
     public void test_chronoFields() {
         ChronoLocalDate hdate = HijrahChronology.INSTANCE.date(1434, 6, 28);
-        assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH), 3);
+        assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH), 7);
         assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR), 7);
         assertEquals(hdate.get(ChronoField.ALIGNED_WEEK_OF_MONTH), 4);
         assertEquals(hdate.get(ChronoField.ALIGNED_WEEK_OF_YEAR), 25);
@@ -776,9 +776,9 @@ public class TestUmmAlQuraChronology {
             {HijrahDate.of(1434,5,1), "Japanese Heisei 25-03-13"},
             {HijrahDate.of(1436,1,1), "Japanese Heisei 26-10-25"},
             {HijrahDate.of(1440,8,25), "Japanese Heisei 31-04-30"},
-            {HijrahDate.of(1440,8,26), "Japanese NewEra 1-05-01"},
-            {HijrahDate.of(1500,6,12), "Japanese NewEra 59-05-05"},
-            {HijrahDate.of(1550,3,11), "Japanese NewEra 107-08-11"},
+            {HijrahDate.of(1440,8,26), "Japanese Reiwa 1-05-01"},
+            {HijrahDate.of(1500,6,12), "Japanese Reiwa 59-05-05"},
+            {HijrahDate.of(1550,3,11), "Japanese Reiwa 107-08-11"},
         };
     }
 
@@ -786,5 +786,33 @@ public class TestUmmAlQuraChronology {
     @Test(dataProvider="hijrahToJapanese")
       public void test_hijrahToJapanese(HijrahDate hijrah, String japanese) {
           assertEquals(JapaneseChronology.INSTANCE.date(hijrah).toString(), japanese);
+    }
+
+    @DataProvider(name="alignedDayOfWeekInMonthTestDates")
+    Object[][] data_alignedDayOfWeekInMonth() {
+        return new Object[][] {
+            {1437, 9, 1, 1, 1},
+            {1437, 10, 1, 1, 1},
+            {1437, 10, 11, 2, 4},
+            {1437, 10, 29, 5, 1},
+        };
+    }
+
+    //-----------------------------------------------------------------------
+    // Test for aligned-week-of-month calculation based on the day-of-month
+    //-----------------------------------------------------------------------
+    @Test(dataProvider="alignedDayOfWeekInMonthTestDates")
+    public void test_alignedWeekOfMonth(int year, int month, int dom, int wom, int dowm) {
+        HijrahDate date = HijrahChronology.INSTANCE.date(year, month, dom);
+        assertEquals(date.getLong(ChronoField.ALIGNED_WEEK_OF_MONTH), wom);
+    }
+
+    //-----------------------------------------------------------------------
+    // Test for aligned-day-of-week calculation based on the day-of-month
+    //-----------------------------------------------------------------------
+    @Test(dataProvider="alignedDayOfWeekInMonthTestDates")
+    public void test_alignedDayOfWeekInMonth(int year, int month, int dom, int wom, int dowm) {
+        HijrahDate date = HijrahChronology.INSTANCE.date(year, month, dom);
+        assertEquals(date.getLong(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH), dowm);
     }
 }
