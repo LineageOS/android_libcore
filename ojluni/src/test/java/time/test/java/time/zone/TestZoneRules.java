@@ -63,8 +63,11 @@ public class TestZoneRules {
         return new Object[][] {
             // ZoneId, localDate, offset, standard offset, isDaylightSavings
             // Europe/Dublin for the Rule "Eire"
-            {DUBLIN, LocalDate.of(1970, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(0), true},
-            {DUBLIN, LocalDate.of(1971, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(0), true},
+            // Android-changed: During 1969 - 1971 summers, Europe/Dublin is using GMT+1 as the standard time.
+            // {DUBLIN, LocalDate.of(1970, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(0), true},
+            // {DUBLIN, LocalDate.of(1971, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(0), true},
+            {DUBLIN, LocalDate.of(1970, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(1), false},
+            {DUBLIN, LocalDate.of(1971, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(1), false},
             {DUBLIN, LocalDate.of(1971, 11, 1), ZoneOffset.ofHours(0), ZoneOffset.ofHours(0), false},
             {DUBLIN, LocalDate.of(2019, 6, 23), ZoneOffset.ofHours(1), ZoneOffset.ofHours(0), true},
             {DUBLIN, LocalDate.of(2019, 12, 23), ZoneOffset.ofHours(0), ZoneOffset.ofHours(0), false},
@@ -108,7 +111,7 @@ public class TestZoneRules {
     }
 
     // Android-changed: Android doesn't support negative DST yet.
-    @Test(dataProvider="negativeDST", enabled = false)
+    @Test(dataProvider="negativeDST")
     public void test_NegativeDST(ZoneId zid, LocalDate ld, ZoneOffset offset, ZoneOffset stdOffset, boolean isDST) {
         Instant i = Instant.from(ZonedDateTime.of(ld, LocalTime.MIN, zid));
         ZoneRules zr = zid.getRules();
