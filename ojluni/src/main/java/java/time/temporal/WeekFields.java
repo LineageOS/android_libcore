@@ -282,15 +282,11 @@ public final class WeekFields implements Serializable {
     private final transient TemporalField weekBasedYear = ComputedDayOfField.ofWeekBasedYearField(this);
 
     //-----------------------------------------------------------------------
+    // Android-changed: Remove "fw" and "rg" support in the javadoc. See http://b/228322300.
     /**
      * Obtains an instance of {@code WeekFields} appropriate for a locale.
      * <p>
      * This will look up appropriate values from the provider of localization data.
-     * If the locale contains "fw" (First day of week) and/or "rg"
-     * (Region Override) <a href="../../util/Locale.html#def_locale_extension">
-     * Unicode extensions</a>, returned instance will reflect the values specified with
-     * those extensions. If both "fw" and "rg" are specified, the value from
-     * the "fw" extension supersedes the implicit one from the "rg" extension.
      *
      * @param locale  the locale to use, not null
      * @return the week-definition, not null
