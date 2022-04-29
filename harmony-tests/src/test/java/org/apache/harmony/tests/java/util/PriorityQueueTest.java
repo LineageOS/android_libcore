@@ -650,7 +650,7 @@ public class PriorityQueueTest extends TestCase {
         integerQueue1.offer(1);
         assertFalse(integerQueue1.remove(new Float(1.3F)));
 
-        PriorityQueue<Object> queue = new PriorityQueue<Object>();
+        PriorityQueue<Object> queue = new PriorityQueue<Object>(comparator);
         Object o = new Object();
         queue.offer(o);
         assertTrue(queue.remove(o));
