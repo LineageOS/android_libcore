@@ -337,11 +337,15 @@ public class PriorityQueue<E> extends AbstractQueue<E>
         int i = size;
         if (i >= queue.length)
             grow(i + 1);
+        // Android-changed: Backport fix which checks first element is Comparable
+        // if comparator is null
+        // size = i + 1;
+        // if (i == 0)
+        //     queue[0] = e;
+        // else
+        //     siftUp(i, e);
+        siftUp(i, e);
         size = i + 1;
-        if (i == 0)
-            queue[0] = e;
-        else
-            siftUp(i, e);
         return true;
     }
 
