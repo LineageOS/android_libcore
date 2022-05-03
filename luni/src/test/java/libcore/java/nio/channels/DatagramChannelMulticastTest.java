@@ -390,7 +390,6 @@ public class DatagramChannelMulticastTest extends TestCase {
         dc.close();
     }
 
-
     private DatagramChannel createReceiverChannel() throws Exception {
         DatagramChannel dc = DatagramChannel.open();
         dc.bind(null /* leave the OS to determine the port, and use the wildcard address */);
