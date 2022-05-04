@@ -17,6 +17,7 @@
 package libcore.java.net;
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.net.MalformedURLException;
@@ -28,8 +29,12 @@ import org.junit.runners.JUnit4;
 public class MalformedURLExceptionTest {
 
     @Test
-    public void testEmptyConstructor() {
+    public void testConstructor() {
         MalformedURLException e = new MalformedURLException();
         assertNull(e.getMessage());
+
+        String msg = "x:yyy is not valid URL";
+        e = new MalformedURLException(msg);
+        assertEquals(msg, e.getMessage());
     }
 }
