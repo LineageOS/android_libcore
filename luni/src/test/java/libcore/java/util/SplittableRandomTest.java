@@ -14,27 +14,25 @@
  * limitations under the License.
  */
 
-package libcore.java.net;
-
+package libcore.java.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
-import java.net.MalformedURLException;
+import java.util.SplittableRandom;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class MalformedURLExceptionTest {
+public class SplittableRandomTest {
 
     @Test
-    public void testConstructor() {
-        MalformedURLException e = new MalformedURLException();
-        assertNull(e.getMessage());
-
-        String msg = "x:yyy is not valid URL";
-        e = new MalformedURLException(msg);
-        assertEquals(msg, e.getMessage());
+    public void testNextBoolean() {
+        long seed = 0x1234567890L;
+        SplittableRandom random1 = new SplittableRandom(seed);
+        SplittableRandom random2 = new SplittableRandom(seed);
+        for (int i = 0; i < 1000; i++) {
+            assertEquals(random1.nextBoolean(), random2.nextBoolean());
+        }
     }
 }
