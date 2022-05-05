@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package libcore.java.net;
-
+package libcore.java.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import java.net.MalformedURLException;
+import java.util.IllformedLocaleException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
-public class MalformedURLExceptionTest {
+public class IllformedLocaleExceptionTest {
 
     @Test
     public void testConstructor() {
-        MalformedURLException e = new MalformedURLException();
-        assertNull(e.getMessage());
+        IllformedLocaleException exception = new IllformedLocaleException();
+        assertNull(exception.getMessage());
+        assertEquals(-1, exception.getErrorIndex());
+    }
 
-        String msg = "x:yyy is not valid URL";
-        e = new MalformedURLException(msg);
-        assertEquals(msg, e.getMessage());
+    @Test
+    public void testGetErrorIndex() {
+        IllformedLocaleException exception = new IllformedLocaleException("message", 6);
+        assertEquals(6, exception.getErrorIndex());
     }
 }
