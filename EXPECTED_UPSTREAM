@@ -134,6 +134,7 @@ ojluni/src/main/java/java/lang/ClassCircularityError.java,jdk11u/jdk-11.0.13-ga,
 ojluni/src/main/java/java/lang/ClassFormatError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassFormatError.java
 ojluni/src/main/java/java/lang/ClassLoader.java,jdk8u/jdk8u60-b31,jdk/src/share/classes/java/lang/ClassLoader.java
 ojluni/src/main/java/java/lang/ClassNotFoundException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassNotFoundException.java
+ojluni/src/main/java/java/lang/ClassValue.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassValue.java
 ojluni/src/main/java/java/lang/CloneNotSupportedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/CloneNotSupportedException.java
 ojluni/src/main/java/java/lang/Cloneable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Cloneable.java
 ojluni/src/main/java/java/lang/Comparable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Comparable.java
