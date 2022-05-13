@@ -475,8 +475,10 @@ public final class Daemons {
                 monitorRefQueue = true;
                 refQueueStartCount = ReferenceQueueDaemon.INSTANCE.progressCounter.get();
             }
-
             // Avoid remembering object being finalized, so as not to keep it alive.
+            final long startMillis = System.currentTimeMillis();
+            final long startNanos = System.nanoTime();
+
             if (!sleepForNanos(finalizerTimeoutNs)) {
                 // Don't report possibly spurious timeout if we are interrupted.
                 return null;
@@ -500,11 +502,21 @@ public final class Daemons {
                 // just finished as we were timing out, in which case we may get null or a later
                 // one.  In this last case, we are very likely to discard it below.
                 Object finalizing = FinalizerDaemon.INSTANCE.finalizingObject;
+                System.logW("Watchdog: Considering throwing exception",
+                    finalizerTimeoutException(finalizing));
+                System.logW("Watchdog: Millis elapsed so far: "
+                    + (System.currentTimeMillis() - startMillis));
+                System.logW("Watchdog: Nanos so far: " + (System.nanoTime() - startNanos));
                 sleepForNanos(500 * NANOS_PER_MILLI);
                 // Recheck to make it even less likely we report the wrong finalizing object in
                 // the case which a very slow finalization just finished as we were timing out.
                 if (isActive(FINALIZER_DAEMON)
                         && FinalizerDaemon.INSTANCE.progressCounter.get() == finalizerStartCount) {
+                    System.logE("Was finalizing " + finalizing + ", now finalizing "
+                        + FinalizerDaemon.INSTANCE.finalizingObject);
+                    System.logE("Total elapsed millis: "
+                        + (System.currentTimeMillis() - startMillis));
+                    System.logE("Total nanos: " + (System.nanoTime() - startNanos));
                     return finalizerTimeoutException(finalizing);
                 }
             }
