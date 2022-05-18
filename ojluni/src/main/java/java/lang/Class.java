@@ -2695,6 +2695,9 @@ public final class Class<T> implements java.io.Serializable,
     @FastNative
     private native Method getDeclaredMethodInternal(String name, Class<?>[] args);
 
+    @FastNative
+    native ClassExt ensureExtDataPresent();
+
     private static class Caches {
         /**
          * Cache to avoid frequent recalculation of generic interfaces, which is generally uncommon.
