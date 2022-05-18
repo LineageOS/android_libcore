@@ -3110,4 +3110,34 @@ public class Transformers {
             finiFrame.copyReturnValueTo(callerFrame);
         }
     }
+
+    /** Implements {@code MethodHandles.tableSwitch}. */
+    static class TableSwitch extends Transformer {
+        private final MethodHandle fallback;
+        private final MethodHandle[] targets;
+
+        TableSwitch(MethodType type, MethodHandle fallback, MethodHandle[] targets) {
+            super(type);
+            this.fallback = fallback;
+            this.targets = targets;
+        }
+
+        @Override
+        public void transform(EmulatedStackFrame callerFrame) throws Throwable {
+            final MethodHandle selected = selectMethodHandle(callerFrame);
+            invokeExactFromTransform(selected, callerFrame);
+        }
+
+        private MethodHandle selectMethodHandle(EmulatedStackFrame callerFrame) {
+            StackFrameReader reader = new StackFrameReader();
+            reader.attach(callerFrame);
+            final int index = reader.nextInt();
+
+            if (index >= 0 && index < targets.length) {
+                return targets[index];
+            } else {
+                return fallback;
+            }
+        }
+    }
 }
