@@ -4,6 +4,485 @@
 
     <issue
         id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ArrayElementVarHandle extends VarHandle {"
+        errorLine2="                                          ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ArrayElementVarHandle.java"
+            line="26"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
+        errorLine2="                       ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="297"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
+            line="962"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="            return TWO;"
+        errorLine2="                   ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="859"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                        result = result.add(TWO);"
+        errorLine2="                                            ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="877"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                result = result.add(TWO);"
+        errorLine2="                                    ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="890"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="                z = z.modPow(TWO, this);"
+        errorLine2="                             ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="1107"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        errorLine1="        if (w.equals(TWO))"
+        errorLine2="                     ~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
+            line="3884"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteArrayViewVarHandle extends VarHandle {"
+        errorLine2="                                           ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteArrayViewVarHandle.java"
+            line="25"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="final class ByteBufferViewVarHandle extends VarHandle {"
+        errorLine2="                                            ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/ByteBufferViewVarHandle.java"
+            line="26"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeHomeLocation(cache = getCacheCarefully(type), this);"
+        errorLine2="                                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="103"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="        map.removeEntry(this);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="174"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="        map.changeEntry(this, value);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="180"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeBackupLocations(cache, this);"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="209"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="            Entry&lt;T> e = map.startEntry(this);"
+        errorLine2="                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="225"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                e = map.finishEntry(this, e);"
+        errorLine2="                                    ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="234"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="    private volatile Version&lt;T> version = new Version&lt;>(this);"
+        errorLine2="                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="303"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="    void bumpVersion() { version = new Version&lt;>(this); }"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="305"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="474"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="498"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="521"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="536"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="            addToCache(classValue, e);"
+        errorLine2="                       ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="542"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="            ClassValue&lt;?> cv = e.classValueOrNull();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="602"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 32 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="720"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="                Cleanable ref = (Cleanable) queue.remove(60 * 1000L);"
+        errorLine2="                                 ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/CleanerImpl.java"
+            line="152"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="288"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/DatagramSocketImpl.java"
+            line="333"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.spec.NamedParameterSpec`"
+        errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/spec/ECGenParameterSpec.java"
+            line="38"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPrivateKey extends EdECKey, PrivateKey {"
+        errorLine2="                                        ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPrivateKey.java"
+            line="44"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        errorLine1="public interface EdECPublicKey extends EdECKey, PublicKey {"
+        errorLine2="                                       ~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/EdECPublicKey.java"
+            line="42"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="class FieldVarHandle extends VarHandle {"
+        errorLine2="                             ~~~~~~~~~">
+        <location
+            file="libcore/libart/src/main/java/java/lang/invoke/FieldVarHandle.java"
+            line="26"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="                                || VarHandle.class.isAssignableFrom(declaringClass))) {"
+        errorLine2="                                   ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandleImpl.java"
+            line="165"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="            } else if (refc == VarHandle.class) {"
+        errorLine2="                               ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="955"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        Class&lt;?> refc = VarHandle.class;"
+        errorLine2="                        ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2580"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        errorLine1="        MethodType methodType = type.insertParameterTypes(0, VarHandle.class);"
+        errorLine2="                                                             ~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/invoke/MethodHandles.java"
+            line="2587"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        errorLine1="        implements Cleaner.Cleanable {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java"
+            line="44"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="400"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/SocketImpl.java"
+            line="443"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        errorLine1="        if (p == null || (!(p instanceof URICertStoreParameters))) {"
+        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
+            line="127"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        errorLine1="        URICertStoreParameters other = (URICertStoreParameters)p;"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/cert/URICertStoreParameters.java"
+            line="135"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPrivateKey extends XECKey, PrivateKey {"
+        errorLine2="                                       ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPrivateKey.java"
+            line="45"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        errorLine1="public interface XECPublicKey extends XECKey, PublicKey {"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/security/interfaces/XECPublicKey.java"
+            line="45"
+            column="39"/>
+    </issue>
+
+    <!-- TODO(b/205570605): The following repeats all the issues above, but with
+         required API level 32 instead of 33 in the messages. This happens in
+         unbundled Mainline builds, e.g.
+         m TARGET_PRODUCT=mainline_modules_arm TARGET_BUILD_APPS=com.android.art TARGET_BUILD_UNBUNDLED=true lint-check
+    -->
+
+    <issue
+        id="NewApi"
         message="Class requires API level 33 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="final class ArrayElementVarHandle extends VarHandle {"
         errorLine2="                                          ~~~~~~~~~">
@@ -20,7 +499,7 @@
         errorLine2="                       ~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="296"
+            line="297"
             column="24"/>
     </issue>
 
@@ -31,7 +510,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="956"
+            line="962"
             column="22"/>
     </issue>
 
@@ -42,7 +521,7 @@
         errorLine2="                   ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="865"
+            line="859"
             column="20"/>
     </issue>
 
@@ -53,7 +532,7 @@
         errorLine2="                                            ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="883"
+            line="877"
             column="45"/>
     </issue>
 
@@ -64,7 +543,7 @@
         errorLine2="                                    ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="896"
+            line="890"
             column="37"/>
     </issue>
 
@@ -75,7 +554,7 @@
         errorLine2="                             ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="1113"
+            line="1107"
             column="30"/>
     </issue>
 
@@ -86,7 +565,7 @@
         errorLine2="                     ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="3846"
+            line="3884"
             column="22"/>
     </issue>
 
@@ -110,6 +589,171 @@
             file="libcore/libart/src/main/java/java/lang/invoke/ByteBufferViewVarHandle.java"
             line="26"
             column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeHomeLocation(cache = getCacheCarefully(type), this);"
+        errorLine2="                                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="103"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="        map.removeEntry(this);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="174"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="        map.changeEntry(this, value);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="180"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeBackupLocations(cache, this);"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="209"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="            Entry&lt;T> e = map.startEntry(this);"
+        errorLine2="                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="225"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                e = map.finishEntry(this, e);"
+        errorLine2="                                    ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="234"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="    private volatile Version&lt;T> version = new Version&lt;>(this);"
+        errorLine2="                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="303"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="    void bumpVersion() { version = new Version&lt;>(this); }"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="305"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="474"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="498"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="521"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="536"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="            addToCache(classValue, e);"
+        errorLine2="                       ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="542"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="            ClassValue&lt;?> cv = e.classValueOrNull();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="602"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 33 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="720"
+            column="28"/>
     </issue>
 
     <issue
@@ -311,14 +955,14 @@
     </issue>
 
     <!-- TODO(b/205570605): The following repeats all the issues above, but with
-         required API level 32 instead of 33 in the messages. This happens in
+         required API level 34 instead of 33 in the messages. This happens in
          unbundled Mainline builds, e.g.
          m TARGET_PRODUCT=mainline_modules_arm TARGET_BUILD_APPS=com.android.art TARGET_BUILD_UNBUNDLED=true lint-check
     -->
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="final class ArrayElementVarHandle extends VarHandle {"
         errorLine2="                                          ~~~~~~~~~">
         <location
@@ -329,84 +973,84 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="        new BigDecimal(BigInteger.TWO,        2,  0, 1),"
         errorLine2="                       ~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="296"
+            line="297"
             column="24"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="                rb = BigInteger.TWO.pow(exponent).multiply(compactVal);"
         errorLine2="                     ~~~~~~~~~~~~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigDecimal.java"
-            line="956"
+            line="962"
             column="22"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="            return TWO;"
         errorLine2="                   ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="865"
+            line="859"
             column="20"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="                        result = result.add(TWO);"
         errorLine2="                                            ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="883"
+            line="877"
             column="45"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="                result = result.add(TWO);"
         errorLine2="                                    ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="896"
+            line="890"
             column="37"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="                z = z.modPow(TWO, this);"
         errorLine2="                             ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="1113"
+            line="1107"
             column="30"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.math.BigInteger#TWO`"
+        message="Field requires API level 34 (current min is 31): `java.math.BigInteger#TWO`"
         errorLine1="        if (w.equals(TWO))"
         errorLine2="                     ~~~">
         <location
             file="libcore/ojluni/src/main/java/java/math/BigInteger.java"
-            line="3846"
+            line="3884"
             column="22"/>
     </issue>
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="final class ByteArrayViewVarHandle extends VarHandle {"
         errorLine2="                                           ~~~~~~~~~">
         <location
@@ -417,7 +1061,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="final class ByteBufferViewVarHandle extends VarHandle {"
         errorLine2="                                            ~~~~~~~~~">
         <location
@@ -428,7 +1072,172 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeHomeLocation(cache = getCacheCarefully(type), this);"
+        errorLine2="                                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="103"
+            column="73"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="        map.removeEntry(this);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="174"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="        map.changeEntry(this, value);"
+        errorLine2="                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="180"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="        Entry&lt;T> e = probeBackupLocations(cache, this);"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="209"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="            Entry&lt;T> e = map.startEntry(this);"
+        errorLine2="                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="225"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                e = map.finishEntry(this, e);"
+        errorLine2="                                    ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="234"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="    private volatile Version&lt;T> version = new Version&lt;>(this);"
+        errorLine2="                                                        ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="303"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="    void bumpVersion() { version = new Version&lt;>(this); }"
+        errorLine2="                                                 ~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="305"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="474"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="498"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="521"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                removeStaleEntries(classValue);"
+        errorLine2="                                   ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="536"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="            addToCache(classValue, e);"
+        errorLine2="                       ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="542"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="            ClassValue&lt;?> cv = e.classValueOrNull();"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="602"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Cast to `ClassValue` requires API level 34 (current min is 31)"
+        errorLine1="                addToCache(classValue, e);"
+        errorLine2="                           ~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/lang/ClassValue.java"
+            line="720"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
         errorLine1="                Cleanable ref = (Cleanable) queue.remove(60 * 1000L);"
         errorLine2="                                 ~~~~~~~~~">
         <location
@@ -439,7 +1248,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        message="Field requires API level 34 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -450,7 +1259,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        message="Field requires API level 34 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -461,7 +1270,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.spec.NamedParameterSpec`"
+        message="Class requires API level 34 (current min is 31): `java.security.spec.NamedParameterSpec`"
         errorLine1="public class ECGenParameterSpec extends NamedParameterSpec implements AlgorithmParameterSpec {"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~">
         <location
@@ -472,7 +1281,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        message="Class requires API level 34 (current min is 31): `java.security.interfaces.EdECKey`"
         errorLine1="public interface EdECPrivateKey extends EdECKey, PrivateKey {"
         errorLine2="                                        ~~~~~~~">
         <location
@@ -483,7 +1292,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.interfaces.EdECKey`"
+        message="Class requires API level 34 (current min is 31): `java.security.interfaces.EdECKey`"
         errorLine1="public interface EdECPublicKey extends EdECKey, PublicKey {"
         errorLine2="                                       ~~~~~~~">
         <location
@@ -494,7 +1303,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="class FieldVarHandle extends VarHandle {"
         errorLine2="                             ~~~~~~~~~">
         <location
@@ -505,7 +1314,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="                                || VarHandle.class.isAssignableFrom(declaringClass))) {"
         errorLine2="                                   ~~~~~~~~~">
         <location
@@ -516,7 +1325,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="            } else if (refc == VarHandle.class) {"
         errorLine2="                               ~~~~~~~~~">
         <location
@@ -527,7 +1336,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="        Class&lt;?> refc = VarHandle.class;"
         errorLine2="                        ~~~~~~~~~">
         <location
@@ -538,7 +1347,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.invoke.VarHandle`"
+        message="Class requires API level 34 (current min is 31): `java.lang.invoke.VarHandle`"
         errorLine1="        MethodType methodType = type.insertParameterTypes(0, VarHandle.class);"
         errorLine2="                                                             ~~~~~~~~~">
         <location
@@ -549,7 +1358,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
+        message="Class requires API level 34 (current min is 31): `java.lang.ref.Cleaner.Cleanable`"
         errorLine1="        implements Cleaner.Cleanable {"
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
@@ -560,7 +1369,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        message="Field requires API level 34 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -571,7 +1380,7 @@
 
     <issue
         id="NewApi"
-        message="Field requires API level 32 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
+        message="Field requires API level 34 (current min is 31): `java.net.StandardSocketOptions#SO_REUSEPORT`"
         errorLine1="        } else if (name == StandardSocketOptions.SO_REUSEPORT &amp;&amp;"
         errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -582,7 +1391,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        message="Class requires API level 34 (current min is 31): `java.security.cert.URICertStoreParameters`"
         errorLine1="        if (p == null || (!(p instanceof URICertStoreParameters))) {"
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -593,7 +1402,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.cert.URICertStoreParameters`"
+        message="Class requires API level 34 (current min is 31): `java.security.cert.URICertStoreParameters`"
         errorLine1="        URICertStoreParameters other = (URICertStoreParameters)p;"
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -604,7 +1413,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        message="Class requires API level 34 (current min is 31): `java.security.interfaces.XECKey`"
         errorLine1="public interface XECPrivateKey extends XECKey, PrivateKey {"
         errorLine2="                                       ~~~~~~">
         <location
@@ -615,7 +1424,7 @@
 
     <issue
         id="NewApi"
-        message="Class requires API level 32 (current min is 31): `java.security.interfaces.XECKey`"
+        message="Class requires API level 34 (current min is 31): `java.security.interfaces.XECKey`"
         errorLine1="public interface XECPublicKey extends XECKey, PublicKey {"
         errorLine2="                                      ~~~~~~">
         <location
