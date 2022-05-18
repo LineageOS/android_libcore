@@ -2977,6 +2977,13 @@ package java.lang {
     method public Throwable getException();
   }
 
+  public abstract class ClassValue<T> {
+    ctor protected ClassValue();
+    method protected abstract T computeValue(Class<?>);
+    method public T get(Class<?>);
+    method public void remove(Class<?>);
+  }
+
   public class CloneNotSupportedException extends java.lang.Exception {
     ctor public CloneNotSupportedException();
     ctor public CloneNotSupportedException(String);

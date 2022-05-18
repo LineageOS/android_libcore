@@ -134,6 +134,7 @@ ojluni/src/main/java/java/lang/ClassCircularityError.java,jdk11u/jdk-11.0.13-ga,
 ojluni/src/main/java/java/lang/ClassFormatError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassFormatError.java
 ojluni/src/main/java/java/lang/ClassLoader.java,jdk8u/jdk8u60-b31,jdk/src/share/classes/java/lang/ClassLoader.java
 ojluni/src/main/java/java/lang/ClassNotFoundException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassNotFoundException.java
+ojluni/src/main/java/java/lang/ClassValue.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassValue.java
 ojluni/src/main/java/java/lang/CloneNotSupportedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/CloneNotSupportedException.java
 ojluni/src/main/java/java/lang/Cloneable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Cloneable.java
 ojluni/src/main/java/java/lang/Comparable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Comparable.java
@@ -1809,6 +1810,7 @@ ojluni/src/main/resources/java/time/chrono/hijrah-config-islamic-umalqura.proper
 ojluni/src/test/java/io/Reader/NullReader.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/NullReader.java
 ojluni/src/test/java/io/Reader/TransferTo.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/TransferTo.java
 ojluni/src/test/java/io/Writer/NullWriter.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Writer/NullWriter.java
+ojluni/src/test/java/lang/invoke/ClassValueTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/ClassValueTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleBaseTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleBaseTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleMethodReferenceTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleMethodReferenceTest.java
