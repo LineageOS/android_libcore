@@ -64,6 +64,9 @@ public class NativeAllocationRegistry {
     private final long size;
     // Bit mask for "is_malloced" information.
     private static final long IS_MALLOCED = 0x1;
+    // Assumed size for malloced objects that don't specify a size.
+    // We use an even value close to 100 that is unlikely to be explicitly provided.
+    private static final long DEFAULT_SIZE = 98;
 
     /**
      * Return a {@link NativeAllocationRegistry} for native memory that is mostly
@@ -78,6 +81,8 @@ public class NativeAllocationRegistry {
      *                     kind of native allocation
      * @param size         estimated size in bytes of the part of the described
      *                     native memory that is not allocated with system malloc.
+     *                     Used as input to the garbage collector triggering algorithm,
+     *                     and by heap analysis tools.
      *                     Approximate values are acceptable.
      * @return allocated {@link NativeAllocationRegistry}
      * @throws IllegalArgumentException If {@code size} is negative
@@ -107,8 +112,10 @@ public class NativeAllocationRegistry {
      *                     kind of native allocation
      * @param size         estimated size in bytes of the part of the described
      *                     native memory allocated with system malloc.
-     *                     Approximate values are acceptable. For sizes less than
-     *                     a few hundered KB, use the simplified overload below.
+     *                     Approximate values, including wild guesses, are acceptable.
+     *                     Unlike {@code createNonmalloced()}, this size is used
+     *                     only by heap analysis tools; garbage collector triggering
+     *                     instead looks directly at {@code mallinfo()} information.
      * @return allocated {@link NativeAllocationRegistry}
      * @throws IllegalArgumentException If {@code size} is negative
      *
@@ -122,8 +129,10 @@ public class NativeAllocationRegistry {
 
     /**
      * Return a {@link NativeAllocationRegistry} for native memory that is mostly
-     * allocated by the system memory allocator. This version is preferred
-     * for smaller objects (typically less than a few hundred KB).
+     * allocated by the system memory allocator. This version uses a default size,
+     * thus providing less information than desired for heap analysis tools.
+     * It should only be used when the native allocation is expected to be small,
+     * but there is no reasonable way to provide a meaningful size estimate.
      * @param classLoader  ClassLoader that was used to load the native
      *                     library {@code freeFunction} belongs to.
      * @param freeFunction address of a native function of type
@@ -137,7 +146,7 @@ public class NativeAllocationRegistry {
     @libcore.api.IntraCoreApi
     public static NativeAllocationRegistry createMalloced(
             @NonNull ClassLoader classLoader, long freeFunction) {
-        return new NativeAllocationRegistry(classLoader, freeFunction, 0, true);
+        return new NativeAllocationRegistry(classLoader, freeFunction, DEFAULT_SIZE, true);
     }
 
     /**
