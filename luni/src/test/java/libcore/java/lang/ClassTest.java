@@ -15,24 +15,40 @@
  */
 package libcore.java.lang;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import junit.framework.TestCase;
-
+import dalvik.system.InMemoryDexClassLoader;
 import dalvik.system.PathClassLoader;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.util.stream.Stream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-public class ClassTest extends TestCase {
+import libcore.io.Streams;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+@RunWith(JUnit4.class)
+public class ClassTest {
 
     interface Foo {
         public void foo();
@@ -50,7 +66,8 @@ public class ClassTest extends TestCase {
 
     }
 
-    public void test_getGenericSuperclass_nullReturnCases() {
+    @Test
+    public void getGenericSuperclass_nullReturnCases() {
         // Should always return null for interfaces.
         assertNull(Foo.class.getGenericSuperclass());
         assertNull(ParameterizedFoo.class.getGenericSuperclass());
@@ -62,11 +79,13 @@ public class ClassTest extends TestCase {
         assertNull(int.class.getGenericSuperclass());
     }
 
-    public void test_getGenericSuperclass_returnsObjectForArrays() {
+    @Test
+    public void getGenericSuperclass_returnsObjectForArrays() {
         assertSame(Object.class, (new Integer[0]).getClass().getGenericSuperclass());
     }
 
-    public void test_b28833829() throws Exception {
+    @Test
+    public void b28833829() throws Exception {
         File f = File.createTempFile("temp_b28833829", ".dex");
         try (InputStream is =
             getClass().getClassLoader().getResourceAsStream("TestBug28833829.dex");
@@ -100,7 +119,8 @@ public class ClassTest extends TestCase {
     }
     class X implements A { }
     class Y extends X implements B { }
-    public void test_getField() {
+    @Test
+    public void getField() {
         try {
             assertEquals(A.class.getField("name"), X.class.getField("name"));
         } catch (NoSuchFieldException e) {
@@ -121,7 +141,8 @@ public class ClassTest extends TestCase {
     }
     abstract class Z implements D { }
 
-    public void test_getMethod() {
+    @Test
+    public void getMethod() {
       try {
           assertEquals(Z.class.getMethod("foo"), D.class.getMethod("foo"));
       } catch (NoSuchMethodException e) {
@@ -129,7 +150,8 @@ public class ClassTest extends TestCase {
       }
     }
 
-    public void test_getPrimitiveType_null() throws Throwable {
+    @Test
+    public void getPrimitiveType_null() throws Throwable {
         try {
             getPrimitiveType(null);
             fail();
@@ -138,7 +160,8 @@ public class ClassTest extends TestCase {
         }
     }
 
-    public void test_getPrimitiveType_invalid() throws Throwable {
+    @Test
+    public void getPrimitiveType_invalid() throws Throwable {
         List<String> invalidNames = Arrays.asList("", "java.lang.Object", "invalid",
                 "Boolean", "java.lang.Boolean", "java/lang/Boolean", "Ljava/lang/Boolean;");
         for (String name : invalidNames) {
@@ -151,7 +174,8 @@ public class ClassTest extends TestCase {
         }
     }
 
-    public void test_getPrimitiveType_valid() throws Throwable {
+    @Test
+    public void getPrimitiveType_valid() throws Throwable {
         checkPrimitiveType("boolean", boolean.class, Boolean.TYPE,
             boolean[].class.getComponentType());
         checkPrimitiveType("byte", byte.class, Byte.TYPE, byte[].class.getComponentType());
@@ -225,7 +249,8 @@ public class ClassTest extends TestCase {
         }
     }
 
-    public void test_getVirtualMethod() throws Exception {
+    @Test
+    public void getVirtualMethod() throws Exception {
         final Class<?>[] noArgs = new Class<?>[] { };
 
         TestGetVirtualMethod instance = new TestGetVirtualMethod();
@@ -264,7 +289,8 @@ public class ClassTest extends TestCase {
         assertNull(TestGetVirtualMethod.class.getInstanceMethod("staticMethod", noArgs));
     }
 
-    public void test_toString() throws Exception {
+    @Test
+    public void toStringTest() throws Exception {
         final String outerClassName = getClass().getName();
         final String packageProtectedClassName = PackageProtectedClass.class.getName();
 
@@ -301,7 +327,8 @@ public class ClassTest extends TestCase {
         assertEquals(expected, clazz.toString());
     }
 
-    public void test_getTypeName() throws Exception {
+    @Test
+    public void getTypeName() throws Exception {
         final String outerClassName = getClass().getName();
         final String packageProtectedClassName = PackageProtectedClass.class.getName();
 
@@ -330,7 +357,8 @@ public class ClassTest extends TestCase {
         assertEquals(expected, clazz.getTypeName());
     }
 
-    public void test_toGenericString() throws Exception {
+    @Test
+    public void toGenericString() throws Exception {
         final String outerClassName = getClass().getName();
         final String packageProtectedClassName = PackageProtectedClass.class.getName();
 
@@ -375,4 +403,129 @@ public class ClassTest extends TestCase {
             T extends Number,
             U extends Function<? extends Number, ? super Number>>
             extends Comparable<T> {}
+
+    @Test
+    public void nestMate() {
+        try {
+            ClassLoader classLoader = createClassLoaderForResource("core-tests-smali.dex");
+
+            Class hostClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupHost");
+            Class innerAClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupInnerA");
+            Class bClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupB");
+            Class innerFakeClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupInnerFake");
+            Class selfClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupSelf");
+
+            checkNestHost(hostClass, hostClass);
+            checkNestMembers(hostClass, new Class[] { hostClass, innerAClass });
+
+            checkNestHost(innerAClass, hostClass);
+            checkNestMembers(innerAClass, new Class[] { hostClass, innerAClass });
+
+            checkNestHost(innerFakeClass, innerFakeClass);
+            checkNestMembers(innerFakeClass, new Class[] { innerFakeClass });
+
+            checkNestHost(bClass, bClass);
+            checkNestMembers(bClass, new Class[] { bClass });
+
+            checkNestHost(selfClass, selfClass);
+            checkNestMembers(selfClass, new Class[] { selfClass });
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    private static ClassLoader createClassLoaderForResource(String resourcePath)
+            throws Exception {
+        byte[] data;
+        try (InputStream is =
+                ThreadTest.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            data = Streams.readFullyNoClose(is);
+        }
+        return new InMemoryDexClassLoader(ByteBuffer.wrap(data),
+                ThreadTest.class.getClassLoader());
+    }
+
+    private static boolean checkNestHost(Class<?> clazz, Class<?> expected) {
+        Class<?> host = getNestHost(clazz);
+        if ( !expected.equals(host) ) {
+            System.err.println("Expected host " + expected + " got " + host);
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean checkNestMembers(Class<?> clazz, Class<?>[] expected) {
+        Class<?>[] members = getNestMembers(clazz);
+        if ( !Arrays.deepEquals(expected, members) ) {
+            System.err.println("Expected members " + expected + " got " + Arrays.toString(members));
+            return false;
+        }
+        System.out.println("Found members for " + clazz + ": " + Arrays.toString(members));
+        return true;
+    }
+
+    private static Class<?> getNestHost(Class<?> clazz) {
+        Class host = doGetNestHost(clazz);
+        return (nestHostHasMember(host, clazz) ? host : clazz);
+    }
+
+    private static Class<?> doGetNestHost(Class<?> clazz) {
+        try {
+            Class annotationClass = Class.forName("dalvik.annotation.NestHost");
+            Object hostAnnotation = clazz.getAnnotation(annotationClass);
+            if (hostAnnotation == null) {
+                return clazz;
+            }
+            Method hostMethod = annotationClass.getMethod("host", (Class[]) null);
+            return (Class) hostMethod.invoke(hostAnnotation);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    private static boolean nestHostHasMember(Class<?> host, Class<?> member) {
+        if (host.equals(member)) {
+            return true;
+        }
+        Class[] members = doGetNestMembers(host);
+        if (members == null) {
+            return false;
+        }
+        if (!Arrays.stream(members).anyMatch(member::equals)) {
+            return false;
+        }
+        return true;
+    }
+
+    private static Class<?>[] doGetNestMembers(Class<?> clazz) {
+        try {
+            Class annotationClass = Class.forName("dalvik.annotation.NestMembers");
+            Object membersAnnotation = clazz.getAnnotation(annotationClass);
+            if (membersAnnotation == null) {
+                return null;
+            }
+            Method membersMethod = annotationClass.getMethod("classes", (Class[]) null);
+            return (Class[]) membersMethod.invoke(membersAnnotation);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    private static Class<?>[] getNestMembers(Class<?> clazz) {
+        Class[] members = doGetNestMembers(clazz);
+        final Class[] selfArray = { clazz };
+        if (members == null) {
+            Class host = doGetNestHost(clazz);
+            if (host == clazz) {
+                return selfArray;
+            }
+            if (!nestHostHasMember(host, clazz)) {
+                return selfArray;
+            }
+            return getNestMembers(host);
+        }
+        return Stream.concat(Arrays.stream(selfArray), Arrays.stream(members))
+            .filter(member -> clazz.equals(doGetNestHost(member))).toArray(Class[]::new);
+    }
+
 }
