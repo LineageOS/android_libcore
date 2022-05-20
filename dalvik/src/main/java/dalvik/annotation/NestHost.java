@@ -48,6 +48,6 @@ import java.lang.reflect.Parameter;
      * It is expected that if the NestHost annotation is used, the host is a different class from
      * the current, annotated, one.
      */
-    // Class<?> host();
+    Class<?> host();
 }
 

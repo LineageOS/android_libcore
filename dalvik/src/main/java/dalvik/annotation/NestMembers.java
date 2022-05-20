@@ -48,6 +48,6 @@ import java.lang.reflect.Parameter;
      * The nest host is implicitly a member of the nest group and does not need
      * to be included in the list of member classes.
      */
-    // Class<?>[] classes();
+    Class<?>[] classes();
 }
 
