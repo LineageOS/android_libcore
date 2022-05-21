@@ -476,7 +476,7 @@
     </issue>
 
     <!-- TODO(b/205570605): The following repeats all the issues above, but with
-         required API level 32 instead of 33 in the messages. This happens in
+         required API level 32 and 34 instead of 33 in the messages. This happens in
          unbundled Mainline builds, e.g.
          m TARGET_PRODUCT=mainline_modules_arm TARGET_BUILD_APPS=com.android.art TARGET_BUILD_UNBUNDLED=true lint-check
     -->
@@ -954,11 +954,6 @@
             column="39"/>
     </issue>
 
-    <!-- TODO(b/205570605): The following repeats all the issues above, but with
-         required API level 34 instead of 33 in the messages. This happens in
-         unbundled Mainline builds, e.g.
-         m TARGET_PRODUCT=mainline_modules_arm TARGET_BUILD_APPS=com.android.art TARGET_BUILD_UNBUNDLED=true lint-check
-    -->
 
     <issue
         id="NewApi"
