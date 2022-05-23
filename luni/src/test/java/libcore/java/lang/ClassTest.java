@@ -533,4 +533,144 @@ public class ClassTest {
         }
     }
 
+    @Test
+    public void recordClass() {
+        try {
+            ClassLoader classLoader = createClassLoaderForResource("core-tests-smali.dex");
+
+            Class recordClassA = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.RecordClassA");
+            Class nonFinalRecordClass = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.NonFinalRecordClass");
+            Class emptyRecordClass = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.EmptyRecordClass");
+            Class unequalComponentArraysRecordClass = classLoader.loadClass(
+                    "libcore.java.lang.recordclasses.UnequalComponentArraysRecordClass");
+
+            assertTrue(getIsRecord(recordClassA));
+            checkRecordComponents(recordClassA,
+                    new RecordComponent[] {
+                        new RecordComponent("x", int.class),
+                        new RecordComponent("y", Integer.class)
+                    });
+
+            assertFalse(getIsRecord(nonFinalRecordClass));
+            checkRecordComponents(nonFinalRecordClass, (RecordComponent[]) null);
+
+            assertTrue(getIsRecord(emptyRecordClass));
+            checkRecordComponents(emptyRecordClass,
+                    new RecordComponent[] {  });
+
+            assertFalse(getIsRecord(unequalComponentArraysRecordClass));
+            checkRecordComponents(unequalComponentArraysRecordClass, (RecordComponent[]) null);
+
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    static boolean getIsRecord(Class<?> clazz) {
+        if (!canClassBeRecord(clazz)) {
+            return false;
+        }
+        RecordComponent[] components = doGetRecordComponents(clazz);
+        return (components != null);
+    }
+
+    static boolean canClassBeRecord(Class<?> clazz) {
+        if (clazz.isPrimitive() || clazz.isArray() || Void.TYPE.equals(clazz)) {
+            return false;
+        }
+        if (!Modifier.isFinal( clazz.getModifiers() )) {
+            return false;
+        }
+        // TODO: Check it extends java.lang.Record
+        return true;
+    }
+
+    static void checkRecordComponents(Class<?> clazz, RecordComponent[] expected) {
+        if (!canClassBeRecord(clazz)) {
+            if (expected != null) {
+                fail("Expected record with components " + Arrays.toString(expected)
+                        + ", got class that is not a record");
+            }
+            return;
+        }
+        RecordComponent[] components = doGetRecordComponents(clazz);
+        assertArrayEquals(expected, components);
+    }
+
+    static private class RecordComponent {
+        final String name;
+        final Class<?> type;
+
+        RecordComponent(String name, Class<?> type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        String getName() {
+            return name;
+        }
+
+        Class<?> getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return ("(" + name + ", " + type.getName() + ")");
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (!other.getClass().equals(RecordComponent.class)) {
+                return false;
+            }
+            RecordComponent otherComponent = (RecordComponent)other;
+            if (!name.equals(otherComponent.name)) {
+                return false;
+            }
+            if (!type.equals(otherComponent.type)) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    private static RecordComponent[] doGetRecordComponents(Class<?> clazz) {
+        try {
+            Class annotationClass = Class.forName("dalvik.annotation.Record");
+            Object recordAnnotation = clazz.getAnnotation(annotationClass);
+            if (recordAnnotation == null) {
+                return null;
+            }
+            Method componentNamesMethod = annotationClass.getMethod("componentNames", (Class[]) null);
+            String[] names = (String[]) componentNamesMethod.invoke(recordAnnotation);
+            Method componentTypesMethod = annotationClass.getMethod("componentTypes", (Class[]) null);
+            Class<?>[] types = (Class<?>[]) componentTypesMethod.invoke(recordAnnotation);
+
+            if (names == null || types == null) {
+                return null;
+            }
+
+            if (names.length != types.length) {
+                return null;
+            }
+
+            RecordComponent[] components = new RecordComponent[names.length];
+
+            for (int i = 0; i < names.length; ++i) {
+                if (names[i] == null || types[i] == null) {
+                    return null;
+                }
+                components[i] = new RecordComponent(names[i], types[i]);
+            }
+            return components;
+
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
 }
