@@ -519,6 +519,7 @@ java_library_static {
         "//cts/apps/CtsVerifier",
         "//cts/tests/tests/keystore",
         "//cts/tests/tests/net",
+        "//cts/hostsidetests/statsdatom/apps/statsdapp",
         "//cts/tests/tests/net/api23Test",
         "//external/apache-harmony",
         "//frameworks/base/core/tests/coretests",
