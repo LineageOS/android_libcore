@@ -108,16 +108,23 @@ accordingly
 
 ## Workflow in command lines
 ### Setup
-1. Switch to the expected_upstream branch
-```shell
-git branch <local_branch> aosp/expected_upstream
-git checkout <local_branch>
-```
 
-2. Install tools
-```shell
-source ./tools/expected_upstream/install_tools.sh
-```
+1. Ensure you have a local expected_upstream branch
+   ```shell
+   git fetch aosp expected_upstream
+   ```
+
+2. Switch to the expected_upstream branch
+   ```shell
+   git branch <local_branch> aosp/expected_upstream
+   git checkout <local_branch>
+   ```
+
+3. Install tools
+   ```shell
+   source ./tools/expected_upstream/install_tools.sh
+   ```
+
 ## Upgrade a java class to a higher OpenJDK version
 For example, upgrade `java.lang.String` to 11.0.13-ga version:
 
