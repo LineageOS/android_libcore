@@ -15,7 +15,9 @@
  */
 package libcore.java.lang;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -415,20 +417,20 @@ public class ClassTest {
             Class innerFakeClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupInnerFake");
             Class selfClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupSelf");
 
-            checkNestHost(hostClass, hostClass);
-            checkNestMembers(hostClass, new Class[] { hostClass, innerAClass });
+            assertEquals(hostClass, getNestHost(hostClass));
+            assertArrayEquals(new Class[] { hostClass, innerAClass }, getNestMembers(hostClass));
 
-            checkNestHost(innerAClass, hostClass);
-            checkNestMembers(innerAClass, new Class[] { hostClass, innerAClass });
+            assertEquals(hostClass, getNestHost(innerAClass));
+            assertArrayEquals(new Class[] { hostClass, innerAClass }, getNestMembers(innerAClass));
 
-            checkNestHost(innerFakeClass, innerFakeClass);
-            checkNestMembers(innerFakeClass, new Class[] { innerFakeClass });
+            assertEquals(innerFakeClass, getNestHost(innerFakeClass));
+            assertArrayEquals(new Class[] { innerFakeClass }, getNestMembers(innerFakeClass));
 
-            checkNestHost(bClass, bClass);
-            checkNestMembers(bClass, new Class[] { bClass });
+            assertEquals(bClass, getNestHost(bClass));
+            assertArrayEquals(new Class[] { bClass }, getNestMembers(bClass));
 
-            checkNestHost(selfClass, selfClass);
-            checkNestMembers(selfClass, new Class[] { selfClass });
+            assertEquals(selfClass, getNestHost(selfClass));
+            assertArrayEquals(new Class[] { selfClass }, getNestMembers(selfClass));
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -443,25 +445,6 @@ public class ClassTest {
         }
         return new InMemoryDexClassLoader(ByteBuffer.wrap(data),
                 ThreadTest.class.getClassLoader());
-    }
-
-    private static boolean checkNestHost(Class<?> clazz, Class<?> expected) {
-        Class<?> host = getNestHost(clazz);
-        if ( !expected.equals(host) ) {
-            System.err.println("Expected host " + expected + " got " + host);
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean checkNestMembers(Class<?> clazz, Class<?>[] expected) {
-        Class<?>[] members = getNestMembers(clazz);
-        if ( !Arrays.deepEquals(expected, members) ) {
-            System.err.println("Expected members " + expected + " got " + Arrays.toString(members));
-            return false;
-        }
-        System.out.println("Found members for " + clazz + ": " + Arrays.toString(members));
-        return true;
     }
 
     private static Class<?> getNestHost(Class<?> clazz) {
