@@ -484,8 +484,10 @@ public class TestDateTimeFormatterBuilder {
             {"HH:MM:ss"},
             {"HHMMSS"},
             {"HH:MM:SS"},
-            {"+H"},
-            {"+HMM"},
+            // Android-changed: Android T updates java.time, where these formats are actually
+            // allowed. Changes are delivered in art module from M-2022-07 mainline train
+            // {"+H"},
+            // {"+HMM"},
             {"+HHM"},
             {"+A"},
         };
@@ -684,7 +686,9 @@ public class TestDateTimeFormatterBuilder {
             {"LLLLL", "Text(MonthOfYear,NARROW_STANDALONE)"},
 
             {"D", "Value(DayOfYear)"},
-            {"DD", "Value(DayOfYear,2)"},
+            // Android-changed: This was changed on Android T.
+            // Change is delivered by art module in M-2022-07 mainline train.
+            // {"DD", "Value(DayOfYear,2)"},
             {"DDD", "Value(DayOfYear,3)"},
 
             {"d", "Value(DayOfMonth)"},
@@ -746,13 +750,18 @@ public class TestDateTimeFormatterBuilder {
             {"SSS", "Fraction(NanoOfSecond,3,3)"},
             {"SSSSSSSSS", "Fraction(NanoOfSecond,9,9)"},
 
-            {"A", "Value(MilliOfDay)"},
-            {"AA", "Value(MilliOfDay,2)"},
-            {"AAA", "Value(MilliOfDay,3)"},
+            // Android-changed: This was changed on Android T.
+            // {"A", "Value(MilliOfDay)"},
+            // {"AA", "Value(MilliOfDay,2)"},
+            // {"AAA", "Value(MilliOfDay,3)"},
 
-            {"n", "Value(NanoOfSecond)"},
-            {"nn", "Value(NanoOfSecond,2)"},
-            {"nnn", "Value(NanoOfSecond,3)"},
+            // {"n", "Value(NanoOfSecond)"},
+            // {"nn", "Value(NanoOfSecond,2)"},
+            // {"nnn", "Value(NanoOfSecond,3)"},
+
+            // {"N", "Value(NanoOfDay)"},
+            // {"NN", "Value(NanoOfDay,2)"},
+            // {"NNN", "Value(NanoOfDay,3)"},
 
             {"N", "Value(NanoOfDay)"},
             {"NN", "Value(NanoOfDay,2)"},
@@ -782,7 +791,8 @@ public class TestDateTimeFormatterBuilder {
             {"xxxxx", "Offset(+HH:MM:ss,'+00:00')"},  // LDML
 
             {"ppH", "Pad(Value(HourOfDay),2)"},
-            {"pppDD", "Pad(Value(DayOfYear,2),3)"},
+            // Android-changed: This was changed on Android T.
+            // {"pppDD", "Pad(Value(DayOfYear,2),3)"},
 
             {"yyyy[-MM[-dd", "Value(YearOfEra,4,19,EXCEEDS_PAD)['-'Value(MonthOfYear,2)['-'Value(DayOfMonth,2)]]"},
             {"yyyy[-MM[-dd]]", "Value(YearOfEra,4,19,EXCEEDS_PAD)['-'Value(MonthOfYear,2)['-'Value(DayOfMonth,2)]]"},

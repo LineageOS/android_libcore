@@ -176,9 +176,11 @@ public class TCKLocalizedFieldParser extends AbstractTestPrinterParser {
             {"Y-w-e",  "2008-01-1", 0, 9, LocalDate.of(2007, 12, 30)},
             {"Y-w-e",  "2008-52-1", 0, 9, LocalDate.of(2008, 12, 21)},
             {"Y-w-e",  "2008-52-7", 0, 9, LocalDate.of(2008, 12, 27)},
-            {"Y-w-e",  "2009-01-01", 0, 10, LocalDate.of(2008, 12, 28)},
-            {"Y-w-e",  "2009-01-04", 0, 10, LocalDate.of(2008, 12, 31)},
-            {"Y-w-e",  "2009-01-05", 0, 10, LocalDate.of(2009, 1, 1)},
+            // Android-changed: Android T updates java.time.
+            // Changes are delivered in art module from M-2022-07 mainline train
+            // {"Y-w-e",  "2009-01-01", 0, 10, LocalDate.of(2008, 12, 28)},
+            // {"Y-w-e",  "2009-01-04", 0, 10, LocalDate.of(2008, 12, 31)},
+            // {"Y-w-e",  "2009-01-05", 0, 10, LocalDate.of(2009, 1, 1)},
        };
     }
 
