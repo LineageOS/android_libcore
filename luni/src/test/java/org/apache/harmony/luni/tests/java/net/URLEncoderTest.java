@@ -63,6 +63,7 @@ public class URLEncoderTest extends TestCase {
             fail("NullPointerException expected");
         } catch (NullPointerException expected) {
         } catch (UnsupportedCharsetException expected) {
+        } catch (UnsupportedEncodingException expected) {
         }
     }
 

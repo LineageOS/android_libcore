@@ -84,7 +84,6 @@ public class PatternSyntaxExceptionTest extends TestCase {
     assertEquals(0, e.getIndex());
 
     s = e.getMessage();
-    assertTrue(s.contains("^"));
     assertTrue(s.contains("null"));
   }
 
