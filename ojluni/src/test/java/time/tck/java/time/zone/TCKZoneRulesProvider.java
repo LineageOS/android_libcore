@@ -91,10 +91,12 @@ public class TCKZoneRulesProvider {
     public void test_getAvailableGroupIds() {
         Set<String> zoneIds = ZoneRulesProvider.getAvailableZoneIds();
         assertEquals(zoneIds.contains("Europe/London"), true);
-        zoneIds.clear();
-        assertEquals(zoneIds.size(), 0);
-        Set<String> zoneIds2 = ZoneRulesProvider.getAvailableZoneIds();
-        assertEquals(zoneIds2.contains("Europe/London"), true);
+        // Android-removed: in Android T method returns unmodifiable instance instead of copy.
+        // Change is delivered by art module in M-2022-07 mainline train.
+        // zoneIds.clear();
+        // assertEquals(zoneIds.size(), 0);
+        // Set<String> zoneIds2 = ZoneRulesProvider.getAvailableZoneIds();
+        // assertEquals(zoneIds2.contains("Europe/London"), true);
     }
 
     //-----------------------------------------------------------------------
