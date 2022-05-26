@@ -1515,7 +1515,7 @@ ojluni/src/main/java/sun/nio/cs/StreamDecoder.java,jdk8u/jdk8u121-b13,jdk/src/sh
 ojluni/src/main/java/sun/nio/cs/StreamEncoder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/cs/StreamEncoder.java
 ojluni/src/main/java/sun/nio/cs/ThreadLocalCoders.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/cs/ThreadLocalCoders.java
 ojluni/src/main/java/sun/nio/fs/AbstractBasicFileAttributeView.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/nio/fs/AbstractBasicFileAttributeView.java
-ojluni/src/main/java/sun/nio/fs/AbstractFileSystemProvider.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/fs/AbstractFileSystemProvider.java
+ojluni/src/main/java/sun/nio/fs/AbstractFileSystemProvider.java,jdk17u/jdk-17.0.2-ga,jdk/src/share/classes/sun/nio/fs/AbstractFileSystemProvider.java
 ojluni/src/main/java/sun/nio/fs/AbstractFileTypeDetector.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/fs/AbstractFileTypeDetector.java
 ojluni/src/main/java/sun/nio/fs/AbstractPath.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/fs/AbstractPath.java
 ojluni/src/main/java/sun/nio/fs/AbstractPoller.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/fs/AbstractPoller.java
@@ -1554,10 +1554,10 @@ ojluni/src/main/java/sun/nio/fs/UnixFileModeAttribute.java,jdk11u/jdk-11.0.13-ga
 ojluni/src/main/java/sun/nio/fs/UnixFileStore.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixFileStore.java
 ojluni/src/main/java/sun/nio/fs/UnixFileStoreAttributes.java,jdk11u/jdk-11.0.13-ga,src/java.base/unix/classes/sun/nio/fs/UnixFileStoreAttributes.java
 ojluni/src/main/java/sun/nio/fs/UnixFileSystem.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixFileSystem.java
-ojluni/src/main/java/sun/nio/fs/UnixFileSystemProvider.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixFileSystemProvider.java
+ojluni/src/main/java/sun/nio/fs/UnixFileSystemProvider.java,jdk17u/jdk-17.0.2-ga,src/java.base/unix/classes/sun/nio/fs/UnixFileSystemProvider.java
 ojluni/src/main/java/sun/nio/fs/UnixMountEntry.java,jdk11u/jdk-11.0.13-ga,src/java.base/unix/classes/sun/nio/fs/UnixMountEntry.java
-ojluni/src/main/java/sun/nio/fs/UnixNativeDispatcher.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixNativeDispatcher.java
-ojluni/src/main/java/sun/nio/fs/UnixPath.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixPath.java
+ojluni/src/main/java/sun/nio/fs/UnixNativeDispatcher.java,jdk17u/jdk-17.0.2-ga,src/java.base/unix/classes/sun/nio/fs/UnixNativeDispatcher.java
+ojluni/src/main/java/sun/nio/fs/UnixPath.java,jdk17u/jdk-17.0.2-ga,src/java.base/unix/classes/sun/nio/fs/UnixPath.java
 ojluni/src/main/java/sun/nio/fs/UnixSecureDirectoryStream.java,jdk11u/jdk-11.0.13-ga,src/java.base/unix/classes/sun/nio/fs/UnixSecureDirectoryStream.java
 ojluni/src/main/java/sun/nio/fs/UnixUriUtils.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/fs/UnixUriUtils.java
 ojluni/src/main/java/sun/nio/fs/UnixUserPrincipals.java,jdk11u/jdk-11.0.13-ga,src/java.base/unix/classes/sun/nio/fs/UnixUserPrincipals.java
