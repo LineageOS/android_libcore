@@ -100,6 +100,7 @@ ojluni/src/main/java/java/io/PushbackReader.java,jdk11u/jdk-11.0.13-ga,src/java.
 ojluni/src/main/java/java/io/RandomAccessFile.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/RandomAccessFile.java
 ojluni/src/main/java/java/io/Reader.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/Reader.java
 ojluni/src/main/java/java/io/SequenceInputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/SequenceInputStream.java
+ojluni/src/main/java/java/io/Serial.java,jdk17u/jdk-17.0.2-ga,jdk/src/java.base/share/classes/java/io/Serial.java
 ojluni/src/main/java/java/io/SerialCallbackContext.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/SerialCallbackContext.java
 ojluni/src/main/java/java/io/Serializable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/Serializable.java
 ojluni/src/main/java/java/io/SerializablePermission.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/SerializablePermission.java
