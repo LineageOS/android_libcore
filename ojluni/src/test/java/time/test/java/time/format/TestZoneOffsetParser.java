@@ -296,7 +296,9 @@ public class TestZoneOffsetParser extends AbstractTestPrinterParser {
     @DataProvider(name="bigOffsets")
     Object[][] provider_bigOffsets() {
         return new Object[][] {
-            {"+HH", "+59", 59 * 3600},
+            // Android-changed: Android T updates java.time, where these formats are actually
+            // allowed. Changes are delivered in art module from M-2022-07 mainline train.
+            // {"+HH", "+59", 59 * 3600},
             {"+HH", "-19", -(19 * 3600)},
 
             {"+HHMM", "+1801", 18 * 3600 + 1 * 60},
