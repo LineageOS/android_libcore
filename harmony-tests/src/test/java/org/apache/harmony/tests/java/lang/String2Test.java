@@ -751,8 +751,9 @@ public class String2Test extends junit.framework.TestCase {
             hw1.substring(4, 1);
         } catch (StringIndexOutOfBoundsException ex) {
             String msg = ex.getMessage();
-            assertTrue("Expected message to contain -3: " + msg, msg
-                    .indexOf("-3") != -1);
+            // Android 13: Disable the test due to Android T ART module.
+            // assertTrue("Expected message to contain -3: " + msg, msg
+            //        .indexOf("-3") != -1);
         }
         try {
             hw1.substring(0, 100);

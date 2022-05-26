@@ -149,6 +149,7 @@ public final class UrlEncodingTest extends TestCase {
             assertEquals("ab", URLDecoder.decode("ab", "no-such-charset"));
             // no fail()
         } catch (UnsupportedCharsetException expected) {
+        } catch (UnsupportedEncodingException expected) {
         }
     }
 

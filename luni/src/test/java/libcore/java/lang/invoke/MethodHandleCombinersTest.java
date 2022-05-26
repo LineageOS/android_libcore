@@ -855,11 +855,6 @@ public class MethodHandleCombinersTest extends TestCase {
         MethodHandle exactInvoker = MethodHandles.exactInvoker(target.type());
         assertEquals("barbar", (String) exactInvoker.invoke(target, "bar", "bar"));
         try {
-            String foo = (String) exactInvoker.invoke(target, (Object) returnBar(), "bar");
-            fail();
-        } catch (WrongMethodTypeException expected) {
-        }
-        try {
             String foo = (String) exactInvoker.invoke(target, "bar", "bar", 24);
             fail();
         } catch (WrongMethodTypeException expected) {

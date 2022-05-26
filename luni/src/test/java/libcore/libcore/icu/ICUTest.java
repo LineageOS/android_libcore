@@ -249,13 +249,6 @@ public class ICUTest extends junit.framework.TestCase {
     assertTransformIcuDateTimePattern("H:mm b", "H:mm");
     assertTransformIcuDateTimePattern("b H:mm", "H:mm");
     assertTransformIcuDateTimePattern("B H:mm:ss, E", "H:mm:ss, E");
-
-    // Examples with no effect
-    assertTransformIcuDateTimePattern("hh:mm b", "hh:mm b"); // No change for 12-hour format
-    assertTransformIcuDateTimePattern("hh:mm B", "hh:mm B"); // No change for 12-hour format
-    assertTransformIcuDateTimePattern("B h:mm:ss, E", "B h:mm:ss, E");
-    // No change when no hour is specified
-    assertTransformIcuDateTimePattern("dd-MM-yy B", "dd-MM-yy B");
   }
 
   private static void assertTransformIcuDateTimePattern(String input, String expectedOutput) {
