@@ -624,7 +624,9 @@ public class TestUmmAlQuraChronology {
     @Test
     public void test_chronoFields() {
         ChronoLocalDate hdate = HijrahChronology.INSTANCE.date(1434, 6, 28);
-        assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH), 3);
+        // Android-changed: This was changed on Android T.
+        // Change is delivered by art module in M-2022-07 mainline train.
+        // assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH), 3);
         assertEquals(hdate.get(ChronoField.ALIGNED_DAY_OF_WEEK_IN_YEAR), 7);
         assertEquals(hdate.get(ChronoField.ALIGNED_WEEK_OF_MONTH), 4);
         assertEquals(hdate.get(ChronoField.ALIGNED_WEEK_OF_YEAR), 25);

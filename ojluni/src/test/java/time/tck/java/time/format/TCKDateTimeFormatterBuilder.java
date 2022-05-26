@@ -403,8 +403,10 @@ public class TCKDateTimeFormatterBuilder {
             {"HH:MM:ss"},
             {"HHMMSS"},
             {"HH:MM:SS"},
-            {"+H"},
-            {"+HMM"},
+            // Android-changed: Android T updates java.time, where these formats are actually
+            // allowed. Changes are delivered in art module from M-2022-07 mainline train
+            // {"+H"},
+            // {"+HMM"},
             {"+HHM"},
             {"+A"},
         };
