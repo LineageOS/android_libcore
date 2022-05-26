@@ -11,7 +11,7 @@ with:
 
 make smali
 smali assemble libcore/luni/src/test/java/libcore/java/lang/smali/*.smali \
-    -o libcore/luni/src/test/resources/libcore/java/lang/smali/nestgroup.dex
+    -o libcore/luni/src/test/resources/libcore/java/lang/smali/testclasses.dex
 
 ---------------------
 
@@ -65,4 +65,63 @@ package libcore.java.lang.nestgroup;
 import dalvik.annotation.NestHost;
 
 public class NestGroupSelf {
+}
+
+// SealedBaseClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+@PermittedSubclasses(classes={FinalDerivedClass.class,
+                              SealedDerivedClass.class,
+                              StandaloneClass.class})
+class SealedBaseClass {
+}
+
+// FinalDerivedClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+final class FinalDerivedClass extends SealedBaseClass {
+}
+
+// SealedDerivedClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+@PermittedSubclasses(classes={OpenDerivedClass.class})
+class SealedDerivedClass {
+}
+
+// OpenDerivedClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+class OpenDerivedClass extends SealedDerivedClass {
+}
+
+// StandaloneClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+class StandaloneClass {
+}
+
+// SealedFinalClass.java
+
+package libcore.java.lang.sealedclasses;
+
+import dalvik.annotation.PermittedSubclasses;
+
+@PermittedSubclasses(classes={FinalDerivedClass.class})
+final class SealedFinalClass {
 }
