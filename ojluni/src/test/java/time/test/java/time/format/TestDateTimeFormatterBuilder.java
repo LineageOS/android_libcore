@@ -763,10 +763,6 @@ public class TestDateTimeFormatterBuilder {
             // {"NN", "Value(NanoOfDay,2)"},
             // {"NNN", "Value(NanoOfDay,3)"},
 
-            {"N", "Value(NanoOfDay)"},
-            {"NN", "Value(NanoOfDay,2)"},
-            {"NNN", "Value(NanoOfDay,3)"},
-
             {"z", "ZoneText(SHORT)"},
             {"zz", "ZoneText(SHORT)"},
             {"zzz", "ZoneText(SHORT)"},
