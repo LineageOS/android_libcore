@@ -262,6 +262,12 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     assertEquals("Thursday, January 1 – Friday, January 2, 1970", formatDateRange(l, utc, midnight, nextMidnight, flags));
   }
 
+  /**
+   * ICU 71 started to use "at" instead of "," as the preposition for the date and time.
+   */
+  private static final String DATETIME_PREPOSITION = VersionInfo.ICU_VERSION.getMajor() >= 71
+      ? " at" : ",";
+
   // http://b/10560853 - when the start and end times are otherwise on the same day,
   // an end time 0 ms into the next day is considered to belong to the previous day.
   public void test10560853_for_single_day_events() throws Exception {
@@ -270,8 +276,11 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
 
     int flags = FORMAT_SHOW_TIME | FORMAT_24HOUR | FORMAT_SHOW_DATE;
 
-    assertEquals("January 1, 1970, 22:00 – 00:00", formatDateRange(l, utc, 22 * HOUR, 24 * HOUR, flags));
-    assertEquals("January 1, 1970, 22:00 – January 2, 1970, 00:30", formatDateRange(l, utc, 22 * HOUR, 24 * HOUR + 30 * MINUTE, flags));
+    assertEquals("January 1, 1970, 22:00 – 00:00",
+        formatDateRange(l, utc, 22 * HOUR, 24 * HOUR, flags));
+    assertEquals("January 1, 1970" + DATETIME_PREPOSITION + " 22:00 – January 2, 1970"
+            + DATETIME_PREPOSITION + " 00:30",
+        formatDateRange(l, utc, 22 * HOUR, 24 * HOUR + 30 * MINUTE, flags));
   }
 
   // The fix for http://b/10560853 didn't work except for the day around the epoch, which was
@@ -288,7 +297,7 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     long jan_1_1980 = c.getTimeInMillis();
     assertEquals("January 1, 1980, 22:00 – 00:00",
                  formatDateRange(l, utc, jan_1_1980 + 22 * HOUR, jan_1_1980 + 24 * HOUR, flags));
-    assertEquals("January 1, 1980, 22:00 – January 2, 1980, 00:30",
+    assertEquals("January 1, 1980" + DATETIME_PREPOSITION + " 22:00 – January 2, 1980" + DATETIME_PREPOSITION + " 00:30",
                  formatDateRange(l, utc, jan_1_1980 + 22 * HOUR, jan_1_1980 + 24 * HOUR + 30 * MINUTE, flags));
   }
 
@@ -321,19 +330,24 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
 
     int flags = FORMAT_SHOW_DATE | FORMAT_SHOW_WEEKDAY | FORMAT_SHOW_TIME | FORMAT_24HOUR;
 
-    assertEquals("Thursday, January 1, 1970, 00:00", formatDateRange(l, utc, 0L, 0L, flags));
+    assertEquals("Thursday, January 1, 1970" + DATETIME_PREPOSITION + " 00:00",
+        formatDateRange(l, utc, 0L, 0L, flags));
 
     long t1833 = ((long) Integer.MIN_VALUE + Integer.MIN_VALUE) * 1000L;
-    assertEquals("Sunday, November 24, 1833, 17:31", formatDateRange(l, utc, t1833, t1833, flags));
+    assertEquals("Sunday, November 24, 1833" + DATETIME_PREPOSITION + " 17:31",
+        formatDateRange(l, utc, t1833, t1833, flags));
 
     long t1901 = Integer.MIN_VALUE * 1000L;
-    assertEquals("Friday, December 13, 1901, 20:45", formatDateRange(l, utc, t1901, t1901, flags));
+    assertEquals("Friday, December 13, 1901" + DATETIME_PREPOSITION + " 20:45",
+        formatDateRange(l, utc, t1901, t1901, flags));
 
     long t2038 = Integer.MAX_VALUE * 1000L;
-    assertEquals("Tuesday, January 19, 2038, 03:14", formatDateRange(l, utc, t2038, t2038, flags));
+    assertEquals("Tuesday, January 19, 2038" + DATETIME_PREPOSITION + " 03:14",
+        formatDateRange(l, utc, t2038, t2038, flags));
 
     long t2106 = (2L + Integer.MAX_VALUE + Integer.MAX_VALUE) * 1000L;
-    assertEquals("Sunday, February 7, 2106, 06:28", formatDateRange(l, utc, t2106, t2106, flags));
+    assertEquals("Sunday, February 7, 2106" + DATETIME_PREPOSITION + " 06:28",
+        formatDateRange(l, utc, t2106, t2106, flags));
   }
 
   // http://b/10209343 - for the current year, we should honor the FORMAT_SHOW_YEAR flags.
@@ -449,17 +463,17 @@ public class DateIntervalFormatTest extends junit.framework.TestCase {
     // behaviour of suppressing the date for the end...
     assertEquals("February 27, 2007, 04:00 – 00:00", fmt.apply(1172548800000L, 1172620800000L));
     // ...unless the start-point is also midnight, in which case we need dates to disambiguate.
-    assertEquals("February 27, 2007, 00:00 – February 28, 2007, 00:00",
+    assertEquals("February 27, 2007" + DATETIME_PREPOSITION + " 00:00 – February 28, 2007" + DATETIME_PREPOSITION + " 00:00",
             fmt.apply(1172534400000L, 1172620800000L));
     // We want to show the date if the end-point is a millisecond after midnight the following
     // day, or if it is exactly midnight the day after that.
-    assertEquals("February 27, 2007, 04:00 – February 28, 2007, 00:00",
+    assertEquals("February 27, 2007" + DATETIME_PREPOSITION + " 04:00 – February 28, 2007" + DATETIME_PREPOSITION + " 00:00",
             fmt.apply(1172548800000L, 1172620800001L));
-    assertEquals("February 27, 2007, 04:00 – March 1, 2007, 00:00",
+    assertEquals("February 27, 2007" + DATETIME_PREPOSITION + " 04:00 – March 1, 2007" + DATETIME_PREPOSITION + " 00:00",
             fmt.apply(1172548800000L, 1172707200000L));
     // We want to show the date if the start-point is anything less than a minute after midnight,
     // since that gets displayed as midnight...
-    assertEquals("February 27, 2007, 00:00 – February 28, 2007, 00:00",
+    assertEquals("February 27, 2007" + DATETIME_PREPOSITION + " 00:00 – February 28, 2007" + DATETIME_PREPOSITION + " 00:00",
             fmt.apply(1172534459999L, 1172620800000L));
     // ...but not if it is exactly one minute after midnight.
     assertEquals("February 27, 2007, 00:01 – 00:00", fmt.apply(1172534460000L, 1172620800000L));
