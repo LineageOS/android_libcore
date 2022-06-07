@@ -5682,6 +5682,7 @@ package java.net {
   public enum StandardProtocolFamily implements java.net.ProtocolFamily {
     enum_constant public static final java.net.StandardProtocolFamily INET;
     enum_constant public static final java.net.StandardProtocolFamily INET6;
+    enum_constant public static final java.net.StandardProtocolFamily UNIX;
   }
 
   public final class StandardSocketOptions {
