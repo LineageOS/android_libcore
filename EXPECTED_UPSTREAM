@@ -354,7 +354,7 @@ ojluni/src/main/java/java/net/SocketSecrets.java,jdk8u/jdk8u121-b13,jdk/src/shar
 ojluni/src/main/java/java/net/SocketTimeoutException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/SocketTimeoutException.java
 ojluni/src/main/java/java/net/SocksConsts.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/SocksConsts.java
 ojluni/src/main/java/java/net/SocksSocketImpl.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/SocksSocketImpl.java
-ojluni/src/main/java/java/net/StandardProtocolFamily.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/StandardProtocolFamily.java
+ojluni/src/main/java/java/net/StandardProtocolFamily.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/net/StandardProtocolFamily.java
 ojluni/src/main/java/java/net/StandardSocketOptions.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/StandardSocketOptions.java
 ojluni/src/main/java/java/net/URI.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/URI.java
 ojluni/src/main/java/java/net/URISyntaxException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/URISyntaxException.java
