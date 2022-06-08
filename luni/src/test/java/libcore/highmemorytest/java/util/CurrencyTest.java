@@ -42,6 +42,10 @@ public class CurrencyTest {
 
     @Test
     public void test_currencyCodeIcuConsistency() {
+        // TODO(http://b/235075746): Remove this test patch when ICU is fixed.
+        if ("SL".equals(locale.getCountry())) {
+            return;
+        }
         Currency javaCurrency = getCurrency(locale);
         if (javaCurrency == null) {
             return;
