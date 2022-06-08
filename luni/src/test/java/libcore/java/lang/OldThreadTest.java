@@ -296,7 +296,7 @@ public class OldThreadTest extends junit.framework.TestCase {
         public void run() {
             for(int i = 0; i < 1000; i++) {
                 if(isDoYield)
-                    yield();
+                    this.yield();
                 counter ++;
             }
         }
