@@ -2896,6 +2896,8 @@ package java.lang {
     method @NonNull public java.lang.reflect.Method[] getMethods() throws java.lang.SecurityException;
     method public int getModifiers();
     method @NonNull public String getName();
+    method @NonNull public Class<?> getNestHost();
+    method @NonNull public Class<?>[] getNestMembers();
     method @Nullable public Package getPackage();
     method @NonNull public String getPackageName();
     method @Nullable public java.security.ProtectionDomain getProtectionDomain();

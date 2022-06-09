@@ -4,7 +4,7 @@
 
 
 # annotations
-.annotation runtime Ldalvik/annotation/NestMembers;
+.annotation system Ldalvik/annotation/NestMembers;
     classes = {
         Llibcore/java/lang/nestgroup/NestGroupInnerA;,
         Llibcore/java/lang/nestgroup/NestGroupB;

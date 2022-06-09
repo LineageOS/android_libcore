@@ -418,20 +418,26 @@ public class ClassTest {
             Class innerFakeClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupInnerFake");
             Class selfClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupSelf");
 
-            assertEquals(hostClass, getNestHost(hostClass));
-            assertArrayEquals(new Class[] { hostClass, innerAClass }, getNestMembers(hostClass));
+            assertEquals(int.class, int.class.getNestHost());
+            assertArrayEquals(new Class[] { int.class }, int.class.getNestMembers());
 
-            assertEquals(hostClass, getNestHost(innerAClass));
-            assertArrayEquals(new Class[] { hostClass, innerAClass }, getNestMembers(innerAClass));
+            assertEquals(Integer[].class, Integer[].class.getNestHost());
+            assertArrayEquals(new Class[] { Integer[].class }, Integer[].class.getNestMembers());
 
-            assertEquals(innerFakeClass, getNestHost(innerFakeClass));
-            assertArrayEquals(new Class[] { innerFakeClass }, getNestMembers(innerFakeClass));
+            assertEquals(hostClass, hostClass.getNestHost());
+            assertArrayEquals(new Class[] { hostClass, innerAClass }, hostClass.getNestMembers());
 
-            assertEquals(bClass, getNestHost(bClass));
-            assertArrayEquals(new Class[] { bClass }, getNestMembers(bClass));
+            assertEquals(hostClass, innerAClass.getNestHost());
+            assertArrayEquals(new Class[] { hostClass, innerAClass }, innerAClass.getNestMembers());
 
-            assertEquals(selfClass, getNestHost(selfClass));
-            assertArrayEquals(new Class[] { selfClass }, getNestMembers(selfClass));
+            assertEquals(innerFakeClass, innerFakeClass.getNestHost());
+            assertArrayEquals(new Class[] { innerFakeClass }, innerFakeClass.getNestMembers());
+
+            assertEquals(bClass, bClass.getNestHost());
+            assertArrayEquals(new Class[] { bClass }, bClass.getNestMembers());
+
+            assertEquals(selfClass, selfClass.getNestHost());
+            assertArrayEquals(new Class[] { selfClass }, selfClass.getNestMembers());
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
@@ -446,70 +452,6 @@ public class ClassTest {
         }
         return new InMemoryDexClassLoader(ByteBuffer.wrap(data),
                 ThreadTest.class.getClassLoader());
-    }
-
-    private static Class<?> getNestHost(Class<?> clazz) {
-        Class host = doGetNestHost(clazz);
-        return (nestHostHasMember(host, clazz) ? host : clazz);
-    }
-
-    private static Class<?> doGetNestHost(Class<?> clazz) {
-        try {
-            Class annotationClass = Class.forName("dalvik.annotation.NestHost");
-            Object hostAnnotation = clazz.getAnnotation(annotationClass);
-            if (hostAnnotation == null) {
-                return clazz;
-            }
-            Method hostMethod = annotationClass.getMethod("host", (Class[]) null);
-            return (Class) hostMethod.invoke(hostAnnotation);
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    private static boolean nestHostHasMember(Class<?> host, Class<?> member) {
-        if (host.equals(member)) {
-            return true;
-        }
-        Class[] members = doGetNestMembers(host);
-        if (members == null) {
-            return false;
-        }
-        if (!Arrays.stream(members).anyMatch(member::equals)) {
-            return false;
-        }
-        return true;
-    }
-
-    private static Class<?>[] doGetNestMembers(Class<?> clazz) {
-        try {
-            Class annotationClass = Class.forName("dalvik.annotation.NestMembers");
-            Object membersAnnotation = clazz.getAnnotation(annotationClass);
-            if (membersAnnotation == null) {
-                return null;
-            }
-            Method membersMethod = annotationClass.getMethod("classes", (Class[]) null);
-            return (Class[]) membersMethod.invoke(membersAnnotation);
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    private static Class<?>[] getNestMembers(Class<?> clazz) {
-        Class[] members = doGetNestMembers(clazz);
-        final Class[] selfArray = { clazz };
-        if (members == null) {
-            Class host = doGetNestHost(clazz);
-            if (host == clazz) {
-                return selfArray;
-            }
-            if (!nestHostHasMember(host, clazz)) {
-                return selfArray;
-            }
-            return getNestMembers(host);
-        }
-        return Stream.concat(Arrays.stream(selfArray), Arrays.stream(members))
-            .filter(member -> clazz.equals(doGetNestHost(member))).toArray(Class[]::new);
     }
 
     @Test
