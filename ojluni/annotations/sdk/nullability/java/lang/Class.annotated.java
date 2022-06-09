@@ -169,4 +169,8 @@ public java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNu
 public native <A extends java.lang.annotation.Annotation> @libcore.util.Nullable A getDeclaredAnnotation(@libcore.util.NonNull java.lang.Class<A> annotationClass);
 
 public native java.lang.annotation.@libcore.util.NonNull Annotation @libcore.util.NonNull [] getDeclaredAnnotations();
+
+public @libcore.util.NonNull Class<?> getNestHost();
+
+public @libcore.util.NonNull Class<?> @libcore.util.NonNull [] getNestMembers();
 }
