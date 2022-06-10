@@ -133,10 +133,9 @@ public class HostnameVerifierTest extends TestCase implements
         // The certificate has this name in the altnames section, but OkHostnameVerifier drops
         // any altnames that are improperly encoded according to RFC 5280, which requires
         // non-ASCII characters to be encoded in ASCII via Punycode.
-        // Removed due to b/235018993
-        // assertFalse(verifier.verify("\u82b1\u5b50.bar.com", session));
-        // assertFalse(verifier.verify("\u82b1\u5b50.co.jp", session));
-        // assertFalse(verifier.verify("a.\u82b1\u5b50.co.jp", session));
+        assertFalse(verifier.verify("\u82b1\u5b50.bar.com", session));
+        assertFalse(verifier.verify("\u82b1\u5b50.co.jp", session));
+        assertFalse(verifier.verify("a.\u82b1\u5b50.co.jp", session));
     }
 
     public void testSubjectAlt() throws Exception {
