@@ -1896,6 +1896,9 @@ ojluni/src/test/java/nio/channels/SelectionKey/AtomicUpdates.java,jdk11u/jdk-11.
 ojluni/src/test/java/nio/channels/Selector/ByteServer.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/nio/channels/Selector/ByteServer.java
 ojluni/src/test/java/nio/channels/Selector/SelectAfterRead.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/nio/channels/Selector/SelectAfterRead.java
 ojluni/src/test/java/nio/channels/Selector/SelectWithConsumer.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/nio/channels/Selector/SelectWithConsumer.java
+ojluni/src/test/java/nio/file/Path/Misc.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/Misc.java
+ojluni/src/test/java/nio/file/Path/PathOps.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/PathOps.java
+ojluni/src/test/java/nio/file/Path/UriImportExport.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/UriImportExport.java
 ojluni/src/test/java/security/cert/CertPathEncodingTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/CertPathEncodingTest.java
 ojluni/src/test/java/security/cert/GetInstance.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/GetInstance.java
 ojluni/src/test/java/security/cert/URICertStoreParameters/TestBasic.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/URICertStoreParameters/TestBasic.java
