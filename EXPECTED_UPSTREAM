@@ -1361,6 +1361,7 @@ ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk11u/jdk-11.0.1
 ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
 ojluni/src/main/java/jdk/internal/util/ArraysSupport.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/util/ArraysSupport.java
 ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/util/Preconditions.java
+ojluni/src/main/java/jdk/internal/util/StaticProperty.java,dk17u/jdk-17.0.2-ga,src/java.base/share/classes/jdk/internal/util/StaticProperty.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Contended.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Contended.java
 ojluni/src/main/java/jdk/internal/vm/annotation/ReservedStackAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/vm/annotation/ReservedStackAccess.java
 ojluni/src/main/java/jdk/internal/vm/annotation/Stable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/vm/annotation/Stable.java
