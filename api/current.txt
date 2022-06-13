@@ -10872,6 +10872,7 @@ package java.time {
     method public static java.time.Clock systemDefaultZone();
     method public static java.time.Clock systemUTC();
     method public static java.time.Clock tick(java.time.Clock, java.time.Duration);
+    method public static java.time.Clock tickMillis(java.time.ZoneId);
     method public static java.time.Clock tickMinutes(java.time.ZoneId);
     method public static java.time.Clock tickSeconds(java.time.ZoneId);
     method public abstract java.time.Clock withZone(java.time.ZoneId);
@@ -11008,6 +11009,8 @@ package java.time {
     method public java.time.LocalDateTime atTime(int, int, int);
     method public java.time.LocalDateTime atTime(int, int, int, int);
     method public java.time.OffsetDateTime atTime(java.time.OffsetTime);
+    method public java.util.stream.Stream<java.time.LocalDate> datesUntil(java.time.LocalDate);
+    method public java.util.stream.Stream<java.time.LocalDate> datesUntil(java.time.LocalDate, java.time.Period);
     method public static java.time.LocalDate from(java.time.temporal.TemporalAccessor);
     method public java.time.chrono.IsoChronology getChronology();
     method public int getDayOfMonth();
@@ -11030,6 +11033,7 @@ package java.time {
     method public static java.time.LocalDate of(int, java.time.Month, int);
     method public static java.time.LocalDate of(int, int, int);
     method public static java.time.LocalDate ofEpochDay(long);
+    method public static java.time.LocalDate ofInstant(java.time.Instant, java.time.ZoneId);
     method public static java.time.LocalDate ofYearDay(int, int);
     method public static java.time.LocalDate parse(CharSequence);
     method public static java.time.LocalDate parse(CharSequence, java.time.format.DateTimeFormatter);
@@ -11039,6 +11043,7 @@ package java.time {
     method public java.time.LocalDate plusMonths(long);
     method public java.time.LocalDate plusWeeks(long);
     method public java.time.LocalDate plusYears(long);
+    method public long toEpochSecond(java.time.LocalTime, java.time.ZoneOffset);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
     method public java.time.Period until(java.time.chrono.ChronoLocalDate);
     method public java.time.LocalDate with(java.time.temporal.TemporalAdjuster);
@@ -11047,6 +11052,7 @@ package java.time {
     method public java.time.LocalDate withDayOfYear(int);
     method public java.time.LocalDate withMonth(int);
     method public java.time.LocalDate withYear(int);
+    field public static final java.time.LocalDate EPOCH;
     field public static final java.time.LocalDate MAX;
     field public static final java.time.LocalDate MIN;
   }
@@ -11346,6 +11352,7 @@ package java.time {
     method public java.time.OffsetTime plusMinutes(long);
     method public java.time.OffsetTime plusNanos(long);
     method public java.time.OffsetTime plusSeconds(long);
+    method public long toEpochSecond(java.time.LocalDate);
     method public java.time.LocalTime toLocalTime();
     method public java.time.OffsetTime truncatedTo(java.time.temporal.TemporalUnit);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
@@ -11703,6 +11710,8 @@ package java.time.chrono {
     method public default java.time.chrono.ChronoLocalDate dateNow(java.time.Clock);
     method public default java.time.chrono.ChronoLocalDate dateYearDay(java.time.chrono.Era, int, int);
     method public java.time.chrono.ChronoLocalDate dateYearDay(int, int);
+    method public default long epochSecond(int, int, int, int, int, int, java.time.ZoneOffset);
+    method public default long epochSecond(java.time.chrono.Era, int, int, int, int, int, int, java.time.ZoneOffset);
     method public boolean equals(Object);
     method public java.time.chrono.Era eraOf(int);
     method public java.util.List<java.time.chrono.Era> eras();
@@ -11992,6 +12001,7 @@ package java.time.format {
     method public java.util.Set<java.time.temporal.TemporalField> getResolverFields();
     method public java.time.format.ResolverStyle getResolverStyle();
     method public java.time.ZoneId getZone();
+    method public java.time.format.DateTimeFormatter localizedBy(java.util.Locale);
     method public static java.time.format.DateTimeFormatter ofLocalizedDate(java.time.format.FormatStyle);
     method public static java.time.format.DateTimeFormatter ofLocalizedDateTime(java.time.format.FormatStyle);
     method public static java.time.format.DateTimeFormatter ofLocalizedDateTime(java.time.format.FormatStyle, java.time.format.FormatStyle);
@@ -12037,6 +12047,8 @@ package java.time.format {
     method public java.time.format.DateTimeFormatterBuilder appendChronologyId();
     method public java.time.format.DateTimeFormatterBuilder appendChronologyText(java.time.format.TextStyle);
     method public java.time.format.DateTimeFormatterBuilder appendFraction(java.time.temporal.TemporalField, int, int, boolean);
+    method public java.time.format.DateTimeFormatterBuilder appendGenericZoneText(java.time.format.TextStyle);
+    method public java.time.format.DateTimeFormatterBuilder appendGenericZoneText(java.time.format.TextStyle, java.util.Set<java.time.ZoneId>);
     method public java.time.format.DateTimeFormatterBuilder appendInstant();
     method public java.time.format.DateTimeFormatterBuilder appendInstant(int);
     method public java.time.format.DateTimeFormatterBuilder appendLiteral(char);
