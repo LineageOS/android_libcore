@@ -7036,6 +7036,8 @@ package java.nio.file {
     method public boolean isAbsolute();
     method public java.util.Iterator<java.nio.file.Path> iterator();
     method public java.nio.file.Path normalize();
+    method public static java.nio.file.Path of(String, java.lang.String...);
+    method public static java.nio.file.Path of(java.net.URI);
     method public java.nio.file.Path relativize(java.nio.file.Path);
     method public java.nio.file.Path resolve(java.nio.file.Path);
     method public java.nio.file.Path resolve(String);
