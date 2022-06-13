@@ -192,7 +192,9 @@ public final class ZygoteHooks {
 
         // Enable memory-mapped coverage if JaCoCo is in the boot classpath. system_server is
         // skipped due to being persistent and having its own coverage writing mechanism.
-        if (!isSystemServer && enableMemoryMappedDataMethod != null) {
+        // Child zygote processes are also skipped so that file descriptors are not kept open
+        // when the child zygote process forks again.
+        if (!isSystemServer && !isChildZygote && enableMemoryMappedDataMethod != null) {
           try {
             enableMemoryMappedDataMethod.invoke(null);
           } catch (ReflectiveOperationException e) {
