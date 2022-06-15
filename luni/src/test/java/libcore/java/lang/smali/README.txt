@@ -95,7 +95,7 @@ package libcore.java.lang.sealedclasses;
 import dalvik.annotation.PermittedSubclasses;
 
 @PermittedSubclasses(classes={OpenDerivedClass.class})
-class SealedDerivedClass {
+class SealedDerivedClass extends SealedBaseClass {
 }
 
 // OpenDerivedClass.java

@@ -43,6 +43,6 @@ import java.lang.reflect.Parameter;
      * Represents the list of classes and interfaces which are authorized to directly extend or
      * implement the current class or interface.
      */
-    Class<?>[] classes();
+    // Class<?>[] value();
 }
 
