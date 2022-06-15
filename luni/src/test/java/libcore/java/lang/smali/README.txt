@@ -125,3 +125,47 @@ import dalvik.annotation.PermittedSubclasses;
 @PermittedSubclasses(classes={FinalDerivedClass.class})
 final class SealedFinalClass {
 }
+
+// RecordClassA.java
+
+package libcore.java.lang.recordclasses;
+
+import dalvik.annotation.Record;
+
+@Record(componentNames={"x", "y"},
+        componentTypes={int.class, Integer.class})
+final class RecordClassA {
+}
+
+// NonFinalRecordClass.java
+
+package libcore.java.lang.recordclasses;
+
+import dalvik.annotation.Record;
+
+@Record(componentNames={"x", "y"},
+        componentTypes={int.class, Integer.class})
+class NonFinalRecordClass {
+}
+
+// EmptyRecordClass.java
+
+package libcore.java.lang.recordclasses;
+
+import dalvik.annotation.Record;
+
+@Record(componentNames={},
+        componentTypes={})
+final class EmptyRecordClass {
+}
+
+// UnequalComponentArraysRecordClass.java
+
+package libcore.java.lang.recordclasses;
+
+import dalvik.annotation.Record;
+
+@Record(componentNames={"x", "y"},
+        componentTypes={int.class})
+final class UnequalComponentArraysRecordClass {
+}
