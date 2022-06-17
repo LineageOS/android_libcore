@@ -2870,4 +2870,130 @@ public final class Class<T> implements java.io.Serializable,
         private static final BasicLruCache<Class, Type[]> genericInterfaces
             = new BasicLruCache<Class, Type[]>(8);
     }
+
+    // Android-changed: Removed @jls tags.
+    /**
+     * Returns an array containing {@code Class} objects representing the
+     * direct subinterfaces or subclasses permitted to extend or
+     * implement this class or interface if it is sealed.  The order of such elements
+     * is unspecified. The array is empty if this sealed class or interface has no
+     * permitted subclass. If this {@code Class} object represents a primitive type,
+     * {@code void}, an array type, or a class or interface that is not sealed,
+     * that is {@link #isSealed()} returns {@code false}, then this method returns {@code null}.
+     * Conversely, if {@link #isSealed()} returns {@code true}, then this method
+     * returns a non-null value.
+     *
+     * For each class or interface {@code C} which is recorded as a permitted
+     * direct subinterface or subclass of this class or interface,
+     * this method attempts to obtain the {@code Class}
+     * object for {@code C} (using {@linkplain #getClassLoader() the defining class
+     * loader} of the current {@code Class} object).
+     * The {@code Class} objects which can be obtained and which are direct
+     * subinterfaces or subclasses of this class or interface,
+     * are indicated by elements of the returned array. If a {@code Class} object
+     * cannot be obtained, it is silently ignored, and not included in the result
+     * array.
+     *
+     * @return an array of {@code Class} objects of the permitted subclasses of this class or interface,
+     *         or {@code null} if this class or interface is not sealed.
+     *
+     * @since 17
+     */
+    // Android-removed: CallerSensitive annotation
+    // @CallerSensitive
+    public Class<?>[] getPermittedSubclasses() {
+        Class<?>[] subClasses;
+        // Android-changed: A final class cannot be sealed.
+        // if (isArray() || isPrimitive() || (subClasses = getPermittedSubclassesFromAnnotation()) == null) {
+        if (isArray() || isPrimitive() || Modifier.isFinal( getModifiers() ) ||
+                (subClasses = getPermittedSubclassesFromAnnotation()) == null) {
+            return null;
+        }
+        // Android-changed: Avoid using lambdas.
+        /*
+        if (subClasses.length > 0) {
+            if (Arrays.stream(subClasses).anyMatch(c -> !isDirectSubType(c))) {
+                subClasses = Arrays.stream(subClasses)
+                                   .filter(this::isDirectSubType)
+                                   .toArray(s -> new Class<?>[s]);
+            }
+        }
+        */
+        int directSubClassCount = getDirectSubClassCount(subClasses);
+        if (directSubClassCount < subClasses.length) {
+            Class[] tmp = new Class[directSubClassCount];
+            int idx = 0;
+            for (Class<?> c : subClasses) {
+                if (isDirectSubType(c)) {
+                    tmp[idx] = c;
+                    ++idx;
+                }
+            }
+            subClasses = tmp;
+        }
+
+        // Android-removed: SecurityManager usage.
+        /*
+        if (subClasses.length > 0) {
+            // If we return some classes we need a security check:
+            @SuppressWarnings("removal")
+            SecurityManager sm = System.getSecurityManager();
+            if (sm != null) {
+                checkPackageAccessForPermittedSubclasses(sm,
+                                             ClassLoader.getClassLoader(Reflection.getCallerClass()),
+                                             subClasses);
+            }
+        }
+        */
+        return subClasses;
+    }
+
+    private int getDirectSubClassCount(Class<?>[] subClasses) {
+        int result = 0;
+        for (Class<?> c : subClasses) {
+            if (isDirectSubType(c)) {
+                 ++result;
+            }
+        }
+        return result;
+    }
+
+    private boolean isDirectSubType(Class<?> c) {
+        if (isInterface()) {
+            // Android-changed: Use of getInterfaces
+            //for (Class<?> i : c.getInterfaces(/* cloneArray */ false)) {
+            for (Class<?> i : c.getInterfaces()) {
+                if (i == this) {
+                    return true;
+                }
+            }
+        } else {
+            return c.getSuperclass() == this;
+        }
+        return false;
+    }
+
+    // Android-changed: Removed @jls tags.
+    /**
+     * Returns {@code true} if and only if this {@code Class} object represents
+     * a sealed class or interface. If this {@code Class} object represents a
+     * primitive type, {@code void}, or an array type, this method returns
+     * {@code false}. A sealed class or interface has (possibly zero) permitted
+     * subclasses; {@link #getPermittedSubclasses()} returns a non-null but
+     * possibly empty value for a sealed class or interface.
+     *
+     * @return {@code true} if and only if this {@code Class} object represents
+     * a sealed class or interface.
+     *
+     * @since 17
+     */
+    public boolean isSealed() {
+        if (isArray() || isPrimitive()) {
+            return false;
+        }
+        return getPermittedSubclasses() != null;
+    }
+
+    @FastNative
+    private native Class<?>[] getPermittedSubclassesFromAnnotation();
 }
