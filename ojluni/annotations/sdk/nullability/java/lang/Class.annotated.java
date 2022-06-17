@@ -173,4 +173,8 @@ public native java.lang.annotation.@libcore.util.NonNull Annotation @libcore.uti
 public @libcore.util.NonNull Class<?> getNestHost();
 
 public @libcore.util.NonNull Class<?> @libcore.util.NonNull [] getNestMembers();
+
+public @libcore.util.Nullable Class<?> @libcore.util.NonNull [] getPermittedSubclasses();
+
+public boolean isSealed() { throw new RuntimeException("Stub!"); }
 }
