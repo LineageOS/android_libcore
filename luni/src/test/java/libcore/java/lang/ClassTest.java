@@ -466,68 +466,25 @@ public class ClassTest {
             Class standaloneClass = classLoader.loadClass("libcore.java.lang.sealedclasses.StandaloneClass");
             Class sealedFinalClass = classLoader.loadClass("libcore.java.lang.sealedclasses.SealedFinalClass");
 
-            assertTrue(getIsSealed(sealedBaseClass));
-            checkPermittedSubclasses(sealedBaseClass,
-                    new Class[] { finalDerivedClass, sealedDerivedClass, standaloneClass});
+            assertTrue(sealedBaseClass.isSealed());
+            assertArrayEquals(new Class[] { finalDerivedClass, sealedDerivedClass},
+                    sealedBaseClass.getPermittedSubclasses());
 
-            assertFalse(getIsSealed(finalDerivedClass));
-            checkPermittedSubclasses(finalDerivedClass, (Class[]) null);
+            assertFalse(finalDerivedClass.isSealed());
+            assertArrayEquals((Class[]) null, finalDerivedClass.getPermittedSubclasses());
 
-            assertTrue(getIsSealed(sealedDerivedClass));
-            checkPermittedSubclasses(sealedDerivedClass, new Class[] { openDerivedClass});
+            assertTrue(sealedDerivedClass.isSealed());
+            assertArrayEquals(new Class[] { openDerivedClass}, sealedDerivedClass.getPermittedSubclasses());
 
-            assertFalse(getIsSealed(openDerivedClass));
-            checkPermittedSubclasses(openDerivedClass, (Class[]) null);
+            assertFalse(openDerivedClass.isSealed());
+            assertArrayEquals((Class[]) null, openDerivedClass.getPermittedSubclasses());
 
-            assertFalse(getIsSealed(standaloneClass));
-            checkPermittedSubclasses(standaloneClass, (Class[]) null);
+            assertFalse(standaloneClass.isSealed());
+            assertArrayEquals((Class[]) null, standaloneClass.getPermittedSubclasses());
 
-            assertFalse(getIsSealed(sealedFinalClass));
-            checkPermittedSubclasses(sealedFinalClass, (Class[]) null);
+            assertFalse(sealedFinalClass.isSealed());
+            assertArrayEquals((Class[]) null, sealedFinalClass.getPermittedSubclasses());
 
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
-        }
-    }
-
-    static void checkPermittedSubclasses(Class<?> clazz, Class<?>[] expected) {
-        if (!canClassBeSealed(clazz)) {
-            if (expected != null) {
-                fail();
-            }
-            return;
-        }
-        Class<?>[] subclasses = doGetPermittedSubclasses(clazz);
-        assertArrayEquals(expected, subclasses);
-    }
-
-    static boolean getIsSealed(Class<?> clazz) {
-        if (!canClassBeSealed(clazz)) {
-            return false;
-        }
-        Class<?>[] subclasses = doGetPermittedSubclasses(clazz);
-        return (subclasses != null);
-    }
-
-    static boolean canClassBeSealed(Class<?> clazz) {
-        if (clazz.isPrimitive() || clazz.isArray() || Void.TYPE.equals(clazz)) {
-            return false;
-        }
-        if (Modifier.isFinal( clazz.getModifiers() )) {
-            return false;
-        }
-        return true;
-    }
-
-    private static Class<?>[] doGetPermittedSubclasses(Class<?> clazz) {
-        try {
-            Class annotationClass = Class.forName("dalvik.annotation.PermittedSubclasses");
-            Object subclassesAnnotation = clazz.getAnnotation(annotationClass);
-            if (subclassesAnnotation == null) {
-                return null;
-            }
-            Method classesMethod = annotationClass.getMethod("classes", (Class[]) null);
-            return (Class[]) classesMethod.invoke(subclassesAnnotation);
         } catch (Throwable t) {
             throw new RuntimeException(t);
         }
