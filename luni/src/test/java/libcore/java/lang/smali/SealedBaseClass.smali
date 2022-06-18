@@ -4,8 +4,8 @@
 
 
 # annotations
-.annotation runtime Ldalvik/annotation/PermittedSubclasses;
-    classes = {
+.annotation system Ldalvik/annotation/PermittedSubclasses;
+    value = {
         Llibcore/java/lang/sealedclasses/FinalDerivedClass;,
         Llibcore/java/lang/sealedclasses/SealedDerivedClass;,
         Llibcore/java/lang/sealedclasses/StandaloneClass;
