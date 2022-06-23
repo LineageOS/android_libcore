@@ -440,6 +440,7 @@ public class HandshakeCompletedEventTest extends TestCase {
                 ostream.flush();
                 ostream.close();
 
+                assertNull(clientSocket.getApplicationProtocol());
                 clientSocket.close();
                 serverSocket.close();
 
@@ -509,6 +510,7 @@ public class HandshakeCompletedEventTest extends TestCase {
                     assertEquals(i, j);
                 }
 
+                assertNull(socket.getApplicationProtocol());
                 istream.close();
 
                 socket.close();
