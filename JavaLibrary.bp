@@ -161,6 +161,9 @@ java_defaults {
             "-Xep:UnicodeInCode:WARN", // XML parser uses line feeds in whitespace
         ],
     },
+    lint: {
+        warning_checks: ["SuspiciousIndentation"],
+    },
     min_sdk_version: "31",
 }
 
