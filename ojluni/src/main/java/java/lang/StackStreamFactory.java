@@ -24,8 +24,6 @@
  */
 package java.lang;
 
-import jdk.internal.reflect.MethodAccessor;
-import jdk.internal.reflect.ConstructorAccessor;
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 
@@ -125,7 +123,9 @@ final class StackStreamFactory {
         protected final long mode;
         protected int depth;    // traversed stack depth
         protected FrameBuffer<? extends T> frameBuffer;
-        protected long anchor;
+        // Android-changed: Android uses a different anchor.
+        // protected long anchor;
+        protected Object anchor;
 
         // buffers to fill in stack frame information
         protected AbstractStackWalker(StackWalker walker, int mode) {
@@ -206,18 +206,22 @@ final class StackStreamFactory {
                         Thread.currentThread().getName() + " " + thread.getName());
             }
             switch (state) {
+                // Android-changed: Android uses a different anchor.
                 case NEW:
-                    if (anchor != 0) {
+                    // if (anchor != 0) {
+                    if (anchor != null) {
                         throw new IllegalStateException("This stack stream is being reused.");
                     }
                     break;
                 case OPEN:
-                    if (anchor == 0 || anchor == -1L) {
+                    // if (anchor == 0 || anchor == -1L) {
+                    if (anchor == null) {
                         throw new IllegalStateException("This stack stream is not valid for walking.");
                     }
                     break;
                 case CLOSED:
-                    if (anchor != -1L) {
+                    // if (anchor != -1L) {
+                    if (anchor != null) {
                         throw new IllegalStateException("This stack stream is not closed.");
                     }
             }
@@ -227,7 +231,9 @@ final class StackStreamFactory {
          * Close this stream.  This stream becomes invalid to walk.
          */
         private void close() {
-            this.anchor = -1L;
+            // Android-changed: Android uses a different anchor.
+            // this.anchor = -1;
+            this.anchor = null;
         }
 
         /*
@@ -288,7 +294,9 @@ final class StackStreamFactory {
          * 2. reuse or expand the allocated buffers
          * 3. create specialized StackFrame objects
          */
-        private Object doStackWalk(long anchor, int skipFrames, int batchSize,
+        // Android-changed: Android uses a different anchor.
+        // private Object doStackWalk(long anchor, int skipFrames, int batchSize,
+        private R doStackWalk(Object anchor, int skipFrames, int batchSize,
                                                 int bufStartIndex, int bufEndIndex) {
             checkState(NEW);
 
@@ -411,9 +419,35 @@ final class StackStreamFactory {
          *                    or a {@link StackFrameInfo} (or derivative) array otherwise.
          * @return            Result of AbstractStackWalker::doStackWalk
          */
-        private native R callStackWalk(long mode, int skipframes,
+        // Android-changed: Not a native method.
+        // private native R callStackWalk(long mode, int skipframes,
+        private R callStackWalk(long mode, int skipframes,
                                        int batchSize, int startIndex,
-                                       T[] frames);
+                                       T[] frames) {
+            // TODO: Use mode
+            // TODO: Accept any StackFrames in addition to StackFrameInfo
+            checkFrameType(frames);
+            Object anchor = new LibcoreStacks(new Throwable());
+            int endIndex = fetchStackFrames(mode, anchor, batchSize, startIndex, frames);
+            return doStackWalk(anchor, skipframes, batchSize, startIndex, endIndex);
+        }
+
+        // Android-added: internal class.
+        private static class LibcoreStacks {
+            private StackTraceElement[] stes;
+            private int index = 0;
+
+            private LibcoreStacks(Throwable throwable) {
+                this.stes = throwable.getStackTrace();
+            }
+        }
+
+        private void checkFrameType(T[] frames) {
+            if (!(frames instanceof StackFrameInfo[])) {
+                throw new UnsupportedOperationException("Frame array type isn't supported yet:" +
+                    frames.getClass().getName());
+            }
+        }
 
         /**
          * Fetch the next batch of stack frames.
@@ -427,9 +461,24 @@ final class StackStreamFactory {
          *
          * @return the end index to the frame buffers
          */
-        private native int fetchStackFrames(long mode, long anchor,
+        // Android-changed: Uses a different anchor.
+        // private native int fetchStackFrames(long mode, long anchor,
+        private int fetchStackFrames(long mode, Object anchor,
                                             int batchSize, int startIndex,
-                                            T[] frames);
+                                            T[] frames) {
+            checkFrameType(frames);
+            LibcoreStacks stacks = (LibcoreStacks) anchor;
+            StackTraceElement[] stes = stacks.stes;
+            int endIndex = startIndex;
+            for (int i = stacks.index;
+                i < stes.length && endIndex - startIndex < batchSize && endIndex < frames.length;) {
+                StackFrameInfo stackFrameInfo = (StackFrameInfo) frames[endIndex];
+                stackFrameInfo.ste = stes[i];
+                endIndex++;
+                i++;
+            }
+            return endIndex;
+        }
     }
 
     /*
@@ -955,7 +1004,12 @@ final class StackStreamFactory {
         }
     }
 
-    private static native boolean checkStackWalkModes();
+    // Android-changed: This method isn't necessary on Android.
+    // private static native boolean checkStackWalkModes();
+    private static boolean checkStackWalkModes() {
+        // no-op.
+        return true;
+    }
 
     // avoid loading other subclasses as they may not be used
     private static Set<Class<?>> init() {
@@ -985,8 +1039,9 @@ final class StackStreamFactory {
         // ## should filter all @Hidden frames?
         return c == Method.class ||
                c == Constructor.class ||
-               MethodAccessor.class.isAssignableFrom(c) ||
-               ConstructorAccessor.class.isAssignableFrom(c) ||
+               // android-changed: libcore doesn't have MethodAccessor / ConstructorAccessor yet.
+               // MethodAccessor.class.isAssignableFrom(c) ||
+               // ConstructorAccessor.class.isAssignableFrom(c) ||
                c.getName().startsWith("java.lang.invoke.LambdaForm");
     }
 

@@ -85,6 +85,7 @@ import java.util.stream.Stream;
  * to be thrown.
  *
  * @since 9
+ * @hide Hide this API until it's fully implemented.
  */
 public final class StackWalker {
     /**

@@ -24,20 +24,21 @@
  */
 package java.lang;
 
-import jdk.internal.access.JavaLangInvokeAccess;
-import jdk.internal.access.SharedSecrets;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodType;
 
 class StackFrameInfo implements StackFrame {
-    private static final JavaLangInvokeAccess JLIA =
-        SharedSecrets.getJavaLangInvokeAccess();
+
+    // Android-removed: libcore dones't have JavaLangInvokeAccess yet.
+    // private static final JavaLangInvokeAccess JLIA =
+    //     SharedSecrets.getJavaLangInvokeAccess();
 
     private final boolean retainClassRef;
-    private final Object memberName;    // MemberName initialized by VM
-    private int bci;                    // initialized by VM to >= 0
-    private volatile StackTraceElement ste;
+    // Android-removed: Unused internal fields.
+    // private final Object memberName;    // MemberName initialized by VM
+    // private int bci;                    // initialized by VM to >= 0
+    volatile StackTraceElement ste;
 
     /*
      * Construct an empty StackFrameInfo object that will be filled by the VM
@@ -48,20 +49,24 @@ class StackFrameInfo implements StackFrame {
      */
     StackFrameInfo(StackWalker walker) {
         this.retainClassRef = walker.retainClassRef;
-        this.memberName = JLIA.newMemberName();
+        // Android-removed: Unused internal fields.
+        // this.memberName = JLIA.newMemberName();
     }
 
     // package-private called by StackStreamFactory to skip
     // the capability check
     Class<?> declaringClass() {
-        return JLIA.getDeclaringClass(memberName);
+        // Android-changed: To be implemented.
+        // return JLIA.getDeclaringClass(memberName);
+        return getClassName() != null ? Object.class : null;
     }
 
     // ----- implementation of StackFrame methods
 
     @Override
     public String getClassName() {
-        return declaringClass().getName();
+        // Android-changed: Android own implementation.
+        return ste.getClassName();
     }
 
     @Override
@@ -72,18 +77,24 @@ class StackFrameInfo implements StackFrame {
 
     @Override
     public String getMethodName() {
-        return JLIA.getName(memberName);
+        // Android-changed: Android own implementation.
+        // return JLIA.getName(memberName);
+        return ste.getMethodName();
     }
 
     @Override
     public MethodType getMethodType() {
         ensureRetainClassRefEnabled();
-        return JLIA.getMethodType(memberName);
+        // Android-changed: To be implemented.
+        // return JLIA.getMethodType(memberName);
+        return null;
     }
 
     @Override
     public String getDescriptor() {
-        return JLIA.getMethodDescriptor(memberName);
+        // Android-changed: To be implemented.
+        // return JLIA.getMethodDescriptor(memberName);
+        return ste.getMethodName();
     }
 
     @Override
@@ -92,7 +103,9 @@ class StackFrameInfo implements StackFrame {
         if (isNativeMethod())
             return -1;
 
-        return bci;
+        // Android-changed: To be implemented.
+        // It's incorrect!
+        return ste.getLineNumber();
     }
 
     @Override
@@ -112,7 +125,9 @@ class StackFrameInfo implements StackFrame {
 
     @Override
     public boolean isNativeMethod() {
-        return JLIA.isNative(memberName);
+        // Android-changed: Android own implementation.
+        // return JLIA.isNative(memberName);
+        return ste.isNativeMethod();
     }
 
     @Override
@@ -123,14 +138,15 @@ class StackFrameInfo implements StackFrame {
     @Override
     public StackTraceElement toStackTraceElement() {
         StackTraceElement s = ste;
-        if (s == null) {
-            synchronized (this) {
-                s = ste;
-                if (s == null) {
-                    ste = s = StackTraceElement.of(this);
-                }
-            }
-        }
+        // Android-changed: To be implemented.
+        // if (s == null) {
+        //     synchronized (this) {
+        //         s = ste;
+        //         if (s == null) {
+        //             ste = s = StackTraceElement.of(this);
+        //         }
+        //     }
+        // }
         return s;
     }
 

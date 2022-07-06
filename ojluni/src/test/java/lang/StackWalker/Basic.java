@@ -28,6 +28,9 @@
  * @run testng Basic
  */
 
+
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.StackFrame;
 import java.lang.invoke.MethodType;
 import java.util.List;
@@ -64,7 +67,8 @@ public class Basic {
         }
     }
 
-    @Test
+    // Android-changed: The underlying features is to be implemented.
+    @Test(enabled = false)
     public static void testWalkFromConstructor() throws Exception {
         System.out.println("testWalkFromConstructor:");
         List<String> found = ((ConstructorNewInstance)ConstructorNewInstance.class.getMethod("create")
@@ -75,7 +79,8 @@ public class Basic {
                      found);
     }
 
-    @Test
+    // Android-changed: The underlying features is to be implemented.
+    @Test(enabled = false)
     public static void testMethodSignature() throws Exception {
         List<StackFrame> frames = new StackBuilder(16, 16).build();
         Map<String, MethodType> methodTypes = StackBuilder.methodTypes();
