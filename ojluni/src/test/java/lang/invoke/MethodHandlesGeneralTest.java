@@ -1183,8 +1183,7 @@ public class MethodHandlesGeneralTest extends MethodHandlesTest {
     }
 
     // Android-removed: remove CodeCacheOverflowProcessor wrapper (not supported).
-    // Android-changed: test temporarily skipped due to b/236819572
-    @Ignore
+    @Test
     public void testCollectArguments() throws Throwable {
         if (CAN_SKIP_WORKING)  return;
         startTest("collectArguments");
