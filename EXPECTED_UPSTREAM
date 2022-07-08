@@ -165,6 +165,8 @@ ojluni/src/main/java/java/lang/InternalError.java,jdk11u/jdk-11.0.13-ga,src/java
 ojluni/src/main/java/java/lang/InterruptedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/InterruptedException.java
 ojluni/src/main/java/java/lang/Iterable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Iterable.java
 ojluni/src/main/java/java/lang/LinkageError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/LinkageError.java
+ojluni/src/main/java/java/lang/LiveStackFrame.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/LiveStackFrame.java
+ojluni/src/main/java/java/lang/LiveStackFrameInfo.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/LiveStackFrameInfo.java
 ojluni/src/main/java/java/lang/Long.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Long.java
 ojluni/src/main/java/java/lang/Math.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Math.java
 ojluni/src/main/java/java/lang/NegativeArraySizeException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/NegativeArraySizeException.java
@@ -194,8 +196,11 @@ ojluni/src/main/java/java/lang/SafeVarargs.java,jdk11u/jdk-11.0.13-ga,src/java.b
 ojluni/src/main/java/java/lang/SecurityException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/SecurityException.java
 ojluni/src/main/java/java/lang/SecurityManager.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/SecurityManager.java
 ojluni/src/main/java/java/lang/Short.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Short.java
+ojluni/src/main/java/java/lang/StackFrameInfo.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/StackFrameInfo.java
 ojluni/src/main/java/java/lang/StackOverflowError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StackOverflowError.java
+ojluni/src/main/java/java/lang/StackStreamFactory.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/StackStreamFactory.java
 ojluni/src/main/java/java/lang/StackTraceElement.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StackTraceElement.java
+ojluni/src/main/java/java/lang/StackWalker.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/StackWalker.java
 ojluni/src/main/java/java/lang/StrictMath.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StrictMath.java
 ojluni/src/main/java/java/lang/String.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/String.java
 ojluni/src/main/java/java/lang/StringBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuffer.java
@@ -1811,6 +1816,7 @@ ojluni/src/main/resources/java/time/chrono/hijrah-config-islamic-umalqura.proper
 ojluni/src/test/java/io/Reader/NullReader.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/NullReader.java
 ojluni/src/test/java/io/Reader/TransferTo.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/TransferTo.java
 ojluni/src/test/java/io/Writer/NullWriter.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Writer/NullWriter.java
+ojluni/src/test/java/lang/StackWalker/Basic.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/Basic.java
 ojluni/src/test/java/lang/invoke/ClassValueTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/ClassValueTest.java
 ojluni/src/test/java/lang/invoke/MethodHandlesGeneralTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/MethodHandlesGeneralTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java
