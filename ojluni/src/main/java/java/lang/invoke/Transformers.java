@@ -1702,14 +1702,14 @@ public class Transformers {
                 reader.attach(filterFrame).makeReturnValueAccessor();
                 final StackFrameWriter writer = new StackFrameWriter();
                 writer.attach(targetFrame, pos, range1.numReferences, range1.numBytes);
-                copyNext(reader, writer, target.type().ptypes()[0]);
+                copyNext(reader, writer, target.type().ptypes()[pos]);
             }
 
             stackFrame.copyRangeTo(
                     targetFrame,
                     range2,
                     range1.numReferences + referencesOffset,
-                    range2.numBytes + stackFrameOffset);
+                    range1.numBytes + stackFrameOffset);
 
             invokeFromTransform(target, targetFrame);
             targetFrame.copyReturnValueTo(stackFrame);
