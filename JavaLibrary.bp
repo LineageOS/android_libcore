@@ -526,6 +526,7 @@ java_library_static {
         "//cts/tests/tests/net/api23Test",
         "//external/apache-harmony",
         "//frameworks/base/core/tests/coretests",
+        "//frameworks/base/apct-tests/perftests/core",
         "//libcore/benchmarks",
         "//packages/apps/KeyChain/tests",
         "//system/timezone/distro/core",
