@@ -81,6 +81,7 @@ filegroup {
         "ojluni/src/main/java/java/io/RandomAccessFile.java",
         "ojluni/src/main/java/java/io/Reader.java",
         "ojluni/src/main/java/java/io/SequenceInputStream.java",
+        "ojluni/src/main/java/java/io/Serial.java",
         "ojluni/src/main/java/java/io/SerialCallbackContext.java",
         "ojluni/src/main/java/java/io/Serializable.java",
         "ojluni/src/main/java/java/io/SerializablePermission.java",
