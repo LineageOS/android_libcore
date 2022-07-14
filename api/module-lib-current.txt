@@ -273,15 +273,15 @@ package dalvik.system {
     method public static void dumpHprofDataDdms();
     method public static void dumpReferenceTables();
     method public static int getAllocCount(int);
-    method @dalvik.annotation.optimization.FastNative public static int getLoadedClassCount();
+    method public static int getLoadedClassCount();
     method public static int getMethodTracingMode();
     method public static String getRuntimeStat(String);
     method public static java.util.Map<java.lang.String,java.lang.String> getRuntimeStats();
     method public static String[] getVmFeatureList();
-    method @dalvik.annotation.optimization.FastNative public static boolean isDebuggerConnected();
-    method @dalvik.annotation.optimization.FastNative public static boolean isDebuggingEnabled();
-    method @dalvik.annotation.optimization.FastNative public static long lastDebuggerActivity();
-    method @dalvik.annotation.optimization.FastNative public static void printLoadedClasses(int);
+    method public static boolean isDebuggerConnected();
+    method public static boolean isDebuggingEnabled();
+    method public static long lastDebuggerActivity();
+    method public static void printLoadedClasses(int);
     method public static void resetAllocCount(int);
     method public static void setAllocTrackerStackDepth(int);
     method public static void startAllocCounting();
@@ -290,7 +290,7 @@ package dalvik.system {
     method public static void startMethodTracingDdms(int, int, boolean, int);
     method public static void stopAllocCounting();
     method public static void stopMethodTracing();
-    method @dalvik.annotation.optimization.FastNative public static long threadCpuTimeNanos();
+    method public static long threadCpuTimeNanos();
     field public static final int KIND_ALL_COUNTS = -1; // 0xffffffff
     field public static final int KIND_GLOBAL_ALLOCATED_BYTES = 2; // 0x2
     field public static final int KIND_GLOBAL_ALLOCATED_OBJECTS = 1; // 0x1
@@ -306,7 +306,7 @@ package dalvik.system {
   }
 
   public final class VMRuntime {
-    method @dalvik.annotation.optimization.FastNative public long addressOf(Object);
+    method public long addressOf(Object);
     method public static void bootCompleted();
     method public void clampGrowthLimit();
     method public void clearGrowthLimit();
@@ -314,14 +314,14 @@ package dalvik.system {
     method public static String getInstructionSet(String);
     method public static dalvik.system.VMRuntime getRuntime();
     method public int getTargetSdkVersion();
-    method @dalvik.annotation.optimization.FastNative public boolean is64Bit();
+    method public boolean is64Bit();
     method public static boolean is64BitAbi(String);
     method public static boolean is64BitInstructionSet(String);
-    method @dalvik.annotation.optimization.FastNative public boolean isCheckJniEnabled();
-    method @dalvik.annotation.optimization.FastNative public boolean isNativeDebuggable();
+    method public boolean isCheckJniEnabled();
+    method public boolean isNativeDebuggable();
     method public static boolean isValidClassLoaderContext(String);
-    method @dalvik.annotation.optimization.FastNative public Object newNonMovableArray(Class<?>, int);
-    method @dalvik.annotation.optimization.FastNative public Object newUnpaddedArray(Class<?>, int);
+    method public Object newNonMovableArray(Class<?>, int);
+    method public Object newUnpaddedArray(Class<?>, int);
     method public void notifyStartupCompleted();
     method public void preloadDexCaches();
     method public static void registerAppInfo(String, String, String, String[], int);
@@ -359,7 +359,7 @@ package dalvik.system {
   }
 
   public final class VMStack {
-    method @Nullable @dalvik.annotation.optimization.FastNative public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(Thread);
+    method @Nullable public static dalvik.system.AnnotatedStackTraceElement[] getAnnotatedThreadStackTrace(Thread);
   }
 
   public final class ZygoteHooks {
@@ -784,33 +784,33 @@ package sun.misc {
   public final class Unsafe {
     method public int arrayBaseOffset(Class);
     method public int arrayIndexScale(Class);
-    method @dalvik.annotation.optimization.FastNative public void copyMemory(long, long, long);
-    method @dalvik.annotation.optimization.FastNative public boolean getBoolean(Object, long);
-    method @dalvik.annotation.optimization.FastNative public byte getByte(Object, long);
-    method @dalvik.annotation.optimization.FastNative public byte getByte(long);
-    method @dalvik.annotation.optimization.FastNative public double getDouble(Object, long);
-    method @dalvik.annotation.optimization.FastNative public double getDouble(long);
-    method @dalvik.annotation.optimization.FastNative public float getFloat(Object, long);
-    method @dalvik.annotation.optimization.FastNative public float getFloat(long);
-    method @dalvik.annotation.optimization.FastNative public int getInt(Object, long);
-    method @dalvik.annotation.optimization.FastNative public int getInt(long);
-    method @dalvik.annotation.optimization.FastNative public long getLong(Object, long);
-    method @dalvik.annotation.optimization.FastNative public long getLong(long);
-    method @dalvik.annotation.optimization.FastNative public Object getObject(Object, long);
+    method public void copyMemory(long, long, long);
+    method public boolean getBoolean(Object, long);
+    method public byte getByte(Object, long);
+    method public byte getByte(long);
+    method public double getDouble(Object, long);
+    method public double getDouble(long);
+    method public float getFloat(Object, long);
+    method public float getFloat(long);
+    method public int getInt(Object, long);
+    method public int getInt(long);
+    method public long getLong(Object, long);
+    method public long getLong(long);
+    method public Object getObject(Object, long);
     method public static sun.misc.Unsafe getUnsafe();
     method public long objectFieldOffset(java.lang.reflect.Field);
-    method @dalvik.annotation.optimization.FastNative public void putBoolean(Object, long, boolean);
-    method @dalvik.annotation.optimization.FastNative public void putByte(Object, long, byte);
-    method @dalvik.annotation.optimization.FastNative public void putByte(long, byte);
-    method @dalvik.annotation.optimization.FastNative public void putDouble(Object, long, double);
-    method @dalvik.annotation.optimization.FastNative public void putDouble(long, double);
-    method @dalvik.annotation.optimization.FastNative public void putFloat(Object, long, float);
-    method @dalvik.annotation.optimization.FastNative public void putFloat(long, float);
-    method @dalvik.annotation.optimization.FastNative public void putInt(Object, long, int);
-    method @dalvik.annotation.optimization.FastNative public void putInt(long, int);
-    method @dalvik.annotation.optimization.FastNative public void putLong(Object, long, long);
-    method @dalvik.annotation.optimization.FastNative public void putLong(long, long);
-    method @dalvik.annotation.optimization.FastNative public void putObject(Object, long, Object);
+    method public void putBoolean(Object, long, boolean);
+    method public void putByte(Object, long, byte);
+    method public void putByte(long, byte);
+    method public void putDouble(Object, long, double);
+    method public void putDouble(long, double);
+    method public void putFloat(Object, long, float);
+    method public void putFloat(long, float);
+    method public void putInt(Object, long, int);
+    method public void putInt(long, int);
+    method public void putLong(Object, long, long);
+    method public void putLong(long, long);
+    method public void putObject(Object, long, Object);
   }
 
 }
