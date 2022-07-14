@@ -70,9 +70,9 @@ package dalvik.system {
   }
 
   @libcore.api.IntraCoreApi public final class VMRuntime {
-    method @dalvik.annotation.optimization.FastNative @libcore.api.IntraCoreApi public long addressOf(Object);
+    method @libcore.api.IntraCoreApi public long addressOf(Object);
     method @libcore.api.IntraCoreApi public static dalvik.system.VMRuntime getRuntime();
-    method @dalvik.annotation.optimization.FastNative @libcore.api.IntraCoreApi public Object newNonMovableArray(Class<?>, int);
+    method @libcore.api.IntraCoreApi public Object newNonMovableArray(Class<?>, int);
   }
 
 }
