@@ -2140,6 +2140,9 @@ package java.io {
     method public int read() throws java.io.IOException;
   }
 
+  @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.SOURCE) @java.lang.annotation.Target({java.lang.annotation.ElementType.METHOD, java.lang.annotation.ElementType.FIELD}) public @interface Serial {
+  }
+
   public interface Serializable {
   }
 
