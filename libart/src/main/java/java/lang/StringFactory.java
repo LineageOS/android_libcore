@@ -35,9 +35,6 @@ import libcore.util.EmptyArray;
  */
 public final class StringFactory {
 
-    // TODO: Remove once native methods are in place.
-    private static final char REPLACEMENT_CHAR = (char) 0xfffd;
-
     public static String newEmptyString() {
         return newStringFromChars(EmptyArray.CHAR, 0, 0);
     }
