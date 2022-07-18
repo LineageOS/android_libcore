@@ -371,6 +371,7 @@ ojluni/src/main/java/java/net/URLDecoder.java,jdk11u/jdk-11.0.13-ga,src/java.bas
 ojluni/src/main/java/java/net/URLEncoder.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/URLEncoder.java
 ojluni/src/main/java/java/net/URLStreamHandler.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/URLStreamHandler.java
 ojluni/src/main/java/java/net/URLStreamHandlerFactory.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/URLStreamHandlerFactory.java
+ojluni/src/main/java/java/net/UnixDomainSocketAddress.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/net/UnixDomainSocketAddress.java
 ojluni/src/main/java/java/net/UnknownHostException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/UnknownHostException.java
 ojluni/src/main/java/java/net/UnknownServiceException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/UnknownServiceException.java
 ojluni/src/main/java/java/net/package-info.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/package-info.java
@@ -1514,6 +1515,8 @@ ojluni/src/main/java/sun/nio/ch/SourceChannelImpl.java,jdk8u/jdk8u121-b13,jdk/sr
 ojluni/src/main/java/sun/nio/ch/ThreadPool.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/ch/ThreadPool.java
 ojluni/src/main/java/sun/nio/ch/UnixAsynchronousServerSocketChannelImpl.java,jdk11u/jdk-11.0.13-ga,src/java.base/unix/classes/sun/nio/ch/UnixAsynchronousServerSocketChannelImpl.java
 ojluni/src/main/java/sun/nio/ch/UnixAsynchronousSocketChannelImpl.java,jdk8u/jdk8u121-b13,jdk/src/solaris/classes/sun/nio/ch/UnixAsynchronousSocketChannelImpl.java
+ojluni/src/main/java/sun/nio/ch/UnixDomainSockets.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/sun/nio/ch/UnixDomainSockets.java
+ojluni/src/main/java/sun/nio/ch/UnixDomainSocketsUtil.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/sun/nio/ch/UnixDomainSocketsUtil.java
 ojluni/src/main/java/sun/nio/ch/Util.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/ch/Util.java
 ojluni/src/main/java/sun/nio/cs/ArrayDecoder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/cs/ArrayDecoder.java
 ojluni/src/main/java/sun/nio/cs/ArrayEncoder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/nio/cs/ArrayEncoder.java
@@ -1799,6 +1802,7 @@ ojluni/src/main/native/UNIXProcess_md.c,jdk7u/jdk7u40-b60,jdk/src/solaris/native
 ojluni/src/main/native/UnixAsynchronousServerSocketChannelImpl.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/ch/UnixAsynchronousServerSocketChannelImpl.c
 ojluni/src/main/native/UnixAsynchronousSocketChannelImpl.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/ch/UnixAsynchronousSocketChannelImpl.c
 ojluni/src/main/native/UnixCopyFile.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/sun/nio/fs/UnixCopyFile.c
+ojluni/src/main/native/UnixDomainSockets.c,jdk17u/jdk-17.0.2-ga,jdk/src/java.base/unix/native/libnio/ch/UnixDomainSockets.c
 ojluni/src/main/native/UnixFileSystem_md.c,jdk8u/jdk8u121-b13,jdk/src/solaris/native/java/io/UnixFileSystem_md.c
 ojluni/src/main/native/UnixNativeDispatcher.c,jdk8u/jdk8u60-b31,jdk/src/solaris/native/sun/nio/fs/UnixNativeDispatcher.c
 ojluni/src/main/native/ZipFile.c,jdk8u/jdk8u60-b31,jdk/src/share/native/java/util/zip/ZipFile.c
@@ -1908,6 +1912,8 @@ ojluni/src/test/java/nio/channels/Selector/SelectWithConsumer.java,jdk11u/jdk-11
 ojluni/src/test/java/nio/file/Path/Misc.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/Misc.java
 ojluni/src/test/java/nio/file/Path/PathOps.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/PathOps.java
 ojluni/src/test/java/nio/file/Path/UriImportExport.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/nio/file/Path/UriImportExport.java
+ojluni/src/test/java/net/UnixDomainSocketAddress/LengthTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/net/UnixDomainSocketAddress/LengthTest.java
+ojluni/src/test/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java
 ojluni/src/test/java/security/cert/CertPathEncodingTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/CertPathEncodingTest.java
 ojluni/src/test/java/security/cert/GetInstance.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/GetInstance.java
 ojluni/src/test/java/security/cert/URICertStoreParameters/TestBasic.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/security/cert/URICertStoreParameters/TestBasic.java

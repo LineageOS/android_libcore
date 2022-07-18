@@ -1428,4 +1428,70 @@
             column="39"/>
     </issue>
 
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        if (!(o instanceof UnixDomainSocketAddress))"
+        errorLine2="                           ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/UnixDomainSocketAddress.java"
+            line="194"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        return this.path.equals(((UnixDomainSocketAddress) o).path);"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/java/net/UnixDomainSocketAddress.java"
+            line="196"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        UnixDomainSocketAddress addr = (UnixDomainSocketAddress) sa;"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/sun/nio/ch/UnixDomainSockets.java"
+            line="68"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        if (!(sa instanceof UnixDomainSocketAddress))"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/sun/nio/ch/UnixDomainSockets.java"
+            line="94"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        return (UnixDomainSocketAddress) sa;"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/sun/nio/ch/UnixDomainSockets.java"
+            line="96"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Class requires API level 34 (current min is 31): `java.net.UnixDomainSocketAddress`"
+        errorLine1="        return UnixDomainSockets.connect(fd, ((UnixDomainSocketAddress) sa).getPath());"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="libcore/ojluni/src/main/java/sun/nio/ch/UnixDomainSockets.java"
+            line="144"
+            column="39"/>
+    </issue>
+
 </issues>
