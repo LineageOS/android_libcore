@@ -28,6 +28,8 @@
  * @run testng ReflectionFrames
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -48,8 +50,10 @@ import static org.testng.Assert.*;
 
 public class ReflectionFrames {
     final static boolean verbose = false;
-    final static Class<?> REFLECT_ACCESS = findClass("java.lang.reflect.ReflectAccess");
-    final static Class<?> REFLECTION_FACTORY = findClass("jdk.internal.reflect.ReflectionFactory");
+    // Android-changed: libcore has different internal implementation for reflection.
+    // final static Class<?> REFLECT_ACCESS = findClass("java.lang.reflect.ReflectAccess");
+    // final static Class<?> REFLECTION_FACTORY = findClass("jdk.internal.reflect.ReflectionFactory");
+    final static Class<?> REFLECT_ACCESS = findClass("java.lang.Class");
 
     private static Class<?> findClass(String cn) {
         try {
@@ -170,7 +174,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testNewStackInspector"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.reflect method through reflection
         // and check the frames collected in the StackInspector
@@ -200,7 +205,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testNewStackInspector"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.handle method through reflection
         // and check the frames collected in the StackInspector
@@ -229,7 +235,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testNewStackInspector"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
     }
 
    /**
@@ -337,7 +344,9 @@ public class ReflectionFrames {
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
                              Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
+                                 // Android-changed: libcore internal implementation is different.
+                                 // +"::newInstanceWithCaller",
+                                 +"::newInstance0",
                              Constructor.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -347,7 +356,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testConstructor"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.reflect method through reflection
         // and check the frames collected in the StackInspector
@@ -367,7 +377,9 @@ public class ReflectionFrames {
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
                              Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
+                                 // Android-changed: libcore internal implementation is different.
+                                 // +"::newInstanceWithCaller",
+                                 +"::newInstance0",
                              Constructor.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -381,7 +393,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testConstructor"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.handle method through reflection
         // and check the frames collected in the StackInspector
@@ -401,7 +414,9 @@ public class ReflectionFrames {
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
                              Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
+                                 // Android-changed: libcore internal implementation is different.
+                                 // +"::newInstanceWithCaller",
+                                 +"::newInstance0",
                              Constructor.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -414,7 +429,8 @@ public class ReflectionFrames {
                              ReflectionFrames.class.getName()
                                  +"::testConstructor"));
         assertEquals(obj.cls, StackInspector.Caller.class);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
     }
 
    /**
@@ -452,10 +468,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
-                             REFLECTION_FACTORY.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
+                             // REFLECTION_FACTORY.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -484,10 +501,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
-                             REFLECTION_FACTORY.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
+                             // REFLECTION_FACTORY.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -519,10 +537,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
-                             REFLECTION_FACTORY.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
+                             // REFLECTION_FACTORY.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -556,10 +575,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // Constructor.class.getName()
+                                 // +"::newInstanceWithCaller",
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -571,7 +591,8 @@ public class ReflectionFrames {
         // Because implementation frames are not filtered, then the
         // caller is ReflectAccess.class
         assertEquals(obj.cls, REFLECT_ACCESS);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.reflect method through reflection
         // and check the frames collected in the StackInspector
@@ -591,10 +612,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // Constructor.class.getName()
+                                 // +"::newInstanceWithCaller",
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -611,7 +633,8 @@ public class ReflectionFrames {
         // Because implementation frames are not filtered, then the
         // caller is ReflectAccess.class
         assertEquals(obj.cls, REFLECT_ACCESS);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
 
         // Calls the StackInspector.handle method through reflection
         // and check the frames collected in the StackInspector
@@ -630,10 +653,11 @@ public class ReflectionFrames {
         assertEquals(obj.collectedFrames,
                      List.of(StackInspector.class.getName()
                                  +"::<init>",
-                             Constructor.class.getName()
-                                 +"::newInstanceWithCaller",
-                             REFLECT_ACCESS.getName()
-                                 +"::newInstance",
+                             // Android-changed: libcore internal implementation is different.
+                             // Constructor.class.getName()
+                                 // +"::newInstanceWithCaller",
+                             // REFLECT_ACCESS.getName()
+                             //     +"::newInstance",
                              Class.class.getName()
                                  +"::newInstance",
                              StackInspector.Caller.class.getName()
@@ -649,7 +673,8 @@ public class ReflectionFrames {
         // Because implementation frames are not filtered, then the
         // caller is ReflectAccess.class
         assertEquals(obj.cls, REFLECT_ACCESS);
-        assertNotEquals(obj.filtered, 0);
+        // Android-changed: libcore uses very little of jdk.internal.reflect.
+        // assertNotEquals(obj.filtered, 0);
     }
 
     @Test
@@ -690,7 +715,8 @@ public class ReflectionFrames {
                      ReflectionFrames.class);
     }
 
-    @Test
+    // Android-changed: Android desugars lambda and thus the caller is different.
+    @Test(enabled = false)
     public static void testSupplyCaller() throws Exception {
         // Sets the default walker which hides reflection
         // frames.
@@ -810,7 +836,9 @@ public class ReflectionFrames {
         }
 
         List<String> parse(Stream<StackFrame> s) {
-            return s.takeWhile(this::takeWhile)
+            // Android-changed: libcore doesn't have Stream.takeWhile method yet.
+            // return s.takeWhile(this::takeWhile)
+            return s.filter(this::takeWhile)
                     .filter(this::filter)
                     .map(this::frame)
                     .collect(Collectors.toList());

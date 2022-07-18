@@ -28,6 +28,8 @@
  * @run testng SanityTest
  */
 
+package test.java.lang.StackWalker;
+
 
 import java.util.Collections;
 import java.util.Set;

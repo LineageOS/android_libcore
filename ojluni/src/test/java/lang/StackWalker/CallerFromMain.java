@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 /*
  * @test
  * @bug 8140450
@@ -29,12 +31,16 @@
  * @run main CallerFromMain exec
  */
 
-import jdk.test.lib.process.ProcessTools;
-import jdk.test.lib.process.OutputAnalyzer;
+// import jdk.test.lib.process.ProcessTools;
+// import jdk.test.lib.process.OutputAnalyzer;
+
+import org.testng.annotations.Test;
 
 public class CallerFromMain {
 
     private static final StackWalker sw = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
+    // Android-removed: Our test infra doesn't have the ProcessTools lib, and the lib is optional.
+    /*
     public static void main(String[] args) throws Exception {
         if (args.length > 0) {
             ProcessBuilder pb = ProcessTools.createTestJvm("CallerFromMain");
@@ -43,14 +49,19 @@ public class CallerFromMain {
             output.shouldHaveExitValue(0);
             return;
         }
-
+    */
+    @Test
+    public static void main() throws Exception {
         // StackWalker::getCallerClass
         // CallerFromMain::main
         // no caller
+        // Android-removed: TestNg calls this class and thus caller is not null.
+        /*
         try {
             Class<?> c = sw.getCallerClass();
             throw new RuntimeException("UOE not thrown. Caller: " + c);
         } catch (IllegalCallerException e) {}
+        */
 
         // StackWalker::getCallerClass
         // Runnable::run
@@ -69,9 +80,10 @@ public class CallerFromMain {
         // StackWalker::getCallerClass
         // CallerFromMain::doit
         // Thread::run
-        Thread t2 = new Thread(CallerFromMain::doit);
-        t2.setDaemon(true);
-        t2.start();
+        // Android-removed: Android desugars lambda.
+        // Thread t2 = new Thread(CallerFromMain::doit);
+        // t2.setDaemon(true);
+        // t2.start();
 
         // StackWalker::getCallerClass
         // MyRunnable::run
@@ -97,7 +109,8 @@ public class CallerFromMain {
         t4.start();
 
         t1.join();
-        t2.join();
+        // Android-removed: Android desugars lambda.
+        // t2.join();
         t3.join();
         t4.join();
     }

@@ -28,8 +28,11 @@
  * @run main StackStreamState
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.StackFrame;
 import java.util.stream.Stream;
+import org.testng.annotations.Test;
 
 public class StackStreamState {
     public static void main(String... args) {
@@ -42,21 +45,32 @@ public class StackStreamState {
     private static Stream<StackFrame> staticStream;
     private Stream<StackFrame> instanceStream;
     private final StackWalker walker = StackWalker.getInstance();
-    void testStatic() {
+
+    // Android-changed: Add @Test annotation.
+    // void testStatic() {
+    @Test
+    public void testStatic() {
         walker.walk(s -> {
             staticStream = s;
             return null;
         });
         checkStreamState(staticStream);
     }
-    void testInstance() {
+
+    // Android-changed: Add @Test annotation.
+    // void testInstance() {
+    @Test
+    public void testInstance() {
         walker.walk(s -> {
             instanceStream = s;
             return null;
         });
         checkStreamState(instanceStream);
     }
-    void testLocal() {
+    // Android-changed: Add @Test annotation.
+    // void testLocal() {
+    @Test
+    public void testLocal() {
         Stream<StackFrame> stream = walker.walk(s -> {
             return s;
         });

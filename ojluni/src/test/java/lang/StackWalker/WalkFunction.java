@@ -28,15 +28,21 @@
  * @run main WalkFunction
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.StackFrame;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import org.testng.annotations.Test;
 
 public class WalkFunction {
     private static final StackWalker walker = StackWalker.getInstance();
 
-    public static void main(String... args) throws Exception {
+    // Android-changed: Add @Test annotation.
+    // public static void main(String... args) throws Exception {
+    @Test
+    public static void main() throws Exception {
         testFunctions();
         testWildcards();
         walker.walk(counter());
@@ -58,7 +64,25 @@ public class WalkFunction {
     }
 
     static Optional<StackFrame> reduce(Stream<StackFrame> stream) {
-        return stream.reduce((r,f) -> r.getClassName().compareTo(f.getClassName()) > 0 ? f : r);
+        // Android-changed: Ignore Android test infra classes.
+        // return stream.reduce((r,f) -> r.getClassName().compareTo(f.getClassName()) > 0 ? f : r);
+        return stream.reduce((r,f) -> {
+            String name = f.getClassName();
+
+            String[] androidInfraPackages = new String[] {
+                "android.app.Instrumentation",
+                "androidx.test",
+                "com.android.cts",
+                "org.junit",
+                "org.testng",
+            };
+            for (String pkg : androidInfraPackages) {
+                if (name.startsWith(pkg)) {
+                    return r;
+                }
+            }
+            return r.getClassName().compareTo(name) > 0 ? f : r;
+        });
     }
 
     private static void testWildcards() {

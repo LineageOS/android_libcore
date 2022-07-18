@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.reflect.InvocationTargetException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -31,6 +33,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Objects;
+import org.testng.annotations.Test;
 
 import static java.lang.StackWalker.Option.*;
 
@@ -217,8 +220,11 @@ public class VerifyStackTrace {
         }
     }
 
-
-    public static void main(String[] args) {
+    // Android-changed: Add @Test annotation.
+    // public static void main(String[] args) {
+    // TODO: Fix this test because this matches the exact stacks, including package names, line no.
+    @Test(enabled = false)
+    public static void main() {
         test(new TestCase1());
         test(new TestCase2());
         test(new TestCase3());

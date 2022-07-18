@@ -21,6 +21,10 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
+import org.testng.annotations.Test;
+
 /*
  * @test
  * @bug 8020968
@@ -29,8 +33,13 @@
  * @run main/othervm/java.security.policy=stackwalk.policy SecurityExceptions false
  */
 public class SecurityExceptions {
-    public static void main(String[] args) {
-        boolean expectException = Boolean.parseBoolean(args[0]);
+    // Android-changed: Add @Test annotation.
+    // public static void main(String[] args) {
+    @Test
+    public static void main() {
+        // Android-changed: Android doesn't have such security policy.
+        // boolean expectException = Boolean.parseBoolean(args[0]);
+        boolean expectException = false;
 
         StackWalker sw = StackWalker.getInstance();
 

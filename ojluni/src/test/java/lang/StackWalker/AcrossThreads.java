@@ -29,6 +29,8 @@
  * @run testng AcrossThreads
  */
 
+package test.java.lang.StackWalker;
+
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;

@@ -28,15 +28,21 @@
  * @run main HiddenFrames
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
+import org.testng.annotations.Test;
 
 public class HiddenFrames {
-    public static void main(String... args) throws Exception {
+    // Android-changed: Add @Test annotation.
+    // public static void main(String... args) throws Exception {
+    @Test
+    public static void main() throws Exception {
         new HiddenFrames().test();
         new HiddenFrames(Option.SHOW_REFLECT_FRAMES).test();
         new HiddenFrames(Option.SHOW_HIDDEN_FRAMES).test();
@@ -75,7 +81,8 @@ public class HiddenFrames {
         }
 
         if (option == Option.SHOW_HIDDEN_FRAMES && lambdas.isEmpty()) {
-            throw new RuntimeException("No hidden Lambda frame");
+            // Android-removed: Android desugars lambdas during build-time, not in runtime.
+            // throw new RuntimeException("No hidden Lambda frame");
         }
     }
 
@@ -88,7 +95,8 @@ public class HiddenFrames {
         }
 
         if (option == Option.SHOW_HIDDEN_FRAMES && lambdas.isEmpty()) {
-            throw new RuntimeException("No hidden Lambda frame");
+            // Android-removed: Android desugars lambdas during build-time, not in runtime.
+            // throw new RuntimeException("No hidden Lambda frame");
         }
 
         if (option != null && reflects.isEmpty()) {

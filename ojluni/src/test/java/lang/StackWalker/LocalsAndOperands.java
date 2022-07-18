@@ -38,6 +38,9 @@
  * @run testng/othervm -Xcomp -XX:-TieredCompilation LocalsAndOperands
  */
 
+package test.java.lang.StackWalker;
+
+import dalvik.system.VMRuntime;
 import org.testng.annotations.*;
 import static org.testng.Assert.*;
 import java.lang.StackWalker.StackFrame;
@@ -102,6 +105,8 @@ public class LocalsAndOperands {
             extendedWalker = (StackWalker) getExtendedWalker.invoke(null,
                     EnumSet.noneOf(StackWalker.Option.class));
 
+            // Android-changed: Android doesn't have the "sun.arch.data.model" property.
+            /*
             String dataModel = System.getProperty("sun.arch.data.model");
             if ("32".equals(dataModel)) {
                 is32bit = true;
@@ -111,6 +116,8 @@ public class LocalsAndOperands {
                 throw new RuntimeException("Weird data model:" + dataModel);
             }
             System.out.println("VM bits: " + dataModel);
+            */
+            is32bit = !VMRuntime.getRuntime().is64Bit();
 
             testUnused = System.getProperty("testUnused") != null;
         } catch (Throwable t) { throw new RuntimeException(t); }
@@ -329,7 +336,8 @@ public class LocalsAndOperands {
 
     /* Simpler tests of long & double arguments */
 
-    @Test
+    // Android-changed: It tests unimplemented hidden java.lang.LiveStackFrame.
+    @Test(enabled = false)
     public static void testUsedLongArg() throws Exception {
         usedLong(LOWER_LONG_VAL);
         usedLong(UPPER_LONG_VAL);
@@ -376,7 +384,8 @@ public class LocalsAndOperands {
         }
     }
 
-    @Test
+    // Android-changed: It tests unimplemented hidden java.lang.LiveStackFrame.
+    @Test(enabled = false)
     public static void testUsedDoubleArg() throws Exception {
         usedDouble(LOWER_DOUBLE_VAL);
         usedDouble(UPPER_DOUBLE_VAL);

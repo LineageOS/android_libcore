@@ -29,6 +29,8 @@
  * @run main/othervm -Djava.security.manager=allow GetCallerClassTest sm
  */
 
+package test.java.lang.StackWalker;
+
 import static java.lang.StackWalker.Option.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -43,6 +45,7 @@ import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
+import org.testng.annotations.Test;
 
 public class GetCallerClassTest {
     static final Policy DEFAULT_POLICY = Policy.getPolicy();
@@ -53,7 +56,12 @@ public class GetCallerClassTest {
         this.walker = sw;
         this.expectUOE = expect;
     }
-    public static void main(String... args) throws Exception {
+
+    // Android-changed: Add @Test annotation.
+    // public static void main(String... args) throws Exception {
+    @Test
+    public static void main() throws Exception {
+        String[] args = new String[0];
         if (args.length > 0 && args[0].equals("sm")) {
             PermissionCollection perms = new Permissions();
             perms.add(new RuntimePermission("getStackWalkerWithClassReference"));
@@ -185,7 +193,12 @@ public class GetCallerClassTest {
                 try {
                     Class<?> c = walker.getCallerClass();
 
-                    assertEquals(c, LambdaTest.class);
+                    // Android-changed: Android desugar lambdas.
+                    // assertEquals(c, LambdaTest.class);
+                    if (!c.getName().startsWith(LambdaTest.class.getName())) {
+                        throw new RuntimeException("Expect " + c + " to start with "
+                            + LambdaTest.class);
+                    }
                     if (expectUOE) { // Should have thrown
                         throw new RuntimeException("Didn't get expected exception");
                     }

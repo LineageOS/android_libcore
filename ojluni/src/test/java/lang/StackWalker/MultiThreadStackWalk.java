@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +31,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.lang.StackWalker.StackFrame;
+
 import static java.lang.StackWalker.Option.*;
 
 
@@ -337,7 +340,10 @@ public class MultiThreadStackWalk {
         }
     }
 
-    public static void main(String[] args) throws Throwable {
+    // Android-changed: Add @Test annotation.
+    // public static void main(String[] args) throws Throwable {
+    @org.testng.annotations.Test
+    public static void main() throws Throwable {
         WalkThread[] threads = new WalkThread[Call.WalkType.values().length*3];
         Throwable failed = null;
         for (int i=0; i<threads.length; i++) {

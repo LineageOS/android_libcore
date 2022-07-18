@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.util.*;

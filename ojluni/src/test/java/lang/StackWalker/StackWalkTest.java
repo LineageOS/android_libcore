@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 import static java.lang.StackWalker.Option.*;
 import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import jdk.test.lib.RandomFactory;
+import org.testng.annotations.Test;
 
 /**
  * @test
@@ -99,7 +102,9 @@ public class StackWalkTest {
     }
 
     public StackWalkTest(int estimatedDepth) {
-        this(EnumSet.noneOf(StackWalker.Option.class), -1);
+        // Android-changed: Error-prone catches this upstream bug that the param is not used.
+        // this(EnumSet.noneOf(StackWalker.Option.class), -1);
+        this(EnumSet.noneOf(StackWalker.Option.class), estimatedDepth);
     }
 
     public StackWalkTest(Set<StackWalker.Option> swOptions, int estimatedDepth) {
@@ -131,6 +136,20 @@ public class StackWalkTest {
             if (infrastructureClasses.contains(sf.getClassName())) {
                 // safe to ignore
                 return;
+            }
+
+            // Android-added: Ignore extra Android test classes.
+            String[] androidInfraPackages = new String[] {
+                "android.app.Instrumentation",
+                "androidx.test",
+                "com.android.cts",
+                "org.junit",
+                "org.testng",
+            };
+            for (String pkg : androidInfraPackages) {
+                if (sf.getClassName().startsWith(pkg)) {
+                    return;
+                }
             }
         }
         try {
@@ -252,7 +271,11 @@ public class StackWalkTest {
         }
     }
 
-    public static void main(String[] args) {
+    // Android-changed: Add @Test annotation.
+    // public static void main(String[] args) {
+    @org.testng.annotations.Test
+    public static void main() {
+        String[] args = new String[0];
         String rand = "-random";
         String randItems = "-random:";
         for(String arg : args) {

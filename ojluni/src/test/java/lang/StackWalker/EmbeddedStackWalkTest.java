@@ -30,6 +30,8 @@
  * @run testng/othervm EmbeddedStackWalkTest
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.StackFrame;
 import static java.lang.StackWalker.Option.*;
 import java.lang.invoke.MethodHandle;

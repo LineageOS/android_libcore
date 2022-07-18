@@ -30,12 +30,16 @@
  * @run main/othervm DumpStackTest
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import org.testng.annotations.Test;
 
 public class DumpStackTest {
 
@@ -76,7 +80,9 @@ public class DumpStackTest {
         }
     }
 
-    static void test() {
+    // Android-changed: Add @Test annotation.
+    @Test(enabled = false)
+    public static void test() {
         CallFrame[] callStack = new CallFrame[] {
                 new CallFrame(Thread.class, "getStackTrace"),
                 new CallFrame(DumpStackTest.class, "test"),
@@ -103,10 +109,18 @@ public class DumpStackTest {
             assertStackTrace(ex.getStackTrace(), callStack);
         }
     }
-    static void testThread() {
+    // Android-changed: Add @Test annotation.
+    @Test(enabled = false)
+    public static void testThread() {
+        // Android-changed: Avoid test process crash when throwing in the new thread.
+        AtomicReference<Throwable> th = new AtomicReference<>();
         Thread t1 = new Thread() {
             public void run() {
-                c();
+                try {
+                    c();
+                } catch (Throwable e) {
+                    th.set(e);
+                }
             }
 
             void c() {
@@ -123,9 +137,14 @@ public class DumpStackTest {
         try {
             t1.join();
         } catch(InterruptedException e) {}
+        if (th.get() != null) {
+            throw new AssertionError("Pending throwable.", th.get());
+        }
     }
 
-    static void testLambda() {
+    // Android-changed: Add @Test annotation.
+    @Test(enabled = false)
+    public static void testLambda() {
         Consumer<Void> c = (x) -> consumeLambda();
         c.accept(null);
     }
@@ -148,7 +167,9 @@ public class DumpStackTest {
         DumpStackTest.getStackTrace(callStack);
     }
 
-    static void testMethodInvoke() {
+    // Android-changed: Add @Test annotation.
+    @Test(enabled = false)
+    public static void testMethodInvoke() {
         try {
             Method m = DumpStackTest.class.getDeclaredMethod("methodInvoke");
             m.invoke(null);
@@ -157,7 +178,9 @@ public class DumpStackTest {
         }
     }
 
-    static void methodInvoke() {
+    // Android-changed: Add @Test annotation.
+    @Test(enabled = false)
+    public static void methodInvoke() {
         CallFrame[] callStack = new CallFrame[] {
                 new CallFrame(Thread.class, "getStackTrace"),
                 new CallFrame(DumpStackTest.class, "methodInvoke"),

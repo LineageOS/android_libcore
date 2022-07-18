@@ -28,11 +28,14 @@
  * @run main NativeMethod
  */
 
+package test.java.lang.StackWalker;
+
 import java.lang.StackWalker.Option;
 import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.testng.annotations.Test;
 
 public class NativeMethod {
     public static void main(String... args) throws Exception {
@@ -44,7 +47,9 @@ public class NativeMethod {
         this.walker = StackWalker.getInstance(Option.SHOW_REFLECT_FRAMES);
     }
 
-    void test() throws Exception {
+    // Android-changed: Add @Test annotation.
+    @Test
+    public void test() throws Exception {
         // invoke via reflection that includes native methods
         Method m = NativeMethod.class.getDeclaredMethod("walk");
         m.invoke(this);

@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.lang.StackWalker;
+
 import static java.lang.StackWalker.Option.*;
 import java.lang.StackWalker.StackFrame;
 import java.util.Arrays;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.testng.annotations.Test;
 
 /**
  * @test
@@ -37,7 +40,10 @@ import java.util.stream.Collectors;
  * @run main/othervm StackStreamTest
  */
 public class StackStreamTest {
-    public static void main(String[] argv) throws Exception {
+    // Android-added: Add @Test annotation.
+    // public static void main(String[] argv) throws Exception {
+    @Test
+    public static void main() throws Exception {
         new StackStreamTest().test();
     }
 
@@ -83,7 +89,8 @@ public class StackStreamTest {
 
     private static boolean isTestClass(StackFrame f) {
         // Filter jtreg frames from the end of the stack
-        return f.getClassName().startsWith("StackStreamTest");
+        // Android-changed: Add test package name.
+        return f.getClassName().startsWith(StackStreamTest.class.getName());
     }
 
     static class G {
@@ -91,15 +98,16 @@ public class StackStreamTest {
         static StackWalker DEFAULT_WALKER = StackWalker.getInstance();
 
         private static final List<String> GOLDEN_CLASS_NAMES =
-                Arrays.asList("StackStreamTest$G",
-                              "StackStreamTest$F",
-                              "StackStreamTest$E",
-                              "StackStreamTest$D",
-                              "StackStreamTest$C",
-                              "StackStreamTest$B",
-                              "StackStreamTest$A",
-                              "StackStreamTest",
-                              "StackStreamTest");
+                // Android-changed: Add test package name.
+                Arrays.asList("test.java.lang.StackWalker.StackStreamTest$G",
+                              "test.java.lang.StackWalker.StackStreamTest$F",
+                              "test.java.lang.StackWalker.StackStreamTest$E",
+                              "test.java.lang.StackWalker.StackStreamTest$D",
+                              "test.java.lang.StackWalker.StackStreamTest$C",
+                              "test.java.lang.StackWalker.StackStreamTest$B",
+                              "test.java.lang.StackWalker.StackStreamTest$A",
+                              "test.java.lang.StackWalker.StackStreamTest",
+                              "test.java.lang.StackWalker.StackStreamTest");
         private static final List<String> GOLDEN_METHOD_NAMES =
             Arrays.asList("g", "f", "e", "d", "c", "b", "a", "test", "main");
 
@@ -200,9 +208,16 @@ public class StackStreamTest {
             Optional<StackFrame> frame = sw.walk(s ->
             {
                  return s.filter(e -> {
+                            // Android-changed: Add package name
+                            /*
                             System.err.println(e.getClassName() + " == " +
                                                e.getClassName().equals("StackStreamTest"));
                             return e.getClassName().equals("StackStreamTest");
+                            */
+                            String selfName = StackStreamTest.class.getName();
+                            System.err.println(e.getClassName() + " == " +
+                                               e.getClassName().equals(selfName));
+                            return e.getClassName().equals(selfName);
                         }).findFirst();
             });
             Class<?> c = frame.get().getDeclaringClass();
