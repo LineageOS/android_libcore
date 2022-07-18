@@ -28,7 +28,6 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -38,14 +37,18 @@ import java.time.zone.ZoneRules;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Consumer;
 
 /**
- * Tests that bionic's interpretation of the TZDB rules on a device matches Android's java.time
- * behavior. On Android, java.time is implemented using ICU4J, so these confirm that bionic's
- * understanding of TZDB transitions and UTC offsets matches those of ICU4J.
+ * Tests that Android's java.time interpretation of TZDB rules matches with other available APIs:
+ * bionic and java.util.TimeZone.
+ *
+ * On Android, java.time is implemented using ICU4J, bionic and java.util.TimeZone read transitions
+ * from tzdata file. These tests ensure that they have consistent view on what offset was on a given
+ * time zone at a given time.
  */
 @RunWith(Parameterized.class)
-public class BionicTzdbConsistencyTest {
+public class TimeApisConsistencyTest {
 
     // The lower bound for testing.
     private static final LocalDateTime START_DATE;
@@ -98,9 +101,11 @@ public class BionicTzdbConsistencyTest {
     }
 
     private final String timeZoneId;
+    private final ZoneRules zoneRules;
 
-    public BionicTzdbConsistencyTest(String timeZoneId) {
+    public TimeApisConsistencyTest(String timeZoneId) {
         this.timeZoneId = timeZoneId;
+        this.zoneRules = ZoneId.of(timeZoneId).getRules();
     }
 
     /**
@@ -110,23 +115,22 @@ public class BionicTzdbConsistencyTest {
      */
     @Test
     public void compareBionicFormattingWithJavaTime() {
-        ZoneRules zoneRules = ZoneId.of(timeZoneId).getRules();
+        runChecksAroundInterestingTimestamps(this::compareWithBionic);
+    }
 
+    @Test
+    public void compareJavaUtilTimeZoneWthJavaTime() {
+        runChecksAroundInterestingTimestamps(this::compareWithJavaUtilTimeZone);
+    }
+
+    private void runChecksAroundInterestingTimestamps(Consumer<Instant> checkFunction) {
         Instant start = START_DATE.atOffset(ZoneOffset.UTC).toInstant();
         Instant stop = END_DATE.atOffset(ZoneOffset.UTC).toInstant();
 
         ZoneOffsetTransition zoneOffsetTransition = zoneRules.nextTransition(start);
 
         while (start.isBefore(stop)) {
-            for (Duration interestingOffset : INTERESTING_OFFSETS) {
-                Instant instantToCheck = start.plus(interestingOffset);
-                String bionicResult = formatWithBionic(instantToCheck, timeZoneId);
-                String javaResult = instantToCheck.atZone(ZoneId.of(timeZoneId)).format(FORMATTER);
-
-                String errorMessage = "Failed to format " + start + " at " + timeZoneId
-                        + " with offset=" + interestingOffset;
-                assertEquals(errorMessage, javaResult, bionicResult);
-            }
+            checkFunction.accept(start);
 
             if (zoneOffsetTransition == null) {
                 break;
@@ -137,10 +141,45 @@ public class BionicTzdbConsistencyTest {
         }
     }
 
+    private void compareWithBionic(Instant timestamp) {
+        for (Duration interestingOffset : INTERESTING_OFFSETS) {
+            Instant instantToCheck = timestamp.plus(interestingOffset);
+            String bionicResult = formatWithBionic(instantToCheck, timeZoneId);
+            String javaResult = instantToCheck.atZone(ZoneId.of(timeZoneId)).format(FORMATTER);
+
+            String errorMessage = "Failed to format " + timestamp + " at " + timeZoneId
+                    + " with offset=" + interestingOffset;
+            assertEquals(errorMessage, javaResult, bionicResult);
+        }
+
+    }
+
     private static String formatWithBionic(Instant instant, String timeZoneId) {
         return formatWithBionic(instant.getEpochSecond(), timeZoneId);
     }
 
     private static native String formatWithBionic(long epochSeconds, String timeZoneId);
 
+    /**
+     * TZif format does not store enough information to reliably tell what was DST savings offset
+     * even when the offset was not ambiguous at the time. This usually happens around dates when
+     * time zone's standard offset was changed.
+     *
+     * <p> Heuristics used to determine DST offset do not always work, so this test compares total
+     * (standard offset + DST savings) offset only.
+     */
+    private void compareWithJavaUtilTimeZone(Instant timestamp) {
+        for (Duration interestingOffset : INTERESTING_OFFSETS) {
+            Instant instantToCheck = timestamp.plus(interestingOffset);
+
+            int javaTimeOffset = zoneRules.getOffset(instantToCheck).getTotalSeconds() * 1_000;
+
+            int javaUtilOffset = java.util.TimeZone.getTimeZone(timeZoneId)
+                    .getOffset(instantToCheck.toEpochMilli());
+
+            String errorMessage = "java.time and java.util.TimeZone got different offsets for "
+                    + timestamp + " at " + timeZoneId + " with offset=" + interestingOffset;
+            assertEquals(errorMessage, javaTimeOffset, javaUtilOffset);
+        }
+    }
 }
