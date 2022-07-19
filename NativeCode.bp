@@ -158,8 +158,6 @@ cc_defaults {
             ],
         },
     },
-
-    notice: "ojluni/NOTICE",
 }
 
 cc_library_shared {
