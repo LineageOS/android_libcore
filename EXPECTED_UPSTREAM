@@ -1817,7 +1817,27 @@ ojluni/src/main/resources/java/time/chrono/hijrah-config-islamic-umalqura.proper
 ojluni/src/test/java/io/Reader/NullReader.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/NullReader.java
 ojluni/src/test/java/io/Reader/TransferTo.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Reader/TransferTo.java
 ojluni/src/test/java/io/Writer/NullWriter.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/io/Writer/NullWriter.java
+ojluni/src/test/java/lang/StackWalker/AcrossThreads.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/AcrossThreads.java
 ojluni/src/test/java/lang/StackWalker/Basic.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/Basic.java
+ojluni/src/test/java/lang/StackWalker/CallerFromMain.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/CallerFromMain.java
+ojluni/src/test/java/lang/StackWalker/DumpStackTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/DumpStackTest.java
+ojluni/src/test/java/lang/StackWalker/EmbeddedStackWalkTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/EmbeddedStackWalkTest.java
+ojluni/src/test/java/lang/StackWalker/GetCallerClassTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/GetCallerClassTest.java
+ojluni/src/test/java/lang/StackWalker/HiddenFrames.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/HiddenFrames.java
+ojluni/src/test/java/lang/StackWalker/LocalsAndOperands.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/LocalsAndOperands.java
+ojluni/src/test/java/lang/StackWalker/MultiThreadStackWalk.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/MultiThreadStackWalk.java
+ojluni/src/test/java/lang/StackWalker/NativeMethod.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/NativeMethod.java
+ojluni/src/test/java/lang/StackWalker/ReflectionFrames.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/ReflectionFrames.java
+ojluni/src/test/java/lang/StackWalker/SanityTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/SanityTest.java
+ojluni/src/test/java/lang/StackWalker/SecurityExceptions.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/SecurityExceptions.java
+ojluni/src/test/java/lang/StackWalker/StackRecorderUtil.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/StackRecorderUtil.java
+ojluni/src/test/java/lang/StackWalker/StackStreamState.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/StackStreamState.java
+ojluni/src/test/java/lang/StackWalker/StackStreamTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/StackStreamTest.java
+ojluni/src/test/java/lang/StackWalker/StackWalkTest.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/StackWalkTest.java
+# The test TestBCI analyses .class files, but Android runs dex codes.
+# ojluni/src/test/java/lang/StackWalker/TestBCI.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/TestBCI.java
+ojluni/src/test/java/lang/StackWalker/VerifyStackTrace.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/VerifyStackTrace.java
+ojluni/src/test/java/lang/StackWalker/WalkFunction.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/lang/StackWalker/WalkFunction.java
 ojluni/src/test/java/lang/invoke/ClassValueTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/ClassValueTest.java
 ojluni/src/test/java/lang/invoke/MethodHandlesGeneralTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/MethodHandlesGeneralTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java
