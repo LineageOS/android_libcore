@@ -54,6 +54,7 @@ license {
     license_text: [
         "LICENSE",
         "NOTICE",
+        "ojluni/NOTICE",
     ],
 }
 
