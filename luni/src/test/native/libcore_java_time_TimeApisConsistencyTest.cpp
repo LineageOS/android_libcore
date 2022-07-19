@@ -20,7 +20,7 @@
 #include <jni.h>
 
 extern "C"
-JNIEXPORT jstring JNICALL Java_libcore_java_time_BionicTzdbConsistencyTest_formatWithBionic(
+JNIEXPORT jstring JNICALL Java_libcore_java_time_TimeApisConsistencyTest_formatWithBionic(
     JNIEnv* env, jclass, jlong epochSeconds, jstring timeZoneId) {
 
   const char* oldTimeZone = getenv("TZ");
