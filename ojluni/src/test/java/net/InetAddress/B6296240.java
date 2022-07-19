@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Oracle designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Oracle in the LICENSE file that accompanied this code.
+ * published by the Free Software Foundation.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -22,29 +20,35 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package java.net;
-
+package test.java.net.InetAddress;
 
 /**
- *
- * This class represents a Socket Address with no protocol attachment.
- * As an abstract class, it is meant to be subclassed with a specific,
- * protocol dependent, implementation.
- * <p>
- * It provides an immutable object used by sockets for binding, connecting, or
- * as returned values.
- *
- * @see java.net.Socket
- * @see java.net.ServerSocket
- * @since 1.4
+ * @test
+ * @bug 6296240
+ * @summary  REGRESSION: InetAddress.getAllByName accepts badly formed address
  */
-public abstract class SocketAddress implements java.io.Serializable {
 
-    @java.io.Serial
-    static final long serialVersionUID = 5215720748342549866L;
+import java.net.*;
+import java.util.BitSet;
 
-    /**
-     * Constructor for subclasses to call.
-     */
-    public SocketAddress() {}
+import org.testng.annotations.Test;
+import org.testng.Assert;
+
+public class B6296240 {
+    @Test
+    public void testB6296240() {
+        String[] malformedIPv4s = {"192.168.1.220..."};
+        BitSet expectedExceptions = new BitSet(malformedIPv4s.length);
+        expectedExceptions.clear();
+
+        for (int i = 0; i < malformedIPv4s.length; i++) {
+            try {
+                InetAddress.getAllByName(malformedIPv4s[i]);
+            } catch (UnknownHostException e) {
+                expectedExceptions.set(i);
+            }
+        }
+
+        Assert.assertEquals(expectedExceptions.cardinality(), malformedIPv4s.length);
+    }
 }
