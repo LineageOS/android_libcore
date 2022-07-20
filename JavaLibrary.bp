@@ -292,8 +292,6 @@ java_library {
         ],
     },
 
-    notice: "ojluni/NOTICE",
-
     hiddenapi_additional_annotations: [
         "core-oj-hiddenapi-annotations",
     ],
@@ -403,8 +401,6 @@ java_defaults {
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
 
-    notice: "ojluni/NOTICE",
-
     installable: false,
     include_srcs: true,
 }
@@ -460,7 +456,6 @@ java_library {
     sdk_version: "none",
     system_modules: "core-all-system-modules",
     patch_module: "java.base",
-    notice: "ojluni/NOTICE",
     installable: false,
     include_srcs: true,
 }

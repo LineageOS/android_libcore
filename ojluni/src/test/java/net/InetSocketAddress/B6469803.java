@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Oracle designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Oracle in the LICENSE file that accompanied this code.
+ * published by the Free Software Foundation.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -22,29 +20,27 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package java.net;
+package test.java.net.InetSocketAddress;
 
-
-/**
- *
- * This class represents a Socket Address with no protocol attachment.
- * As an abstract class, it is meant to be subclassed with a specific,
- * protocol dependent, implementation.
- * <p>
- * It provides an immutable object used by sockets for binding, connecting, or
- * as returned values.
- *
- * @see java.net.Socket
- * @see java.net.ServerSocket
- * @since 1.4
+/*
+ * @test
+ * @bug 6469803
+ * @summary Socket creation on Windows takes a long time if web proxy does not have a DNS
  */
-public abstract class SocketAddress implements java.io.Serializable {
 
-    @java.io.Serial
-    static final long serialVersionUID = 5215720748342549866L;
+import java.net.*;
+import org.testng.annotations.Test;
+import static org.testng.Assert.assertTrue;
 
-    /**
-     * Constructor for subclasses to call.
-     */
-    public SocketAddress() {}
+public class B6469803 {
+
+    @Test
+    public void testLocalHost() {
+        InetSocketAddress addr = new InetSocketAddress("192.168.1.1", 12345);
+        String s = addr.getHostString();
+        assertTrue(s.equals("192.168.1.1"));
+        addr = new InetSocketAddress("localhost", 12345);
+        s = addr.getHostString();
+        assertTrue(s.equals("localhost"));
+    }
 }
