@@ -458,7 +458,7 @@ final class StackStreamFactory {
         }
 
         private void checkFrameType(T[] frames) {
-            if (!(frames instanceof StackFrameInfo[])) {
+            if (!(frames instanceof StackFrameInfo[]) && !(frames instanceof Class[])) {
                 throw new UnsupportedOperationException("Frame array type isn't supported yet:" +
                     frames.getClass().getName());
             }
@@ -487,10 +487,28 @@ final class StackStreamFactory {
             // TODO: use mode
             Objects.requireNonNull(anchor, "internal anchor can't be null");
             checkFrameType(frames);
+            // TODO: Optimize the performance when frames are Class[]
+            // Currently, to simplify the implementation, we can retrieve the calling classes from
+            // StackFrameInfo, but we need to create extra intermediate StackFrameInfo objects.
+            final StackFrameInfo[] internalFrames;
+            if (frames instanceof StackFrameInfo[]) {
+                internalFrames = (StackFrameInfo[]) frames;
+            } else {
+                internalFrames = new StackFrameInfo[frames.length];
+                for (int i = 0; i < frames.length; i++) {
+                    internalFrames[i] = new StackFrameInfo(/* retainClassRef= */true);
+                }
+            }
             LibcoreAnchor stacks = (LibcoreAnchor) anchor;
             int startTraceIndex = stacks.stackLevel;
             int endIndex = nativeFetchStackFrameInfo(mode, stacks.nativeAnchor, startTraceIndex,
-                batchSize, startIndex, (StackFrameInfo[]) frames);
+                batchSize, startIndex, internalFrames);
+            if (frames instanceof Class[]) {
+                Class[] classes = (Class[]) frames;
+                for (int i = startIndex; i < endIndex; i++) {
+                    classes[i] = internalFrames[i].getDeclaringClass();
+                }
+            }
             // Store the index of the trace.
             stacks.stackLevel += endIndex - startIndex;
             return endIndex;

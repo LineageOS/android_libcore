@@ -60,6 +60,12 @@ class StackFrameInfo implements StackFrame {
         // this.memberName = JLIA.newMemberName();
     }
 
+    // Android-added: Additional constructor
+    StackFrameInfo(boolean retainClassRef) {
+        this.retainClassRef = retainClassRef;
+    }
+
+
     // package-private called by StackStreamFactory to skip
     // the capability check
     Class<?> declaringClass() {
