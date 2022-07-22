@@ -20,7 +20,7 @@
 #include "nativehelper/ScopedUtfChars.h"
 
 extern "C"
-JNIEXPORT jstring JNICALL Java_tests_support_SystemProperties_getString(
+JNIEXPORT jstring JNICALL Java_tests_support_AndroidProperties_getString(
     JNIEnv* env, jclass, jstring jprop_name, jstring jdef) {
 
   ScopedUtfChars prop_name(env, jprop_name);
@@ -30,7 +30,7 @@ JNIEXPORT jstring JNICALL Java_tests_support_SystemProperties_getString(
 }
 
 extern "C"
-JNIEXPORT jint JNICALL Java_tests_support_SystemProperties_getInt(
+JNIEXPORT jint JNICALL Java_tests_support_AndroidProperties_getInt(
     JNIEnv* env, jclass, jstring jprop_name, jint jdef) {
 
   ScopedUtfChars prop_name(env, jprop_name);
