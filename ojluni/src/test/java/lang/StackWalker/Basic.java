@@ -67,8 +67,7 @@ public class Basic {
         }
     }
 
-    // Android-changed: The underlying features is to be implemented.
-    @Test(enabled = false)
+    @Test
     public static void testWalkFromConstructor() throws Exception {
         System.out.println("testWalkFromConstructor:");
         List<String> found = ((ConstructorNewInstance)ConstructorNewInstance.class.getMethod("create")
@@ -79,8 +78,7 @@ public class Basic {
                      found);
     }
 
-    // Android-changed: The underlying features is to be implemented.
-    @Test(enabled = false)
+    @Test
     public static void testMethodSignature() throws Exception {
         List<StackFrame> frames = new StackBuilder(16, 16).build();
         Map<String, MethodType> methodTypes = StackBuilder.methodTypes();
@@ -151,7 +149,9 @@ public class Basic {
             // are reflection frames. None should be present,
             // since they are supposed to be filtered by
             // by StackWalker. If we find any, we want to fail.
-            if (!f.getClassName().contains(".")
+            // Android-changed: Unlike upstream, this test class has a package name.
+            // if (!f.getClassName().contains(".")
+            if (f.getClassName().startsWith(Basic.class.getPackageName())
                 || f.getClassName().contains(".reflect.")) {
                 System.out.println("    " + f);
                 return true;
