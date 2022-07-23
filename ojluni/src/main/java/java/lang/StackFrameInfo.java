@@ -30,15 +30,22 @@ import java.lang.invoke.MethodType;
 
 class StackFrameInfo implements StackFrame {
 
-    // Android-removed: libcore dones't have JavaLangInvokeAccess yet.
+    // Android-removed: libcore doesn't have JavaLangInvokeAccess yet.
     // private static final JavaLangInvokeAccess JLIA =
     //     SharedSecrets.getJavaLangInvokeAccess();
 
     private final boolean retainClassRef;
     // Android-removed: Unused internal fields.
     // private final Object memberName;    // MemberName initialized by VM
-    // private int bci;                    // initialized by VM to >= 0
-    volatile StackTraceElement ste;
+    private int bci;                    // initialized by VM to >= 0
+    private volatile StackTraceElement ste;
+
+    // Android-added: Add Android-specific internal fields.
+    private Class<?> declaringClass; // initialized by VM
+    private MethodType methodType; // initialized by VM
+    private String methodName; // initialized by VM
+    private String fileName; // initialized by VM
+    private int lineNumber; // initialized by VM
 
     /*
      * Construct an empty StackFrameInfo object that will be filled by the VM
@@ -53,20 +60,25 @@ class StackFrameInfo implements StackFrame {
         // this.memberName = JLIA.newMemberName();
     }
 
+    // Android-added: Additional constructor
+    StackFrameInfo(boolean retainClassRef) {
+        this.retainClassRef = retainClassRef;
+    }
+
+
     // package-private called by StackStreamFactory to skip
     // the capability check
     Class<?> declaringClass() {
-        // Android-changed: To be implemented.
+        // Android-changed: Android own implementation.
         // return JLIA.getDeclaringClass(memberName);
-        return getClassName() != null ? Object.class : null;
+        return declaringClass;
     }
 
     // ----- implementation of StackFrame methods
 
     @Override
     public String getClassName() {
-        // Android-changed: Android own implementation.
-        return ste.getClassName();
+        return declaringClass().getName();
     }
 
     @Override
@@ -79,22 +91,22 @@ class StackFrameInfo implements StackFrame {
     public String getMethodName() {
         // Android-changed: Android own implementation.
         // return JLIA.getName(memberName);
-        return ste.getMethodName();
+        return methodName;
     }
 
     @Override
     public MethodType getMethodType() {
         ensureRetainClassRefEnabled();
-        // Android-changed: To be implemented.
+        // Android-changed: Android own implementation.
         // return JLIA.getMethodType(memberName);
-        return null;
+        return methodType;
     }
 
     @Override
     public String getDescriptor() {
-        // Android-changed: To be implemented.
+        // Android-changed: Android own implementation.
         // return JLIA.getMethodDescriptor(memberName);
-        return ste.getMethodName();
+        return methodType.toMethodDescriptorString();
     }
 
     @Override
@@ -103,14 +115,14 @@ class StackFrameInfo implements StackFrame {
         if (isNativeMethod())
             return -1;
 
-        // Android-changed: To be implemented.
-        // It's incorrect!
-        return ste.getLineNumber();
+        return bci;
     }
 
     @Override
     public String getFileName() {
-        return toStackTraceElement().getFileName();
+        // Android-changed: Android own implementation.
+        // return toStackTraceElement().getFileName();
+        return fileName;
     }
 
     @Override
@@ -119,7 +131,9 @@ class StackFrameInfo implements StackFrame {
         if (isNativeMethod())
             return -2;
 
-        return toStackTraceElement().getLineNumber();
+        // Android-changed: Android own implementation.
+        // return toStackTraceElement().getLineNumber();
+        return lineNumber;
     }
 
 
@@ -127,7 +141,8 @@ class StackFrameInfo implements StackFrame {
     public boolean isNativeMethod() {
         // Android-changed: Android own implementation.
         // return JLIA.isNative(memberName);
-        return ste.isNativeMethod();
+        // StackTraceElement.isNativeMethod() uses -2 in line number to indicate native method.
+        return lineNumber == -2;
     }
 
     @Override
@@ -138,15 +153,17 @@ class StackFrameInfo implements StackFrame {
     @Override
     public StackTraceElement toStackTraceElement() {
         StackTraceElement s = ste;
-        // Android-changed: To be implemented.
-        // if (s == null) {
-        //     synchronized (this) {
-        //         s = ste;
-        //         if (s == null) {
-        //             ste = s = StackTraceElement.of(this);
-        //         }
-        //     }
-        // }
+        if (s == null) {
+            synchronized (this) {
+                s = ste;
+                if (s == null) {
+                    // Android-changed: patch needed until StackTraceElement.of is implemented.
+                    // ste = s = StackTraceElement.of(this);
+                    ste = s = new StackTraceElement(getClassName(), methodName, fileName,
+                        lineNumber);
+                }
+            }
+        }
         return s;
     }
 

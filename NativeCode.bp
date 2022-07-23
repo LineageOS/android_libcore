@@ -207,8 +207,10 @@ cc_library_shared {
         "luni/src/test/native/libcore_java_nio_BufferTest.cpp",
         "luni/src/test/native/libcore_java_time_TimeApisConsistencyTest.cpp",
         "luni/src/test/native/libcore_libcore_util_NativeAllocationRegistryTest.cpp",
+        "luni/src/test/native/tests_support_AndroidProperties.cpp",
     ],
     shared_libs: [
+        "libbase",
         "liblog",
         "libnativehelper",
     ],
