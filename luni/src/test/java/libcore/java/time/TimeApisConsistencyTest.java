@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import tests.support.PlatformVersions;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -49,6 +50,10 @@ import java.util.function.Consumer;
  */
 @RunWith(Parameterized.class)
 public class TimeApisConsistencyTest {
+
+    // Before U java.util.TimeZone could handle dates prior to the year 2038 only.
+    private static final Instant PRE_U_JAVA_UTIL_TIME_ZONE_MAX_SUPPORTED
+            = Instant.ofEpochSecond(2145916800); // 1 Jan 2038
 
     // The lower bound for testing.
     private static final LocalDateTime START_DATE;
@@ -169,6 +174,11 @@ public class TimeApisConsistencyTest {
      * (standard offset + DST savings) offset only.
      */
     private void compareWithJavaUtilTimeZone(Instant timestamp) {
+        if (!PlatformVersions.isAtLeastU()) {
+            if (timestamp.isAfter(PRE_U_JAVA_UTIL_TIME_ZONE_MAX_SUPPORTED)) {
+                return;
+            }
+        }
         for (Duration interestingOffset : INTERESTING_OFFSETS) {
             Instant instantToCheck = timestamp.plus(interestingOffset);
 
