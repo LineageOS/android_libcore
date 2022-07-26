@@ -32,6 +32,7 @@
 
 package test.java.lang.StackWalker;
 
+import dalvik.system.VMStack;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -43,7 +44,9 @@ import org.testng.annotations.Test;
 
 public class DumpStackTest {
 
-    public static void main(String args[]) {
+    // public static void main(String args[]) {
+    @Test
+    public static void main() {
         test();
         testThread();
         testLambda();
@@ -80,17 +83,16 @@ public class DumpStackTest {
         }
     }
 
-    // Android-changed: Add @Test annotation.
-    @Test(enabled = false)
-    public static void test() {
+    static void test() {
         CallFrame[] callStack = new CallFrame[] {
                 new CallFrame(Thread.class, "getStackTrace"),
                 new CallFrame(DumpStackTest.class, "test"),
                 new CallFrame(DumpStackTest.class, "main"),
                 // if invoked from jtreg
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"), // non-public class
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
-                new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
+                // Android-removed: libcore doesn't have such hidden frames for reflection.
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"), // non-public class
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
+                // new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
                 new CallFrame(Method.class, "invoke"),
                 new CallFrame(Thread.class, "run"),
         };
@@ -109,9 +111,7 @@ public class DumpStackTest {
             assertStackTrace(ex.getStackTrace(), callStack);
         }
     }
-    // Android-changed: Add @Test annotation.
-    @Test(enabled = false)
-    public static void testThread() {
+    static void testThread() {
         // Android-changed: Avoid test process crash when throwing in the new thread.
         AtomicReference<Throwable> th = new AtomicReference<>();
         Thread t1 = new Thread() {
@@ -142,9 +142,7 @@ public class DumpStackTest {
         }
     }
 
-    // Android-changed: Add @Test annotation.
-    @Test(enabled = false)
-    public static void testLambda() {
+    static void testLambda() {
         Consumer<Void> c = (x) -> consumeLambda();
         c.accept(null);
     }
@@ -157,9 +155,10 @@ public class DumpStackTest {
                 new CallFrame(DumpStackTest.class, "testLambda"),
                 new CallFrame(DumpStackTest.class, "main"),
                 // if invoked from jtreg
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
-                new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
+                // Android-removed: libcore doesn't have such hidden frames for reflection.
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
+                // new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
                 new CallFrame(Method.class, "invoke"),
                 new CallFrame(Thread.class, "run")
         };
@@ -167,9 +166,7 @@ public class DumpStackTest {
         DumpStackTest.getStackTrace(callStack);
     }
 
-    // Android-changed: Add @Test annotation.
-    @Test(enabled = false)
-    public static void testMethodInvoke() {
+    static void testMethodInvoke() {
         try {
             Method m = DumpStackTest.class.getDeclaredMethod("methodInvoke");
             m.invoke(null);
@@ -178,22 +175,22 @@ public class DumpStackTest {
         }
     }
 
-    // Android-changed: Add @Test annotation.
-    @Test(enabled = false)
-    public static void methodInvoke() {
+    static void methodInvoke() {
         CallFrame[] callStack = new CallFrame[] {
                 new CallFrame(Thread.class, "getStackTrace"),
                 new CallFrame(DumpStackTest.class, "methodInvoke"),
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
-                new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
+                // Android-removed: libcore doesn't have such hidden frames for reflection.
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
+                // new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
                 new CallFrame(Method.class, "invoke"),
                 new CallFrame(DumpStackTest.class, "testMethodInvoke"),
                 new CallFrame(DumpStackTest.class, "main"),
                 // if invoked from jtreg
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
-                new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
+                // Android-removed: libcore doesn't have such hidden frames for reflection.
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
+                // new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
                 new CallFrame(Method.class, "invoke"),
                 new CallFrame(Thread.class, "run")
         };
@@ -219,9 +216,10 @@ public class DumpStackTest {
                 new CallFrame(DumpStackTest.class, "testMethodHandle"),
                 new CallFrame(DumpStackTest.class, "main"),
                 // if invoked from jtreg
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
-                new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
-                new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
+                // Android-removed: libcore doesn't have such hidden frames for reflection.
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke0"),
+                // new CallFrame("jdk.internal.reflect.NativeMethodAccessorImpl", "invoke"),
+                // new CallFrame("jdk.internal.reflect.DelegatingMethodAccessorImpl", "invoke"),
                 new CallFrame(Method.class, "invoke"),
                 new CallFrame(Thread.class, "run")
         };
@@ -234,14 +232,24 @@ public class DumpStackTest {
         Arrays.stream(actual).forEach(e -> System.out.println(e));
         System.out.println("--- Expected ---");
         Arrays.stream(expected).forEach(e -> System.out.println(e));
-
         for (int i = 0, j = 0; i < actual.length; i++) {
             // filter test framework classes
-            if (actual[i].getClassName().startsWith("com.sun.javatest.regtest"))
+            // Android-changed: Android uses different test infras.
+            // if (actual[i].getClassName().startsWith("com.sun.javatest.regtest"))
+            if (isAndroidTestInfra(actual[i].getClassName()))
                 continue;
+            // Android-added: dexer on Android generates extra class for lambda
+            if (actual[i].getClassName().contains("$$ExternalSyntheticLambda")) {
+                continue;
+            }
+            // Android-added: Due to http://b/240140214, we skip this call frame.
+            // TODO(http://b/240140214): Remove this patch when it's fixed.
+            if (VMStack.class.getName().equals(actual[i].getClassName()) &&
+                "getThreadStackTrace".equals(actual[i].getMethodName())) {
+                continue;
+            }
             assertEquals(actual[i], expected[j++], i);
         }
-
     }
     static void assertEquals(StackTraceElement actual, CallFrame expected, int idx) {
         if (!actual.getClassName().equals(expected.getClassName()) ||
@@ -250,5 +258,22 @@ public class DumpStackTest {
             throw new RuntimeException("StackTraceElements mismatch at index " + idx +
                 ". Expected [" + expected + "], but get [" + actual + "]");
         }
+    }
+
+    // Android-added: Extra function to filter Android test infra in stack frames.
+    private static final String[] ANDROID_INFRA_PACKAGES = new String[] {
+        "android.app.Instrumentation",
+        "androidx.test",
+        "com.android.cts",
+        "org.junit",
+        "org.testng",
+    };
+    private static final boolean isAndroidTestInfra(String classname) {
+        for (String pkg : ANDROID_INFRA_PACKAGES) {
+            if (classname.startsWith(pkg)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
