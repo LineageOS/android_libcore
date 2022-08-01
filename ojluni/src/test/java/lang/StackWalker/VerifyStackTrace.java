@@ -33,9 +33,12 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.Objects;
+
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import static java.lang.StackWalker.Option.*;
+import static org.testng.Assert.assertEquals;
 
 /**
  * @test
@@ -69,6 +72,8 @@ public class VerifyStackTrace {
         // then you can cut & paste the <-- actual --> stack printed in the
         // test output in here:
         private final String expected =
+            // Android-changed: This test has a package name on Android.
+            /*
             "1: VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:209)\n" +
             "2: VerifyStackTrace$Handle.execute(VerifyStackTrace.java:145)\n" +
             "3: VerifyStackTrace$Handle.run(VerifyStackTrace.java:158)\n" +
@@ -77,6 +82,16 @@ public class VerifyStackTrace {
             "6: java.base/java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
             "7: VerifyStackTrace.test(VerifyStackTrace.java:227)\n" +
             "8: VerifyStackTrace.main(VerifyStackTrace.java:182)\n";
+            */
+            "1: test.java.lang.StackWalker.VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:209)\n" +
+            "2: test.java.lang.StackWalker.VerifyStackTrace$$ExternalSyntheticLambda1.run(Unknown Source:8)\n" +
+            "3: test.java.lang.StackWalker.VerifyStackTrace$Handle.execute(VerifyStackTrace.java:145)\n" +
+            "4: test.java.lang.StackWalker.VerifyStackTrace$Handle.run(VerifyStackTrace.java:158)\n" +
+            "5: test.java.lang.StackWalker.VerifyStackTrace.invoke(VerifyStackTrace.java:188)\n" +
+            "6: test.java.lang.StackWalker.VerifyStackTrace$1.run(VerifyStackTrace.java:218)\n" +
+            "7: java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
+            "8: test.java.lang.StackWalker.VerifyStackTrace.test(VerifyStackTrace.java:227)\n" +
+            "9: test.java.lang.StackWalker.VerifyStackTrace.main(VerifyStackTrace.java:182)\n";
 
         @Override public StackWalker walker() { return walker;}
         @Override public String description() { return description;}
@@ -99,6 +114,9 @@ public class VerifyStackTrace {
         // then you can cut & paste the <-- actual --> stack printed in the
         // test output in here (don't forget the final \n):
         private final String expected =
+            // Android-changed: This test has a package name on Android, and implements
+            // lambda and OpenJDK classes with a different call chain.
+            /*
             "1: VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:211)\n" +
             "2: VerifyStackTrace$Handle.execute(VerifyStackTrace.java:147)\n" +
             "3: VerifyStackTrace$Handle.run(VerifyStackTrace.java:160)\n" +
@@ -111,7 +129,17 @@ public class VerifyStackTrace {
             "10: java.base/java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
             "11: VerifyStackTrace.test(VerifyStackTrace.java:229)\n" +
             "12: VerifyStackTrace.main(VerifyStackTrace.java:185)\n";
-
+            */
+            "1: test.java.lang.StackWalker.VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:211)\n" +
+            "2: test.java.lang.StackWalker.VerifyStackTrace$$ExternalSyntheticLambda1.run(Unknown Source:8)\n" +
+            "3: test.java.lang.StackWalker.VerifyStackTrace$Handle.execute(VerifyStackTrace.java:147)\n" +
+            "4: test.java.lang.StackWalker.VerifyStackTrace$Handle.run(VerifyStackTrace.java:160)\n" +
+            "5: test.java.lang.StackWalker.VerifyStackTrace.invoke(VerifyStackTrace.java:190)\n" +
+            "6: java.lang.reflect.Method.invoke(Native Method)\n" +
+            "7: test.java.lang.StackWalker.VerifyStackTrace$1.run(VerifyStackTrace.java:220)\n" +
+            "8: java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
+            "9: test.java.lang.StackWalker.VerifyStackTrace.test(VerifyStackTrace.java:229)\n" +
+            "10: test.java.lang.StackWalker.VerifyStackTrace.main(VerifyStackTrace.java:185)\n";
         @Override public StackWalker walker() { return walker;}
         @Override public String description() { return description;}
         @Override public String expected()    { return expected;}
@@ -133,6 +161,9 @@ public class VerifyStackTrace {
         // then you can cut & paste the <-- actual --> stack printed in the
         // test output in here (don't forget the final \n):
         private final String expected =
+                // Android-changed: This test has a package name on Android, and implements
+                // lambda and OpenJDK classes with a different call chain.
+            /*
             "1: VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:213)\n" +
             "2: VerifyStackTrace$$Lambda$1/0x00000007c0089430.run(Unknown Source)\n" +
             "3: VerifyStackTrace$Handle.execute(VerifyStackTrace.java:149)\n" +
@@ -149,7 +180,17 @@ public class VerifyStackTrace {
             "14: java.base/java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
             "15: VerifyStackTrace.test(VerifyStackTrace.java:231)\n" +
             "16: VerifyStackTrace.main(VerifyStackTrace.java:188)\n";
-
+            */
+            "1: test.java.lang.StackWalker.VerifyStackTrace.lambda$test$1(VerifyStackTrace.java:213)\n" +
+            "2: test.java.lang.StackWalker.VerifyStackTrace$$ExternalSyntheticLambda1.run(Unknown Source:8)\n" +
+            "3: test.java.lang.StackWalker.VerifyStackTrace$Handle.execute(VerifyStackTrace.java:149)\n" +
+            "4: test.java.lang.StackWalker.VerifyStackTrace$Handle.run(VerifyStackTrace.java:162)\n" +
+            "5: test.java.lang.StackWalker.VerifyStackTrace.invoke(VerifyStackTrace.java:192)\n" +
+            "6: java.lang.reflect.Method.invoke(Native Method)\n" +
+            "7: test.java.lang.StackWalker.VerifyStackTrace$1.run(VerifyStackTrace.java:222)\n" +
+            "8: java.security.AccessController.doPrivileged(AccessController.java:310)\n" +
+            "9: test.java.lang.StackWalker.VerifyStackTrace.test(VerifyStackTrace.java:231)\n" +
+            "10: test.java.lang.StackWalker.VerifyStackTrace.main(VerifyStackTrace.java:188)\n";
         @Override public StackWalker walker() { return walker;}
         @Override public String description() { return description;}
         @Override public String expected()    { return expected;}
@@ -222,8 +263,7 @@ public class VerifyStackTrace {
 
     // Android-changed: Add @Test annotation.
     // public static void main(String[] args) {
-    // TODO: Fix this test because this matches the exact stacks, including package names, line no.
-    @Test(enabled = false)
+    @Test
     public static void main() {
         test(new TestCase1());
         test(new TestCase2());
@@ -276,6 +316,9 @@ public class VerifyStackTrace {
         };
         AccessController.doPrivileged(pa);
         System.out.println("Main found: " + recorder.found);
+        assertEquals(prepare(builder.toString(), true), prepare(test.expected(), true));
+        // Android-changed: Replace System.out because the output is invisible to Tradefed.
+        /*
         if (!Objects.equals(prepare(test.expected(), true), prepare(builder.toString(), true))) {
             System.out.flush();
             try {
@@ -291,6 +334,7 @@ public class VerifyStackTrace {
                     + prepare(builder.toString(), false));
             throw new RuntimeException("Unexpected stack trace  for: " + test.description());
         }
+        */
     }
 
 

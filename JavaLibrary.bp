@@ -539,6 +539,26 @@ java_library_static {
     ],
 }
 
+// Used to generate the prebuilt file luni/src/test/resources/prebuilt-dex-from-java.dex.
+// The reason why we pre-build this dex file is to stabilize the test result from the
+// dexer / javac / other toolchains change.
+// Regenerate the prebuilt file with the following command:
+//   m core-tests-prebuilt-dex-from-java &&
+//   unzip out/soong/.intermediates/libcore/core-tests-prebuilt-dex-from-java/android_common/dex/core-tests-prebuilt-dex-from-java.jar classes.dex \
+//   -d libcore/luni/src/test/resources/ && mv libcore/luni/src/test/resources/classes.dex libcore/luni/src/test/resources/prebuilt-dex-from-java.dex
+java_test {
+    name: "core-tests-prebuilt-dex-from-java",
+    srcs: ["luni/src/test/dex_src/**/*.java"],
+    compile_dex: true,
+    defaults: ["libcore_java_defaults"],
+    sdk_version: "none",
+    system_modules: "core-all-system-modules",
+
+    visibility: [
+        "//libcore:__subpackages__",
+    ],
+}
+
 // Builds the jsr166-tests library.
 java_test {
     name: "jsr166-tests",
