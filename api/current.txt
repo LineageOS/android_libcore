@@ -17639,6 +17639,7 @@ package java.util.stream {
     method public java.util.stream.Stream<T> sorted(java.util.Comparator<? super T>);
     method public Object[] toArray();
     method public <A> A[] toArray(java.util.function.IntFunction<A[]>);
+    method public default java.util.List<T> toList();
   }
 
   public static interface Stream.Builder<T> extends java.util.function.Consumer<T> {
