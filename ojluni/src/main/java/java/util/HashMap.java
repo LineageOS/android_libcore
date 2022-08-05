@@ -1087,6 +1087,16 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This method will, on a best-effort basis, throw a
+     * {@link ConcurrentModificationException} if it is detected that the
+     * mapping function modifies this map during computation.
+     *
+     * @throws ConcurrentModificationException if it is detected that the
+     * mapping function modified this map
+     */
     @Override
     public V computeIfAbsent(K key,
                              Function<? super K, ? extends V> mappingFunction) {
@@ -1120,7 +1130,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 return oldValue;
             }
         }
+        int mc = modCount;
         V v = mappingFunction.apply(key);
+        if (mc != modCount) { throw new ConcurrentModificationException(); }
         if (v == null) {
             return null;
         } else if (old != null) {
@@ -1135,12 +1147,23 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (binCount >= TREEIFY_THRESHOLD - 1)
                 treeifyBin(tab, hash);
         }
-        ++modCount;
+        modCount = mc + 1;
         ++size;
         afterNodeInsertion(true);
         return v;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This method will, on a best-effort basis, throw a
+     * {@link ConcurrentModificationException} if it is detected that the
+     * remapping function modifies this map during computation.
+     *
+     * @throws ConcurrentModificationException if it is detected that the
+     * remapping function modified this map
+     */
+    @Override
     public V computeIfPresent(K key,
                               BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
         if (remappingFunction == null)
@@ -1148,7 +1171,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         Node<K,V> e; V oldValue;
         if ((e = getNode(key)) != null &&
             (oldValue = e.value) != null) {
+            int mc = modCount;
             V v = remappingFunction.apply(key, oldValue);
+            if (mc != modCount) { throw new ConcurrentModificationException(); }
             if (v != null) {
                 e.value = v;
                 afterNodeAccess(e);
@@ -1162,6 +1187,16 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return null;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This method will, on a best-effort basis, throw a
+     * {@link ConcurrentModificationException} if it is detected that the
+     * remapping function modifies this map during computation.
+     *
+     * @throws ConcurrentModificationException if it is detected that the
+     * remapping function modified this map
+     */
     @Override
     public V compute(K key,
                      BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
@@ -1191,7 +1226,9 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             }
         }
         V oldValue = (old == null) ? null : old.value;
+        int mc = modCount;
         V v = remappingFunction.apply(key, oldValue);
+        if (mc != modCount) { throw new ConcurrentModificationException(); }
         if (old != null) {
             if (v != null) {
                 old.value = v;
@@ -1208,19 +1245,27 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 if (binCount >= TREEIFY_THRESHOLD - 1)
                     treeifyBin(tab, hash);
             }
-            ++modCount;
+            modCount = mc + 1;
             ++size;
             afterNodeInsertion(true);
         }
         return v;
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * <p>This method will, on a best-effort basis, throw a
+     * {@link ConcurrentModificationException} if it is detected that the
+     * remapping function modifies this map during computation.
+     *
+     * @throws ConcurrentModificationException if it is detected that the
+     * remapping function modified this map
+     */
     @Override
     public V merge(K key, V value,
                    BiFunction<? super V, ? super V, ? extends V> remappingFunction) {
-        if (value == null)
-            throw new NullPointerException();
-        if (remappingFunction == null)
+        if (value == null || remappingFunction == null)
             throw new NullPointerException();
         int hash = hash(key);
         Node<K,V>[] tab; Node<K,V> first; int n, i;
@@ -1247,10 +1292,15 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         }
         if (old != null) {
             V v;
-            if (old.value != null)
+            if (old.value != null) {
+                int mc = modCount;
                 v = remappingFunction.apply(old.value, value);
-            else
+                if (mc != modCount) {
+                    throw new ConcurrentModificationException();
+                }
+            } else {
                 v = value;
+            }
             if (v != null) {
                 old.value = v;
                 afterNodeAccess(old);
@@ -1258,8 +1308,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             else
                 removeNode(hash, key, null, false, true);
             return v;
-        }
-        if (value != null) {
+        } else {
             if (t != null)
                 t.putTreeVal(this, tab, hash, key, value);
             else {
@@ -1270,8 +1319,8 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             ++modCount;
             ++size;
             afterNodeInsertion(true);
+            return value;
         }
-        return value;
     }
 
     @Override
