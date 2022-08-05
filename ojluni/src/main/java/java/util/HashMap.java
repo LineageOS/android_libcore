@@ -2040,8 +2040,11 @@ public class HashMap<K,V> extends AbstractMap<K,V>
                 return;
             if (root.parent != null)
                 root = root.root();
-            if (root == null || root.right == null ||
-                (rl = root.left) == null || rl.left == null) {
+            if (root == null
+                || (movable
+                    && (root.right == null
+                        || (rl = root.left) == null
+                        || rl.left == null))) {
                 tab[index] = first.untreeify(map);  // too small
                 return;
             }
@@ -2093,7 +2096,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
             if (replacement != p) {
                 TreeNode<K,V> pp = replacement.parent = p.parent;
                 if (pp == null)
-                    root = replacement;
+                    (root = replacement).red = false;
                 else if (p == pp.left)
                     pp.left = replacement;
                 else
