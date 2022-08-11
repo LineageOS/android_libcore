@@ -3904,6 +3904,7 @@ package java.lang {
     method @NonNull public String toLowerCase();
     method @NonNull public String toUpperCase(@NonNull java.util.Locale);
     method @NonNull public String toUpperCase();
+    method @NonNull public String translateEscapes();
     method @NonNull public String trim();
     method @NonNull public static String valueOf(@Nullable Object);
     method @NonNull public static String valueOf(char[]);

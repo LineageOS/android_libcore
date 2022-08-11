@@ -186,6 +186,8 @@ public boolean isBlank() { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.String stripIndent() { throw new RuntimeException("Stub!"); }
 
+@libcore.util.NonNull public java.lang.String translateEscapes() { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
 public native char[] toCharArray();
