@@ -117,5 +117,15 @@ public enum ElementType {
      *
      * @since 9
      */
-    MODULE
+    MODULE,
+
+    /**
+     * Record component
+     *
+     * @jls 8.10.3 Record Members
+     * @jls 9.7.4 Where Annotations May Appear
+     *
+     * @since 16
+     */
+    RECORD_COMPONENT;
 }
