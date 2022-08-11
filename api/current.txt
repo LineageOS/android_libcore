@@ -3858,6 +3858,7 @@ package java.lang {
     method public boolean equalsIgnoreCase(@Nullable String);
     method @NonNull public static String format(@NonNull String, @NonNull java.lang.Object...);
     method @NonNull public static String format(@NonNull java.util.Locale, @NonNull String, @NonNull java.lang.Object...);
+    method @NonNull public String formatted(@NonNull java.lang.Object...);
     method @Deprecated public void getBytes(int, int, byte[], int);
     method public byte[] getBytes(@NonNull String) throws java.io.UnsupportedEncodingException;
     method public byte[] getBytes(@NonNull java.nio.charset.Charset);
