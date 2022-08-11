@@ -42,7 +42,7 @@ import java.util.regex.PatternSyntaxException;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import jdk.internal.HotSpotIntrinsicCandidate;
+import jdk.internal.vm.annotation.IntrinsicCandidate;
 
 import libcore.util.CharsetUtils;
 
@@ -199,7 +199,7 @@ public final class String
      * @param  original
      *         A {@code String}
      */
-    @HotSpotIntrinsicCandidate
+    @IntrinsicCandidate
     public String(String original) {
         // BEGIN Android-changed: Implemented as compiler and runtime intrinsics.
         /*
