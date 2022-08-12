@@ -13761,6 +13761,8 @@ package java.util {
 
   public class NoSuchElementException extends java.lang.RuntimeException {
     ctor public NoSuchElementException();
+    ctor public NoSuchElementException(String, Throwable);
+    ctor public NoSuchElementException(Throwable);
     ctor public NoSuchElementException(String);
   }
 
