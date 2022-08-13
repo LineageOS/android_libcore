@@ -196,6 +196,8 @@ public native char[] toCharArray();
 
 @libcore.util.NonNull public static java.lang.String format(@libcore.util.NonNull java.util.Locale l, @libcore.util.NonNull java.lang.String format, java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
 
+@libcore.util.NonNull public java.lang.String formatted(java.lang.@libcore.util.Nullable Object @libcore.util.NonNull ... args) { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public static java.lang.String valueOf(@libcore.util.Nullable java.lang.Object obj) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public static java.lang.String valueOf(char[] data) { throw new RuntimeException("Stub!"); }
