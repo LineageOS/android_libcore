@@ -3435,19 +3435,6 @@ public final class String
         return indexOfNonWhitespace() == length();
     }
 
-    private int indexOfNonWhitespace() {
-        // BEGIN Android-removed: Delegate to StringUTF16.
-        /*
-        if (isLatin1()) {
-            return StringLatin1.indexOfNonWhitespace(value);
-        } else {
-            return StringUTF16.indexOfNonWhitespace(value);
-        }
-         */
-        return StringUTF16.indexOfNonWhitespace(this);
-        // END Android-removed: Delegate to StringUTF16.
-    }
-
     /**
      * Returns a stream of lines extracted from this string,
      * separated by line terminators.
@@ -3538,6 +3525,26 @@ public final class String
             stream = stream.map(s -> s.substring(Math.min(-n, s.indexOfNonWhitespace())));
         }
         return stream.collect(Collectors.joining("\n", "", "\n"));
+    }
+
+    private int indexOfNonWhitespace() {
+        // BEGIN Android-removed: Delegate to StringUTF16.
+        /*
+        return isLatin1() ? StringLatin1.indexOfNonWhitespace(value)
+                          : StringUTF16.indexOfNonWhitespace(value);
+         */
+        return StringUTF16.indexOfNonWhitespace(this);
+        // END Android-removed: Delegate to StringUTF16.
+    }
+
+    private int lastIndexOfNonWhitespace() {
+        // BEGIN Android-changed: Delegate to StringUTF16.
+        /*
+        return isLatin1() ? StringLatin1.lastIndexOfNonWhitespace(value)
+                          : StringUTF16.lastIndexOfNonWhitespace(value);
+        */
+        return StringUTF16.lastIndexOfNonWhitespace(this);
+        // END Android-changed: Delegate to StringUTF16.
     }
 
     /**
