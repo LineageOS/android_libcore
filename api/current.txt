@@ -3863,6 +3863,7 @@ package java.lang {
     method public byte[] getBytes(@NonNull java.nio.charset.Charset);
     method public byte[] getBytes();
     method public void getChars(int, int, char[], int);
+    method @NonNull public String indent(int);
     method public int indexOf(int);
     method public int indexOf(int, int);
     method public int indexOf(@NonNull String);
