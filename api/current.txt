@@ -3755,6 +3755,8 @@ package java.lang {
     method public static long abs(long);
     method public static float abs(float);
     method public static double abs(double);
+    method public static int absExact(int);
+    method public static long absExact(long);
     method public static double acos(double);
     method public static int addExact(int, int);
     method public static long addExact(long, long);
