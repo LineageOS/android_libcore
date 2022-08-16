@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -39,18 +39,42 @@ import java.util.spi.CalendarNameProvider;
  * @author Naoto Sato
  */
 public class CalendarDataUtility {
-    public final static String FIRST_DAY_OF_WEEK = "firstDayOfWeek";
-    public final static String MINIMAL_DAYS_IN_FIRST_WEEK = "minimalDaysInFirstWeek";
+    public static final String FIRST_DAY_OF_WEEK = "firstDayOfWeek";
+    public static final String MINIMAL_DAYS_IN_FIRST_WEEK = "minimalDaysInFirstWeek";
 
     // No instantiation
     private CalendarDataUtility() {
     }
 
     public static int retrieveFirstDayOfWeek(Locale locale) {
+        // Look for the Unicode Extension in the locale parameter
+        if (locale.hasExtensions()) {
+            String fw = locale.getUnicodeLocaleType("fw");
+            if (fw != null) {
+                switch (fw.toLowerCase(Locale.ROOT)) {
+                    case "mon":
+                        return MONDAY;
+                    case "tue":
+                        return TUESDAY;
+                    case "wed":
+                        return WEDNESDAY;
+                    case "thu":
+                        return THURSDAY;
+                    case "fri":
+                        return FRIDAY;
+                    case "sat":
+                        return SATURDAY;
+                    case "sun":
+                        return SUNDAY;
+                }
+            }
+        }
+
         LocaleServiceProviderPool pool =
                 LocaleServiceProviderPool.getPool(CalendarDataProvider.class);
         Integer value = pool.getLocalizedObject(CalendarWeekParameterGetter.INSTANCE,
-                                                locale, FIRST_DAY_OF_WEEK);
+                                                findRegionOverride(locale),
+                                                true, FIRST_DAY_OF_WEEK);
         return (value != null && (value >= SUNDAY && value <= SATURDAY)) ? value : SUNDAY;
     }
 
@@ -58,7 +82,8 @@ public class CalendarDataUtility {
         LocaleServiceProviderPool pool =
                 LocaleServiceProviderPool.getPool(CalendarDataProvider.class);
         Integer value = pool.getLocalizedObject(CalendarWeekParameterGetter.INSTANCE,
-                                                locale, MINIMAL_DAYS_IN_FIRST_WEEK);
+                                                findRegionOverride(locale),
+                                                true, MINIMAL_DAYS_IN_FIRST_WEEK);
         return (value != null && (value >= 1 && value <= 7)) ? value : 1;
     }
 
@@ -100,6 +125,32 @@ public class CalendarDataUtility {
                                            normalizeCalendarType(id), field, style, false);
         }
         return map;
+    }
+
+    /**
+     * Utility to look for a region override extension.
+     * If no region override is found, returns the original locale.
+     */
+    public static Locale findRegionOverride(Locale l) {
+        String rg = l.getUnicodeLocaleType("rg");
+        Locale override = l;
+
+        if (rg != null && rg.length() == 6) {
+            // UN M.49 code should not be allowed here
+            // cannot use regex here, as it could be a recursive call
+            rg = rg.toUpperCase(Locale.ROOT);
+            if (rg.charAt(0) >= 0x0041 &&
+                rg.charAt(0) <= 0x005A &&
+                rg.charAt(1) >= 0x0041 &&
+                rg.charAt(1) <= 0x005A &&
+                rg.substring(2).equals("ZZZZ")) {
+                override = new Locale.Builder().setLocale(l)
+                    .setRegion(rg.substring(0, 2))
+                    .build();
+            }
+        }
+
+        return override;
     }
 
     static String normalizeCalendarType(String requestID) {
@@ -179,7 +230,7 @@ public class CalendarDataUtility {
         }
     }
 
-     private static class CalendarWeekParameterGetter
+    private static class CalendarWeekParameterGetter
         implements LocaleServiceProviderPool.LocalizedObjectGetter<CalendarDataProvider,
                                                                    Integer> {
         private static final CalendarWeekParameterGetter INSTANCE =
@@ -195,14 +246,22 @@ public class CalendarDataUtility {
             switch (requestID) {
             case FIRST_DAY_OF_WEEK:
                 value = calendarDataProvider.getFirstDayOfWeek(locale);
+                if (value == 0) {
+                    value = MONDAY; // default for the world ("001")
+                }
                 break;
             case MINIMAL_DAYS_IN_FIRST_WEEK:
                 value = calendarDataProvider.getMinimalDaysInFirstWeek(locale);
+                if (value == 0) {
+                    value = 1; // default for the world ("001")
+                }
                 break;
             default:
                 throw new InternalError("invalid requestID: " + requestID);
             }
-            return (value != 0) ? value : null;
+
+            assert value != 0;
+            return value;
         }
     }
 }
