@@ -3094,7 +3094,7 @@ public final class URLConnectionTest {
 
     @Test public void noSslFallback_defaultProtocols() throws Exception {
         // Will need to be updated if the enabled protocols in Android's SSLSocketFactory change
-        String[] expectedEnabledProtocols = { "TLSv1.2", "TLSv1.1", "TLSv1" };
+        String[] expectedEnabledProtocols = { "TLSv1.3", "TLSv1.2", "TLSv1.1", "TLSv1" };
 
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
         SSLSocketFactory serverSocketFactory = testSSLContext.serverContext.getSocketFactory();
