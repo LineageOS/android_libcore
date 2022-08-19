@@ -416,6 +416,9 @@ public abstract class InputStream implements Closeable {
                 if (MAX_BUFFER_SIZE - total < nread) {
                     throw new OutOfMemoryError("Required array size too large");
                 }
+                if (nread < buf.length) {
+                    buf = Arrays.copyOfRange(buf, 0, nread);
+                }
                 total += nread;
                 if (result == null) {
                     result = buf;
