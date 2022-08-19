@@ -78,46 +78,6 @@ public class Arrays {
     // Suppresses default constructor, ensuring non-instantiability.
     private Arrays() {}
 
-    /**
-     * A comparator that implements the natural ordering of a group of
-     * mutually comparable elements. May be used when a supplied
-     * comparator is null. To simplify code-sharing within underlying
-     * implementations, the compare method only declares type Object
-     * for its second argument.
-     *
-     * Arrays class implementor's note: It is an empirical matter
-     * whether ComparableTimSort offers any performance benefit over
-     * TimSort used with this comparator.  If not, you are better off
-     * deleting or bypassing ComparableTimSort.  There is currently no
-     * empirical case for separating them for parallel sorting, so all
-     * public Object parallelSort methods use the same comparator
-     * based implementation.
-     */
-    static final class NaturalOrder implements Comparator<Object> {
-        @SuppressWarnings("unchecked")
-        public int compare(Object first, Object second) {
-            return ((Comparable<Object>)first).compareTo(second);
-        }
-        static final NaturalOrder INSTANCE = new NaturalOrder();
-    }
-
-    /**
-     * Checks that {@code fromIndex} and {@code toIndex} are in
-     * the range and throws an exception if they aren't.
-     */
-    static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
-        if (fromIndex > toIndex) {
-            throw new IllegalArgumentException(
-                    "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
-        }
-        if (fromIndex < 0) {
-            throw new ArrayIndexOutOfBoundsException(fromIndex);
-        }
-        if (toIndex > arrayLength) {
-            throw new ArrayIndexOutOfBoundsException(toIndex);
-        }
-    }
-
     /*
      * Sorting methods. Note that all public "sort" methods take the
      * same form: performing argument checks if necessary, and then
@@ -944,6 +904,46 @@ public class Arrays {
                 (null, a, new double[n], fromIndex, n, 0,
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
+    }
+
+    /**
+     * Checks that {@code fromIndex} and {@code toIndex} are in
+     * the range and throws an exception if they aren't.
+     */
+    static void rangeCheck(int arrayLength, int fromIndex, int toIndex) {
+        if (fromIndex > toIndex) {
+            throw new IllegalArgumentException(
+                "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+        }
+        if (fromIndex < 0) {
+            throw new ArrayIndexOutOfBoundsException(fromIndex);
+        }
+        if (toIndex > arrayLength) {
+            throw new ArrayIndexOutOfBoundsException(toIndex);
+        }
+    }
+
+    /**
+     * A comparator that implements the natural ordering of a group of
+     * mutually comparable elements. May be used when a supplied
+     * comparator is null. To simplify code-sharing within underlying
+     * implementations, the compare method only declares type Object
+     * for its second argument.
+     *
+     * Arrays class implementor's note: It is an empirical matter
+     * whether ComparableTimSort offers any performance benefit over
+     * TimSort used with this comparator.  If not, you are better off
+     * deleting or bypassing ComparableTimSort.  There is currently no
+     * empirical case for separating them for parallel sorting, so all
+     * public Object parallelSort methods use the same comparator
+     * based implementation.
+     */
+    static final class NaturalOrder implements Comparator<Object> {
+        @SuppressWarnings("unchecked")
+        public int compare(Object first, Object second) {
+            return ((Comparable<Object>)first).compareTo(second);
+        }
+        static final NaturalOrder INSTANCE = new NaturalOrder();
     }
 
     /**
