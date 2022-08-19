@@ -75,16 +75,6 @@ import java.util.stream.StreamSupport;
  */
 public class Arrays {
 
-    /**
-     * The minimum array length below which a parallel sorting
-     * algorithm will not further partition the sorting task. Using
-     * smaller sizes typically results in memory contention across
-     * tasks that makes parallel speedups unlikely.
-     * @hide
-     */
-    // Android-changed: Make MIN_ARRAY_SORT_GRAN public and @hide (used by harmony ArraysTest).
-    public static final int MIN_ARRAY_SORT_GRAN = 1 << 13;
-
     // Suppresses default constructor, ensuring non-instantiability.
     private Arrays() {}
 
@@ -955,6 +945,18 @@ public class Arrays {
                  ((g = n / (p << 2)) <= MIN_ARRAY_SORT_GRAN) ?
                  MIN_ARRAY_SORT_GRAN : g).invoke();
     }
+
+    /**
+     * The minimum array length below which a parallel sorting
+     * algorithm will not further partition the sorting task. Using
+     * smaller sizes typically results in memory contention across
+     * tasks that makes parallel speedups unlikely.
+     *
+     * @hide
+     */
+    // Android-changed: Make MIN_ARRAY_SORT_GRAN public and @hide (used by harmony
+    // ArraysTest).
+    public static final int MIN_ARRAY_SORT_GRAN = 1 << 13;
 
     /**
      * Sorts the specified array of objects into ascending order, according
