@@ -42,12 +42,13 @@ public class WriteAbortedException extends ObjectStreamException {
     /**
      * Exception that was caught while writing the ObjectStream.
      *
-     * <p>This field predates the general-purpose exception chaining facility.
-     * The {@link Throwable#getCause()} method is now the preferred means of
-     * obtaining this information.
+     * @deprecated This field predates the general-purpose exception
+     * chaining facility.  The {@link Throwable#getCause()} method is
+     * now the preferred means of obtaining this information.
      *
      * @serial
      */
+    @Deprecated(since="17")
     public Exception detail;
 
     /**
