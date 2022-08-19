@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,9 +26,10 @@
 
 package java.util;
 
-import jdk.internal.vm.annotation.IntrinsicCandidate;
 import jdk.internal.util.ArraysSupport;
+import jdk.internal.vm.annotation.IntrinsicCandidate;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.BinaryOperator;
@@ -129,7 +130,7 @@ public class Arrays {
 
     /*
      * Sorting methods. Note that all public "sort" methods take the
-     * same form: Performing argument checks if necessary, and then
+     * same form: performing argument checks if necessary, and then
      * expanding arguments into those required for the internal
      * implementation methods residing in other package-private
      * classes (except for legacyMergeSort, included in this class).
@@ -138,10 +139,9 @@ public class Arrays {
     /**
      * Sorts the specified array into ascending numerical order.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -156,10 +156,9 @@ public class Arrays {
      * the index {@code toIndex}, exclusive. If {@code fromIndex == toIndex},
      * the range to be sorted is empty.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -178,10 +177,9 @@ public class Arrays {
     /**
      * Sorts the specified array into ascending numerical order.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -196,10 +194,9 @@ public class Arrays {
      * the index {@code toIndex}, exclusive. If {@code fromIndex == toIndex},
      * the range to be sorted is empty.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -218,10 +215,9 @@ public class Arrays {
     /**
      * Sorts the specified array into ascending numerical order.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -236,10 +232,9 @@ public class Arrays {
      * the index {@code toIndex}, exclusive. If {@code fromIndex == toIndex},
      * the range to be sorted is empty.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -258,10 +253,9 @@ public class Arrays {
     /**
      * Sorts the specified array into ascending numerical order.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -276,10 +270,9 @@ public class Arrays {
      * the index {@code toIndex}, exclusive. If {@code fromIndex == toIndex},
      * the range to be sorted is empty.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -298,10 +291,9 @@ public class Arrays {
     /**
      * Sorts the specified array into ascending numerical order.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -316,10 +308,9 @@ public class Arrays {
      * the index {@code toIndex}, exclusive. If {@code fromIndex == toIndex},
      * the range to be sorted is empty.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -346,10 +337,9 @@ public class Arrays {
      * {@code 0.0f} and {@code Float.NaN} is considered greater than any
      * other value and all {@code Float.NaN} values are considered equal.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -372,10 +362,9 @@ public class Arrays {
      * {@code 0.0f} and {@code Float.NaN} is considered greater than any
      * other value and all {@code Float.NaN} values are considered equal.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -402,10 +391,9 @@ public class Arrays {
      * {@code 0.0d} and {@code Double.NaN} is considered greater than any
      * other value and all {@code Double.NaN} values are considered equal.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -428,10 +416,9 @@ public class Arrays {
      * {@code 0.0d} and {@code Double.NaN} is considered greater than any
      * other value and all {@code Double.NaN} values are considered equal.
      *
-     * <p>Implementation note: The sorting algorithm is a Dual-Pivot Quicksort
+     * @implNote The sorting algorithm is a Dual-Pivot Quicksort
      * by Vladimir Yaroslavskiy, Jon Bentley, and Joshua Bloch. This algorithm
-     * offers O(n log(n)) performance on many data sets that cause other
-     * quicksorts to degrade to quadratic performance, and is typically
+     * offers O(n log(n)) performance on all data sets, and is typically
      * faster than traditional (one-pivot) Quicksort implementations.
      *
      * @param a the array to be sorted
@@ -2523,7 +2510,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2595,7 +2582,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2667,7 +2654,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2740,7 +2727,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2813,7 +2800,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2885,7 +2872,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -2928,7 +2915,7 @@ public class Arrays {
      * Two doubles {@code d1} and {@code d2} are considered equal if:
      * <pre>    {@code new Double(d1).equals(new Double(d2))}</pre>
      * (Unlike the {@code ==} operator, this method considers
-     * {@code NaN} equals to itself, and 0.0d unequal to -0.0d.)
+     * {@code NaN} equal to itself, and 0.0d unequal to -0.0d.)
      *
      * @param a one array to be tested for equality
      * @param a2 the other array to be tested for equality
@@ -2961,14 +2948,14 @@ public class Arrays {
      * <p>Two doubles {@code d1} and {@code d2} are considered equal if:
      * <pre>    {@code new Double(d1).equals(new Double(d2))}</pre>
      * (Unlike the {@code ==} operator, this method considers
-     * {@code NaN} equals to itself, and 0.0d unequal to -0.0d.)
+     * {@code NaN} equal to itself, and 0.0d unequal to -0.0d.)
      *
      * @param a the first array to be tested for equality
      * @param aFromIndex the index (inclusive) of the first element in the
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -3011,7 +2998,7 @@ public class Arrays {
      * Two floats {@code f1} and {@code f2} are considered equal if:
      * <pre>    {@code new Float(f1).equals(new Float(f2))}</pre>
      * (Unlike the {@code ==} operator, this method considers
-     * {@code NaN} equals to itself, and 0.0f unequal to -0.0f.)
+     * {@code NaN} equal to itself, and 0.0f unequal to -0.0f.)
      *
      * @param a one array to be tested for equality
      * @param a2 the other array to be tested for equality
@@ -3044,14 +3031,14 @@ public class Arrays {
      * <p>Two floats {@code f1} and {@code f2} are considered equal if:
      * <pre>    {@code new Float(f1).equals(new Float(f2))}</pre>
      * (Unlike the {@code ==} operator, this method considers
-     * {@code NaN} equals to itself, and 0.0f unequal to -0.0f.)
+     * {@code NaN} equal to itself, and 0.0f unequal to -0.0f.)
      *
      * @param a the first array to be tested for equality
      * @param aFromIndex the index (inclusive) of the first element in the
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -3134,7 +3121,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -3227,7 +3214,7 @@ public class Arrays {
      *                   first array to be tested
      * @param aToIndex the index (exclusive) of the last element in the
      *                 first array to be tested
-     * @param b the second array to be tested fro equality
+     * @param b the second array to be tested for equality
      * @param bFromIndex the index (inclusive) of the first element in the
      *                   second array to be tested
      * @param bToIndex the index (exclusive) of the last element in the
@@ -3750,7 +3737,7 @@ public class Arrays {
      * so the copy has the specified length.  For all indices that are valid
      * in both the original array and the copy, the two arrays will contain
      * identical values.  For any indices that are valid in the copy but not
-     * the original, the copy will contain {@code '\\u000'}.  Such indices
+     * the original, the copy will contain {@code '\u005cu0000'}.  Such indices
      * will exist if and only if the specified length is greater than that of
      * the original array.
      *
@@ -4076,7 +4063,7 @@ public class Arrays {
      * subsequent elements in the copy.  The final index of the range
      * ({@code to}), which must be greater than or equal to {@code from},
      * may be greater than {@code original.length}, in which case
-     * {@code '\\u000'} is placed in all elements of the copy whose index is
+     * {@code '\u005cu0000'} is placed in all elements of the copy whose index is
      * greater than or equal to {@code original.length - from}.  The length
      * of the returned array will be {@code to - from}.
      *
@@ -4213,21 +4200,41 @@ public class Arrays {
     // Misc
 
     /**
-     * Returns a fixed-size list backed by the specified array.  (Changes to
-     * the returned list "write through" to the array.)  This method acts
-     * as bridge between array-based and collection-based APIs, in
-     * combination with {@link Collection#toArray}.  The returned list is
-     * serializable and implements {@link RandomAccess}.
+     * Returns a fixed-size list backed by the specified array. Changes made to
+     * the array will be visible in the returned list, and changes made to the
+     * list will be visible in the array. The returned list is
+     * {@link Serializable} and implements {@link RandomAccess}.
+     *
+     * <p>The returned list implements the optional {@code Collection} methods, except
+     * those that would change the size of the returned list. Those methods leave
+     * the list unchanged and throw {@link UnsupportedOperationException}.
+     *
+     * @apiNote
+     * This method acts as bridge between array-based and collection-based
+     * APIs, in combination with {@link Collection#toArray}.
+     *
+     * <p>This method provides a way to wrap an existing array:
+     * <pre>{@code
+     *     Integer[] numbers = ...
+     *     ...
+     *     List<Integer> values = Arrays.asList(numbers);
+     * }</pre>
      *
      * <p>This method also provides a convenient way to create a fixed-size
      * list initialized to contain several elements:
-     * <pre>
-     *     List&lt;String&gt; stooges = Arrays.asList("Larry", "Moe", "Curly");
-     * </pre>
+     * <pre>{@code
+     *     List<String> stooges = Arrays.asList("Larry", "Moe", "Curly");
+     * }</pre>
+     *
+     * <p><em>The list returned by this method is modifiable.</em>
+     * To create an unmodifiable list, use
+     * {@link Collections#unmodifiableList Collections.unmodifiableList}
+     * or <a href="List.html#unmodifiable">Unmodifiable Lists</a>.
      *
      * @param <T> the class of the objects in the array
      * @param a the array by which the list will be backed
      * @return a list view of the specified array
+     * @throws NullPointerException if the specified array is {@code null}
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
@@ -4241,6 +4248,7 @@ public class Arrays {
     private static class ArrayList<E> extends AbstractList<E>
         implements RandomAccess, java.io.Serializable
     {
+        @java.io.Serial
         private static final long serialVersionUID = -2764017481108945198L;
         private final E[] a;
 
@@ -7234,10 +7242,10 @@ public class Arrays {
      * and proper prefix.)
      *
      * <p>A {@code null} array reference is considered lexicographically less
-     * than a non-{@code null} array reference.  Two {@code null} array
+     * than a non-{@code null} array reference. Two {@code null} array
      * references are considered equal.
-     * A {@code null} array element is considered lexicographically than a
-     * non-{@code null} array element.  Two {@code null} array elements are
+     * A {@code null} array element is considered lexicographically less than a
+     * non-{@code null} array element. Two {@code null} array elements are
      * considered equal.
      *
      * <p>The comparison is consistent with {@link #equals(Object[], Object[]) equals},
@@ -7610,7 +7618,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -7737,7 +7745,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -7864,7 +7872,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -7991,7 +7999,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8118,7 +8126,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8245,7 +8253,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8372,7 +8380,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8499,7 +8507,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8630,7 +8638,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
@@ -8776,7 +8784,7 @@ public class Arrays {
      * <p>Two non-{@code null} arrays, {@code a} and {@code b} with specified
      * ranges [{@code aFromIndex}, {@code atoIndex}) and
      * [{@code bFromIndex}, {@code btoIndex}) respectively, share a proper
-     * if the following expression is true:
+     * prefix if the following expression is true:
      * <pre>{@code
      *     (aToIndex - aFromIndex) != (bToIndex - bFromIndex) &&
      *     Arrays.equals(a, 0, Math.min(aToIndex - aFromIndex, bToIndex - bFromIndex),
