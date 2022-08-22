@@ -1699,6 +1699,10 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
 
     private static TimeZone defaultTimeZone(Locale l) {
         TimeZone defaultTZ = TimeZone.getDefault();
+        // Android-added: Accept null locale. http://b/16938922
+        if (l == null) {
+            return defaultTZ;
+        }
         String shortTZID = l.getUnicodeLocaleType("tz");
         return shortTZID != null ?
             // Android-changed: Use ICU to convert LDML short ID

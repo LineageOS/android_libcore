@@ -13131,6 +13131,7 @@ package java.util {
     method public static java.util.Currency getInstance(String);
     method public static java.util.Currency getInstance(java.util.Locale);
     method public int getNumericCode();
+    method public String getNumericCodeAsString();
     method public String getSymbol();
     method public String getSymbol(java.util.Locale);
   }
@@ -13575,6 +13576,7 @@ package java.util {
     method @NonNull public String getISO3Country() throws java.util.MissingResourceException;
     method @NonNull public String getISO3Language() throws java.util.MissingResourceException;
     method @NonNull public static String[] getISOCountries();
+    method @NonNull public static java.util.Set<java.lang.String> getISOCountries(@NonNull java.util.Locale.IsoCountryCode);
     method @NonNull public static String[] getISOLanguages();
     method @NonNull public String getLanguage();
     method @NonNull public String getScript();
@@ -13643,6 +13645,12 @@ package java.util {
     enum_constant public static final java.util.Locale.FilteringMode IGNORE_EXTENDED_RANGES;
     enum_constant public static final java.util.Locale.FilteringMode MAP_EXTENDED_RANGES;
     enum_constant public static final java.util.Locale.FilteringMode REJECT_EXTENDED_RANGES;
+  }
+
+  public enum Locale.IsoCountryCode {
+    enum_constant public static final java.util.Locale.IsoCountryCode PART1_ALPHA2;
+    enum_constant public static final java.util.Locale.IsoCountryCode PART1_ALPHA3;
+    enum_constant public static final java.util.Locale.IsoCountryCode PART3;
   }
 
   public static final class Locale.LanguageRange {
