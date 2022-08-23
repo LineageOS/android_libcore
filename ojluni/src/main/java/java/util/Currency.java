@@ -321,6 +321,7 @@ public final class Currency implements Serializable {
         return (instance != null ? instance : currencyVal);
     }
 
+    // Android-changed: Remove "rg" support in the javadoc. See http://b/228322300.
     /**
      * Returns the <code>Currency</code> instance for the country of the
      * given locale. The language and variant components of the locale
@@ -330,12 +331,10 @@ public final class Currency implements Serializable {
      * until December 31, 2001, and the Euro from January 1, 2002, local time
      * of the respective countries.
      * <p>
-     * If the specified {@code locale} contains "cu" and/or "rg"
+     * If the specified {@code locale} contains "cu"
      * <a href="./Locale.html#def_locale_extension">Unicode extensions</a>,
      * the instance returned from this method reflects
-     * the values specified with those extensions. If both "cu" and "rg" are
-     * specified, the currency from the "cu" extension supersedes the implicit one
-     * from the "rg" extension.
+     * the values specified with those extensions.
      * <p>
      * The method returns <code>null</code> for territories that don't
      * have a currency, such as Antarctica.
@@ -511,18 +510,13 @@ public final class Currency implements Serializable {
         return currencyCode;
     }
 
+    // Android-changed: Remove "rg" support in the javadoc. See http://b/228322300.
     /**
      * Gets the symbol of this currency for the default
      * {@link Locale.Category#DISPLAY DISPLAY} locale.
      * For example, for the US Dollar, the symbol is "$" if the default
      * locale is the US, while for other locales it may be "US$". If no
      * symbol can be determined, the ISO 4217 currency code is returned.
-     * <p>
-     * If the default {@link Locale.Category#DISPLAY DISPLAY} locale
-     * contains "rg" (region override)
-     * <a href="./Locale.html#def_locale_extension">Unicode extension</a>,
-     * the symbol returned from this method reflects
-     * the value specified with that extension.
      * <p>
      * This is equivalent to calling
      * {@link #getSymbol(Locale)
@@ -535,16 +529,12 @@ public final class Currency implements Serializable {
         return getSymbol(Locale.getDefault(Locale.Category.DISPLAY));
     }
 
+    // Android-changed: Remove "rg" support in the javadoc. See http://b/228322300.
     /**
      * Gets the symbol of this currency for the specified locale.
      * For example, for the US Dollar, the symbol is "$" if the specified
      * locale is the US, while for other locales it may be "US$". If no
      * symbol can be determined, the ISO 4217 currency code is returned.
-     * <p>
-     * If the specified {@code locale} contains "rg" (region override)
-     * <a href="./Locale.html#def_locale_extension">Unicode extension</a>,
-     * the symbol returned from this method reflects
-     * the value specified with that extension.
      *
      * @param locale the locale for which a display name for this currency is
      * needed
