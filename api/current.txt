@@ -2238,7 +2238,7 @@ package java.io {
 
   public class WriteAbortedException extends java.io.ObjectStreamException {
     ctor public WriteAbortedException(String, Exception);
-    field public Exception detail;
+    field @Deprecated public Exception detail;
   }
 
   public abstract class Writer implements java.lang.Appendable java.io.Closeable java.io.Flushable {
