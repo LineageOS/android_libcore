@@ -1664,6 +1664,7 @@ package java.io {
     method public int readNBytes(byte[], int, int) throws java.io.IOException;
     method public void reset() throws java.io.IOException;
     method public long skip(long) throws java.io.IOException;
+    method public void skipNBytes(long) throws java.io.IOException;
     method public long transferTo(java.io.OutputStream) throws java.io.IOException;
   }
 
