@@ -55,6 +55,8 @@ import libcore.icu.ICU;
 import libcore.icu.LocaleData;
 import sun.util.locale.provider.CalendarDataUtility;
 
+// Android-changed: Remove "rg" support in the javadoc. See http://b/228322300.
+// Android-changed: Support the "fw" extension since Android 13.
 /**
  * The <code>Calendar</code> class is an abstract class that provides methods
  * for converting between a specific instant in time and a set of {@link
@@ -125,10 +127,9 @@ import sun.util.locale.provider.CalendarDataUtility;
  * parameters: the first day of the week and the minimal days in first week
  * (from 1 to 7).  These numbers are taken from the locale resource data or the
  * locale itself when a {@code Calendar} is constructed. If the designated
- * locale contains "fw" and/or "rg" <a href="./Locale.html#def_locale_extension">
+ * locale contains "fw" <a href="./Locale.html#def_locale_extension">
  * Unicode extensions</a>, the first day of the week will be obtained according to
- * those extensions. If both "fw" and "rg" are specified, the value from the "fw"
- * extension supersedes the implicit one from the "rg" extension.
+ * those extensions.
  * They may also be specified explicitly through the methods for setting their
  * values.
  *
@@ -1425,6 +1426,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
             return this;
         }
 
+        // Android-changed: Support the "tz" extension since Android 13.
         /**
          * Returns a {@code Calendar} built from the parameters set by the
          * setter methods. The calendar type given by the {@link #setCalendarType(String)
@@ -1446,7 +1448,7 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
          * <p>The default values are used for locale and time zone if these
          * parameters haven't been given explicitly.
          * <p>
-         * If the locale contains the time zone with "tz"
+         * Since Android 13, if the locale contains the time zone with "tz"
          * <a href="Locale.html#def_locale_extension">Unicode extension</a>,
          * and time zone hasn't been given explicitly, time zone in the locale
          * is used.
@@ -1623,13 +1625,14 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         setWeekCountData(aLocale);
     }
 
+    // Android-changed: Support the "tz" extension since Android 13.
     /**
      * Gets a calendar using the default time zone and locale. The
      * <code>Calendar</code> returned is based on the current time
      * in the default time zone with the default
      * {@link Locale.Category#FORMAT FORMAT} locale.
      * <p>
-     * If the locale contains the time zone with "tz"
+     * Since Android 13, if the locale contains the time zone with "tz"
      * <a href="Locale.html#def_locale_extension">Unicode extension</a>,
      * that time zone is used instead.
      *
@@ -1655,12 +1658,13 @@ public abstract class Calendar implements Serializable, Cloneable, Comparable<Ca
         return createCalendar(zone, Locale.getDefault(Locale.Category.FORMAT));
     }
 
+    // Android-changed: Support the "tz" extension since Android 13.
     /**
      * Gets a calendar using the default time zone and specified locale.
      * The <code>Calendar</code> returned is based on the current time
      * in the default time zone with the given locale.
      * <p>
-     * If the locale contains the time zone with "tz"
+     * Since Android 13, if the locale contains the time zone with "tz"
      * <a href="Locale.html#def_locale_extension">Unicode extension</a>,
      * that time zone is used instead.
      *

@@ -72,10 +72,15 @@ public class CalendarDataUtility {
     private CalendarDataUtility() {
     }
 
-    // BEGIN Android-removed: Dead code, unused on Android.
-    // Clients should use libcore.icu.LocaleData or android.icu.util.Calendar.WeekData instead.
-    /*
-    public static int retrieveFirstDayOfWeek(Locale locale) {
+    // Android-changed: Modify retrieveFirstDayOfWeek() to provide the default value.
+    // public static int retrieveFirstDayOfWeek(Locale locale) {
+    /**
+     * @param defaultFirstDayOfWeek default first day of week if the {@code locale} doesn't have the
+     * "fw" extension. This default can be obtained from the locale via ICU4J
+     * {@code android.icu.util.Calendar}.
+     * @return
+     */
+    public static int retrieveFirstDayOfWeek(Locale locale, int defaultFirstDayOfWeek) {
         // Look for the Unicode Extension in the locale parameter
         if (locale.hasExtensions()) {
             String fw = locale.getUnicodeLocaleType("fw");
@@ -99,14 +104,20 @@ public class CalendarDataUtility {
             }
         }
 
+        // Android-changed: Modify retrieveFirstDayOfWeek() to use the default first day of week.
+        /*
         LocaleServiceProviderPool pool =
                 LocaleServiceProviderPool.getPool(CalendarDataProvider.class);
         Integer value = pool.getLocalizedObject(CalendarWeekParameterGetter.INSTANCE,
                                                 findRegionOverride(locale),
                                                 true, FIRST_DAY_OF_WEEK);
         return (value != null && (value >= SUNDAY && value <= SATURDAY)) ? value : SUNDAY;
+        */
+        return defaultFirstDayOfWeek;
     }
 
+    // BEGIN Android-removed: Dead code, unused on Android.
+    /*
     public static int retrieveMinimalDaysInFirstWeek(Locale locale) {
         LocaleServiceProviderPool pool =
                 LocaleServiceProviderPool.getPool(CalendarDataProvider.class);
@@ -232,6 +243,8 @@ public class CalendarDataUtility {
      * Utility to look for a region override extension.
      * If no region override is found, returns the original locale.
      */
+    // BEGIN Android-removed: Dead code, unused on Android.
+    /*
     public static Locale findRegionOverride(Locale l) {
         String rg = l.getUnicodeLocaleType("rg");
         Locale override = l;
@@ -253,6 +266,8 @@ public class CalendarDataUtility {
 
         return override;
     }
+    */
+    // END Android-removed: Dead code, unused on Android.
 
     // Android-changed: Added private modifier for normalizeCalendarType().
     // static String normalizeCalendarType(String requestID) {
