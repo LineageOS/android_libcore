@@ -870,9 +870,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code boolean} to be printed
      */
     public void println(boolean x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -884,9 +888,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code char} to be printed.
      */
     public void println(char x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -898,9 +906,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code int} to be printed.
      */
     public void println(int x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -912,9 +924,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  a The {@code long} to be printed.
      */
     public void println(long x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -926,9 +942,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code float} to be printed.
      */
     public void println(float x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -940,9 +960,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code double} to be printed.
      */
     public void println(double x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -953,10 +977,14 @@ public class PrintStream extends FilterOutputStream
      *
      * @param x  an array of chars to print.
      */
-    public void println(char x[]) {
-        synchronized (this) {
-            print(x);
-            newLine();
+    public void println(char[] x) {
+        if (getClass() == PrintStream.class) {
+            writeln(x);
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -968,9 +996,13 @@ public class PrintStream extends FilterOutputStream
      * @param x  The {@code String} to be printed.
      */
     public void println(String x) {
-        synchronized (this) {
-            print(x);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            writeln(String.valueOf(x));
+        } else {
+            synchronized (this) {
+                print(x);
+                newLine();
+            }
         }
     }
 
@@ -985,9 +1017,15 @@ public class PrintStream extends FilterOutputStream
      */
     public void println(Object x) {
         String s = String.valueOf(x);
-        synchronized (this) {
-            print(s);
-            newLine();
+        if (getClass() == PrintStream.class) {
+            // need to apply String.valueOf again since first invocation
+            // might return null
+            writeln(String.valueOf(s));
+        } else {
+            synchronized (this) {
+                print(s);
+                newLine();
+            }
         }
     }
 
