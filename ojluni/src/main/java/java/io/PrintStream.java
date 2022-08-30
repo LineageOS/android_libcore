@@ -623,6 +623,30 @@ public class PrintStream extends FilterOutputStream
                         }
                 }
             }
+        } catch (InterruptedIOException x) {
+            Thread.currentThread().interrupt();
+        } catch (IOException x) {
+            trouble = true;
+        }
+    }
+
+    // Used to optimize away back-to-back flushing and synchronization when
+    // using println, but since subclasses could exist which depend on
+    // observing a call to print followed by newLine() we only use this if
+    // getClass() == PrintStream.class to avoid compatibility issues.
+    private void writeln(char[] buf) {
+        try {
+            synchronized (this) {
+                ensureOpen();
+                // Android-added: Lazy initialization of charOut and textOut.
+                BufferedWriter textOut = getTextOut();
+                textOut.write(buf);
+                textOut.newLine();
+                textOut.flushBuffer();
+                charOut.flushBuffer();
+                if (autoFlush)
+                    out.flush();
+            }
         }
         catch (InterruptedIOException x) {
             Thread.currentThread().interrupt();
@@ -642,6 +666,32 @@ public class PrintStream extends FilterOutputStream
                 textOut.flushBuffer();
                 charOut.flushBuffer();
                 if (autoFlush && (s.indexOf('\n') >= 0))
+                    out.flush();
+            }
+        }
+        catch (InterruptedIOException x) {
+            Thread.currentThread().interrupt();
+        }
+        catch (IOException x) {
+            trouble = true;
+        }
+    }
+
+    // Used to optimize away back-to-back flushing and synchronization when
+    // using println, but since subclasses could exist which depend on
+    // observing a call to print followed by newLine we only use this if
+    // getClass() == PrintStream.class to avoid compatibility issues.
+    private void writeln(String s) {
+        try {
+            synchronized (this) {
+                ensureOpen();
+                // Android-added: Lazy initialization of charOut and textOut.
+                BufferedWriter textOut = getTextOut();
+                textOut.write(s);
+                textOut.newLine();
+                textOut.flushBuffer();
+                charOut.flushBuffer();
+                if (autoFlush)
                     out.flush();
             }
         }
