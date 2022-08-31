@@ -25,6 +25,7 @@
 
 package java.io;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import jdk.internal.util.ArraysSupport;
 
 /**
  * A {@code BufferedInputStream} adds
@@ -51,15 +52,6 @@ public class BufferedInputStream extends FilterInputStream {
 
     // Android-changed: made final
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-
-    /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    // Android-changed: made final
-    private static final int MAX_BUFFER_SIZE = Integer.MAX_VALUE - 8;
 
     /**
      * The internal buffer array where the data is stored. When necessary,
@@ -224,11 +216,10 @@ public class BufferedInputStream extends FilterInputStream {
             } else if (buffer.length >= marklimit) {
                 markpos = -1;   /* buffer got too big, invalidate mark */
                 pos = 0;        /* drop buffer contents */
-            } else if (buffer.length >= MAX_BUFFER_SIZE) {
-                throw new OutOfMemoryError("Required array size too large");
             } else {            /* grow buffer */
-                int nsz = (pos <= MAX_BUFFER_SIZE - pos) ?
-                        pos * 2 : MAX_BUFFER_SIZE;
+                int nsz = ArraysSupport.newLength(pos,
+                        1,  /* minimum growth */
+                        pos /* preferred growth */);
                 if (nsz > marklimit)
                     nsz = marklimit;
                 byte[] nbuf = new byte[nsz];
