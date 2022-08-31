@@ -2003,6 +2003,7 @@ package java.io {
     method protected void setError();
     method public void write(int);
     method public void write(byte[], int, int);
+    method public void writeBytes(byte[]);
   }
 
   public class PrintWriter extends java.io.Writer {
