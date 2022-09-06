@@ -30,6 +30,8 @@
  * @run testng/othervm PatternStreamTest
  */
 
+package test.java.util.regex;
+
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -43,10 +45,10 @@ import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.LambdaTestHelpers;
-import java.util.stream.OpTestCase;
 import java.util.stream.Stream;
-import java.util.stream.TestData;
+import org.openjdk.testlib.java.util.stream.LambdaTestHelpers;
+import org.openjdk.testlib.java.util.stream.OpTestCase;
+import org.openjdk.testlib.java.util.stream.TestData;
 
 import static org.testng.Assert.*;
 

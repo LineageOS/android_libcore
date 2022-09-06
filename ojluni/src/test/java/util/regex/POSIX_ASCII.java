@@ -21,6 +21,8 @@
  * questions.
  */
 
+package test.java.util.regex;
+
 
 final class POSIX_ASCII {
 

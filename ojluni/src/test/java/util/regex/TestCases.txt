@@ -466,11 +466,15 @@ true a 0
 a
 true a 0
 
-\pL
+// Android-changed: This syntax \pL isn't documented.
+// \pL
+\p{L}
 a
 true a 0
 
-\pL
+// Android-changed: This syntax \pL isn't documented.
+// \pL
+\p{L}
 7
 false 0
 
@@ -536,17 +540,20 @@ true \u00bc 0
 \u00bc
 true \u00bc 0
 
-\p{L1}
-\u00bc
-true \u00bc 0
+// Android-removed: L1 isn't a known Unicode category.
+// \p{L1}
+// \u00bc
+// true \u00bc 0
 
-\p{L1}+
-\u00bc
-true \u00bc 0
+// Android-removed: L1 isn't a known Unicode category.
+// \p{L1}+
+// \u00bc
+// true \u00bc 0
 
-\p{L1}
-\u02bc
-false 0
+// Android-removed: L1 isn't a known Unicode category.
+// \p{L1}
+// \u02bc
+// false 0
 
 \p{ASCII}
 a
@@ -560,7 +567,9 @@ true a 0
 \u0370
 false 0
 
-\pLbc
+// Android-changed: This syntax \pL isn't documented.
+// \pLbc
+\p{L}bc
 abc
 true abc 0
 
