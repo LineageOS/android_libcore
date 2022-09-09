@@ -17621,6 +17621,7 @@ package java.util.stream {
     method public void forEachOrdered(java.util.function.Consumer<? super T>);
     method public static <T> java.util.stream.Stream<T> generate(java.util.function.Supplier<T>);
     method public static <T> java.util.stream.Stream<T> iterate(T, java.util.function.UnaryOperator<T>);
+    method public static <T> java.util.stream.Stream<T> iterate(T, java.util.function.Predicate<? super T>, java.util.function.UnaryOperator<T>);
     method public java.util.stream.Stream<T> limit(long);
     method public <R> java.util.stream.Stream<R> map(java.util.function.Function<? super T,? extends R>);
     method public default <R> java.util.stream.Stream<R> mapMulti(java.util.function.BiConsumer<? super T,? super java.util.function.Consumer<R>>);
