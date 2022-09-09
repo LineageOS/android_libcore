@@ -17635,6 +17635,7 @@ package java.util.stream {
     method public boolean noneMatch(java.util.function.Predicate<? super T>);
     method public static <T> java.util.stream.Stream<T> of(T);
     method @java.lang.SafeVarargs public static <T> java.util.stream.Stream<T> of(T...);
+    method public static <T> java.util.stream.Stream<T> ofNullable(T);
     method public java.util.stream.Stream<T> peek(java.util.function.Consumer<? super T>);
     method public T reduce(T, java.util.function.BinaryOperator<T>);
     method public java.util.Optional<T> reduce(java.util.function.BinaryOperator<T>);
