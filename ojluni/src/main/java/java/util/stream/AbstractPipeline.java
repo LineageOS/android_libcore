@@ -492,15 +492,16 @@ public abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, 
 
     @Override
     @SuppressWarnings("unchecked")
-    final <P_IN> void copyIntoWithCancel(Sink<P_IN> wrappedSink, Spliterator<P_IN> spliterator) {
+    final <P_IN> boolean copyIntoWithCancel(Sink<P_IN> wrappedSink, Spliterator<P_IN> spliterator) {
         @SuppressWarnings({"rawtypes","unchecked"})
         AbstractPipeline p = AbstractPipeline.this;
         while (p.depth > 0) {
             p = p.previousStage;
         }
         wrappedSink.begin(spliterator.getExactSizeIfKnown());
-        p.forEachWithCancel(spliterator, wrappedSink);
+        boolean cancelled = p.forEachWithCancel(spliterator, wrappedSink);
         wrappedSink.end();
+        return cancelled;
     }
 
     @Override
@@ -614,7 +615,7 @@ public abstract class AbstractPipeline<E_IN, E_OUT, S extends BaseStream<E_OUT, 
      * @param sink the sink to push elements to
      */
     // Android-changed: Made public for CTS tests only.
-    public abstract void forEachWithCancel(Spliterator<E_OUT> spliterator, Sink<E_OUT> sink);
+    public abstract boolean forEachWithCancel(Spliterator<E_OUT> spliterator, Sink<E_OUT> sink);
 
     /**
      * Make a node builder compatible with this stream shape.
