@@ -69,6 +69,14 @@ final class Nodes {
     private static final Node.OfLong EMPTY_LONG_NODE = new EmptyNode.OfLong();
     private static final Node.OfDouble EMPTY_DOUBLE_NODE = new EmptyNode.OfDouble();
 
+    /**
+     * @return an array generator for an array whose elements are of type T.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> IntFunction<T[]> castingArray() {
+        return size -> (T[]) new Object[size];
+    }
+
     // General shape-based node creation methods
 
     /**
