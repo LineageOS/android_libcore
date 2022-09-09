@@ -17622,6 +17622,10 @@ package java.util.stream {
     method public static <T> java.util.stream.Stream<T> iterate(T, java.util.function.UnaryOperator<T>);
     method public java.util.stream.Stream<T> limit(long);
     method public <R> java.util.stream.Stream<R> map(java.util.function.Function<? super T,? extends R>);
+    method public default <R> java.util.stream.Stream<R> mapMulti(java.util.function.BiConsumer<? super T,? super java.util.function.Consumer<R>>);
+    method public default java.util.stream.DoubleStream mapMultiToDouble(java.util.function.BiConsumer<? super T,? super java.util.function.DoubleConsumer>);
+    method public default java.util.stream.IntStream mapMultiToInt(java.util.function.BiConsumer<? super T,? super java.util.function.IntConsumer>);
+    method public default java.util.stream.LongStream mapMultiToLong(java.util.function.BiConsumer<? super T,? super java.util.function.LongConsumer>);
     method public java.util.stream.DoubleStream mapToDouble(java.util.function.ToDoubleFunction<? super T>);
     method public java.util.stream.IntStream mapToInt(java.util.function.ToIntFunction<? super T>);
     method public java.util.stream.LongStream mapToLong(java.util.function.ToLongFunction<? super T>);
