@@ -24,7 +24,6 @@
  */
 package java.util.stream;
 
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -80,6 +79,19 @@ import java.util.function.UnaryOperator;
  * terminal operation is initiated, and source elements are consumed only
  * as needed.
  *
+ * <p>A stream implementation is permitted significant latitude in optimizing
+ * the computation of the result.  For example, a stream implementation is free
+ * to elide operations (or entire stages) from a stream pipeline -- and
+ * therefore elide invocation of behavioral parameters -- if it can prove that
+ * it would not affect the result of the computation.  This means that
+ * side-effects of behavioral parameters may not always be executed and should
+ * not be relied upon, unless otherwise specified (such as by the terminal
+ * operations {@code forEach} and {@code forEachOrdered}). (For a specific
+ * example of such an optimization, see the API note documented on the
+ * {@link #count} operation.  For more detail, see the
+ * <a href="package-summary.html#SideEffects">side-effects</a> section of the
+ * stream package documentation.)
+ *
  * <p>Collections and streams, while bearing some superficial similarities,
  * have different goals.  Collections are primarily concerned with the efficient
  * management of, and access to, their elements.  By contrast, streams do not
@@ -122,13 +134,15 @@ import java.util.function.UnaryOperator;
  * operations may return their receiver rather than a new stream object, it may
  * not be possible to detect reuse in all cases.
  *
- * <p>Streams have a {@link #close()} method and implement {@link AutoCloseable},
- * but nearly all stream instances do not actually need to be closed after use.
- * Generally, only streams whose source is an IO channel (such as those returned
- * by {@link Files#lines(Path, Charset)}) will require closing.  Most streams
+ * <p>Streams have a {@link #close()} method and implement {@link AutoCloseable}.
+ * Operating on a stream after it has been closed will throw {@link IllegalStateException}.
+ * Most stream instances do not actually need to be closed after use, as they
  * are backed by collections, arrays, or generating functions, which require no
- * special resource management.  (If a stream does require closing, it can be
- * declared as a resource in a {@code try}-with-resources statement.)
+ * special resource management. Generally, only streams whose source is an IO channel,
+ * such as those returned by {@link Files#lines(Path)}, will require closing. If a
+ * stream does require closing, it must be opened as a resource within a try-with-resources
+ * statement or similar control structure to ensure that it is closed promptly after its
+ * operations have completed.
  *
  * <p>Stream pipelines may execute either sequentially or in
  * <a href="package-summary.html#Parallelism">parallel</a>.  This
@@ -618,6 +632,11 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *         .collect(Collectors.toList());
      * }</pre>
      *
+     * <p>In cases where the stream implementation is able to optimize away the
+     * production of some or all the elements (such as with short-circuiting
+     * operations like {@code findFirst}, or in the example described in
+     * {@link #count}), the action will not be invoked for those elements.
+     *
      * @param action a <a href="package-summary.html#NonInterference">
      *                 non-interfering</a> action to perform on the elements as
      *                 they are consumed from the stream
@@ -725,7 +744,8 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * <p>This is a <a href="package-summary.html#StreamOps">terminal
      * operation</a>.
      *
-     * @return an array containing the elements of this stream
+     * @return an array, whose {@linkplain Class#getComponentType runtime component
+     * type} is {@code Object}, containing the elements of this stream
      */
     Object[] toArray();
 
@@ -748,13 +768,13 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *                          .toArray(Person[]::new);
      * }</pre>
      *
-     * @param <A> the element type of the resulting array
+     * @param <A> the component type of the resulting array
      * @param generator a function which produces a new array of the desired
      *                  type and the provided length
      * @return an array containing the elements in this stream
-     * @throws ArrayStoreException if the runtime type of the array returned
-     * from the array generator is not a supertype of the runtime type of every
-     * element in this stream
+     * @throws ArrayStoreException if the runtime type of any element of this
+     *         stream is not assignable to the {@linkplain Class#getComponentType
+     *         runtime component type} of the generated array
      */
     <A> A[] toArray(IntFunction<A[]> generator);
 
@@ -936,19 +956,23 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      *                                 .toString();
      * }</pre>
      *
-     * @param <R> type of the result
-     * @param supplier a function that creates a new result container. For a
-     *                 parallel execution, this function may be called
+     * @param <R> the type of the mutable result container
+     * @param supplier a function that creates a new mutable result container.
+     *                 For a parallel execution, this function may be called
      *                 multiple times and must return a fresh value each time.
      * @param accumulator an <a href="package-summary.html#Associativity">associative</a>,
      *                    <a href="package-summary.html#NonInterference">non-interfering</a>,
      *                    <a href="package-summary.html#Statelessness">stateless</a>
-     *                    function for incorporating an additional element into a result
+     *                    function that must fold an element into a result
+     *                    container.
      * @param combiner an <a href="package-summary.html#Associativity">associative</a>,
      *                    <a href="package-summary.html#NonInterference">non-interfering</a>,
      *                    <a href="package-summary.html#Statelessness">stateless</a>
-     *                    function for combining two values, which must be
-     *                    compatible with the accumulator function
+     *                    function that accepts two partial result containers
+     *                    and merges them, which must be compatible with the
+     *                    accumulator function.  The combiner function must fold
+     *                    the elements from the second result container into the
+     *                    first result container.
      * @return the result of the reduction
      */
     <R> R collect(Supplier<R> supplier,
@@ -981,7 +1005,7 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * additional synchronization is needed for a parallel reduction.
      *
      * @apiNote
-     * The following will accumulate strings into an ArrayList:
+     * The following will accumulate strings into a List:
      * <pre>{@code
      *     List<String> asList = stringStream.collect(Collectors.toList());
      * }</pre>
@@ -1085,6 +1109,25 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * }</pre>
      *
      * <p>This is a <a href="package-summary.html#StreamOps">terminal operation</a>.
+     *
+     * @apiNote
+     * An implementation may choose to not execute the stream pipeline (either
+     * sequentially or in parallel) if it is capable of computing the count
+     * directly from the stream source.  In such cases no source elements will
+     * be traversed and no intermediate operations will be evaluated.
+     * Behavioral parameters with side-effects, which are strongly discouraged
+     * except for harmless cases such as debugging, may be affected.  For
+     * example, consider the following stream:
+     * <pre>{@code
+     *     List<String> l = Arrays.asList("A", "B", "C", "D");
+     *     long count = l.stream().peek(System.out::println).count();
+     * }</pre>
+     * The number of elements covered by the stream source, a {@code List}, is
+     * known and the intermediate operation, {@code peek}, does not inject into
+     * or remove elements from the stream (as may be the case for
+     * {@code flatMap} or {@code filter} operations).  Thus the count is the
+     * size of the {@code List} and there is no need to execute the pipeline
+     * and, as a side-effect, print out the list elements.
      *
      * @return the count of elements in this stream
      */
@@ -1248,9 +1291,15 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * {@code n}, will be the result of applying the function {@code f} to the
      * element at position {@code n - 1}.
      *
+     * <p>The action of applying {@code f} for one element
+     * <a href="../concurrent/package-summary.html#MemoryVisibility"><i>happens-before</i></a>
+     * the action of applying {@code f} for subsequent elements.  For any given
+     * element the action may be performed in whatever thread the library
+     * chooses.
+     *
      * @param <T> the type of stream elements
      * @param seed the initial element
-     * @param f a function to be applied to to the previous element to produce
+     * @param f a function to be applied to the previous element to produce
      *          a new element
      * @return a new sequential {@code Stream}
      */
@@ -1298,10 +1347,29 @@ public interface Stream<T> extends BaseStream<T, Stream<T>> {
      * streams is parallel.  When the resulting stream is closed, the close
      * handlers for both input streams are invoked.
      *
+     * <p>This method operates on the two input streams and binds each stream
+     * to its source.  As a result subsequent modifications to an input stream
+     * source may not be reflected in the concatenated stream result.
+     *
      * @implNote
      * Use caution when constructing streams from repeated concatenation.
      * Accessing an element of a deeply concatenated stream can result in deep
-     * call chains, or even {@code StackOverflowException}.
+     * call chains, or even {@code StackOverflowError}.
+     *
+     * <p>Subsequent changes to the sequential/parallel execution mode of the
+     * returned stream are not guaranteed to be propagated to the input streams.
+     *
+     * @apiNote
+     * To preserve optimization opportunities this method binds each stream to
+     * its source and accepts only two streams as parameters.  For example, the
+     * exact size of the concatenated stream source can be computed if the exact
+     * size of each input stream source is known.
+     * To concatenate more streams without binding, or without nested calls to
+     * this method, try creating a stream of streams and flat-mapping with the
+     * identity function, for example:
+     * <pre>{@code
+     *     Stream<T> concat = Stream.of(s1, s2, s3, s4).flatMap(s -> s);
+     * }</pre>
      *
      * @param <T> The type of stream elements
      * @param a the first stream
