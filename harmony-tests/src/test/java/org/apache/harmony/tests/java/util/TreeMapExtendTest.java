@@ -1858,548 +1858,548 @@ public class TreeMapExtendTest extends TestCase {
     }
 
     public void test_DescendingSubMap_ceilingEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
+        NavigableMap descendingMap = tm.descendingMap();
         String key = Integer.valueOf(-1).toString();
-        assertNull(decendingMap.ceilingEntry(key));
+        assertNull(descendingMap.ceilingEntry(key));
         for (int i = 0; i < objArray.length; i++) {
             key = objArray[i].toString();
-            assertEquals(objArray[i], decendingMap.ceilingEntry(key).getValue());
+            assertEquals(objArray[i], descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(1000).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
         key = Integer.valueOf(1001).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertNull(decendingMap.ceilingEntry(key));
+        assertNull(descendingMap.ceilingEntry(key));
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(108, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(108, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertNull(decendingMap.ceilingEntry(key));
+        assertNull(descendingMap.ceilingEntry(key));
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(109, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(108, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(108, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(109, descendingMap.ceilingEntry(key).getValue());
 
         // With Comparator
-        decendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertNull(decendingMap.ceilingEntry(key));
+        assertNull(descendingMap.ceilingEntry(key));
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(108, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(108, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertNull(decendingMap.ceilingEntry(key));
+        assertNull(descendingMap.ceilingEntry(key));
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(109, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(108, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(108, descendingMap.ceilingEntry(key).getValue());
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(100, descendingMap.ceilingEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.ceilingEntry(key).getValue());
+            assertEquals(i, descendingMap.ceilingEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.ceilingEntry(key).getValue());
+        assertEquals(109, descendingMap.ceilingEntry(key).getValue());
     }
 
     public void test_DescendingSubMap_descendingMap() {
-        NavigableMap decendingMap = tm.descendingMap();
-        NavigableMap decendingDecendingMap = decendingMap.descendingMap();
-        assertEquals(decendingMap, decendingDecendingMap);
+        NavigableMap descendingMap = tm.descendingMap();
+        NavigableMap descendingDescendingMap = descendingMap.descendingMap();
+        assertEquals(descendingMap, descendingDescendingMap);
 
-        NavigableMap decendingMapHeadMap = decendingMap.headMap(
+        NavigableMap descendingMapHeadMap = descendingMap.headMap(
                 Integer.valueOf(990).toString(), false);
-        NavigableMap decendingDecendingHeadMap = decendingMapHeadMap
+        NavigableMap descendingDescendingHeadMap = descendingMapHeadMap
                 .descendingMap();
-        assertNotNull(decendingMapHeadMap);
-        assertNotNull(decendingDecendingHeadMap);
-        assertEquals(decendingMapHeadMap, decendingDecendingHeadMap);
+        assertNotNull(descendingMapHeadMap);
+        assertNotNull(descendingDescendingHeadMap);
+        assertEquals(descendingMapHeadMap, descendingDescendingHeadMap);
 
-        NavigableMap decendingMapTailMap = decendingMap.tailMap(
+        NavigableMap descendingMapTailMap = descendingMap.tailMap(
                 Integer.valueOf(990).toString(), false);
-        NavigableMap decendingDecendingTailMap = decendingMapTailMap
+        NavigableMap descendingDescendingTailMap = descendingMapTailMap
                 .descendingMap();
-        assertNotNull(decendingMapTailMap);
-        assertNotNull(decendingDecendingTailMap);
-        // assertEquals(decendingMapTailMap,decendingDecendingTailMap);
+        assertNotNull(descendingMapTailMap);
+        assertNotNull(descendingDescendingTailMap);
+        // assertEquals(descendingMapTailMap,descendingDescendingTailMap);
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        decendingDecendingMap = decendingMap.descendingMap();
-        assertEquals(decendingMap, decendingDecendingMap);
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingDescendingMap = descendingMap.descendingMap();
+        assertEquals(descendingMap, descendingDescendingMap);
 
-        decendingMapHeadMap = decendingMap.headMap(Integer.valueOf(104).toString(),
+        descendingMapHeadMap = descendingMap.headMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingHeadMap = decendingMapHeadMap.descendingMap();
-        assertEquals(decendingMapHeadMap, decendingDecendingHeadMap);
+        descendingDescendingHeadMap = descendingMapHeadMap.descendingMap();
+        assertEquals(descendingMapHeadMap, descendingDescendingHeadMap);
 
-        decendingMapTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingMapTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingTailMap = decendingMapTailMap.descendingMap();
-        assertEquals(decendingMapTailMap, decendingDecendingTailMap);
+        descendingDescendingTailMap = descendingMapTailMap.descendingMap();
+        assertEquals(descendingMapTailMap, descendingDescendingTailMap);
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        decendingDecendingMap = decendingMap.descendingMap();
-        assertEquals(decendingMap, decendingDecendingMap);
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingDescendingMap = descendingMap.descendingMap();
+        assertEquals(descendingMap, descendingDescendingMap);
 
-        decendingMapHeadMap = decendingMap.headMap(Integer.valueOf(104).toString(),
+        descendingMapHeadMap = descendingMap.headMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingHeadMap = decendingMapHeadMap.descendingMap();
-        assertEquals(decendingMapHeadMap, decendingDecendingHeadMap);
+        descendingDescendingHeadMap = descendingMapHeadMap.descendingMap();
+        assertEquals(descendingMapHeadMap, descendingDescendingHeadMap);
 
-        decendingMapTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingMapTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingTailMap = decendingMapTailMap.descendingMap();
-        assertEquals(decendingMapTailMap, decendingDecendingTailMap);
+        descendingDescendingTailMap = descendingMapTailMap.descendingMap();
+        assertEquals(descendingMapTailMap, descendingDescendingTailMap);
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        decendingDecendingMap = decendingMap.descendingMap();
-        assertEquals(decendingMap, decendingDecendingMap);
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingDescendingMap = descendingMap.descendingMap();
+        assertEquals(descendingMap, descendingDescendingMap);
 
-        decendingMapHeadMap = decendingMap.headMap(Integer.valueOf(104).toString(),
+        descendingMapHeadMap = descendingMap.headMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingHeadMap = decendingMapHeadMap.descendingMap();
-        assertEquals(decendingMapHeadMap, decendingDecendingHeadMap);
+        descendingDescendingHeadMap = descendingMapHeadMap.descendingMap();
+        assertEquals(descendingMapHeadMap, descendingDescendingHeadMap);
 
-        decendingMapTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingMapTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingTailMap = decendingMapTailMap.descendingMap();
-        assertEquals(decendingMapTailMap, decendingDecendingTailMap);
+        descendingDescendingTailMap = descendingMapTailMap.descendingMap();
+        assertEquals(descendingMapTailMap, descendingDescendingTailMap);
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        decendingDecendingMap = decendingMap.descendingMap();
-        assertEquals(decendingMap, decendingDecendingMap);
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingDescendingMap = descendingMap.descendingMap();
+        assertEquals(descendingMap, descendingDescendingMap);
 
-        decendingMapHeadMap = decendingMap.headMap(Integer.valueOf(104).toString(),
+        descendingMapHeadMap = descendingMap.headMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingHeadMap = decendingMapHeadMap.descendingMap();
-        assertEquals(decendingMapHeadMap, decendingDecendingHeadMap);
+        descendingDescendingHeadMap = descendingMapHeadMap.descendingMap();
+        assertEquals(descendingMapHeadMap, descendingDescendingHeadMap);
 
-        decendingMapTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingMapTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
-        decendingDecendingTailMap = decendingMapTailMap.descendingMap();
-        assertEquals(decendingMapTailMap, decendingDecendingTailMap);
+        descendingDescendingTailMap = descendingMapTailMap.descendingMap();
+        assertEquals(descendingMapTailMap, descendingDescendingTailMap);
     }
 
     public void test_DescendingSubMap_firstEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
-        assertEquals(999, decendingMap.firstEntry().getValue());
+        NavigableMap descendingMap = tm.descendingMap();
+        assertEquals(999, descendingMap.firstEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        assertEquals(108, decendingMap.firstEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        assertEquals(108, descendingMap.firstEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        assertEquals(109, decendingMap.firstEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        assertEquals(109, descendingMap.firstEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        assertEquals(108, decendingMap.firstEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        assertEquals(108, descendingMap.firstEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        assertEquals(109, decendingMap.firstEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        assertEquals(109, descendingMap.firstEntry().getValue());
     }
 
     public void test_DescendingSubMap_floorEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
+        NavigableMap descendingMap = tm.descendingMap();
         String key = Integer.valueOf(-1).toString();
-        assertEquals(0, decendingMap.floorEntry(key).getValue());
+        assertEquals(0, descendingMap.floorEntry(key).getValue());
         for (int i = 0; i < objArray.length; i++) {
             key = objArray[i].toString();
-            assertEquals(objArray[i], decendingMap.floorEntry(key).getValue());
+            assertEquals(objArray[i], descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(1000).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
         key = Integer.valueOf(1001).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertNull(decendingMap.floorEntry(key));
+        assertNull(descendingMap.floorEntry(key));
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.floorEntry(key).getValue());
+        assertEquals(109, descendingMap.floorEntry(key).getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.floorEntry(key).getValue());
+        assertEquals(100, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertNull(decendingMap.floorEntry(key));
+        assertNull(descendingMap.floorEntry(key));
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.floorEntry(key).getValue());
+        assertEquals(100, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.floorEntry(key).getValue());
+        assertEquals(109, descendingMap.floorEntry(key).getValue());
 
         // With Comparator
-        decendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertNull(decendingMap.floorEntry(key));
+        assertNull(descendingMap.floorEntry(key));
 
-        decendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(101, decendingMap.floorEntry(key).getValue());
+        assertEquals(101, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.floorEntry(key).getValue());
+        assertEquals(109, descendingMap.floorEntry(key).getValue());
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.floorEntry(key).getValue());
+        assertEquals(100, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertNull(decendingMap.floorEntry(key));
+        assertNull(descendingMap.floorEntry(key));
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
                 .descendingMap();
         key = Integer.valueOf(100).toString();
-        assertEquals(100, decendingMap.floorEntry(key).getValue());
+        assertEquals(100, descendingMap.floorEntry(key).getValue());
         for (int i = 101; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertEquals(i, decendingMap.floorEntry(key).getValue());
+            assertEquals(i, descendingMap.floorEntry(key).getValue());
         }
         key = Integer.valueOf(109).toString();
-        assertEquals(109, decendingMap.floorEntry(key).getValue());
+        assertEquals(109, descendingMap.floorEntry(key).getValue());
     }
 
     public void test_DescendingSubMap_lastEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
-        assertEquals(0, decendingMap.lastEntry().getValue());
+        NavigableMap descendingMap = tm.descendingMap();
+        assertEquals(0, descendingMap.lastEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        assertEquals(101, decendingMap.lastEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        assertEquals(101, descendingMap.lastEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        assertEquals(101, decendingMap.lastEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        assertEquals(101, descendingMap.lastEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        assertEquals(100, decendingMap.lastEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        assertEquals(100, descendingMap.lastEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        assertEquals(100, decendingMap.lastEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        assertEquals(100, descendingMap.lastEntry().getValue());
     }
 
     public void test_DescendingSubMap_higherEntry() {
-        NavigableMap decendingMap;
-        NavigableMap decendingTailMap;
+        NavigableMap descendingMap;
+        NavigableMap descendingTailMap;
         Integer value;
         Entry entry;
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         value = Integer.valueOf(101);
-        assertNull(decendingMap.higherEntry(value.toString()));
+        assertNull(descendingMap.higherEntry(value.toString()));
 
         for (int i = 108; i > 101; i--) {
             value = Integer.valueOf(i);
-            entry = decendingMap.higherEntry(value.toString());
+            entry = descendingMap.higherEntry(value.toString());
             assertEquals(value - 1, entry.getValue());
         }
 
         value = Integer.valueOf(109);
-        entry = decendingMap.higherEntry(value.toString());
+        entry = descendingMap.higherEntry(value.toString());
         assertEquals(108, entry.getValue());
 
-        decendingTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
         value = Integer.valueOf(109);
-        entry = decendingTailMap.higherEntry(value.toString());
+        entry = descendingTailMap.higherEntry(value.toString());
         assertEquals(103, entry.getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         value = Integer.valueOf(100);
-        assertNull(decendingMap.higherEntry(value.toString()));
+        assertNull(descendingMap.higherEntry(value.toString()));
 
         for (int i = 108; i > 100; i--) {
             value = Integer.valueOf(i);
-            entry = decendingMap.higherEntry(value.toString());
+            entry = descendingMap.higherEntry(value.toString());
             assertEquals(value - 1, entry.getValue());
         }
 
         value = Integer.valueOf(109);
-        entry = decendingMap.higherEntry(value.toString());
+        entry = descendingMap.higherEntry(value.toString());
         assertEquals(108, entry.getValue());
 
-        decendingTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
         value = Integer.valueOf(109);
-        entry = decendingTailMap.higherEntry(value.toString());
+        entry = descendingTailMap.higherEntry(value.toString());
         assertEquals(103, entry.getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         value = Integer.valueOf(101);
-        assertNull(decendingMap.higherEntry(value.toString()));
+        assertNull(descendingMap.higherEntry(value.toString()));
 
         for (int i = 109; i > 101; i--) {
             value = Integer.valueOf(i);
-            entry = decendingMap.higherEntry(value.toString());
+            entry = descendingMap.higherEntry(value.toString());
             assertEquals(value - 1, entry.getValue());
         }
 
         value = Integer.valueOf(2);
-        entry = decendingMap.higherEntry(value.toString());
+        entry = descendingMap.higherEntry(value.toString());
         assertEquals(109, entry.getValue());
 
-        decendingTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
         value = Integer.valueOf(109);
-        entry = decendingTailMap.higherEntry(value.toString());
+        entry = descendingTailMap.higherEntry(value.toString());
         assertEquals(103, entry.getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         value = Integer.valueOf(100);
-        assertNull(decendingMap.higherEntry(value.toString()));
+        assertNull(descendingMap.higherEntry(value.toString()));
 
         for (int i = 109; i > 100; i--) {
             value = Integer.valueOf(i);
-            entry = decendingMap.higherEntry(value.toString());
+            entry = descendingMap.higherEntry(value.toString());
             assertEquals(value - 1, entry.getValue());
         }
 
         value = Integer.valueOf(2);
-        entry = decendingMap.higherEntry(value.toString());
+        entry = descendingMap.higherEntry(value.toString());
         assertEquals(109, entry.getValue());
 
-        decendingTailMap = decendingMap.tailMap(Integer.valueOf(104).toString(),
+        descendingTailMap = descendingMap.tailMap(Integer.valueOf(104).toString(),
                 false);
         value = Integer.valueOf(109);
-        entry = decendingTailMap.higherEntry(value.toString());
+        entry = descendingTailMap.higherEntry(value.toString());
         assertEquals(103, entry.getValue());
     }
 
     public void test_DescendingSubMap_lowerEntry() {
-        NavigableMap decendingMap;
-        NavigableMap decendingHeadMap;
+        NavigableMap descendingMap;
+        NavigableMap descendingHeadMap;
         Integer value;
         Entry entry;
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         value = Integer.valueOf(99);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
         for (int i = 100; i < 108; i++) {
             value = Integer.valueOf(i);
-            entry = decendingMap.lowerEntry(value.toString());
+            entry = descendingMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(109);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
 
-        decendingHeadMap = decendingMap.headMap(Integer.valueOf(103).toString(),
+        descendingHeadMap = descendingMap.headMap(Integer.valueOf(103).toString(),
                 false);
         for (int i = 104; i < 106; i++) {
             value = Integer.valueOf(i);
-            entry = decendingHeadMap.lowerEntry(value.toString());
+            entry = descendingHeadMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(102);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertEquals(104, entry.getValue());
 
         value = Integer.valueOf(109);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertNull(entry);
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         value = Integer.valueOf(99);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
         for (int i = 100; i < 109; i++) {
             value = Integer.valueOf(i);
-            entry = decendingMap.lowerEntry(value.toString());
+            entry = descendingMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(110);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
 
-        decendingHeadMap = decendingMap.headMap(Integer.valueOf(103).toString(),
+        descendingHeadMap = descendingMap.headMap(Integer.valueOf(103).toString(),
                 false);
         for (int i = 104; i < 109; i++) {
             value = Integer.valueOf(i);
-            entry = decendingHeadMap.lowerEntry(value.toString());
+            entry = descendingHeadMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(102);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertEquals(104, entry.getValue());
 
         value = Integer.valueOf(2);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertNull(entry);
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         value = Integer.valueOf(99);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
         for (int i = 100; i < 108; i++) {
             value = Integer.valueOf(i);
-            entry = decendingMap.lowerEntry(value.toString());
+            entry = descendingMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(109);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
 
-        decendingHeadMap = decendingMap.headMap(Integer.valueOf(103).toString(),
+        descendingHeadMap = descendingMap.headMap(Integer.valueOf(103).toString(),
                 false);
         for (int i = 104; i < 107; i++) {
             value = Integer.valueOf(i);
-            entry = decendingHeadMap.lowerEntry(value.toString());
+            entry = descendingHeadMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(102);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertEquals(104, entry.getValue());
 
         value = Integer.valueOf(2);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertNull(entry);
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         value = Integer.valueOf(99);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
         for (int i = 100; i < 109; i++) {
             value = Integer.valueOf(i);
-            entry = decendingMap.lowerEntry(value.toString());
+            entry = descendingMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(110);
-        assertNull(decendingMap.lowerEntry(value.toString()));
+        assertNull(descendingMap.lowerEntry(value.toString()));
 
-        decendingHeadMap = decendingMap.headMap(Integer.valueOf(103).toString(),
+        descendingHeadMap = descendingMap.headMap(Integer.valueOf(103).toString(),
                 false);
         for (int i = 104; i < 109; i++) {
             value = Integer.valueOf(i);
-            entry = decendingHeadMap.lowerEntry(value.toString());
+            entry = descendingHeadMap.lowerEntry(value.toString());
             assertEquals(value + 1, entry.getValue());
         }
         value = Integer.valueOf(102);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertEquals(104, entry.getValue());
 
         value = Integer.valueOf(2);
-        entry = decendingHeadMap.lowerEntry(value.toString());
+        entry = descendingHeadMap.lowerEntry(value.toString());
         assertNull(entry);
     }
 
     public void test_DescendingSubMap_pollFirstEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
-        assertEquals(999, decendingMap.pollFirstEntry().getValue());
+        NavigableMap descendingMap = tm.descendingMap();
+        assertEquals(999, descendingMap.pollFirstEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        assertEquals(108, decendingMap.pollFirstEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        assertEquals(108, descendingMap.pollFirstEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        assertEquals(109, decendingMap.pollFirstEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        assertEquals(109, descendingMap.pollFirstEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        assertEquals(107, decendingMap.pollFirstEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        assertEquals(107, descendingMap.pollFirstEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        assertEquals(106, decendingMap.pollFirstEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        assertEquals(106, descendingMap.pollFirstEntry().getValue());
     }
 
     public void test_DescendingSubMap_pollLastEntry() {
-        NavigableMap decendingMap = tm.descendingMap();
-        assertEquals(0, decendingMap.pollLastEntry().getValue());
+        NavigableMap descendingMap = tm.descendingMap();
+        assertEquals(0, descendingMap.pollLastEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        assertEquals(101, decendingMap.pollLastEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        assertEquals(101, descendingMap.pollLastEntry().getValue());
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        assertEquals(102, decendingMap.pollLastEntry().getValue());
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        assertEquals(102, descendingMap.pollLastEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        assertEquals(100, decendingMap.pollLastEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        assertEquals(100, descendingMap.pollLastEntry().getValue());
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        assertEquals(103, decendingMap.pollLastEntry().getValue());
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        assertEquals(103, descendingMap.pollLastEntry().getValue());
     }
 
     public void test_DescendingSubMap_values() {
-        NavigableMap decendingMap = tm.descendingMap();
-        Collection values = decendingMap.values();
+        NavigableMap descendingMap = tm.descendingMap();
+        Collection values = descendingMap.values();
         assertFalse(values.isEmpty());
         assertFalse(values.contains(1000));
         for (int i = 999; i > 0; i--) {
@@ -2408,7 +2408,7 @@ public class TreeMapExtendTest extends TestCase {
         assertTrue(values.contains(0));
 
         String endKey = Integer.valueOf(99).toString();
-        NavigableMap headMap = decendingMap.headMap(endKey, false);
+        NavigableMap headMap = descendingMap.headMap(endKey, false);
         values = headMap.values();
         Iterator it = values.iterator();
         for (int i = 999; i > 990; i--) {
@@ -2417,7 +2417,7 @@ public class TreeMapExtendTest extends TestCase {
         }
 
         String startKey = Integer.valueOf(11).toString();
-        NavigableMap tailMap = decendingMap.tailMap(startKey, false);
+        NavigableMap tailMap = descendingMap.tailMap(startKey, false);
         values = tailMap.values();
         it = values.iterator();
         for (int i = 109; i > 100; i--) {
@@ -2425,8 +2425,8 @@ public class TreeMapExtendTest extends TestCase {
             assertEquals(i, it.next());
         }
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
-        values = decendingMap.values();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        values = descendingMap.values();
         assertFalse(values.isEmpty());
         assertFalse(values.contains(109));
         for (int i = 108; i > 100; i--) {
@@ -2434,8 +2434,8 @@ public class TreeMapExtendTest extends TestCase {
         }
         assertFalse(values.contains(100));
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
-        values = decendingMap.values();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        values = descendingMap.values();
         assertFalse(values.isEmpty());
         assertFalse(values.contains(100));
         for (int i = 108; i > 100; i--) {
@@ -2443,8 +2443,8 @@ public class TreeMapExtendTest extends TestCase {
         }
         assertTrue(values.contains(109));
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
-        values = decendingMap.values();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        values = descendingMap.values();
         assertFalse(values.isEmpty());
         assertTrue(values.contains(100));
         for (int i = 108; i > 100; i--) {
@@ -2452,8 +2452,8 @@ public class TreeMapExtendTest extends TestCase {
         }
         assertFalse(values.contains(109));
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
-        values = decendingMap.values();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        values = descendingMap.values();
         assertFalse(values.isEmpty());
         assertTrue(values.contains(100));
         for (int i = 108; i > 100; i--) {
@@ -2463,244 +2463,244 @@ public class TreeMapExtendTest extends TestCase {
     }
 
     public void test_DescendingSubMap_headMap() {
-        NavigableMap decendingMap = tm.descendingMap();
+        NavigableMap descendingMap = tm.descendingMap();
         String endKey = Integer.valueOf(0).toString(), key;
-        SortedMap subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        SortedMap subDecendingMap_Excluded = decendingMap
+        SortedMap subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        SortedMap subDescendingMap_Excluded = descendingMap
                 .headMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 1; i < 1000; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(1000).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.headMap(endKey, true);
+            descendingMap.headMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.headMap(endKey, true);
+            descendingMap.headMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         // With Comparator
 
-        decendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.headMap(endKey, true);
+            descendingMap.headMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.headMap(endKey, true);
+            descendingMap.headMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endExcluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endIncluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.headMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.headMap(endKey, false);
+        subDescendingMap_Included = descendingMap.headMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.headMap(endKey, false);
 
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         for (int i = 102; i < 109; i++) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(109).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
     }
 
     public void test_DescendingSubMap_subMap() {
@@ -2765,66 +2765,66 @@ public class TreeMapExtendTest extends TestCase {
 
     public void test_DescendingSubMap_tailMap() {
         // tm
-        NavigableMap decendingMap = tm.descendingMap();
+        NavigableMap descendingMap = tm.descendingMap();
         String endKey = Integer.valueOf(1000).toString(), key;
-        SortedMap subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        SortedMap subDecendingMap_Excluded = decendingMap
+        SortedMap subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        SortedMap subDescendingMap_Excluded = descendingMap
                 .tailMap(endKey, false);
 
         key = endKey;
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         key = Integer.valueOf(100).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         key = Integer.valueOf(10).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         key = Integer.valueOf(1).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         key = Integer.valueOf(0).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(999).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 998; i > 0; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(0).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(0).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
-        assertEquals(1, subDecendingMap_Included.size());
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
+        assertEquals(1, subDescendingMap_Included.size());
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.isEmpty());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.isEmpty());
 
         // navigableMap_startExcluded_endExcluded
-        decendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endExcluded.descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -2832,47 +2832,47 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(1, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.isEmpty());
+        assertEquals(1, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.isEmpty());
 
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -2880,75 +2880,75 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         // navigableMap_startExcluded_endIncluded
-        decendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startExcluded_endIncluded.descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         endKey = Integer.valueOf(109).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(1, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.isEmpty());
+        assertEquals(1, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.isEmpty());
 
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -2956,30 +2956,30 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         // navigableMap_startIncluded_endExcluded
-        decendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endExcluded.descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -2987,70 +2987,70 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
 
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(2, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertEquals(2, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         // navigableMap_startIncluded_endIncluded
-        decendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
+        descendingMap = navigableMap_startIncluded_endIncluded.descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3058,72 +3058,72 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
 
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(2, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertEquals(2, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         // With Comparator
-        decendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endExcluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3131,47 +3131,47 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(1, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.isEmpty());
+        assertEquals(1, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.isEmpty());
 
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3179,75 +3179,75 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
-        decendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
+        descendingMap = ((NavigableMap) subMap_startExcluded_endIncluded_comparator)
                 .descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         endKey = Integer.valueOf(109).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertFalse(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(1, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Excluded.isEmpty());
+        assertEquals(1, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Excluded.isEmpty());
 
         endKey = Integer.valueOf(100).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3255,31 +3255,31 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         // navigableMap_startIncluded_endExcluded
-        decendingMap = ((NavigableMap) subMap_startIncluded_endExcluded)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endExcluded)
                 .descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3287,70 +3287,70 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
 
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(2, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertEquals(2, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
 
-        decendingMap = ((NavigableMap) subMap_startIncluded_endIncluded)
+        descendingMap = ((NavigableMap) subMap_startIncluded_endIncluded)
                 .descendingMap();
         endKey = Integer.valueOf(110).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
@@ -3358,54 +3358,54 @@ public class TreeMapExtendTest extends TestCase {
 
         endKey = Integer.valueOf(109).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
 
         } catch (IllegalArgumentException e) {
             // Expected
         }
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(108).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
         for (int i = 107; i > 100; i--) {
             key = Integer.valueOf(i).toString();
-            assertTrue(subDecendingMap_Included.containsKey(key));
-            assertTrue(subDecendingMap_Excluded.containsKey(key));
+            assertTrue(subDescendingMap_Included.containsKey(key));
+            assertTrue(subDescendingMap_Excluded.containsKey(key));
         }
         key = Integer.valueOf(100).toString();
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertTrue(subDecendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
 
         endKey = Integer.valueOf(101).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertEquals(2, subDecendingMap_Included.size());
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertEquals(2, subDescendingMap_Included.size());
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(100).toString();
-        subDecendingMap_Included = decendingMap.tailMap(endKey, true);
-        subDecendingMap_Excluded = decendingMap.tailMap(endKey, false);
+        subDescendingMap_Included = descendingMap.tailMap(endKey, true);
+        subDescendingMap_Excluded = descendingMap.tailMap(endKey, false);
         key = endKey;
-        assertTrue(subDecendingMap_Included.containsKey(key));
-        assertFalse(subDecendingMap_Excluded.containsKey(key));
+        assertTrue(subDescendingMap_Included.containsKey(key));
+        assertFalse(subDescendingMap_Excluded.containsKey(key));
 
         endKey = Integer.valueOf(99).toString();
         try {
-            decendingMap.tailMap(endKey, true);
+            descendingMap.tailMap(endKey, true);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
         }
         try {
-            decendingMap.tailMap(endKey, false);
+            descendingMap.tailMap(endKey, false);
             fail("should throw IllegalArgumentException");
         } catch (IllegalArgumentException e) {
             // Expected
