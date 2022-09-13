@@ -41,7 +41,9 @@ import libcore.util.EmptyArray;
 // Android-changed: Document that named capturing is only available from API 26.
 // Android-changed: Android always uses unicode character classes.
 // Android-changed: Remove reference to Character.codePointOf(String) until it's implemented.
-// UNICODE_CHARACTER_CLASS has no effect on Android.
+// Android-changed: UNICODE_CHARACTER_CLASS causes IllegalArgumentException on Android.
+// Android-changed: POSIX character classes are Unicode-aware.
+// Android-changed: Throw PatternSyntaxException for non-existent back references.
 /**
  * A compiled representation of a regular expression.
  *
@@ -177,36 +179,39 @@ import libcore.util.EmptyArray;
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_word">{@code \W}</th>
  *     <td headers="matches predef non_word">A non-word character: {@code [^\w]}</td></tr>
  *
- * <tr><th colspan="2" style="padding-top:20px" id="posix"><b>POSIX character classes (US-ASCII only)</b></th></tr>
+ * <tr><th colspan="2" style="padding-top:20px" id="posix"><b>POSIX character classes (Unicode-aware)</b></th></tr>
  *
  * <tr><th style="vertical-align:top; font-weight:normal" id="Lower">{@code \p{Lower}}</th>
- *     <td headers="matches posix Lower">A lower-case alphabetic character: {@code [a-z]}</td></tr>
+ *     <td headers="matches posix Lower">A lower-case alphabetic character: {@code \p{Lowercase}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Upper">{@code \p{Upper}}</th>
- *     <td headers="matches posix Upper">An upper-case alphabetic character:{@code [A-Z]}</td></tr>
+ *     <td headers="matches posix Upper">An upper-case alphabetic character:{@code \p{Uppercase}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="ASCII">{@code \p{ASCII}}</th>
  *     <td headers="matches posix ASCII">All ASCII:{@code [\x00-\x7F]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Alpha">{@code \p{Alpha}}</th>
  *     <td headers="matches posix Alpha">An alphabetic character:{@code [\p{Lower}\p{Upper}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Digit">{@code \p{Digit}}</th>
- *     <td headers="matches posix Digit">A decimal digit: {@code [0-9]}</td></tr>
+ *     <td headers="matches posix Digit">A decimal digit: {@code \p{gc=Decimal_Number}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Alnum">{@code \p{Alnum}}</th>
  *     <td headers="matches posix Alnum">An alphanumeric character:{@code [\p{Alpha}\p{Digit}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Punct">{@code \p{Punct}}</th>
- *     <td headers="matches posix Punct">Punctuation: One of {@code !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~}</td></tr>
+ *     <td headers="matches posix Punct">Punctuation: {@code \p{gc=Punctuation}}</td></tr>
  *     <!-- {@code [\!"#\$%&'\(\)\*\+,\-\./:;\<=\>\?@\[\\\]\^_`\{\|\}~]}
  *          {@code [\X21-\X2F\X31-\X40\X5B-\X60\X7B-\X7E]} -->
  * <tr><th style="vertical-align:top; font-weight:normal" id="Graph">{@code \p{Graph}}</th>
- *     <td headers="matches posix Graph">A visible character: {@code [\p{Alnum}\p{Punct}]}</td></tr>
+ *     <td headers="matches posix Graph">A visible character:
+ *     {@code [^p{space}\p{gc=Control}\p{gc=Surrogate}\p{gc=Unassigned}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Print">{@code \p{Print}}</th>
- *     <td headers="matches posix Print">A printable character: {@code [\p{Graph}\x20]}</td></tr>
+ *     <td headers="matches posix Print">A printable character: {@code \p{graph} \p{blank} -- \p{cntrl}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Blank">{@code \p{Blank}}</th>
- *     <td headers="matches posix Blank">A space or a tab: {@code [ \t]}</td></tr>
+ *     <td headers="matches posix Blank">A space or a tab: {@code \p{gc=Space_Separator} \N{CHARACTER TABULATION}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Cntrl">{@code \p{Cntrl}}</th>
- *     <td headers="matches posix Cntrl">A control character: {@code [\x00-\x1F\x7F]}</td></tr>
+ *     <td headers="matches posix Cntrl">A control character: {@code \p{gc=Control}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="XDigit">{@code \p{XDigit}}</th>
- *     <td headers="matches posix XDigit">A hexadecimal digit: {@code [0-9a-fA-F]}</td></tr>
+ *     <td headers="matches posix XDigit">A hexadecimal digit: {@code \p{gc=Decimal_Number}\p{Hex_Digit}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Space">{@code \p{Space}}</th>
- *     <td headers="matches posix Space">A whitespace character: {@code [ \t\n\x0B\f\r]}</td></tr>
+ *     <td headers="matches posix Space">A whitespace character: {@code \p{Whitespace}}</td></tr>
+ * <tr><th style="vertical-align:top; font-weight:normal" id="PosixCompatible">POSIX Compatible</th>
+ *     <td headers="matches posix PosixCompatible">See <a href="http://www.unicode.org/reports/tr18/#Compatibility_Properties">Unicode documentation</a></td></tr>
  *
  * <tr><th colspan="2" style="padding-top:20px" id="java">java.lang.Character classes (simple <a href="#jcc">java character type</a>)</th></tr>
  *
@@ -349,7 +354,7 @@ import libcore.util.EmptyArray;
  *     <td headers="matches special named_group"><i>X</i>, as a named-capturing group. Only available for API 26 or above.</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_capture_group">{@code (?:}<i>X</i>{@code )}</th>
  *     <td headers="matches special non_capture_group"><i>X</i>, as a non-capturing group</td></tr>
- * <tr><th style="vertical-align:top; font-weight:normal" id="flags"><code>(?idmsuxU-idmsuxU)&nbsp;</code></th>
+ * <tr><th style="vertical-align:top; font-weight:normal" id="flags"><code>(?idmsux-idmsux)&nbsp;</code></th>
  * <a href="#UNIX_LINES">d</a> <a href="#MULTILINE">m</a> <a href="#DOTALL">s</a>
  * <a href="#UNICODE_CASE">u</a> <a href="#COMMENTS">x</a> <a href="#UNICODE_CHARACTER_CLASS">U</a>
  * on - off</td></tr>
@@ -743,11 +748,9 @@ import libcore.util.EmptyArray;
  *    treated as a back reference if at least that many subexpressions exist,
  *    otherwise it is interpreted, if possible, as an octal escape.  In this
  *    class octal escapes must always begin with a zero. In this class,
- *    {@code \1} through {@code \9} are always interpreted as back
- *    references, and a larger number is accepted as a back reference if at
- *    least that many subexpressions exist at that point in the regular
- *    expression, otherwise the parser will drop digits until the number is
- *    smaller or equal to the existing number of groups or it is one digit.
+ *    {@link #compile(String)} throws {@link PatternSyntaxException} for any
+ *    non-existent back references. Please use {@code \Q} and {@code \E} to
+ *    quote any digit literals followed by back references.
  *    </p></li>
  *
  *    <li><p> Perl uses the {@code g} flag to request a match that resumes
@@ -806,13 +809,11 @@ public final class Pattern
      */
     public static final int UNIX_LINES = 0x01;
 
+    // Android-changed: CASE_INSENSITIVE is Unicode-aware on Android.
     /**
      * Enables case-insensitive matching.
      *
-     * <p> By default, case-insensitive matching assumes that only characters
-     * in the US-ASCII charset are being matched.  Unicode-aware
-     * case-insensitive matching can be enabled by specifying the {@link
-     * #UNICODE_CASE} flag in conjunction with this flag.
+     * <p> Case-insensitive matching is Unicode-aware on Android.
      *
      * <p> Case-insensitive matching can also be enabled via the embedded flag
      * expression&nbsp;{@code (?i)}.
@@ -875,17 +876,13 @@ public final class Pattern
      */
     public static final int DOTALL = 0x20;
 
+    // Android-changed: UNICODE_CASE flag is ignored.
     /**
-     * Enables Unicode-aware case folding.
+     * Enables Unicode-aware case folding. This flag is ignoredon Android.
+     * When {@link #CASE_INSENSITIVE} flag is provided, case-insensitive
+     * matching is always done in a manner consistent with the Unicode Standard.
      *
-     * <p> When this flag is specified then case-insensitive matching, when
-     * enabled by the {@link #CASE_INSENSITIVE} flag, is done in a manner
-     * consistent with the Unicode Standard.  By default, case-insensitive
-     * matching assumes that only characters in the US-ASCII charset are being
-     * matched.
-     *
-     * <p> Unicode-aware case folding can also be enabled via the embedded flag
-     * expression&nbsp;{@code (?u)}.
+     * <p> The embedded flag &nbsp;{@code (?u)} is ignored.
      *
      * <p> Specifying this flag may impose a performance penalty.  </p>
      */
@@ -894,19 +891,6 @@ public final class Pattern
     // Android-changed: Android does not support CANON_EQ flag.
     /**
      * This flag is not supported on Android.
-     *
-     * Enables canonical equivalence.
-     *
-     * <p> When this flag is specified then two characters will be considered
-     * to match if, and only if, their full canonical decompositions match.
-     * The expression <code>"a&#92;u030A"</code>, for example, will match the
-     * string <code>"&#92;u00E5"</code> when this flag is specified.  By default,
-     * matching does not take canonical equivalence into account.
-     *
-     * <p> There is no embedded flag character for enabling canonical
-     * equivalence.
-     *
-     * <p> Specifying this flag may impose a performance penalty.  </p>
      */
     public static final int CANON_EQ = 0x80;
 
@@ -914,19 +898,12 @@ public final class Pattern
     /**
      * This flag is not supported on Android, and Unicode character classes are always
      * used.
-     *
-     * Enables the Unicode version of <i>Predefined character classes</i> and
+     * <p>
+     * See the Unicode version of <i>Predefined character classes</i> and
      * <i>POSIX character classes</i> as defined by <a href="http://www.unicode.org/reports/tr18/"><i>Unicode Technical
      * Standard #18: Unicode Regular Expression</i></a>
      * <i>Annex C: Compatibility Properties</i>.
      * <p>
-     * The UNICODE_CHARACTER_CLASS mode can also be enabled via the embedded
-     * flag expression&nbsp;{@code (?U)}.
-     * <p>
-     * The flag implies UNICODE_CASE, that is, it enables Unicode-aware case
-     * folding.
-     * <p>
-     * Specifying this flag may impose a performance penalty.  </p>
      * @since 1.7
      */
     public static final int UNICODE_CHARACTER_CLASS = 0x100;
