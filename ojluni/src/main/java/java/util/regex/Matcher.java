@@ -221,6 +221,7 @@ public final class Matcher implements MatchResult {
      * matcher.
      *
      * @return  a {@code MatchResult} with the state of this matcher
+     * @throws IllegalStateException if no match is found.
      * @since 1.5
      */
     public MatchResult toMatchResult() {
