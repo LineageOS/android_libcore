@@ -912,8 +912,10 @@ public final class Pattern
      * Contains all possible flags for compile(regex, flags).
      */
     private static final int ALL_FLAGS = CASE_INSENSITIVE | MULTILINE |
-            DOTALL | UNICODE_CASE | CANON_EQ | UNIX_LINES | LITERAL |
-            UNICODE_CHARACTER_CLASS | COMMENTS;
+            // Android-changed: CANON_EQ and UNICODE_CHARACTER_CLASS flags aren't supported.
+            // DOTALL | UNICODE_CASE | CANON_EQ | UNIX_LINES | LITERAL |
+            // UNICODE_CHARACTER_CLASS | COMMENTS;
+            DOTALL | UNICODE_CASE | UNIX_LINES | LITERAL | COMMENTS;
 
     /* Pattern has only two serialized components: The pattern string
      * and the flags, which are all that is needed to recompile the pattern
@@ -1413,6 +1415,14 @@ public final class Pattern
      * a Pattern.
      */
     private Pattern(String p, int f) {
+        // BEGIN Android-added: CANON_EQ and UNICODE_CHARACTER_CLASS flags are not supported.
+        if ((f & CANON_EQ) != 0) {
+            throw new IllegalArgumentException("CANON_EQ flag isn't supported");
+        }
+        if ((f & UNICODE_CHARACTER_CLASS) != 0) {
+            throw new IllegalArgumentException("UNICODE_CHARACTER_CLASS flag not supported");
+        }
+        // END Android-added: CANON_EQ and UNICODE_CHARACTER_CLASS flags are not supported.
         if ((f & ~ALL_FLAGS) != 0) {
             throw new IllegalArgumentException("Unknown flag 0x"
                                                + Integer.toHexString(f));
@@ -1420,7 +1430,8 @@ public final class Pattern
         pattern = p;
         flags = f;
 
-        // BEGIN Android-changed: Only specific flags are supported.
+        // Android-changed: Pattern is eagerly compiled() upon construction.
+        // BEGIN Android-changed: Reimplement matching logic via ICU4C, and shouldn't overflow.
         /*
         // to use UNICODE_CASE if UNICODE_CHARACTER_CLASS present
         if ((flags & UNICODE_CHARACTER_CLASS) != 0)
@@ -1433,19 +1444,7 @@ public final class Pattern
         capturingGroupCount = 1;
         localCount = 0;
         localTCNCount = 0;
-        */
-        if ((f & CANON_EQ) != 0) {
-            throw new UnsupportedOperationException("CANON_EQ flag not supported");
-        }
-        int supportedFlags = CASE_INSENSITIVE | COMMENTS | DOTALL | LITERAL | MULTILINE | UNICODE_CASE | UNIX_LINES;
-        if ((f & ~supportedFlags) != 0) {
-            throw new IllegalArgumentException("Unsupported flags: " + (f & ~supportedFlags));
-        }
-        // END Android-changed: Only specific flags are supported.
 
-        // Android-changed: Pattern is eagerly compiled() upon construction.
-        // BEGIN Android-changed: Reimplement matching logic via ICU4C, and shouldn't overflow.
-        /*
         if (!pattern.isEmpty()) {
             try {
                 compile();
