@@ -18,11 +18,6 @@
 package org.apache.harmony.tests.java.io;
 
 import dalvik.system.DexFile;
-
-import junit.framework.TestCase;
-
-import org.apache.harmony.testframework.serialization.SerializationTest;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -38,6 +33,10 @@ import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+
+import junit.framework.TestCase;
+
+import org.apache.harmony.testframework.serialization.SerializationTest;
 
 public class ObjectInputStream2Test extends TestCase {
 
@@ -231,7 +230,6 @@ public class ObjectInputStream2Test extends TestCase {
         // Get the class object
         try {
             Files.copy(dexIs, sameFieldNames.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            assertTrue(sameFieldNames.setReadOnly());
             DexFile dexFile = new DexFile(sameFieldNames);
             clazz = dexFile.loadClass("sameFieldNames", getClass().getClassLoader());
             dexFile.close();
