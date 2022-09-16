@@ -7819,7 +7819,7 @@ package java.security {
     method public String getAlgorithm();
     method public byte[] getEncoded();
     method public String getFormat();
-    field public static final long serialVersionUID = 6603384152749567654L; // 0x5ba3eee69414eea6L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 6603384152749567654L; // 0x5ba3eee69414eea6L
   }
 
   public class KeyException extends java.security.GeneralSecurityException {
