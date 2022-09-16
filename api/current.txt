@@ -8133,7 +8133,7 @@ package java.security {
   }
 
   public interface PrivateKey extends java.security.Key javax.security.auth.Destroyable {
-    field public static final long serialVersionUID = 6034044314589513430L; // 0x53bd3b559a12c6d6L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 6034044314589513430L; // 0x53bd3b559a12c6d6L
   }
 
   public interface PrivilegedAction<T> {
