@@ -962,7 +962,7 @@ ojluni/src/main/java/java/util/Stack.java,jdk11u/jdk-11.0.13-ga,src/java.base/sh
 ojluni/src/main/java/java/util/StringJoiner.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/StringJoiner.java
 ojluni/src/main/java/java/util/StringTokenizer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/StringTokenizer.java
 ojluni/src/main/java/java/util/TimSort.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/TimSort.java
-ojluni/src/main/java/java/util/TimeZone.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/TimeZone.java
+ojluni/src/main/java/java/util/TimeZone.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/util/TimeZone.java
 ojluni/src/main/java/java/util/Timer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Timer.java
 ojluni/src/main/java/java/util/TimerTask.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/TimerTask.java
 ojluni/src/main/java/java/util/TooManyListenersException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/TooManyListenersException.java
