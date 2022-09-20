@@ -7819,7 +7819,7 @@ package java.security {
     method public String getAlgorithm();
     method public byte[] getEncoded();
     method public String getFormat();
-    field public static final long serialVersionUID = 6603384152749567654L; // 0x5ba3eee69414eea6L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 6603384152749567654L; // 0x5ba3eee69414eea6L
   }
 
   public class KeyException extends java.security.GeneralSecurityException {
@@ -8133,7 +8133,7 @@ package java.security {
   }
 
   public interface PrivateKey extends java.security.Key javax.security.auth.Destroyable {
-    field public static final long serialVersionUID = 6034044314589513430L; // 0x53bd3b559a12c6d6L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 6034044314589513430L; // 0x53bd3b559a12c6d6L
   }
 
   public interface PrivilegedAction<T> {
@@ -8208,7 +8208,7 @@ package java.security {
   }
 
   public interface PublicKey extends java.security.Key {
-    field public static final long serialVersionUID = 7187392471159151072L; // 0x63bebf5f40c219e0L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 7187392471159151072L; // 0x63bebf5f40c219e0L
   }
 
   public class SecureClassLoader extends java.lang.ClassLoader {
