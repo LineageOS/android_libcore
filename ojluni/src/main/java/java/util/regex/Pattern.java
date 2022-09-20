@@ -44,6 +44,7 @@ import libcore.util.EmptyArray;
 // Android-changed: UNICODE_CHARACTER_CLASS causes IllegalArgumentException on Android.
 // Android-changed: POSIX character classes are Unicode-aware.
 // Android-changed: Throw PatternSyntaxException for non-existent back references.
+// Android-changed: Remove "Compatibility Properties of Unicode Regular Expression" table.
 /**
  * A compiled representation of a regular expression.
  *
@@ -157,16 +158,16 @@ import libcore.util.EmptyArray;
  * <tr><th style="vertical-align:top; font-weight:normal" id="any">{@code .}</th>
  *     <td headers="matches predef any">Any character (may or may not match <a href="#lt">line terminators</a>)</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="digit">{@code \d}</th>
- *     <td headers="matches predef digit">A digit: {@code [0-9]}</td></tr>
+ *     <td headers="matches predef digit">A digit: {@code \p{IsDigit}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_digit">{@code \D}</th>
- *     <td headers="matches predef non_digit">A non-digit: {@code [^0-9]}</td></tr>
+ *     <td headers="matches predef non_digit">A non-digit: {@code  [^\d]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="horiz_white">{@code \h}</th>
  *     <td headers="matches predef horiz_white">A horizontal whitespace character:
  *     <code>[ \t\xA0&#92;u1680&#92;u180e&#92;u2000-&#92;u200a&#92;u202f&#92;u205f&#92;u3000]</code></td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_horiz_white">{@code \H}</th>
  *     <td headers="matches predef non_horiz_white">A non-horizontal whitespace character: {@code [^\h]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="white">{@code \s}</th>
- *     <td headers="matches predef white">A whitespace character: {@code [ \t\n\x0B\f\r]}</td></tr>
+ *     <td headers="matches predef white">A whitespace character: {@code \p{IsWhite_Space}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_white">{@code \S}</th>
  *     <td headers="matches predef non_white">A non-whitespace character: {@code [^\s]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="vert_white">{@code \v}</th>
@@ -175,42 +176,40 @@ import libcore.util.EmptyArray;
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_vert_white">{@code \V}</th>
  *     <td headers="matches predef non_vert_white">A non-vertical whitespace character: {@code [^\v]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="word">{@code \w}</th>
- *     <td headers="matches predef word">A word character: {@code [a-zA-Z_0-9]}</td></tr>
+ *     <td headers="matches predef word">A word character: {@code [\p{alpha}\p{gc=Mark}\p{digit}\p{gc=Connector_Punctuation}\p{Join_Control}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="non_word">{@code \W}</th>
  *     <td headers="matches predef non_word">A non-word character: {@code [^\w]}</td></tr>
  *
  * <tr><th colspan="2" style="padding-top:20px" id="posix"><b>POSIX character classes (Unicode-aware)</b></th></tr>
  *
  * <tr><th style="vertical-align:top; font-weight:normal" id="Lower">{@code \p{Lower}}</th>
- *     <td headers="matches posix Lower">A lower-case alphabetic character: {@code \p{Lowercase}}</td></tr>
+ *     <td headers="matches posix Lower">A lower-case alphabetic character: {@code \p{IsLowercase}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Upper">{@code \p{Upper}}</th>
- *     <td headers="matches posix Upper">An upper-case alphabetic character:{@code \p{Uppercase}}</td></tr>
+ *     <td headers="matches posix Upper">An upper-case alphabetic character:{@code \p{IsUppercase}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="ASCII">{@code \p{ASCII}}</th>
  *     <td headers="matches posix ASCII">All ASCII:{@code [\x00-\x7F]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Alpha">{@code \p{Alpha}}</th>
- *     <td headers="matches posix Alpha">An alphabetic character:{@code [\p{Lower}\p{Upper}]}</td></tr>
- * <tr><th style="vertical-align:top; font-weight:normal" id="Digit">{@code \p{Digit}}</th>
+ *     <td headers="matches posix Alpha">An alphabetic character:{@code [\p{IsAlphabetic}]}</td></tr>
+ * <tr><th style="vertical-align:top; font-weight:normal" id="Digit">{@code \p{IsDigit}}</th>
  *     <td headers="matches posix Digit">A decimal digit: {@code \p{gc=Decimal_Number}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Alnum">{@code \p{Alnum}}</th>
  *     <td headers="matches posix Alnum">An alphanumeric character:{@code [\p{Alpha}\p{Digit}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Punct">{@code \p{Punct}}</th>
- *     <td headers="matches posix Punct">Punctuation: {@code \p{gc=Punctuation}}</td></tr>
- *     <!-- {@code [\!"#\$%&'\(\)\*\+,\-\./:;\<=\>\?@\[\\\]\^_`\{\|\}~]}
- *          {@code [\X21-\X2F\X31-\X40\X5B-\X60\X7B-\X7E]} -->
+ *     <td headers="matches posix Punct">Punctuation: {@code \p{IsPunctuation}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Graph">{@code \p{Graph}}</th>
  *     <td headers="matches posix Graph">A visible character:
  *     {@code [^p{space}\p{gc=Control}\p{gc=Surrogate}\p{gc=Unassigned}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Print">{@code \p{Print}}</th>
- *     <td headers="matches posix Print">A printable character: {@code \p{graph} \p{blank} -- \p{cntrl}}</td></tr>
+ *     <td headers="matches posix Print">A printable character: {@code [\p{Graph}\p{Blank}&&[^\p{Cntrl}]]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Blank">{@code \p{Blank}}</th>
- *     <td headers="matches posix Blank">A space or a tab: {@code \p{gc=Space_Separator} \N{CHARACTER TABULATION}}</td></tr>
+ *     <td headers="matches posix Blank">A space or a tab: {@code [\p{gc=Space_Separator}\N{CHARACTER TABULATION}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Cntrl">{@code \p{Cntrl}}</th>
  *     <td headers="matches posix Cntrl">A control character: {@code \p{gc=Control}}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="XDigit">{@code \p{XDigit}}</th>
- *     <td headers="matches posix XDigit">A hexadecimal digit: {@code \p{gc=Decimal_Number}\p{Hex_Digit}}</td></tr>
+ *     <td headers="matches posix XDigit">A hexadecimal digit: {@code [\p{gc=Decimal_Number}\p{IsHex_Digit}]}</td></tr>
  * <tr><th style="vertical-align:top; font-weight:normal" id="Space">{@code \p{Space}}</th>
- *     <td headers="matches posix Space">A whitespace character: {@code \p{Whitespace}}</td></tr>
- * <tr><th style="vertical-align:top; font-weight:normal" id="PosixCompatible">POSIX Compatible</th>
+ *     <td headers="matches posix Space">A whitespace character: {@code \p{IsWhite_Space}}</td></tr>
+ * <tr><th style="vertical-align:top; font-weight:normal" id="PosixCompatible">POSIX-Compatible expression</th>
  *     <td headers="matches posix PosixCompatible">See <a href="http://www.unicode.org/reports/tr18/#Compatibility_Properties">Unicode documentation</a></td></tr>
  *
  * <tr><th colspan="2" style="padding-top:20px" id="java">java.lang.Character classes (simple <a href="#jcc">java character type</a>)</th></tr>
@@ -630,60 +629,11 @@ import libcore.util.EmptyArray;
  *   <li> Assigned
  * </ul>
  * <p>
- * The following <b>Predefined Character classes</b> and <b>POSIX character classes</b>
+ * The <b>Predefined Character classes</b> and <b>POSIX character classes</b>
  * are in conformance with the recommendation of <i>Annex C: Compatibility Properties</i>
  * of <a href="http://www.unicode.org/reports/tr18/"><i>Unicode Regular Expression
  * </i></a>.
  *
- * <table class="striped">
- * <caption style="display:none">predefined and posix character classes in Unicode mode</caption>
- * <thead>
- * <tr>
- * <th scope="col" id="predef_classes">Classes</th>
- * <th scope="col" id="predef_matches">Matches</th>
- * </tr>
- * </thead>
- * <tbody>
- * <tr><th scope="row">{@code \p{Lower}}</th>
- *     <td>A lowercase character:{@code \p{IsLowercase}}</td></tr>
- * <tr><th scope="row">{@code \p{Upper}}</th>
- *     <td>An uppercase character:{@code \p{IsUppercase}}</td></tr>
- * <tr><th scope="row">{@code \p{ASCII}}</th>
- *     <td>All ASCII:{@code [\x00-\x7F]}</td></tr>
- * <tr><th scope="row">{@code \p{Alpha}}</th>
- *     <td>An alphabetic character:{@code \p{IsAlphabetic}}</td></tr>
- * <tr><th scope="row">{@code \p{Digit}}</th>
- *     <td>A decimal digit character:{@code \p{IsDigit}}</td></tr>
- * <tr><th scope="row">{@code \p{Alnum}}</th>
- *     <td>An alphanumeric character:{@code [\p{IsAlphabetic}\p{IsDigit}]}</td></tr>
- * <tr><th scope="row">{@code \p{Punct}}</th>
- *     <td>A punctuation character:{@code \p{IsPunctuation}}</td></tr>
- * <tr><th scope="row">{@code \p{Graph}}</th>
- *     <td>A visible character: {@code [^\p{IsWhite_Space}\p{gc=Cc}\p{gc=Cs}\p{gc=Cn}]}</td></tr>
- * <tr><th scope="row">{@code \p{Print}}</th>
- *     <td>A printable character: {@code [\p{Graph}\p{Blank}&&[^\p{Cntrl}]]}</td></tr>
- * <tr><th scope="row">{@code \p{Blank}}</th>
- *     <td>A space or a tab: {@code [\p{IsWhite_Space}&&[^\p{gc=Zl}\p{gc=Zp}\x0a\x0b\x0c\x0d\x85]]}</td></tr>
- * <tr><th scope="row">{@code \p{Cntrl}}</th>
- *     <td>A control character: {@code \p{gc=Cc}}</td></tr>
- * <tr><th scope="row">{@code \p{XDigit}}</th>
- *     <td>A hexadecimal digit: {@code [\p{gc=Nd}\p{IsHex_Digit}]}</td></tr>
- * <tr><th scope="row">{@code \p{Space}}</th>
- *     <td>A whitespace character:{@code \p{IsWhite_Space}}</td></tr>
- * <tr><th scope="row">{@code \d}</th>
- *     <td>A digit: {@code \p{IsDigit}}</td></tr>
- * <tr><th scope="row">{@code \D}</th>
- *     <td>A non-digit: {@code [^\d]}</td></tr>
- * <tr><th scope="row">{@code \s}</th>
- *     <td>A whitespace character: {@code \p{IsWhite_Space}}</td></tr>
- * <tr><th scope="row">{@code \S}</th>
- *     <td>A non-whitespace character: {@code [^\s]}</td></tr>
- * <tr><th scope="row">{@code \w}</th>
- *     <td>A word character: {@code [\p{Alpha}\p{gc=Mn}\p{gc=Me}\p{gc=Mc}\p{Digit}\p{gc=Pc}\p{IsJoin_Control}]}</td></tr>
- * <tr><th scope="row">{@code \W}</th>
- *     <td>A non-word character: {@code [^\w]}</td></tr>
- * </tbody>
- * </table>
  * <p>
  * <a id="jcc">
  * Categories that behave like the java.lang.Character
