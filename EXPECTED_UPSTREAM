@@ -178,7 +178,7 @@ ojluni/src/main/java/java/lang/NoSuchMethodException.java,jdk11u/jdk-11.0.13-ga,
 ojluni/src/main/java/java/lang/NullPointerException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/NullPointerException.java
 ojluni/src/main/java/java/lang/Number.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/Number.java
 ojluni/src/main/java/java/lang/NumberFormatException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/NumberFormatException.java
-ojluni/src/main/java/java/lang/Object.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Object.java
+ojluni/src/main/java/java/lang/Object.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Object.java
 ojluni/src/main/java/java/lang/OutOfMemoryError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/OutOfMemoryError.java
 ojluni/src/main/java/java/lang/Override.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Override.java
 ojluni/src/main/java/java/lang/Package.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Package.java
