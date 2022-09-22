@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,28 +25,25 @@
 
 package sun.nio.fs;
 
-import java.nio.*;
 import java.nio.file.*;
 import java.nio.charset.*;
 import java.io.*;
 import java.net.URI;
 import java.util.*;
-import java.lang.ref.SoftReference;
+
+import jdk.internal.access.JavaLangAccess;
+import jdk.internal.access.SharedSecrets;
 
 import static sun.nio.fs.UnixNativeDispatcher.*;
 import static sun.nio.fs.UnixConstants.*;
 
 /**
- * Solaris/Linux implementation of java.nio.file.Path
+ * Linux/Mac implementation of java.nio.file.Path
  */
+class UnixPath implements Path {
 
-class UnixPath
-    extends AbstractPath
-{
-    private static ThreadLocal<SoftReference<CharsetEncoder>> encoder =
-        new ThreadLocal<SoftReference<CharsetEncoder>>();
+    private static final JavaLangAccess JLA = SharedSecrets.getJavaLangAccess();
 
-    // FIXME - eliminate this reference to reduce space
     private final UnixFileSystem fs;
 
     // internal representation
@@ -117,43 +114,13 @@ class UnixPath
 
     // encodes the given path-string into a sequence of bytes
     private static byte[] encode(UnixFileSystem fs, String input) {
-        SoftReference<CharsetEncoder> ref = encoder.get();
-        CharsetEncoder ce = (ref != null) ? ref.get() : null;
-        if (ce == null) {
-            ce = Util.jnuEncoding().newEncoder()
-                .onMalformedInput(CodingErrorAction.REPORT)
-                .onUnmappableCharacter(CodingErrorAction.REPORT);
-            encoder.set(new SoftReference<CharsetEncoder>(ce));
-        }
-
-        char[] ca = fs.normalizeNativePath(input.toCharArray());
-
-        // size output buffer for worse-case size
-        byte[] ba = new byte[(int)(ca.length * (double)ce.maxBytesPerChar())];
-
-        // encode
-        ByteBuffer bb = ByteBuffer.wrap(ba);
-        CharBuffer cb = CharBuffer.wrap(ca);
-        ce.reset();
-        CoderResult cr = ce.encode(cb, bb, true);
-        boolean error;
-        if (!cr.isUnderflow()) {
-            error = true;
-        } else {
-            cr = ce.flush(bb);
-            error = !cr.isUnderflow();
-        }
-        if (error) {
+        input = fs.normalizeNativePath(input);
+        try {
+            return JLA.getBytesNoRepl(input, Util.jnuEncoding());
+        } catch (CharacterCodingException cce) {
             throw new InvalidPathException(input,
                 "Malformed input or input contains unmappable characters");
         }
-
-        // trim result to actual length if required
-        int len = bb.position();
-        if (len != ba.length)
-            ba = Arrays.copyOf(ba, len);
-
-        return ba;
     }
 
     // package-private
@@ -245,13 +212,28 @@ class UnixPath
     }
 
     // returns {@code true} if this path is an empty path
-    private boolean isEmpty() {
+    boolean isEmpty() {
         return path.length == 0;
     }
 
     // returns an empty path
     private UnixPath emptyPath() {
         return new UnixPath(getFileSystem(), new byte[0]);
+    }
+
+
+    // return true if this path has "." or ".."
+    private boolean hasDotOrDotDot() {
+        int n = getNameCount();
+        for (int i=0; i<n; i++) {
+            byte[] bytes = getName(i).path;
+            if ((bytes.length == 1 && bytes[0] == '.'))
+                return true;
+            if ((bytes.length == 2 && bytes[0] == '.') && bytes[1] == '.') {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -407,80 +389,94 @@ class UnixPath
 
     @Override
     public UnixPath relativize(Path obj) {
-        UnixPath other = toUnixPath(obj);
-        if (other.equals(this))
+        UnixPath child = toUnixPath(obj);
+        if (child.equals(this))
             return emptyPath();
 
         // can only relativize paths of the same type
-        if (this.isAbsolute() != other.isAbsolute())
+        if (this.isAbsolute() != child.isAbsolute())
             throw new IllegalArgumentException("'other' is different type of Path");
 
         // this path is the empty path
         if (this.isEmpty())
-            return other;
+            return child;
 
-        int bn = this.getNameCount();
-        int cn = other.getNameCount();
+        UnixPath base = this;
+        if (base.hasDotOrDotDot() || child.hasDotOrDotDot()) {
+            base = base.normalize();
+            child = child.normalize();
+        }
+
+        int baseCount = base.getNameCount();
+        int childCount = child.getNameCount();
 
         // skip matching names
-        int n = (bn > cn) ? cn : bn;
+        int n = Math.min(baseCount, childCount);
         int i = 0;
         while (i < n) {
-            if (!this.getName(i).equals(other.getName(i)))
+            if (!base.getName(i).equals(child.getName(i)))
                 break;
             i++;
         }
 
-        int dotdots = bn - i;
-        if (i < cn) {
-            // remaining name components in other
-            UnixPath remainder = other.subpath(i, cn);
-            if (dotdots == 0)
-                return remainder;
-
-            // other is the empty path
-            boolean isOtherEmpty = other.isEmpty();
-
-            // result is a  "../" for each remaining name in base
-            // followed by the remaining names in other. If the remainder is
-            // the empty path then we don't add the final trailing slash.
-            int len = dotdots*3 + remainder.path.length;
-            if (isOtherEmpty) {
-                assert remainder.isEmpty();
-                len--;
-            }
-            byte[] result = new byte[len];
-            int pos = 0;
-            while (dotdots > 0) {
-                result[pos++] = (byte)'.';
-                result[pos++] = (byte)'.';
-                if (isOtherEmpty) {
-                    if (dotdots > 1) result[pos++] = (byte)'/';
-                } else {
-                    result[pos++] = (byte)'/';
-                }
-                dotdots--;
-            }
-            System.arraycopy(remainder.path, 0, result, pos, remainder.path.length);
-            return new UnixPath(getFileSystem(), result);
+        // remaining elements in child
+        UnixPath childRemaining;
+        boolean isChildEmpty;
+        if (i == childCount) {
+            childRemaining = emptyPath();
+            isChildEmpty = true;
         } else {
-            // no remaining names in other so result is simply a sequence of ".."
-            byte[] result = new byte[dotdots*3 - 1];
-            int pos = 0;
-            while (dotdots > 0) {
-                result[pos++] = (byte)'.';
-                result[pos++] = (byte)'.';
-                // no tailing slash at the end
-                if (dotdots > 1)
-                    result[pos++] = (byte)'/';
-                dotdots--;
-            }
-            return new UnixPath(getFileSystem(), result);
+            childRemaining = child.subpath(i, childCount);
+            isChildEmpty = childRemaining.isEmpty();
         }
+
+        // matched all of base
+        if (i == baseCount) {
+            return childRemaining;
+        }
+
+        // the remainder of base cannot contain ".."
+        UnixPath baseRemaining = base.subpath(i, baseCount);
+        if (baseRemaining.hasDotOrDotDot()) {
+            throw new IllegalArgumentException("Unable to compute relative "
+                    + " path from " + this + " to " + obj);
+        }
+        if (baseRemaining.isEmpty())
+            return childRemaining;
+
+        // number of ".." needed
+        int dotdots = baseRemaining.getNameCount();
+        if (dotdots == 0) {
+            return childRemaining;
+        }
+
+        // result is a  "../" for each remaining name in base followed by the
+        // remaining names in child. If the remainder is the empty path
+        // then we don't add the final trailing slash.
+        int len = dotdots*3 + childRemaining.path.length;
+        if (isChildEmpty) {
+            assert childRemaining.isEmpty();
+            len--;
+        }
+        byte[] result = new byte[len];
+        int pos = 0;
+        while (dotdots > 0) {
+            result[pos++] = (byte)'.';
+            result[pos++] = (byte)'.';
+            if (isChildEmpty) {
+                if (dotdots > 1) result[pos++] = (byte)'/';
+            } else {
+                result[pos++] = (byte)'/';
+            }
+            dotdots--;
+        }
+        System.arraycopy(childRemaining.path,0, result, pos,
+                             childRemaining.path.length);
+        return new UnixPath(getFileSystem(), result);
     }
 
     @Override
-    public Path normalize() {
+    public UnixPath normalize() {
         final int count = getNameCount();
         if (count == 0 || isEmpty())
             return this;
@@ -735,8 +731,8 @@ class UnixPath
 
     @Override
     public boolean equals(Object ob) {
-        if ((ob != null) && (ob instanceof UnixPath)) {
-            return compareTo((Path)ob) == 0;
+        if (ob instanceof UnixPath path) {
+            return compareTo(path) == 0;
         }
         return false;
     }
@@ -766,42 +762,33 @@ class UnixPath
     // -- file operations --
 
     // package-private
-    int openForAttributeAccess(boolean followLinks) throws IOException {
+    int openForAttributeAccess(boolean followLinks) throws UnixException {
         int flags = O_RDONLY;
         if (!followLinks) {
             if (O_NOFOLLOW == 0)
-                throw new IOException("NOFOLLOW_LINKS is not supported on this platform");
+                throw new UnixException
+                    ("NOFOLLOW_LINKS is not supported on this platform");
             flags |= O_NOFOLLOW;
         }
-        try {
-            return open(this, flags, 0);
-        } catch (UnixException x) {
-            // HACK: EINVAL instead of ELOOP on Solaris 10 prior to u4 (see 6460380)
-            if (getFileSystem().isSolaris() && x.errno() == EINVAL)
-                x.setError(ELOOP);
-
-            if (x.errno() == ELOOP)
-                throw new FileSystemException(getPathForExceptionMessage(), null,
-                    x.getMessage() + " or unable to access attributes of symbolic link");
-
-            x.rethrowAsIOException(this);
-            return -1; // keep compile happy
-        }
+        return open(this, flags, 0);
     }
 
     void checkRead() {
+        @SuppressWarnings("removal")
         SecurityManager sm = System.getSecurityManager();
         if (sm != null)
             sm.checkRead(getPathForPermissionCheck());
     }
 
     void checkWrite() {
+        @SuppressWarnings("removal")
         SecurityManager sm = System.getSecurityManager();
         if (sm != null)
             sm.checkWrite(getPathForPermissionCheck());
     }
 
     void checkDelete() {
+        @SuppressWarnings("removal")
         SecurityManager sm = System.getSecurityManager();
         if (sm != null)
             sm.checkDelete(getPathForPermissionCheck());
@@ -814,6 +801,7 @@ class UnixPath
         }
         // The path is relative so need to resolve against default directory,
         // taking care not to reveal the user.dir
+        @SuppressWarnings("removal")
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {
             sm.checkPropertyAccess("user.dir");
