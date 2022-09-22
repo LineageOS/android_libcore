@@ -899,7 +899,7 @@ ojluni/src/main/java/java/util/GregorianCalendar.java,jdk11u/jdk-11.0.13-ga,src/
 ojluni/src/main/java/java/util/HashMap.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/HashMap.java
 ojluni/src/main/java/java/util/HashSet.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/HashSet.java
 ojluni/src/main/java/java/util/Hashtable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/Hashtable.java
-ojluni/src/main/java/java/util/IdentityHashMap.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/IdentityHashMap.java
+ojluni/src/main/java/java/util/IdentityHashMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IdentityHashMap.java
 ojluni/src/main/java/java/util/IllegalFormatCodePointException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IllegalFormatCodePointException.java
 ojluni/src/main/java/java/util/IllegalFormatConversionException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IllegalFormatConversionException.java
 ojluni/src/main/java/java/util/IllegalFormatException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IllegalFormatException.java
@@ -2136,6 +2136,11 @@ ojluni/src/test/java/time/test/java/time/zone/TestFixedZoneRules.java,jdk11u/jdk
 ojluni/src/test/java/time/test/java/time/zone/TestZoneRules.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/time/test/java/time/zone/TestZoneRules.java
 ojluni/src/test/java/time/test/java/util/TestFormatter.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/time/test/java/util/TestFormatter.java
 ojluni/src/test/java/util/Collections/NCopies.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/util/Collections/NCopies.java
+ojluni/src/test/java/util/IdentityHashMap/Capacity.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/Capacity.java
+ojluni/src/test/java/util/IdentityHashMap/DistinctEntrySetElements.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/DistinctEntrySetElements.java
+ojluni/src/test/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java
+ojluni/src/test/java/util/IdentityHashMap/ToArray.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/ToArray.java
+ojluni/src/test/java/util/IdentityHashMap/ToString.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/ToString.java
 ojluni/src/test/java/util/regex/BMPTestCases.txt,jdk17u/jdk-17.0.2-ga,test/jdk/java/util/regex/BMPTestCases.txt
 ojluni/src/test/java/util/regex/GraphemeTestCases.txt,jdk17u/jdk-17.0.2-ga,test/jdk/java/util/regex/GraphemeTestCases.txt
 ojluni/src/test/java/util/regex/POSIX_ASCII.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/util/regex/POSIX_ASCII.java
