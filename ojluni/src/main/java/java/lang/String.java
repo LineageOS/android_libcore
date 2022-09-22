@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2022, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,23 +28,38 @@ package java.lang;
 import java.io.ObjectStreamField;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Native;
-import java.nio.charset.Charset;
+import java.lang.invoke.MethodHandles;
+import java.lang.constant.Constable;
+import java.lang.constant.ConstantDesc;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Spliterator;
-import java.util.StringJoiner;
-import java.util.regex.Matcher;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import jdk.internal.HotSpotIntrinsicCandidate;
+
+import jdk.internal.vm.annotation.ForceInline;
+import jdk.internal.vm.annotation.IntrinsicCandidate;
 import jdk.internal.vm.annotation.Stable;
+import sun.nio.cs.ArrayDecoder;
+import sun.nio.cs.ArrayEncoder;
+
+import sun.nio.cs.ISO_8859_1;
+import sun.nio.cs.US_ASCII;
+import sun.nio.cs.UTF_8;
 
 /**
  * The {@code String} class represents character strings. All
@@ -67,7 +82,7 @@ import jdk.internal.vm.annotation.Stable;
  *     System.out.println("abc");
  *     String cde = "cde";
  *     System.out.println("abc" + cde);
- *     String c = "abc".substring(2,3);
+ *     String c = "abc".substring(2, 3);
  *     String d = cde.substring(1, 2);
  * </pre></blockquote>
  * <p>
@@ -81,7 +96,7 @@ import jdk.internal.vm.annotation.Stable;
  * The Java language provides special support for the string
  * concatenation operator (&nbsp;+&nbsp;), and for conversion of
  * other objects to strings. For additional information on string
- * concatenation and conversion, see <i>The Java&trade; Language Specification</i>.
+ * concatenation and conversion, see <i>The Java Language Specification</i>.
  *
  * <p> Unless otherwise noted, passing a {@code null} argument to a constructor
  * or method in this class will cause a {@link NullPointerException} to be
@@ -104,7 +119,7 @@ import jdk.internal.vm.annotation.Stable;
  *
  * @implNote The implementation of the string concatenation operator is left to
  * the discretion of a Java compiler, as long as the compiler ultimately conforms
- * to <i>The Java&trade; Language Specification</i>. For example, the {@code javac} compiler
+ * to <i>The Java Language Specification</i>. For example, the {@code javac} compiler
  * may implement the operator with {@code StringBuffer}, {@code StringBuilder},
  * or {@code java.lang.invoke.StringConcatFactory} depending on the JDK version. The
  * implementation of string conversion is typically through the method {@code toString},
@@ -123,7 +138,8 @@ import jdk.internal.vm.annotation.Stable;
  */
 
 public final class String
-    implements java.io.Serializable, Comparable<String>, CharSequence {
+    implements java.io.Serializable, Comparable<String>, CharSequence,
+               Constable, ConstantDesc {
 
     /**
      * The value is used for character storage.
@@ -155,7 +171,14 @@ public final class String
     /** Cache the hash code for the string */
     private int hash; // Default to 0
 
+    /**
+     * Cache if the hash has been calculated as actually being zero, enabling
+     * us to avoid recalculating this.
+     */
+    private boolean hashIsZero; // Default to false;
+
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
+    @java.io.Serial
     private static final long serialVersionUID = -6849794470754667710L;
 
     /**
@@ -208,6 +231,7 @@ public final class String
      * <a href="{@docRoot}/../specs/serialization/protocol.html#stream-elements">
      * Object Serialization Specification, Section 6.2, "Stream Elements"</a>
      */
+    @java.io.Serial
     private static final ObjectStreamField[] serialPersistentFields =
         new ObjectStreamField[0];
 
@@ -231,7 +255,7 @@ public final class String
      * @param  original
      *         A {@code String}
      */
-    @HotSpotIntrinsicCandidate
+    @IntrinsicCandidate
     public String(String original) {
         this.value = original.value;
         this.coder = original.coder;
@@ -444,7 +468,7 @@ public final class String
      *
      * @param  length
      *         The number of bytes to decode
-
+     *
      * @param  charsetName
      *         The name of a supported {@linkplain java.nio.charset.Charset
      *         charset}
@@ -458,15 +482,9 @@ public final class String
      *
      * @since  1.1
      */
-    public String(byte bytes[], int offset, int length, String charsetName)
+    public String(byte[] bytes, int offset, int length, String charsetName)
             throws UnsupportedEncodingException {
-        if (charsetName == null)
-            throw new NullPointerException("charsetName");
-        checkBoundsOffCount(offset, length, bytes.length);
-        StringCoding.Result ret =
-            StringCoding.decode(charsetName, bytes, offset, length);
-        this.value = ret.value;
-        this.coder = ret.coder;
+        this(bytes, offset, length, lookupCharset(charsetName));
     }
 
     /**
@@ -499,14 +517,820 @@ public final class String
      *
      * @since  1.6
      */
-    public String(byte bytes[], int offset, int length, Charset charset) {
-        if (charset == null)
-            throw new NullPointerException("charset");
+    @SuppressWarnings("removal")
+    public String(byte[] bytes, int offset, int length, Charset charset) {
+        Objects.requireNonNull(charset);
         checkBoundsOffCount(offset, length, bytes.length);
-        StringCoding.Result ret =
-            StringCoding.decode(charset, bytes, offset, length);
-        this.value = ret.value;
-        this.coder = ret.coder;
+        if (length == 0) {
+            this.value = "".value;
+            this.coder = "".coder;
+        } else if (charset == UTF_8.INSTANCE) {
+            if (COMPACT_STRINGS && !StringCoding.hasNegatives(bytes, offset, length)) {
+                this.value = Arrays.copyOfRange(bytes, offset, offset + length);
+                this.coder = LATIN1;
+            } else {
+                int sl = offset + length;
+                int dp = 0;
+                byte[] dst = null;
+                if (COMPACT_STRINGS) {
+                    dst = new byte[length];
+                    while (offset < sl) {
+                        int b1 = bytes[offset];
+                        if (b1 >= 0) {
+                            dst[dp++] = (byte)b1;
+                            offset++;
+                            continue;
+                        }
+                        if ((b1 == (byte)0xc2 || b1 == (byte)0xc3) &&
+                                offset + 1 < sl) {
+                            int b2 = bytes[offset + 1];
+                            if (!isNotContinuation(b2)) {
+                                dst[dp++] = (byte)decode2(b1, b2);
+                                offset += 2;
+                                continue;
+                            }
+                        }
+                        // anything not a latin1, including the repl
+                        // we have to go with the utf16
+                        break;
+                    }
+                    if (offset == sl) {
+                        if (dp != dst.length) {
+                            dst = Arrays.copyOf(dst, dp);
+                        }
+                        this.value = dst;
+                        this.coder = LATIN1;
+                        return;
+                    }
+                }
+                if (dp == 0 || dst == null) {
+                    dst = new byte[length << 1];
+                } else {
+                    byte[] buf = new byte[length << 1];
+                    StringLatin1.inflate(dst, 0, buf, 0, dp);
+                    dst = buf;
+                }
+                dp = decodeUTF8_UTF16(bytes, offset, sl, dst, dp, true);
+                if (dp != length) {
+                    dst = Arrays.copyOf(dst, dp << 1);
+                }
+                this.value = dst;
+                this.coder = UTF16;
+            }
+        } else if (charset == ISO_8859_1.INSTANCE) {
+            if (COMPACT_STRINGS) {
+                this.value = Arrays.copyOfRange(bytes, offset, offset + length);
+                this.coder = LATIN1;
+            } else {
+                this.value = StringLatin1.inflate(bytes, offset, length);
+                this.coder = UTF16;
+            }
+        } else if (charset == US_ASCII.INSTANCE) {
+            if (COMPACT_STRINGS && !StringCoding.hasNegatives(bytes, offset, length)) {
+                this.value = Arrays.copyOfRange(bytes, offset, offset + length);
+                this.coder = LATIN1;
+            } else {
+                byte[] dst = new byte[length << 1];
+                int dp = 0;
+                while (dp < length) {
+                    int b = bytes[offset++];
+                    StringUTF16.putChar(dst, dp++, (b >= 0) ? (char) b : REPL);
+                }
+                this.value = dst;
+                this.coder = UTF16;
+            }
+        } else {
+            // (1)We never cache the "external" cs, the only benefit of creating
+            // an additional StringDe/Encoder object to wrap it is to share the
+            // de/encode() method. These SD/E objects are short-lived, the young-gen
+            // gc should be able to take care of them well. But the best approach
+            // is still not to generate them if not really necessary.
+            // (2)The defensive copy of the input byte/char[] has a big performance
+            // impact, as well as the outgoing result byte/char[]. Need to do the
+            // optimization check of (sm==null && classLoader0==null) for both.
+            CharsetDecoder cd = charset.newDecoder();
+            // ArrayDecoder fastpaths
+            if (cd instanceof ArrayDecoder ad) {
+                // ascii
+                if (ad.isASCIICompatible() && !StringCoding.hasNegatives(bytes, offset, length)) {
+                    if (COMPACT_STRINGS) {
+                        this.value = Arrays.copyOfRange(bytes, offset, offset + length);
+                        this.coder = LATIN1;
+                        return;
+                    }
+                    this.value = StringLatin1.inflate(bytes, offset, length);
+                    this.coder = UTF16;
+                    return;
+                }
+
+                // fastpath for always Latin1 decodable single byte
+                if (COMPACT_STRINGS && ad.isLatin1Decodable()) {
+                    byte[] dst = new byte[length];
+                    ad.decodeToLatin1(bytes, offset, length, dst);
+                    this.value = dst;
+                    this.coder = LATIN1;
+                    return;
+                }
+
+                int en = scale(length, cd.maxCharsPerByte());
+                cd.onMalformedInput(CodingErrorAction.REPLACE)
+                        .onUnmappableCharacter(CodingErrorAction.REPLACE);
+                char[] ca = new char[en];
+                int clen = ad.decode(bytes, offset, length, ca);
+                if (COMPACT_STRINGS) {
+                    byte[] bs = StringUTF16.compress(ca, 0, clen);
+                    if (bs != null) {
+                        value = bs;
+                        coder = LATIN1;
+                        return;
+                    }
+                }
+                coder = UTF16;
+                value = StringUTF16.toBytes(ca, 0, clen);
+                return;
+            }
+
+            // decode using CharsetDecoder
+            int en = scale(length, cd.maxCharsPerByte());
+            cd.onMalformedInput(CodingErrorAction.REPLACE)
+                    .onUnmappableCharacter(CodingErrorAction.REPLACE);
+            char[] ca = new char[en];
+            if (charset.getClass().getClassLoader0() != null &&
+                    System.getSecurityManager() != null) {
+                bytes = Arrays.copyOfRange(bytes, offset, offset + length);
+                offset = 0;
+            }
+
+            int caLen = decodeWithDecoder(cd, ca, bytes, offset, length);
+            if (COMPACT_STRINGS) {
+                byte[] bs = StringUTF16.compress(ca, 0, caLen);
+                if (bs != null) {
+                    value = bs;
+                    coder = LATIN1;
+                    return;
+                }
+            }
+            coder = UTF16;
+            value = StringUTF16.toBytes(ca, 0, caLen);
+        }
+    }
+
+    /*
+     * Throws iae, instead of replacing, if malformed or unmappable.
+     */
+    static String newStringUTF8NoRepl(byte[] bytes, int offset, int length) {
+        checkBoundsOffCount(offset, length, bytes.length);
+        if (length == 0) {
+            return "";
+        }
+        if (COMPACT_STRINGS && !StringCoding.hasNegatives(bytes, offset, length)) {
+            return new String(Arrays.copyOfRange(bytes, offset, offset + length), LATIN1);
+        } else {
+            int sl = offset + length;
+            int dp = 0;
+            byte[] dst = null;
+            if (COMPACT_STRINGS) {
+                dst = new byte[length];
+                while (offset < sl) {
+                    int b1 = bytes[offset];
+                    if (b1 >= 0) {
+                        dst[dp++] = (byte) b1;
+                        offset++;
+                        continue;
+                    }
+                    if ((b1 == (byte) 0xc2 || b1 == (byte) 0xc3) &&
+                            offset + 1 < sl) {
+                        int b2 = bytes[offset + 1];
+                        if (!isNotContinuation(b2)) {
+                            dst[dp++] = (byte) decode2(b1, b2);
+                            offset += 2;
+                            continue;
+                        }
+                    }
+                    // anything not a latin1, including the REPL
+                    // we have to go with the utf16
+                    break;
+                }
+                if (offset == sl) {
+                    if (dp != dst.length) {
+                        dst = Arrays.copyOf(dst, dp);
+                    }
+                    return new String(dst, LATIN1);
+                }
+            }
+            if (dp == 0 || dst == null) {
+                dst = new byte[length << 1];
+            } else {
+                byte[] buf = new byte[length << 1];
+                StringLatin1.inflate(dst, 0, buf, 0, dp);
+                dst = buf;
+            }
+            dp = decodeUTF8_UTF16(bytes, offset, sl, dst, dp, false);
+            if (dp != length) {
+                dst = Arrays.copyOf(dst, dp << 1);
+            }
+            return new String(dst, UTF16);
+        }
+    }
+
+    static String newStringNoRepl(byte[] src, Charset cs) throws CharacterCodingException {
+        try {
+            return newStringNoRepl1(src, cs);
+        } catch (IllegalArgumentException e) {
+            //newStringNoRepl1 throws IAE with MalformedInputException or CCE as the cause
+            Throwable cause = e.getCause();
+            if (cause instanceof MalformedInputException mie) {
+                throw mie;
+            }
+            throw (CharacterCodingException)cause;
+        }
+    }
+
+    @SuppressWarnings("removal")
+    private static String newStringNoRepl1(byte[] src, Charset cs) {
+        int len = src.length;
+        if (len == 0) {
+            return "";
+        }
+        if (cs == UTF_8.INSTANCE) {
+            return newStringUTF8NoRepl(src, 0, src.length);
+        }
+        if (cs == ISO_8859_1.INSTANCE) {
+            if (COMPACT_STRINGS)
+                return new String(src, LATIN1);
+            return new String(StringLatin1.inflate(src, 0, src.length), UTF16);
+        }
+        if (cs == US_ASCII.INSTANCE) {
+            if (!StringCoding.hasNegatives(src, 0, src.length)) {
+                if (COMPACT_STRINGS)
+                    return new String(src, LATIN1);
+                return new String(StringLatin1.inflate(src, 0, src.length), UTF16);
+            } else {
+                throwMalformed(src);
+            }
+        }
+
+        CharsetDecoder cd = cs.newDecoder();
+        // ascii fastpath
+        if (cd instanceof ArrayDecoder ad &&
+                ad.isASCIICompatible() &&
+                !StringCoding.hasNegatives(src, 0, src.length)) {
+            return new String(src, 0, src.length, ISO_8859_1.INSTANCE);
+        }
+        int en = scale(len, cd.maxCharsPerByte());
+        char[] ca = new char[en];
+        if (cs.getClass().getClassLoader0() != null &&
+                System.getSecurityManager() != null) {
+            src = Arrays.copyOf(src, len);
+        }
+        int caLen = decodeWithDecoder(cd, ca, src, 0, src.length);
+        if (COMPACT_STRINGS) {
+            byte[] bs = StringUTF16.compress(ca, 0, caLen);
+            if (bs != null) {
+                return new String(bs, LATIN1);
+            }
+        }
+        return new String(StringUTF16.toBytes(ca, 0, caLen), UTF16);
+    }
+
+    private static final char REPL = '\ufffd';
+
+    // Trim the given byte array to the given length
+    @SuppressWarnings("removal")
+    private static byte[] safeTrim(byte[] ba, int len, boolean isTrusted) {
+        if (len == ba.length && (isTrusted || System.getSecurityManager() == null)) {
+            return ba;
+        } else {
+            return Arrays.copyOf(ba, len);
+        }
+    }
+
+    private static int scale(int len, float expansionFactor) {
+        // We need to perform double, not float, arithmetic; otherwise
+        // we lose low order bits when len is larger than 2**24.
+        return (int)(len * (double)expansionFactor);
+    }
+
+    private static Charset lookupCharset(String csn) throws UnsupportedEncodingException {
+        Objects.requireNonNull(csn);
+        try {
+            return Charset.forName(csn);
+        } catch (UnsupportedCharsetException | IllegalCharsetNameException x) {
+            throw new UnsupportedEncodingException(csn);
+        }
+    }
+
+    private static byte[] encode(Charset cs, byte coder, byte[] val) {
+        if (cs == UTF_8.INSTANCE) {
+            return encodeUTF8(coder, val, true);
+        }
+        if (cs == ISO_8859_1.INSTANCE) {
+            return encode8859_1(coder, val);
+        }
+        if (cs == US_ASCII.INSTANCE) {
+            return encodeASCII(coder, val);
+        }
+        return encodeWithEncoder(cs, coder, val, true);
+    }
+
+    private static byte[] encodeWithEncoder(Charset cs, byte coder, byte[] val, boolean doReplace) {
+        CharsetEncoder ce = cs.newEncoder();
+        int len = val.length >> coder;  // assume LATIN1=0/UTF16=1;
+        int en = scale(len, ce.maxBytesPerChar());
+        if (ce instanceof ArrayEncoder ae) {
+            // fastpath for ascii compatible
+            if (coder == LATIN1 &&
+                    ae.isASCIICompatible() &&
+                    !StringCoding.hasNegatives(val, 0, val.length)) {
+                return Arrays.copyOf(val, val.length);
+            }
+            byte[] ba = new byte[en];
+            if (len == 0) {
+                return ba;
+            }
+            if (doReplace) {
+                ce.onMalformedInput(CodingErrorAction.REPLACE)
+                        .onUnmappableCharacter(CodingErrorAction.REPLACE);
+            }
+
+            int blen = (coder == LATIN1) ? ae.encodeFromLatin1(val, 0, len, ba)
+                    : ae.encodeFromUTF16(val, 0, len, ba);
+            if (blen != -1) {
+                return safeTrim(ba, blen, true);
+            }
+        }
+
+        byte[] ba = new byte[en];
+        if (len == 0) {
+            return ba;
+        }
+        if (doReplace) {
+            ce.onMalformedInput(CodingErrorAction.REPLACE)
+                    .onUnmappableCharacter(CodingErrorAction.REPLACE);
+        }
+        char[] ca = (coder == LATIN1 ) ? StringLatin1.toChars(val)
+                : StringUTF16.toChars(val);
+        ByteBuffer bb = ByteBuffer.wrap(ba);
+        CharBuffer cb = CharBuffer.wrap(ca, 0, len);
+        try {
+            CoderResult cr = ce.encode(cb, bb, true);
+            if (!cr.isUnderflow())
+                cr.throwException();
+            cr = ce.flush(bb);
+            if (!cr.isUnderflow())
+                cr.throwException();
+        } catch (CharacterCodingException x) {
+            if (!doReplace) {
+                throw new IllegalArgumentException(x);
+            } else {
+                throw new Error(x);
+            }
+        }
+        return safeTrim(ba, bb.position(), cs.getClass().getClassLoader0() == null);
+    }
+
+    /*
+     * Throws iae, instead of replacing, if unmappable.
+     */
+    static byte[] getBytesUTF8NoRepl(String s) {
+        return encodeUTF8(s.coder(), s.value(), false);
+    }
+
+    private static boolean isASCII(byte[] src) {
+        return !StringCoding.hasNegatives(src, 0, src.length);
+    }
+
+    /*
+     * Throws CCE, instead of replacing, if unmappable.
+     */
+    static byte[] getBytesNoRepl(String s, Charset cs) throws CharacterCodingException {
+        try {
+            return getBytesNoRepl1(s, cs);
+        } catch (IllegalArgumentException e) {
+            //getBytesNoRepl1 throws IAE with UnmappableCharacterException or CCE as the cause
+            Throwable cause = e.getCause();
+            if (cause instanceof UnmappableCharacterException) {
+                throw (UnmappableCharacterException)cause;
+            }
+            throw (CharacterCodingException)cause;
+        }
+    }
+
+    private static byte[] getBytesNoRepl1(String s, Charset cs) {
+        byte[] val = s.value();
+        byte coder = s.coder();
+        if (cs == UTF_8.INSTANCE) {
+            if (coder == LATIN1 && isASCII(val)) {
+                return val;
+            }
+            return encodeUTF8(coder, val, false);
+        }
+        if (cs == ISO_8859_1.INSTANCE) {
+            if (coder == LATIN1) {
+                return val;
+            }
+            return encode8859_1(coder, val, false);
+        }
+        if (cs == US_ASCII.INSTANCE) {
+            if (coder == LATIN1) {
+                if (isASCII(val)) {
+                    return val;
+                } else {
+                    throwUnmappable(val);
+                }
+            }
+        }
+        return encodeWithEncoder(cs, coder, val, false);
+    }
+
+    private static byte[] encodeASCII(byte coder, byte[] val) {
+        if (coder == LATIN1) {
+            byte[] dst = Arrays.copyOf(val, val.length);
+            for (int i = 0; i < dst.length; i++) {
+                if (dst[i] < 0) {
+                    dst[i] = '?';
+                }
+            }
+            return dst;
+        }
+        int len = val.length >> 1;
+        byte[] dst = new byte[len];
+        int dp = 0;
+        for (int i = 0; i < len; i++) {
+            char c = StringUTF16.getChar(val, i);
+            if (c < 0x80) {
+                dst[dp++] = (byte)c;
+                continue;
+            }
+            if (Character.isHighSurrogate(c) && i + 1 < len &&
+                    Character.isLowSurrogate(StringUTF16.getChar(val, i + 1))) {
+                i++;
+            }
+            dst[dp++] = '?';
+        }
+        if (len == dp) {
+            return dst;
+        }
+        return Arrays.copyOf(dst, dp);
+    }
+
+    private static byte[] encode8859_1(byte coder, byte[] val) {
+        return encode8859_1(coder, val, true);
+    }
+
+    private static byte[] encode8859_1(byte coder, byte[] val, boolean doReplace) {
+        if (coder == LATIN1) {
+            return Arrays.copyOf(val, val.length);
+        }
+        int len = val.length >> 1;
+        byte[] dst = new byte[len];
+        int dp = 0;
+        int sp = 0;
+        int sl = len;
+        while (sp < sl) {
+            int ret = StringCoding.implEncodeISOArray(val, sp, dst, dp, len);
+            sp = sp + ret;
+            dp = dp + ret;
+            if (ret != len) {
+                if (!doReplace) {
+                    throwUnmappable(sp);
+                }
+                char c = StringUTF16.getChar(val, sp++);
+                if (Character.isHighSurrogate(c) && sp < sl &&
+                        Character.isLowSurrogate(StringUTF16.getChar(val, sp))) {
+                    sp++;
+                }
+                dst[dp++] = '?';
+                len = sl - sp;
+            }
+        }
+        if (dp == dst.length) {
+            return dst;
+        }
+        return Arrays.copyOf(dst, dp);
+    }
+
+    //////////////////////////////// utf8 ////////////////////////////////////
+
+    /**
+     * Decodes ASCII from the source byte array into the destination
+     * char array. Used via JavaLangAccess from UTF_8 and other charset
+     * decoders.
+     *
+     * @return the number of bytes successfully decoded, at most len
+     */
+    /* package-private */
+    static int decodeASCII(byte[] sa, int sp, char[] da, int dp, int len) {
+        if (!StringCoding.hasNegatives(sa, sp, len)) {
+            StringLatin1.inflate(sa, sp, da, dp, len);
+            return len;
+        } else {
+            int start = sp;
+            int end = sp + len;
+            while (sp < end && sa[sp] >= 0) {
+                da[dp++] = (char) sa[sp++];
+            }
+            return sp - start;
+        }
+    }
+
+    private static boolean isNotContinuation(int b) {
+        return (b & 0xc0) != 0x80;
+    }
+
+    private static boolean isMalformed3(int b1, int b2, int b3) {
+        return (b1 == (byte)0xe0 && (b2 & 0xe0) == 0x80) ||
+                (b2 & 0xc0) != 0x80 || (b3 & 0xc0) != 0x80;
+    }
+
+    private static boolean isMalformed3_2(int b1, int b2) {
+        return (b1 == (byte)0xe0 && (b2 & 0xe0) == 0x80) ||
+                (b2 & 0xc0) != 0x80;
+    }
+
+    private static boolean isMalformed4(int b2, int b3, int b4) {
+        return (b2 & 0xc0) != 0x80 || (b3 & 0xc0) != 0x80 ||
+                (b4 & 0xc0) != 0x80;
+    }
+
+    private static boolean isMalformed4_2(int b1, int b2) {
+        return (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
+                (b1 == 0xf4 && (b2 & 0xf0) != 0x80) ||
+                (b2 & 0xc0) != 0x80;
+    }
+
+    private static boolean isMalformed4_3(int b3) {
+        return (b3 & 0xc0) != 0x80;
+    }
+
+    private static char decode2(int b1, int b2) {
+        return (char)(((b1 << 6) ^ b2) ^
+                (((byte) 0xC0 << 6) ^
+                        ((byte) 0x80 << 0)));
+    }
+
+    private static char decode3(int b1, int b2, int b3) {
+        return (char)((b1 << 12) ^
+                (b2 <<  6) ^
+                (b3 ^
+                        (((byte) 0xE0 << 12) ^
+                                ((byte) 0x80 <<  6) ^
+                                ((byte) 0x80 <<  0))));
+    }
+
+    private static int decode4(int b1, int b2, int b3, int b4) {
+        return ((b1 << 18) ^
+                (b2 << 12) ^
+                (b3 <<  6) ^
+                (b4 ^
+                        (((byte) 0xF0 << 18) ^
+                                ((byte) 0x80 << 12) ^
+                                ((byte) 0x80 <<  6) ^
+                                ((byte) 0x80 <<  0))));
+    }
+
+    private static int decodeUTF8_UTF16(byte[] src, int sp, int sl, byte[] dst, int dp, boolean doReplace) {
+        while (sp < sl) {
+            int b1 = src[sp++];
+            if (b1 >= 0) {
+                StringUTF16.putChar(dst, dp++, (char) b1);
+            } else if ((b1 >> 5) == -2 && (b1 & 0x1e) != 0) {
+                if (sp < sl) {
+                    int b2 = src[sp++];
+                    if (isNotContinuation(b2)) {
+                        if (!doReplace) {
+                            throwMalformed(sp - 1, 1);
+                        }
+                        StringUTF16.putChar(dst, dp++, REPL);
+                        sp--;
+                    } else {
+                        StringUTF16.putChar(dst, dp++, decode2(b1, b2));
+                    }
+                    continue;
+                }
+                if (!doReplace) {
+                    throwMalformed(sp, 1);  // underflow()
+                }
+                StringUTF16.putChar(dst, dp++, REPL);
+                break;
+            } else if ((b1 >> 4) == -2) {
+                if (sp + 1 < sl) {
+                    int b2 = src[sp++];
+                    int b3 = src[sp++];
+                    if (isMalformed3(b1, b2, b3)) {
+                        if (!doReplace) {
+                            throwMalformed(sp - 3, 3);
+                        }
+                        StringUTF16.putChar(dst, dp++, REPL);
+                        sp -= 3;
+                        sp += malformed3(src, sp);
+                    } else {
+                        char c = decode3(b1, b2, b3);
+                        if (Character.isSurrogate(c)) {
+                            if (!doReplace) {
+                                throwMalformed(sp - 3, 3);
+                            }
+                            StringUTF16.putChar(dst, dp++, REPL);
+                        } else {
+                            StringUTF16.putChar(dst, dp++, c);
+                        }
+                    }
+                    continue;
+                }
+                if (sp < sl && isMalformed3_2(b1, src[sp])) {
+                    if (!doReplace) {
+                        throwMalformed(sp - 1, 2);
+                    }
+                    StringUTF16.putChar(dst, dp++, REPL);
+                    continue;
+                }
+                if (!doReplace) {
+                    throwMalformed(sp, 1);
+                }
+                StringUTF16.putChar(dst, dp++, REPL);
+                break;
+            } else if ((b1 >> 3) == -2) {
+                if (sp + 2 < sl) {
+                    int b2 = src[sp++];
+                    int b3 = src[sp++];
+                    int b4 = src[sp++];
+                    int uc = decode4(b1, b2, b3, b4);
+                    if (isMalformed4(b2, b3, b4) ||
+                            !Character.isSupplementaryCodePoint(uc)) { // shortest form check
+                        if (!doReplace) {
+                            throwMalformed(sp - 4, 4);
+                        }
+                        StringUTF16.putChar(dst, dp++, REPL);
+                        sp -= 4;
+                        sp += malformed4(src, sp);
+                    } else {
+                        StringUTF16.putChar(dst, dp++, Character.highSurrogate(uc));
+                        StringUTF16.putChar(dst, dp++, Character.lowSurrogate(uc));
+                    }
+                    continue;
+                }
+                b1 &= 0xff;
+                if (b1 > 0xf4 || sp < sl && isMalformed4_2(b1, src[sp] & 0xff)) {
+                    if (!doReplace) {
+                        throwMalformed(sp - 1, 1);  // or 2
+                    }
+                    StringUTF16.putChar(dst, dp++, REPL);
+                    continue;
+                }
+                if (!doReplace) {
+                    throwMalformed(sp - 1, 1);
+                }
+                sp++;
+                StringUTF16.putChar(dst, dp++, REPL);
+                if (sp < sl && isMalformed4_3(src[sp])) {
+                    continue;
+                }
+                break;
+            } else {
+                if (!doReplace) {
+                    throwMalformed(sp - 1, 1);
+                }
+                StringUTF16.putChar(dst, dp++, REPL);
+            }
+        }
+        return dp;
+    }
+
+    private static int decodeWithDecoder(CharsetDecoder cd, char[] dst, byte[] src, int offset, int length) {
+        ByteBuffer bb = ByteBuffer.wrap(src, offset, length);
+        CharBuffer cb = CharBuffer.wrap(dst, 0, dst.length);
+        try {
+            CoderResult cr = cd.decode(bb, cb, true);
+            if (!cr.isUnderflow())
+                cr.throwException();
+            cr = cd.flush(cb);
+            if (!cr.isUnderflow())
+                cr.throwException();
+        } catch (CharacterCodingException x) {
+            // Substitution is always enabled,
+            // so this shouldn't happen
+            throw new Error(x);
+        }
+        return cb.position();
+    }
+
+    private static int malformed3(byte[] src, int sp) {
+        int b1 = src[sp++];
+        int b2 = src[sp];    // no need to lookup b3
+        return ((b1 == (byte)0xe0 && (b2 & 0xe0) == 0x80) ||
+                isNotContinuation(b2)) ? 1 : 2;
+    }
+
+    private static int malformed4(byte[] src, int sp) {
+        // we don't care the speed here
+        int b1 = src[sp++] & 0xff;
+        int b2 = src[sp++] & 0xff;
+        if (b1 > 0xf4 ||
+                (b1 == 0xf0 && (b2 < 0x90 || b2 > 0xbf)) ||
+                (b1 == 0xf4 && (b2 & 0xf0) != 0x80) ||
+                isNotContinuation(b2))
+            return 1;
+        if (isNotContinuation(src[sp]))
+            return 2;
+        return 3;
+    }
+
+    private static void throwMalformed(int off, int nb) {
+        String msg = "malformed input off : " + off + ", length : " + nb;
+        throw new IllegalArgumentException(msg, new MalformedInputException(nb));
+    }
+
+    private static void throwMalformed(byte[] val) {
+        int dp = 0;
+        while (dp < val.length && val[dp] >=0) { dp++; }
+        throwMalformed(dp, 1);
+    }
+
+    private static void throwUnmappable(int off) {
+        String msg = "malformed input off : " + off + ", length : 1";
+        throw new IllegalArgumentException(msg, new UnmappableCharacterException(1));
+    }
+
+    private static void throwUnmappable(byte[] val) {
+        int dp = 0;
+        while (dp < val.length && val[dp] >=0) { dp++; }
+        throwUnmappable(dp);
+    }
+
+    private static byte[] encodeUTF8(byte coder, byte[] val, boolean doReplace) {
+        if (coder == UTF16)
+            return encodeUTF8_UTF16(val, doReplace);
+
+        if (!StringCoding.hasNegatives(val, 0, val.length))
+            return Arrays.copyOf(val, val.length);
+
+        int dp = 0;
+        byte[] dst = new byte[val.length << 1];
+        for (byte c : val) {
+            if (c < 0) {
+                dst[dp++] = (byte) (0xc0 | ((c & 0xff) >> 6));
+                dst[dp++] = (byte) (0x80 | (c & 0x3f));
+            } else {
+                dst[dp++] = c;
+            }
+        }
+        if (dp == dst.length)
+            return dst;
+        return Arrays.copyOf(dst, dp);
+    }
+
+    private static byte[] encodeUTF8_UTF16(byte[] val, boolean doReplace) {
+        int dp = 0;
+        int sp = 0;
+        int sl = val.length >> 1;
+        byte[] dst = new byte[sl * 3];
+        while (sp < sl) {
+            // ascii fast loop;
+            char c = StringUTF16.getChar(val, sp);
+            if (c >= '\u0080') {
+                break;
+            }
+            dst[dp++] = (byte)c;
+            sp++;
+        }
+        while (sp < sl) {
+            char c = StringUTF16.getChar(val, sp++);
+            if (c < 0x80) {
+                dst[dp++] = (byte)c;
+            } else if (c < 0x800) {
+                dst[dp++] = (byte)(0xc0 | (c >> 6));
+                dst[dp++] = (byte)(0x80 | (c & 0x3f));
+            } else if (Character.isSurrogate(c)) {
+                int uc = -1;
+                char c2;
+                if (Character.isHighSurrogate(c) && sp < sl &&
+                        Character.isLowSurrogate(c2 = StringUTF16.getChar(val, sp))) {
+                    uc = Character.toCodePoint(c, c2);
+                }
+                if (uc < 0) {
+                    if (doReplace) {
+                        dst[dp++] = '?';
+                    } else {
+                        throwUnmappable(sp - 1);
+                    }
+                } else {
+                    dst[dp++] = (byte)(0xf0 | ((uc >> 18)));
+                    dst[dp++] = (byte)(0x80 | ((uc >> 12) & 0x3f));
+                    dst[dp++] = (byte)(0x80 | ((uc >>  6) & 0x3f));
+                    dst[dp++] = (byte)(0x80 | (uc & 0x3f));
+                    sp++;  // 2 chars
+                }
+            } else {
+                // 3 bytes, 16 bits
+                dst[dp++] = (byte)(0xe0 | ((c >> 12)));
+                dst[dp++] = (byte)(0x80 | ((c >>  6) & 0x3f));
+                dst[dp++] = (byte)(0x80 | (c & 0x3f));
+            }
+        }
+        if (dp == dst.length) {
+            return dst;
+        }
+        return Arrays.copyOf(dst, dp);
     }
 
     /**
@@ -587,11 +1411,8 @@ public final class String
      *
      * @since  1.1
      */
-    public String(byte bytes[], int offset, int length) {
-        checkBoundsOffCount(offset, length, bytes.length);
-        StringCoding.Result ret = StringCoding.decode(bytes, offset, length);
-        this.value = ret.value;
-        this.coder = ret.coder;
+    public String(byte[] bytes, int offset, int length) {
+        this(bytes, offset, length, Charset.defaultCharset());
     }
 
     /**
@@ -666,6 +1487,7 @@ public final class String
      *
      * @since 1.6
      */
+    @Override
     public boolean isEmpty() {
         return value.length == 0;
     }
@@ -684,7 +1506,7 @@ public final class String
      * @param      index   the index of the {@code char} value.
      * @return     the {@code char} value at the specified index of this string.
      *             The first {@code char} value is at index {@code 0}.
-     * @exception  IndexOutOfBoundsException  if the {@code index}
+     * @throws     IndexOutOfBoundsException  if the {@code index}
      *             argument is negative or not less than the length of this
      *             string.
      */
@@ -713,7 +1535,7 @@ public final class String
      * @param      index the index to the {@code char} values
      * @return     the code point value of the character at the
      *             {@code index}
-     * @exception  IndexOutOfBoundsException  if the {@code index}
+     * @throws     IndexOutOfBoundsException  if the {@code index}
      *             argument is negative or not less than the length of this
      *             string.
      * @since      1.5
@@ -745,7 +1567,7 @@ public final class String
      *
      * @param     index the index following the code point that should be returned
      * @return    the Unicode code point value before the given index.
-     * @exception IndexOutOfBoundsException if the {@code index}
+     * @throws    IndexOutOfBoundsException if the {@code index}
      *            argument is less than 1 or greater than the length
      *            of this string.
      * @since     1.5
@@ -776,7 +1598,7 @@ public final class String
      * the text range.
      * @return the number of Unicode code points in the specified text
      * range
-     * @exception IndexOutOfBoundsException if the
+     * @throws    IndexOutOfBoundsException if the
      * {@code beginIndex} is negative, or {@code endIndex}
      * is larger than the length of this {@code String}, or
      * {@code beginIndex} is larger than {@code endIndex}.
@@ -803,7 +1625,7 @@ public final class String
      * @param index the index to be offset
      * @param codePointOffset the offset in code points
      * @return the index within this {@code String}
-     * @exception IndexOutOfBoundsException if {@code index}
+     * @throws    IndexOutOfBoundsException if {@code index}
      *   is negative or larger then the length of this
      *   {@code String}, or if {@code codePointOffset} is positive
      *   and the substring starting with {@code index} has fewer
@@ -840,7 +1662,7 @@ public final class String
      *                        to copy.
      * @param      dst        the destination array.
      * @param      dstBegin   the start offset in the destination array.
-     * @exception IndexOutOfBoundsException If any of the following
+     * @throws    IndexOutOfBoundsException If any of the following
      *            is true:
      *            <ul><li>{@code srcBegin} is negative.
      *            <li>{@code srcBegin} is greater than {@code srcEnd}
@@ -938,7 +1760,7 @@ public final class String
     public byte[] getBytes(String charsetName)
             throws UnsupportedEncodingException {
         if (charsetName == null) throw new NullPointerException();
-        return StringCoding.encode(charsetName, coder(), value);
+        return encode(lookupCharset(charsetName), coder(), value);
     }
 
     /**
@@ -961,7 +1783,7 @@ public final class String
      */
     public byte[] getBytes(Charset charset) {
         if (charset == null) throw new NullPointerException();
-        return StringCoding.encode(charset, coder(), value);
+        return encode(charset, coder(), value);
      }
 
     /**
@@ -978,7 +1800,7 @@ public final class String
      * @since      1.1
      */
     public byte[] getBytes() {
-        return StringCoding.encode(coder(), value);
+        return encode(Charset.defaultCharset(), coder(), value);
     }
 
     /**
@@ -1003,14 +1825,9 @@ public final class String
         if (this == anObject) {
             return true;
         }
-        if (anObject instanceof String) {
-            String aString = (String)anObject;
-            if (coder() == aString.coder()) {
-                return isLatin1() ? StringLatin1.equals(value, aString.value)
-                                  : StringUTF16.equals(value, aString.value);
-            }
-        }
-        return false;
+        return (anObject instanceof String aString)
+                && (!COMPACT_STRINGS || this.coder == aString.coder)
+                && StringLatin1.equals(value, aString.value);
     }
 
     /**
@@ -1042,7 +1859,8 @@ public final class String
         }
         byte v1[] = value;
         byte v2[] = sb.getValue();
-        if (coder() == sb.getCoder()) {
+        byte coder = coder();
+        if (coder == sb.getCoder()) {
             int n = v1.length;
             for (int i = 0; i < n; i++) {
                 if (v1[i] != v2[i]) {
@@ -1050,7 +1868,7 @@ public final class String
                 }
             }
         } else {
-            if (!isLatin1()) {  // utf16 str and latin1 abs can never be "equal"
+            if (coder != LATIN1) {  // utf16 str and latin1 abs can never be "equal"
                 return false;
             }
             return StringUTF16.contentEquals(v1, v2, len);
@@ -1115,16 +1933,16 @@ public final class String
     /**
      * Compares this {@code String} to another {@code String}, ignoring case
      * considerations.  Two strings are considered equal ignoring case if they
-     * are of the same length and corresponding characters in the two strings
-     * are equal ignoring case.
+     * are of the same length and corresponding Unicode code points in the two
+     * strings are equal ignoring case.
      *
-     * <p> Two characters {@code c1} and {@code c2} are considered the same
+     * <p> Two Unicode code points are considered the same
      * ignoring case if at least one of the following is true:
      * <ul>
-     *   <li> The two characters are the same (as compared by the
+     *   <li> The two Unicode code points are the same (as compared by the
      *        {@code ==} operator)
-     *   <li> Calling {@code Character.toLowerCase(Character.toUpperCase(char))}
-     *        on each character produces the same result
+     *   <li> Calling {@code Character.toLowerCase(Character.toUpperCase(int))}
+     *        on each Unicode code point produces the same result
      * </ul>
      *
      * <p>Note that this method does <em>not</em> take locale into account, and
@@ -1139,6 +1957,7 @@ public final class String
      *          false} otherwise
      *
      * @see  #equals(Object)
+     * @see  #codePoints()
      */
     public boolean equalsIgnoreCase(String anotherString) {
         return (this == anotherString) ? true
@@ -1194,17 +2013,19 @@ public final class String
     public int compareTo(String anotherString) {
         byte v1[] = value;
         byte v2[] = anotherString.value;
-        if (coder() == anotherString.coder()) {
-            return isLatin1() ? StringLatin1.compareTo(v1, v2)
-                              : StringUTF16.compareTo(v1, v2);
+        byte coder = coder();
+        if (coder == anotherString.coder()) {
+            return coder == LATIN1 ? StringLatin1.compareTo(v1, v2)
+                                   : StringUTF16.compareTo(v1, v2);
         }
-        return isLatin1() ? StringLatin1.compareToUTF16(v1, v2)
-                          : StringUTF16.compareToLatin1(v1, v2);
+        return coder == LATIN1 ? StringLatin1.compareToUTF16(v1, v2)
+                               : StringUTF16.compareToLatin1(v1, v2);
      }
 
     /**
      * A Comparator that orders {@code String} objects as by
-     * {@code compareToIgnoreCase}. This comparator is serializable.
+     * {@link #compareToIgnoreCase(String) compareToIgnoreCase}.
+     * This comparator is serializable.
      * <p>
      * Note that this Comparator does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
@@ -1215,33 +2036,40 @@ public final class String
      */
     public static final Comparator<String> CASE_INSENSITIVE_ORDER
                                          = new CaseInsensitiveComparator();
+
+    /**
+     * CaseInsensitiveComparator for Strings.
+     */
     private static class CaseInsensitiveComparator
             implements Comparator<String>, java.io.Serializable {
         // use serialVersionUID from JDK 1.2.2 for interoperability
+        @java.io.Serial
         private static final long serialVersionUID = 8575799808933029326L;
 
         public int compare(String s1, String s2) {
             byte v1[] = s1.value;
             byte v2[] = s2.value;
-            if (s1.coder() == s2.coder()) {
-                return s1.isLatin1() ? StringLatin1.compareToCI(v1, v2)
-                                     : StringUTF16.compareToCI(v1, v2);
+            byte coder = s1.coder();
+            if (coder == s2.coder()) {
+                return coder == LATIN1 ? StringLatin1.compareToCI(v1, v2)
+                                       : StringUTF16.compareToCI(v1, v2);
             }
-            return s1.isLatin1() ? StringLatin1.compareToCI_UTF16(v1, v2)
-                                 : StringUTF16.compareToCI_Latin1(v1, v2);
+            return coder == LATIN1 ? StringLatin1.compareToCI_UTF16(v1, v2)
+                                   : StringUTF16.compareToCI_Latin1(v1, v2);
         }
 
         /** Replaces the de-serialized object. */
+        @java.io.Serial
         private Object readResolve() { return CASE_INSENSITIVE_ORDER; }
     }
 
     /**
      * Compares two strings lexicographically, ignoring case
      * differences. This method returns an integer whose sign is that of
-     * calling {@code compareTo} with normalized versions of the strings
+     * calling {@code compareTo} with case folded versions of the strings
      * where case differences have been eliminated by calling
-     * {@code Character.toLowerCase(Character.toUpperCase(character))} on
-     * each character.
+     * {@code Character.toLowerCase(Character.toUpperCase(int))} on
+     * each Unicode code point.
      * <p>
      * Note that this method does <em>not</em> take locale into account,
      * and will result in an unsatisfactory ordering for certain locales.
@@ -1252,6 +2080,7 @@ public final class String
      *          specified String is greater than, equal to, or less
      *          than this String, ignoring case considerations.
      * @see     java.text.Collator
+     * @see     #codePoints()
      * @since   1.2
      */
     public int compareToIgnoreCase(String str) {
@@ -1302,7 +2131,8 @@ public final class String
              (ooffset > (long)other.length() - len)) {
             return false;
         }
-        if (coder() == other.coder()) {
+        byte coder = coder();
+        if (coder == other.coder()) {
             if (!isLatin1() && (len > 0)) {
                 toffset = toffset << 1;
                 ooffset = ooffset << 1;
@@ -1314,7 +2144,7 @@ public final class String
                 }
             }
         } else {
-            if (coder() == LATIN1) {
+            if (coder == LATIN1) {
                 while (len-- > 0) {
                     if (StringLatin1.getChar(tv, toffset++) !=
                         StringUTF16.getChar(ov, ooffset++)) {
@@ -1338,30 +2168,26 @@ public final class String
      * <p>
      * A substring of this {@code String} object is compared to a substring
      * of the argument {@code other}. The result is {@code true} if these
-     * substrings represent character sequences that are the same, ignoring
-     * case if and only if {@code ignoreCase} is true. The substring of
-     * this {@code String} object to be compared begins at index
-     * {@code toffset} and has length {@code len}. The substring of
-     * {@code other} to be compared begins at index {@code ooffset} and
-     * has length {@code len}. The result is {@code false} if and only if
-     * at least one of the following is true:
-     * <ul><li>{@code toffset} is negative.
-     * <li>{@code ooffset} is negative.
-     * <li>{@code toffset+len} is greater than the length of this
+     * substrings represent Unicode code point sequences that are the same,
+     * ignoring case if and only if {@code ignoreCase} is true.
+     * The sequences {@code tsequence} and {@code osequence} are compared,
+     * where {@code tsequence} is the sequence produced as if by calling
+     * {@code this.substring(toffset, toffset + len).codePoints()} and
+     * {@code osequence} is the sequence produced as if by calling
+     * {@code other.substring(ooffset, ooffset + len).codePoints()}.
+     * The result is {@code true} if and only if all of the following
+     * are true:
+     * <ul><li>{@code toffset} is non-negative.
+     * <li>{@code ooffset} is non-negative.
+     * <li>{@code toffset+len} is less than or equal to the length of this
      * {@code String} object.
-     * <li>{@code ooffset+len} is greater than the length of the other
+     * <li>{@code ooffset+len} is less than or equal to the length of the other
      * argument.
-     * <li>{@code ignoreCase} is {@code false} and there is some nonnegative
-     * integer <i>k</i> less than {@code len} such that:
-     * <blockquote><pre>
-     * this.charAt(toffset+k) != other.charAt(ooffset+k)
-     * </pre></blockquote>
-     * <li>{@code ignoreCase} is {@code true} and there is some nonnegative
-     * integer <i>k</i> less than {@code len} such that:
-     * <blockquote><pre>
-     * Character.toLowerCase(Character.toUpperCase(this.charAt(toffset+k))) !=
-     Character.toLowerCase(Character.toUpperCase(other.charAt(ooffset+k)))
-     * </pre></blockquote>
+     * <li>if {@code ignoreCase} is {@code false}, all pairs of corresponding Unicode
+     * code points are equal integer values; or if {@code ignoreCase} is {@code true},
+     * {@link Character#toLowerCase(int) Character.toLowerCase(}
+     * {@link Character#toUpperCase(int)}{@code )} on all pairs of Unicode code points
+     * results in equal integer values.
      * </ul>
      *
      * <p>Note that this method does <em>not</em> take locale into account,
@@ -1376,12 +2202,14 @@ public final class String
      * @param   other        the string argument.
      * @param   ooffset      the starting offset of the subregion in the string
      *                       argument.
-     * @param   len          the number of characters to compare.
+     * @param   len          the number of characters (Unicode code units -
+     *                       16bit {@code char} value) to compare.
      * @return  {@code true} if the specified subregion of this string
      *          matches the specified subregion of the string argument;
      *          {@code false} otherwise. Whether the matching is exact
      *          or case insensitive depends on the {@code ignoreCase}
      *          argument.
+     * @see     #codePoints()
      */
     public boolean regionMatches(boolean ignoreCase, int toffset,
             String other, int ooffset, int len) {
@@ -1396,12 +2224,13 @@ public final class String
         }
         byte tv[] = value;
         byte ov[] = other.value;
-        if (coder() == other.coder()) {
-            return isLatin1()
+        byte coder = coder();
+        if (coder == other.coder()) {
+            return coder == LATIN1
               ? StringLatin1.regionMatchesCI(tv, toffset, ov, ooffset, len)
               : StringUTF16.regionMatchesCI(tv, toffset, ov, ooffset, len);
         }
-        return isLatin1()
+        return coder == LATIN1
               ? StringLatin1.regionMatchesCI_UTF16(tv, toffset, ov, ooffset, len)
               : StringUTF16.regionMatchesCI_Latin1(tv, toffset, ov, ooffset, len);
     }
@@ -1432,15 +2261,16 @@ public final class String
         byte pa[] = prefix.value;
         int po = 0;
         int pc = pa.length;
-        if (coder() == prefix.coder()) {
-            int to = isLatin1() ? toffset : toffset << 1;
+        byte coder = coder();
+        if (coder == prefix.coder()) {
+            int to = (coder == LATIN1) ? toffset : toffset << 1;
             while (po < pc) {
                 if (ta[to++] != pa[po++]) {
                     return false;
                 }
             }
         } else {
-            if (isLatin1()) {  // && pcoder == UTF16
+            if (coder == LATIN1) {  // && pcoder == UTF16
                 return false;
             }
             // coder == UTF16 && pcoder == LATIN1)
@@ -1499,10 +2329,23 @@ public final class String
      * @return  a hash code value for this object.
      */
     public int hashCode() {
+        // The hash or hashIsZero fields are subject to a benign data race,
+        // making it crucial to ensure that any observable result of the
+        // calculation in this method stays correct under any possible read of
+        // these fields. Necessary restrictions to allow this to be correct
+        // without explicit memory fences or similar concurrency primitives is
+        // that we can ever only write to one of these two fields for a given
+        // String instance, and that the computation is idempotent and derived
+        // from immutable state
         int h = hash;
-        if (h == 0 && value.length > 0) {
-            hash = h = isLatin1() ? StringLatin1.hashCode(value)
-                                  : StringUTF16.hashCode(value);
+        if (h == 0 && !hashIsZero) {
+            h = isLatin1() ? StringLatin1.hashCode(value)
+                           : StringUTF16.hashCode(value);
+            if (h == 0) {
+                hashIsZero = true;
+            } else {
+                hash = h;
+            }
         }
         return h;
     }
@@ -1660,11 +2503,12 @@ public final class String
      *          or {@code -1} if there is no such occurrence.
      */
     public int indexOf(String str) {
-        if (coder() == str.coder()) {
+        byte coder = coder();
+        if (coder == str.coder()) {
             return isLatin1() ? StringLatin1.indexOf(value, str.value)
                               : StringUTF16.indexOf(value, str.value);
         }
-        if (coder() == LATIN1) {  // str.coder == UTF16
+        if (coder == LATIN1) {  // str.coder == UTF16
             return -1;
         }
         return StringUTF16.indexOfLatin1(value, str.value);
@@ -1780,7 +2624,7 @@ public final class String
      * @param   src         the characters being searched.
      * @param   srcCoder    coder handles the mapping between bytes/chars
      * @param   srcCount    count of the source string.
-     * @param   tgt         the characters being searched for.
+     * @param   tgtStr      the characters being searched for.
      * @param   fromIndex   the index to begin searching from.
      */
     static int lastIndexOf(byte[] src, byte srcCoder, int srcCount,
@@ -1828,23 +2672,12 @@ public final class String
      *
      * @param      beginIndex   the beginning index, inclusive.
      * @return     the specified substring.
-     * @exception  IndexOutOfBoundsException  if
+     * @throws     IndexOutOfBoundsException  if
      *             {@code beginIndex} is negative or larger than the
      *             length of this {@code String} object.
      */
     public String substring(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new StringIndexOutOfBoundsException(beginIndex);
-        }
-        int subLen = length() - beginIndex;
-        if (subLen < 0) {
-            throw new StringIndexOutOfBoundsException(subLen);
-        }
-        if (beginIndex == 0) {
-            return this;
-        }
-        return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
-                          : StringUTF16.newString(value, beginIndex, subLen);
+        return substring(beginIndex, length());
     }
 
     /**
@@ -1862,7 +2695,7 @@ public final class String
      * @param      beginIndex   the beginning index, inclusive.
      * @param      endIndex     the ending index, exclusive.
      * @return     the specified substring.
-     * @exception  IndexOutOfBoundsException  if the
+     * @throws     IndexOutOfBoundsException  if the
      *             {@code beginIndex} is negative, or
      *             {@code endIndex} is larger than the length of
      *             this {@code String} object, or
@@ -1872,10 +2705,10 @@ public final class String
     public String substring(int beginIndex, int endIndex) {
         int length = length();
         checkBoundsBeginEnd(beginIndex, endIndex, length);
-        int subLen = endIndex - beginIndex;
         if (beginIndex == 0 && endIndex == length) {
             return this;
         }
+        int subLen = endIndex - beginIndex;
         return isLatin1() ? StringLatin1.newString(value, beginIndex, subLen)
                           : StringUTF16.newString(value, beginIndex, subLen);
     }
@@ -1907,7 +2740,6 @@ public final class String
      *          or if {@code beginIndex} is greater than {@code endIndex}
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public CharSequence subSequence(int beginIndex, int endIndex) {
         return this.substring(beginIndex, endIndex);
@@ -1937,20 +2769,7 @@ public final class String
         if (str.isEmpty()) {
             return this;
         }
-        if (coder() == str.coder()) {
-            byte[] val = this.value;
-            byte[] oval = str.value;
-            int len = val.length + oval.length;
-            byte[] buf = Arrays.copyOf(val, len);
-            System.arraycopy(oval, 0, buf, val.length, oval.length);
-            return new String(buf, coder);
-        }
-        int len = length();
-        int olen = str.length();
-        byte[] buf = StringUTF16.newBytesFor(len + olen);
-        getBytes(buf, 0, UTF16);
-        str.getBytes(buf, len, UTF16);
-        return new String(buf, UTF16);
+        return StringConcatHelper.simpleConcat(this, str);
     }
 
     /**
@@ -2018,7 +2837,6 @@ public final class String
      * @see java.util.regex.Pattern
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public boolean matches(String regex) {
         return Pattern.matches(regex, this);
@@ -2048,9 +2866,9 @@ public final class String
      * <blockquote>
      * <code>
      * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
+     * java.util.regex.Pattern#compile(String) compile}(<i>regex</i>).{@link
      * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
+     * java.util.regex.Matcher#replaceFirst(String) replaceFirst}(<i>repl</i>)
      * </code>
      * </blockquote>
      *
@@ -2075,7 +2893,6 @@ public final class String
      * @see java.util.regex.Pattern
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public String replaceFirst(String regex, String replacement) {
         return Pattern.compile(regex).matcher(this).replaceFirst(replacement);
@@ -2093,9 +2910,9 @@ public final class String
      * <blockquote>
      * <code>
      * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
+     * java.util.regex.Pattern#compile(String) compile}(<i>regex</i>).{@link
      * java.util.regex.Pattern#matcher(java.lang.CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
+     * java.util.regex.Matcher#replaceAll(String) replaceAll}(<i>repl</i>)
      * </code>
      * </blockquote>
      *
@@ -2120,7 +2937,6 @@ public final class String
      * @see java.util.regex.Pattern
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public String replaceAll(String regex, String replacement) {
         return Pattern.compile(regex).matcher(this).replaceAll(replacement);
@@ -2139,27 +2955,48 @@ public final class String
      * @since 1.5
      */
     public String replace(CharSequence target, CharSequence replacement) {
-        String tgtStr = target.toString();
+        String trgtStr = target.toString();
         String replStr = replacement.toString();
-        int j = indexOf(tgtStr);
-        if (j < 0) {
-            return this;
-        }
-        int tgtLen = tgtStr.length();
-        int tgtLen1 = Math.max(tgtLen, 1);
         int thisLen = length();
+        int trgtLen = trgtStr.length();
+        int replLen = replStr.length();
 
-        int newLenHint = thisLen - tgtLen + replStr.length();
-        if (newLenHint < 0) {
-            throw new OutOfMemoryError();
+        if (trgtLen > 0) {
+            if (trgtLen == 1 && replLen == 1) {
+                return replace(trgtStr.charAt(0), replStr.charAt(0));
+            }
+
+            boolean thisIsLatin1 = this.isLatin1();
+            boolean trgtIsLatin1 = trgtStr.isLatin1();
+            boolean replIsLatin1 = replStr.isLatin1();
+            String ret = (thisIsLatin1 && trgtIsLatin1 && replIsLatin1)
+                    ? StringLatin1.replace(value, thisLen,
+                                           trgtStr.value, trgtLen,
+                                           replStr.value, replLen)
+                    : StringUTF16.replace(value, thisLen, thisIsLatin1,
+                                          trgtStr.value, trgtLen, trgtIsLatin1,
+                                          replStr.value, replLen, replIsLatin1);
+            if (ret != null) {
+                return ret;
+            }
+            return this;
+
+        } else { // trgtLen == 0
+            int resultLen;
+            try {
+                resultLen = Math.addExact(thisLen, Math.multiplyExact(
+                        Math.addExact(thisLen, 1), replLen));
+            } catch (ArithmeticException ignored) {
+                throw new OutOfMemoryError("Required length exceeds implementation limit");
+            }
+
+            StringBuilder sb = new StringBuilder(resultLen);
+            sb.append(replStr);
+            for (int i = 0; i < thisLen; ++i) {
+                sb.append(charAt(i)).append(replStr);
+            }
+            return sb.toString();
         }
-        StringBuilder sb = new StringBuilder(newLenHint);
-        int i = 0;
-        do {
-            sb.append(this, i, j).append(replStr);
-            i = j + tgtLen;
-        } while (j < thisLen && (j = indexOf(tgtStr, j + tgtLen1)) > 0);
-        return sb.append(this, i, thisLen).toString();
     }
 
     /**
@@ -2239,7 +3076,7 @@ public final class String
      * <blockquote>
      * <code>
      * {@link java.util.regex.Pattern}.{@link
-     * java.util.regex.Pattern#compile compile}(<i>regex</i>).{@link
+     * java.util.regex.Pattern#compile(String) compile}(<i>regex</i>).{@link
      * java.util.regex.Pattern#split(java.lang.CharSequence,int) split}(<i>str</i>,&nbsp;<i>n</i>)
      * </code>
      * </blockquote>
@@ -2260,14 +3097,13 @@ public final class String
      * @see java.util.regex.Pattern
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public String[] split(String regex, int limit) {
         /* fastpath if the regex is a
-         (1)one-char String and this character is not one of the
-            RegEx's meta characters ".$|()[{^?*+\\", or
-         (2)two-char String and the first char is the backslash and
-            the second is not the ascii digit or ascii letter.
+         * (1) one-char String and this character is not one of the
+         *     RegEx's meta characters ".$|()[{^?*+\\", or
+         * (2) two-char String and the first char is the backslash and
+         *     the second is not the ascii digit or ascii letter.
          */
         char ch = 0;
         if (((regex.length() == 1 &&
@@ -2358,7 +3194,6 @@ public final class String
      * @see java.util.regex.Pattern
      *
      * @since 1.4
-     * @spec JSR-51
      */
     public String[] split(String regex) {
         return split(regex, 0);
@@ -2390,14 +3225,62 @@ public final class String
      * @since 1.8
      */
     public static String join(CharSequence delimiter, CharSequence... elements) {
-        Objects.requireNonNull(delimiter);
-        Objects.requireNonNull(elements);
-        // Number of elements not likely worth Arrays.stream overhead.
-        StringJoiner joiner = new StringJoiner(delimiter);
-        for (CharSequence cs: elements) {
-            joiner.add(cs);
+        var delim = delimiter.toString();
+        var elems = new String[elements.length];
+        for (int i = 0; i < elements.length; i++) {
+            elems[i] = String.valueOf(elements[i]);
         }
-        return joiner.toString();
+        return join("", "", delim, elems, elems.length);
+    }
+
+    /**
+     * Designated join routine.
+     *
+     * @param prefix the non-null prefix
+     * @param suffix the non-null suffix
+     * @param delimiter the non-null delimiter
+     * @param elements the non-null array of non-null elements
+     * @param size the number of elements in the array (<= elements.length)
+     * @return the joined string
+     */
+    @ForceInline
+    static String join(String prefix, String suffix, String delimiter, String[] elements, int size) {
+        int icoder = prefix.coder() | suffix.coder();
+        long len = (long) prefix.length() + suffix.length();
+        if (size > 1) { // when there are more than one element, size - 1 delimiters will be emitted
+            len += (long) (size - 1) * delimiter.length();
+            icoder |= delimiter.coder();
+        }
+        // assert len > 0L; // max: (long) Integer.MAX_VALUE << 32
+        // following loop wil add max: (long) Integer.MAX_VALUE * Integer.MAX_VALUE to len
+        // so len can overflow at most once
+        for (int i = 0; i < size; i++) {
+            var el = elements[i];
+            len += el.length();
+            icoder |= el.coder();
+        }
+        byte coder = (byte) icoder;
+        // long len overflow check, char -> byte length, int len overflow check
+        if (len < 0L || (len <<= coder) != (int) len) {
+            throw new OutOfMemoryError("Requested string length exceeds VM limit");
+        }
+        byte[] value = StringConcatHelper.newArray(len);
+
+        int off = 0;
+        prefix.getBytes(value, off, coder); off += prefix.length();
+        if (size > 0) {
+            var el = elements[0];
+            el.getBytes(value, off, coder); off += el.length();
+            for (int i = 1; i < size; i++) {
+                delimiter.getBytes(value, off, coder); off += delimiter.length();
+                el = elements[i];
+                el.getBytes(value, off, coder); off += el.length();
+            }
+        }
+        suffix.getBytes(value, off, coder);
+        // assert off + suffix.length() == value.length >> coder;
+
+        return new String(value, coder);
     }
 
     /**
@@ -2409,12 +3292,12 @@ public final class String
      * <pre>{@code
      *     List<String> strings = List.of("Java", "is", "cool");
      *     String message = String.join(" ", strings);
-     *     //message returned is: "Java is cool"
+     *     // message returned is: "Java is cool"
      *
      *     Set<String> strings =
      *         new LinkedHashSet<>(List.of("Java", "is", "very", "cool"));
      *     String message = String.join("-", strings);
-     *     //message returned is: "Java-is-very-cool"
+     *     // message returned is: "Java-is-very-cool"
      * }</pre></blockquote>
      *
      * Note that if an individual element is {@code null}, then {@code "null"} is added.
@@ -2438,11 +3321,16 @@ public final class String
             Iterable<? extends CharSequence> elements) {
         Objects.requireNonNull(delimiter);
         Objects.requireNonNull(elements);
-        StringJoiner joiner = new StringJoiner(delimiter);
+        var delim = delimiter.toString();
+        var elems = new String[8];
+        int size = 0;
         for (CharSequence cs: elements) {
-            joiner.add(cs);
+            if (size >= elems.length) {
+                elems = Arrays.copyOf(elems, elems.length << 1);
+            }
+            elems[size++] = String.valueOf(cs);
         }
-        return joiner.toString();
+        return join("", "", delim, elems, size);
     }
 
     /**
@@ -2648,21 +3536,21 @@ public final class String
 
     /**
      * Returns a string whose value is this string, with all leading
-     * and trailing {@link Character#isWhitespace(int) white space}
+     * and trailing {@linkplain Character#isWhitespace(int) white space}
      * removed.
      * <p>
      * If this {@code String} object represents an empty string,
      * or if all code points in this string are
-     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * {@linkplain Character#isWhitespace(int) white space}, then an empty string
      * is returned.
      * <p>
      * Otherwise, returns a substring of this string beginning with the first
-     * code point that is not a {@link Character#isWhitespace(int) white space}
+     * code point that is not a {@linkplain Character#isWhitespace(int) white space}
      * up to and including the last code point that is not a
-     * {@link Character#isWhitespace(int) white space}.
+     * {@linkplain Character#isWhitespace(int) white space}.
      * <p>
      * This method may be used to strip
-     * {@link Character#isWhitespace(int) white space} from
+     * {@linkplain Character#isWhitespace(int) white space} from
      * the beginning and end of a string.
      *
      * @return  a string whose value is this string, with all leading
@@ -2680,19 +3568,19 @@ public final class String
 
     /**
      * Returns a string whose value is this string, with all leading
-     * {@link Character#isWhitespace(int) white space} removed.
+     * {@linkplain Character#isWhitespace(int) white space} removed.
      * <p>
      * If this {@code String} object represents an empty string,
      * or if all code points in this string are
-     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * {@linkplain Character#isWhitespace(int) white space}, then an empty string
      * is returned.
      * <p>
      * Otherwise, returns a substring of this string beginning with the first
-     * code point that is not a {@link Character#isWhitespace(int) white space}
-     * up to to and including the last code point of this string.
+     * code point that is not a {@linkplain Character#isWhitespace(int) white space}
+     * up to and including the last code point of this string.
      * <p>
      * This method may be used to trim
-     * {@link Character#isWhitespace(int) white space} from
+     * {@linkplain Character#isWhitespace(int) white space} from
      * the beginning of a string.
      *
      * @return  a string whose value is this string, with all leading white
@@ -2710,19 +3598,19 @@ public final class String
 
     /**
      * Returns a string whose value is this string, with all trailing
-     * {@link Character#isWhitespace(int) white space} removed.
+     * {@linkplain Character#isWhitespace(int) white space} removed.
      * <p>
      * If this {@code String} object represents an empty string,
      * or if all characters in this string are
-     * {@link Character#isWhitespace(int) white space}, then an empty string
+     * {@linkplain Character#isWhitespace(int) white space}, then an empty string
      * is returned.
      * <p>
      * Otherwise, returns a substring of this string beginning with the first
      * code point of this string up to and including the last code point
-     * that is not a {@link Character#isWhitespace(int) white space}.
+     * that is not a {@linkplain Character#isWhitespace(int) white space}.
      * <p>
      * This method may be used to trim
-     * {@link Character#isWhitespace(int) white space} from
+     * {@linkplain Character#isWhitespace(int) white space} from
      * the end of a string.
      *
      * @return  a string whose value is this string, with all trailing white
@@ -2740,11 +3628,11 @@ public final class String
 
     /**
      * Returns {@code true} if the string is empty or contains only
-     * {@link Character#isWhitespace(int) white space} codepoints,
+     * {@linkplain Character#isWhitespace(int) white space} codepoints,
      * otherwise {@code false}.
      *
      * @return {@code true} if the string is empty or contains only
-     *         {@link Character#isWhitespace(int) white space} codepoints,
+     *         {@linkplain Character#isWhitespace(int) white space} codepoints,
      *         otherwise {@code false}
      *
      * @see Character#isWhitespace(int)
@@ -2753,14 +3641,6 @@ public final class String
      */
     public boolean isBlank() {
         return indexOfNonWhitespace() == length();
-    }
-
-    private int indexOfNonWhitespace() {
-        if (isLatin1()) {
-            return StringLatin1.indexOfNonWhitespace(value);
-        } else {
-            return StringUTF16.indexOfNonWhitespace(value);
-        }
     }
 
     /**
@@ -2794,8 +3674,374 @@ public final class String
      * @since 11
      */
     public Stream<String> lines() {
-        return isLatin1() ? StringLatin1.lines(value)
-                          : StringUTF16.lines(value);
+        return isLatin1() ? StringLatin1.lines(value) : StringUTF16.lines(value);
+    }
+
+    /**
+     * Adjusts the indentation of each line of this string based on the value of
+     * {@code n}, and normalizes line termination characters.
+     * <p>
+     * This string is conceptually separated into lines using
+     * {@link String#lines()}. Each line is then adjusted as described below
+     * and then suffixed with a line feed {@code "\n"} (U+000A). The resulting
+     * lines are then concatenated and returned.
+     * <p>
+     * If {@code n > 0} then {@code n} spaces (U+0020) are inserted at the
+     * beginning of each line.
+     * <p>
+     * If {@code n < 0} then up to {@code n}
+     * {@linkplain Character#isWhitespace(int) white space characters} are removed
+     * from the beginning of each line. If a given line does not contain
+     * sufficient white space then all leading
+     * {@linkplain Character#isWhitespace(int) white space characters} are removed.
+     * Each white space character is treated as a single character. In
+     * particular, the tab character {@code "\t"} (U+0009) is considered a
+     * single character; it is not expanded.
+     * <p>
+     * If {@code n == 0} then the line remains unchanged. However, line
+     * terminators are still normalized.
+     *
+     * @param n  number of leading
+     *           {@linkplain Character#isWhitespace(int) white space characters}
+     *           to add or remove
+     *
+     * @return string with indentation adjusted and line endings normalized
+     *
+     * @see String#lines()
+     * @see String#isBlank()
+     * @see Character#isWhitespace(int)
+     *
+     * @since 12
+     */
+    public String indent(int n) {
+        if (isEmpty()) {
+            return "";
+        }
+        Stream<String> stream = lines();
+        if (n > 0) {
+            final String spaces = " ".repeat(n);
+            stream = stream.map(s -> spaces + s);
+        } else if (n == Integer.MIN_VALUE) {
+            stream = stream.map(s -> s.stripLeading());
+        } else if (n < 0) {
+            stream = stream.map(s -> s.substring(Math.min(-n, s.indexOfNonWhitespace())));
+        }
+        return stream.collect(Collectors.joining("\n", "", "\n"));
+    }
+
+    private int indexOfNonWhitespace() {
+        return isLatin1() ? StringLatin1.indexOfNonWhitespace(value)
+                          : StringUTF16.indexOfNonWhitespace(value);
+    }
+
+    private int lastIndexOfNonWhitespace() {
+        return isLatin1() ? StringLatin1.lastIndexOfNonWhitespace(value)
+                          : StringUTF16.lastIndexOfNonWhitespace(value);
+    }
+
+    /**
+     * Returns a string whose value is this string, with incidental
+     * {@linkplain Character#isWhitespace(int) white space} removed from
+     * the beginning and end of every line.
+     * <p>
+     * Incidental {@linkplain Character#isWhitespace(int) white space}
+     * is often present in a text block to align the content with the opening
+     * delimiter. For example, in the following code, dots represent incidental
+     * {@linkplain Character#isWhitespace(int) white space}:
+     * <blockquote><pre>
+     * String html = """
+     * ..............&lt;html&gt;
+     * ..............    &lt;body&gt;
+     * ..............        &lt;p&gt;Hello, world&lt;/p&gt;
+     * ..............    &lt;/body&gt;
+     * ..............&lt;/html&gt;
+     * ..............""";
+     * </pre></blockquote>
+     * This method treats the incidental
+     * {@linkplain Character#isWhitespace(int) white space} as indentation to be
+     * stripped, producing a string that preserves the relative indentation of
+     * the content. Using | to visualize the start of each line of the string:
+     * <blockquote><pre>
+     * |&lt;html&gt;
+     * |    &lt;body&gt;
+     * |        &lt;p&gt;Hello, world&lt;/p&gt;
+     * |    &lt;/body&gt;
+     * |&lt;/html&gt;
+     * </pre></blockquote>
+     * First, the individual lines of this string are extracted. A <i>line</i>
+     * is a sequence of zero or more characters followed by either a line
+     * terminator or the end of the string.
+     * If the string has at least one line terminator, the last line consists
+     * of the characters between the last terminator and the end of the string.
+     * Otherwise, if the string has no terminators, the last line is the start
+     * of the string to the end of the string, in other words, the entire
+     * string.
+     * A line does not include the line terminator.
+     * <p>
+     * Then, the <i>minimum indentation</i> (min) is determined as follows:
+     * <ul>
+     *   <li><p>For each non-blank line (as defined by {@link String#isBlank()}),
+     *   the leading {@linkplain Character#isWhitespace(int) white space}
+     *   characters are counted.</p>
+     *   </li>
+     *   <li><p>The leading {@linkplain Character#isWhitespace(int) white space}
+     *   characters on the last line are also counted even if
+     *   {@linkplain String#isBlank() blank}.</p>
+     *   </li>
+     * </ul>
+     * <p>The <i>min</i> value is the smallest of these counts.
+     * <p>
+     * For each {@linkplain String#isBlank() non-blank} line, <i>min</i> leading
+     * {@linkplain Character#isWhitespace(int) white space} characters are
+     * removed, and any trailing {@linkplain Character#isWhitespace(int) white
+     * space} characters are removed. {@linkplain String#isBlank() Blank} lines
+     * are replaced with the empty string.
+     *
+     * <p>
+     * Finally, the lines are joined into a new string, using the LF character
+     * {@code "\n"} (U+000A) to separate lines.
+     *
+     * @apiNote
+     * This method's primary purpose is to shift a block of lines as far as
+     * possible to the left, while preserving relative indentation. Lines
+     * that were indented the least will thus have no leading
+     * {@linkplain Character#isWhitespace(int) white space}.
+     * The result will have the same number of line terminators as this string.
+     * If this string ends with a line terminator then the result will end
+     * with a line terminator.
+     *
+     * @implSpec
+     * This method treats all {@linkplain Character#isWhitespace(int) white space}
+     * characters as having equal width. As long as the indentation on every
+     * line is consistently composed of the same character sequences, then the
+     * result will be as described above.
+     *
+     * @return string with incidental indentation removed and line
+     *         terminators normalized
+     *
+     * @see String#lines()
+     * @see String#isBlank()
+     * @see String#indent(int)
+     * @see Character#isWhitespace(int)
+     *
+     * @since 15
+     *
+     */
+    public String stripIndent() {
+        int length = length();
+        if (length == 0) {
+            return "";
+        }
+        char lastChar = charAt(length - 1);
+        boolean optOut = lastChar == '\n' || lastChar == '\r';
+        List<String> lines = lines().toList();
+        final int outdent = optOut ? 0 : outdent(lines);
+        return lines.stream()
+            .map(line -> {
+                int firstNonWhitespace = line.indexOfNonWhitespace();
+                int lastNonWhitespace = line.lastIndexOfNonWhitespace();
+                int incidentalWhitespace = Math.min(outdent, firstNonWhitespace);
+                return firstNonWhitespace > lastNonWhitespace
+                    ? "" : line.substring(incidentalWhitespace, lastNonWhitespace);
+            })
+            .collect(Collectors.joining("\n", "", optOut ? "\n" : ""));
+    }
+
+    private static int outdent(List<String> lines) {
+        // Note: outdent is guaranteed to be zero or positive number.
+        // If there isn't a non-blank line then the last must be blank
+        int outdent = Integer.MAX_VALUE;
+        for (String line : lines) {
+            int leadingWhitespace = line.indexOfNonWhitespace();
+            if (leadingWhitespace != line.length()) {
+                outdent = Integer.min(outdent, leadingWhitespace);
+            }
+        }
+        String lastLine = lines.get(lines.size() - 1);
+        if (lastLine.isBlank()) {
+            outdent = Integer.min(outdent, lastLine.length());
+        }
+        return outdent;
+    }
+
+    /**
+     * Returns a string whose value is this string, with escape sequences
+     * translated as if in a string literal.
+     * <p>
+     * Escape sequences are translated as follows;
+     * <table class="striped">
+     *   <caption style="display:none">Translation</caption>
+     *   <thead>
+     *   <tr>
+     *     <th scope="col">Escape</th>
+     *     <th scope="col">Name</th>
+     *     <th scope="col">Translation</th>
+     *   </tr>
+     *   </thead>
+     *   <tbody>
+     *   <tr>
+     *     <th scope="row">{@code \u005Cb}</th>
+     *     <td>backspace</td>
+     *     <td>{@code U+0008}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005Ct}</th>
+     *     <td>horizontal tab</td>
+     *     <td>{@code U+0009}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005Cn}</th>
+     *     <td>line feed</td>
+     *     <td>{@code U+000A}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005Cf}</th>
+     *     <td>form feed</td>
+     *     <td>{@code U+000C}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005Cr}</th>
+     *     <td>carriage return</td>
+     *     <td>{@code U+000D}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005Cs}</th>
+     *     <td>space</td>
+     *     <td>{@code U+0020}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005C"}</th>
+     *     <td>double quote</td>
+     *     <td>{@code U+0022}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005C'}</th>
+     *     <td>single quote</td>
+     *     <td>{@code U+0027}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005C\u005C}</th>
+     *     <td>backslash</td>
+     *     <td>{@code U+005C}</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005C0 - \u005C377}</th>
+     *     <td>octal escape</td>
+     *     <td>code point equivalents</td>
+     *   </tr>
+     *   <tr>
+     *     <th scope="row">{@code \u005C<line-terminator>}</th>
+     *     <td>continuation</td>
+     *     <td>discard</td>
+     *   </tr>
+     *   </tbody>
+     * </table>
+     *
+     * @implNote
+     * This method does <em>not</em> translate Unicode escapes such as "{@code \u005cu2022}".
+     * Unicode escapes are translated by the Java compiler when reading input characters and
+     * are not part of the string literal specification.
+     *
+     * @throws IllegalArgumentException when an escape sequence is malformed.
+     *
+     * @return String with escape sequences translated.
+     *
+     * @jls 3.10.7 Escape Sequences
+     *
+     * @since 15
+     */
+    public String translateEscapes() {
+        if (isEmpty()) {
+            return "";
+        }
+        char[] chars = toCharArray();
+        int length = chars.length;
+        int from = 0;
+        int to = 0;
+        while (from < length) {
+            char ch = chars[from++];
+            if (ch == '\\') {
+                ch = from < length ? chars[from++] : '\0';
+                switch (ch) {
+                case 'b':
+                    ch = '\b';
+                    break;
+                case 'f':
+                    ch = '\f';
+                    break;
+                case 'n':
+                    ch = '\n';
+                    break;
+                case 'r':
+                    ch = '\r';
+                    break;
+                case 's':
+                    ch = ' ';
+                    break;
+                case 't':
+                    ch = '\t';
+                    break;
+                case '\'':
+                case '\"':
+                case '\\':
+                    // as is
+                    break;
+                case '0': case '1': case '2': case '3':
+                case '4': case '5': case '6': case '7':
+                    int limit = Integer.min(from + (ch <= '3' ? 2 : 1), length);
+                    int code = ch - '0';
+                    while (from < limit) {
+                        ch = chars[from];
+                        if (ch < '0' || '7' < ch) {
+                            break;
+                        }
+                        from++;
+                        code = (code << 3) | (ch - '0');
+                    }
+                    ch = (char)code;
+                    break;
+                case '\n':
+                    continue;
+                case '\r':
+                    if (from < length && chars[from] == '\n') {
+                        from++;
+                    }
+                    continue;
+                default: {
+                    String msg = String.format(
+                        "Invalid escape sequence: \\%c \\\\u%04X",
+                        ch, (int)ch);
+                    throw new IllegalArgumentException(msg);
+                }
+                }
+            }
+
+            chars[to++] = ch;
+        }
+
+        return new String(chars, 0, to);
+    }
+
+    /**
+     * This method allows the application of a function to {@code this}
+     * string. The function should expect a single String argument
+     * and produce an {@code R} result.
+     * <p>
+     * Any exception thrown by {@code f.apply()} will be propagated to the
+     * caller.
+     *
+     * @param f    a function to apply
+     *
+     * @param <R>  the type of the result
+     *
+     * @return     the result of applying the function to this string
+     *
+     * @see java.util.function.Function
+     *
+     * @since 12
+     */
+    public <R> R transform(Function<? super String, ? extends R> f) {
+        return f.apply(this);
     }
 
     /**
@@ -2874,7 +4120,7 @@ public final class String
      *         extra arguments are ignored.  The number of arguments is
      *         variable and may be zero.  The maximum number of arguments is
      *         limited by the maximum dimension of a Java array as defined by
-     *         <cite>The Java&trade; Virtual Machine Specification</cite>.
+     *         <cite>The Java Virtual Machine Specification</cite>.
      *         The behaviour on a
      *         {@code null} argument depends on the <a
      *         href="../util/Formatter.html#syntax">conversion</a>.
@@ -2915,7 +4161,7 @@ public final class String
      *         extra arguments are ignored.  The number of arguments is
      *         variable and may be zero.  The maximum number of arguments is
      *         limited by the maximum dimension of a Java array as defined by
-     *         <cite>The Java&trade; Virtual Machine Specification</cite>.
+     *         <cite>The Java Virtual Machine Specification</cite>.
      *         The behaviour on a
      *         {@code null} argument depends on the
      *         <a href="../util/Formatter.html#syntax">conversion</a>.
@@ -2936,6 +4182,27 @@ public final class String
      */
     public static String format(Locale l, String format, Object... args) {
         return new Formatter(l).format(format, args).toString();
+    }
+
+    /**
+     * Formats using this string as the format string, and the supplied
+     * arguments.
+     *
+     * @implSpec This method is equivalent to {@code String.format(this, args)}.
+     *
+     * @param  args
+     *         Arguments referenced by the format specifiers in this string.
+     *
+     * @return  A formatted string
+     *
+     * @see  java.lang.String#format(String,Object...)
+     * @see  java.util.Formatter
+     *
+     * @since 15
+     *
+     */
+    public String formatted(Object... args) {
+        return new Formatter().format(this, args).toString();
     }
 
     /**
@@ -2980,7 +4247,7 @@ public final class String
      * @param   count    length of the subarray.
      * @return  a {@code String} that contains the characters of the
      *          specified subarray of the character array.
-     * @exception IndexOutOfBoundsException if {@code offset} is
+     * @throws    IndexOutOfBoundsException if {@code offset} is
      *          negative, or {@code count} is negative, or
      *          {@code offset+count} is larger than
      *          {@code data.length}.
@@ -2997,7 +4264,7 @@ public final class String
      * @param   count    length of the subarray.
      * @return  a {@code String} that contains the characters of the
      *          specified subarray of the character array.
-     * @exception IndexOutOfBoundsException if {@code offset} is
+     * @throws    IndexOutOfBoundsException if {@code offset} is
      *          negative, or {@code count} is negative, or
      *          {@code offset+count} is larger than
      *          {@code data.length}.
@@ -3117,12 +4384,11 @@ public final class String
      * if and only if {@code s.equals(t)} is {@code true}.
      * <p>
      * All literal strings and string-valued constant expressions are
-     * interned. String literals are defined in section 3.10.5 of the
-     * <cite>The Java&trade; Language Specification</cite>.
+     * interned. String literals are defined in section {@jls 3.10.5} of the
+     * <cite>The Java Language Specification</cite>.
      *
      * @return  a string that has the same contents as this string, but is
      *          guaranteed to be from a pool of unique strings.
-     * @jls 3.10.5 String Literals
      */
     public native String intern();
 
@@ -3155,14 +4421,13 @@ public final class String
         if (len == 0 || count == 0) {
             return "";
         }
+        if (Integer.MAX_VALUE / count < len) {
+            throw new OutOfMemoryError("Required length exceeds implementation limit");
+        }
         if (len == 1) {
             final byte[] single = new byte[count];
             Arrays.fill(single, value[0]);
             return new String(single, coder);
-        }
-        if (Integer.MAX_VALUE / count < len) {
-            throw new OutOfMemoryError("Repeating " + len + " bytes String " + count +
-                    " times will produce a String exceeding maximum size.");
         }
         final int limit = len * count;
         final byte[] multiple = new byte[limit];
@@ -3187,11 +4452,31 @@ public final class String
      * @param dstBegin  the char index, not offset of byte[]
      * @param coder     the coder of dst[]
      */
-    void getBytes(byte dst[], int dstBegin, byte coder) {
+    void getBytes(byte[] dst, int dstBegin, byte coder) {
         if (coder() == coder) {
             System.arraycopy(value, 0, dst, dstBegin << coder, value.length);
         } else {    // this.coder == LATIN && coder == UTF16
             StringLatin1.inflate(value, 0, dst, dstBegin, value.length);
+        }
+    }
+
+    /**
+     * Copy character bytes from this string into dst starting at dstBegin.
+     * This method doesn't perform any range checking.
+     *
+     * Invoker guarantees: dst is in UTF16 (inflate itself for asb), if two
+     * coders are different, and dst is big enough (range check)
+     *
+     * @param srcPos    the char index, not offset of byte[]
+     * @param dstBegin  the char index to start from
+     * @param coder     the coder of dst[]
+     * @param length    the amount of copied chars
+     */
+    void getBytes(byte[] dst, int srcPos, int dstBegin, byte coder, int length) {
+        if (coder() == coder) {
+            System.arraycopy(value, srcPos << coder, dst, dstBegin << coder, length << coder);
+        } else {    // this.coder == LATIN && coder == UTF16
+            StringLatin1.inflate(value, srcPos, dst, dstBegin, length);
         }
     }
 
@@ -3262,7 +4547,7 @@ public final class String
         return value;
     }
 
-    private boolean isLatin1() {
+    boolean isLatin1() {
         return COMPACT_STRINGS && coder == LATIN1;
     }
 
@@ -3276,7 +4561,7 @@ public final class String
     static void checkIndex(int index, int length) {
         if (index < 0 || index >= length) {
             throw new StringIndexOutOfBoundsException("index " + index +
-                                                      ",length " + length);
+                                                      ", length " + length);
         }
     }
 
@@ -3287,7 +4572,7 @@ public final class String
     static void checkOffset(int offset, int length) {
         if (offset < 0 || offset > length) {
             throw new StringIndexOutOfBoundsException("offset " + offset +
-                                                      ",length " + length);
+                                                      ", length " + length);
         }
     }
 
@@ -3344,4 +4629,30 @@ public final class String
         throw new IllegalArgumentException(
             format("Not a valid Unicode code point: 0x%X", codePoint));
     }
+
+    /**
+     * Returns an {@link Optional} containing the nominal descriptor for this
+     * instance, which is the instance itself.
+     *
+     * @return an {@link Optional} describing the {@linkplain String} instance
+     * @since 12
+     */
+    @Override
+    public Optional<String> describeConstable() {
+        return Optional.of(this);
+    }
+
+    /**
+     * Resolves this instance as a {@link ConstantDesc}, the result of which is
+     * the instance itself.
+     *
+     * @param lookup ignored
+     * @return the {@linkplain String} instance
+     * @since 12
+     */
+    @Override
+    public String resolveConstantDesc(MethodHandles.Lookup lookup) {
+        return this;
+    }
+
 }
