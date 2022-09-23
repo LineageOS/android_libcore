@@ -1,12 +1,10 @@
 /*
- * Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Oracle designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Oracle in the LICENSE file that accompanied this code.
+ * published by the Free Software Foundation.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -22,29 +20,18 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package java.net;
 
-
-/**
- *
- * This class represents a Socket Address with no protocol attachment.
- * As an abstract class, it is meant to be subclassed with a specific,
- * protocol dependent, implementation.
- * <p>
- * It provides an immutable object used by sockets for binding, connecting, or
- * as returned values.
- *
- * @see java.net.Socket
- * @see java.net.ServerSocket
- * @since 1.4
+/*
+ * @test
+ * @bug 4909209
+ * @summary Need a way to specifically create unresolved InetSocketAddress
  */
-public abstract class SocketAddress implements java.io.Serializable {
+import java.net.InetSocketAddress;
 
-    @java.io.Serial
-    static final long serialVersionUID = 5215720748342549866L;
-
-    /**
-     * Constructor for subclasses to call.
-     */
-    public SocketAddress() {}
+public class CreateUnresolved {
+    public static void main(String[] args) {
+        InetSocketAddress a = InetSocketAddress.createUnresolved("unresolved", 1234);
+        if (!a.isUnresolved())
+            throw new RuntimeException("Address is not flagged as 'unresolved'");
+    }
 }
