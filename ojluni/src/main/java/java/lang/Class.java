@@ -1877,7 +1877,7 @@ public final class Class<T> implements java.io.Serializable,
      * @return {@code true} if and only if this class is an anonymous class.
      * @since 1.5
      */
-    // Android-changed:
+    // Android-changed: ART has a different JNI layer.
     /*
     public boolean isAnonymousClass() {
         return !isArray() && isLocalOrAnonymousClass() &&
