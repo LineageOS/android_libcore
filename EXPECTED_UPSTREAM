@@ -129,7 +129,7 @@ ojluni/src/main/java/java/lang/BootstrapMethodError.java,jdk17u/jdk-17.0.3-ga,sr
 ojluni/src/main/java/java/lang/Byte.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/Byte.java
 ojluni/src/main/java/java/lang/CharSequence.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/CharSequence.java
 ojluni/src/main/java/java/lang/Character.java,jdk17u/jdk-17.0.2-ga,src/java.base/share/classes/java/lang/Character.java
-ojluni/src/main/java/java/lang/Class.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Class.java
+ojluni/src/main/java/java/lang/Class.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Class.java
 ojluni/src/main/java/java/lang/ClassCastException.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/ClassCastException.java
 ojluni/src/main/java/java/lang/ClassCircularityError.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/ClassCircularityError.java
 ojluni/src/main/java/java/lang/ClassFormatError.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/ClassFormatError.java
