@@ -24,31 +24,30 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
 import dalvik.system.InMemoryDexClassLoader;
 import dalvik.system.PathClassLoader;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.nio.ByteBuffer;
-import java.util.stream.Stream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.function.Function;
 
 import libcore.io.Streams;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.List;
+import java.util.TreeMap;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 @RunWith(JUnit4.class)
 public class ClassTest {
@@ -99,6 +98,7 @@ public class ClassTest {
                 os.write(buffer, 0, bytesRead);
             }
         }
+        assertTrue(f.setReadOnly());
 
         PathClassLoader pcl = new PathClassLoader(f.getAbsolutePath(), null);
         Class<?> cl = pcl.loadClass(
