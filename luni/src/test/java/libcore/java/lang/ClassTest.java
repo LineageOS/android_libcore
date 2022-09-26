@@ -366,9 +366,9 @@ public class ClassTest {
         final String packageProtectedClassName = PackageProtectedClass.class.getName();
 
         assertToGenericString("int", int.class);
-        assertToGenericString("public abstract final class [I", int[].class);
+        assertToGenericString("int[]", int[].class);
         assertToGenericString("public class java.lang.Object", Object.class);
-        assertToGenericString("public abstract final class [Ljava.lang.Object;", Object[].class);
+        assertToGenericString("java.lang.Object[]", Object[].class);
         assertToGenericString("public final class java.lang.Integer", Integer.class);
         assertToGenericString(
                 "public abstract interface java.util.function.Function<T,R>",
@@ -419,24 +419,31 @@ public class ClassTest {
             Class selfClass = classLoader.loadClass("libcore.java.lang.nestgroup.NestGroupSelf");
 
             assertEquals(int.class, int.class.getNestHost());
+            assertTrue(int.class.isNestmateOf(int.class));
             assertArrayEquals(new Class[] { int.class }, int.class.getNestMembers());
 
             assertEquals(Integer[].class, Integer[].class.getNestHost());
+            assertTrue(Integer[].class.isNestmateOf(Integer[].class));
             assertArrayEquals(new Class[] { Integer[].class }, Integer[].class.getNestMembers());
 
             assertEquals(hostClass, hostClass.getNestHost());
+            assertTrue(hostClass.isNestmateOf(hostClass));
             assertArrayEquals(new Class[] { hostClass, innerAClass }, hostClass.getNestMembers());
 
             assertEquals(hostClass, innerAClass.getNestHost());
+            assertTrue(hostClass.isNestmateOf(innerAClass));
             assertArrayEquals(new Class[] { hostClass, innerAClass }, innerAClass.getNestMembers());
 
             assertEquals(innerFakeClass, innerFakeClass.getNestHost());
+            assertTrue(innerFakeClass.isNestmateOf(innerFakeClass));
             assertArrayEquals(new Class[] { innerFakeClass }, innerFakeClass.getNestMembers());
 
             assertEquals(bClass, bClass.getNestHost());
+            assertTrue(bClass.isNestmateOf(bClass));
             assertArrayEquals(new Class[] { bClass }, bClass.getNestMembers());
 
             assertEquals(selfClass, selfClass.getNestHost());
+            assertTrue(selfClass.isNestmateOf(selfClass));
             assertArrayEquals(new Class[] { selfClass }, selfClass.getNestMembers());
         } catch (Throwable t) {
             throw new RuntimeException(t);
