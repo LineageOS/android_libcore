@@ -12705,6 +12705,7 @@ package java.util {
     method @NonNull public java.util.ArrayDeque<E> clone();
     method @NonNull public java.util.Iterator<E> descendingIterator();
     method public E element();
+    method public void forEach(@NonNull java.util.function.Consumer<? super E>);
     method public E getFirst();
     method public E getLast();
     method @NonNull public java.util.Iterator<E> iterator();
