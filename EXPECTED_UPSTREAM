@@ -897,7 +897,7 @@ ojluni/src/main/java/java/util/Formatter.java,jdk8u/jdk8u121-b13,jdk/src/share/c
 ojluni/src/main/java/java/util/FormatterClosedException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/FormatterClosedException.java
 ojluni/src/main/java/java/util/GregorianCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/GregorianCalendar.java
 ojluni/src/main/java/java/util/HashMap.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/util/HashMap.java
-ojluni/src/main/java/java/util/HashSet.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/HashSet.java
+ojluni/src/main/java/java/util/HashSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/HashSet.java
 ojluni/src/main/java/java/util/Hashtable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/Hashtable.java
 ojluni/src/main/java/java/util/HexFormat.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/util/HexFormat.java
 ojluni/src/main/java/java/util/IdentityHashMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IdentityHashMap.java
@@ -2150,6 +2150,7 @@ ojluni/src/test/java/util/Base64/mimeEncode.txt,jdk11u/jdk-11.0.13-ga,test/jdk/j
 ojluni/src/test/java/util/Base64/plain.txt,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Base64/plain.txt
 ojluni/src/test/java/util/Base64/urlEncode.txt,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Base64/urlEncode.txt
 ojluni/src/test/java/util/Collections/NCopies.java,jdk17u/jdk-17.0.2-ga,test/jdk/java/util/Collections/NCopies.java
+ojluni/src/test/java/util/HashSet/Serialization.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/HashSet/Serialization.java
 ojluni/src/test/java/util/IdentityHashMap/Capacity.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/Capacity.java
 ojluni/src/test/java/util/IdentityHashMap/DistinctEntrySetElements.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/DistinctEntrySetElements.java
 ojluni/src/test/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java
