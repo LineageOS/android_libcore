@@ -880,7 +880,7 @@ ojluni/src/main/java/java/util/Currency.java,jdk11u/jdk-11.0.13-ga,src/java.base
 ojluni/src/main/java/java/util/Date.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Date.java
 ojluni/src/main/java/java/util/Deque.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Deque.java
 ojluni/src/main/java/java/util/Dictionary.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Dictionary.java
-ojluni/src/main/java/java/util/DoubleSummaryStatistics.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/DoubleSummaryStatistics.java
+ojluni/src/main/java/java/util/DoubleSummaryStatistics.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DoubleSummaryStatistics.java
 ojluni/src/main/java/java/util/DualPivotQuicksort.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DualPivotQuicksort.java
 ojluni/src/main/java/java/util/DuplicateFormatFlagsException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DuplicateFormatFlagsException.java
 ojluni/src/main/java/java/util/EmptyStackException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EmptyStackException.java
