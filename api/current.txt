@@ -14116,6 +14116,7 @@ package java.util {
     ctor public PriorityQueue(java.util.PriorityQueue<? extends E>);
     ctor public PriorityQueue(java.util.SortedSet<? extends E>);
     method public java.util.Comparator<? super E> comparator();
+    method public void forEach(java.util.function.Consumer<? super E>);
     method public java.util.Iterator<E> iterator();
     method public boolean offer(E);
     method public E peek();
