@@ -4031,10 +4031,9 @@ public class BigInteger extends Number implements Comparable<BigInteger> {
         if (x == this)
             return true;
 
-        if (!(x instanceof BigInteger))
+        if (!(x instanceof BigInteger xInt))
             return false;
 
-        BigInteger xInt = (BigInteger) x;
         if (xInt.signum != signum)
             return false;
 
