@@ -1207,12 +1207,18 @@ public class OsTest extends TestCase {
 
     // http://b/65051835
     public void test_sendfile_errno() throws Exception {
+        File testFile = File.createTempFile("test_sendfile_errno", "");
+        FileDescriptor fd = Os.open(testFile.toString(), O_WRONLY, S_IRUSR | S_IWUSR);
+        assertNotNull(fd);
+
         try {
-            // FileDescriptor.out is not open for input, will cause EBADF
+            // fd is not open for input, will cause EBADF
             Int64Ref offset = new Int64Ref(10);
-            Os.sendfile(FileDescriptor.out, FileDescriptor.out, offset, 10);
+            Os.sendfile(fd, fd, offset, 10);
             fail();
         } catch (ErrnoException expected) {
+        } finally {
+            Os.close(fd);
         }
     }
 
