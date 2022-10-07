@@ -208,7 +208,7 @@ ojluni/src/main/java/java/lang/StringBuffer.java,jdk8u/jdk8u121-b13,jdk/src/shar
 ojluni/src/main/java/java/lang/StringBuilder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/StringBuilder.java
 ojluni/src/main/java/java/lang/StringIndexOutOfBoundsException.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/StringIndexOutOfBoundsException.java
 ojluni/src/main/java/java/lang/StringUTF16.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/StringUTF16.java
-ojluni/src/main/java/java/lang/SuppressWarnings.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/SuppressWarnings.java
+ojluni/src/main/java/java/lang/SuppressWarnings.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/SuppressWarnings.java
 ojluni/src/main/java/java/lang/System.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/System.java
 ojluni/src/main/java/java/lang/Thread.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Thread.java
 ojluni/src/main/java/java/lang/ThreadDeath.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ThreadDeath.java
