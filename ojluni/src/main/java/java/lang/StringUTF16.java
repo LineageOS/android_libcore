@@ -909,7 +909,9 @@ final class StringUTF16 {
             len--;
         }
         return ((st > 0) || (len < length )) ?
-            new String(Arrays.copyOfRange(value, st << 1, len << 1), UTF16) :
+            // Android-changed: Avoid byte[] allocation.
+            // new String(Arrays.copyOfRange(value, st << 1, len << 1), UTF16) :
+            StringFactory.newStringFromUtf16Bytes(value, st << 1, len - st) :
             null;
     }
 
@@ -1125,6 +1127,8 @@ final class StringUTF16 {
     }
 
     public static String newString(byte[] val, int index, int len) {
+        // Android-changed: Skip compression check because ART's StringFactory will do so.
+        /*
         if (String.COMPACT_STRINGS) {
             byte[] buf = compress(val, index, len);
             if (buf != null) {
@@ -1133,6 +1137,8 @@ final class StringUTF16 {
         }
         int last = index + len;
         return new String(Arrays.copyOfRange(val, index << 1, last << 1), UTF16);
+        */
+        return StringFactory.newStringFromUtf16Bytes(val, index << 1, len);
     }
 
     // BEGIN Android-added: Pass String instead of byte[]; implement in terms of substring().
