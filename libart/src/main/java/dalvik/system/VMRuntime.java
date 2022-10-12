@@ -64,6 +64,7 @@ public final class VMRuntime {
         ABI_TO_INSTRUCTION_SET_MAP.put("x86_64", "x86_64");
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a", "arm64");
         ABI_TO_INSTRUCTION_SET_MAP.put("arm64-v8a-hwasan", "arm64");
+        ABI_TO_INSTRUCTION_SET_MAP.put("riscv64", "riscv64");
     }
 
     /**
@@ -925,7 +926,8 @@ public final class VMRuntime {
     public static boolean is64BitInstructionSet(String instructionSet) {
         return "arm64".equals(instructionSet) ||
                 "x86_64".equals(instructionSet) ||
-                "mips64".equals(instructionSet);
+                "mips64".equals(instructionSet) ||
+                "riscv64".equals(instructionSet);
     }
 
     /**
