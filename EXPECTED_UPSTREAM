@@ -190,7 +190,7 @@ ojluni/src/main/java/java/lang/ProcessImpl.java,jdk8u/jdk8u121-b13,jdk/src/solar
 ojluni/src/main/java/java/lang/Readable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Readable.java
 ojluni/src/main/java/java/lang/ReflectiveOperationException.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/ReflectiveOperationException.java
 ojluni/src/main/java/java/lang/Runnable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/Runnable.java
-ojluni/src/main/java/java/lang/Runtime.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/Runtime.java
+ojluni/src/main/java/java/lang/Runtime.java,jdk11u/jdk-11.0.2-ga,src/java.base/share/classes/java/lang/Runtime.java
 ojluni/src/main/java/java/lang/RuntimeException.java,jdk17u/jdk-17.0.3-ga,src/java.base/share/classes/java/lang/RuntimeException.java
 ojluni/src/main/java/java/lang/RuntimePermission.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/RuntimePermission.java
 ojluni/src/main/java/java/lang/SafeVarargs.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/SafeVarargs.java
