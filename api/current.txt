@@ -1080,6 +1080,7 @@ package dalvik.system {
   }
 
   public static final class DexFile.OptimizationInfo {
+    method public boolean isFullyCompiled();
     method public boolean isOptimized();
     method public boolean isVerified();
   }
