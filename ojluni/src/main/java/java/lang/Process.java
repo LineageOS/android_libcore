@@ -78,12 +78,6 @@ import java.util.stream.Stream;
  * <p>As of 1.5, {@link ProcessBuilder#start()} is the preferred way
  * to create a {@code Process}.
  *
- * <p>Subclasses of Process should override the {@link #onExit()} and
- * {@link #toHandle()} methods to provide a fully functional Process including the
- * {@linkplain #pid() process id},
- * {@linkplain #info() information about the process},
- * {@linkplain #children() direct children}, and
- * {@linkplain #descendants() direct children plus descendants of those children} of the process.
  * Delegating to the underlying Process or ProcessHandle is typically
  * easiest and most efficient.
  *
@@ -237,15 +231,11 @@ public abstract class Process {
     /**
      * Kills the process.
      * Whether the process represented by this {@code Process} object is
-     * {@linkplain #supportsNormalTermination normally terminated} or not is
+     * normally terminated or not is
      * implementation dependent.
      * Forcible process destruction is defined as the immediate termination of a
      * process, whereas normal termination allows the process to shut down cleanly.
      * If the process is not alive, no action is taken.
-     * <p>
-     * The {@link java.util.concurrent.CompletableFuture} from {@link #onExit} is
-     * {@linkplain java.util.concurrent.CompletableFuture#complete completed}
-     * when the process has terminated.
      */
     public abstract void destroy();
 
@@ -256,7 +246,7 @@ public abstract class Process {
      * process, whereas normal termination allows the process to shut down cleanly.
      * If the process is not alive, no action is taken.
      * <p>
-     * The {@link java.util.concurrent.CompletableFuture} from {@link #onExit} is
+     * The {@link java.util.concurrent.CompletableFuture} is
      * {@linkplain java.util.concurrent.CompletableFuture#complete completed}
      * when the process has terminated.
      * <p>

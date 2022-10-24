@@ -44,11 +44,6 @@ import sun.security.action.GetPropertyAction;
  * {@link Process} instance with those attributes.  The {@link
  * #start()} method can be invoked repeatedly from the same instance
  * to create new subprocesses with identical or related attributes.
- * <p>
- * The {@link #startPipeline startPipeline} method can be invoked to create
- * a pipeline of new processes that send the output of each process
- * directly to the next process.  Each process has the attributes of
- * its respective ProcessBuilder.
  *
  * <p>Each process builder manages these process attributes:
  *
@@ -452,7 +447,6 @@ public final class ProcessBuilder
      * <ul>
      * <li>the special value {@link #PIPE Redirect.PIPE}
      * <li>the special value {@link #INHERIT Redirect.INHERIT}
-     * <li>the special value {@link #DISCARD Redirect.DISCARD}
      * <li>a redirection to read from a file, created by an invocation of
      *     {@link Redirect#from Redirect.from(File)}
      * <li>a redirection to write to a file,  created by an invocation of
