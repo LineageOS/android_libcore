@@ -82,7 +82,7 @@ public final class ZipPathValidator {
          * Called to check the validity of the path of a zip entry. The default implementation
          * accepts all paths without raising any exceptions.
          * <p>
-         * This method will be called by @link java.util.zip.ZipInputStream#getNextEntry} or
+         * This method will be called by {@link java.util.zip.ZipInputStream#getNextEntry} or
          * {@link java.util.zip.ZipFile#ZipFile(String)}.
          *
          * @param path The name of the zip entry.
