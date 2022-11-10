@@ -18,6 +18,7 @@
 # configuration files to apply.
 declare -A PATH_TO_CONFIG=(
     [dalvik]=tools/checkstyle/aosp-copyright.xml
+    [dom]=tools/checkstyle/w3c-copyright.xml
     [json]=tools/checkstyle/aosp-copyright.xml
     [libart]=tools/checkstyle/aosp-copyright.xml
     [luni/src/main/java]=tools/checkstyle/not-gpl.xml
