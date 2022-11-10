@@ -42,4 +42,13 @@
     <property name="fileNamePattern"
       value="ojluni/src/main/java/sun/util/locale/UnicodeLocaleExtension.java" />
   </module>
+  <!-- Deprecated AOSP sources in ojluni/annotations/hiddenapi. -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="ojluni/annotations/hiddenapi/sun/security/x509/AVA(Comparator|Keyword).java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="ojluni/annotations/hiddenapi/sun/security/util/MemoryCache.java" />
+  </module>
 </module>

@@ -19,7 +19,7 @@
   <module name="RegexpHeader">
     <property name="severity" value="error" />
     <property name="headerFile" value="tools/checkstyle/w3c-copyright.pattern" />
-    <property name="multiLines" value="1,3"/>
+    <property name="multiLines" value="1,3" />
   </module>
   <!-- Files with Google copyrights amongst the sources with W3C copyrights. -->
   <module name="BeforeExecutionExclusionFileFilter">
@@ -29,5 +29,102 @@
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern"
       value="dom/src/test/java/org/w3c/domts/JunitTestCases.java" />
+  </module>
+  <!-- Files with no apparent copyright. -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/AttrGetOwnerElement.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/AttrGetOwnerElement.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentBuilderSettingStrategy.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentCreateElementNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentGeteEementById.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentGetElementsByTagnameNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentImportNode.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DocumentTypeInternalSubset.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DOMDocumentBuilderFactory.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DOMImplementationCreateDocument.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DOMImplementationHasFeature.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/DOMTestCase.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/ElementGetAttributeNodeNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/ElementGetElementsByTagNameNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/ElementHasAttribute.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/ElementRemoveAttributeNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/ElementSetAttributeNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/GetNamedItemNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/HasAttribute.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/HCEntitiesSetNamedItemNS.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/HCNodeDocumentFragmentNormalize.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/IsSupported.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/LocalName.java" />
+  </module>
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+      value="luni/src/test/java/tests/org/w3c/dom/LSExceptionTest.java" />
   </module>
 </module>

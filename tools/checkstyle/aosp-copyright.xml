@@ -25,4 +25,16 @@
     <property name="fileNamePattern"
       value="libart/src/main/java/java/lang/(DexCache|StringFactory|AndroidHardcodedSystemProperties).java" />
   </module>
+  <!-- Ignore patch sample file. -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="tools/patch-style/sample-input.java"/>
+  </module>
+  <!-- ASF copyright -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="luni/src/test/java/libcore/libcore/io/MemoryTest.java"/>
+  </module>
+  <!-- Google ASF copyright -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern" value="luni/src/test/java/libcore/libcore/util/SerializationTester.java"/>
+  </module>
 </module>
