@@ -2195,7 +2195,6 @@ ojluni/src/test/java/util/StringJoiner/StringJoinerTest.java,jdk11u/jdk-11.0.13-
 ojluni/src/test/java/util/UUID/Serial.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/UUID/Serial.java
 ojluni/src/test/java/util/UUID/UUIDTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/UUID/UUIDTest.java
 ojluni/src/test/java/util/Vector/ArrayManagement.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Vector/ArrayManagement.java
-ojluni/src/test/java/util/Vector/Bug8148174.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Vector/Bug8148174.java
 ojluni/src/test/java/util/Vector/ComodifiedRemoveAllElements.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Vector/ComodifiedRemoveAllElements.java
 ojluni/src/test/java/util/Vector/CopyInto.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Vector/CopyInto.java
 ojluni/src/test/java/util/Vector/IllegalConstructorArgs.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/Vector/IllegalConstructorArgs.java
