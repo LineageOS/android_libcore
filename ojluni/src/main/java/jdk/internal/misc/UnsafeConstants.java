@@ -26,6 +26,7 @@
 
 package jdk.internal.misc;
 
+// Android-added: Android-specific implNote.
 /**
  * A class used to expose details of the underlying hardware that
  * configure the operation of class Unsafe.  This class is
@@ -43,6 +44,11 @@ package jdk.internal.misc;
  * is required to prevent the fields from being considered constant
  * variables, so the field values will be not be compiled directly into
  * any class that uses them.
+ *
+ * @implNote
+ *
+ * On Android the VM does not inject the values, they are rather set as needed from the static
+ * block.
  */
 
 final class UnsafeConstants {
@@ -53,6 +59,8 @@ final class UnsafeConstants {
      */
     private UnsafeConstants() {}
 
+    // BEGIN Android-removed: Retrieved through Unsafe.addressSize().
+    /*
     /**
      * The size in bytes of a native pointer, as stored via {@link
      * #putAddress}.  This value will be either 4 or 8.  Note that the
@@ -61,19 +69,25 @@ final class UnsafeConstants {
      *
      * @implNote
      * The actual value for this field is injected by the JVM.
-     */
+     * /
 
     static final int ADDRESS_SIZE0;
+     */
+    // END Android-removed: Retrieved through Unsafe.addressSize().
 
+    // BEGIN Android-removed: Retrieved through Unsafe.pageSize().
+    /*
     /**
      * The size in bytes of a native memory page (whatever that is).
      * This value will always be a power of two.
      *
      * @implNote
      * The actual value for this field is injected by the JVM.
-     */
+     * /
 
     static final int PAGE_SIZE;
+     */
+    // END Android-removed: Retrieved through Unsafe.pageSize().
 
     /**
      * Flag whose value is true if and only if the native endianness
@@ -95,6 +109,8 @@ final class UnsafeConstants {
 
     static final boolean UNALIGNED_ACCESS;
 
+    // BEGIN Android-removed: Not used in Android.
+    /*
     /**
      * The size of an L1 data cache line which will be either a power
      * of two or zero.
@@ -108,15 +124,20 @@ final class UnsafeConstants {
      *
      * @implNote
      * The actual value for this field is injected by the JVM.
-     */
+     * /
 
     static final int DATA_CACHE_LINE_FLUSH_SIZE;
+     */
+    // END Android-removed: Not used in Android.
 
     static {
-        ADDRESS_SIZE0 = 0;
-        PAGE_SIZE = 0;
+        // Android-removed: Retrieved through Unsafe.addressSize().
+        // ADDRESS_SIZE0 = 0;
+        // Android-removed: Retrieved through Unsafe.pageSize().
+        // PAGE_SIZE = 0;
         BIG_ENDIAN = false;
         UNALIGNED_ACCESS = false;
-        DATA_CACHE_LINE_FLUSH_SIZE = 0;
+        // Android-removed: Not used in Android.
+        // DATA_CACHE_LINE_FLUSH_SIZE = 0;
     }
 }
