@@ -950,7 +950,7 @@ ojluni/src/main/java/java/util/Random.java,jdk11u/jdk-11.0.13-ga,src/java.base/s
 ojluni/src/main/java/java/util/RandomAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/RandomAccess.java
 ojluni/src/main/java/java/util/RegularEnumSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
-ojluni/src/main/java/java/util/Scanner.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/Scanner.java
+ojluni/src/main/java/java/util/Scanner.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/java/util/Scanner.java
 ojluni/src/main/java/java/util/ServiceConfigurationError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ServiceConfigurationError.java
 ojluni/src/main/java/java/util/ServiceLoader.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/ServiceLoader.java
 ojluni/src/main/java/java/util/Set.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Set.java
@@ -2191,6 +2191,11 @@ ojluni/src/test/java/util/PriorityQueue/ForgetMeNot.java,jdk11u/jdk-11.0.13-ga,t
 ojluni/src/test/java/util/PriorityQueue/NoNulls.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/PriorityQueue/NoNulls.java
 ojluni/src/test/java/util/PriorityQueue/PriorityQueueSort.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/PriorityQueue/PriorityQueueSort.java
 ojluni/src/test/java/util/PriorityQueue/RemoveContains.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/PriorityQueue/RemoveContains.java
+ojluni/src/test/java/util/Scanner/EncodingTest.java,jdk17u/jdk-17.0.5-ga,test/jdk/java/util/Scanner/EncodingTest.java
+ojluni/src/test/java/util/Scanner/FailingConstructors.java,jdk17u/jdk-17.0.5-ga,test/jdk/java/util/Scanner/FailingConstructors.java
+ojluni/src/test/java/util/Scanner/ScanTest.java,jdk17u/jdk-17.0.5-ga,test/jdk/java/util/Scanner/ScanTest.java
+ojluni/src/test/java/util/Scanner/ScannerStreamTest.java,jdk17u/jdk-17.0.5-ga,test/jdk/java/util/Scanner/ScannerStreamTest.java
+ojluni/src/test/java/util/Scanner/input.txt,jdk17u/jdk-17.0.5-ga,test/jdk/java/util/Scanner/input.txt
 ojluni/src/test/java/util/StringJoiner/MergeTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/StringJoiner/MergeTest.java
 ojluni/src/test/java/util/StringJoiner/StringJoinerTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/StringJoiner/StringJoinerTest.java
 ojluni/src/test/java/util/UUID/Serial.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/UUID/Serial.java
