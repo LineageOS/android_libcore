@@ -189,6 +189,7 @@ public abstract class CharsetEncoder {
                    float maxBytesPerChar,
                    byte[] replacement)
     {
+
         // BEGIN Android-added: A hidden constructor for the CharsetEncoderICU subclass.
         this(cs, averageBytesPerChar, maxBytesPerChar, replacement, false);
     }
@@ -203,6 +204,7 @@ public abstract class CharsetEncoder {
             boolean trusted)
     {
         // END Android-added: A hidden constructor for the CharsetEncoderICU subclass.
+
         this.charset = cs;
         if (averageBytesPerChar <= 0.0f)
             throw new IllegalArgumentException("Non-positive "
@@ -219,12 +221,19 @@ public abstract class CharsetEncoder {
         this.replacement = replacement;
         this.averageBytesPerChar = averageBytesPerChar;
         this.maxBytesPerChar = maxBytesPerChar;
+
+
+
+
+
+
         // BEGIN Android-changed: Avoid calling replaceWith() for trusted subclasses.
         // replaceWith(replacement);
         if (!trusted) {
             replaceWith(replacement);
         }
         // END Android-changed: Avoid calling replaceWith() for trusted subclasses.
+
     }
 
     /**
@@ -1012,6 +1021,7 @@ public abstract class CharsetEncoder {
             // Android-removed: An unnecessary call to toString().
             // cb = CharBuffer.wrap(cs.toString());
             cb = CharBuffer.wrap(cs);
+
         return canEncode(cb);
     }
 

@@ -1,4 +1,5 @@
 /*
+ * Copyright (C) 2014 The Android Open Source Project
  * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
@@ -188,6 +189,22 @@ public abstract class Charset$Coder$ {
                    float max$ItypesPerOtype$,
                    $replType$ replacement)
     {
+#if[encoder] // Android-added
+        // BEGIN Android-added: A hidden constructor for the CharsetEncoderICU subclass.
+        this(cs, averageBytesPerChar, maxBytesPerChar, replacement, false);
+    }
+
+    /**
+     * This constructor is for subclasses to specify whether {@code replacement} can be used as it
+     * is ("trusted"). If it is trusted, {@link #replaceWith(byte[])} and
+     * {@link #implReplaceWith(byte[])} will not be called.
+     * @hide
+     */
+    protected CharsetEncoder(Charset cs, float averageBytesPerChar, float maxBytesPerChar, byte[] replacement,
+            boolean trusted)
+    {
+        // END Android-added: A hidden constructor for the CharsetEncoderICU subclass.
+#end[encoder]
         this.charset = cs;
         if (average$ItypesPerOtype$ <= 0.0f)
             throw new IllegalArgumentException("Non-positive "
@@ -204,7 +221,19 @@ public abstract class Charset$Coder$ {
         this.replacement = replacement;
         this.average$ItypesPerOtype$ = average$ItypesPerOtype$;
         this.max$ItypesPerOtype$ = max$ItypesPerOtype$;
-        replaceWith(replacement);
+// ## Android-changed: Remove unnecessary replaceWith() for performance reason.
+// ##   replaceWith(replacement);
+#if[decoder]
+        // Android-removed
+        // replaceWith(replacement);
+#else[decoder]
+        // BEGIN Android-changed: Avoid calling replaceWith() for trusted subclasses.
+        // replaceWith(replacement);
+        if (!trusted) {
+            replaceWith(replacement);
+        }
+        // END Android-changed: Avoid calling replaceWith() for trusted subclasses.
+#end[decoder]
     }
 
     /**
@@ -902,6 +931,14 @@ public abstract class Charset$Coder$ {
             reset();
         else if (state != ST_RESET)
             throwIllegalStateException(state, ST_CODING);
+
+        // BEGIN Android-added: Fast path handling for empty buffers.
+        // Empty buffers can always be "encoded".
+        if (!cb.hasRemaining()) {
+            return true;
+        }
+        // END Android-added: Fast path handling for empty buffers.
+
         CodingErrorAction ma = malformedInputAction();
         CodingErrorAction ua = unmappableCharacterAction();
         try {
@@ -981,7 +1018,10 @@ public abstract class Charset$Coder$ {
         if (cs instanceof CharBuffer)
             cb = ((CharBuffer)cs).duplicate();
         else
-            cb = CharBuffer.wrap(cs.toString());
+            // Android-removed: An unnecessary call to toString().
+            // cb = CharBuffer.wrap(cs.toString());
+            cb = CharBuffer.wrap(cs);
+
         return canEncode(cb);
     }
 
