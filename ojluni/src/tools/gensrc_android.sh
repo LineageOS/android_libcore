@@ -34,8 +34,8 @@ ${ANDROID_BUILD_TOP}/libcore/ojluni/src/tools/scripts/genExceptions.sh \
 
 MAKE_ROOT=${ANDROID_BUILD_TOP}/libcore/ojluni/src/tools/make
 gmake -C ${MAKE_ROOT} all
-mv ${MAKE_ROOT}/out/gensrc/java/nio/charset/CharsetEncoder.java \
+mv ${MAKE_ROOT}/out/gensrc/java.base/java/nio/charset/CharsetEncoder.java \
   ${OJLUNI_JAVA_ROOT}/java/nio/charset/CharsetEncoder.java
-mv ${MAKE_ROOT}/out/gensrc/java/nio/charset/CharsetDecoder.java \
+mv ${MAKE_ROOT}/out/gensrc/java.base/java/nio/charset/CharsetDecoder.java \
   ${OJLUNI_JAVA_ROOT}/java/nio/charset/CharsetDecoder.java
 

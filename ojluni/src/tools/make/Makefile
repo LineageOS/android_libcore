@@ -38,15 +38,15 @@ JAVAC := javac
 
 # Define BUILD_TOOLS and rules to build BUILD_TOOLS
 # BUILD_TOOLS is defined in the upstream ToolsJdk.gmk
-JDK_OUTPUTDIR := $(ANDROID_BUILD_TOP)/libcore/ojluni/src/tools/make/out
-BUILD_TOOLS_JDK := $(JDK_OUTPUTDIR)/jdk_tools_classes
-BUILD_TOOLS := $(BUILD_TOOLS_JDK)/build/tools/spp/Spp.class
-TOOL_SPP = java -cp $(BUILD_TOOLS_JDK) build.tools.spp.Spp
+SUPPORT_OUTPUTDIR := $(ANDROID_BUILD_TOP)/libcore/ojluni/src/tools/make/out
+BUILD_TOOLS_JDK_DIR := $(SUPPORT_OUTPUTDIR)/jdk_tools_classes
+BUILD_TOOLS_JDK := $(BUILD_TOOLS_JDK_DIR)/build/tools/spp/Spp.class
+TOOL_SPP = java -cp $(BUILD_TOOLS_JDK_DIR) build.tools.spp.Spp
 SPP_SRC := $(ANDROID_BUILD_TOP)/libcore/ojluni/src/tools/build/tools/spp/Spp.java
 
-$(BUILD_TOOLS): $(SPP_SRC)
-	$(MKDIR) -p $(BUILD_TOOLS_JDK)
-	$(JAVAC) -d $(BUILD_TOOLS_JDK) $(SPP_SRC)
+$(BUILD_TOOLS_JDK): $(SPP_SRC)
+	$(MKDIR) -p $(BUILD_TOOLS_JDK_DIR)
+	$(JAVAC) -d $(BUILD_TOOLS_JDK_DIR) $(SPP_SRC)
 
 
 # Define variables only needed for GensrcCharsetEncoder.gmk
@@ -58,5 +58,5 @@ all: \
   $(GENSRC_CHARSETCODER)
 
 clean:
-	rm $(BUILD_TOOLS)
-	rm $(GENSRC_CHARSETCODER)
+	rm -rf $(BUILD_TOOLS_JDK_DIR)
+	rm -f $(GENSRC_CHARSETCODER)

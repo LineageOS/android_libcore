@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
- * Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2000, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -42,7 +42,7 @@ import java.util.Arrays;
  * An engine that can transform a sequence of bytes in a specific charset into a sequence of
  * sixteen-bit Unicode characters.
  *
- * <a name="steps"></a>
+ * <a id="steps"></a>
  *
  * <p> The input byte sequence is provided in a byte buffer or a series
  * of such buffers.  The output character sequence is written to a character buffer
@@ -56,12 +56,12 @@ import java.util.Arrays;
  *   has not been used before; </p></li>
  *
  *   <li><p> Invoke the {@link #decode decode} method zero or more times, as
- *   long as additional input may be available, passing <tt>false</tt> for the
- *   <tt>endOfInput</tt> argument and filling the input buffer and flushing the
+ *   long as additional input may be available, passing {@code false} for the
+ *   {@code endOfInput} argument and filling the input buffer and flushing the
  *   output buffer between invocations; </p></li>
  *
  *   <li><p> Invoke the {@link #decode decode} method one final time, passing
- *   <tt>true</tt> for the <tt>endOfInput</tt> argument; and then </p></li>
+ *   {@code true} for the {@code endOfInput} argument; and then </p></li>
  *
  *   <li><p> Invoke the {@link #flush flush} method so that the decoder can
  *   flush any internal state to the output buffer. </p></li>
@@ -77,14 +77,14 @@ import java.util.Arrays;
  * examine this object and fill the input buffer, flush the output buffer, or
  * attempt to recover from a decoding error, as appropriate, and try again.
  *
- * <a name="ce"></a>
+ * <a id="ce"></a>
  *
  * <p> There are two general types of decoding errors.  If the input byte
  * sequence is not legal for this charset then the input is considered <i>malformed</i>.  If
  * the input byte sequence is legal but cannot be mapped to a valid
  * Unicode character then an <i>unmappable character</i> has been encountered.
  *
- * <a name="cae"></a>
+ * <a id="cae"></a>
  *
  * <p> How a decoding error is handled depends upon the action requested for
  * that type of error, which is described by an instance of the {@link
@@ -100,7 +100,7 @@ import java.util.Arrays;
 
 
 
- * has the initial value <tt>"&#92;uFFFD"</tt>;
+ * has the initial value <code>"&#92;uFFFD"</code>;
 
  *
  * its value may be changed via the {@link #replaceWith(java.lang.String)
@@ -176,7 +176,7 @@ public abstract class CharsetDecoder {
      *         characters that will be produced for each input byte
      *
      * @param  replacement
-     *         The initial replacement; must not be <tt>null</tt>, must have
+     *         The initial replacement; must not be {@code null}, must have
      *         non-zero length, must not be longer than maxCharsPerByte,
      *         and must be {@linkplain #isLegalReplacement legal}
      *
@@ -212,12 +212,10 @@ public abstract class CharsetDecoder {
         if (maxCharsPerByte <= 0.0f)
             throw new IllegalArgumentException("Non-positive "
                                                + "maxCharsPerByte");
-        if (!Charset.atBugLevel("1.4")) {
-            if (averageCharsPerByte > maxCharsPerByte)
-                throw new IllegalArgumentException("averageCharsPerByte"
-                                                   + " exceeds "
-                                                   + "maxCharsPerByte");
-        }
+        if (averageCharsPerByte > maxCharsPerByte)
+            throw new IllegalArgumentException("averageCharsPerByte"
+                                               + " exceeds "
+                                               + "maxCharsPerByte");
         this.replacement = replacement;
         this.averageCharsPerByte = averageCharsPerByte;
         this.maxCharsPerByte = maxCharsPerByte;
@@ -239,7 +237,7 @@ public abstract class CharsetDecoder {
     /**
      * Initializes a new decoder.  The new decoder will have the given
      * chars-per-byte values and its replacement will be the
-     * string <tt>"&#92;uFFFD"</tt>.
+     * string <code>"&#92;uFFFD"</code>.
      *
      * @param  cs
      *         The charset that created this decoder
@@ -277,7 +275,7 @@ public abstract class CharsetDecoder {
      * Returns this decoder's replacement value.
      *
      * @return  This decoder's current replacement,
-     *          which is never <tt>null</tt> and is never empty
+     *          which is never {@code null} and is never empty
      */
     public final String replacement() {
 
@@ -295,12 +293,11 @@ public abstract class CharsetDecoder {
      * method, passing the new replacement, after checking that the new
      * replacement is acceptable.  </p>
      *
-     * @param  newReplacement  The replacement value
-     *
+     * @param  newReplacement  The new replacement; must not be
+     *         {@code null}, must have non-zero length,
 
-     *         The new replacement; must not be <tt>null</tt>
-     *         and must have non-zero length
-
+     *         and must not be longer than the value returned by the
+     *         {@link #maxCharsPerByte() maxCharsPerByte} method
 
 
 
@@ -388,7 +385,7 @@ public abstract class CharsetDecoder {
     /**
      * Returns this decoder's current action for malformed-input errors.
      *
-     * @return The current malformed-input action, which is never <tt>null</tt>
+     * @return The current malformed-input action, which is never {@code null}
      */
     public CodingErrorAction malformedInputAction() {
         return malformedInputAction;
@@ -400,7 +397,7 @@ public abstract class CharsetDecoder {
      * <p> This method invokes the {@link #implOnMalformedInput
      * implOnMalformedInput} method, passing the new action.  </p>
      *
-     * @param  newAction  The new action; must not be <tt>null</tt>
+     * @param  newAction  The new action; must not be {@code null}
      *
      * @return  This decoder
      *
@@ -430,7 +427,7 @@ public abstract class CharsetDecoder {
      * Returns this decoder's current action for unmappable-character errors.
      *
      * @return The current unmappable-character action, which is never
-     *         <tt>null</tt>
+     *         {@code null}
      */
     public CodingErrorAction unmappableCharacterAction() {
         return unmappableCharacterAction;
@@ -442,7 +439,7 @@ public abstract class CharsetDecoder {
      * <p> This method invokes the {@link #implOnUnmappableCharacter
      * implOnUnmappableCharacter} method, passing the new action.  </p>
      *
-     * @param  newAction  The new action; must not be <tt>null</tt>
+     * @param  newAction  The new action; must not be {@code null}
      *
      * @return  This decoder
      *
@@ -551,16 +548,16 @@ public abstract class CharsetDecoder {
      * operation then care should be taken to preserve any bytes remaining
      * in the input buffer so that they are available to the next invocation.
      *
-     * <p> The <tt>endOfInput</tt> parameter advises this method as to whether
+     * <p> The {@code endOfInput} parameter advises this method as to whether
      * the invoker can provide further input beyond that contained in the given
      * input buffer.  If there is a possibility of providing additional input
-     * then the invoker should pass <tt>false</tt> for this parameter; if there
+     * then the invoker should pass {@code false} for this parameter; if there
      * is no possibility of providing further input then the invoker should
-     * pass <tt>true</tt>.  It is not erroneous, and in fact it is quite
-     * common, to pass <tt>false</tt> in one invocation and later discover that
+     * pass {@code true}.  It is not erroneous, and in fact it is quite
+     * common, to pass {@code false} in one invocation and later discover that
      * no further input was actually available.  It is critical, however, that
      * the final invocation of this method in a sequence of invocations always
-     * pass <tt>true</tt> so that any remaining undecoded input will be treated
+     * pass {@code true} so that any remaining undecoded input will be treated
      * as being malformed.
      *
      * <p> This method works by invoking the {@link #decodeLoop decodeLoop}
@@ -575,7 +572,7 @@ public abstract class CharsetDecoder {
      *         The output character buffer
      *
      * @param  endOfInput
-     *         <tt>true</tt> if, and only if, the invoker can provide no
+     *         {@code true} if, and only if, the invoker can provide no
      *         additional input bytes beyond those in the given buffer
      *
      * @return  A coder-result object describing the reason for termination
@@ -583,9 +580,9 @@ public abstract class CharsetDecoder {
      * @throws  IllegalStateException
      *          If a decoding operation is already in progress and the previous
      *          step was an invocation neither of the {@link #reset reset}
-     *          method, nor of this method with a value of <tt>false</tt> for
-     *          the <tt>endOfInput</tt> parameter, nor of this method with a
-     *          value of <tt>true</tt> for the <tt>endOfInput</tt> parameter
+     *          method, nor of this method with a value of {@code false} for
+     *          the {@code endOfInput} parameter, nor of this method with a
+     *          value of {@code true} for the {@code endOfInput} parameter
      *          but a return value indicating an incomplete decoding operation
      *
      * @throws  CoderMalfunctionError
@@ -689,7 +686,7 @@ public abstract class CharsetDecoder {
      *          invocation neither of the {@link #flush flush} method nor of
      *          the three-argument {@link
      *          #decode(ByteBuffer,CharBuffer,boolean) decode} method
-     *          with a value of <tt>true</tt> for the <tt>endOfInput</tt>
+     *          with a value of {@code true} for the {@code endOfInput}
      *          parameter
      */
     public final CoderResult flush(CharBuffer out) {
@@ -854,10 +851,10 @@ public abstract class CharsetDecoder {
      * Tells whether or not this decoder implements an auto-detecting charset.
      *
      * <p> The default implementation of this method always returns
-     * <tt>false</tt>; it should be overridden by auto-detecting decoders to
-     * return <tt>true</tt>.  </p>
+     * {@code false}; it should be overridden by auto-detecting decoders to
+     * return {@code true}.  </p>
      *
-     * @return  <tt>true</tt> if, and only if, this decoder implements an
+     * @return  {@code true} if, and only if, this decoder implements an
      *          auto-detecting charset
      */
     public boolean isAutoDetecting() {
@@ -870,21 +867,21 @@ public abstract class CharsetDecoder {
      *
      * <p> If this decoder implements an auto-detecting charset then at a
      * single point during a decoding operation this method may start returning
-     * <tt>true</tt> to indicate that a specific charset has been detected in
+     * {@code true} to indicate that a specific charset has been detected in
      * the input byte sequence.  Once this occurs, the {@link #detectedCharset
      * detectedCharset} method may be invoked to retrieve the detected charset.
      *
-     * <p> That this method returns <tt>false</tt> does not imply that no bytes
+     * <p> That this method returns {@code false} does not imply that no bytes
      * have yet been decoded.  Some auto-detecting decoders are capable of
      * decoding some, or even all, of an input byte sequence without fixing on
      * a particular charset.
      *
      * <p> The default implementation of this method always throws an {@link
      * UnsupportedOperationException}; it should be overridden by
-     * auto-detecting decoders to return <tt>true</tt> once the input charset
+     * auto-detecting decoders to return {@code true} once the input charset
      * has been determined.  </p>
      *
-     * @return  <tt>true</tt> if, and only if, this decoder has detected a
+     * @return  {@code true} if, and only if, this decoder has detected a
      *          specific charset
      *
      * @throws  UnsupportedOperationException
@@ -910,7 +907,7 @@ public abstract class CharsetDecoder {
      * auto-detecting decoders to return the appropriate value.  </p>
      *
      * @return  The charset detected by this auto-detecting decoder,
-     *          or <tt>null</tt> if the charset has not yet been determined
+     *          or {@code null} if the charset has not yet been determined
      *
      * @throws  IllegalStateException
      *          If insufficient bytes have been read to determine a charset
