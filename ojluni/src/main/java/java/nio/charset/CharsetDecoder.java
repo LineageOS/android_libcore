@@ -189,6 +189,22 @@ public abstract class CharsetDecoder {
                    float maxCharsPerByte,
                    String replacement)
     {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         this.charset = cs;
         if (averageCharsPerByte <= 0.0f)
             throw new IllegalArgumentException("Non-positive "
@@ -205,8 +221,19 @@ public abstract class CharsetDecoder {
         this.replacement = replacement;
         this.averageCharsPerByte = averageCharsPerByte;
         this.maxCharsPerByte = maxCharsPerByte;
+
+
+
         // Android-removed
         // replaceWith(replacement);
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -894,6 +921,17 @@ public abstract class CharsetDecoder {
     public Charset detectedCharset() {
         throw new UnsupportedOperationException();
     }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
