@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2011, 2013, Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2011, 2014, Oracle and/or its affiliates. All rights reserved.
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 #
 # This code is free software; you can redistribute it and/or modify it
@@ -25,15 +25,14 @@
 
 GENSRC_CHARSETCODER :=
 
-GENSRC_CHARSETCODER_TMP := $(JDK_OUTPUTDIR)/gensrc
-GENSRC_CHARSETCODER_DST := $(JDK_OUTPUTDIR)/gensrc/java/nio/charset
+GENSRC_CHARSETCODER_DST := $(SUPPORT_OUTPUTDIR)/gensrc/java.base/java/nio/charset
 
-# Android-changed: ojluni/ doesn't have src/share directory.
-# GENSRC_CHARSETCODER_SRC := $(JDK_TOPDIR)/src/share/classes/java/nio
+# Android-changed: ojluni/ doesn't have java.base/ directory.
+# GENSRC_CHARSETCODER_SRC := $(TOPDIR)/src/java.base/share/classes/java/nio
 
 GENSRC_CHARSETCODER_TEMPLATE := $(GENSRC_CHARSETCODER_SRC)/charset/Charset-X-Coder.java.template
 
-###
+################################################################################
 
 $(GENSRC_CHARSETCODER_DST)/CharsetDecoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 	$(MKDIR) -p $(@D)
@@ -56,7 +55,7 @@ $(GENSRC_CHARSETCODER_DST)/CharsetDecoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 	    -DOtherCoder='Encoder' \
 	    -DreplTypeName='string' \
 	    -DdefaultRepl='"\\uFFFD"' \
-	    -DdefaultReplName='<tt>"\&#92;uFFFD"<\/tt>' \
+	    -DdefaultReplName='<code>"\&#92;uFFFD"<\/code>' \
 	    -DreplType='String' \
 	    -DreplFQType='java.lang.String' \
 	    -DreplLength='length()' \
@@ -68,7 +67,7 @@ $(GENSRC_CHARSETCODER_DST)/CharsetDecoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 
 GENSRC_CHARSETCODER += $(GENSRC_CHARSETCODER_DST)/CharsetDecoder.java
 
-###
+################################################################################
 
 $(GENSRC_CHARSETCODER_DST)/CharsetEncoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 	$(MKDIR) -p $(@D)
@@ -91,7 +90,7 @@ $(GENSRC_CHARSETCODER_DST)/CharsetEncoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 	    -DOtherCoder='Decoder' \
 	    -DreplTypeName='byte array' \
 	    -DdefaultRepl='new byte[] { (byte)'"'"\\?"'"' }' \
-	    -DdefaultReplName='<tt>{<\/tt>\&nbsp;<tt>(byte)'"'"\\?"'"'<\/tt>\&nbsp;<tt>}<\/tt>' \
+	    -DdefaultReplName='<code>{<\/code>\&nbsp;<code>(byte)'"'"\\?"'"'<\/code>\&nbsp;<code>}<\/code>' \
 	    -DreplType='byte[]' \
 	    -DreplFQType='byte[]' \
 	    -DreplLength='length' \
@@ -102,7 +101,8 @@ $(GENSRC_CHARSETCODER_DST)/CharsetEncoder.java: $(GENSRC_CHARSETCODER_TEMPLATE)
 	$(MV) $@.tmp $@
 
 GENSRC_CHARSETCODER += $(GENSRC_CHARSETCODER_DST)/CharsetEncoder.java
+GENSRC_JAVA_BASE += $(GENSRC_CHARSETCODER)
 
-###
+################################################################################
 
-$(GENSRC_CHARSETCODER): $(BUILD_TOOLS)
+$(GENSRC_CHARSETCODER): $(BUILD_TOOLS_JDK)
