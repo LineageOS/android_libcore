@@ -1171,7 +1171,8 @@ public final class OffsetTime
     @Override
     public long until(Temporal endExclusive, TemporalUnit unit) {
         OffsetTime end = OffsetTime.from(endExclusive);
-        if (unit instanceof ChronoUnit chronoUnit) {
+        if (unit instanceof ChronoUnit) {
+            ChronoUnit chronoUnit = (ChronoUnit) unit;
             long nanosUntil = end.toEpochNano() - toEpochNano();  // no overflow
             switch (chronoUnit) {
                 case NANOS: return nanosUntil;
@@ -1353,9 +1354,11 @@ public final class OffsetTime
         if (this == obj) {
             return true;
         }
-        return (obj instanceof OffsetTime other)
-                && time.equals(other.time)
-                && offset.equals(other.offset);
+        if (obj instanceof OffsetTime) {
+            OffsetTime other = (OffsetTime) obj;
+            return time.equals(other.time) && offset.equals(other.offset);
+        }
+        return false;
     }
 
     /**

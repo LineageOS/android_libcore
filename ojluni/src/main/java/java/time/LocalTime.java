@@ -849,7 +849,8 @@ public final class LocalTime
      */
     @Override
     public LocalTime with(TemporalField field, long newValue) {
-        if (field instanceof ChronoField chronoField) {
+        if (field instanceof ChronoField) {
+            ChronoField chronoField = (ChronoField) field;
             chronoField.checkValidValue(newValue);
             switch (chronoField) {
                 case NANO_OF_SECOND: return withNano((int) newValue);
@@ -1059,7 +1060,8 @@ public final class LocalTime
      */
     @Override
     public LocalTime plus(long amountToAdd, TemporalUnit unit) {
-        if (unit instanceof ChronoUnit chronoUnit) {
+        if (unit instanceof ChronoUnit) {
+            ChronoUnit chronoUnit = (ChronoUnit) unit;
             switch (chronoUnit) {
                 case NANOS: return plusNanos(amountToAdd);
                 case MICROS: return plusNanos((amountToAdd % MICROS_PER_DAY) * 1000);
@@ -1400,7 +1402,8 @@ public final class LocalTime
     @Override
     public long until(Temporal endExclusive, TemporalUnit unit) {
         LocalTime end = LocalTime.from(endExclusive);
-        if (unit instanceof ChronoUnit chronoUnit) {
+        if (unit instanceof ChronoUnit) {
+            ChronoUnit chronoUnit = (ChronoUnit) unit;
             long nanosUntil = end.toNanoOfDay() - toNanoOfDay();  // no overflow
             switch (chronoUnit) {
                 case NANOS: return nanosUntil;
@@ -1579,11 +1582,12 @@ public final class LocalTime
         if (this == obj) {
             return true;
         }
-        return (obj instanceof LocalTime other)
-                && hour == other.hour
-                && minute == other.minute
-                && second == other.second
-                && nano == other.nano;
+        if (obj instanceof LocalTime) {
+            LocalTime other = (LocalTime) obj;
+            return hour == other.hour && minute == other.minute &&
+                    second == other.second && nano == other.nano;
+        }
+        return false;
     }
 
     /**

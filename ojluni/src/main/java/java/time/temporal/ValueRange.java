@@ -393,11 +393,12 @@ public final class ValueRange implements Serializable {
         if (obj == this) {
             return true;
         }
-        return (obj instanceof ValueRange other)
-                && minSmallest == other.minSmallest
-                && minLargest == other.minLargest
-                && maxSmallest == other.maxSmallest
-                && maxLargest == other.maxLargest;
+        if (obj instanceof ValueRange) {
+            ValueRange other = (ValueRange) obj;
+            return minSmallest == other.minSmallest && minLargest == other.minLargest &&
+                    maxSmallest == other.maxSmallest && maxLargest == other.maxLargest;
+        }
+        return false;
     }
 
     /**

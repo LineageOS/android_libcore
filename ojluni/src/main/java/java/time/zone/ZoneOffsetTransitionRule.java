@@ -519,16 +519,17 @@ public final class ZoneOffsetTransitionRule implements Serializable {
         if (otherRule == this) {
             return true;
         }
-        return (otherRule instanceof ZoneOffsetTransitionRule other)
-                && month == other.month
-                && dom == other.dom
-                && dow == other.dow
-                && timeDefinition == other.timeDefinition
-                && timeEndOfDay == other.timeEndOfDay
-                && time.equals(other.time)
-                && standardOffset.equals(other.standardOffset)
-                && offsetBefore.equals(other.offsetBefore)
-                && offsetAfter.equals(other.offsetAfter);
+        if (otherRule instanceof ZoneOffsetTransitionRule) {
+            ZoneOffsetTransitionRule other = (ZoneOffsetTransitionRule) otherRule;
+            return month == other.month && dom == other.dom && dow == other.dow &&
+                    timeDefinition == other.timeDefinition &&
+                    time.equals(other.time) &&
+                    timeEndOfDay == other.timeEndOfDay &&
+                    standardOffset.equals(other.standardOffset) &&
+                    offsetBefore.equals(other.offsetBefore) &&
+                    offsetAfter.equals(other.offsetAfter);
+        }
+        return false;
     }
 
     /**

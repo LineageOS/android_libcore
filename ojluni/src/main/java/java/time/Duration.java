@@ -700,7 +700,8 @@ public final class Duration
         if (amountToAdd == 0) {
             return this;
         }
-        if (unit instanceof ChronoUnit chronoUnit) {
+        if (unit instanceof ChronoUnit) {
+            ChronoUnit chronoUnit = (ChronoUnit) unit;
             switch (chronoUnit) {
                 case NANOS: return plusNanos(amountToAdd);
                 case MICROS: return plusSeconds((amountToAdd / (1000_000L * 1000)) * 1000).plusNanos((amountToAdd % (1000_000L * 1000)) * 1000);
@@ -1394,9 +1395,12 @@ public final class Duration
         if (this == other) {
             return true;
         }
-        return (other instanceof Duration otherDuration)
-                && this.seconds == otherDuration.seconds
-                && this.nanos == otherDuration.nanos;
+        if (other instanceof Duration) {
+            Duration otherDuration = (Duration) other;
+            return this.seconds == otherDuration.seconds &&
+                    this.nanos == otherDuration.nanos;
+        }
+        return false;
     }
 
     /**

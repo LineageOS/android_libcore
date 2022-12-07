@@ -664,9 +664,11 @@ public abstract class Clock implements InstantSource {
         }
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof FixedClock other
-                    && instant.equals(other.instant)
-                    && zone.equals(other.zone);
+            if (obj instanceof FixedClock) {
+                FixedClock other = (FixedClock) obj;
+                return instant.equals(other.instant) && zone.equals(other.zone);
+            }
+            return false;
         }
         @Override
         public int hashCode() {
@@ -714,9 +716,11 @@ public abstract class Clock implements InstantSource {
         }
         @Override
         public boolean equals(Object obj) {
-            return obj instanceof OffsetClock other
-                    && baseClock.equals(other.baseClock)
-                    && offset.equals(other.offset);
+            if (obj instanceof OffsetClock) {
+                OffsetClock other = (OffsetClock) obj;
+                return baseClock.equals(other.baseClock) && offset.equals(other.offset);
+            }
+            return false;
         }
         @Override
         public int hashCode() {
@@ -772,9 +776,11 @@ public abstract class Clock implements InstantSource {
         }
         @Override
         public boolean equals(Object obj) {
-            return (obj instanceof TickClock other)
-                    && tickNanos == other.tickNanos
-                    && baseClock.equals(other.baseClock);
+            if (obj instanceof TickClock) {
+                TickClock other = (TickClock) obj;
+                return baseClock.equals(other.baseClock) && tickNanos == other.tickNanos;
+            }
+            return false;
         }
         @Override
         public int hashCode() {
@@ -822,9 +828,12 @@ public abstract class Clock implements InstantSource {
         }
         @Override
         public boolean equals(Object obj) {
-            return (obj instanceof SourceClock other)
-                    && zone.equals(other.zone)
-                    && baseSource.equals(other.baseSource);
+            if (obj instanceof SourceClock) {
+                SourceClock other = (SourceClock) obj;
+                return zone.equals(other.zone)
+                        && baseSource.equals(other.baseSource);
+            }
+            return false;
         }
         @Override
         public int hashCode() {

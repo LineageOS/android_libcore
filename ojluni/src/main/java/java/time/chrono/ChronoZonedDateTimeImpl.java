@@ -283,7 +283,8 @@ final class ChronoZonedDateTimeImpl<D extends ChronoLocalDate>
     //-----------------------------------------------------------------------
     @Override
     public ChronoZonedDateTime<D> with(TemporalField field, long newValue) {
-        if (field instanceof ChronoField chronoField) {
+        if (field instanceof ChronoField) {
+            ChronoField chronoField = (ChronoField) field;
             switch (chronoField) {
                 case INSTANT_SECONDS: return plus(newValue - toEpochSecond(), SECONDS);
                 case OFFSET_SECONDS: {

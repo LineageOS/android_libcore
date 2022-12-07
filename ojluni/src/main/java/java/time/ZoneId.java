@@ -592,8 +592,12 @@ public abstract class ZoneId implements Serializable {
         if (this == obj) {
            return true;
         }
-        return (obj instanceof ZoneId other)
-                && getId().equals(other.getId());
+
+        if (obj instanceof ZoneId) {
+            ZoneId other = (ZoneId) obj;
+            return getId().equals(other.getId());
+        }
+        return false;
     }
 
     /**

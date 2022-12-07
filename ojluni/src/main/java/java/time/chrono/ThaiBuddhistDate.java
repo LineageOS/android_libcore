@@ -304,7 +304,8 @@ public final class ThaiBuddhistDate
     //-----------------------------------------------------------------------
     @Override
     public ThaiBuddhistDate with(TemporalField field, long newValue) {
-        if (field instanceof ChronoField chronoField) {
+        if (field instanceof ChronoField) {
+            ChronoField chronoField = (ChronoField) field;
             if (getLong(chronoField) == newValue) {
                 return this;
             }
@@ -451,8 +452,11 @@ public final class ThaiBuddhistDate
         if (this == obj) {
             return true;
         }
-        return (obj instanceof ThaiBuddhistDate otherDate)
-                && this.isoDate.equals(otherDate.isoDate);
+        if (obj instanceof ThaiBuddhistDate) {
+            ThaiBuddhistDate otherDate = (ThaiBuddhistDate) obj;
+            return this.isoDate.equals(otherDate.isoDate);
+        }
+        return false;
     }
 
     /**
