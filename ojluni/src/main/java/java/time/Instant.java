@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -108,7 +108,7 @@ import java.util.Objects;
  * For both the epoch-second and nanosecond parts, a larger value is always later on the time-line
  * than a smaller value.
  *
- * <h3>Time-scale</h3>
+ * <h2>Time-scale</h2>
  * <p>
  * The length of the solar day is the standard way that humans measure time.
  * This has traditionally been subdivided into 24 hours of 60 minutes of 60 seconds,
@@ -191,12 +191,12 @@ import java.util.Objects;
  * The Java time-scale is used for all date-time classes.
  * This includes {@code Instant}, {@code LocalDate}, {@code LocalTime}, {@code OffsetDateTime},
  * {@code ZonedDateTime} and {@code Duration}.
- *
  * <p>
  * This is a <a href="{@docRoot}/java.base/java/lang/doc-files/ValueBased.html">value-based</a>
- * class; use of identity-sensitive operations (including reference equality
- * ({@code ==}), identity hash code, or synchronization) on instances of
- * {@code Instant} may have unpredictable results and should be avoided.
+ * class; programmers should treat instances that are
+ * {@linkplain #equals(Object) equal} as interchangeable and should not
+ * use instances for synchronization, or unpredictable behavior may
+ * occur. For example, in a future release, synchronization may fail.
  * The {@code equals} method should be used for comparisons.
  *
  * @implSpec
@@ -204,6 +204,7 @@ import java.util.Objects;
  *
  * @since 1.8
  */
+@jdk.internal.ValueBased
 public final class Instant
         implements Temporal, TemporalAdjuster, Comparable<Instant>, Serializable {
 
@@ -245,6 +246,7 @@ public final class Instant
     /**
      * Serialization version.
      */
+    @java.io.Serial
     private static final long serialVersionUID = -665713676816604388L;
 
     /**
@@ -270,7 +272,7 @@ public final class Instant
      * @return the current instant using the system clock, not null
      */
     public static Instant now() {
-        return Clock.systemUTC().instant();
+        return Clock.currentInstant();
     }
 
     /**
@@ -701,10 +703,9 @@ public final class Instant
      */
     @Override
     public Instant with(TemporalField field, long newValue) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            f.checkValidValue(newValue);
-            switch (f) {
+        if (field instanceof ChronoField chronoField) {
+            chronoField.checkValidValue(newValue);
+            switch (chronoField) {
                 case MILLI_OF_SECOND: {
                     int nval = (int) newValue * 1000_000;
                     return (nval != nanos ? create(seconds, nval) : this);
@@ -1141,9 +1142,8 @@ public final class Instant
     @Override
     public long until(Temporal endExclusive, TemporalUnit unit) {
         Instant end = Instant.from(endExclusive);
-        if (unit instanceof ChronoUnit) {
-            ChronoUnit f = (ChronoUnit) unit;
-            switch (f) {
+        if (unit instanceof ChronoUnit chronoUnit) {
+            switch (chronoUnit) {
                 case NANOS: return nanosUntil(end);
                 case MICROS: return nanosUntil(end) / 1000;
                 case MILLIS: return Math.subtractExact(end.toEpochMilli(), toEpochMilli());
@@ -1290,20 +1290,17 @@ public final class Instant
      * <p>
      * The comparison is based on the time-line position of the instants.
      *
-     * @param otherInstant  the other instant, null returns false
+     * @param other  the other instant, null returns false
      * @return true if the other instant is equal to this one
      */
     @Override
-    public boolean equals(Object otherInstant) {
-        if (this == otherInstant) {
+    public boolean equals(Object other) {
+        if (this == other) {
             return true;
         }
-        if (otherInstant instanceof Instant) {
-            Instant other = (Instant) otherInstant;
-            return this.seconds == other.seconds &&
-                   this.nanos == other.nanos;
-        }
-        return false;
+        return (other instanceof Instant otherInstant)
+                && this.seconds == otherInstant.seconds
+                && this.nanos == otherInstant.nanos;
     }
 
     /**
@@ -1332,7 +1329,7 @@ public final class Instant
     // -----------------------------------------------------------------------
     /**
      * Writes the object using a
-     * <a href="../../serialized-form.html#java.time.Ser">dedicated serialized form</a>.
+     * <a href="{@docRoot}/serialized-form.html#java.time.Ser">dedicated serialized form</a>.
      * @serialData
      * <pre>
      *  out.writeByte(2);  // identifies an Instant
@@ -1342,6 +1339,7 @@ public final class Instant
      *
      * @return the instance of {@code Ser}, not null
      */
+    @java.io.Serial
     private Object writeReplace() {
         return new Ser(Ser.INSTANT_TYPE, this);
     }
@@ -1352,6 +1350,7 @@ public final class Instant
      * @param s the stream to read
      * @throws InvalidObjectException always
      */
+    @java.io.Serial
     private void readObject(ObjectInputStream s) throws InvalidObjectException {
         throw new InvalidObjectException("Deserialization via serialization delegate");
     }
