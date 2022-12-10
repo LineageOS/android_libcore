@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -119,12 +119,12 @@ import java.util.Objects;
  * For most applications written today, the ISO-8601 rules are entirely suitable.
  * However, any application that makes use of historical dates, and requires them
  * to be accurate will find the ISO-8601 approach unsuitable.
- *
  * <p>
  * This is a <a href="{@docRoot}/java.base/java/lang/doc-files/ValueBased.html">value-based</a>
- * class; use of identity-sensitive operations (including reference equality
- * ({@code ==}), identity hash code, or synchronization) on instances of
- * {@code LocalDateTime} may have unpredictable results and should be avoided.
+ * class; programmers should treat instances that are
+ * {@linkplain #equals(Object) equal} as interchangeable and should not
+ * use instances for synchronization, or unpredictable behavior may
+ * occur. For example, in a future release, synchronization may fail.
  * The {@code equals} method should be used for comparisons.
  *
  * @implSpec
@@ -132,6 +132,7 @@ import java.util.Objects;
  *
  * @since 1.8
  */
+@jdk.internal.ValueBased
 public final class LocalDateTime
         implements Temporal, TemporalAdjuster, ChronoLocalDateTime<LocalDate>, Serializable {
 
@@ -153,6 +154,7 @@ public final class LocalDateTime
     /**
      * Serialization version.
      */
+    @java.io.Serial
     private static final long serialVersionUID = 6207766400415563566L;
 
     /**
@@ -572,9 +574,8 @@ public final class LocalDateTime
      */
     @Override
     public boolean isSupported(TemporalField field) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            return f.isDateBased() || f.isTimeBased();
+        if (field instanceof ChronoField chronoField) {
+            return chronoField.isDateBased() || chronoField.isTimeBased();
         }
         return field != null && field.isSupportedBy(this);
     }
@@ -646,9 +647,8 @@ public final class LocalDateTime
      */
     @Override
     public ValueRange range(TemporalField field) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            return (f.isTimeBased() ? time.range(field) : date.range(field));
+        if (field instanceof ChronoField chronoField) {
+            return (chronoField.isTimeBased() ? time.range(field) : date.range(field));
         }
         return field.rangeRefinedBy(this);
     }
@@ -683,9 +683,8 @@ public final class LocalDateTime
      */
     @Override
     public int get(TemporalField field) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            return (f.isTimeBased() ? time.get(field) : date.get(field));
+        if (field instanceof ChronoField chronoField) {
+            return (chronoField.isTimeBased() ? time.get(field) : date.get(field));
         }
         return ChronoLocalDateTime.super.get(field);
     }
@@ -715,9 +714,8 @@ public final class LocalDateTime
      */
     @Override
     public long getLong(TemporalField field) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            return (f.isTimeBased() ? time.getLong(field) : date.getLong(field));
+        if (field instanceof ChronoField chronoField) {
+            return (chronoField.isTimeBased() ? time.getLong(field) : date.getLong(field));
         }
         return field.getFrom(this);
     }
@@ -962,9 +960,8 @@ public final class LocalDateTime
      */
     @Override
     public LocalDateTime with(TemporalField field, long newValue) {
-        if (field instanceof ChronoField) {
-            ChronoField f = (ChronoField) field;
-            if (f.isTimeBased()) {
+        if (field instanceof ChronoField chronoField) {
+            if (chronoField.isTimeBased()) {
                 return with(date, time.with(field, newValue));
             } else {
                 return with(date.with(field, newValue), time);
@@ -1144,8 +1141,7 @@ public final class LocalDateTime
      */
     @Override
     public LocalDateTime plus(TemporalAmount amountToAdd) {
-        if (amountToAdd instanceof Period) {
-            Period periodToAdd = (Period) amountToAdd;
+        if (amountToAdd instanceof Period periodToAdd) {
             return with(date.plus(periodToAdd), time);
         }
         Objects.requireNonNull(amountToAdd, "amountToAdd");
@@ -1180,9 +1176,8 @@ public final class LocalDateTime
      */
     @Override
     public LocalDateTime plus(long amountToAdd, TemporalUnit unit) {
-        if (unit instanceof ChronoUnit) {
-            ChronoUnit f = (ChronoUnit) unit;
-            switch (f) {
+        if (unit instanceof ChronoUnit chronoUnit) {
+            switch (chronoUnit) {
                 case NANOS: return plusNanos(amountToAdd);
                 case MICROS: return plusDays(amountToAdd / MICROS_PER_DAY).plusNanos((amountToAdd % MICROS_PER_DAY) * 1000);
                 case MILLIS: return plusDays(amountToAdd / MILLIS_PER_DAY).plusNanos((amountToAdd % MILLIS_PER_DAY) * 1000_000);
@@ -1363,8 +1358,7 @@ public final class LocalDateTime
      */
     @Override
     public LocalDateTime minus(TemporalAmount amountToSubtract) {
-        if (amountToSubtract instanceof Period) {
-            Period periodToSubtract = (Period) amountToSubtract;
+        if (amountToSubtract instanceof Period periodToSubtract) {
             return with(date.minus(periodToSubtract), time);
         }
         Objects.requireNonNull(amountToSubtract, "amountToSubtract");
@@ -1681,7 +1675,7 @@ public final class LocalDateTime
     @Override
     public long until(Temporal endExclusive, TemporalUnit unit) {
         LocalDateTime end = LocalDateTime.from(endExclusive);
-        if (unit instanceof ChronoUnit) {
+        if (unit instanceof ChronoUnit chronoUnit) {
             if (unit.isTimeBased()) {
                 long amount = date.daysUntil(end.date);
                 if (amount == 0) {
@@ -1695,7 +1689,7 @@ public final class LocalDateTime
                     amount++;  // safe
                     timePart -= NANOS_PER_DAY;  // safe
                 }
-                switch ((ChronoUnit) unit) {
+                switch (chronoUnit) {
                     case NANOS:
                         amount = Math.multiplyExact(amount, NANOS_PER_DAY);
                         break;
@@ -1933,11 +1927,9 @@ public final class LocalDateTime
         if (this == obj) {
             return true;
         }
-        if (obj instanceof LocalDateTime) {
-            LocalDateTime other = (LocalDateTime) obj;
-            return date.equals(other.date) && time.equals(other.time);
-        }
-        return false;
+        return (obj instanceof LocalDateTime other)
+                && date.equals(other.date)
+                && time.equals(other.time);
     }
 
     /**
@@ -1975,16 +1967,17 @@ public final class LocalDateTime
     //-----------------------------------------------------------------------
     /**
      * Writes the object using a
-     * <a href="../../serialized-form.html#java.time.Ser">dedicated serialized form</a>.
+     * <a href="{@docRoot}/serialized-form.html#java.time.Ser">dedicated serialized form</a>.
      * @serialData
      * <pre>
      *  out.writeByte(5);  // identifies a LocalDateTime
-     *  // the <a href="../../serialized-form.html#java.time.LocalDate">date</a> excluding the one byte header
-     *  // the <a href="../../serialized-form.html#java.time.LocalTime">time</a> excluding the one byte header
+     *  // the <a href="{@docRoot}/serialized-form.html#java.time.LocalDate">date</a> excluding the one byte header
+     *  // the <a href="{@docRoot}/serialized-form.html#java.time.LocalTime">time</a> excluding the one byte header
      * </pre>
      *
      * @return the instance of {@code Ser}, not null
      */
+    @java.io.Serial
     private Object writeReplace() {
         return new Ser(Ser.LOCAL_DATE_TIME_TYPE, this);
     }
@@ -1995,6 +1988,7 @@ public final class LocalDateTime
      * @param s the stream to read
      * @throws InvalidObjectException always
      */
+    @java.io.Serial
     private void readObject(ObjectInputStream s) throws InvalidObjectException {
         throw new InvalidObjectException("Deserialization via serialization delegate");
     }
