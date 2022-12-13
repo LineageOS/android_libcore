@@ -130,15 +130,29 @@ class PatternEntry {
             if (showWhiteSpace)
                 toAddTo.append(' ');
         }
-        var c = switch (strength) {
-            case Collator.IDENTICAL -> '=';
-            case Collator.TERTIARY  -> ',';
-            case Collator.SECONDARY -> ';';
-            case Collator.PRIMARY   -> '<';
-            case RESET              -> '&';
-            case UNSET              -> '?';
+        final char c;
+        switch (strength) {
+            case Collator.IDENTICAL:
+                c = '=';
+                break;
+            case Collator.TERTIARY:
+                c = ',';
+                break;
+            case Collator.SECONDARY:
+                c = ';';
+                break;
+            case Collator.PRIMARY:
+                c = '<';
+                break;
+            case RESET:
+                c = '&';
+                break;
+            case UNSET:
+                c = '?';
+                break;
 
-            default -> throw new IllegalStateException("Unexpected value: " + strength);
+            default:
+                throw new IllegalStateException("Unexpected value: " + strength);
         };
         toAddTo.append(c);
 

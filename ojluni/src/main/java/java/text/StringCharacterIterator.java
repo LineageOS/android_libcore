@@ -240,9 +240,10 @@ public final class StringCharacterIterator implements CharacterIterator
     {
         if (this == obj)
             return true;
-        if (!(obj instanceof StringCharacterIterator that))
+        if (!(obj instanceof StringCharacterIterator))
             return false;
 
+        StringCharacterIterator that = (StringCharacterIterator) obj;
         if (hashCode() != that.hashCode())
             return false;
         if (!text.equals(that.text))

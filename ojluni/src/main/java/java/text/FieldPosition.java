@@ -221,8 +221,9 @@ public class FieldPosition {
     public boolean equals(Object obj)
     {
         if (obj == null) return false;
-        if (!(obj instanceof FieldPosition other))
+        if (!(obj instanceof FieldPosition))
             return false;
+        FieldPosition other = (FieldPosition) obj;
         if (attribute == null) {
             if (other.attribute != null) {
                 return false;

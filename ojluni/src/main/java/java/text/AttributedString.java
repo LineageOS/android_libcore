@@ -776,9 +776,10 @@ public class AttributedString {
             if (this == obj) {
                 return true;
             }
-            if (!(obj instanceof AttributedStringIterator that)) {
+            if (!(obj instanceof AttributedStringIterator)) {
                 return false;
             }
+            AttributedStringIterator that = (AttributedStringIterator) obj;
 
             if (AttributedString.this != that.getString())
                 return false;
@@ -1094,9 +1095,10 @@ class AttributeEntry implements Map.Entry<Attribute,Object> {
     }
 
     public boolean equals(Object o) {
-        if (!(o instanceof AttributeEntry other)) {
+        if (!(o instanceof AttributeEntry)) {
             return false;
         }
+        AttributeEntry other = (AttributeEntry) o;
         return other.key.equals(key) && Objects.equals(other.value, value);
     }
 
