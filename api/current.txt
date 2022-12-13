@@ -10600,7 +10600,7 @@ package java.text {
     method public final boolean equals(Object);
     method protected String getName();
     method public final int hashCode();
-    method protected Object readResolve() throws java.io.InvalidObjectException;
+    method @java.io.Serial protected Object readResolve() throws java.io.InvalidObjectException;
     field public static final java.text.AttributedCharacterIterator.Attribute INPUT_METHOD_SEGMENT;
     field public static final java.text.AttributedCharacterIterator.Attribute LANGUAGE;
     field public static final java.text.AttributedCharacterIterator.Attribute READING;
@@ -10899,6 +10899,7 @@ package java.text {
     method public String getInternationalCurrencySymbol();
     method public char getMinusSign();
     method public char getMonetaryDecimalSeparator();
+    method public char getMonetaryGroupingSeparator();
     method public String getNaN();
     method public char getPatternSeparator();
     method public char getPerMill();
@@ -10914,6 +10915,7 @@ package java.text {
     method public void setInternationalCurrencySymbol(String);
     method public void setMinusSign(char);
     method public void setMonetaryDecimalSeparator(char);
+    method public void setMonetaryGroupingSeparator(char);
     method public void setNaN(String);
     method public void setPatternSeparator(char);
     method public void setPerMill(char);
