@@ -583,6 +583,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         }
         hashCode = 0;
         exponentialSeparator = exp;
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     /**
@@ -610,6 +612,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     {
         hashCode = 0;
         this.monetaryGroupingSeparator = monetaryGroupingSeparator;
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     //------------------------------------------------------------
@@ -630,6 +634,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
     void setExponentialSymbol(char exp)
     {
         exponential = exp;
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     /**
@@ -665,6 +671,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         hashCode = 0;
         this.perMillText = perMillText;
         this.perMill = findNonFormatChar(perMillText, '\u2030');
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     /**
@@ -700,6 +708,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         hashCode = 0;
         this.percentText = percentText;
         this.percent = findNonFormatChar(percentText, '%');
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     /**
@@ -740,6 +750,8 @@ public class DecimalFormatSymbols implements Cloneable, Serializable {
         hashCode = 0;
         this.minusSignText = minusSignText;
         this.minusSign = findNonFormatChar(minusSignText, '-');
+        // Android-added: reset cachedIcuDFS.
+        cachedIcuDFS = null;
     }
 
     //------------------------------------------------------------
