@@ -1099,3 +1099,12 @@ java_api_contribution {
         "//build/orchestrator/apis",
     ],
 }
+
+java_api_contribution {
+    name: "art-module-public-api-system-stubs",
+    api_surface: "system",
+    api_file: "api/system-current.txt",
+    visibility: [
+        "//build/orchestrator/apis",
+    ],
+}
