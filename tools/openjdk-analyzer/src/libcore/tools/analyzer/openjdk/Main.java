@@ -16,6 +16,9 @@
 
 package libcore.tools.analyzer.openjdk;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
@@ -37,7 +40,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -65,7 +67,7 @@ public class Main {
         @Parameter(required = true, arity = 1,
                 description = "<class>. The fully qualified name of the class in the classpath. "
                         + "Note that inner class uses $ separator and $ has to be escaped in shell,"
-                        + " e.g.java.lang.Character\\$Subset")
+                        + " e.g. java.lang.Character\\$Subset")
         public List<String> classNames;
 
         @Parameter(names = "-h", help = true, description = "help usage")
@@ -104,7 +106,7 @@ public class Main {
         @Parameter(required = true, arity = 1,
                 description = "<class>. The fully qualified name of the class in the classpath.\n"
                         + "Note that inner class uses $ separator and $ has to be escaped in shell,"
-                        + " e.g.java.lang.Character\\$Subset")
+                        + " e.g. java.lang.Character\\$Subset")
         public List<String> classNames;
 
         @Parameter(names = "-h", help = true, description = "help usage")
@@ -167,40 +169,40 @@ public class Main {
                 ClassNode baseClass = parseClass(baseIn);
                 ClassNode newClass = parseClass(newIn);
                 Map<String, MethodNode> baseMethods = getExposedMethods(baseClass)
-                        .collect(Collectors.toMap(DiffAnalyzer::toApiSignature, node -> node));
+                        .collect(toMap(DiffAnalyzer::toApiSignature, node -> node));
                 Map<String, MethodNode> newMethods = getExposedMethods(newClass)
-                        .collect(Collectors.toMap(DiffAnalyzer::toApiSignature, node -> node));
+                        .collect(toMap(DiffAnalyzer::toApiSignature, node -> node));
 
                 DiffAnalyzer result = new DiffAnalyzer();
                 result.newMethods = getExposedMethods(newClass)
                         .filter(node -> !baseMethods.containsKey(toApiSignature(node)))
-                        .collect(Collectors.toList());
+                        .collect(toList());
                 result.removedMethods = getExposedMethods(baseClass)
                         .filter(node -> !newMethods.containsKey(toApiSignature(node)))
-                        .collect(Collectors.toList());
+                        .collect(toList());
                 result.newlyDeprecatedMethods = getExposedMethods(newClass)
                         .filter(DiffAnalyzer::isDeprecated)
                         .filter(node -> !baseMethods.containsKey(toApiSignature(node))
                                 || !isDeprecated(baseMethods.get(toApiSignature(node))) )
-                        .collect(Collectors.toList());
+                        .collect(toList());
 
 
                 Map<String, FieldNode> baseFields = getExposedFields(baseClass)
-                        .collect(Collectors.toMap(node -> node.name, node -> node));
+                        .collect(toMap(node -> node.name, node -> node));
                 Map<String, FieldNode> newFields = getExposedFields(newClass)
-                        .collect(Collectors.toMap(node -> node.name, node -> node));
+                        .collect(toMap(node -> node.name, node -> node));
 
                 result.newFields = getExposedFields(newClass)
                         .filter(node -> !baseFields.containsKey(node.name))
-                        .collect(Collectors.toList());
+                        .collect(toList());
                 result.removedFields = getExposedFields(baseClass)
                         .filter(node -> !newFields.containsKey(node.name))
-                        .collect(Collectors.toList());
+                        .collect(toList());
                 result.newlyDeprecatedFields = getExposedFields(newClass)
                         .filter(DiffAnalyzer::isDeprecated)
                         .filter(node -> !baseFields.containsKey(node.name)
                                 || !isDeprecated(baseFields.get(node.name)) )
-                        .collect(Collectors.toList());
+                        .collect(toList());
 
                 return result;
             }
@@ -336,7 +338,7 @@ public class Main {
             e = zipFile.getEntry(secondName);
             if (e == null) {
                 throw new IllegalArgumentException(String.format(Locale.US,
-                        "%s and %s is not found in %s", entryName, secondName,
+                        "Neither %s nor %s is found in %s", entryName, secondName,
                         zipPath.toString()));
             }
         }
