@@ -1222,7 +1222,7 @@ ojluni/src/main/java/java/util/zip/ZipException.java,jdk17u/jdk-17.0.4-ga,src/ja
 ojluni/src/main/java/java/util/zip/ZipFile.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/zip/ZipFile.java
 ojluni/src/main/java/java/util/zip/ZipInputStream.java,jdk11u/jdk-11+28,src/java.base/share/classes/java/util/zip/ZipInputStream.java
 ojluni/src/main/java/java/util/zip/ZipOutputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/zip/ZipOutputStream.java
-ojluni/src/main/java/java/util/zip/ZipUtils.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/zip/ZipUtils.java
+ojluni/src/main/java/java/util/zip/ZipUtils.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/java/util/zip/ZipUtils.java
 ojluni/src/main/java/javax/crypto/AEADBadTagException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/javax/crypto/AEADBadTagException.java
 ojluni/src/main/java/javax/crypto/BadPaddingException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/javax/crypto/BadPaddingException.java
 ojluni/src/main/java/javax/crypto/Cipher.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/javax/crypto/Cipher.java
