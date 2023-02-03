@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,8 +26,8 @@
 package java.security;
 
 import sun.security.util.Debug;
-import sun.reflect.CallerSensitive;
-import sun.reflect.Reflection;
+import jdk.internal.reflect.CallerSensitive;
+import jdk.internal.reflect.Reflection;
 
 /**
  * <p> The AccessController class is used for access control operations
@@ -259,6 +259,7 @@ import sun.reflect.Reflection;
  *
  * @author Li Gong
  * @author Roland Schemers
+ * @since 1.2
  */
 
 public final class AccessController {
@@ -425,7 +426,8 @@ public final class AccessController {
             throw new NullPointerException("null permissions parameter");
         }
         Class <?> caller = Reflection.getCallerClass();
-        return AccessController.doPrivileged(action, createWrapper(null,
+        DomainCombiner dc = (context == null) ? null : context.getCombiner();
+        return AccessController.doPrivileged(action, createWrapper(dc,
             caller, parent, context, perms));
     }
 
@@ -592,17 +594,27 @@ public final class AccessController {
             System.getSecurityManager() != null &&
             !callerPD.impliesCreateAccessControlContext())
         {
-            ProtectionDomain nullPD = new ProtectionDomain(null, null);
-            return new AccessControlContext(new ProtectionDomain[] { nullPD });
+            return getInnocuousAcc();
         } else {
             return new AccessControlContext(callerPD, combiner, parent,
                                             context, perms);
         }
     }
 
+    private static class AccHolder {
+        // An AccessControlContext with no granted permissions.
+        // Only initialized on demand when getInnocuousAcc() is called.
+        static final AccessControlContext innocuousAcc =
+            new AccessControlContext(new ProtectionDomain[] {
+                                     new ProtectionDomain(null, null) });
+    }
+    private static AccessControlContext getInnocuousAcc() {
+        return AccHolder.innocuousAcc;
+    }
+
     private static ProtectionDomain getCallerPD(final Class <?> caller) {
         ProtectionDomain callerPd = doPrivileged
-            (new PrivilegedAction<ProtectionDomain>() {
+            (new PrivilegedAction<>() {
             public ProtectionDomain run() {
                 return caller.getProtectionDomain();
             }
@@ -710,7 +722,8 @@ public final class AccessController {
             throw new NullPointerException("null permissions parameter");
         }
         Class <?> caller = Reflection.getCallerClass();
-        return AccessController.doPrivileged(action, createWrapper(null, caller, parent, context, perms));
+        DomainCombiner dc = (context == null) ? null : context.getCombiner();
+        return AccessController.doPrivileged(action, createWrapper(dc, caller, parent, context, perms));
     }
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -51,6 +51,7 @@ import sun.security.util.SecurityConstants;
  *
  *
  * @author Roland Schemers
+ * @since 1.2
  *
  * @serial exclude
  */
@@ -96,7 +97,7 @@ public final class AllPermission extends Permission {
      * objects are always equal.
      *
      * @param obj the object we are testing for equality with this object.
-     * @return true if <i>obj</i> is an AllPermission, false otherwise.
+     * @return true if {@code obj} is an AllPermission, false otherwise.
      */
     public boolean equals(Object obj) {
         return (obj instanceof AllPermission);
@@ -124,7 +125,6 @@ public final class AllPermission extends Permission {
     /**
      * Returns a new PermissionCollection object for storing AllPermission
      * objects.
-     * <p>
      *
      * @return a new PermissionCollection object suitable for
      * storing AllPermissions.
@@ -213,7 +213,7 @@ final class AllPermissionCollection
      * @return an enumeration of all the AllPermission objects.
      */
     public Enumeration<Permission> elements() {
-        return new Enumeration<Permission>() {
+        return new Enumeration<>() {
             private boolean hasMore = all_allowed;
 
             public boolean hasMoreElements() {

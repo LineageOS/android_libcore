@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,6 +26,7 @@
 package java.security;
 
 import java.security.spec.AlgorithmParameterSpec;
+import java.util.Objects;
 
 /**
  * The {@code AlgorithmParameterGenerator} class is used to generate a
@@ -60,23 +61,28 @@ import java.security.spec.AlgorithmParameterSpec;
  * </ul>
  *
  * <P>In case the client does not explicitly initialize the
- * AlgorithmParameterGenerator
- * (via a call to an {@code init} method), each provider must supply (and
- * document) a default initialization. For example, the Sun provider uses a
- * default modulus prime size of 1024 bits for the generation of DSA
- * parameters.
+ * AlgorithmParameterGenerator (via a call to an {@code init} method),
+ * each provider must supply (and document) a default initialization.
+ * See the Keysize Restriction sections of the
+ * {@extLink security_guide_jdk_providers JDK Providers}
+ * document for information on the AlgorithmParameterGenerator defaults
+ * used by JDK providers.
+ * However, note that defaults may vary across different providers.
+ * Additionally, the default value for a provider may change in a future
+ * version. Therefore, it is recommended to explicitly initialize the
+ * AlgorithmParameterGenerator instead of relying on provider-specific defaults.
  *
  * <p> Every implementation of the Java platform is required to support the
  * following standard {@code AlgorithmParameterGenerator} algorithms and
  * keysizes in parentheses:
  * <ul>
- * <li>{@code DiffieHellman} (1024)</li>
- * <li>{@code DSA} (1024)</li>
+ * <li>{@code DiffieHellman} (1024, 2048)</li>
+ * <li>{@code DSA} (1024, 2048)</li>
  * </ul>
  * These algorithms are described in the <a href=
- * "{@docRoot}/../technotes/guides/security/StandardNames.html#AlgorithmParameterGenerator">
+ * "{@docRoot}/../specs/security/standard-names.html#algorithmparametergenerator-algorithms">
  * AlgorithmParameterGenerator section</a> of the
- * Java Cryptography Architecture Standard Algorithm Name Documentation.
+ * Java Security Standard Algorithm Names Specification.
  * Consult the release documentation for your implementation to see if any
  * other algorithms are supported.
  *
@@ -138,23 +144,34 @@ public class AlgorithmParameterGenerator {
      * <p> Note that the list of registered providers may be retrieved via
      * the {@link Security#getProviders() Security.getProviders()} method.
      *
+     * @implNote
+     * The JDK Reference Implementation additionally uses the
+     * {@code jdk.security.provider.preferred}
+     * {@link Security#getProperty(String) Security} property to determine
+     * the preferred provider order for the specified algorithm. This
+     * may be different than the order of providers returned by
+     * {@link Security#getProviders() Security.getProviders()}.
+     *
      * @param algorithm the name of the algorithm this
      * parameter generator is associated with.
      * See the AlgorithmParameterGenerator section in the <a href=
-     * "{@docRoot}/../technotes/guides/security/StandardNames.html#AlgorithmParameterGenerator">
-     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
+     * "{@docRoot}/../specs/security/standard-names.html#algorithmparametergenerator-algorithms">
+     * Java Security Standard Algorithm Names Specification</a>
      * for information about standard algorithm names.
      *
-     * @return the new AlgorithmParameterGenerator object.
+     * @return the new {@code AlgorithmParameterGenerator} object
      *
-     * @exception NoSuchAlgorithmException if no Provider supports an
-     *          AlgorithmParameterGeneratorSpi implementation for the
-     *          specified algorithm.
+     * @throws NoSuchAlgorithmException if no {@code Provider} supports an
+     *         {@code AlgorithmParameterGeneratorSpi} implementation for the
+     *         specified algorithm
+     *
+     * @throws NullPointerException if {@code algorithm} is {@code null}
      *
      * @see Provider
      */
     public static AlgorithmParameterGenerator getInstance(String algorithm)
         throws NoSuchAlgorithmException {
+            Objects.requireNonNull(algorithm, "null algorithm name");
             try {
                 Object[] objs = Security.getImpl(algorithm,
                                                  "AlgorithmParameterGenerator",
@@ -183,23 +200,26 @@ public class AlgorithmParameterGenerator {
      * @param algorithm the name of the algorithm this
      * parameter generator is associated with.
      * See the AlgorithmParameterGenerator section in the <a href=
-     * "{@docRoot}/../technotes/guides/security/StandardNames.html#AlgorithmParameterGenerator">
-     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
+     * "{@docRoot}/../specs/security/standard-names.html#algorithmparametergenerator-algorithms">
+     * Java Security Standard Algorithm Names Specification</a>
      * for information about standard algorithm names.
      *
      * @param provider the string name of the Provider.
      *
-     * @return the new AlgorithmParameterGenerator object.
+     * @return the new {@code AlgorithmParameterGenerator} object
      *
-     * @exception NoSuchAlgorithmException if an AlgorithmParameterGeneratorSpi
-     *          implementation for the specified algorithm is not
-     *          available from the specified provider.
+     * @throws IllegalArgumentException if the provider name is {@code null}
+     *         or empty
      *
-     * @exception NoSuchProviderException if the specified provider is not
-     *          registered in the security provider list.
+     * @throws NoSuchAlgorithmException if an
+     *         {@code AlgorithmParameterGeneratorSpi}
+     *         implementation for the specified algorithm is not
+     *         available from the specified provider
      *
-     * @exception IllegalArgumentException if the provider name is null
-     *          or empty.
+     * @throws NoSuchProviderException if the specified provider is not
+     *         registered in the security provider list
+     *
+     * @throws NullPointerException if {@code algorithm} is {@code null}
      *
      * @see Provider
      */
@@ -207,7 +227,8 @@ public class AlgorithmParameterGenerator {
                                                           String provider)
         throws NoSuchAlgorithmException, NoSuchProviderException
     {
-        if (provider == null || provider.length() == 0)
+        Objects.requireNonNull(algorithm, "null algorithm name");
+        if (provider == null || provider.isEmpty())
             throw new IllegalArgumentException("missing provider");
         Object[] objs = Security.getImpl(algorithm,
                                          "AlgorithmParameterGenerator",
@@ -229,19 +250,23 @@ public class AlgorithmParameterGenerator {
      * @param algorithm the string name of the algorithm this
      * parameter generator is associated with.
      * See the AlgorithmParameterGenerator section in the <a href=
-     * "{@docRoot}/../technotes/guides/security/StandardNames.html#AlgorithmParameterGenerator">
-     * Java Cryptography Architecture Standard Algorithm Name Documentation</a>
+     * "{@docRoot}/../specs/security/standard-names.html#algorithmparametergenerator-algorithms">
+     * Java Security Standard Algorithm Names Specification</a>
      * for information about standard algorithm names.
      *
-     * @param provider the Provider object.
+     * @param provider the {@code Provider} object.
      *
-     * @return the new AlgorithmParameterGenerator object.
+     * @return the new {@code AlgorithmParameterGenerator} object
      *
-     * @exception NoSuchAlgorithmException if an AlgorithmParameterGeneratorSpi
-     *          implementation for the specified algorithm is not available
-     *          from the specified Provider object.
+     * @throws IllegalArgumentException if the specified provider is
+     *         {@code null}
      *
-     * @exception IllegalArgumentException if the specified provider is null.
+     * @throws NoSuchAlgorithmException if an
+     *         {@code AlgorithmParameterGeneratorSpi}
+     *         implementation for the specified algorithm is not available
+     *         from the specified {@code Provider} object
+     *
+     * @throws NullPointerException if {@code algorithm} is {@code null}
      *
      * @see Provider
      *
@@ -251,6 +276,7 @@ public class AlgorithmParameterGenerator {
                                                           Provider provider)
         throws NoSuchAlgorithmException
     {
+        Objects.requireNonNull(algorithm, "null algorithm name");
         if (provider == null)
             throw new IllegalArgumentException("missing provider");
         Object[] objs = Security.getImpl(algorithm,

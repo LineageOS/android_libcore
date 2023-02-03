@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,15 +25,13 @@
 
 package java.security;
 
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Collections;
-import java.io.ObjectStreamField;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamField;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The BasicPermission class extends the Permission class, and
@@ -56,7 +54,7 @@ import java.io.IOException;
  * named permission or you don't.)
  * Subclasses may implement actions on top of BasicPermission,
  * if desired.
- * <p>
+ *
  * @see java.security.Permission
  * @see java.security.Permissions
  * @see java.security.PermissionCollection
@@ -64,6 +62,7 @@ import java.io.IOException;
  *
  * @author Marianne Mueller
  * @author Roland Schemers
+ * @since 1.2
  */
 
 public abstract class BasicPermission extends Permission
@@ -154,8 +153,8 @@ public abstract class BasicPermission extends Permission
      * <P>
      * More specifically, this method returns true if:
      * <ul>
-     * <li> <i>p</i>'s class is the same as this object's class, and
-     * <li> <i>p</i>'s name equals or (in the case of wildcards)
+     * <li> {@code p}'s class is the same as this object's class, and
+     * <li> {@code p}'s name equals or (in the case of wildcards)
      *      is implied by this object's
      *      name. For example, "a.b.*" implies "a.b.c".
      * </ul>
@@ -165,6 +164,7 @@ public abstract class BasicPermission extends Permission
      * @return true if the passed permission is equal to or
      * implied by this permission, false otherwise.
      */
+    @Override
     public boolean implies(Permission p) {
         if ((p == null) || (p.getClass() != getClass()))
             return false;
@@ -193,13 +193,14 @@ public abstract class BasicPermission extends Permission
 
     /**
      * Checks two BasicPermission objects for equality.
-     * Checks that <i>obj</i>'s class is the same as this object's class
+     * Checks that {@code obj}'s class is the same as this object's class
      * and has the same name as this object.
-     * <P>
+     *
      * @param obj the object we are testing for equality with this object.
-     * @return true if <i>obj</i>'s class is the same as this object's class
+     * @return true if {@code obj}'s class is the same as this object's class
      *  and has the same name as this BasicPermission object, false otherwise.
      */
+    @Override
     public boolean equals(Object obj) {
         if (obj == this)
             return true;
@@ -221,6 +222,7 @@ public abstract class BasicPermission extends Permission
      *
      * @return a hash code value for this object.
      */
+    @Override
     public int hashCode() {
         return this.getName().hashCode();
     }
@@ -232,6 +234,7 @@ public abstract class BasicPermission extends Permission
      *
      * @return the empty string "".
      */
+    @Override
     public String getActions() {
         return "";
     }
@@ -248,6 +251,7 @@ public abstract class BasicPermission extends Permission
      * @return a new PermissionCollection object suitable for
      * storing BasicPermissions.
      */
+    @Override
     public PermissionCollection newPermissionCollection() {
         return new BasicPermissionCollection(this.getClass());
     }
@@ -308,7 +312,7 @@ final class BasicPermissionCollection
       * collection must be of the same type.
       * Not serialized; see serialization section at end of class.
       */
-    private transient Map<String, Permission> perms;
+    private transient ConcurrentHashMap<String, Permission> perms;
 
     /**
      * This is set to {@code true} if this BasicPermissionCollection
@@ -320,7 +324,7 @@ final class BasicPermissionCollection
 
     /**
      * The class to which all BasicPermissions in this
-     * BasicPermissionCollection belongs.
+     * BasicPermissionCollection belong.
      *
      * @see #serialPersistentFields
      */
@@ -330,9 +334,8 @@ final class BasicPermissionCollection
      * Create an empty BasicPermissionCollection object.
      *
      */
-
     public BasicPermissionCollection(Class<?> clazz) {
-        perms = new HashMap<String, Permission>(11);
+        perms = new ConcurrentHashMap<>(11);
         all_allowed = false;
         permClass = clazz;
     }
@@ -352,6 +355,7 @@ final class BasicPermissionCollection
      * @exception SecurityException - if this BasicPermissionCollection object
      *                                has been marked readonly
      */
+    @Override
     public void add(Permission permission) {
         if (! (permission instanceof BasicPermission))
             throw new IllegalArgumentException("invalid permission: "+
@@ -373,13 +377,12 @@ final class BasicPermissionCollection
                                                 permission);
         }
 
-        synchronized (this) {
-            perms.put(bp.getCanonicalName(), permission);
-        }
+        String canonName = bp.getCanonicalName();
+        perms.put(canonName, permission);
 
         // No sync on all_allowed; staleness OK
         if (!all_allowed) {
-            if (bp.getCanonicalName().equals("*"))
+            if (canonName.equals("*"))
                 all_allowed = true;
         }
     }
@@ -393,6 +396,7 @@ final class BasicPermissionCollection
      * @return true if "permission" is a proper subset of a permission in
      * the set, false if not.
      */
+    @Override
     public boolean implies(Permission permission) {
         if (! (permission instanceof BasicPermission))
             return false;
@@ -414,11 +418,7 @@ final class BasicPermissionCollection
         String path = bp.getCanonicalName();
         //System.out.println("check "+path);
 
-        Permission x;
-
-        synchronized (this) {
-            x = perms.get(path);
-        }
+        Permission x = perms.get(path);
 
         if (x != null) {
             // we have a direct hit!
@@ -430,14 +430,12 @@ final class BasicPermissionCollection
 
         offset = path.length()-1;
 
-        while ((last = path.lastIndexOf(".", offset)) != -1) {
+        while ((last = path.lastIndexOf('.', offset)) != -1) {
 
             path = path.substring(0, last+1) + "*";
             //System.out.println("check "+path);
 
-            synchronized (this) {
-                x = perms.get(path);
-            }
+            x = perms.get(path);
 
             if (x != null) {
                 return x.implies(permission);
@@ -456,11 +454,9 @@ final class BasicPermissionCollection
      *
      * @return an enumeration of all the BasicPermission objects.
      */
+    @Override
     public Enumeration<Permission> elements() {
-        // Convert Iterator of Map values into an Enumeration
-        synchronized (this) {
-            return Collections.enumeration(perms.values());
-        }
+        return perms.elements();
     }
 
     // Need to maintain serialization interoperability with earlier releases,
@@ -503,9 +499,7 @@ final class BasicPermissionCollection
         Hashtable<String, Permission> permissions =
                 new Hashtable<>(perms.size()*2);
 
-        synchronized (this) {
-            permissions.putAll(perms);
-        }
+        permissions.putAll(perms);
 
         // Write out serializable fields
         ObjectOutputStream.PutField pfields = out.putFields();
@@ -533,7 +527,7 @@ final class BasicPermissionCollection
         @SuppressWarnings("unchecked")
         Hashtable<String, Permission> permissions =
                 (Hashtable<String, Permission>)gfields.get("permissions", null);
-        perms = new HashMap<String, Permission>(permissions.size()*2);
+        perms = new ConcurrentHashMap<>(permissions.size()*2);
         perms.putAll(permissions);
 
         // Get all_allowed
