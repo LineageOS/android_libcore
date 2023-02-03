@@ -1115,14 +1115,14 @@ ojluni/src/main/java/java/util/function/ToLongBiFunction.java,jdk17u/jdk-17.0.6-
 ojluni/src/main/java/java/util/function/ToLongFunction.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/function/ToLongFunction.java
 ojluni/src/main/java/java/util/function/UnaryOperator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/function/UnaryOperator.java
 ojluni/src/main/java/java/util/function/package-info.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/function/package-info.java
-ojluni/src/main/java/java/util/jar/Attributes.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Attributes.java
+ojluni/src/main/java/java/util/jar/Attributes.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/java/util/jar/Attributes.java
 ojluni/src/main/java/java/util/jar/JarEntry.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/jar/JarEntry.java
 ojluni/src/main/java/java/util/jar/JarException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/jar/JarException.java
 ojluni/src/main/java/java/util/jar/JarFile.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarFile.java
 ojluni/src/main/java/java/util/jar/JarInputStream.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarInputStream.java
 ojluni/src/main/java/java/util/jar/JarOutputStream.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/jar/JarOutputStream.java
 ojluni/src/main/java/java/util/jar/JarVerifier.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/JarVerifier.java
-ojluni/src/main/java/java/util/jar/Manifest.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Manifest.java
+ojluni/src/main/java/java/util/jar/Manifest.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/java/util/jar/Manifest.java
 ojluni/src/main/java/java/util/jar/Pack200.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/jar/Pack200.java
 ojluni/src/main/java/java/util/logging/ConsoleHandler.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/logging/ConsoleHandler.java
 ojluni/src/main/java/java/util/logging/ErrorManager.java,jdk11u/jdk-11.0.13-ga,src/java.logging/share/classes/java/util/logging/ErrorManager.java
@@ -1665,6 +1665,7 @@ ojluni/src/main/java/sun/security/util/PropertyExpander.java,jdk8u/jdk8u121-b13,
 ojluni/src/main/java/sun/security/util/Resources.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/Resources.java
 ojluni/src/main/java/sun/security/util/ResourcesMgr.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/ResourcesMgr.java
 ojluni/src/main/java/sun/security/util/SecurityConstants.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/security/util/SecurityConstants.java
+ojluni/src/main/java/sun/security/util/SecurityProperties.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/sun/security/util/SecurityProperties.java
 ojluni/src/main/java/sun/security/util/SignatureFileVerifier.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/util/SignatureFileVerifier.java
 ojluni/src/main/java/sun/security/x509/AVA.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/x509/AVA.java
 ojluni/src/main/java/sun/security/x509/AccessDescription.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/security/x509/AccessDescription.java
