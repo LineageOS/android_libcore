@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1995, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1995, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -77,6 +77,13 @@ static void freeCEN(jzfile *);
 static jint INITIAL_META_COUNT = 2;   /* initial number of entries in meta name array */
 
 /*
+ * Declare library specific JNI_Onload entry if static build
+ */
+#ifdef STATIC_BUILD
+DEF_STATIC_JNI_OnLoad
+#endif
+
+/*
  * The ZFILE_* functions exist to provide some platform-independence with
  * respect to file access needs.
  */
@@ -93,6 +100,9 @@ static jint INITIAL_META_COUNT = 2;   /* initial number of entries in meta name 
 static ZFILE
 ZFILE_Open(const char *fname, int flags) {
 #ifdef WIN32
+    WCHAR *wfname, *wprefixed_fname;
+    size_t fname_length;
+    jlong fhandle;
     const DWORD access =
         (flags & O_RDWR)   ? (GENERIC_WRITE | GENERIC_READ) :
         (flags & O_WRONLY) ?  GENERIC_WRITE :
@@ -114,16 +124,46 @@ ZFILE_Open(const char *fname, int flags) {
         FILE_ATTRIBUTE_NORMAL;
     const DWORD flagsAndAttributes = maybeWriteThrough | maybeDeleteOnClose;
 
-    return (jlong) CreateFile(
-        fname,          /* Wide char path name */
-        access,         /* Read and/or write permission */
-        sharing,        /* File sharing flags */
-        NULL,           /* Security attributes */
-        disposition,        /* creation disposition */
-        flagsAndAttributes, /* flags and attributes */
-        NULL);
+    fname_length = strlen(fname);
+    if (fname_length < MAX_PATH) {
+        return (jlong)CreateFile(
+            fname,              /* path name in multibyte char */
+            access,             /* Read and/or write permission */
+            sharing,            /* File sharing flags */
+            NULL,               /* Security attributes */
+            disposition,        /* creation disposition */
+            flagsAndAttributes, /* flags and attributes */
+            NULL);
+    } else {
+        /* Get required buffer size to convert to Unicode */
+        int wfname_len = MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS,
+                                             fname, -1, NULL, 0);
+        if (wfname_len == 0) {
+            return (jlong)INVALID_HANDLE_VALUE;
+        }
+        if ((wfname = (WCHAR*)malloc(wfname_len * sizeof(WCHAR))) == NULL) {
+            return (jlong)INVALID_HANDLE_VALUE;
+        }
+        if (MultiByteToWideChar(CP_ACP, MB_ERR_INVALID_CHARS,
+                                fname, -1, wfname, wfname_len) == 0) {
+            free(wfname);
+            return (jlong)INVALID_HANDLE_VALUE;
+        }
+        wprefixed_fname = getPrefixed(wfname, (int)fname_length);
+        fhandle = (jlong)CreateFileW(
+            wprefixed_fname,    /* Wide char path name */
+            access,             /* Read and/or write permission */
+            sharing,            /* File sharing flags */
+            NULL,               /* Security attributes */
+            disposition,        /* creation disposition */
+            flagsAndAttributes, /* flags and attributes */
+            NULL);
+        free(wfname);
+        free(wprefixed_fname);
+        return fhandle;
+    }
 #else
-    return JVM_Open(fname, flags, 0);
+    return open(fname, flags, 0);
 #endif
 }
 
@@ -136,7 +176,7 @@ ZFILE_Close(ZFILE zfd) {
 #ifdef WIN32
     CloseHandle((HANDLE) zfd);
 #else
-    JVM_Close(zfd);
+    close(zfd);
 #endif
 }
 
@@ -145,14 +185,6 @@ ZFILE_read(ZFILE zfd, char *buf, jint nbytes) {
 #ifdef WIN32
     return (int) IO_Read(zfd, buf, nbytes);
 #else
-    /*
-     * Calling JVM_Read will return JVM_IO_INTR when Thread.interrupt is called
-     * only on Solaris. Continue reading jar file in this case is the best
-     * thing to do since zip file reading is relatively fast and it is very onerous
-     * for a interrupted thread to deal with this kind of hidden I/O. However, handling
-     * JVM_IO_INTR is tricky and could cause undesired side effect. So we decided
-     * to simply call "read" on Solaris/Linux. See details in bug 6304463.
-     */
     return read(zfd, buf, nbytes);
 #endif
 }
@@ -198,9 +230,8 @@ readFully(ZFILE zfd, void *buf, jlong len) {
         if (n > 0) {
             bp += n;
             len -= n;
-        } else if (n == JVM_IO_ERR && errno == EINTR) {
-          /* Retry after EINTR (interrupted by signal).
-             We depend on the fact that JVM_IO_ERR == -1. */
+        } else if (n == -1 && errno == EINTR) {
+          /* Retry after EINTR (interrupted by signal). */
             continue;
         } else { /* EOF or IO error */
             return -1;
@@ -290,9 +321,9 @@ static jboolean verifyEND(jzfile *zip, jlong endpos, char *endbuf) {
     return (cenpos >= 0 &&
             locpos >= 0 &&
             readFullyAt(zip->zfd, buf, sizeof(buf), cenpos) != -1 &&
-            GETSIG(buf) == CENSIG &&
+            CENSIG_AT(buf) &&
             readFullyAt(zip->zfd, buf, sizeof(buf), locpos) != -1 &&
-            GETSIG(buf) == LOCSIG);
+            LOCSIG_AT(buf));
 }
 
 /*
@@ -584,16 +615,17 @@ readCEN(jzfile *zip, jint knownTotal)
         }
     }
 
-    if (cenlen > endpos)
+    if (cenlen > endpos) {
         ZIP_FORMAT_ERROR("invalid END header (bad central directory size)");
+    }
     cenpos = endpos - cenlen;
 
     /* Get position of first local file (LOC) header, taking into
      * account that there may be a stub prefixed to the zip file. */
     zip->locpos = cenpos - cenoff;
-    if (zip->locpos < 0)
+    if (zip->locpos < 0) {
         ZIP_FORMAT_ERROR("invalid END header (bad central directory offset)");
-
+    }
 #ifdef USE_MMAP
     if (zip->usemmap) {
       /* On Solaris & Linux prior to JDK 6, we used to mmap the whole jar file to
@@ -683,15 +715,18 @@ readCEN(jzfile *zip, jint knownTotal)
         method = CENHOW(cp);
         nlen   = CENNAM(cp);
 
-        if (GETSIG(cp) != CENSIG)
+        if (!CENSIG_AT(cp)) {
             ZIP_FORMAT_ERROR("invalid CEN header (bad signature)");
-        if (CENFLG(cp) & 1)
+        }
+        if (CENFLG(cp) & 1) {
             ZIP_FORMAT_ERROR("invalid CEN header (encrypted entry)");
-        if (method != STORED && method != DEFLATED)
+        }
+        if (method != STORED && method != DEFLATED) {
             ZIP_FORMAT_ERROR("invalid CEN header (bad compression method)");
-        if (cp + CENHDR + nlen > cenend)
+        }
+        if (cp + CENHDR + nlen > cenend) {
             ZIP_FORMAT_ERROR("invalid CEN header (bad header size)");
-
+        }
         /* if the entry is metadata add it to our metadata names */
         if (isMetaName((char *)cp+CENHDR, nlen))
             if (addMetaName(zip, (char *)cp+CENHDR, nlen) != 0)
@@ -706,9 +741,9 @@ readCEN(jzfile *zip, jint knownTotal)
         entries[i].next = table[hsh];
         table[hsh] = i;
     }
-    if (cp != cenend)
+    if (cp != cenend) {
         ZIP_FORMAT_ERROR("invalid CEN header (bad header size)");
-
+    }
     zip->total = i;
     goto Finally;
 
@@ -737,13 +772,13 @@ ZIP_Open_Generic(const char *name, char **pmsg, int mode, jlong lastModified)
     jzfile *zip = NULL;
 
     /* Clear zip error message */
-    if (pmsg != 0) {
+    if (pmsg != NULL) {
         *pmsg = NULL;
     }
 
     zip = ZIP_Get_From_Cache(name, pmsg, lastModified);
 
-    if (zip == NULL && *pmsg == NULL) {
+    if (zip == NULL && pmsg != NULL && *pmsg == NULL) {
         ZFILE zfd = ZFILE_Open(name, mode);
         zip = ZIP_Put_In_Cache(name, zfd, pmsg, lastModified);
     }
@@ -828,7 +863,7 @@ ZIP_Put_In_Cache0(const char *name, ZFILE zfd, char **pmsg, jlong lastModified,
     zip->lastModified = lastModified;
 
     if (zfd == -1) {
-        if (pmsg && JVM_GetLastErrorString(errbuf, sizeof(errbuf)) > 0)
+        if (pmsg && getLastErrorString(errbuf, sizeof(errbuf)) > 0)
             *pmsg = strdup(errbuf);
         freeZip(zip);
         return NULL;
@@ -836,10 +871,7 @@ ZIP_Put_In_Cache0(const char *name, ZFILE zfd, char **pmsg, jlong lastModified,
 
     // Assumption, zfd refers to start of file. Trivially, reuse errbuf.
     if (readFully(zfd, errbuf, 4) != -1) {  // errors will be handled later
-        if (GETSIG(errbuf) == LOCSIG)
-            zip->locsig = JNI_TRUE;
-        else
-            zip->locsig = JNI_FALSE;
+        zip->locsig = LOCSIG_AT(errbuf) ? JNI_TRUE : JNI_FALSE;
     }
 
     len = zip->len = IO_Lseek(zfd, 0, SEEK_END);
@@ -849,7 +881,7 @@ ZIP_Put_In_Cache0(const char *name, ZFILE zfd, char **pmsg, jlong lastModified,
                 *pmsg = strdup("zip file is empty");
             }
         } else { /* error */
-            if (pmsg && JVM_GetLastErrorString(errbuf, sizeof(errbuf)) > 0)
+            if (pmsg && getLastErrorString(errbuf, sizeof(errbuf)) > 0)
                 *pmsg = strdup(errbuf);
         }
         ZFILE_Close(zfd);
@@ -882,7 +914,7 @@ ZIP_Put_In_Cache0(const char *name, ZFILE zfd, char **pmsg, jlong lastModified,
  * set to the error message text if msg != 0. Otherwise, *msg will be
  * set to NULL. Caller doesn't need to free the error message.
  */
-jzfile * JNICALL
+JNIEXPORT jzfile *
 ZIP_Open(const char *name, char **pmsg)
 {
     jzfile *file = ZIP_Open_Generic(name, pmsg, O_RDONLY, 0);
@@ -896,7 +928,7 @@ ZIP_Open(const char *name, char **pmsg)
 /*
  * Closes the specified zip file object.
  */
-void JNICALL
+JNIEXPORT void
 ZIP_Close(jzfile *zip)
 {
     MLOCK(zfiles_lock);
@@ -1120,7 +1152,7 @@ jzentry *
 ZIP_GetEntry(jzfile *zip, char *name, jint ulen)
 {
     if (ulen == 0) {
-        return ZIP_GetEntry2(zip, name, strlen(name), JNI_FALSE);
+        return ZIP_GetEntry2(zip, name, (jint)strlen(name), JNI_FALSE);
     }
     return ZIP_GetEntry2(zip, name, ulen, JNI_TRUE);
 }
@@ -1218,7 +1250,7 @@ ZIP_GetEntry2(jzfile *zip, char *name, jint ulen, jboolean addSlash)
         }
 
         /* Slash is already there? */
-        if (name[ulen-1] == '/') {
+        if (ulen > 0 && name[ulen - 1] == '/') {
             break;
         }
 
@@ -1239,7 +1271,7 @@ Finally:
  * Returns the n'th (starting at zero) zip file entry, or NULL if the
  * specified index was out of range.
  */
-jzentry * JNICALL
+JNIEXPORT jzentry *
 ZIP_GetNextEntry(jzfile *zip, jint n)
 {
     jzentry *result;
@@ -1293,7 +1325,7 @@ ZIP_GetEntryDataOffset(jzfile *zip, jzentry *entry)
             zip->msg = "error reading zip file";
             return -1;
         }
-        if (GETSIG(loc) != LOCSIG) {
+        if (!LOCSIG_AT(loc)) {
             zip->msg = "invalid LOC header (bad signature)";
             return -1;
         }
@@ -1420,7 +1452,7 @@ InflateFully(jzfile *zip, jzentry *entry, void *buf, char **msg)
             case Z_OK:
                 break;
             case Z_STREAM_END:
-                if (count != 0 || strm.total_out != entry->size) {
+                if (count != 0 || strm.total_out != (uInt)entry->size) {
                     *msg = "inflateFully: Unexpected end of stream";
                     inflateEnd(&strm);
                     return JNI_FALSE;
@@ -1431,6 +1463,7 @@ InflateFully(jzfile *zip, jzentry *entry, void *buf, char **msg)
             }
         } while (strm.avail_in > 0);
     }
+
     inflateEnd(&strm);
     return JNI_TRUE;
 }
@@ -1439,13 +1472,13 @@ InflateFully(jzfile *zip, jzentry *entry, void *buf, char **msg)
  * The current implementation does not support reading an entry that
  * has the size bigger than 2**32 bytes in ONE invocation.
  */
-jzentry * JNICALL
+JNIEXPORT jzentry *
 ZIP_FindEntry(jzfile *zip, char *name, jint *sizeP, jint *nameLenP)
 {
     jzentry *entry = ZIP_GetEntry(zip, name, 0);
     if (entry) {
         *sizeP = (jint)entry->size;
-        *nameLenP = strlen(entry->name);
+        *nameLenP = (jint)strlen(entry->name);
     }
     return entry;
 }
@@ -1456,7 +1489,7 @@ ZIP_FindEntry(jzfile *zip, char *name, jint *sizeP, jint *nameLenP)
  * Note: this is called from the separately delivered VM (hotspot/classic)
  * so we have to be careful to maintain the expected behaviour.
  */
-jboolean JNICALL
+JNIEXPORT jboolean
 ZIP_ReadEntry(jzfile *zip, jzentry *entry, unsigned char *buf, char *entryname)
 {
     char *msg;
@@ -1513,4 +1546,159 @@ ZIP_ReadEntry(jzfile *zip, jzentry *entry, unsigned char *buf, char *entryname)
     ZIP_FreeEntry(zip, entry);
 
     return JNI_TRUE;
+}
+
+JNIEXPORT jboolean
+ZIP_InflateFully(void *inBuf, jlong inLen, void *outBuf, jlong outLen, char **pmsg)
+{
+    z_stream strm;
+    int i = 0;
+    memset(&strm, 0, sizeof(z_stream));
+
+    *pmsg = 0; /* Reset error message */
+
+    if (inflateInit2(&strm, MAX_WBITS) != Z_OK) {
+        *pmsg = strm.msg;
+        return JNI_FALSE;
+    }
+
+    strm.next_out = (Bytef *) outBuf;
+    strm.avail_out = (uInt)outLen;
+    strm.next_in = (Bytef *) inBuf;
+    strm.avail_in = (uInt)inLen;
+
+    do {
+        switch (inflate(&strm, Z_PARTIAL_FLUSH)) {
+            case Z_OK:
+                break;
+            case Z_STREAM_END:
+                if (strm.total_out != (uInt)outLen) {
+                    *pmsg = "INFLATER_inflateFully: Unexpected end of stream";
+                    inflateEnd(&strm);
+                    return JNI_FALSE;
+                }
+                break;
+            case Z_DATA_ERROR:
+                *pmsg = "INFLATER_inflateFully: Compressed data corrupted";
+                inflateEnd(&strm);
+                return JNI_FALSE;
+            case Z_MEM_ERROR:
+                *pmsg = "INFLATER_inflateFully: out of memory";
+                inflateEnd(&strm);
+                return JNI_FALSE;
+            default:
+                *pmsg = "INFLATER_inflateFully: internal error";
+                inflateEnd(&strm);
+                return JNI_FALSE;
+        }
+    } while (strm.avail_in > 0);
+
+    inflateEnd(&strm);
+    return JNI_TRUE;
+}
+
+static voidpf tracking_zlib_alloc(voidpf opaque, uInt items, uInt size) {
+  size_t* needed = (size_t*) opaque;
+  *needed += (size_t) items * (size_t) size;
+  return (voidpf) calloc((size_t) items, (size_t) size);
+}
+
+static void tracking_zlib_free(voidpf opaque, voidpf address) {
+  free((void*) address);
+}
+
+static voidpf zlib_block_alloc(voidpf opaque, uInt items, uInt size) {
+  char** range = (char**) opaque;
+  voidpf result = NULL;
+  size_t needed = (size_t) items * (size_t) size;
+
+  if (range[1] - range[0] >= (ptrdiff_t) needed) {
+    result = (voidpf) range[0];
+    range[0] += needed;
+  }
+
+  return result;
+}
+
+static void zlib_block_free(voidpf opaque, voidpf address) {
+  /* Nothing to do. */
+}
+
+static char const* deflateInit2Wrapper(z_stream* strm, int level) {
+  int err = deflateInit2(strm, level >= 0 && level <= 9 ? level : Z_DEFAULT_COMPRESSION,
+                         Z_DEFLATED, 31, 8, Z_DEFAULT_STRATEGY);
+  if (err == Z_MEM_ERROR) {
+    return "Out of memory in deflateInit2";
+  }
+
+  if (err != Z_OK) {
+    return "Internal error in deflateInit2";
+  }
+
+  return NULL;
+}
+
+JNIEXPORT char const*
+ZIP_GZip_InitParams(size_t inLen, size_t* outLen, size_t* tmpLen, int level) {
+  z_stream strm;
+  *tmpLen = 0;
+  char const* errorMsg;
+
+  memset(&strm, 0, sizeof(z_stream));
+  strm.zalloc = tracking_zlib_alloc;
+  strm.zfree = tracking_zlib_free;
+  strm.opaque = (voidpf) tmpLen;
+
+  errorMsg = deflateInit2Wrapper(&strm, level);
+
+  if (errorMsg == NULL) {
+    *outLen = (size_t) deflateBound(&strm, (uLong) inLen);
+    deflateEnd(&strm);
+  }
+
+  return errorMsg;
+}
+
+JNIEXPORT size_t
+ZIP_GZip_Fully(char* inBuf, size_t inLen, char* outBuf, size_t outLen, char* tmp, size_t tmpLen,
+               int level, char* comment, char const** pmsg) {
+  z_stream strm;
+  gz_header hdr;
+  int err;
+  char* block[] = {tmp, tmpLen + tmp};
+  size_t result = 0;
+
+  memset(&strm, 0, sizeof(z_stream));
+  strm.zalloc = zlib_block_alloc;
+  strm.zfree = zlib_block_free;
+  strm.opaque = (voidpf) block;
+
+  *pmsg = deflateInit2Wrapper(&strm, level);
+
+  if (*pmsg == NULL) {
+    strm.next_out = (Bytef *) outBuf;
+    strm.avail_out = (uInt) outLen;
+    strm.next_in = (Bytef *) inBuf;
+    strm.avail_in = (uInt) inLen;
+
+    if (comment != NULL) {
+      memset(&hdr, 0, sizeof(hdr));
+      hdr.comment = (Bytef*) comment;
+      deflateSetHeader(&strm, &hdr);
+    }
+
+    err = deflate(&strm, Z_FINISH);
+
+    if (err == Z_OK || err == Z_BUF_ERROR) {
+      *pmsg = "Buffer too small";
+    } else if (err != Z_STREAM_END) {
+      *pmsg = "Intern deflate error";
+    } else {
+      result = (size_t) strm.total_out;
+    }
+
+    deflateEnd(&strm);
+  }
+
+  return result;
 }
