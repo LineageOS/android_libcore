@@ -712,7 +712,7 @@ public class MulticastSocketTest {
         Enumeration theInterfaces = NetworkInterface.getNetworkInterfaces();
         while (theInterfaces.hasMoreElements()) {
             NetworkInterface thisInterface = (NetworkInterface) theInterfaces.nextElement();
-            if (willWorkForMulticast(thisInterface)) {
+            if (willWorkForMulticast(thisInterface, group)) {
                 if ((!(thisInterface.getInetAddresses().nextElement()).isLoopbackAddress())) {
                     MulticastSocket receivingSocket = createReceivingSocket(0);
                     InetSocketAddress groupAddress =
@@ -905,6 +905,29 @@ public class MulticastSocketTest {
                 && !iface.isPointToPoint()
                 && iface.supportsMulticast()
                 && iface.getInetAddresses().hasMoreElements();
+    }
+
+    private static boolean ipv6Assigned(NetworkInterface iface) {
+        Enumeration<InetAddress> addresses = iface.getInetAddresses();
+        while(addresses.hasMoreElements()){
+            InetAddress addr = addresses.nextElement();
+            if(addr instanceof Inet6Address)
+                return true;
+        }
+        return false;
+    }
+
+    private static boolean willWorkForMulticast(NetworkInterface iface, InetAddress group) throws IOException {
+        return iface.isUp()
+                // Typically loopback interfaces do not support multicast, but we rule them out
+                // explicitly anyway.
+                && !iface.isLoopback()
+                // Point-to-point interfaces are known to cause problems. http://b/23279677
+                && !iface.isPointToPoint()
+                && iface.supportsMulticast()
+                && iface.getInetAddresses().hasMoreElements()
+                // To those interfaces don't have ipv6 address assigned, should not test.
+                && ((group instanceof Inet6Address) ? ipv6Assigned(iface) : true);
     }
 
     private static MulticastSocket createReceivingSocket(int aPort) throws IOException {
