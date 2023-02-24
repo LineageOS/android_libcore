@@ -35,6 +35,7 @@ java/lang/Class#getModule()Ljava/lang/Module;
 java/lang/ClassLoader#findClass(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Class;
 java/lang/ClassLoader#findResource(Ljava/lang/String;Ljava/lang/String;)Ljava/net/URL;
 java/lang/ClassLoader#getUnnamedModule()Ljava/lang/Module;
+java/lang/StackTraceElement#<init>(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V
 java/lang/StackTraceElement#getModuleName()Ljava/lang/String;
 java/lang/StackTraceElement#getModuleVersion()Ljava/lang/String;
 java/util/ResourceBundle#getBundle(Ljava/lang/String;Ljava/lang/Module;)Ljava/util/ResourceBundle;
@@ -120,6 +121,11 @@ java/security/UnresolvedPermission#equals(Ljava/lang/Object;)Z
 java/security/UnresolvedPermission#hashCode()I
 java/security/UnresolvedPermission#newPermissionCollection()Ljava/security/PermissionCollection;
 java/security/UnresolvedPermission#toString()Ljava/lang/String;
+java/util/PropertyPermission#equals(Ljava/lang/Object;)Z
+java/util/PropertyPermission#getActions()Ljava/lang/String;
+java/util/PropertyPermission#hashCode()I
+java/util/PropertyPermission#implies(Ljava/security/Permission;)Z
+java/util/PropertyPermission#newPermissionCollection()Ljava/security/PermissionCollection;
 
 # Only a limited set of javax.security.auth.login APIs are supported due to KeyStore.
 # The rest of APIs are not supported.
@@ -159,6 +165,8 @@ java/util/spi/ResourceBundleProvider
 java/util/spi/ToolProvider
 
 # Neither Runtime$Version nor multi-release JARs are applicable to Android.
+java/lang/Runtime$Version
+java/lang/Runtime#version()Ljava/lang/Runtime$Version;
 java/util/jar/Attributes$Name#MULTI_RELEASE:Ljava/util/jar/Attributes$Name;
 java/util/jar/JarFile#<init>(Ljava/io/File;ZILjava/lang/Runtime$Version;)V
 java/util/jar/JarFile#baseVersion()Ljava/lang/Runtime$Version;
