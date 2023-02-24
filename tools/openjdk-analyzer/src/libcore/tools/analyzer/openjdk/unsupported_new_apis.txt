@@ -157,3 +157,12 @@ java/util/spi/ResourceBundleProvider
 
 # libcore doesn't need a provider of compiler / documentation tool on device.
 java/util/spi/ToolProvider
+
+# Neither Runtime$Version nor multi-release JARs are applicable to Android.
+java/util/jar/Attributes$Name#MULTI_RELEASE:Ljava/util/jar/Attributes$Name;
+java/util/jar/JarFile#<init>(Ljava/io/File;ZILjava/lang/Runtime$Version;)V
+java/util/jar/JarFile#baseVersion()Ljava/lang/Runtime$Version;
+java/util/jar/JarFile#getVersion()Ljava/lang/Runtime$Version;
+java/util/jar/JarFile#isMultiRelease()Z
+java/util/jar/JarFile#runtimeVersion()Ljava/lang/Runtime$Version;
+java/util/jar/JarFile#versionedStream()Ljava/util/stream/Stream;
