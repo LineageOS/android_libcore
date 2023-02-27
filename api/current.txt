@@ -9042,12 +9042,12 @@ package java.security.interfaces {
 
   public interface DSAPrivateKey extends java.security.interfaces.DSAKey java.security.PrivateKey {
     method public java.math.BigInteger getX();
-    field public static final long serialVersionUID = 7776497482533790279L; // 0x6bebab423b256247L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 7776497482533790279L; // 0x6bebab423b256247L
   }
 
   public interface DSAPublicKey extends java.security.interfaces.DSAKey java.security.PublicKey {
     method public java.math.BigInteger getY();
-    field public static final long serialVersionUID = 1234526332779022332L; // 0x1121eb28ab28c7fcL
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 1234526332779022332L; // 0x1121eb28ab28c7fcL
   }
 
   public interface ECKey {
@@ -9056,12 +9056,12 @@ package java.security.interfaces {
 
   public interface ECPrivateKey extends java.security.PrivateKey java.security.interfaces.ECKey {
     method public java.math.BigInteger getS();
-    field public static final long serialVersionUID = -7896394956925609184L; // 0x926a5e9fa2435b20L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = -7896394956925609184L; // 0x926a5e9fa2435b20L
   }
 
   public interface ECPublicKey extends java.security.PublicKey java.security.interfaces.ECKey {
     method public java.security.spec.ECPoint getW();
-    field public static final long serialVersionUID = -3314988629879632826L; // 0xd1fecb679990cc46L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = -3314988629879632826L; // 0xd1fecb679990cc46L
   }
 
   public interface EdECKey {
@@ -9078,6 +9078,7 @@ package java.security.interfaces {
 
   public interface RSAKey {
     method public java.math.BigInteger getModulus();
+    method public default java.security.spec.AlgorithmParameterSpec getParams();
   }
 
   public interface RSAMultiPrimePrivateCrtKey extends java.security.interfaces.RSAPrivateKey {
@@ -9088,7 +9089,7 @@ package java.security.interfaces {
     method public java.math.BigInteger getPrimeP();
     method public java.math.BigInteger getPrimeQ();
     method public java.math.BigInteger getPublicExponent();
-    field public static final long serialVersionUID = 618058533534628008L; // 0x893c8f62dbaf8a8L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 618058533534628008L; // 0x893c8f62dbaf8a8L
   }
 
   public interface RSAPrivateCrtKey extends java.security.interfaces.RSAPrivateKey {
@@ -9098,17 +9099,17 @@ package java.security.interfaces {
     method public java.math.BigInteger getPrimeP();
     method public java.math.BigInteger getPrimeQ();
     method public java.math.BigInteger getPublicExponent();
-    field public static final long serialVersionUID = -5682214253527700368L; // 0xb124b83df8d1ec70L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = -5682214253527700368L; // 0xb124b83df8d1ec70L
   }
 
   public interface RSAPrivateKey extends java.security.PrivateKey java.security.interfaces.RSAKey {
     method public java.math.BigInteger getPrivateExponent();
-    field public static final long serialVersionUID = 5187144804936595022L; // 0x47fc70b7a8c2364eL
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = 5187144804936595022L; // 0x47fc70b7a8c2364eL
   }
 
   public interface RSAPublicKey extends java.security.PublicKey java.security.interfaces.RSAKey {
     method public java.math.BigInteger getPublicExponent();
-    field public static final long serialVersionUID = -8727434096241101194L; // 0x86e1ecedeceab676L
+    field @Deprecated @java.io.Serial public static final long serialVersionUID = -8727434096241101194L; // 0x86e1ecedeceab676L
   }
 
   public interface XECKey {
