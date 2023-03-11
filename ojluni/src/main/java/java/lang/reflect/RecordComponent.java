@@ -106,7 +106,9 @@ public final class RecordComponent implements AnnotatedElement {
      * @jvms 4.7.9.1 Signatures
      */
     public String getGenericSignature() {
-        return signature;
+        // Android-changed: Re-implement on top of ART.
+        // return signature;
+        return field.getSignatureAttribute();
     }
 
     /**
