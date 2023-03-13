@@ -895,7 +895,7 @@ ojluni/src/main/java/java/util/DuplicateFormatFlagsException.java,jdk11u/jdk-11.
 ojluni/src/main/java/java/util/EmptyStackException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EmptyStackException.java
 ojluni/src/main/java/java/util/EnumMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EnumMap.java
 ojluni/src/main/java/java/util/EnumSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EnumSet.java
-ojluni/src/main/java/java/util/Enumeration.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Enumeration.java
+ojluni/src/main/java/java/util/Enumeration.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Enumeration.java
 ojluni/src/main/java/java/util/EventListener.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EventListener.java
 ojluni/src/main/java/java/util/EventListenerProxy.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EventListenerProxy.java
 ojluni/src/main/java/java/util/EventObject.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EventObject.java
