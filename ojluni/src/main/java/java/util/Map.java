@@ -590,7 +590,6 @@ public interface Map<K, V> {
          * @return a map entry equal to the given entry
          * @throws NullPointerException if e is null or if either of its key or value is null
          * @since 17
-         * @hide
          */
         @SuppressWarnings("unchecked")
         public static <K, V> Map.Entry<K, V> copyOf(Map.Entry<? extends K, ? extends V> e) {
