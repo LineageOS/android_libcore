@@ -882,8 +882,8 @@ ojluni/src/main/java/java/util/Calendar.java,jdk11u/jdk-11.0.13-ga,src/java.base
 ojluni/src/main/java/java/util/Collection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Collection.java
 ojluni/src/main/java/java/util/Collections.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Collections.java
 ojluni/src/main/java/java/util/ComparableTimSort.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ComparableTimSort.java
-ojluni/src/main/java/java/util/Comparator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Comparator.java
-ojluni/src/main/java/java/util/Comparators.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Comparators.java
+ojluni/src/main/java/java/util/Comparator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Comparator.java
+ojluni/src/main/java/java/util/Comparators.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Comparators.java
 ojluni/src/main/java/java/util/ConcurrentModificationException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ConcurrentModificationException.java
 ojluni/src/main/java/java/util/Currency.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Currency.java
 ojluni/src/main/java/java/util/Date.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Date.java
