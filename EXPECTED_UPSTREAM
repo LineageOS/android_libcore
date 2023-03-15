@@ -238,7 +238,24 @@ ojluni/src/main/java/java/lang/annotation/Retention.java,jdk17u/jdk-17.0.6-ga,sr
 ojluni/src/main/java/java/lang/annotation/RetentionPolicy.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/annotation/RetentionPolicy.java
 ojluni/src/main/java/java/lang/annotation/Target.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/annotation/Target.java
 ojluni/src/main/java/java/lang/annotation/package-info.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/annotation/package-info.java
+ojluni/src/main/java/java/lang/constant/AsTypeMethodHandleDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/AsTypeMethodHandleDesc.java
+ojluni/src/main/java/java/lang/constant/ClassDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/ClassDesc.java
+ojluni/src/main/java/java/lang/constant/Constable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/Constable.java
+ojluni/src/main/java/java/lang/constant/ConstantDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/ConstantDesc.java
+ojluni/src/main/java/java/lang/constant/ConstantDescs.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/ConstantDescs.java
+ojluni/src/main/java/java/lang/constant/ConstantUtils.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/ConstantUtils.java
+ojluni/src/main/java/java/lang/constant/DirectMethodHandleDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/DirectMethodHandleDesc.java
+ojluni/src/main/java/java/lang/constant/DirectMethodHandleDescImpl.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/DirectMethodHandleDescImpl.java
+ojluni/src/main/java/java/lang/constant/DynamicCallSiteDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/DynamicCallSiteDesc.java
+ojluni/src/main/java/java/lang/constant/DynamicConstantDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/DynamicConstantDesc.java
+ojluni/src/main/java/java/lang/constant/MethodHandleDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/MethodHandleDesc.java
+ojluni/src/main/java/java/lang/constant/MethodTypeDesc.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/MethodTypeDesc.java
+ojluni/src/main/java/java/lang/constant/MethodTypeDescImpl.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/MethodTypeDescImpl.java
+ojluni/src/main/java/java/lang/constant/PrimitiveClassDescImpl.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/PrimitiveClassDescImpl.java
+ojluni/src/main/java/java/lang/constant/ReferenceClassDescImpl.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/ReferenceClassDescImpl.java
+ojluni/src/main/java/java/lang/constant/package-info.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/constant/package-info.java
 ojluni/src/main/java/java/lang/invoke/CallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/CallSite.java
+ojluni/src/main/java/java/lang/invoke/ConstantBootstraps.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/invoke/ConstantBootstraps.java
 ojluni/src/main/java/java/lang/invoke/ConstantCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/ConstantCallSite.java
 ojluni/src/main/java/java/lang/invoke/LambdaConversionException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/LambdaConversionException.java
 ojluni/src/main/java/java/lang/invoke/MethodHandle.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodHandle.java
@@ -251,6 +268,7 @@ ojluni/src/main/java/java/lang/invoke/MethodType.java,jdk8u/jdk8u121-b13,jdk/src
 ojluni/src/main/java/java/lang/invoke/MethodTypeForm.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MethodTypeForm.java
 ojluni/src/main/java/java/lang/invoke/MutableCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/MutableCallSite.java
 ojluni/src/main/java/java/lang/invoke/Stable.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/Stable.java
+ojluni/src/main/java/java/lang/invoke/TypeDescriptor.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/invoke/TypeDescriptor.java
 # java.lang.invoke.Transformers isn't in the upstream OpenJDK
 ojluni/src/main/java/java/lang/invoke/VarHandle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/invoke/VarHandle.java
 ojluni/src/main/java/java/lang/invoke/VolatileCallSite.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/lang/invoke/VolatileCallSite.java
@@ -1891,6 +1909,12 @@ ojluni/src/test/java/lang/StringBuilder/Comparison.java,jdk17u/jdk-17.0.6-ga,tes
 ojluni/src/test/java/lang/StringBuilder/EnsureCapacity.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/StringBuilder/EnsureCapacity.java
 ojluni/src/test/java/lang/StringBuilder/Insert.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/StringBuilder/Insert.java
 ojluni/src/test/java/lang/StringBuilder/Supplementary.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/StringBuilder/Supplementary.java
+ojluni/src/test/java/lang/constant/ConvertTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/ConvertTest.java
+ojluni/src/test/java/lang/constant/DynamicConstantDescTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/DynamicConstantDescTest.java
+ojluni/src/test/java/lang/constant/NameValidationTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/NameValidationTest.java
+ojluni/src/test/java/lang/constant/access_test/pkg1/MethodTypeDescriptorAccessTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/access_test/pkg1/MethodTypeDescriptorAccessTest.java
+ojluni/src/test/java/lang/constant/access_test/pkg2/NonPublicClass.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/access_test/pkg2/NonPublicClass.java
+ojluni/src/test/java/lang/constant/access_test/pkg2/PublicClass.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/constant/access_test/pkg2/PublicClass.java
 ojluni/src/test/java/lang/invoke/ClassValueTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/lang/invoke/ClassValueTest.java
 ojluni/src/test/java/lang/invoke/MethodHandlesGeneralTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/MethodHandlesGeneralTest.java
 ojluni/src/test/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/lang/invoke/VarHandles/VarHandleBaseByteArrayTest.java
