@@ -893,8 +893,8 @@ ojluni/src/main/java/java/util/DoubleSummaryStatistics.java,jdk11u/jdk-11.0.13-g
 ojluni/src/main/java/java/util/DualPivotQuicksort.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DualPivotQuicksort.java
 ojluni/src/main/java/java/util/DuplicateFormatFlagsException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DuplicateFormatFlagsException.java
 ojluni/src/main/java/java/util/EmptyStackException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EmptyStackException.java
-ojluni/src/main/java/java/util/EnumMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EnumMap.java
-ojluni/src/main/java/java/util/EnumSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/EnumSet.java
+ojluni/src/main/java/java/util/EnumMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EnumMap.java
+ojluni/src/main/java/java/util/EnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EnumSet.java
 ojluni/src/main/java/java/util/Enumeration.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Enumeration.java
 ojluni/src/main/java/java/util/EventListener.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EventListener.java
 ojluni/src/main/java/java/util/EventListenerProxy.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EventListenerProxy.java
@@ -923,7 +923,7 @@ ojluni/src/main/java/java/util/IntSummaryStatistics.java,jdk11u/jdk-11.0.13-ga,s
 ojluni/src/main/java/java/util/InvalidPropertiesFormatException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/InvalidPropertiesFormatException.java
 ojluni/src/main/java/java/util/Iterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Iterator.java
 ojluni/src/main/java/java/util/JapaneseImperialCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/JapaneseImperialCalendar.java
-ojluni/src/main/java/java/util/JumboEnumSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/JumboEnumSet.java
+ojluni/src/main/java/java/util/JumboEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/JumboEnumSet.java
 ojluni/src/main/java/java/util/KeyValueHolder.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/KeyValueHolder.java
 ojluni/src/main/java/java/util/LinkedHashMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedHashMap.java
 ojluni/src/main/java/java/util/LinkedHashSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedHashSet.java
@@ -956,7 +956,7 @@ ojluni/src/main/java/java/util/PropertyResourceBundle.java,jdk8u/jdk8u121-b13,jd
 ojluni/src/main/java/java/util/Queue.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Queue.java
 ojluni/src/main/java/java/util/Random.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Random.java
 ojluni/src/main/java/java/util/RandomAccess.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/RandomAccess.java
-ojluni/src/main/java/java/util/RegularEnumSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
+ojluni/src/main/java/java/util/RegularEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
 ojluni/src/main/java/java/util/Scanner.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Scanner.java
 ojluni/src/main/java/java/util/ServiceConfigurationError.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ServiceConfigurationError.java
