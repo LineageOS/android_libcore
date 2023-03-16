@@ -942,7 +942,7 @@ ojluni/src/main/java/java/util/InvalidPropertiesFormatException.java,jdk17u/jdk-
 ojluni/src/main/java/java/util/Iterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Iterator.java
 ojluni/src/main/java/java/util/JapaneseImperialCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/JapaneseImperialCalendar.java
 ojluni/src/main/java/java/util/JumboEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/JumboEnumSet.java
-ojluni/src/main/java/java/util/KeyValueHolder.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/KeyValueHolder.java
+ojluni/src/main/java/java/util/KeyValueHolder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/KeyValueHolder.java
 ojluni/src/main/java/java/util/LinkedHashMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedHashMap.java
 ojluni/src/main/java/java/util/LinkedHashSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedHashSet.java
 ojluni/src/main/java/java/util/LinkedList.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedList.java
