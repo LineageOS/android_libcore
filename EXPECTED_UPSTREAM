@@ -965,8 +965,8 @@ ojluni/src/main/java/java/util/Set.java,jdk17u/jdk-17.0.6-ga,src/java.base/share
 ojluni/src/main/java/java/util/SimpleTimeZone.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/SimpleTimeZone.java
 ojluni/src/main/java/java/util/SortedMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/SortedMap.java
 ojluni/src/main/java/java/util/SortedSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/SortedSet.java
-ojluni/src/main/java/java/util/Spliterator.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Spliterator.java
-ojluni/src/main/java/java/util/Spliterators.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Spliterators.java
+ojluni/src/main/java/java/util/Spliterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Spliterator.java
+ojluni/src/main/java/java/util/Spliterators.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Spliterators.java
 ojluni/src/main/java/java/util/SplittableRandom.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/SplittableRandom.java
 ojluni/src/main/java/java/util/Stack.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Stack.java
 ojluni/src/main/java/java/util/StringJoiner.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/StringJoiner.java
