@@ -894,7 +894,7 @@ ojluni/src/main/java/java/util/ArrayList.java,jdk17u/jdk-17.0.6-ga,src/java.base
 ojluni/src/main/java/java/util/ArrayPrefixHelpers.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ArrayPrefixHelpers.java
 ojluni/src/main/java/java/util/Arrays.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Arrays.java
 ojluni/src/main/java/java/util/ArraysParallelSortHelpers.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ArraysParallelSortHelpers.java
-ojluni/src/main/java/java/util/Base64.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Base64.java
+ojluni/src/main/java/java/util/Base64.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Base64.java
 ojluni/src/main/java/java/util/BitSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/BitSet.java
 ojluni/src/main/java/java/util/Calendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Calendar.java
 ojluni/src/main/java/java/util/Collection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Collection.java
