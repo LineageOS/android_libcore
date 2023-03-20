@@ -903,7 +903,7 @@ ojluni/src/main/java/java/util/ComparableTimSort.java,jdk17u/jdk-17.0.6-ga,src/j
 ojluni/src/main/java/java/util/Comparator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Comparator.java
 ojluni/src/main/java/java/util/Comparators.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Comparators.java
 ojluni/src/main/java/java/util/ConcurrentModificationException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ConcurrentModificationException.java
-ojluni/src/main/java/java/util/Currency.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Currency.java
+ojluni/src/main/java/java/util/Currency.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Currency.java
 ojluni/src/main/java/java/util/Date.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Date.java
 ojluni/src/main/java/java/util/Deque.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Deque.java
 ojluni/src/main/java/java/util/Dictionary.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Dictionary.java
