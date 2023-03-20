@@ -1000,7 +1000,7 @@ ojluni/src/main/java/java/util/Tripwire.java,jdk11u/jdk-11.0.13-ga,src/java.base
 ojluni/src/main/java/java/util/UUID.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/UUID.java
 ojluni/src/main/java/java/util/UnknownFormatConversionException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/UnknownFormatConversionException.java
 ojluni/src/main/java/java/util/UnknownFormatFlagsException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/UnknownFormatFlagsException.java
-ojluni/src/main/java/java/util/Vector.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Vector.java
+ojluni/src/main/java/java/util/Vector.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Vector.java
 ojluni/src/main/java/java/util/WeakHashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/WeakHashMap.java
 ojluni/src/main/java/java/util/XMLUtils.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/java/util/XMLUtils.java
 ojluni/src/main/java/java/util/concurrent/AbstractExecutorService.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/concurrent/AbstractExecutorService.java
