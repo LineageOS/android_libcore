@@ -996,7 +996,7 @@ ojluni/src/main/java/java/util/TimerTask.java,jdk17u/jdk-17.0.6-ga,src/java.base
 ojluni/src/main/java/java/util/TooManyListenersException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TooManyListenersException.java
 ojluni/src/main/java/java/util/TreeMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/TreeMap.java
 ojluni/src/main/java/java/util/TreeSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TreeSet.java
-ojluni/src/main/java/java/util/Tripwire.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Tripwire.java
+ojluni/src/main/java/java/util/Tripwire.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Tripwire.java
 ojluni/src/main/java/java/util/UUID.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/UUID.java
 ojluni/src/main/java/java/util/UnknownFormatConversionException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/UnknownFormatConversionException.java
 ojluni/src/main/java/java/util/UnknownFormatFlagsException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/UnknownFormatFlagsException.java
