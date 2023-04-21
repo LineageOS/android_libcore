@@ -216,7 +216,8 @@ static bool isIPv4MappedAddress(const sockaddr *sa) {
             _wasSignaled = _monitor.wasSignaled(); \
         } \
         if (_wasSignaled) { \
-            jniThrowException(jni_env, "java/io/InterruptedIOException", # syscall_name " interrupted"); \
+            jniThrowException(jni_env, "java/io/InterruptedIOException", \
+                # syscall_name " interrupted by close() on another thread"); \
             _rc = -1; \
             break; \
         } \
