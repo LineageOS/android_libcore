@@ -14034,6 +14034,7 @@ package java.util {
     method @NonNull public static <K, V> java.util.Comparator<java.util.Map.Entry<K,V>> comparingByKey(@NonNull java.util.Comparator<? super K>);
     method @NonNull public static <K, V extends java.lang.Comparable<? super V>> java.util.Comparator<java.util.Map.Entry<K,V>> comparingByValue();
     method @NonNull public static <K, V> java.util.Comparator<java.util.Map.Entry<K,V>> comparingByValue(@NonNull java.util.Comparator<? super V>);
+    method @NonNull public static <K, V> java.util.Map.Entry<K,V> copyOf(@NonNull java.util.Map.Entry<? extends K,? extends V>);
     method public boolean equals(@Nullable Object);
     method public K getKey();
     method public V getValue();
