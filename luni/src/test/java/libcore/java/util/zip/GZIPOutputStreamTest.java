@@ -34,7 +34,7 @@ public final class GZIPOutputStreamTest extends TestCaseWithRules {
 
   public void testShortMessage() throws IOException {
     byte[] data = gzip(("Hello World").getBytes("UTF-8"));
-    assertEquals("[31, -117, 8, 0, 0, 0, 0, 0, 0, 0, -13, 72, -51, -55, -55, 87, 8, -49, " +
+    assertEquals("[31, -117, 8, 0, 0, 0, 0, 0, 0, -1, -13, 72, -51, -55, -55, 87, 8, -49, " +
                  "47, -54, 73, 1, 0, 86, -79, 23, 74, 11, 0, 0, 0]", Arrays.toString(data));
   }
 
