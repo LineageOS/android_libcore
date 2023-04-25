@@ -26,7 +26,7 @@
 package java.util;
 
 import java.io.InvalidObjectException;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
 
 /**
  * This class implements the {@code Set} interface, backed by a hash table
@@ -91,6 +91,7 @@ public class HashSet<E>
     extends AbstractSet<E>
     implements Set<E>, Cloneable, java.io.Serializable
 {
+    @java.io.Serial
     static final long serialVersionUID = -5024744406713321676L;
 
     private transient HashMap<E,Object> map;
@@ -271,6 +272,7 @@ public class HashSet<E>
      *             (int), followed by all of its elements (each an Object) in
      *             no particular order.
      */
+    @java.io.Serial
     private void writeObject(java.io.ObjectOutputStream s)
         throws java.io.IOException {
         // Write out any hidden serialization magic
@@ -292,6 +294,7 @@ public class HashSet<E>
      * Reconstitute the {@code HashSet} instance from a stream (that is,
      * deserialize it).
      */
+    @java.io.Serial
     private void readObject(java.io.ObjectInputStream s)
         throws java.io.IOException, ClassNotFoundException {
         // Consume and ignore stream fields (currently zero).
@@ -358,5 +361,15 @@ public class HashSet<E>
      */
     public Spliterator<E> spliterator() {
         return new HashMap.KeySpliterator<>(map, 0, -1, 0, 0);
+    }
+
+    @Override
+    public Object[] toArray() {
+        return map.keysToArray(new Object[map.size()]);
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return map.keysToArray(map.prepareArray(a));
     }
 }
