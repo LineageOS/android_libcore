@@ -650,7 +650,7 @@ class ZipFile implements ZipConstants, Closeable {
         e.size = getEntrySize(jzentry);
         e.csize = getEntryCSize(jzentry);
         e.method = getEntryMethod(jzentry);
-        e.setExtra0(getEntryBytes(jzentry, JZENTRY_EXTRA), false);
+        e.setExtra0(getEntryBytes(jzentry, JZENTRY_EXTRA), false, false);
         byte[] bcomm = getEntryBytes(jzentry, JZENTRY_COMMENT);
         if (bcomm == null) {
             e.comment = null;

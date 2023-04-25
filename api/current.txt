@@ -17996,6 +17996,7 @@ package java.util.zip {
     method public String getName();
     method public long getSize();
     method public long getTime();
+    method public java.time.LocalDateTime getTimeLocal();
     method public boolean isDirectory();
     method public void setComment(String);
     method public void setCompressedSize(long);
@@ -18007,6 +18008,7 @@ package java.util.zip {
     method public void setMethod(int);
     method public void setSize(long);
     method public void setTime(long);
+    method public void setTimeLocal(java.time.LocalDateTime);
     field public static final int CENATT = 36; // 0x24
     field public static final int CENATX = 38; // 0x26
     field public static final int CENCOM = 32; // 0x20

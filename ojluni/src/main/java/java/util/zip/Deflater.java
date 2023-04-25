@@ -583,6 +583,17 @@ class Deflater {
             throw new NullPointerException("Deflater has been closed");
     }
 
+    // Android-added: this method is from OpenJDK 17.
+    /**
+     * Returns the value of 'finish' flag.
+     * 'finish' will be set to true if def.finish() method is called.
+     */
+    boolean shouldFinish() {
+        synchronized (zsRef) {
+            return finish;
+        }
+    }
+
     // Android-changed: initIDs handled in register method.
     // private native static void initIDs();
     private native static long init(int level, int strategy, boolean nowrap);
