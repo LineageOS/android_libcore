@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.attribute.FileTime;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
@@ -378,10 +379,11 @@ public class ZipOutputStreamTest extends TestCaseWithRules {
 
         // Set last access time and test that calling setTime with value >
         // ZipEntry.UPPER_DOSTIME_BOUND will set the info-zip last-modified extended
-        // timestamp
+        // timestamp. ZipEntry.UPPER_DOSTIME_BOUND is lower than actual DOS time upper
+        // bound, so adding 3 years to make sure that it is really out of upper bound.
         entries.add(zipEntry = new ZipEntry("test_setLastAccessTime"));
         zipEntry.setLastAccessTime(FileTime.fromMillis(3000));
-        zipEntry.setTime(timestampBeyondDostimeBound);
+        zipEntry.setTime(timestampBeyondDostimeBound + Duration.ofDays(3 * 365).toMillis());
         assertNotNull(mtimeField.get(zipEntry));
 
         for (ZipEntry entry : entries) {
