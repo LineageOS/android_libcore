@@ -24,27 +24,27 @@ package test.java.util.LinkedHashMap;
 
 import java.util.*;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 /**
  * @test
  * @bug 8030016
  * @summary computeIfAbsent would generate spurious access
  */
-public class ComputeIfAbsentAccessOrder {
 
-    @Test
-    public void testComputeIfAbsent() {
+import java.util.*;
+
+public class ComputeIfAbsentAccessOrder {
+    public static void main(String args[]) throws Throwable {
         LinkedHashMap<String,Object> map = new LinkedHashMap<>(2, 0.75f, true);
         map.put("first", null);
         map.put("second", null);
 
         map.computeIfAbsent("first", l -> null); // should do nothing
 
-        Optional<String> key = map.keySet().stream()
-                .findFirst();
-        Assert.assertFalse(key.isEmpty());
-        Assert.assertTrue("first".equals(key.get()));
+        String key = map.keySet().stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("no value"));
+        if(!"first".equals(key)) {
+            throw new RuntimeException("not expected value " + "first" + "!=" + key);
+        }
     }
 }

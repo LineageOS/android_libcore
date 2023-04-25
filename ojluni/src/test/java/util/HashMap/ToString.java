@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,26 +23,20 @@
 
 /*
  * @test
- * @bug 4627516
- * @summary HashMap.Entry.setValue() returns new value (as opposed to old)
- * @author jbloch
+ * @bug 4189821
+ * @summary HashMap's entry.toString threw a null pointer exc if the HashMap
+ *          contained null keys or values.
  */
+
 package test.java.util.HashMap;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class SetValue {
-    static final String key      = "key";
-    static final String oldValue = "old";
-    static final String newValue = "new";
-
+public class ToString {
     public static void main(String[] args) throws Exception {
         Map m = new HashMap();
-        m.put(key, oldValue);
-        Map.Entry e = (Map.Entry) m.entrySet().iterator().next();
-        Object returnVal = e.setValue(newValue);
-        if (!returnVal.equals(oldValue))
-            throw new RuntimeException("Return value: " + returnVal);
+        m.put(null, null);
+        m.entrySet().iterator().next().toString();
     }
 }

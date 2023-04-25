@@ -924,7 +924,7 @@ ojluni/src/main/java/java/util/Formatter.java,jdk11u/jdk-11.0.13-ga,src/java.bas
 ojluni/src/main/java/java/util/FormatterClosedException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/FormatterClosedException.java
 ojluni/src/main/java/java/util/GregorianCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/GregorianCalendar.java
 ojluni/src/main/java/java/util/HashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/HashMap.java
-ojluni/src/main/java/java/util/HashSet.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/HashSet.java
+ojluni/src/main/java/java/util/HashSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/HashSet.java
 ojluni/src/main/java/java/util/Hashtable.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Hashtable.java
 ojluni/src/main/java/java/util/HexFormat.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/HexFormat.java
 ojluni/src/main/java/java/util/IdentityHashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IdentityHashMap.java
@@ -943,7 +943,7 @@ ojluni/src/main/java/java/util/Iterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/
 ojluni/src/main/java/java/util/JapaneseImperialCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/JapaneseImperialCalendar.java
 ojluni/src/main/java/java/util/JumboEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/JumboEnumSet.java
 ojluni/src/main/java/java/util/KeyValueHolder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/KeyValueHolder.java
-ojluni/src/main/java/java/util/LinkedHashMap.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LinkedHashMap.java
+ojluni/src/main/java/java/util/LinkedHashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LinkedHashMap.java
 ojluni/src/main/java/java/util/LinkedHashSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LinkedHashSet.java
 ojluni/src/main/java/java/util/LinkedList.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LinkedList.java
 ojluni/src/main/java/java/util/List.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/List.java
@@ -2239,6 +2239,17 @@ ojluni/src/test/java/util/Base64/mimeEncode.txt,jdk17u/jdk-17.0.6-ga,test/jdk/ja
 ojluni/src/test/java/util/Base64/plain.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Base64/plain.txt
 ojluni/src/test/java/util/Base64/urlEncode.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Base64/urlEncode.txt
 ojluni/src/test/java/util/Collections/NCopies.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collections/NCopies.java
+ojluni/src/test/java/util/HashMap/HashMapCloneLeak.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/HashMapCloneLeak.java
+ojluni/src/test/java/util/HashMap/KeySetRemove.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/KeySetRemove.java
+ojluni/src/test/java/util/HashMap/NullKeyAtResize.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/NullKeyAtResize.java
+ojluni/src/test/java/util/HashMap/OverrideIsEmpty.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/OverrideIsEmpty.java
+ojluni/src/test/java/util/HashMap/PutNullKey.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/PutNullKey.java
+ojluni/src/test/java/util/HashMap/ReplaceExisting.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/ReplaceExisting.java
+ojluni/src/test/java/util/HashMap/SetValue.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/SetValue.java
+ojluni/src/test/java/util/HashMap/ToArray.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/ToArray.java
+ojluni/src/test/java/util/HashMap/ToString.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/ToString.java
+ojluni/src/test/java/util/HashMap/TreeBinAssert.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/TreeBinAssert.java
+ojluni/src/test/java/util/HashMap/WhiteBoxResizeTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/WhiteBoxResizeTest.java
 ojluni/src/test/java/util/HashSet/Serialization.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashSet/Serialization.java
 ojluni/src/test/java/util/HexFormat/HexFormatTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HexFormat/HexFormatTest.java
 ojluni/src/test/java/util/IdentityHashMap/Capacity.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/IdentityHashMap/Capacity.java
@@ -2246,6 +2257,11 @@ ojluni/src/test/java/util/IdentityHashMap/DistinctEntrySetElements.java,jdk17u/j
 ojluni/src/test/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/IdentityHashMap/EntrySetIteratorRemoveInvalidatesEntry.java
 ojluni/src/test/java/util/IdentityHashMap/ToArray.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/IdentityHashMap/ToArray.java
 ojluni/src/test/java/util/IdentityHashMap/ToString.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/IdentityHashMap/ToString.java
+ojluni/src/test/java/util/LinkedHashMap/Basic.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/Basic.java
+ojluni/src/test/java/util/LinkedHashMap/Cache.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/Cache.java
+ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java
+ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
+ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashSet/Basic.java
 ojluni/src/test/java/util/PriorityQueue/AddNonComparable.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/PriorityQueue/AddNonComparable.java
 ojluni/src/test/java/util/PriorityQueue/ForgetMeNot.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/PriorityQueue/ForgetMeNot.java
 ojluni/src/test/java/util/PriorityQueue/NoNulls.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/PriorityQueue/NoNulls.java

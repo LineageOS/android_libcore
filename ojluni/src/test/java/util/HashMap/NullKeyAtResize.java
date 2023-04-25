@@ -32,13 +32,8 @@ package test.java.util.HashMap;
 
 import java.util.*;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 public class NullKeyAtResize {
-
-    @Test
-    public void test() throws Exception {
+    public static void main(String[] args) throws Exception {
         List<Object> old_order = new ArrayList<>();
         Map<Object,Object> m = new HashMap<>(16);
         int number = 0;
@@ -59,6 +54,8 @@ public class NullKeyAtResize {
             old_order.clear();
             old_order.addAll(m.keySet());
         }
-        Assert.assertNotEquals(number, 100000, "Resize never occurred");
+        if(number == 100000) {
+            throw new Error("Resize never occurred");
+        }
     }
 }
