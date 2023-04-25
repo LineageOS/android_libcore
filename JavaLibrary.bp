@@ -907,16 +907,11 @@ java_library {
 }
 
 // A special set of system modules needed to build art.module.public.api
-// that contain nullability annotations when targeting java language level 1.9
-// and above.
 java_system_modules {
     name: "java-current-stubs-system-modules",
     libs: [
         // Minimal set of classes required for a system module.
         "java.current.stubs",
-
-        // The nullability annotations used by the generated stubs.
-        "stub-annotations",
     ],
 }
 
