@@ -738,7 +738,8 @@ public class MethodHandles {
                             && !name.startsWith("java.util.concurrent.")
                             && !name.equals("java.lang.Daemons$FinalizerWatchdogDaemon")
                             && !name.equals("java.lang.runtime.ObjectMethods")
-                            && !name.equals("java.lang.Thread")) ||
+                            && !name.equals("java.lang.Thread")
+                            && !name.equals("java.util.HashMap")) ||
                         (name.startsWith("sun.")
                                 && !name.startsWith("sun.invoke.")
                                 && !name.equals("sun.reflect.ReflectionFactory"))) {

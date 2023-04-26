@@ -42,25 +42,11 @@ import org.testng.annotations.Test;
  * @author tvaleev
  */
 public class ToArray {
-
-    @Test
-    public void testOrderedMap() {
-        checkMap(true);
-    }
-
-    @Test
-    public void testUnorderedMap() {
+    public static void main(String[] args) {
         checkMap(false);
-    }
-
-    @Test
-    public void testOrderedSet() {
-        checkSet(true);
-    }
-
-    @Test
-    public void testUnorderedSet() {
+        checkMap(true);
         checkSet(false);
+        checkSet(true);
     }
 
     private static <T extends Comparable<T>> void checkToArray(String message, T[] expected, Collection<T> collection,
@@ -82,44 +68,52 @@ public class ToArray {
                                                                     Collection<T> collection, boolean ignoreOrder) {
         T[] res = collection.toArray(inputArray);
         if (expected.length <= inputArray.length && res != inputArray) {
-            Assert.fail(message + ": not the same array returned");
+            throw new AssertionError(message + ": not the same array returned");
         }
-        Assert.assertEquals(res.getClass(), expected.getClass(),
-            message + ": wrong class returned: " + res.getClass());
+        if (res.getClass() != expected.getClass()) {
+            throw new AssertionError(message + ": wrong class returned: " + res.getClass());
+        }
         if (res.length < expected.length) {
-            Assert.fail(message + ": length is smaller than expected: " + res.length + " < " + expected.length);
+            throw new AssertionError(message + ": length is smaller than expected: " + res.length + " < " + expected.length);
         }
         if (ignoreOrder) {
             Arrays.sort(res, 0, Math.min(res.length, expected.length));
         }
         if (inputArray.length <= expected.length) {
             if (!Arrays.equals(res, expected)) {
-                Assert.fail(message + ": not equal: " + Arrays.toString(expected) + " != " +
+                throw new AssertionError(message + ": not equal: " + Arrays.toString(expected) + " != " +
                         Arrays.toString(res));
             }
         } else {
             int mismatch = Arrays.mismatch(expected, res);
-            Assert.assertEquals(mismatch, expected.length,
-                message + ": mismatch at " + mismatch);
-            Assert.assertNull(res[expected.length],
-                message + ": no null at position " + expected.length);
+            if (mismatch != expected.length) {
+                throw new AssertionError(message + ": mismatch at " + mismatch);
+            }
+            if (res[expected.length] != null) {
+                throw new AssertionError(message + ": no null at position " + expected.length);
+            }
             // The tail of bigger array after expected.length position must be untouched
             mismatch = Arrays
                     .mismatch(expected, 1, expected.length, res, expected.length + 1, res.length);
-            Assert.assertEquals(mismatch, -1, message + ": mismatch at " + mismatch);
+            if (mismatch != -1) {
+                throw new AssertionError(message + ": mismatch at " + mismatch);
+            }
         }
     }
 
     private static <T extends Comparable<T>> void checkToObjectArray(String message, T[] expected,
                                                                      Collection<T> collection, boolean ignoreOrder) {
         Object[] objects = collection.toArray();
-        Assert.assertEquals(objects.getClass(), Object[].class,
-            message + ": wrong class returned: " + objects.getClass());
+        if (objects.getClass() != Object[].class) {
+            throw new AssertionError(message + ": wrong class returned: " + objects.getClass());
+        }
         if (ignoreOrder) {
             Arrays.sort(objects);
         }
         int mismatch = Arrays.mismatch(expected, objects);
-        Assert.assertEquals(mismatch, -1,message + ": mismatch at " + mismatch);
+        if (mismatch != -1) {
+            throw new AssertionError(message + ": mismatch at " + mismatch);
+        }
     }
 
     private static void checkMap(boolean ordered) {
