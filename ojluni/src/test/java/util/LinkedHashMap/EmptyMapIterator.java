@@ -32,20 +32,15 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 public class EmptyMapIterator {
-
-    @Test
-    public void testEmptyMapIterator() {
+    public static void main(String[] args) throws Exception {
         HashMap map = new HashMap();
         Iterator iter = map.entrySet().iterator();
         map.put("key", "value");
 
         try {
             iter.next();
-            Assert.fail();
+            throw new Exception("No exception thrown");
         } catch (ConcurrentModificationException e) {
         }
     }

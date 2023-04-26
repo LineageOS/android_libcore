@@ -22,6 +22,11 @@
     <property name="multiLines" value="1,2,3,9,10" />
   </module>
 
+  <!-- Red Hat contributed OpenJDK tests -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+              value="ojluni/src/test/java/util/HashMap/WhiteBoxResizeTest.java" />
+  </module>
   <!-- Google contributed OpenJDK tests -->
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern"
