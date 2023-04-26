@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2018, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -48,12 +48,12 @@ import java.io.IOException;
  * without incurring the increased cost associated with {@link TreeMap}.  It
  * can be used to produce a copy of a map that has the same order as the
  * original, regardless of the original map's implementation:
- * <pre>
- *     void foo(Map m) {
- *         Map copy = new LinkedHashMap(m);
+ * <pre>{@code
+ *     void foo(Map<String, Integer> m) {
+ *         Map<String, Integer> copy = new LinkedHashMap<>(m);
  *         ...
  *     }
- * </pre>
+ * }</pre>
  * This technique is particularly useful if a module takes a map on input,
  * copies it, and later returns results whose order is determined by that of
  * the copy.  (Clients generally appreciate having things returned in the same
@@ -220,6 +220,7 @@ public class LinkedHashMap<K,V>
         }
     }
 
+    @java.io.Serial
     private static final long serialVersionUID = 3801124242820219131L;
 
     /**
@@ -572,6 +573,26 @@ public class LinkedHashMap<K,V>
         return ks;
     }
 
+    @Override
+    final <T> T[] keysToArray(T[] a) {
+        Object[] r = a;
+        int idx = 0;
+        for (LinkedHashMap.LinkedHashMapEntry<K,V> e = head; e != null; e = e.after) {
+            r[idx++] = e.key;
+        }
+        return a;
+    }
+
+    @Override
+    final <T> T[] valuesToArray(T[] a) {
+        Object[] r = a;
+        int idx = 0;
+        for (LinkedHashMap.LinkedHashMapEntry<K,V> e = head; e != null; e = e.after) {
+            r[idx++] = e.value;
+        }
+        return a;
+    }
+
     final class LinkedKeySet extends AbstractSet<K> {
         public final int size()                 { return size; }
         public final void clear()               { LinkedHashMap.this.clear(); }
@@ -587,6 +608,15 @@ public class LinkedHashMap<K,V>
                                             Spliterator.ORDERED |
                                             Spliterator.DISTINCT);
         }
+
+        public Object[] toArray() {
+            return keysToArray(new Object[size]);
+        }
+
+        public <T> T[] toArray(T[] a) {
+            return keysToArray(prepareArray(a));
+        }
+
         public final void forEach(Consumer<? super K> action) {
             if (action == null)
                 throw new NullPointerException();
@@ -637,6 +667,15 @@ public class LinkedHashMap<K,V>
             return Spliterators.spliterator(this, Spliterator.SIZED |
                                             Spliterator.ORDERED);
         }
+
+        public Object[] toArray() {
+            return valuesToArray(new Object[size]);
+        }
+
+        public <T> T[] toArray(T[] a) {
+            return valuesToArray(prepareArray(a));
+        }
+
         public final void forEach(Consumer<? super V> action) {
             if (action == null)
                 throw new NullPointerException();
@@ -680,16 +719,14 @@ public class LinkedHashMap<K,V>
             return new LinkedEntryIterator();
         }
         public final boolean contains(Object o) {
-            if (!(o instanceof Map.Entry))
+            if (!(o instanceof Map.Entry<?, ?> e))
                 return false;
-            Map.Entry<?,?> e = (Map.Entry<?,?>) o;
             Object key = e.getKey();
             Node<K,V> candidate = getNode(key);
             return candidate != null && candidate.equals(e);
         }
         public final boolean remove(Object o) {
-            if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>) o;
+            if (o instanceof Map.Entry<?, ?> e) {
                 Object key = e.getKey();
                 Object value = e.getValue();
                 return removeNode(hash(key), key, value, true, true) != null;
