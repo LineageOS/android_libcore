@@ -36,15 +36,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
 public class ReplaceExisting {
     /* Number of entries required to trigger a resize for cap=16, load=0.75*/
     private static int ENTRIES = 13;
 
-    @Test
-    public void test() {
+    public static void main(String[] args) {
         for (int i = 0; i <= ENTRIES; i++) {
             HashMap<Integer,Integer> hm = prepHashMap();
             testItr(hm, i);
@@ -68,8 +64,7 @@ public class ReplaceExisting {
      */
     private static void testItr(HashMap<Integer,Integer> hm, int elemBeforePut) {
         if (elemBeforePut > hm.size()) {
-            Assert.fail("elemBeforePut must be <= HashMap size. elemBeforePut:" +
-                elemBeforePut + " " + "HashMap.size:" + hm.size());
+            throw new IllegalArgumentException("Error in test: elemBeforePut must be <= HashMap size");
         }
         // Create a copy of the keys
         HashSet<Integer> keys = new HashSet<>(hm.size());
@@ -81,23 +76,27 @@ public class ReplaceExisting {
         Iterator<Integer> itr = hm.keySet().iterator();
         for (int i = 0; i < elemBeforePut; i++) {
             Integer retVal = itr.next();
-            Assert.assertTrue(collected.add(retVal),
-                "Corrupt iterator: key " + retVal + " already encountered");
+            if (!collected.add(retVal)) {
+                throw new RuntimeException("Corrupt iterator: key " + retVal + " already encountered");
+            }
         }
 
         // Do put() to replace entry (and resize table when bug present)
-        Assert.assertNotNull(hm.put(0, 100),
-            "Error in test: expected key 0 to be in the HashMap");
+        if (null == hm.put(0, 100)) {
+            throw new RuntimeException("Error in test: expected key 0 to be in the HashMap");
+        }
 
         // Finish itr + collecting returned elems
         while(itr.hasNext()) {
             Integer retVal = itr.next();
-            Assert.assertTrue(collected.add(retVal),
-                "Corrupt iterator: key " + retVal + " already encountered");
+            if (!collected.add(retVal)) {
+                throw new RuntimeException("Corrupt iterator: key " + retVal + " already encountered");
+            }
         }
 
         // Compare returned elems to original copy of keys
-        Assert.assertEquals (collected, keys,
-            "Collected keys do not match original set of keys");
+        if (!keys.equals(collected)) {
+            throw new RuntimeException("Collected keys do not match original set of keys");
+        }
     }
 }
