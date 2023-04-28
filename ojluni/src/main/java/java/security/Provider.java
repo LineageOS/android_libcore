@@ -1793,28 +1793,35 @@ public abstract class Provider extends Properties {
             Boolean b = hasKeyAttributes;
             if (b == null) {
                 synchronized (this) {
-                    String s;
-                    s = getAttribute("SupportedKeyFormats");
-                    if (s != null) {
-                        supportedFormats = s.split("\\|");
-                    }
-                    s = getAttribute("SupportedKeyClasses");
-                    if (s != null) {
-                        String[] classNames = s.split("\\|");
-                        List<Class<?>> classList =
-                            new ArrayList<>(classNames.length);
-                        for (String className : classNames) {
-                            Class<?> clazz = getKeyClass(className);
-                            if (clazz != null) {
-                                classList.add(clazz);
-                            }
+                    // BEGIN Android-changed: Double-check idiom for concurrent access b/276503829.
+                    // This implementation is brought in line with the upstream commit
+                    // 0610992a8fd46aac2df5e535ad3924a1dca248c4.
+                    b = hasKeyAttributes;
+                    if (b == null) {
+                        String s;
+                        s = getAttribute("SupportedKeyFormats");
+                        if (s != null) {
+                            supportedFormats = s.split("\\|");
                         }
-                        supportedClasses = classList.toArray(CLASS0);
+                        s = getAttribute("SupportedKeyClasses");
+                        if (s != null) {
+                            String[] classNames = s.split("\\|");
+                            List<Class<?>> classList =
+                                new ArrayList<>(classNames.length);
+                            for (String className : classNames) {
+                                Class<?> clazz = getKeyClass(className);
+                                if (clazz != null) {
+                                    classList.add(clazz);
+                                }
+                            }
+                            supportedClasses = classList.toArray(CLASS0);
+                        }
+                        boolean bool = (supportedFormats != null)
+                            || (supportedClasses != null);
+                        b = Boolean.valueOf(bool);
+                        hasKeyAttributes = b;
                     }
-                    boolean bool = (supportedFormats != null)
-                        || (supportedClasses != null);
-                    b = Boolean.valueOf(bool);
-                    hasKeyAttributes = b;
+                    // END Android-changed: Double-check idiom for concurrent access b/276503829.
                 }
             }
             return b.booleanValue();
