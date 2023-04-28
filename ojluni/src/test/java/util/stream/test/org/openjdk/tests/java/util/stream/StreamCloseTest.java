@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,13 +31,21 @@ import org.testng.annotations.Test;
 
 import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.countTo;
 
-/**
- * StreamCloseTest
- *
- * @author Brian Goetz
+
+import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.countTo;
+import static org.openjdk.testlib.java.util.stream.ThrowableHelper.checkNPE;
+import static org.openjdk.testlib.java.util.stream.ThrowableHelper.checkISE;
+
+/*
+ * @test
+ * @summary close handlers and closing streams
+ * @bug 8044047 8147505
  */
 @Test(groups = { "serialization-hostile" })
 public class StreamCloseTest extends OpTestCase {
+    public void testNullCloseHandler() {
+        checkNPE(() -> Stream.of(1).onClose(null));
+    }
     public void testEmptyCloseHandler() {
         try (Stream<Integer> ints = countTo(100).stream()) {
             ints.forEach(i -> {});
@@ -163,5 +171,22 @@ public class StreamCloseTest extends OpTestCase {
         assertTrue(e.getSuppressed().length == n - 1);
         for (int i=0; i<n-1; i++)
         assertTrue(e.getSuppressed()[i].getMessage().equals(String.valueOf(i + 2)));
+    }
+
+    public void testConsumed() {
+        try(Stream<Integer> s = countTo(100).stream()) {
+            s.forEach(i -> {});
+            // Adding onClose handler when stream is consumed is illegal
+            // handler must not be registered
+            checkISE(() -> s.onClose(() -> fail("1")));
+        }
+
+        // close() must be idempotent:
+        // second close() invoked at the end of try-with-resources must have no effect
+        try(Stream<Integer> s = countTo(100).stream()) {
+            s.close();
+            // Adding onClose handler when stream is closed is also illegal
+            checkISE(() -> s.onClose(() -> fail("3")));
+        }
     }
 }

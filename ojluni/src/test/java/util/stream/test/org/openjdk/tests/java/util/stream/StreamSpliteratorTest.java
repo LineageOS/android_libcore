@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -59,6 +59,10 @@ import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.mDoubler;
 import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.pEven;
 import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.permuteStreamFunctions;
 
+/**
+ * @test
+ * @bug 8148838
+ */
 @Test
 public class StreamSpliteratorTest extends OpTestCase {
 
@@ -283,7 +287,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "StreamTestData<Integer>",
+    @Test(dataProvider = "StreamTestData<Integer>.small",
           dataProviderClass = StreamTestDataProvider.class,
           groups = { "serialization-hostile" })
     public void testStreamSpliterators(String name, TestData.OfRef<Integer> data) {
@@ -304,14 +308,14 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class)
+    @Test(dataProvider = "StreamTestData<Integer>.small", dataProviderClass = StreamTestDataProvider.class)
     public void testSpliterators(String name, TestData.OfRef<Integer> data) {
         for (Function<Stream<Integer>, Stream<Integer>> f : streamFunctions()) {
             SpliteratorTestHelper.testSpliterator(() -> f.apply(data.stream()).spliterator());
         }
     }
 
-    @Test(dataProvider = "StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class)
+    @Test(dataProvider = "StreamTestData<Integer>.small", dataProviderClass = StreamTestDataProvider.class)
     public void testParSpliterators(String name, TestData.OfRef<Integer> data) {
         for (Function<Stream<Integer>, Stream<Integer>> f : streamFunctions()) {
             SpliteratorTestHelper.testSpliterator(() -> f.apply(data.parallelStream()).spliterator());
@@ -324,7 +328,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         if (streamFunctions == null) {
             List<Function<Stream<Integer>, Stream<Integer>>> opFunctions = Arrays.asList(
                     s -> s.filter(pEven),
-                    s -> s.map(mDoubler),
+                    s -> s.flatMap(x -> Stream.of(x, x)),
                     // @@@ Add distinct once asserting results with or without order
                     //     is correctly supported
 //                    s -> s.distinct(),
@@ -379,7 +383,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "IntStreamTestData",
+    @Test(dataProvider = "IntStreamTestData.small",
           dataProviderClass = IntStreamTestDataProvider.class,
           groups = { "serialization-hostile" })
     public void testIntStreamSpliterators(String name, TestData.OfInt data) {
@@ -400,14 +404,14 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "IntStreamTestData", dataProviderClass = IntStreamTestDataProvider.class)
+    @Test(dataProvider = "IntStreamTestData.small", dataProviderClass = IntStreamTestDataProvider.class)
     public void testIntSpliterators(String name, TestData.OfInt data) {
         for (Function<IntStream, IntStream> f : intStreamFunctions()) {
             SpliteratorTestHelper.testIntSpliterator(() -> f.apply(data.stream()).spliterator());
         }
     }
 
-    @Test(dataProvider = "IntStreamTestData", dataProviderClass = IntStreamTestDataProvider.class)
+    @Test(dataProvider = "IntStreamTestData.small", dataProviderClass = IntStreamTestDataProvider.class)
     public void testIntParSpliterators(String name, TestData.OfInt data) {
         for (Function<IntStream, IntStream> f : intStreamFunctions()) {
             SpliteratorTestHelper.testIntSpliterator(() -> f.apply(data.parallelStream()).spliterator());
@@ -420,7 +424,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         if (intStreamFunctions == null) {
             List<Function<IntStream, IntStream>> opFunctions = Arrays.asList(
                     s -> s.filter(ipEven),
-                    s -> s.map(irDoubler),
+                    s -> s.flatMap(x -> IntStream.of(x, x)),
                     s -> s.sorted());
 
             intStreamFunctions = permuteStreamFunctions(opFunctions);
@@ -472,7 +476,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "LongStreamTestData",
+    @Test(dataProvider = "LongStreamTestData.small",
           dataProviderClass = LongStreamTestDataProvider.class,
           groups = { "serialization-hostile" })
     public void testLongStreamSpliterators(String name, TestData.OfLong data) {
@@ -493,14 +497,14 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "LongStreamTestData", dataProviderClass = LongStreamTestDataProvider.class)
+    @Test(dataProvider = "LongStreamTestData.small", dataProviderClass = LongStreamTestDataProvider.class)
     public void testLongSpliterators(String name, TestData.OfLong data) {
         for (Function<LongStream, LongStream> f : longStreamFunctions()) {
             SpliteratorTestHelper.testLongSpliterator(() -> f.apply(data.stream()).spliterator());
         }
     }
 
-    @Test(dataProvider = "LongStreamTestData", dataProviderClass = LongStreamTestDataProvider.class)
+    @Test(dataProvider = "LongStreamTestData.small", dataProviderClass = LongStreamTestDataProvider.class)
     public void testLongParSpliterators(String name, TestData.OfLong data) {
         for (Function<LongStream, LongStream> f : longStreamFunctions()) {
             SpliteratorTestHelper.testLongSpliterator(() -> f.apply(data.parallelStream()).spliterator());
@@ -513,7 +517,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         if (longStreamFunctions == null) {
             List<Function<LongStream, LongStream>> opFunctions = Arrays.asList(
                     s -> s.filter(lpEven),
-                    s -> s.map(x -> x * 2L),
+                    s -> s.flatMap(x -> LongStream.of(x, x)),
                     s -> s.sorted());
 
             longStreamFunctions = permuteStreamFunctions(opFunctions);
@@ -565,7 +569,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "DoubleStreamTestData",
+    @Test(dataProvider = "DoubleStreamTestData.small",
           dataProviderClass = DoubleStreamTestDataProvider.class,
           groups = { "serialization-hostile" })
     public void testDoubleStreamSpliterators(String name, TestData.OfDouble data) {
@@ -586,14 +590,14 @@ public class StreamSpliteratorTest extends OpTestCase {
         }
     }
 
-    @Test(dataProvider = "DoubleStreamTestData", dataProviderClass = DoubleStreamTestDataProvider.class)
+    @Test(dataProvider = "DoubleStreamTestData.small", dataProviderClass = DoubleStreamTestDataProvider.class)
     public void testDoubleSpliterators(String name, TestData.OfDouble data) {
         for (Function<DoubleStream, DoubleStream> f : doubleStreamFunctions()) {
             SpliteratorTestHelper.testDoubleSpliterator(() -> f.apply(data.stream()).spliterator());
         }
     }
 
-    @Test(dataProvider = "DoubleStreamTestData", dataProviderClass = DoubleStreamTestDataProvider.class)
+    @Test(dataProvider = "DoubleStreamTestData.small", dataProviderClass = DoubleStreamTestDataProvider.class)
     public void testDoubleParSpliterators(String name, TestData.OfDouble data) {
         for (Function<DoubleStream, DoubleStream> f : doubleStreamFunctions()) {
             SpliteratorTestHelper.testDoubleSpliterator(() -> f.apply(data.parallelStream()).spliterator());
@@ -606,7 +610,7 @@ public class StreamSpliteratorTest extends OpTestCase {
         if (doubleStreamFunctions == null) {
             List<Function<DoubleStream, DoubleStream>> opFunctions = Arrays.asList(
                     s -> s.filter(dpEven),
-                    s -> s.map(x -> x * 2.0),
+                    s -> s.flatMap(x -> DoubleStream.of(x, x)),
                     s -> s.sorted());
 
             doubleStreamFunctions = permuteStreamFunctions(opFunctions);
