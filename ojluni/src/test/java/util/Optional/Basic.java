@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 
@@ -76,12 +77,12 @@ public class Basic {
         assertThrows(NoSuchElementException.class, () -> Optional_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
-        AtomicBoolean b = new AtomicBoolean();
+        var b = new AtomicBoolean();
         empty.ifPresent(s -> b.set(true));
         assertFalse(b.get());
 
-        AtomicBoolean b1 = new AtomicBoolean(false);
-        AtomicBoolean b2 = new AtomicBoolean(false);
+        var b1 = new AtomicBoolean(false);
+        var b2 = new AtomicBoolean(false);
         // Android-changed: use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
         // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
         Optional_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
@@ -118,12 +119,12 @@ public class Basic {
         assertEquals(Optional_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
-        AtomicBoolean b = new AtomicBoolean(false);
+        var b = new AtomicBoolean(false);
         opt.ifPresent(s -> b.set(true));
         assertTrue(b.get());
 
-        AtomicBoolean b1 = new AtomicBoolean(false);
-        AtomicBoolean b2 = new AtomicBoolean(false);
+        var b1 = new AtomicBoolean(false);
+        var b2 = new AtomicBoolean(false);
         // Android-changed: use Optional_ifPresentOrElse() to a void d8 backporting (b/191859202).
         // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
         Optional_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
@@ -133,63 +134,63 @@ public class Basic {
         assertEquals(opt.toString(), "Optional[" + expected + "]");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testEmpty() {
         checkEmpty(Optional.empty());
     }
 
     @SuppressWarnings("NullArgumentForNonNullParameter")
-    @Test
+    @Test(groups = "unit")
     public void testOfNull() {
         assertThrows(NullPointerException.class, () -> Optional.of(null));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testOfPresent() {
         checkPresent(Optional.of("xyzzy"), "xyzzy");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testOfNullableNull() {
         checkEmpty(Optional.ofNullable(null));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testOfNullablePresent() {
         checkPresent(Optional.ofNullable("xyzzy"), "xyzzy");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testFilterEmpty() {
         checkEmpty(Optional.<String>empty().filter(s -> { fail(); return true; }));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testFilterFalse() {
         checkEmpty(Optional.of("xyzzy").filter(s -> s.equals("plugh")));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testFilterTrue() {
         checkPresent(Optional.of("xyzzy").filter(s -> s.equals("xyzzy")), "xyzzy");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testMapEmpty() {
         checkEmpty(Optional.empty().map(s -> { fail(); return ""; }));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testMapPresent() {
         checkPresent(Optional.of("xyzzy").map(s -> s.replace("xyzzy", "plugh")), "plugh");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testFlatMapEmpty() {
         checkEmpty(Optional.empty().flatMap(s -> { fail(); return Optional.of(""); }));
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testFlatMapPresentReturnEmpty() {
         checkEmpty(Optional.of("xyzzy")
                            .flatMap(s -> { assertEquals(s, "xyzzy"); return Optional.empty(); }));
