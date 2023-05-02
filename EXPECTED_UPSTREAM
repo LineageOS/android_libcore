@@ -963,9 +963,9 @@ ojluni/src/main/java/java/util/Objects.java,jdk17u/jdk-17.0.6-ga,src/java.base/s
 ojluni/src/main/java/java/util/Observable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Observable.java
 ojluni/src/main/java/java/util/Observer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Observer.java
 ojluni/src/main/java/java/util/Optional.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Optional.java
-ojluni/src/main/java/java/util/OptionalDouble.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/OptionalDouble.java
-ojluni/src/main/java/java/util/OptionalInt.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/OptionalInt.java
-ojluni/src/main/java/java/util/OptionalLong.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/OptionalLong.java
+ojluni/src/main/java/java/util/OptionalDouble.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/OptionalDouble.java
+ojluni/src/main/java/java/util/OptionalInt.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/OptionalInt.java
+ojluni/src/main/java/java/util/OptionalLong.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/OptionalLong.java
 ojluni/src/main/java/java/util/PrimitiveIterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PrimitiveIterator.java
 ojluni/src/main/java/java/util/PriorityQueue.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/PriorityQueue.java
 ojluni/src/main/java/java/util/Properties.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/Properties.java
@@ -2262,6 +2262,11 @@ ojluni/src/test/java/util/LinkedHashMap/Cache.java,jdk17u/jdk-17.0.6-ga,test/jdk
 ojluni/src/test/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/ComputeIfAbsentAccessOrder.java
 ojluni/src/test/java/util/LinkedHashMap/EmptyMapIterator.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashMap/EmptyMapIterator.java
 ojluni/src/test/java/util/LinkedHashSet/Basic.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/LinkedHashSet/Basic.java
+ojluni/src/test/java/util/Optional/Basic.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Optional/Basic.java
+ojluni/src/test/java/util/Optional/BasicDouble.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Optional/BasicDouble.java
+ojluni/src/test/java/util/Optional/BasicInt.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Optional/BasicInt.java
+ojluni/src/test/java/util/Optional/BasicLong.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Optional/BasicLong.java
+ojluni/src/test/java/util/Optional/ObscureException.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Optional/ObscureException.java
 ojluni/src/test/java/util/PriorityQueue/AddNonComparable.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/PriorityQueue/AddNonComparable.java
 ojluni/src/test/java/util/PriorityQueue/ForgetMeNot.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/PriorityQueue/ForgetMeNot.java
 ojluni/src/test/java/util/PriorityQueue/NoNulls.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/PriorityQueue/NoNulls.java
