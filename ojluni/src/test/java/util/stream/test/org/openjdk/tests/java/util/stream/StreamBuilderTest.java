@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -40,6 +40,7 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static org.openjdk.testlib.java.util.stream.ThrowableHelper.checkISE;
 
 @Test
 public class StreamBuilderTest extends OpTestCase {
@@ -54,27 +55,31 @@ public class StreamBuilderTest extends OpTestCase {
         return sizes.stream().map(i -> new Object[] { i }).toArray(Object[][]::new);
     }
 
-    private void checkException(Class<? extends Exception> ce, Runnable r) {
-        Exception caught = null;
-        try {
-            r.run();
-        } catch (Exception e) {
-            caught = e;
-        }
+    @Test
+    public void testOfNullableWithNonNull() {
+        TestData.OfRef<Integer> data = TestData.Factory.ofSupplier("{1}",
+                                                                   () -> Stream.ofNullable(1));
 
-        assertNotNull(caught);
-        assertTrue(ce.isInstance(caught));
+        withData(data).
+                stream(s -> s).
+                expectedResult(Collections.singletonList(1)).
+                exercise();
     }
 
-    private void checkISE(Runnable r) {
-        checkException(IllegalStateException.class, r);
-    }
+    @Test
+    public void testOfNullableWithNull() {
+        TestData.OfRef<Integer> data = TestData.Factory.ofSupplier("{null})",
+                                                                   () -> Stream.ofNullable(null));
 
-        //
+        withData(data).
+                stream(s -> s).
+                expectedResult(Collections.emptyList()).
+                exercise();
+    }
 
     @Test
     public void testSingleton() {
-        TestData.OfRef<Integer> data = TestData.Factory.ofSupplier("[0, 1)",
+        TestData.OfRef<Integer> data = TestData.Factory.ofSupplier("{1}",
                                                                    () -> Stream.of(1));
 
         withData(data).
@@ -136,7 +141,7 @@ public class StreamBuilderTest extends OpTestCase {
 
     @Test
     public void testIntSingleton() {
-        TestData.OfInt data = TestData.Factory.ofIntSupplier("[0, 1)",
+        TestData.OfInt data = TestData.Factory.ofIntSupplier("{1}",
                                                              () -> IntStream.of(1));
 
         withData(data).
@@ -198,7 +203,7 @@ public class StreamBuilderTest extends OpTestCase {
 
     @Test
     public void testLongSingleton() {
-        TestData.OfLong data = TestData.Factory.ofLongSupplier("[0, 1)",
+        TestData.OfLong data = TestData.Factory.ofLongSupplier("{1}",
                                                                () -> LongStream.of(1));
 
         withData(data).
@@ -260,7 +265,7 @@ public class StreamBuilderTest extends OpTestCase {
 
     @Test
     public void testDoubleSingleton() {
-        TestData.OfDouble data = TestData.Factory.ofDoubleSupplier("[0, 1)", () -> DoubleStream.of(1));
+        TestData.OfDouble data = TestData.Factory.ofDoubleSupplier("{1}", () -> DoubleStream.of(1));
 
         withData(data).
                 stream(s -> s).

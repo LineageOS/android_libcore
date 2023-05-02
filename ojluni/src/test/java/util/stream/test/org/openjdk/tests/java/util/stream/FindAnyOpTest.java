@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,7 +33,6 @@ import org.openjdk.testlib.java.util.stream.TestData;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.stream.BaseStream;
 import java.util.stream.Stream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -44,9 +43,9 @@ import org.testng.annotations.Test;
 
 import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.*;
 
-
 /**
- * FindAnyOpTest
+ * @test
+ * @bug 8148115
  */
 @Test
 public class FindAnyOpTest extends OpTestCase {
@@ -73,18 +72,7 @@ public class FindAnyOpTest extends OpTestCase {
 
     void exerciseStream(TestData.OfRef<Integer> data, Function<Stream<Integer>, Stream<Integer>> fs) {
         Optional<Integer> or = withData(data).terminal(fs, s -> s.findAny()).equalator(VALID_ANSWER).exercise();
-        if (or.isPresent()) {
-            Integer r = or.get();
-            Iterator<Integer> it = fs.apply(data.stream()).iterator();
-            boolean contained = false;
-            while (!contained && it.hasNext()) {
-                contained = Objects.equals(r, it.next());
-            }
-            assertTrue(contained);
-        }
-        else {
-            assertFalse(fs.apply(data.stream()).iterator().hasNext());
-        }
+        assertContains(or, fs.apply(data.stream()).iterator());
     }
 
     @Test(dataProvider = "IntStreamTestData", dataProviderClass = IntStreamTestDataProvider.class)

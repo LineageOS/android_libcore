@@ -28,16 +28,12 @@ import org.openjdk.testlib.java.util.stream.LongStreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.OpTestCase;
 import org.openjdk.testlib.java.util.stream.StreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.TestData;
+import java.util.Collection;
+import java.util.stream.*;
 
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.stream.BaseStream;
-import java.util.stream.Stream;
-import java.util.stream.IntStream;
-import java.util.stream.LongStream;
-import java.util.stream.DoubleStream;
 
 import static org.openjdk.testlib.java.util.stream.LambdaTestHelpers.*;
 

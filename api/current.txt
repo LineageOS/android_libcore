@@ -17580,6 +17580,7 @@ package java.util.stream {
     method public static <T> java.util.stream.Collector<T,?,java.lang.Double> summingDouble(java.util.function.ToDoubleFunction<? super T>);
     method public static <T> java.util.stream.Collector<T,?,java.lang.Integer> summingInt(java.util.function.ToIntFunction<? super T>);
     method public static <T> java.util.stream.Collector<T,?,java.lang.Long> summingLong(java.util.function.ToLongFunction<? super T>);
+    method public static <T, R1, R2, R> java.util.stream.Collector<T,?,R> teeing(java.util.stream.Collector<? super T,?,R1>, java.util.stream.Collector<? super T,?,R2>, java.util.function.BiFunction<? super R1,? super R2,R>);
     method public static <T, C extends java.util.Collection<T>> java.util.stream.Collector<T,?,C> toCollection(java.util.function.Supplier<C>);
     method public static <T, K, U> java.util.stream.Collector<T,?,java.util.concurrent.ConcurrentMap<K,U>> toConcurrentMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>);
     method public static <T, K, U> java.util.stream.Collector<T,?,java.util.concurrent.ConcurrentMap<K,U>> toConcurrentMap(java.util.function.Function<? super T,? extends K>, java.util.function.Function<? super T,? extends U>, java.util.function.BinaryOperator<U>);
@@ -17605,6 +17606,7 @@ package java.util.stream {
     method public static java.util.stream.DoubleStream concat(java.util.stream.DoubleStream, java.util.stream.DoubleStream);
     method public long count();
     method public java.util.stream.DoubleStream distinct();
+    method public default java.util.stream.DoubleStream dropWhile(java.util.function.DoublePredicate);
     method public static java.util.stream.DoubleStream empty();
     method public java.util.stream.DoubleStream filter(java.util.function.DoublePredicate);
     method public java.util.OptionalDouble findAny();
@@ -17614,9 +17616,11 @@ package java.util.stream {
     method public void forEachOrdered(java.util.function.DoubleConsumer);
     method public static java.util.stream.DoubleStream generate(java.util.function.DoubleSupplier);
     method public static java.util.stream.DoubleStream iterate(double, java.util.function.DoubleUnaryOperator);
+    method public static java.util.stream.DoubleStream iterate(double, java.util.function.DoublePredicate, java.util.function.DoubleUnaryOperator);
     method public java.util.PrimitiveIterator.OfDouble iterator();
     method public java.util.stream.DoubleStream limit(long);
     method public java.util.stream.DoubleStream map(java.util.function.DoubleUnaryOperator);
+    method public default java.util.stream.DoubleStream mapMulti(java.util.stream.DoubleStream.DoubleMapMultiConsumer);
     method public java.util.stream.IntStream mapToInt(java.util.function.DoubleToIntFunction);
     method public java.util.stream.LongStream mapToLong(java.util.function.DoubleToLongFunction);
     method public <U> java.util.stream.Stream<U> mapToObj(java.util.function.DoubleFunction<? extends U>);
@@ -17635,12 +17639,17 @@ package java.util.stream {
     method public java.util.Spliterator.OfDouble spliterator();
     method public double sum();
     method public java.util.DoubleSummaryStatistics summaryStatistics();
+    method public default java.util.stream.DoubleStream takeWhile(java.util.function.DoublePredicate);
     method public double[] toArray();
   }
 
   public static interface DoubleStream.Builder extends java.util.function.DoubleConsumer {
     method public default java.util.stream.DoubleStream.Builder add(double);
     method public java.util.stream.DoubleStream build();
+  }
+
+  @java.lang.FunctionalInterface public static interface DoubleStream.DoubleMapMultiConsumer {
+    method public void accept(double, java.util.function.DoubleConsumer);
   }
 
   public interface IntStream extends java.util.stream.BaseStream<java.lang.Integer,java.util.stream.IntStream> {
@@ -17655,6 +17664,7 @@ package java.util.stream {
     method public static java.util.stream.IntStream concat(java.util.stream.IntStream, java.util.stream.IntStream);
     method public long count();
     method public java.util.stream.IntStream distinct();
+    method public default java.util.stream.IntStream dropWhile(java.util.function.IntPredicate);
     method public static java.util.stream.IntStream empty();
     method public java.util.stream.IntStream filter(java.util.function.IntPredicate);
     method public java.util.OptionalInt findAny();
@@ -17664,9 +17674,11 @@ package java.util.stream {
     method public void forEachOrdered(java.util.function.IntConsumer);
     method public static java.util.stream.IntStream generate(java.util.function.IntSupplier);
     method public static java.util.stream.IntStream iterate(int, java.util.function.IntUnaryOperator);
+    method public static java.util.stream.IntStream iterate(int, java.util.function.IntPredicate, java.util.function.IntUnaryOperator);
     method public java.util.PrimitiveIterator.OfInt iterator();
     method public java.util.stream.IntStream limit(long);
     method public java.util.stream.IntStream map(java.util.function.IntUnaryOperator);
+    method public default java.util.stream.IntStream mapMulti(java.util.stream.IntStream.IntMapMultiConsumer);
     method public java.util.stream.DoubleStream mapToDouble(java.util.function.IntToDoubleFunction);
     method public java.util.stream.LongStream mapToLong(java.util.function.IntToLongFunction);
     method public <U> java.util.stream.Stream<U> mapToObj(java.util.function.IntFunction<? extends U>);
@@ -17687,12 +17699,17 @@ package java.util.stream {
     method public java.util.Spliterator.OfInt spliterator();
     method public int sum();
     method public java.util.IntSummaryStatistics summaryStatistics();
+    method public default java.util.stream.IntStream takeWhile(java.util.function.IntPredicate);
     method public int[] toArray();
   }
 
   public static interface IntStream.Builder extends java.util.function.IntConsumer {
     method public default java.util.stream.IntStream.Builder add(int);
     method public java.util.stream.IntStream build();
+  }
+
+  @java.lang.FunctionalInterface public static interface IntStream.IntMapMultiConsumer {
+    method public void accept(int, java.util.function.IntConsumer);
   }
 
   public interface LongStream extends java.util.stream.BaseStream<java.lang.Long,java.util.stream.LongStream> {
@@ -17706,6 +17723,7 @@ package java.util.stream {
     method public static java.util.stream.LongStream concat(java.util.stream.LongStream, java.util.stream.LongStream);
     method public long count();
     method public java.util.stream.LongStream distinct();
+    method public default java.util.stream.LongStream dropWhile(java.util.function.LongPredicate);
     method public static java.util.stream.LongStream empty();
     method public java.util.stream.LongStream filter(java.util.function.LongPredicate);
     method public java.util.OptionalLong findAny();
@@ -17715,9 +17733,11 @@ package java.util.stream {
     method public void forEachOrdered(java.util.function.LongConsumer);
     method public static java.util.stream.LongStream generate(java.util.function.LongSupplier);
     method public static java.util.stream.LongStream iterate(long, java.util.function.LongUnaryOperator);
+    method public static java.util.stream.LongStream iterate(long, java.util.function.LongPredicate, java.util.function.LongUnaryOperator);
     method public java.util.PrimitiveIterator.OfLong iterator();
     method public java.util.stream.LongStream limit(long);
     method public java.util.stream.LongStream map(java.util.function.LongUnaryOperator);
+    method public default java.util.stream.LongStream mapMulti(java.util.stream.LongStream.LongMapMultiConsumer);
     method public java.util.stream.DoubleStream mapToDouble(java.util.function.LongToDoubleFunction);
     method public java.util.stream.IntStream mapToInt(java.util.function.LongToIntFunction);
     method public <U> java.util.stream.Stream<U> mapToObj(java.util.function.LongFunction<? extends U>);
@@ -17738,12 +17758,17 @@ package java.util.stream {
     method public java.util.Spliterator.OfLong spliterator();
     method public long sum();
     method public java.util.LongSummaryStatistics summaryStatistics();
+    method public default java.util.stream.LongStream takeWhile(java.util.function.LongPredicate);
     method public long[] toArray();
   }
 
   public static interface LongStream.Builder extends java.util.function.LongConsumer {
     method public default java.util.stream.LongStream.Builder add(long);
     method public java.util.stream.LongStream build();
+  }
+
+  @java.lang.FunctionalInterface public static interface LongStream.LongMapMultiConsumer {
+    method public void accept(long, java.util.function.LongConsumer);
   }
 
   public interface Stream<T> extends java.util.stream.BaseStream<T,java.util.stream.Stream<T>> {

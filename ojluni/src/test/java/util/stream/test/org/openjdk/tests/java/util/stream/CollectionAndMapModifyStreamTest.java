@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -37,6 +37,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.function.Supplier;
+import org.openjdk.testlib.java.util.stream.LambdaTestHelpers;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -114,7 +115,7 @@ public class CollectionAndMapModifyStreamTest {
         Map<String, Supplier<Map<Integer, Integer>>> maps = new HashMap<>();
 
         maps.put(HashMap.class.getName(), () -> new HashMap<>(content));
-        maps.put(HashMap.class.getName(), () -> new LinkedHashMap<>(content));
+        maps.put(LinkedHashMap.class.getName(), () -> new LinkedHashMap<>(content));
         maps.put(IdentityHashMap.class.getName(), () -> new IdentityHashMap<>(content));
         maps.put(WeakHashMap.class.getName(), () -> new WeakHashMap<>(content));
 
