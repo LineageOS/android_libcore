@@ -68,15 +68,15 @@ public class UUIDTest extends TestCase {
     assertEquals(0xffffffffffffffffL, uuid.getLeastSignificantBits());
   }
 
-  public void testJava11Implementation_invalidInputs() {
+  public void testCurrentImplementation_invalidInputs() {
     var uuid = UUID.randomUUID();
     try {
-      UUID.fromStringJava11("0" + uuid);
+      UUID.fromStringCurrentJava("0" + uuid);
       fail("0" + uuid + " is invalid UUID, IAE should be thrown");
     } catch (IllegalArgumentException expected) { }
 
     try {
-      UUID.fromStringJava11("0-0-0-0-0-");
+      UUID.fromStringCurrentJava("0-0-0-0-0-");
       fail("0-0-0-0-0- is invalid UUID, IAE should be thrown");
     } catch (IllegalArgumentException expected) { }
   }
