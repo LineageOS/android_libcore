@@ -4,7 +4,9 @@
  *
  * This code is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
+ * published by the Free Software Foundation.  Oracle designates this
+ * particular file as subject to the "Classpath" exception as provided
+ * by Oracle in the LICENSE file that accompanied this code.
  *
  * This code is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -20,33 +22,12 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package org.openjdk.tests.java.util.stream;
 
-import java.util.ArrayList;
+package jdk.internal.access;
+
 import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
-import org.testng.annotations.Test;
-import static org.testng.Assert.*;
-
-/*
- * @test
- * @bug 8254090
- * @summary Test for Collectors.toUnmodifiableList().
- */
-public class CollectorToUnmodListTest {
-    @SuppressWarnings("unchecked")
-    @Test
-    public void testFinisher() {
-        String[] array = { "x", "y", "z" };
-        List<String> in = new ArrayList<>() {
-            public Object[] toArray() {
-                return array;
-            }
-        };
-        var finisher = (Function<List<String>, List<String>>)Collectors.<String>toUnmodifiableList().finisher();
-        assertThrows(IllegalArgumentException.class, () -> finisher.apply(in));
-  }
+public interface JavaUtilCollectionAccess {
+    <E> List<E> listFromTrustedArray(Object[] array);
+    <E> List<E> listFromTrustedArrayNullsAllowed(Object[] array);
 }

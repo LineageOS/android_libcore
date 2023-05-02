@@ -293,11 +293,9 @@ public final class Collectors {
      * <a href="../List.html#unmodifiable">unmodifiable List</a> in encounter order
      * @since 10
      */
-    // BEGIN Android-changed: keep old behaviour while JavaUtilCollectionAccess is not imported.
     @SuppressWarnings("unchecked")
     public static <T>
     Collector<T, ?, List<T>> toUnmodifiableList() {
-        /*
         return new CollectorImpl<>(ArrayList::new, List::add,
                                    (left, right) -> { left.addAll(right); return left; },
                                    list -> {
@@ -308,11 +306,6 @@ public final class Collectors {
                                            throw new IllegalArgumentException();
                                        }
                                    },
-                                   CH_NOID);
-        */
-        return new CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,
-                                   (left, right) -> { left.addAll(right); return left; },
-                                   list -> (List<T>)List.of(list.toArray()),
                                    CH_NOID);
     }
 
