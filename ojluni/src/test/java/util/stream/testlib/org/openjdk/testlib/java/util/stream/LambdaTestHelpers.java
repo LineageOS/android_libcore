@@ -48,6 +48,7 @@ import java.util.function.ToLongFunction;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.assertFalse;
 
 /**
  * LambdaTestHelpers -- assertion methods and useful objects for lambda test cases
@@ -399,6 +400,17 @@ public class LambdaTestHelpers {
 
     public static<T> void assertContentsUnordered(Iterator<T> actual, Iterator<T> expected) {
         assertEquals(toBoxedMultiset(actual), toBoxedMultiset(expected));
+    }
+
+    // Android-added: taken from OpenJDK 17. Will update soon.
+    public static<T> void assertContains(Optional<T> actual, Iterator<T> it) {
+        actual.ifPresentOrElse(r -> {
+            boolean contained = false;
+            while (!contained && it.hasNext()) {
+                contained = Objects.equals(r, it.next());
+            }
+            assertTrue(contained, "Not found: "+r);
+        }, () -> assertFalse(it.hasNext()));
     }
 
     public static void launderAssertion(Runnable r, Supplier<String> additionalInfo) {
