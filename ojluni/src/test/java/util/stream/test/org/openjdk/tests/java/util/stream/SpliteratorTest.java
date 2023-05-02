@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,9 +29,11 @@ import org.openjdk.testlib.java.util.stream.IntStreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.LongStreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.SpliteratorTestHelper;
 import org.openjdk.testlib.java.util.stream.StreamTestDataProvider;
+import org.openjdk.testlib.java.util.stream.SpliteratorTestHelper;
 
 import java.util.function.Supplier;
 import java.util.Spliterator;
+
 
 import static org.testng.Assert.*;
 import static org.testng.Assert.assertEquals;
@@ -63,4 +65,17 @@ public class SpliteratorTest {
     public void testDoubleSpliterator(String name, Supplier<Spliterator.OfDouble> supplier) {
         SpliteratorTestHelper.testDoubleSpliterator(supplier);
     }
+
+    // Android-removed: Project Panama is not available.
+    /*
+    @Test(dataProvider = "SegmentSpliterator", dataProviderClass = SegmentTestDataProvider.class )
+    public void testSegmentSpliterator(String name, SequenceLayout layout, SpliteratorTestHelper.ContentAsserter<MemorySegment> contentAsserter) {
+        try (ResourceScope scope = ResourceScope.newConfinedScope()) {
+            MemorySegment segment = MemorySegment.allocateNative(layout, scope);
+            SegmentTestDataProvider.initSegment(segment);
+            SpliteratorTestHelper.testSpliterator(() -> segment.spliterator(layout),
+                    SegmentTestDataProvider::segmentCopier, contentAsserter);
+        }
+    }
+    */
 }
