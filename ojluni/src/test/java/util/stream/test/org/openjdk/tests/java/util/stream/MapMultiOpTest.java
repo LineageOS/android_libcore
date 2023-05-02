@@ -32,6 +32,9 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import org.openjdk.testlib.java.util.stream.DefaultMethodStreams;
+import org.openjdk.testlib.java.util.stream.DoubleStreamTestDataProvider;
+import org.openjdk.testlib.java.util.stream.IntStreamTestDataProvider;
+import org.openjdk.testlib.java.util.stream.LongStreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.OpTestCase;
 import org.openjdk.testlib.java.util.stream.StreamTestDataProvider;
 import org.openjdk.testlib.java.util.stream.TestData;
@@ -41,7 +44,9 @@ import java.util.Collection;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.openjdk.testlib.java.util.stream.DefaultMethodStreams.delegateTo;
@@ -167,8 +172,6 @@ public class MapMultiOpTest extends OpTestCase {
         exerciseOps(data, s -> delegateTo(s).mapMulti(rangeConsumerWithLimit));
     }
 
-    // Android-removed: mapMulti is not yet available for primitive Streams.
-    /*
     // Int
 
     @DataProvider(name = "IntStream")
@@ -318,5 +321,4 @@ public class MapMultiOpTest extends OpTestCase {
         exerciseOps(data, s -> delegateTo(s).mapMulti((e, sink) -> LongStream.range(0, e).forEach(sink)));
         exerciseOps(data, s -> delegateTo(s).mapMulti((e, sink) -> LongStream.range(0, e).limit(10).forEach(sink)));
     }
-    */
 }
