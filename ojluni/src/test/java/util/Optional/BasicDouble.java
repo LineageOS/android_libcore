@@ -72,12 +72,12 @@ public class BasicDouble {
         assertThrows(NoSuchElementException.class, () -> OptionalDouble_orElseThrow(empty));
         assertThrows(ObscureException.class,       () -> empty.orElseThrow(ObscureException::new));
 
-        AtomicBoolean b = new AtomicBoolean();
+        var b = new AtomicBoolean();
         empty.ifPresent(s -> b.set(true));
         assertFalse(b.get());
 
-        AtomicBoolean b1 = new AtomicBoolean(false);
-        AtomicBoolean b2 = new AtomicBoolean(false);
+        var b1 = new AtomicBoolean(false);
+        var b2 = new AtomicBoolean(false);
         // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
         // empty.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
         OptionalDouble_ifPresentOrElse(empty, s -> b1.set(true), () -> b2.set(true));
@@ -114,12 +114,12 @@ public class BasicDouble {
         assertEquals(OptionalDouble_orElseThrow(opt), expected);
         assertEquals(opt.orElseThrow(ObscureException::new), expected);
 
-        AtomicBoolean b = new AtomicBoolean(false);
+        var b = new AtomicBoolean(false);
         opt.ifPresent(s -> b.set(true));
         assertTrue(b.get());
 
-        AtomicBoolean b1 = new AtomicBoolean(false);
-        AtomicBoolean b2 = new AtomicBoolean(false);
+        var b1 = new AtomicBoolean(false);
+        var b2 = new AtomicBoolean(false);
         // Android-changed: Avoid backporting of ifPresentOrElse() (b/191859202).
         // opt.ifPresentOrElse(s -> b1.set(true), () -> b2.set(true));
         OptionalDouble_ifPresentOrElse(opt, s -> b1.set(true), () -> b2.set(true));
@@ -129,12 +129,12 @@ public class BasicDouble {
         assertEquals(opt.toString(), "OptionalDouble[" + expected + "]");
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testEmpty() {
         checkEmpty(OptionalDouble.empty());
     }
 
-    @Test
+    @Test(groups = "unit")
     public void testPresent() {
         checkPresent(OptionalDouble.of(DOUBLEVAL), DOUBLEVAL);
     }
