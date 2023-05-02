@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -35,7 +35,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -106,7 +105,7 @@ public class DistinctOpTest extends OpTestCase {
 
     @Test(dataProvider = "withNull:StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class)
     public void testOpWithNullSorted(String name, TestData.OfRef<Integer> data) {
-        ArrayList<Integer> l = new ArrayList<>();
+        List<Integer> l = new ArrayList<>();
         data.into(l).sort(cNullInteger);
         // Need to inject SORTED into the sorted list source since
         // sorted() with a comparator ironically clears SORTED
@@ -150,7 +149,7 @@ public class DistinctOpTest extends OpTestCase {
                 s -> s.distinct().distinct(),
                 s -> s.distinct().distinct());
 
-         assertUnique(result);
+        assertUnique(result);
     }
 
     @Test(dataProvider = "StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class)
@@ -173,7 +172,7 @@ public class DistinctOpTest extends OpTestCase {
         assertSorted(result);
     }
 
-    @Test
+    @Test(groups = { "serialization-hostile" })
     public void testStable() {
         // Create N instances of Integer all with the same value
         List<Integer> input = IntStream.rangeClosed(0, 1000)
