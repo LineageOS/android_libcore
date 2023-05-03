@@ -907,7 +907,7 @@ ojluni/src/main/java/java/util/Currency.java,jdk17u/jdk-17.0.6-ga,src/java.base/
 ojluni/src/main/java/java/util/Date.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Date.java
 ojluni/src/main/java/java/util/Deque.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Deque.java
 ojluni/src/main/java/java/util/Dictionary.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Dictionary.java
-ojluni/src/main/java/java/util/DoubleSummaryStatistics.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/DoubleSummaryStatistics.java
+ojluni/src/main/java/java/util/DoubleSummaryStatistics.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/DoubleSummaryStatistics.java
 ojluni/src/main/java/java/util/DualPivotQuicksort.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/DualPivotQuicksort.java
 ojluni/src/main/java/java/util/DuplicateFormatFlagsException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/DuplicateFormatFlagsException.java
 ojluni/src/main/java/java/util/EmptyStackException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/EmptyStackException.java
@@ -937,7 +937,7 @@ ojluni/src/main/java/java/util/IllegalFormatWidthException.java,jdk17u/jdk-17.0.
 ojluni/src/main/java/java/util/IllformedLocaleException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IllformedLocaleException.java
 ojluni/src/main/java/java/util/ImmutableCollections.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ImmutableCollections.java
 ojluni/src/main/java/java/util/InputMismatchException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/InputMismatchException.java
-ojluni/src/main/java/java/util/IntSummaryStatistics.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/IntSummaryStatistics.java
+ojluni/src/main/java/java/util/IntSummaryStatistics.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IntSummaryStatistics.java
 ojluni/src/main/java/java/util/InvalidPropertiesFormatException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/InvalidPropertiesFormatException.java
 ojluni/src/main/java/java/util/Iterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Iterator.java
 ojluni/src/main/java/java/util/JapaneseImperialCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/JapaneseImperialCalendar.java
@@ -951,7 +951,7 @@ ojluni/src/main/java/java/util/ListIterator.java,jdk17u/jdk-17.0.6-ga,src/java.b
 ojluni/src/main/java/java/util/ListResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ListResourceBundle.java
 ojluni/src/main/java/java/util/Locale.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Locale.java
 ojluni/src/main/java/java/util/LocaleISOData.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LocaleISOData.java
-ojluni/src/main/java/java/util/LongSummaryStatistics.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/LongSummaryStatistics.java
+ojluni/src/main/java/java/util/LongSummaryStatistics.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LongSummaryStatistics.java
 ojluni/src/main/java/java/util/Map.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Map.java
 ojluni/src/main/java/java/util/MissingFormatArgumentException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/MissingFormatArgumentException.java
 ojluni/src/main/java/java/util/MissingFormatWidthException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/MissingFormatWidthException.java
@@ -2239,6 +2239,8 @@ ojluni/src/test/java/util/Base64/mimeEncode.txt,jdk17u/jdk-17.0.6-ga,test/jdk/ja
 ojluni/src/test/java/util/Base64/plain.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Base64/plain.txt
 ojluni/src/test/java/util/Base64/urlEncode.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Base64/urlEncode.txt
 ojluni/src/test/java/util/Collections/NCopies.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collections/NCopies.java
+ojluni/src/test/java/util/DoubleStreamSums/CompensatedSums.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/DoubleStreamSums/CompensatedSums.java
+ojluni/src/test/java/util/DoubleSummaryStatistics/NegativeCompensation.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/DoubleSummaryStatistics/NegativeCompensation.java
 ojluni/src/test/java/util/HashMap/HashMapCloneLeak.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/HashMapCloneLeak.java
 ojluni/src/test/java/util/HashMap/KeySetRemove.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/KeySetRemove.java
 ojluni/src/test/java/util/HashMap/NullKeyAtResize.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/HashMap/NullKeyAtResize.java
