@@ -1434,9 +1434,6 @@ ojluni/src/main/java/sun/misc/InvalidJarIndexException.java,jdk8u/jdk8u121-b13,j
 ojluni/src/main/java/sun/misc/JavaIOFileDescriptorAccess.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/JavaIOFileDescriptorAccess.java
 ojluni/src/main/java/sun/misc/LRUCache.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/LRUCache.java
 ojluni/src/main/java/sun/misc/MessageUtils.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/MessageUtils.java
-ojluni/src/main/java/sun/misc/REException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/REException.java
-ojluni/src/main/java/sun/misc/RegexpPool.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/RegexpPool.java
-ojluni/src/main/java/sun/misc/RegexpTarget.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/RegexpTarget.java
 ojluni/src/main/java/sun/misc/Resource.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/Resource.java
 ojluni/src/main/java/sun/misc/SharedSecrets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/SharedSecrets.java
 ojluni/src/main/java/sun/misc/URLClassPath.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/URLClassPath.java
