@@ -26,6 +26,7 @@
 package jdk.internal.misc;
 
 import java.io.ObjectInputStream;
+import jdk.internal.access.JavaUtilCollectionAccess;
 
 /** A repository of "shared secrets", which are a mechanism for
     calling implementation-private methods in another package without
@@ -54,6 +55,11 @@ public class SharedSecrets {
     /*
     private static JavaSecurityProtectionDomainAccess javaSecurityProtectionDomainAccess;
     private static JavaSecurityAccess javaSecurityAccess;
+    */
+    // END Android-removed: Pruned unused access interfaces.
+    private static JavaUtilCollectionAccess javaUtilCollectionAccess;
+    // BEGIN Android-removed: Pruned unused access interfaces.
+    /*
     private static JavaUtilZipFileAccess javaUtilZipFileAccess;
     private static JavaAWTAccess javaAWTAccess;
     private static JavaOISAccess javaOISAccess;
@@ -64,7 +70,26 @@ public class SharedSecrets {
     // BEGIN Android-removed: Pruned unused access interfaces.
     /*
     private static JavaSecuritySignatureAccess javaSecuritySignatureAccess;
+    */
+    // END Android-removed: Pruned unused access interfaces.
 
+    public static void setJavaUtilCollectionAccess(JavaUtilCollectionAccess juca) {
+        javaUtilCollectionAccess = juca;
+    }
+
+    public static JavaUtilCollectionAccess getJavaUtilCollectionAccess() {
+        var access = javaUtilCollectionAccess;
+        if (access == null) {
+            try {
+                Class.forName("java.util.ImmutableCollections$Access", true, null);
+                access = javaUtilCollectionAccess;
+            } catch (ClassNotFoundException e) {}
+        }
+        return access;
+    }
+
+    // BEGIN Android-removed: Pruned unused access interfaces.
+    /*
     public static JavaUtilJarAccess javaUtilJarAccess() {
         if (javaUtilJarAccess == null) {
             // Ensure JarFile is initialized; we know that that class

@@ -646,13 +646,10 @@ public abstract class ReferencePipeline<P_IN, P_OUT>
         return toArray(Object[]::new);
     }
 
-    // Android-changed: JavaUtilCollectionAccess is not yet imported.
-    /*
     @Override
     public List<P_OUT> toList() {
         return SharedSecrets.getJavaUtilCollectionAccess().listFromTrustedArrayNullsAllowed(this.toArray());
     }
-    */
 
     @Override
     public final boolean anyMatch(Predicate<? super P_OUT> predicate) {
