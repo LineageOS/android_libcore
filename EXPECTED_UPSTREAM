@@ -991,7 +991,7 @@ ojluni/src/main/java/java/util/StringJoiner.java,jdk11u/jdk-11.0.13-ga,src/java.
 ojluni/src/main/java/java/util/StringTokenizer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/StringTokenizer.java
 ojluni/src/main/java/java/util/TimSort.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TimSort.java
 ojluni/src/main/java/java/util/TimeZone.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TimeZone.java
-ojluni/src/main/java/java/util/Timer.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Timer.java
+ojluni/src/main/java/java/util/Timer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Timer.java
 ojluni/src/main/java/java/util/TimerTask.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TimerTask.java
 ojluni/src/main/java/java/util/TooManyListenersException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TooManyListenersException.java
 ojluni/src/main/java/java/util/TreeMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/TreeMap.java
@@ -2278,6 +2278,12 @@ ojluni/src/test/java/util/Scanner/ScannerStreamTest.java,jdk17u/jdk-17.0.6-ga,te
 ojluni/src/test/java/util/Scanner/input.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Scanner/input.txt
 ojluni/src/test/java/util/StringJoiner/MergeTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/StringJoiner/MergeTest.java
 ojluni/src/test/java/util/StringJoiner/StringJoinerTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/StringJoiner/StringJoinerTest.java
+ojluni/src/test/java/util/Timer/Args.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/Args.java
+ojluni/src/test/java/util/Timer/AutoStop.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/AutoStop.java
+ojluni/src/test/java/util/Timer/DelayOverflow.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/DelayOverflow.java
+ojluni/src/test/java/util/Timer/KillThread.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/KillThread.java
+ojluni/src/test/java/util/Timer/NameConstructors.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/NameConstructors.java
+ojluni/src/test/java/util/Timer/Purge.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Timer/Purge.java
 ojluni/src/test/java/util/UUID/Serial.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/UUID/Serial.java
 ojluni/src/test/java/util/UUID/UUIDTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/UUID/UUIDTest.java
 ojluni/src/test/java/util/Vector/ArrayManagement.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Vector/ArrayManagement.java
