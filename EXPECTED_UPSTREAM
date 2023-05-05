@@ -978,7 +978,7 @@ ojluni/src/main/java/java/util/RegularEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
 ojluni/src/main/java/java/util/Scanner.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Scanner.java
 ojluni/src/main/java/java/util/ServiceConfigurationError.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ServiceConfigurationError.java
-ojluni/src/main/java/java/util/ServiceLoader.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/util/ServiceLoader.java
+ojluni/src/main/java/java/util/ServiceLoader.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ServiceLoader.java
 ojluni/src/main/java/java/util/Set.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Set.java
 ojluni/src/main/java/java/util/SimpleTimeZone.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/SimpleTimeZone.java
 ojluni/src/main/java/java/util/SortedMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/SortedMap.java
