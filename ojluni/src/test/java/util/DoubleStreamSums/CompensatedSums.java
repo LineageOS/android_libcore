@@ -56,7 +56,9 @@ public class CompensatedSums {
         double goodParallelStreamError = 0;
         double badParallelStreamError = 0;
 
-        for (int loop = 0; loop < 100; loop++) {
+        // Android-changed: Reduce number of iterations to limit test runtime.
+        // for (int loop = 0; loop < 100; loop++) {
+        for (int loop = 0; loop < 15; loop++) {
             // sequence of random numbers of varying magnitudes, both positive and negative
             double[] rand = r.doubles(1_000_000)
                     .map(Math::log)
