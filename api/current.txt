@@ -14447,6 +14447,12 @@ package java.util {
     method public static <S> java.util.ServiceLoader<S> load(Class<S>);
     method public static <S> java.util.ServiceLoader<S> loadInstalled(Class<S>);
     method public void reload();
+    method public java.util.stream.Stream<java.util.ServiceLoader.Provider<S>> stream();
+  }
+
+  public static interface ServiceLoader.Provider<S> extends java.util.function.Supplier<S> {
+    method public S get();
+    method public Class<? extends S> type();
   }
 
   public interface Set<E> extends java.util.Collection<E> {
