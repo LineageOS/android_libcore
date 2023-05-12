@@ -1645,10 +1645,15 @@ public final class ServiceLoader<S>
      */
     @CallerSensitive
     public static <S> ServiceLoader<S> loadInstalled(Class<S> service) {
-        // Android-changed: there is no platformClassLoader, using systemClassLoader.
+        // Android-changed: there is no platformClassLoader, using extension classloader.
         // ClassLoader cl = ClassLoader.getPlatformClassLoader();
         ClassLoader cl = ClassLoader.getSystemClassLoader();
-        return new ServiceLoader<>(Reflection.getCallerClass(), service, cl);
+        ClassLoader prev = null;
+        while (cl != null) {
+            prev = cl;
+            cl = cl.getParent();
+        }
+        return new ServiceLoader<>(Reflection.getCallerClass(), service, prev);
     }
 
     // Android-removed: JPMS is not supported.
