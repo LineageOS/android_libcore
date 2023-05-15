@@ -17,6 +17,7 @@
 package libcore.java.util;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
@@ -52,6 +53,33 @@ public class ServiceLoaderTest extends junit.framework.TestCase {
     var serviceLoader = ServiceLoader.load(UnimplementedInterface.class);
 
     assertFalse(serviceLoader.findFirst().isPresent());
+  }
+
+  public void test_stream_emptyLoader() {
+    var serviceLoader = ServiceLoader.load(UnimplementedInterface.class);
+
+    var result = serviceLoader.stream().toList();
+
+    assertTrue("Following services were found: " + result, result.isEmpty());
+  }
+
+  public void test_streamTypes_nonEmptyLoader() {
+    var serviceLoader = ServiceLoader.load(ServiceLoaderTestInterface.class);
+
+    var providerTypes = serviceLoader.stream().map(ServiceLoader.Provider::type).toList();
+
+    assertEquals(List.of(Impl1.class, Impl2.class), providerTypes);
+  }
+
+  public void test_stream_providerGet_nonEmptyLoader() {
+    var serviceLoader = ServiceLoader.load(ServiceLoaderTestInterface.class);
+
+    var providedTypes = serviceLoader.stream()
+            .map(ServiceLoader.Provider::get)
+            .map(Object::getClass)
+            .toList();
+
+    assertEquals(List.of(Impl1.class, Impl2.class), providedTypes);
   }
 
   public void testLoadInstalled() {
