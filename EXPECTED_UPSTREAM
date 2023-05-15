@@ -1383,7 +1383,10 @@ ojluni/src/main/java/javax/sql/StatementEvent.java,jdk7u/jdk7u40-b60,jdk/src/sha
 ojluni/src/main/java/javax/sql/StatementEventListener.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/javax/sql/StatementEventListener.java
 ojluni/src/main/java/jdk/internal/HotSpotIntrinsicCandidate.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/HotSpotIntrinsicCandidate.java
 ojluni/src/main/java/jdk/internal/ValueBased.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/ValueBased.java
+ojluni/src/main/java/jdk/internal/access/JavaIOFileDescriptorAccess.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/access/JavaIOFileDescriptorAccess.java
+ojluni/src/main/java/jdk/internal/access/JavaObjectInputStreamAccess.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/access/JavaObjectInputStreamAccess.java
 ojluni/src/main/java/jdk/internal/access/JavaUtilCollectionAccess.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/access/JavaUtilCollectionAccess.java
+ojluni/src/main/java/jdk/internal/access/SharedSecrets.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/access/SharedSecrets.java
 ojluni/src/main/java/jdk/internal/math/DoubleConsts.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/math/DoubleConsts.java
 ojluni/src/main/java/jdk/internal/math/FDBigInteger.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/math/FDBigInteger.java
 ojluni/src/main/java/jdk/internal/math/FloatConsts.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/math/FloatConsts.java
