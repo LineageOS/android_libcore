@@ -37,7 +37,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import jdk.internal.access.JavaUtilCollectionAccess;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
 import jdk.internal.vm.annotation.Stable;
 
 /**
