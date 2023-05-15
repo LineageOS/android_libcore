@@ -23,7 +23,9 @@
  * questions.
  */
 
-package jdk.internal.misc;
+package jdk.internal.access;
+
+import jdk.internal.misc.Unsafe;
 
 import java.io.ObjectInputStream;
 import jdk.internal.access.JavaUtilCollectionAccess;
