@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -22,19 +22,17 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package jdk.internal.misc;
 
-import java.io.FileDescriptor;
+package jdk.internal.access;
 
-/*
- * @author Chris Hegarty
+import java.io.InvalidClassException;
+import java.io.ObjectInputStream;
+
+/**
+ * Interface to specify methods for accessing {@code ObjectInputStream}.
  */
-
-public interface JavaIOFileDescriptorAccess {
-    public void set(FileDescriptor obj, int fd);
-    public int get(FileDescriptor fd);
-
-    // Only valid on Windows
-    public void setHandle(FileDescriptor obj, long handle);
-    public long getHandle(FileDescriptor obj);
+@FunctionalInterface
+public interface JavaObjectInputStreamAccess {
+    void checkArray(ObjectInputStream ois, Class<?> arrayType, int arrayLength)
+        throws InvalidClassException;
 }
