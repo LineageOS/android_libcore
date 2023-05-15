@@ -244,8 +244,8 @@ public final class FileDescriptor {
     private static native boolean isSocket(int descriptor);
     // Set up JavaIOFileDescriptorAccess in SharedSecrets
     static {
-        jdk.internal.misc.SharedSecrets.setJavaIOFileDescriptorAccess(
-            new jdk.internal.misc.JavaIOFileDescriptorAccess() {
+        jdk.internal.access.SharedSecrets.setJavaIOFileDescriptorAccess(
+            new jdk.internal.access.JavaIOFileDescriptorAccess() {
                 public void set(FileDescriptor obj, int fd) {
                     obj.descriptor = fd;
                 }
