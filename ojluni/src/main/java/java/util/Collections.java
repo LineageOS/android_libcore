@@ -41,9 +41,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-// Android-changed: SharedSecrets are not moved yet.
-// import jdk.internal.access.SharedSecrets;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
 
 import dalvik.system.VMRuntime;
 

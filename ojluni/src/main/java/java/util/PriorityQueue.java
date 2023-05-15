@@ -27,7 +27,7 @@ package java.util;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
 import jdk.internal.util.ArraysSupport;
 
 /**

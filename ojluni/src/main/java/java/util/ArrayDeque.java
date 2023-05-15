@@ -37,7 +37,7 @@ package java.util;
 import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import jdk.internal.misc.SharedSecrets;
+import jdk.internal.access.SharedSecrets;
 
 /**
  * Resizable-array implementation of the {@link Deque} interface.  Array
