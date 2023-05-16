@@ -1393,9 +1393,6 @@ ojluni/src/main/java/jdk/internal/math/FloatConsts.java,jdk17u/jdk-17.0.6-ga,src
 ojluni/src/main/java/jdk/internal/math/FloatingDecimal.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/math/FloatingDecimal.java
 ojluni/src/main/java/jdk/internal/math/FormattedFloatingDecimal.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/math/FormattedFloatingDecimal.java
 ojluni/src/main/java/jdk/internal/misc/InnocuousThread.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/InnocuousThread.java
-ojluni/src/main/java/jdk/internal/misc/JavaIOFileDescriptorAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/JavaIOFileDescriptorAccess.java
-ojluni/src/main/java/jdk/internal/misc/JavaObjectInputStreamAccess.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/JavaObjectInputStreamAccess.java
-ojluni/src/main/java/jdk/internal/misc/SharedSecrets.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/misc/SharedSecrets.java
 ojluni/src/main/java/jdk/internal/misc/TerminatingThreadLocal.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/misc/TerminatingThreadLocal.java
 ojluni/src/main/java/jdk/internal/misc/Unsafe.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/misc/Unsafe.java
 ojluni/src/main/java/jdk/internal/misc/UnsafeConstants.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/misc/UnsafeConstants.java
@@ -1439,7 +1436,6 @@ ojluni/src/main/java/sun/misc/JavaIOFileDescriptorAccess.java,jdk8u/jdk8u121-b13
 ojluni/src/main/java/sun/misc/LRUCache.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/LRUCache.java
 ojluni/src/main/java/sun/misc/MessageUtils.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/MessageUtils.java
 ojluni/src/main/java/sun/misc/Resource.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/Resource.java
-ojluni/src/main/java/sun/misc/SharedSecrets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/SharedSecrets.java
 ojluni/src/main/java/sun/misc/URLClassPath.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/URLClassPath.java
 ojluni/src/main/java/sun/misc/Unsafe.java,jdk7u/jdk7u40-b60,jdk/src/share/classes/sun/misc/Unsafe.java
 ojluni/src/main/java/sun/misc/VM.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/misc/VM.java
