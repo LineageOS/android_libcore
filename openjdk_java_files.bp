@@ -1542,7 +1542,6 @@ filegroup {
         "ojluni/src/main/java/sun/misc/HexDumpEncoder.java",
         "ojluni/src/main/java/sun/misc/InvalidJarIndexException.java",
         "ojluni/src/main/java/sun/misc/IOUtils.java",
-        "ojluni/src/main/java/sun/misc/JavaIOFileDescriptorAccess.java",
         "ojluni/src/main/java/sun/misc/LRUCache.java",
         "ojluni/src/main/java/sun/misc/MessageUtils.java",
         "ojluni/src/main/java/sun/misc/Resource.java",
