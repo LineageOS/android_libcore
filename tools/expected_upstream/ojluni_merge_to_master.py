@@ -25,7 +25,7 @@ import random
 import re
 import string
 import sys
-from typing import List
+from typing import List, Tuple, Set
 from typing import Sequence
 
 # pylint: disable=g-multiple-import
@@ -50,7 +50,7 @@ from git import (
 logging.basicConfig(level=logging.INFO)
 
 
-def validate_and_remove_updated_entries(
+def validate_and_remove_unmodified_entries(
     entries: List[ExpectedUpstreamEntry],
     repo: Repo, commit: Commit) -> List[ExpectedUpstreamEntry]:
   """Returns a list of entries of which the file content needs to be updated."""
@@ -103,6 +103,8 @@ MSG_SECOND_COMMIT = ("Merge {summary} into the "
                      "{bug}\n"
                      "Test: N/A"
                      "{change_id_str}")
+
+INVALID_DIFF = (None, None)
 
 
 def create_commit_staging_diff(repo: Repo) -> None:
@@ -191,21 +193,24 @@ def create_commit_summary(diff_entries: List[ExpectedUpstreamEntry]) -> str:
 
 def create_commit_at_expected_upstream(
     repo: Repo, head: Head, new_entries: List[ExpectedUpstreamEntry],
-    bug_id: str, last_expected_change_id: str) -> Head:
+    removed_paths: Set[str], bug_id: str,
+    last_expected_change_id: str, discard_working_tree: bool) -> Head:
   r"""Create a new commit importing the given files at the head.
 
   Args:
     repo: the repository object
     head: the temp expected_upstream branch
     new_entries: a list of entries
+    removed_paths: removed paths
     bug_id: bug id
     last_expected_change_id: Gerrit's change Id
+    discard_working_tree: discard the working tree.
 
   Returns:
     a list of entries
   """
-  dst_paths = [e.dst_path for e in new_entries]
-  str_dst_paths = "\n  ".join(dst_paths)
+  affected_paths = [e.dst_path for e in new_entries] + list(removed_paths)
+  str_affected_paths = "\n  ".join(affected_paths)
 
   for entry in new_entries:
     ref = entry.git_ref
@@ -223,20 +228,29 @@ def create_commit_at_expected_upstream(
   entries = ExpectedUpstreamFile(head.commit.tree["EXPECTED_UPSTREAM"]
                                  .data_stream.read()).read_all_entries()
   entries = overlay_entries(entries, new_entries)
+  entries = list(filter(lambda e: e.dst_path not in removed_paths, entries))
   # Write the entries to the file system.
   ExpectedUpstreamFile().sort_and_write_all_entries(entries)
 
-  index = IndexFile.from_tree(repo, head.commit)
+  if discard_working_tree:
+    repo.head.reference = head
+    repo.head.reset(index=True)
+    index = repo.index
+  else:
+    index = IndexFile.from_tree(repo, head.commit)
   index.add("EXPECTED_UPSTREAM")
   for entry in new_entries:
     index.add(entry.dst_path)
+
+  for p in removed_paths:
+    index.remove(p)
 
   summary_msg = create_commit_summary(new_entries)
   str_bug = "" if bug_id is None else f"Bug: {bug_id}"
   change_id_str = ""
   if last_expected_change_id:
     change_id_str = f"\nChange-Id: {last_expected_change_id}"
-  msg = MSG_FIRST_COMMIT.format(summary=summary_msg, files=str_dst_paths,
+  msg = MSG_FIRST_COMMIT.format(summary=summary_msg, files=str_affected_paths,
                                 bug=str_bug, change_id_str=change_id_str)
   commit = index.commit(message=msg, parent_commits=[head.commit], head=False)
   new_head = head.set_commit(commit)
@@ -297,8 +311,8 @@ def extract_bug_id(commit: Commit) -> str:
   return result.group(1) if result else None
 
 
-def get_diff_entries(
-    repo: Repo, base_expected_commit: Commit) -> List[ExpectedUpstreamEntry]:
+def get_diff_entries(repo: Repo, base_expected_commit: Commit) -> Tuple[
+    List[ExpectedUpstreamEntry], Set[str]]:
   """Get a list of entries different from the head commit.
 
   Validate EXPECTED_UPSTREAM file and return the list of
@@ -316,7 +330,7 @@ def get_diff_entries(
     print("This script should only run on aosp/master branch. "
           f"Currently, this is on branch {repo.active_branch} "
           f"tracking {current_tracking_branch}", file=sys.stderr)
-    return None
+    return INVALID_DIFF
 
   print("Reading EXPECTED_UPSTREAM file...")
   head_commit = repo.head.commit
@@ -324,36 +338,40 @@ def get_diff_entries(
   no_file_change = len(diff_index)
   if no_file_change == 0:
     print("Can't find any EXPECTED_UPSTREAM file change", file=sys.stderr)
-    return None
+    return INVALID_DIFF
   elif no_file_change > 1 or diff_index[0].a_rawpath != b"EXPECTED_UPSTREAM":
     print("Expect modification in the EXPECTED_UPSTREAM file only.\n"
           "Please remove / commit the other changes. The below file changes "
           "are detected: ", file=sys.stderr)
     print_diff_index(diff_index, file=sys.stderr)
-    return None
+    return INVALID_DIFF
 
   prev_file = ExpectedUpstreamFile(head_commit.tree["EXPECTED_UPSTREAM"]
                                    .data_stream.read())
   curr_file = ExpectedUpstreamFile()
   diff_entries = prev_file.get_new_or_modified_entries(curr_file)
+  removed_paths = prev_file.get_removed_paths(curr_file)
 
-  outdated_entries = validate_and_remove_updated_entries(
+  modified_entries = validate_and_remove_unmodified_entries(
       diff_entries, repo, base_expected_commit)
 
-  if not outdated_entries:
+  if not modified_entries and not removed_paths:
     print("No need to update. All files are updated.")
-    return None
+    return INVALID_DIFF
 
   print("The following entries will be updated from upstream")
-  for e in outdated_entries:
+  for e in modified_entries:
     print(f"  {e.dst_path}")
+  for p in removed_paths:
+    print(f"  {p}")
 
-  return diff_entries
+  return diff_entries, removed_paths
 
 
 def compute_absorbed_diff_entries(
     repo: Repo, base_commit: Commit, commit: Commit, overlaid_entries: List[
-        ExpectedUpstreamEntry]) -> List[ExpectedUpstreamEntry]:
+        ExpectedUpstreamEntry], removed_paths: Set[
+            str]) -> Tuple[List[ExpectedUpstreamEntry], Set[str]]:
   r"""Compute the combined entries after absorbing the new changes.
 
   Args:
@@ -361,6 +379,7 @@ def compute_absorbed_diff_entries(
     base_commit: the base commit in the expected_upstream
     commit: The commit diff-ed against from the base_commit
     overlaid_entries: Additional entries overlaid on top of the diff.
+    removed_paths: removed paths
 
   Returns:
     Combined diff entries
@@ -371,12 +390,19 @@ def compute_absorbed_diff_entries(
                                    .data_stream.read())
   diff_entries = prev_file.get_new_or_modified_entries(curr_file)
   diff_entries = overlay_entries(diff_entries, overlaid_entries)
-  return validate_and_remove_updated_entries(diff_entries, repo, base_commit)
+  intersection = set(filter(lambda e: e.dst_path in removed_paths,
+                            diff_entries))
+  diff_entries = list(filter(lambda e: e not in intersection, diff_entries))
+  new_removed_paths = set(filter(lambda p: p not in intersection,
+                                 removed_paths))
+  return validate_and_remove_unmodified_entries(
+      diff_entries, repo, base_commit), new_removed_paths
 
 
 def main_run(
     repo: Repo, expected_upstream_base: str,
-    bug_id: str, use_rerere: bool, is_absorbed: bool) -> None:
+    bug_id: str, use_rerere: bool, is_absorbed: bool,
+    discard_working_tree: bool) -> None:
   """Create the commits importing files according to the EXPECTED_UPSTREAM.
 
   Args:
@@ -386,6 +412,7 @@ def main_run(
     use_rerere: Reuses the recorded resolution from git
     is_absorbed: Absorb the new changes from EXPECTED_UPSTREAM into the
       existing commits created by this script
+    discard_working_tree: discard working tree flag.
   """
   last_master_commit = repo.head.commit
   last_master_change_id = None
@@ -400,7 +427,7 @@ def main_run(
     last_expected_commit = None
     for commit in head.commit.parents:
       name_rev: list[str] = commit.name_rev.split(" ", 1)
-      if (len(name_rev) > 1 and  # name_rev[1] is usualy the branch name
+      if (len(name_rev) > 1 and  # name_rev[1] is usually the branch name
           name_rev[1].startswith(TEMP_EXPECTED_BRANCH_PREFIX)):
         last_branch = name_rev[1]
         last_expected_commit = commit
@@ -432,38 +459,51 @@ def main_run(
         print(f"{expected_upstream_base} is not found in this repository.",
               file=sys.stderr)
 
-  diff_entries = get_diff_entries(repo, base_expected_branch_commit)
-  if not diff_entries:
+  diff_entries, removed_paths = get_diff_entries(repo,
+                                                 base_expected_branch_commit)
+  if not diff_entries and not removed_paths:
     return
 
   if is_absorbed:
-    diff_entries = compute_absorbed_diff_entries(
-        repo, base_expected_branch_commit, last_expected_commit, diff_entries)
+    diff_entries, removed_paths = compute_absorbed_diff_entries(
+        repo, base_expected_branch_commit, last_expected_commit, diff_entries,
+        removed_paths)
+
+  # Due to a limitation in GitPython, index.remove requires switching branch
+  # and discard the working tree.
+  if removed_paths and not discard_working_tree:
+    print("-r option is required to discard the current working tree.")
+    return
 
   create_commit_staging_diff(repo)
 
+  master_head = repo.active_branch
   branch_name = create_random_branch_name()
   new_branch = repo.create_head(branch_name, base_expected_branch_commit.hexsha)
   new_branch.set_tracking_branch(repo.remotes.aosp.refs.expected_upstream)
   new_branch = create_commit_at_expected_upstream(
-      repo, new_branch, diff_entries, bug_id, last_expected_change_id)
+      repo, new_branch, diff_entries, removed_paths, bug_id,
+      last_expected_change_id, discard_working_tree)
 
   # Clean the working tree before merging branch
+  if discard_working_tree:
+    repo.head.reference = master_head
+
   repo.head.reset(commit=last_master_commit, working_tree=True)
   for e in diff_entries:
     if not has_file_in_tree(e.dst_path, repo.head.commit.tree):
       path = Path(LIBCORE_DIR, e.dst_path)
       path.unlink(missing_ok=True)
 
-  dst_paths = [e.dst_path for e in diff_entries]
-  str_dst_paths = "\n  ".join(dst_paths)
+  affected_paths = [e.dst_path for e in diff_entries] + list(removed_paths)
+  str_affected_paths = "\n  ".join(affected_paths)
   summary_msg = create_commit_summary(diff_entries)
   str_bug = "" if bug_id is None else f"Bug: {bug_id}"
   change_id_str = ""
   if last_master_change_id:
     change_id_str = f"\nChange-Id: {last_master_change_id}"
   msg = MSG_SECOND_COMMIT.format(
-      summary=summary_msg, files=str_dst_paths, bug=str_bug,
+      summary=summary_msg, files=str_affected_paths, bug=str_bug,
       change_id_str=change_id_str)
   rerere_str = "rerere.enabled="
   rerere_str += "true" if use_rerere else "false"
@@ -502,6 +542,10 @@ def main(argv: Sequence[str]) -> None:
       "--disable-rerere", action="store_true",
       help="Do not re-use the recorded resolution from git.")
   arg_parser.add_argument(
+      "-r", "--reset", action="store_true",
+      help="Discard the current working tree. Experimental flag to "
+           "support file removal from ojluni/.")
+  arg_parser.add_argument(
       "-b", "--bug", nargs="?",
       help="Buganizer Id")
   arg_parser.add_argument(
@@ -514,13 +558,15 @@ def main(argv: Sequence[str]) -> None:
   expected_upstream_base = args.expected_upstream_base
   use_rerere = not args.disable_rerere
   is_absorbed = args.absorbed_to_last_merge
+  discard_working_tree = args.reset
   if is_absorbed and expected_upstream_base is not None:
     print("Error: -a and -e options can't be used together.", file=sys.stderr)
     return
 
   repo = Repo(LIBCORE_DIR.as_posix())
   try:
-    main_run(repo, expected_upstream_base, bug_id, use_rerere, is_absorbed)
+    main_run(repo, expected_upstream_base, bug_id, use_rerere, is_absorbed,
+             discard_working_tree)
   finally:
     repo.close()
 
