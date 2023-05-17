@@ -195,9 +195,7 @@ public class Hashtable<K,V>
             initialCapacity = 1;
         this.loadFactor = loadFactor;
         table = new HashtableEntry<?,?>[initialCapacity];
-        // Android-changed: Ignore loadFactor when calculating threshold from initialCapacity
-        // threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);
-        threshold = (int)Math.min(initialCapacity, MAX_ARRAY_SIZE + 1);
+        threshold = (int)Math.min(initialCapacity * loadFactor, MAX_ARRAY_SIZE + 1);
     }
 
     /**
