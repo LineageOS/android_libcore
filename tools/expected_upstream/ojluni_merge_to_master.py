@@ -25,7 +25,7 @@ import random
 import re
 import string
 import sys
-from typing import List, Tuple, Set
+from typing import List, Tuple, Set, Dict
 from typing import Sequence
 
 # pylint: disable=g-multiple-import
@@ -35,6 +35,7 @@ from common_util import (
     has_file_in_tree,
     LIBCORE_DIR,
     OjluniFinder,
+    TEST_PATH,
 )
 
 from git import (
@@ -105,6 +106,10 @@ MSG_SECOND_COMMIT = ("Merge {summary} into the "
                      "{change_id_str}")
 
 INVALID_DIFF = (None, None)
+
+LICENSE_BLOCK = r"\/\*(?:\*(?!\/)|[^*])*\*\/[ ]*\n"
+REGEX_LICENSE_AND_IMPORT = re.compile(
+    r"^(" + LICENSE_BLOCK + "\n+)(import .+;)$", re.MULTILINE)
 
 
 def create_commit_staging_diff(repo: Repo) -> None:
@@ -508,6 +513,14 @@ def main_run(
   rerere_str = "rerere.enabled="
   rerere_str += "true" if use_rerere else "false"
 
+  test_dst_paths = {}
+  for e in diff_entries:
+    if e.dst_path.startswith(TEST_PATH):
+      class_name = OjluniFinder.translate_ojluni_path_to_class_name(e.dst_path)
+      if class_name is not None:
+        package_name = class_name[:class_name.rfind(".")]
+        test_dst_paths[e.dst_path] = package_name
+
   # Run git-merge command here, and will let the user to handle
   # any errors and merge conflicts
   try:
@@ -515,6 +528,23 @@ def main_run(
                       new_branch.commit.hexsha, "-m", msg])
   except GitCommandError as err:
     print(f"Error: {err}", file=sys.stderr)
+
+  insert_package_name_to_tests(test_dst_paths)
+
+
+def insert_package_name_to_tests(test_dst_paths: Dict[str, str]):
+  """Insert package name into the test file before the java import statement.
+
+  Args:
+    test_dst_paths: Map the file path to package names
+  """
+  for dst_path, package_name in test_dst_paths.items():
+    with open(dst_path, "r") as file:
+      src = file.read()
+    replacement = r"\1package " + package_name + r";\n\n\2"
+    modified = REGEX_LICENSE_AND_IMPORT.sub(replacement, src, count=1)
+    with open(dst_path, "w") as out:
+      out.write(modified)
 
 
 def create_random_branch_name():
