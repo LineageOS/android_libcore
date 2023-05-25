@@ -23,19 +23,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.util.List;
+
 @RunWith(JUnit4.class)
 public class VersionCodesTest {
 
     /**
-     * Ensure the consistent values of @link VersionCodes#UPSIDE_DOWN_CAKE} and
-     * {@link android.os.Build.VERSION_CODES#UPSIDE_DOWN_CAKE}.
-     *.
+     * Ensure that the latest entries in {@link VersionCodes} and
+     * {@link android.os.Build.VERSION_CODES} are consistent.
      */
     @Test
-    public void testUPSIDE_DOWN_CAKE() {
-        String field = "UPSIDE_DOWN_CAKE";
-        int frameworkValue = getFrameworksSdkCode(field);
-        Assert.assertEquals(frameworkValue, getLibcoreSdkCode(field));
+    public void valuesInVersionCodesAndFrameworksBuild_areConsistent() {
+        for (String field : List.of("UPSIDE_DOWN_CAKE", "VANILLA_ICE_CREAM")) {
+            int frameworkValue = getFrameworksSdkCode(field);
+            Assert.assertEquals("Values for " + field + " are different",
+                    frameworkValue, getLibcoreSdkCode(field));
+        }
     }
 
     private static int getFrameworksSdkCode(String fieldName) {
