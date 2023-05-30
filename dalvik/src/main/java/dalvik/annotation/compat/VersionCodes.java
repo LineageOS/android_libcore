@@ -89,4 +89,10 @@ public class VersionCodes {
      */
     @IntraCoreApi
     public static final int UPSIDE_DOWN_CAKE = CUR_DEVELOPMENT;
+
+    /**
+     * Vanilla Ice Cream.
+     */
+    @IntraCoreApi
+    public static final int VANILLA_ICE_CREAM = CUR_DEVELOPMENT;
 }
