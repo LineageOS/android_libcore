@@ -25,14 +25,10 @@
 
 package java.lang;
 
-// BEGIN Android-removed: dynamic constants not supported on Android.
-/*
 import java.lang.invoke.MethodHandles;
 import java.lang.constant.Constable;
 import java.lang.constant.ConstantDesc;
 import java.util.Optional;
-*/
-// END Android-removed: dynamic constants not supported on Android.
 
 import jdk.internal.math.FloatingDecimal;
 import jdk.internal.vm.annotation.IntrinsicCandidate;
@@ -72,10 +68,7 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
  */
 @jdk.internal.ValueBased
 public final class Float extends Number
-        implements Comparable<Float>
-// Android-removed: no Constable support.
-// , Constable, ConstantDesc
-{
+        implements Comparable<Float>, Constable, ConstantDesc {
     /**
      * A constant holding the positive infinity of type
      * {@code float}. It is equal to the value returned by
@@ -1010,14 +1003,14 @@ public final class Float extends Number
         return Math.min(a, b);
     }
 
-    // BEGIN Android-removed: dynamic constants not supported on Android.
     /**
      * Returns an {@link Optional} containing the nominal descriptor for this
      * instance, which is the instance itself.
      *
      * @return an {@link Optional} describing the {@linkplain Float} instance
      * @since 12
-     *
+     * @hide
+     */
     @Override
     public Optional<Float> describeConstable() {
         return Optional.of(this);
@@ -1030,12 +1023,12 @@ public final class Float extends Number
      * @param lookup ignored
      * @return the {@linkplain Float} instance
      * @since 12
-     *
+     * @hide
+     */
     @Override
     public Float resolveConstantDesc(MethodHandles.Lookup lookup) {
         return this;
     }
-    // END Android-removed: dynamic constants not supported on Android.
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     @java.io.Serial
