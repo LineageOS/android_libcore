@@ -35,8 +35,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-// BEGIN Android-removed: dynamic constants not supported on Android.
-/*
 import java.lang.constant.Constable;
 import java.lang.constant.DynamicConstantDesc;
 import java.util.Optional;
@@ -44,8 +42,6 @@ import static java.lang.constant.ConstantDescs.BSM_EXPLICIT_CAST;
 import static java.lang.constant.ConstantDescs.CD_char;
 import static java.lang.constant.ConstantDescs.CD_int;
 import static java.lang.constant.ConstantDescs.DEFAULT_NAME;
-*/
-// END Android-removed: dynamic constants not supported on Android.
 
 // Android-changed: Remove reference to a specific unicode standard version
 /**
@@ -195,9 +191,7 @@ import static java.lang.constant.ConstantDescs.DEFAULT_NAME;
  */
 @jdk.internal.ValueBased
 public final
-class Character implements java.io.Serializable, Comparable<Character> {
-// Android-removed: no Constable support.
-// , Constable
+class Character implements java.io.Serializable, Comparable<Character>, Constable {
     /**
      * The minimum radix available for conversion to and from strings.
      * The constant value of this field is the smallest value permitted
@@ -699,20 +693,18 @@ class Character implements java.io.Serializable, Comparable<Character> {
             DIRECTIONALITY_NONSPACING_MARK, DIRECTIONALITY_BOUNDARY_NEUTRAL };
     // END Android-added: Use ICU.
 
-    // BEGIN Android-removed: dynamic constants not supported on Android.
     /**
      * Returns an {@link Optional} containing the nominal descriptor for this
      * instance.
      *
      * @return an {@link Optional} describing the {@linkplain Character} instance
      * @since 15
-     *
+     * @hide
+     */
     @Override
     public Optional<DynamicConstantDesc<Character>> describeConstable() {
         return Optional.of(DynamicConstantDesc.ofNamed(BSM_EXPLICIT_CAST, DEFAULT_NAME, CD_char, (int) value));
     }
-    */
-    // END Android-removed: dynamic constants not supported on Android.
 
     /**
      * Instances of this class represent particular subsets of the Unicode
