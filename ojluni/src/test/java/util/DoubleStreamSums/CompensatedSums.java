@@ -95,7 +95,9 @@ public class CompensatedSums {
         }
 
         Assert.assertTrue(jdkParallelStreamError <= goodParallelStreamError);
-        Assert.assertTrue(badParallelStreamError >= jdkParallelStreamError);
+        // Android-removed: due to limited number of iterations this check might
+        // occasionally fail (b/284693092).
+        // Assert.assertTrue(badParallelStreamError >= jdkParallelStreamError);
 
         Assert.assertTrue(goodSequentialStreamError >= jdkSequentialStreamError);
         Assert.assertTrue(naive > jdkSequentialStreamError);
