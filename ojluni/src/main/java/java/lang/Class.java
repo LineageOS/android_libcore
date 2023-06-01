@@ -32,11 +32,14 @@ import dalvik.system.ClassExt;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.Constable;
 import java.lang.ref.SoftReference;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectStreamField;
 import java.lang.invoke.TypeDescriptor;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -66,8 +69,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import jdk.internal.HotSpotIntrinsicCandidate;
+import jdk.internal.vm.annotation.IntrinsicCandidate;
 import jdk.internal.misc.Unsafe;
 import jdk.internal.misc.VM;
 import libcore.reflect.GenericSignatureParser;
@@ -174,7 +179,8 @@ public final class Class<T> implements java.io.Serializable,
                               GenericDeclaration,
                               Type,
                               AnnotatedElement,
-                              TypeDescriptor.OfField<Class<?>> {
+                              TypeDescriptor.OfField<Class<?>>,
+                              Constable {
     private static final int ANNOTATION= 0x00002000;
     private static final int ENUM      = 0x00004000;
     private static final int SYNTHETIC = 0x00001000;
@@ -1418,6 +1424,22 @@ public final class Class<T> implements java.io.Serializable,
         */
       return componentType;
     }
+
+    /*
+     * Returns the {@code Class} representing the element type of an array class.
+     * If this class does not represent an array class, then this method returns
+     * {@code null}.
+     */
+    private Class<?> elementType() {
+        if (!isArray()) return null;
+
+        Class<?> c = this;
+        while (c.isArray()) {
+            c = c.getComponentType();
+        }
+        return c;
+    }
+
     /**
      * Returns the component type of this {@code Class}, if it describes
      * an array type, or {@code null} otherwise.
@@ -1444,6 +1466,38 @@ public final class Class<T> implements java.io.Serializable,
     @Override
     public Class<?> arrayType() {
         return Array.newInstance(this, 0).getClass();
+    }
+
+    /**
+     * Returns a nominal descriptor for this instance, if one can be
+     * constructed, or an empty {@link Optional} if one cannot be.
+     *
+     * @return An {@link Optional} containing the resulting nominal descriptor,
+     * or an empty {@link Optional} if one cannot be constructed.
+     * @since 12
+     * @hide
+     */
+    @Override
+    public Optional<ClassDesc> describeConstable() {
+        Class<?> c = isArray() ? elementType() : this;
+        return c.isHidden() ? Optional.empty()
+                : Optional.of(ClassDesc.ofDescriptor(descriptorString()));
+    }
+
+    /**
+     * Returns {@code true} if and only if the underlying class is a hidden class.
+     *
+     * @return {@code true} if and only if this class is a hidden class.
+     *
+     * @since 15
+     * @see MethodHandles.Lookup#defineHiddenClass
+     * @hide
+     */
+    @IntrinsicCandidate
+    // Android-changed: Android has not implemented the hidden class feature yet.
+    // public native boolean isHidden();
+    public boolean isHidden() {
+        return false;
     }
 
     // Android-changed: Remove Class#isHidden() and ClassDesc from javadoc.
