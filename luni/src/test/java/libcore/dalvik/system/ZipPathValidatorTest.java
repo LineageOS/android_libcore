@@ -20,6 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -119,6 +120,30 @@ public class ZipPathValidatorTest extends TestCase {
                 verify(mockZipCallback).onZipEntryAccess(entryNames[counter]);
                 counter++;
             }
+        }
+    }
+
+    /**
+     * smdc.zip has a single file with a UTF-8 encoded name. Its name is 'файл' ('file' in Russian)
+     * but the zip file is created with an ASCII encoder. In this case, the ZipPathValidator should
+     * get the entry name decoded with UTF-8 even if the original encoder of the zip file is ASCII.
+     */
+    public void testZipFileDecodesEntryWithUTF8WhenZipCoderIsNotUTF8ButEntryIs() throws Exception {
+        String entryName = "файл";
+        final File tempFile = File.createTempFile("smdc", "zip");
+        try {
+            FileOutputStream tempFileStream = new FileOutputStream(tempFile);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(tempFileStream);
+            zipOutputStream.putNextEntry(new ZipEntry(entryName));
+            zipOutputStream.write(new byte[2]);
+            zipOutputStream.closeEntry();
+            zipOutputStream.close();
+            tempFileStream.close();
+
+            ZipFile zipFile = new ZipFile(tempFile, StandardCharsets.US_ASCII);
+            verify(mockZipCallback).onZipEntryAccess(entryName);
+        } finally {
+            tempFile.delete();
         }
     }
 }
