@@ -1,9 +1,6 @@
 #!/bin/bash
 
 THIS_DIR=$(realpath $(dirname ${BASH_SOURCE[0]:-$0}))
-# prerequisite to run the script
-# See go/pip-install-remediation how to regenerate the requirements.txt file.
-pip3 install --require-hashes -r ${THIS_DIR}/requirements.txt
 
 pushd ${THIS_DIR}
 git fetch aosp expected_upstream
