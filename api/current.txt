@@ -2413,6 +2413,7 @@ package java.lang {
     method public static int codePointBefore(char[], int, int);
     method public static int codePointCount(@NonNull CharSequence, int, int);
     method public static int codePointCount(char[], int, int);
+    method public static int codePointOf(@NonNull String);
     method public static int compare(char, char);
     method public int compareTo(@NonNull Character);
     method public static int digit(char, int);
@@ -2481,6 +2482,7 @@ package java.lang {
     method public static char toLowerCase(char);
     method public static int toLowerCase(int);
     method @NonNull public static String toString(char);
+    method @NonNull public static String toString(int);
     method public static char toTitleCase(char);
     method public static int toTitleCase(int);
     method public static char toUpperCase(char);

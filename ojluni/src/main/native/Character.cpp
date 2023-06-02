@@ -23,6 +23,7 @@
 #include "jvm.h"
 #include <nativehelper/JNIHelp.h>
 #include "nativehelper/jni_macros.h"
+#include <nativehelper/ScopedUtfChars.h>
 #include "unicode/uchar.h"
 #include <math.h>
 #include <stdio.h> // For BUFSIZ
@@ -158,7 +159,16 @@ Character_getNameImpl(JNIEnv* env, jclass, jint codePoint) {
     return (U_FAILURE(status) || byteCount == 0) ? NULL : env->NewStringUTF(buf);
 }
 
+JNIEXPORT jint JNICALL
+Character_codePointOfImpl(JNIEnv* env, jclass, jstring s) {
+    ScopedUtfChars name(env, s);
+    UErrorCode status = U_ZERO_ERROR;
+    jint cp = u_charFromName(U_EXTENDED_CHAR_NAME, name.c_str(), &status);
+    return U_SUCCESS(status) ? cp : -1;
+}
+
 static JNINativeMethod gMethods[] = {
+  FAST_NATIVE_METHOD(Character, codePointOfImpl, "(Ljava/lang/String;)I"),
   FAST_NATIVE_METHOD(Character, digitImpl, "(II)I"),
   FAST_NATIVE_METHOD(Character, getDirectionalityImpl, "(I)B"),
   NATIVE_METHOD(Character, getNameImpl, "(I)Ljava/lang/String;"),

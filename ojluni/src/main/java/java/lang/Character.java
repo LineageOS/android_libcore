@@ -8741,12 +8741,10 @@ class Character implements java.io.Serializable, Comparable<Character>, Constabl
      *      {@code codePoint} is not a {@linkplain #isValidCodePoint
      *      valid Unicode code point}.
      * @since 11
-     *
+     */
     public static String toString(int codePoint) {
         return String.valueOfCodePoint(codePoint);
     }
-    */
-    // END Android-removed: expose after String.valueOfCodePoint() is imported.
 
     /**
      * Determines whether the specified code point is a valid
@@ -11815,10 +11813,12 @@ class Character implements java.io.Serializable, Comparable<Character>, Constabl
      * @throws NullPointerException if {@code name} is {@code null}
      *
      * @since 9
-     *
+     */
     public static int codePointOf(String name) {
         name = name.trim().toUpperCase(Locale.ROOT);
-        int cp = CharacterName.getInstance().getCodePoint(name);
+        // Android-changed: Use ICU4C.
+        // int cp = CharacterName.getInstance().getCodePoint(name);
+        int cp = codePointOfImpl(name);
         if (cp != -1)
             return cp;
         try {
@@ -11831,10 +11831,12 @@ class Character implements java.io.Serializable, Comparable<Character>, Constabl
         } catch (Exception x) {}
         throw new IllegalArgumentException("Unrecognized character name :" + name);
     }
-    */
     // END Android-removed: expose after CharacterName.getCodePoint() is imported.
 
     // Android-added: Use ICU.
-    // Implement getNameImpl() natively.
+    // Implement getNameImpl() and codePointOfImpl() natively.
     private static native String getNameImpl(int codePoint);
+
+    @FastNative
+    private static native int codePointOfImpl(String name);
 }

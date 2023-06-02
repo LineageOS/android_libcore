@@ -206,6 +206,10 @@ public static char reverseBytes(char ch) { throw new RuntimeException("Stub!"); 
 
 @libcore.util.Nullable public static java.lang.String getName(int codePoint) { throw new RuntimeException("Stub!"); }
 
+public static int codePointOf(@libcore.util.NonNull String name) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public static String toString(int codePoint) { throw new RuntimeException("Stub!"); }
+
 public static final int BYTES = 2; // 0x2
 
 public static final byte COMBINING_SPACING_MARK = 8; // 0x8
