@@ -20,7 +20,8 @@ automatically merge the file if no merge conflict.
 
 ## Prerequisite
 * python3
-* pip3
+* python3-git
+  * Install it via `apt install python3-git`
 * A remote `aosp` is setup in your local git repository
 
 ## 1. Setup
