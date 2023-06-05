@@ -397,7 +397,7 @@ def compute_absorbed_diff_entries(
   diff_entries = overlay_entries(diff_entries, overlaid_entries)
   intersection = set(filter(lambda e: e.dst_path in removed_paths,
                             diff_entries))
-  diff_entries = list(filter(lambda e: e not in intersection, diff_entries))
+  diff_entries = list(filter(lambda e: e.dst_path not in intersection, diff_entries))
   new_removed_paths = set(filter(lambda p: p not in intersection,
                                  removed_paths))
   return validate_and_remove_unmodified_entries(

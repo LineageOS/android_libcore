@@ -189,4 +189,11 @@ public class StringBuilderTest extends junit.framework.TestCase {
         sb1.append("a");
         assertEquals(0, new StringBuilder("a").compareTo(sb1));
     }
+
+    public void testIsEmpty() {
+        StringBuilder sb = new StringBuilder();
+        assertTrue(sb.isEmpty());
+        sb.append('a');
+        assertFalse(sb.isEmpty());
+    }
 }
