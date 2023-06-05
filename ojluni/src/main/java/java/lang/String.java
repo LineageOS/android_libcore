@@ -803,6 +803,7 @@ public final class String
      *
      * @since 1.6
      */
+    @Override
     public boolean isEmpty() {
         // BEGIN Android-changed: Get length from count field rather than value array (see above).
         // Empty string has {@code count == 0} with or without string compression enabled.
