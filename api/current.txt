@@ -2395,6 +2395,7 @@ package java.lang {
     method @NonNull public default java.util.stream.IntStream chars();
     method @NonNull public default java.util.stream.IntStream codePoints();
     method public static int compare(@NonNull CharSequence, @NonNull CharSequence);
+    method public default boolean isEmpty();
     method public int length();
     method @NonNull public CharSequence subSequence(int, int);
     method @NonNull public String toString();
@@ -4074,7 +4075,6 @@ package java.lang {
     method public int indexOf(@NonNull String, int);
     method @NonNull public String intern();
     method public boolean isBlank();
-    method public boolean isEmpty();
     method @NonNull public static String join(@NonNull CharSequence, @Nullable java.lang.CharSequence...);
     method @NonNull public static String join(@NonNull CharSequence, @NonNull Iterable<? extends java.lang.CharSequence>);
     method public int lastIndexOf(int);
