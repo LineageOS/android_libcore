@@ -133,7 +133,7 @@ ojluni/src/main/java/java/lang/Class.java,jdk11u/jdk-11.0.13-ga,src/java.base/sh
 ojluni/src/main/java/java/lang/ClassCastException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/ClassCastException.java
 ojluni/src/main/java/java/lang/ClassCircularityError.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/ClassCircularityError.java
 ojluni/src/main/java/java/lang/ClassFormatError.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/ClassFormatError.java
-ojluni/src/main/java/java/lang/ClassLoader.java,jdk8u/jdk8u60-b31,jdk/src/share/classes/java/lang/ClassLoader.java
+ojluni/src/main/java/java/lang/ClassLoader.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/ClassLoader.java
 ojluni/src/main/java/java/lang/ClassNotFoundException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/lang/ClassNotFoundException.java
 ojluni/src/main/java/java/lang/ClassValue.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/ClassValue.java
 ojluni/src/main/java/java/lang/CloneNotSupportedException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/lang/CloneNotSupportedException.java
