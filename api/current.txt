@@ -3147,7 +3147,7 @@ package java.lang {
     method protected java.net.URL findResource(String);
     method protected java.util.Enumeration<java.net.URL> findResources(String) throws java.io.IOException;
     method protected final Class<?> findSystemClass(String) throws java.lang.ClassNotFoundException;
-    method protected Package getPackage(String);
+    method @Deprecated protected Package getPackage(String);
     method protected Package[] getPackages();
     method public final ClassLoader getParent();
     method public java.net.URL getResource(String);

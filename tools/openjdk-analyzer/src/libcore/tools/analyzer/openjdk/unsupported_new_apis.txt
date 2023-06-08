@@ -175,3 +175,7 @@ java/util/jar/JarFile#getVersion()Ljava/lang/Runtime$Version;
 java/util/jar/JarFile#isMultiRelease()Z
 java/util/jar/JarFile#runtimeVersion()Ljava/lang/Runtime$Version;
 java/util/jar/JarFile#versionedStream()Ljava/util/stream/Stream;
+
+# ART doesn't expose a class loading lock.
+# The API was removed by the commit de626ec8a109ea18283d96c720cc57e2f32f67fa
+java/lang/ClassLoader#getClassLoadingLock(Ljava/lang/String;)Ljava/lang/Object;
