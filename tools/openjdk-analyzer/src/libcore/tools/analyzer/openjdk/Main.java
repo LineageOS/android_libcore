@@ -469,8 +469,8 @@ public class Main {
 
         public static final String NAME = "list-no-deps";
 
-        @Parameter(names = {"-t", "--target"},
-                description = "one of the following OpenJDK version: 9, 11, 17")
+        @Parameter(names = {"-t", "--target"}, description = "file path to a .jmod or .jar file or "
+                + "one of the following OpenJDK version: 9, 11, 17")
         public String classpath = "17";
 
         @Parameter(names = "-h", help = true, description = "Shows this help message")
@@ -559,7 +559,7 @@ public class Main {
         public boolean help = false;
 
         private void run() throws UncheckedIOException {
-            if (!List.of("8", "9", "11", "17").contains(classpath)) {
+            if (classpath.matches("\\d+") && !List.of("8", "9", "11", "17").contains(classpath)) {
                 throw new IllegalArgumentException("Only 8, 9, 11, 17 java version is supported. "
                         + "This java version isn't supported: " + classpath);
             }
