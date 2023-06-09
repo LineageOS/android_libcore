@@ -83,9 +83,8 @@ public sealed interface ConstantDesc
                 DynamicConstantDesc,
                 Float,
                 Integer,
-                Long {
-                // Android-changed: Remove String until they implement this.
-                // String {
+                Long,
+                String {
 
     /**
      * Resolves this descriptor reflectively, emulating the resolution behavior
