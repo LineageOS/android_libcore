@@ -702,7 +702,7 @@ ojluni/src/main/java/java/security/spec/EncodedKeySpec.java,jdk8u/jdk8u121-b13,j
 ojluni/src/main/java/java/security/spec/InvalidKeySpecException.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/spec/InvalidKeySpecException.java
 ojluni/src/main/java/java/security/spec/InvalidParameterSpecException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/security/spec/InvalidParameterSpecException.java
 ojluni/src/main/java/java/security/spec/KeySpec.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/security/spec/KeySpec.java
-ojluni/src/main/java/java/security/spec/MGF1ParameterSpec.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/spec/MGF1ParameterSpec.java
+ojluni/src/main/java/java/security/spec/MGF1ParameterSpec.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/security/spec/MGF1ParameterSpec.java
 ojluni/src/main/java/java/security/spec/NamedParameterSpec.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/security/spec/NamedParameterSpec.java
 ojluni/src/main/java/java/security/spec/PKCS8EncodedKeySpec.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/spec/PKCS8EncodedKeySpec.java
 ojluni/src/main/java/java/security/spec/PSSParameterSpec.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/security/spec/PSSParameterSpec.java
