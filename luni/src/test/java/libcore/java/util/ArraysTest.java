@@ -20,9 +20,15 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import dalvik.system.VMRuntime;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -963,6 +969,26 @@ public class ArraysTest {
                 // Expected
             }
         }
+    }
+
+    @Test
+    public void arraysArrayListToArray_componentType() throws Exception {
+        List<String> strings = Arrays.asList("one", "two");
+
+        Method toArrayWithComponentType = strings.getClass().getDeclaredMethod("toArrayPreserveComponentType");
+        toArrayWithComponentType.setAccessible(true);
+
+        assertEquals(String[].class, toArrayWithComponentType.invoke(strings).getClass());
+    }
+
+    @Test
+    public void arraysArrayListToArray_noComponentType() throws Exception {
+        List<String> strings = Arrays.asList("one", "two");
+
+        Method toArrayWithoutComponentType = strings.getClass().getDeclaredMethod("toArrayWithoutComponentType");
+        toArrayWithoutComponentType.setAccessible(true);
+
+        assertEquals(Object[].class, toArrayWithoutComponentType.invoke(strings).getClass());
     }
 
     private int[] intTestArray(int size) {
