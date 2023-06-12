@@ -90,5 +90,31 @@ public class MGF1ParameterSpecTest extends TestCase {
         assertEquals("SHA-256", MGF1ParameterSpec.SHA256.getDigestAlgorithm());
         assertEquals("SHA-384", MGF1ParameterSpec.SHA384.getDigestAlgorithm());
         assertEquals("SHA-512", MGF1ParameterSpec.SHA512.getDigestAlgorithm());
+        assertEquals("SHA3-224", MGF1ParameterSpec.SHA3_224.getDigestAlgorithm());
+        assertEquals("SHA3-256", MGF1ParameterSpec.SHA3_256.getDigestAlgorithm());
+        assertEquals("SHA3-384", MGF1ParameterSpec.SHA3_384.getDigestAlgorithm());
+        assertEquals("SHA3-512", MGF1ParameterSpec.SHA3_512.getDigestAlgorithm());
+        assertEquals("SHA-512/224", MGF1ParameterSpec.SHA512_224.getDigestAlgorithm());
+        assertEquals("SHA-512/256", MGF1ParameterSpec.SHA512_256.getDigestAlgorithm());
+    }
+
+    public void testToString() {
+        assertToString(MGF1ParameterSpec.SHA1);
+        assertToString(MGF1ParameterSpec.SHA256);
+        assertToString(MGF1ParameterSpec.SHA384);
+        assertToString(MGF1ParameterSpec.SHA512);
+        assertToString(MGF1ParameterSpec.SHA3_224);
+        assertToString(MGF1ParameterSpec.SHA3_256);
+        assertToString(MGF1ParameterSpec.SHA3_384);
+        assertToString(MGF1ParameterSpec.SHA3_512);
+        assertToString(MGF1ParameterSpec.SHA512_224);
+        assertToString(MGF1ParameterSpec.SHA512_256);
+    }
+
+    private static void assertToString(MGF1ParameterSpec spec) {
+        String name = spec.getDigestAlgorithm();
+        String msg = "Expected toString() returns a string containing \"" + name
+                + "\n but \"" + spec.toString() + "\"";
+        assertTrue(msg, spec.toString().contains(name));
     }
 }
