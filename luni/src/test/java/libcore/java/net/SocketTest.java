@@ -689,8 +689,9 @@ public class SocketTest extends TestCaseWithRules {
             }
 
             if (triesLeft == 0 || addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
-                fail("Expected " + Arrays.toString(ALL_LOOPBACK_ADDRESSES) +
-                     ", got " + Arrays.toString(addresses));
+                fail("Expected " + addressesToString(ALL_LOOPBACK_ADDRESSES) +
+                    " when resolving " + ALL_LOOPBACK_HOSTNAME +
+                    ", but got " + addressesToString(addresses));
             }
 
             try {
@@ -699,6 +700,16 @@ public class SocketTest extends TestCaseWithRules {
                 fail("Test interrupted");
             }
         }
+    }
+
+    // Makes a human-readable String from the host addresses in an array of InetAddresses,
+    // i.e. removes the hostname part which is not actually used when comparing InetAddresses
+    // for equality.
+    private static String addressesToString(InetAddress[] addresses) {
+        return Arrays.stream(addresses)
+            .map(InetAddress::getHostAddress)
+            .toList()
+            .toString();
     }
 
     private static boolean canConnect(String host, int port) {
