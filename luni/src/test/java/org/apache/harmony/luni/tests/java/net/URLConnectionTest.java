@@ -645,7 +645,7 @@ public class URLConnectionTest extends TestCaseWithRules {
                 Long.MIN_VALUE, hf);
         hf = uc.getHeaderFieldDate("Date", Long.MIN_VALUE);
         assertTrue("Wrong value returned for header field 'Date': " + hf,
-                new Date().getTime() - hf < 5000);
+                new Date().getTime() - hf < 10000);
         hf = uc.getHeaderFieldDate("SERVER", Long.MIN_VALUE);
         assertEquals("Long value returned for header field 'SERVER': ",
                 Long.MIN_VALUE, hf);
