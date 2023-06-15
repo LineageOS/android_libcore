@@ -29,12 +29,22 @@
 
 package test.java.lang.Character;
 
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
 import java.util.Locale;
 
+// Android-changed: Shard the test.
+@RunWith(JUnit4.class)
 public class CharacterName {
 
-    public static void main(String[] args) {
-        for (int cp = 0; cp < Character.MAX_CODE_POINT; cp++) {
+    // Android-changed: Shard the test.
+    // public static void main(String[] args) {
+    //    for (int cp = 0; cp < Character.MAX_CODE_POINT; cp++) {
+    private static void testCodePointRange(int start) {
+        int end = start + 0x8000;
+        for (int cp = start; cp < end; cp++) {
             if (!Character.isValidCodePoint(cp)) {
                 try {
                     Character.getName(cp);
@@ -53,4 +63,31 @@ public class CharacterName {
             }
         }
     }
+
+    // BEGIN Android-added: Shard the test.
+    @Test
+    public void testGetName_shard1() {
+        testCodePointRange(0);
+    }
+    @Test
+    public void testGetName_shard2() {
+        testCodePointRange(0x8000);
+    }
+    @Test
+    public void testGetName_shard3() {
+        testCodePointRange(0x10000);
+    }
+    @Test
+    public void testGetName_shard4() {
+        testCodePointRange(0x18000);
+    }
+    @Test
+    public void testGetName_shard5() {
+        testCodePointRange(0x100000);
+    }
+    @Test
+    public void testGetName_shard6() {
+        testCodePointRange(0x108000);
+    }
+    // END Android-added: Shard the test.
 }
