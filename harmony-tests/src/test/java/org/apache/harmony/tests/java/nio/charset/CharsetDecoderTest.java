@@ -232,6 +232,7 @@ public class CharsetDecoderTest extends TestCase {
         assertCharBufferValue(getString(), out);
     }
 
+    @SuppressWarnings("TryFailThrowable")
     public void testDecodeByteBufferException()
             throws CharacterCodingException, UnsupportedEncodingException {
         CharBuffer out;
@@ -507,6 +508,7 @@ public class CharsetDecoderTest extends TestCase {
                 readOnly(getExceptionByteArray()), false);
     }
 
+    @SuppressWarnings("TryFailThrowable")
     void implTestDecodeCharBufferByteBufferException(ByteBuffer in,
             boolean endOfInput) throws CharacterCodingException,
             UnsupportedEncodingException {
