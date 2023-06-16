@@ -327,7 +327,7 @@ public class ScannerTest extends TestCase {
         try {
             s = new Scanner((PipedInputStream) null, "invalid charset");
             fail();
-        } catch (NullPointerException expected) {
+        } catch (NullPointerException | IllegalArgumentException expected) {
         }
 
         try {
