@@ -87,6 +87,7 @@ public class StringTest extends TestCase {
         public CharsetDecoder newDecoder() { return new EvilCharsetDecoder(this); }
     };
 
+    @SuppressWarnings("TryFailThrowable")
     public void testGetBytes_MaliciousCharset() {
         try {
             String s = "hi";
