@@ -88,9 +88,6 @@
         },
         {
           "exclude-filter": "org.apache.harmony.tests.javax.net.ssl.SSLSessionTest"
-        },
-        {
-          "exclude-filter": "tests.java.sql.StressTest"
         }
       ]
     }
