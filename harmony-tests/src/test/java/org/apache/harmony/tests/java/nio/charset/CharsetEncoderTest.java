@@ -624,6 +624,7 @@ public class CharsetEncoderTest extends TestCase {
 		return CharBuffer.wrap("runtime buffer");
 	}
 
+        @SuppressWarnings("TryFailThrowable")
 	public void testEncodeCharBufferException() throws CharacterCodingException {
 		ByteBuffer out;
 		CharBuffer in;
@@ -826,6 +827,7 @@ public class CharsetEncoderTest extends TestCase {
 		return result;
 	}
 
+        @SuppressWarnings("TryFailThrowable")
 	protected void implTestEncodeCharBufferByteBufferbooleanException(
 			boolean endOfInput) throws CharacterCodingException {
 		ByteBuffer out = ByteBuffer.allocate(100);
