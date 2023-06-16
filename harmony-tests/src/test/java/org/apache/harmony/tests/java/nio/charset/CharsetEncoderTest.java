@@ -21,6 +21,7 @@ import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
+import java.nio.charset.CoderMalfunctionError;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
@@ -679,8 +680,8 @@ public class CharsetEncoderTest extends TestCase {
 		// RuntimeException
 		try {
 			encoder.encode(getExceptionCharBuffer());
-			fail("should throw runtime exception");
-		} catch (RuntimeException e) {
+			fail("should throw");
+		} catch (RuntimeException | CoderMalfunctionError e) {
 		}
 	}
 
@@ -890,8 +891,8 @@ public class CharsetEncoderTest extends TestCase {
 		// RuntimeException
 		try {
 			encoder.encode(getExceptionCharBuffer());
-			fail("should throw runtime exception");
-		} catch (RuntimeException e) {
+			fail("should throw");
+		} catch (RuntimeException | CoderMalfunctionError e) {
 		}
 	}
 
