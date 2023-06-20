@@ -39,6 +39,15 @@
 },
 {
   bug: 286802267,
+  description: "The test depends on internal APIs.",
+  result: EXEC_FAILED,
+  names: [
+    "test.java.time.TestClock_System#test_OffsetLimits",
+    "test.java.time.TestClock_System#test_OffsetRegular"
+  ]
+},
+{
+  bug: 286802267,
   description: "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed / changed in the future ART module version.",
   result: EXEC_FAILED,
   names: [
@@ -51,6 +60,7 @@
   description: "The test depends on locale, but manufacturers / CLDR improves the locale data over time",
   result: EXEC_FAILED,
   names: [
+    "test.java.time.format.TestUnicodeExtension#test_localizedBy",
     "test.java.util.TestFormatter#test"
   ]
 }
