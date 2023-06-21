@@ -144,7 +144,7 @@ public final class Daemons {
             try {
                 runInternal();
             } catch (Throwable ex) {
-                // Should never happen, but may not o.w. get reported, e.g. in zygote.
+                // Usually caught in runInternal. May not o.w. get reported, e.g. in zygote.
                 // Risk logging redundantly, rather than losing it.
                 System.logE("Uncaught exception in system thread " + name, ex);
                 throw ex;
@@ -269,6 +269,13 @@ public final class Daemons {
         @UnsupportedAppUsage
         private Object finalizingObject = null;
 
+        // Track if we are currently logging an exception. We don't want to time out
+        // in the middle.
+        public static int NONE = 0;
+        public static int LOGGING = 1;
+        public static int TIMED_OUT = 2;
+        public volatile int exceptionLoggingState = NONE;
+
         FinalizerDaemon() {
             super("FinalizerDaemon");
         }
@@ -321,7 +328,13 @@ public final class Daemons {
         private void processReference(Object ref) {
             if (ref instanceof FinalizerReference finalizingReference) {
                 finalizingObject = finalizingReference.get();
-                doFinalize(finalizingReference);
+                try {
+                    doFinalize(finalizingReference);
+                } finally {
+                    // Make really sure we delay any PhantomReference enqueueing until we are
+                    // really done. Possibly redundant, but the rules are complex.
+                    Reference.reachabilityFence(finalizingObject);
+                }
             } else if (ref instanceof Cleaner.Cleanable cleanableReference) {
                 finalizingObject = cleanableReference;
                 doClean(cleanableReference);
@@ -339,20 +352,25 @@ public final class Daemons {
                 object.finalize();
             } catch (Throwable ex) {
                 // The RI silently swallows these, but Android has always logged.
+                exceptionLoggingState = LOGGING;
                 System.logE("Uncaught exception thrown by finalizer", ex);
+                if (exceptionLoggingState == TIMED_OUT) {
+                  // We would have timed out. Attempt to crash the process here to leave a trace.
+                  throw new AssertionError("Timed out logging finalizer exception", ex);
+                }
             } finally {
                 // Done finalizing, stop holding the object as live.
                 finalizingObject = null;
+                exceptionLoggingState = NONE;
             }
         }
 
         private void doClean(Cleaner.Cleanable cleanable) {
             try {
                 cleanable.clean();
-            } catch (Throwable ex) {
-                System.logE("Uncaught exception thrown by cleaner", ex);
+                // We only get here for SystemCleaner, and are thus not constrained to ignore
+                // exceptions/errors.
             } finally {
-                // No need to hold cleaner object.
                 finalizingObject = null;
             }
         }
@@ -549,6 +567,10 @@ public final class Daemons {
             // counter change. Thus at least one of the daemons appears stuck.
             if (monitorFinalizer && isActive(FINALIZER_DAEMON)
                 && FinalizerDaemon.INSTANCE.progressCounter.get() == finalizerStartCount) {
+                if (FinalizerDaemon.INSTANCE.exceptionLoggingState == FinalizerDaemon.LOGGING) {
+                    // Try to let it finish and crash. We will time out if we get here again.
+                    FinalizerDaemon.INSTANCE.exceptionLoggingState = FinalizerDaemon.TIMED_OUT;
+                }
                 // The finalizingObject field was set just before the counter increment, which
                 // preceded the doFinalize() or doClean() call.  Thus we are guaranteed to get the
                 // correct finalizing value below, unless doFinalize() just finished as we were
@@ -569,7 +591,8 @@ public final class Daemons {
                 // TODO: Consider changing that, but we have historically been more tolerant here,
                 // since we may not increment the reference counter for every processed queue
                 // element.
-                String currentTarget = ReferenceQueueDaemon.INSTANCE.currentlyProcessing().toString();
+                Object current = ReferenceQueueDaemon.INSTANCE.currentlyProcessing();
+                String currentTarget = current == null ? "unknown" : current.toString();
                 System.logE("ReferenceQueueDaemon timed out while targeting " + currentTarget
                         + ". Total nanos: " + (System.nanoTime() - startNanos));
                 if (observedReferenceQueueTimeouts.incrementAndGet()
@@ -581,6 +604,9 @@ public final class Daemons {
         }
 
         private static TimeoutException finalizerTimeoutException(Object object) {
+            if (object == null) {
+                return new TimeoutException("Unknown finalizer timed out");
+            }
             StringBuilder messageBuilder = new StringBuilder();
 
             if (object instanceof Cleaner.Cleanable) {
@@ -599,6 +625,9 @@ public final class Daemons {
         }
 
         private static String finalizingObjectAsString(Object obj) {
+            if (obj == null) {
+                return "unknown";
+            }
             if (obj instanceof Cleaner.Cleanable) {
                 return VH_ACTION.get(obj).toString();
             } else {
