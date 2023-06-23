@@ -62,6 +62,9 @@ package test.java.time;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertSame;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.lang.reflect.Field;
 import java.time.Clock;
 import java.time.Instant;
@@ -392,6 +395,7 @@ public class TestClock_System {
         }
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.INTERNAL_APIS)
     public void test_OffsetRegular() throws IllegalAccessException {
         System.out.println("*** Testing regular cases ***");
         SystemClockOffset.testWithOffset("System.currentTimeMillis()/1000",
@@ -402,6 +406,7 @@ public class TestClock_System {
                 System.currentTimeMillis()/1000 + 1024);
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.INTERNAL_APIS)
     public void test_OffsetLimits() throws IllegalAccessException {
         System.out.println("*** Testing limits ***");
         SystemClockOffset.testWithOffset("System.currentTimeMillis()/1000 - MAX_OFFSET + 1",
