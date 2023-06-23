@@ -25,6 +25,9 @@ import java.util.regex.PatternSyntaxException;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.SwitchTargetSdkVersionRule;
 import libcore.junit.util.SwitchTargetSdkVersionRule.TargetSdkVersion;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
 
@@ -2186,6 +2189,7 @@ public class PatternTest extends TestCaseWithRules {
         }
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void testSplitAsStream() {
         Pattern pat;
         String[] s;

@@ -17,6 +17,10 @@
 package libcore.java.text;
 
 import dalvik.system.VMRuntime;
+
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
@@ -466,6 +470,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
      * number formats. Ensure normal group separator is used, and ignore monetary group separator
      * when formatting currency. http://b/37135768
      */
+    @NonCts(bug = 287231726, reason = NonCtsReasons.CLDR_DATA_DEPENDENCY)
     public void testLocaleGroupingSeparator() {
         // CLDR uses '.' for currency and U+00a0 for non-currency number formats in de_AT
         // Assert ICU is using these characters
@@ -490,6 +495,7 @@ public class DecimalFormatTest extends junit.framework.TestCase {
      * Test {@link DecimalFormatSymbols#setGroupingSeparator(char)} for currency and non-currency
      * number formats. http://b/37135768
      */
+    @NonCts(bug = 287231726, reason = NonCtsReasons.CLDR_DATA_DEPENDENCY)
     public void testSetGroupingSeparator() {
         DecimalFormatSymbols dfs = new DecimalFormatSymbols(Locale.US);
         dfs.setGroupingSeparator(' ');

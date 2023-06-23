@@ -21,7 +21,10 @@ import java.text.Collator;
 import java.util.Arrays;
 import java.util.Locale;
 import libcore.icu.ICU;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
+@NonCts(bug = 287231726, reason = NonCtsReasons.INTERNAL_APIS)
 public class ICUTest extends junit.framework.TestCase {
   public void test_getISOLanguages() throws Exception {
     // Check that corrupting our array doesn't affect other callers.

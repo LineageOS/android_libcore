@@ -38,6 +38,11 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
 
+import dalvik.annotation.compat.VersionCodes;
+
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonMtsReasons;
+
 /**
  * Tests Era.getDisplayName() correctly returns the name based on each
  * chrono implementation.
@@ -192,12 +197,11 @@ public class TestEraDisplayName {
             .toArray(Object[][]::new);
     }
 
+    // Android-changed: The ICU data is different before ICU version 70. http://b/229960530
+    @NonMts(reason = NonMtsReasons.ICU_VERSION_DEPENDENCY,
+            disabledUntilSdk = VersionCodes.TIRAMISU)
     @Test(dataProvider="eraDisplayName")
     public void test_eraDisplayName(Era era, TextStyle style, Locale locale, String expected) {
-        // Android-added: The ICU data is different before ICU version 70. http://b/229960530
-        if (VersionInfo.ICU_VERSION.getMajor() < 70) {
-            return;
-        }
         assertEquals(era.getDisplayName(style, locale), expected);
     }
 

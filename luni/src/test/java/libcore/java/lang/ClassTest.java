@@ -31,6 +31,8 @@ import dalvik.system.PathClassLoader;
 import dalvik.system.VMRuntime;
 
 import libcore.io.Streams;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -365,6 +367,7 @@ public class ClassTest {
         assertEquals(expected, clazz.getTypeName());
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test
     public void toGenericString() throws Exception {
         final String outerClassName = getClass().getName();

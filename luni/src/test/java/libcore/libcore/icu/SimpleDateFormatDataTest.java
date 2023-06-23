@@ -25,10 +25,14 @@ import java.text.DateFormat;
 import java.util.Locale;
 import libcore.icu.LocaleData;
 import libcore.icu.SimpleDateFormatData;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@NonCts(reason = NonCtsReasons.INTERNAL_APIS)
 @RunWith(JUnit4.class)
 public class SimpleDateFormatDataTest {
 
