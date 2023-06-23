@@ -24,6 +24,9 @@ package test.java.util;
 
 import static org.testng.Assert.assertEquals;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -80,6 +83,7 @@ public class TestFormatter {
         };
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.CLDR_DATA_DEPENDENCY)
     @Test(dataProvider="calendarsByLocale")
     public void test (String calendarLocale) {
         failure = 0;

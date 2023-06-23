@@ -21,6 +21,8 @@ import java.util.Locale;
 import java.util.Set;
 
 import libcore.libcore.util.SerializationTester;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
 public class CurrencyTest extends junit.framework.TestCase {
     // Regression test to ensure that Currency.getSymbol(Locale) returns the
@@ -202,6 +204,7 @@ public class CurrencyTest extends junit.framework.TestCase {
         }
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_localeExtension() {
         // Language=en, Country=US, Currency=Euro
         Locale locale = Locale.forLanguageTag("en-US-u-cu-eur");
