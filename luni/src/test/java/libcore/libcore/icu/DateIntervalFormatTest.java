@@ -20,11 +20,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeNoException;
 
 import libcore.icu.DateIntervalFormat;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@NonCts(bug = 287231726, reason = NonCtsReasons.INTERNAL_APIS)
 @RunWith(JUnit4.class)
 public class DateIntervalFormatTest {
     private static final long MINUTE = 60 * 1000;

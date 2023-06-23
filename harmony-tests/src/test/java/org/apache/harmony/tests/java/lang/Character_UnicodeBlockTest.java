@@ -16,6 +16,9 @@
 
 package org.apache.harmony.tests.java.lang;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import junit.framework.TestCase;
 
 public class Character_UnicodeBlockTest extends TestCase {
@@ -108,6 +111,7 @@ public class Character_UnicodeBlockTest extends TestCase {
     };
 
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_ofC() {
         assertEquals(Character.UnicodeBlock.BASIC_LATIN, Character.UnicodeBlock.of((char) 0x0));
         assertEquals(Character.UnicodeBlock.BASIC_LATIN, Character.UnicodeBlock.of((char) 0x7f));
@@ -360,6 +364,7 @@ public class Character_UnicodeBlockTest extends TestCase {
         }
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_ofI() {
         assertEquals(Character.UnicodeBlock.BASIC_LATIN, Character.UnicodeBlock.of(0x0));
         assertEquals(Character.UnicodeBlock.BASIC_LATIN, Character.UnicodeBlock.of(0x7f));

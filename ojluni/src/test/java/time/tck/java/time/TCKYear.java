@@ -72,6 +72,9 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.time.Clock;
@@ -309,6 +312,7 @@ public class TCKYear extends AbstractDateTimeTest {
         };
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test(dataProvider="badParseData", expectedExceptions=DateTimeParseException.class)
     public void factory_parse_fail(String text, int pos) {
         try {
