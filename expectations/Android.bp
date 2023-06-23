@@ -33,7 +33,10 @@ expectations_visibility = [
 java_library {
     name: "libcore-expectations-knownfailures-jar",
     visibility: expectations_visibility,
-    java_resources: ["knownfailures.txt"],
+    java_resources: [
+        "knownfailures.txt",
+        "skippedCtsTest.txt",
+    ],
     sdk_version: "core_current",
 }
 
