@@ -31,6 +31,9 @@ import junit.framework.TestCase;
 
 import libcore.java.util.ForEachRemainingTester;
 import libcore.java.util.SpliteratorTester;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import org.apache.harmony.testframework.serialization.SerializationTest;
 import org.apache.harmony.testframework.serialization.SerializationTest.SerializableAssert;
 
@@ -592,6 +595,7 @@ public class ArrayDequeTest extends TestCase {
     /**
      * {@link java.util.ArrayDeque#iterator()}
      */
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_iterator() throws Exception {
         assertFalse(testQue.iterator().hasNext());
         assertTrue(testQue.add(testObjOne));
@@ -898,6 +902,7 @@ public class ArrayDequeTest extends TestCase {
                 new String[]{"foo", "bar", "baz "});
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_forEachRemaining_CME() throws Exception {
         ArrayDeque<String> adq = new ArrayDeque<>();
         adq.add("foo");

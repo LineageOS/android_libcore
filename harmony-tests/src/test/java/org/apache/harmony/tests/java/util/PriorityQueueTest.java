@@ -32,6 +32,9 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 import libcore.java.util.SpliteratorTester;
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import tests.util.SerializationTester;
 
 public class PriorityQueueTest extends TestCase {
@@ -635,6 +638,7 @@ public class PriorityQueueTest extends TestCase {
     /**
      * java.util.PriorityQueue#remove(Object)
      */
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @SuppressWarnings("CollectionIncompatibleType")
     public void test_remove_Ljava_lang_Object_not_Compatible() {
         Integer[] array = { 2, 45, 7, -12, 9, 23, 17, 1118, 10, 16, 39 };
