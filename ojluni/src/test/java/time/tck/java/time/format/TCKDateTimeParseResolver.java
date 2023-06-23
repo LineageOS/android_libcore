@@ -94,6 +94,9 @@ import static java.time.temporal.ChronoField.YEAR_OF_ERA;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -871,6 +874,7 @@ public class TCKDateTimeParseResolver {
         };
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     @Test(dataProvider="resolveAmPm")
     public void test_resolveAmPm(ResolverStyle style, long value, LocalTime expectedTime, Integer expectedValue) {
         String str = Long.toString(value);

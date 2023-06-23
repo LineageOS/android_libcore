@@ -33,6 +33,10 @@ import java.util.TimeZone;
 import libcore.icu.DecimalFormatData;
 import libcore.icu.LocaleData;
 import libcore.junit.util.SwitchTargetSdkVersionRule;
+import libcore.test.annotation.NonCts;
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonCtsReasons;
+import libcore.test.reasons.NonMtsReasons;
 
 import org.junit.Assume;
 import org.junit.Rule;
@@ -41,6 +45,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@NonCts(bug = 287231726, reason = NonCtsReasons.INTERNAL_APIS)
 @RunWith(JUnit4.class)
 public class LocaleDataTest {
 

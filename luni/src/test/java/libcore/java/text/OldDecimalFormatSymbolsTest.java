@@ -17,6 +17,9 @@
 
 package libcore.java.text;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.io.ObjectInputStream;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
@@ -30,6 +33,7 @@ public class OldDecimalFormatSymbolsTest extends TestCase {
         dfs = new DecimalFormatSymbols();
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_RIHarmony_compatible() throws Exception {
         ObjectInputStream i = null;
         try {
