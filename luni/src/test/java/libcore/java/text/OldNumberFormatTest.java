@@ -16,6 +16,9 @@
  */
 package libcore.java.text;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.text.ChoiceFormat;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
@@ -304,6 +307,7 @@ public class OldNumberFormatTest extends TestCase {
                 "$1.00", format.format(0.999));
     }
 
+    @NonCts(bug = 287231726, reason = NonCtsReasons.NON_BREAKING_BEHAVIOR_FIX)
     public void test_getCurrencyInstanceLjava_util_Locale() {
         Locale usLocale = Locale.US;
         NumberFormat format = NumberFormat.getCurrencyInstance(usLocale);

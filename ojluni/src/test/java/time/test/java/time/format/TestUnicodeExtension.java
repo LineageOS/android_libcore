@@ -34,6 +34,9 @@ import static org.testng.Assert.assertEquals;
 
 import android.icu.util.VersionInfo;
 
+import libcore.test.annotation.NonCts;
+import libcore.test.reasons.NonCtsReasons;
+
 import java.time.DayOfWeek;
 import java.time.ZonedDateTime;
 import java.time.ZoneId;
@@ -845,6 +848,7 @@ public class TestUnicodeExtension {
         };
     }
 
+    @NonCts(bug = 286802267, reason = NonCtsReasons.CLDR_DATA_DEPENDENCY)
     @Test(dataProvider="localizedBy")
     public void test_localizedBy(Locale locale, Chronology chrono, ZoneId zone,
                                 Chronology chronoExpected, ZoneId zoneExpected,

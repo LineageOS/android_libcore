@@ -57,6 +57,7 @@ java_test {
     ],
 
     static_libs: [
+        "core-test-rules",
         "junit",
         "testng",
     ],
@@ -143,6 +144,7 @@ java_test {
     system_modules: "core-all-system-modules",
     libs: [
         "bouncycastle",
+        "core-test-rules",
         "junit",
         "okhttp",
         "testng",
