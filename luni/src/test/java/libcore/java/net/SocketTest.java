@@ -16,7 +16,14 @@
 
 package libcore.java.net;
 
+import static android.system.OsConstants.AF_INET;
+import static android.system.OsConstants.AF_INET6;
+import static android.system.OsConstants.SOCK_DGRAM;
+
 import static java.util.stream.Collectors.joining;
+
+import android.system.ErrnoException;
+import android.system.Os;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -54,6 +61,7 @@ import java.util.stream.Stream;
 
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
+
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
@@ -676,28 +684,56 @@ public class SocketTest extends TestCaseWithRules {
         return addresses.length <= 1 || (addresses.length == 2 && addresses[0] != addresses[1]);
     }
 
-    /** Confirm the supplied hostname maps to only loopback addresses, both IPv4 and IPv6. */
     private static void checkLoopbackHost() throws UnknownHostException {
-        // b/202426043 retry a few times since DNS maybe prone to being dropped or slow in
-        // responding and we have no control over the query or cache timeouts here.
-        final int WAIT_MILLIS = 2000;
-        for (int triesLeft = 2; triesLeft >= 0; --triesLeft) {
-            InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
-            if (ALL_LOOPBACK_ADDRESSES.equals(Set.of(addresses))) {
-                return;
-            }
+        try {
+            waitForDualStackConnectivity();
+        } catch (InterruptedException e) {
+            throw new AssertionError("Test interrupted", e);
+        }
 
-            if (triesLeft == 0 || addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
-                fail("Expected " + addressesToString(ALL_LOOPBACK_ADDRESSES) +
+        InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
+        if (ALL_LOOPBACK_ADDRESSES.equals(Set.of(addresses))) {
+            return;
+        }
+
+        if (addresses.length > 2 || !allUniqueLoopbackAddresses(addresses)) {
+            fail("Expected " + addressesToString(ALL_LOOPBACK_ADDRESSES) +
                     " when resolving " + ALL_LOOPBACK_HOSTNAME +
                     ", but got " + addressesToString(addresses));
-            }
+        }
+    }
 
+    private static void waitForDualStackConnectivity() throws InterruptedException {
+        try {
+            FileDescriptor v4sock = Os.socket(AF_INET, SOCK_DGRAM, 0);
+            FileDescriptor v6sock = Os.socket(AF_INET6, SOCK_DGRAM, 0);
+            final int SLEEP_TIME_MS = 50;
+            final int ATTEMPTS = 50;
             try {
-                Thread.sleep(WAIT_MILLIS);
-            } catch (InterruptedException e) {
-                fail("Test interrupted");
+                for (int i = 0; i < ATTEMPTS; i++) {
+                    if (udpConnectSucceeded(v4sock, Inet4Address.LOOPBACK) &&
+                            udpConnectSucceeded(v6sock, Inet6Address.LOOPBACK)) {
+                        return;
+                    }
+                    Thread.sleep(SLEEP_TIME_MS);
+                }
+                fail("IPv4+IPv6 connectivity not detected after "
+                        + ATTEMPTS * SLEEP_TIME_MS + " ms");
+            } finally {
+                Os.close(v4sock);
+                Os.close(v6sock);
             }
+        } catch (ErrnoException e) {
+            fail("Unable to check connectivity: " + e.getMessage());
+        }
+    }
+
+    private static boolean udpConnectSucceeded(FileDescriptor socket, InetAddress dst) {
+        try {
+            Os.connect(socket, new InetSocketAddress(dst, 53));
+            return true;
+        } catch (SocketException | ErrnoException e) {
+            return false;
         }
     }
 
