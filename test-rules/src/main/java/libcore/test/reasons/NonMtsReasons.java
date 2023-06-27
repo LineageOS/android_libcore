@@ -28,5 +28,13 @@ public class NonMtsReasons {
     public static final String ICU_VERSION_DEPENDENCY = "The test depends on a "
             + "specific ICU version.";
 
+    /**
+     * If the test asserts a new behavior not tested in CTS, OEMs have the right to customize the
+     * behavior, but impossible to revert the behavior without system image OTA. Thus, we disable
+     * the test in MTS until it's tested in the dessert CTS.
+     */
+    public static final String OEM_CUSTOMIZATION = "The test doesn't pass with certain " +
+            "customizations from AOSP.";
+
     private NonMtsReasons() {}
 }
