@@ -16,6 +16,8 @@
 
 package libcore.java.net;
 
+import static java.util.stream.Collectors.joining;
+
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,12 +42,16 @@ import java.net.UnknownHostException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
+
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
@@ -59,14 +65,8 @@ public class SocketTest extends TestCaseWithRules {
     // This hostname is required to resolve to 127.0.0.1 and ::1 for all tests to pass.
     private static final String ALL_LOOPBACK_HOSTNAME = "loopback46.unittest.grpc.io";
 
-    private static final InetAddress[] ALL_LOOPBACK_ADDRESSES = {
-        Inet4Address.LOOPBACK,
-        Inet6Address.LOOPBACK
-    };
-
-    {
-        sortAddresses(ALL_LOOPBACK_ADDRESSES);
-    }
+    private static final Set<InetAddress> ALL_LOOPBACK_ADDRESSES =
+            Set.of(Inet4Address.LOOPBACK, Inet6Address.LOOPBACK);
 
     // From net/inet_ecn.h
     private static final int INET_ECN_MASK = 0x3;
@@ -683,8 +683,7 @@ public class SocketTest extends TestCaseWithRules {
         final int WAIT_MILLIS = 2000;
         for (int triesLeft = 2; triesLeft >= 0; --triesLeft) {
             InetAddress[] addresses = InetAddress.getAllByName(ALL_LOOPBACK_HOSTNAME);
-            sortAddresses(addresses);
-            if (Arrays.equals(ALL_LOOPBACK_ADDRESSES, addresses)) {
+            if (ALL_LOOPBACK_ADDRESSES.equals(Set.of(addresses))) {
                 return;
             }
 
@@ -706,10 +705,17 @@ public class SocketTest extends TestCaseWithRules {
     // i.e. removes the hostname part which is not actually used when comparing InetAddresses
     // for equality.
     private static String addressesToString(InetAddress[] addresses) {
-        return Arrays.stream(addresses)
-            .map(InetAddress::getHostAddress)
-            .toList()
-            .toString();
+        return addressesToString(Arrays.stream(addresses));
+    }
+
+    private static String addressesToString(Collection<InetAddress> addresses) {
+        return addressesToString(addresses.stream());
+    }
+
+    private static String addressesToString(Stream<InetAddress> addresses) {
+        return addresses
+                .map(InetAddress::getHostAddress)
+                .collect(joining(", ", "[", "]"));
     }
 
     private static boolean canConnect(String host, int port) {
