@@ -27,6 +27,11 @@
     <property name="fileNamePattern"
               value="ojluni/src/test/java/util/HashMap/WhiteBoxResizeTest.java" />
   </module>
+  <!-- Goldman Sachs contributed OpenJDK tests -->
+  <module name="BeforeExecutionExclusionFileFilter">
+    <property name="fileNamePattern"
+              value="ojluni/src/test/java/util/Arrays/SortingNearlySortedPrimitive.java" />
+  </module>
   <!-- Google contributed OpenJDK tests -->
   <module name="BeforeExecutionExclusionFileFilter">
     <property name="fileNamePattern"
