@@ -1,5 +1,5 @@
 ^(/\*)?$
-/* Copyright.*Android.*
+/* Copyright.*(Android|Google|Red Hat|SAP SE|Azul Systems|Goldman Sachs).*
 [ /][*o] Copyright \(c\) \d\d\d\d,( ?\d\d\d\d,?)? Oracle and/or its affiliates\. All rights reserved\.
  \* DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER\.
  \*
