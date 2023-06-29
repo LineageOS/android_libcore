@@ -22,6 +22,7 @@ import static tests.support.Support_Xml.firstChildTextOf;
 import static tests.support.Support_Xml.firstElementOf;
 
 import javax.xml.parsers.DocumentBuilder;
+
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
@@ -29,6 +30,29 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 
 public class DocumentBuilderTest extends junit.framework.TestCase {
+    private static final DocumentBuilder BASE_DOCUMENT_BUILDER = new DocumentBuilder() {
+        @Override
+        public Document parse(InputSource is) { return null; }
+
+        @Override
+        public boolean isNamespaceAware() { return false; }
+
+        @Override
+        public boolean isValidating() { return false; }
+
+        @Override
+        public void setEntityResolver(EntityResolver er) {}
+
+        @Override
+        public void setErrorHandler(ErrorHandler eh) {}
+
+        @Override
+        public Document newDocument() { return null; }
+
+        @Override
+        public DOMImplementation getDOMImplementation() { return null; }
+    };
+
     // http://code.google.com/p/android/issues/detail?id=2607
     public void test_characterReferences() throws Exception {
         assertEquals("aAb", firstChildTextOf(domOf("<p>a&#65;b</p>")));
@@ -73,33 +97,23 @@ public class DocumentBuilderTest extends junit.framework.TestCase {
     }
 
     public void testGetSchema() {
-        DocumentBuilder db = new DocumentBuilder() {
-            @Override
-            public Document parse(InputSource is) { return null; }
-
-            @Override
-            public boolean isNamespaceAware() { return false; }
-
-            @Override
-            public boolean isValidating() { return false; }
-
-            @Override
-            public void setEntityResolver(EntityResolver er) {}
-
-            @Override
-            public void setErrorHandler(ErrorHandler eh) {}
-
-            @Override
-            public Document newDocument() { return null; }
-
-            @Override
-            public DOMImplementation getDOMImplementation() { return null; }
-        };
-
         try {
-            db.getSchema();
+            BASE_DOCUMENT_BUILDER.getSchema();
             fail("Unexpectedly didn't throw UnsupportedOperationException");
         } catch (UnsupportedOperationException expected) {}
     }
 
+    public void testReset() {
+        try {
+            BASE_DOCUMENT_BUILDER.reset();
+            fail("Unexpectedly didn't throw UnsupportedOperationException");
+        } catch (UnsupportedOperationException expected) {}
+    }
+
+    public void testIsXIncludeAware() {
+        try {
+            BASE_DOCUMENT_BUILDER.isXIncludeAware();
+            fail("Unexpectedly didn't throw UnsupportedOperationException");
+        } catch (UnsupportedOperationException expected) {}
+    }
 }
