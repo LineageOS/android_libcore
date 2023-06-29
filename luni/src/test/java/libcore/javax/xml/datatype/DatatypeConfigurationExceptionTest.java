@@ -16,12 +16,18 @@
 package libcore.javax.xml.datatype;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
 
 @RunWith(JUnit4.class)
 public class DatatypeConfigurationExceptionTest {
@@ -47,5 +53,36 @@ public class DatatypeConfigurationExceptionTest {
         DatatypeConfigurationException e = new DatatypeConfigurationException(t);
         assertEquals("java.lang.Throwable", e.getMessage());
         assertEquals(t, e.getCause());
+    }
+
+    @Test
+    public void testPrintStackTrace_noArgs() {
+        Throwable t = new Throwable();
+        DatatypeConfigurationException e = new DatatypeConfigurationException(t);
+        e.printStackTrace();
+    }
+
+    @Test
+    public void testPrintStackTrace_withPrintStream() {
+        Throwable t = new Throwable();
+        DatatypeConfigurationException e = new DatatypeConfigurationException(t);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream ps = new PrintStream(baos, true);
+        e.printStackTrace(ps);
+
+        assertNotEquals(-1, baos.toString().indexOf("javax.xml.datatype.DatatypeConfigurationException"));
+    }
+
+    @Test
+    public void testPrintStackTrace_withPrintWriter() {
+        Throwable t = new Throwable();
+        DatatypeConfigurationException e = new DatatypeConfigurationException(t);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos, true);
+        e.printStackTrace(pw);
+
+        assertNotEquals(-1, baos.toString().indexOf("javax.xml.datatype.DatatypeConfigurationException"));
     }
 }
