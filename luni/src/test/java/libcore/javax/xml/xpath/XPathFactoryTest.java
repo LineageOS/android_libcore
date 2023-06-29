@@ -84,6 +84,14 @@ public class XPathFactoryTest {
             // Expected
         }
 
+        // URI with length 0
+        try {
+            XPathFactory factory = XPathFactory.newInstance("", factoryName,  classLoader);
+            fail("Expected IllegalArgumentException Failed for URI with length 0");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
         // Bad factory name
         try {
             final String badFactoryName = factoryName + "Bad";
@@ -94,10 +102,49 @@ public class XPathFactoryTest {
         } catch (XPathFactoryConfigurationException e) {
         }
 
+        // Null FactoryClassName
+        try {
+            XPathFactory factory = XPathFactory.newInstance(SUPPORTED_URI, null, classLoader);
+            fail("Expected XPathFactoryConfigurationException for null factoryClassName");
+        } catch (XPathFactoryConfigurationException e) {
+            // Expected
+        }
+
         // Null ClassLoader
         {
             XPathFactory factory = XPathFactory.newInstance(SUPPORTED_URI, factoryName, null);
             assertNotNull(factory);
+        }
+    }
+
+    @Test
+    public void newInstanceWithUri() throws Throwable {
+        // Null URI
+        {
+            try {
+                XPathFactory factory = XPathFactory.newInstance(null);
+                fail("Expected NPE Failed for null URI");
+            } catch (NullPointerException e) {
+                // Expected
+            }
+        }
+
+        // URI with length 0
+        {
+            try {
+                XPathFactory factory = XPathFactory.newInstance("");
+                fail("Expected IllegalArgumentException Failed for URI with length 0");
+            } catch (IllegalArgumentException e) {
+                // Expected
+            }
+        }
+
+        // Bad URI
+        try {
+            XPathFactory factory = XPathFactory.newInstance(UNSUPPORTED_URI);
+            fail("Failed for " + UNSUPPORTED_URI);
+        } catch (XPathFactoryConfigurationException e) {
+            // Expected
         }
     }
 }
