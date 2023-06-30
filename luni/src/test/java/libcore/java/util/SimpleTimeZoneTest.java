@@ -16,6 +16,8 @@
 
 package libcore.java.util;
 
+import static org.junit.Assert.assertThrows;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -179,6 +181,33 @@ public class SimpleTimeZoneTest extends TestCase {
                 3600000);
 
         checkDstNewYork2014(timeZone);
+    }
+
+    public void testNegativeDST_isNotAllowed() {
+        assertThrows(IllegalArgumentException.class, () -> new SimpleTimeZone(
+                /* rawOffset= */ 0,
+                /* ID= */ "ID",
+                /* startMonth= */ Calendar.MARCH,
+                /* startDay= */ 0,
+                /* startDayOfWeek= */ Calendar.SUNDAY,
+                /* startTime= */ 0,
+                /* startTimeMode= */ 0,
+                /* endMonth= */ Calendar.NOVEMBER,
+                /* endDay= */ 0,
+                /* endDayOfWeek= */ Calendar.SUNDAY,
+                /* endTime= */ 0,
+                /* endTimeMode= */ 0,
+                /* dstSavings= */ -36_000)); // this is not valid according to the implementation.
+    }
+
+    public void testGetOffset_BC() {
+        var actualOffset = 123456;
+        TimeZone utc = new SimpleTimeZone(actualOffset, "LMT somewhere");
+
+        int returnedOffset =
+                utc.getOffset(GregorianCalendar.BC, 100, Calendar.JANUARY, 10, Calendar.SUNDAY, 0);
+
+        assertEquals(actualOffset, returnedOffset);
     }
 
     /**
