@@ -16,6 +16,8 @@
 
 package libcore.java.util;
 
+import static org.junit.Assert.assertThrows;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.File;
@@ -28,11 +30,13 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.Calendar;
+import java.util.FormatFlagsConversionMismatchException;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+@SuppressWarnings("FormatString")
 public class FormatterTest extends junit.framework.TestCase {
 
     private File aFile;
@@ -291,5 +295,15 @@ public class FormatterTest extends junit.framework.TestCase {
         } catch (NullPointerException ignored) {
             // expected
         }
+    }
+
+    public void test_floatWithAlternateForm() {
+        // when # flag is set, decimal separator is always present.
+        assertEquals("10.", new Formatter(Locale.US).format("%#.0f", 10.12).toString());
+    }
+
+    public void test_numberSignIsNotAllowed_inGeneralFormat() {
+        assertThrows(FormatFlagsConversionMismatchException.class,
+                () -> new Formatter(Locale.US).format("%#.1g", 10.1).toString());
     }
 }
