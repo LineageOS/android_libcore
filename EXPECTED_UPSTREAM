@@ -785,13 +785,11 @@ ojluni/src/main/java/java/text/EntryPair.java,jdk17u/jdk-17.0.6-ga,src/java.base
 ojluni/src/main/java/java/text/FieldPosition.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/FieldPosition.java
 ojluni/src/main/java/java/text/Format.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/Format.java
 # java.text.IcuIteratorWrapper doesn't come from the upstream OpenJDK.
-ojluni/src/main/java/java/text/MergeCollation.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/MergeCollation.java
 ojluni/src/main/java/java/text/MessageFormat.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/MessageFormat.java
 ojluni/src/main/java/java/text/Normalizer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/Normalizer.java
 ojluni/src/main/java/java/text/NumberFormat.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/NumberFormat.java
 ojluni/src/main/java/java/text/ParseException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/ParseException.java
 ojluni/src/main/java/java/text/ParsePosition.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/ParsePosition.java
-ojluni/src/main/java/java/text/PatternEntry.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/PatternEntry.java
 ojluni/src/main/java/java/text/RuleBasedCollator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/RuleBasedCollator.java
 ojluni/src/main/java/java/text/SimpleDateFormat.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/SimpleDateFormat.java
 ojluni/src/main/java/java/text/StringCharacterIterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/text/StringCharacterIterator.java
