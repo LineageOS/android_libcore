@@ -15,6 +15,8 @@
  */
 package libcore.javax.xml.datatype;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.GregorianCalendar;
@@ -63,6 +65,97 @@ public class XMLGregorianCalendarTest extends TestCase {
         assertEquals(3, calendar.getSecond());
         assertEquals(100, calendar.getMillisecond());
         assertEquals(BigDecimal.valueOf(0.1), calendar.getFractionalSecond());
+    }
+
+    public void testEquals_differentObjectParam() {
+        assertNotEquals(Integer.valueOf(0), calendar);
+    }
+
+    public void testEquals_nullObjectParam() {
+        assertNotEquals(null, calendar);
+    }
+
+    public void testEquals_equalObjectParam() {
+        calendar.setYear(2023);
+        calendar.setMonth(6);
+        calendar.setDay(28);
+        calendar.setTime(23, 59, 59, BigDecimal.valueOf(0.1));
+
+        XMLGregorianCalendar anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setYear(2023);
+        anotherCalendar.setMonth(6);
+        anotherCalendar.setDay(28);
+        anotherCalendar.setTime(23, 59, 59, BigDecimal.valueOf(0.1));
+
+        assertEquals(calendar, anotherCalendar);
+    }
+
+    public void testEquals_differentCalendarParam() {
+        calendar.setYear(2023);
+        calendar.setMonth(6);
+        calendar.setDay(28);
+        calendar.setTime(23, 59, 59, BigDecimal.valueOf(0.1));
+
+        XMLGregorianCalendar anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setYear(2023);
+        anotherCalendar.setMonth(7); // different month
+        anotherCalendar.setDay(28);
+        anotherCalendar.setTime(23, 59, 59, BigDecimal.valueOf(0.1));
+
+        assertNotEquals(calendar, anotherCalendar);
+    }
+
+    public void testToString() {
+        calendar.setYear(2006);
+        calendar.setMonth(10);
+        calendar.setDay(23);
+        calendar.setTime(22, 15, 1, BigDecimal.valueOf(0.000000135));
+        calendar.setTimezone(0);
+
+        assertEquals(calendar.toXMLFormat(), calendar.toString());
+    }
+
+    public void testHashCode_sameTimeSameTimezone() {
+        calendar.setTimezone(0);
+
+        XMLGregorianCalendarImpl anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setTimezone(0);
+
+        assertEquals(calendar.hashCode(), anotherCalendar.hashCode());
+    }
+
+    public void testHashCode_differentTimeSameTimezone() {
+        calendar.setTimezone(0);
+
+        XMLGregorianCalendarImpl anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setHour(1);
+        anotherCalendar.setTimezone(0);
+
+        assertNotEquals(calendar.hashCode(), anotherCalendar.hashCode());
+    }
+
+    public void testHashCode_sameTimeDifferentTimezone() {
+        calendar.setHour(1);
+        calendar.setTimezone(0);
+
+        XMLGregorianCalendarImpl anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setHour(1);
+        anotherCalendar.setMinute(30);
+        anotherCalendar.setTimezone(30);
+
+        assertEquals(calendar.hashCode(), anotherCalendar.hashCode());
+    }
+
+    public void testHashCode_differentTimeDifferentTimezone() {
+        calendar.setHour(1);
+        calendar.setTimezone(0);
+
+        XMLGregorianCalendarImpl anotherCalendar = new XMLGregorianCalendarImpl();
+        anotherCalendar.setHour(2);
+        anotherCalendar.setMinute(30);
+        anotherCalendar.setTimezone(30);
+
+        assertNotEquals(calendar.hashCode(), anotherCalendar.hashCode());
     }
 
     /**
@@ -194,19 +287,26 @@ public class XMLGregorianCalendarTest extends TestCase {
 
         @Override
         public int compare(XMLGregorianCalendar rhs) {
-            if (year != rhs.getYear()) return year - rhs.getYear();
-            if (month != rhs.getMonth()) return month - rhs.getMonth();
-            if (day != rhs.getDay()) return day - rhs.getDay();
-            if (hour != rhs.getHour()) return hour - rhs.getHour();
-            if (minute != rhs.getMinute()) return minute - rhs.getMinute();
-            if (second != rhs.getSecond()) return second - rhs.getSecond();
-            if (millisecond != rhs.getMillisecond()) return millisecond - getMillisecond();
-            return fractional.subtract(rhs.getFractionalSecond()).intValue();
+            if (year != rhs.getYear()) return Integer.signum(year - rhs.getYear());
+            if (month != rhs.getMonth()) return Integer.signum(month - rhs.getMonth());
+            if (day != rhs.getDay()) return Integer.signum(day - rhs.getDay());
+            if (hour != rhs.getHour()) return Integer.signum(hour - rhs.getHour());
+            if (minute != rhs.getMinute()) return Integer.signum(minute - rhs.getMinute());
+            if (second != rhs.getSecond()) return Integer.signum(second - rhs.getSecond());
+            // edge case - millisecond is calculated from fractional second
+            if (getMillisecond() != rhs.getMillisecond())
+                return Integer.signum(getMillisecond() - rhs.getMillisecond());
+            return fractional.compareTo(rhs.getFractionalSecond());
         }
 
         @Override
         public XMLGregorianCalendar normalize() {
-            return null;
+            if (this.timezoneOffset == 30) {
+                this.minute -= 30;
+                this.timezoneOffset = 0;
+            }
+
+            return this;
         }
 
         @Override
