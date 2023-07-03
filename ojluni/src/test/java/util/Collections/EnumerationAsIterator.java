@@ -76,43 +76,43 @@ public class EnumerationAsIterator {
     @DataProvider
     public static Iterator<Object[]> unmodifiable() {
         return Arrays.asList(
-                of("Default-wrapped ArrayList",
-                        () -> wrapInDefault(
-                                Collections.enumeration(new ArrayList<>(Arrays.asList("a")))),
-                        Arrays.asList("a")),
+            of("Default-wrapped ArrayList",
+               () -> wrapInDefault(
+                   Collections.enumeration(new ArrayList<>(Arrays.asList("a")))),
+               Arrays.asList("a")),
 
-                of("Unmodifiable ArrayList",
-                        Collections.unmodifiableList(new ArrayList<>(Arrays.asList("a"))),
-                        Arrays.asList("a")),
+            of("Unmodifiable ArrayList",
+               Collections.unmodifiableList(new ArrayList<>(Arrays.asList("a"))),
+               Arrays.asList("a")),
 
-                of("Modifiable ArrayList",
-                        new ArrayList<>(Arrays.asList("a")),
-                        Arrays.asList("a"))
+            of("Modifiable ArrayList",
+               new ArrayList<>(Arrays.asList("a")),
+               Arrays.asList("a"))
         ).iterator();
     }
 
     @DataProvider
     public static Iterator<Object[]> others() {
         return Arrays.asList(
-                of("Default Collections.emptyEnumeration()",
-                        () -> wrapInDefault(Collections.emptyEnumeration()),
-                        Collections.emptyList()),
+            of("Default Collections.emptyEnumeration()",
+               () -> wrapInDefault(Collections.emptyEnumeration()),
+               Collections.emptyList()),
 
-                of("Collections.emptyEnumeration()",
-                        Collections::emptyEnumeration,
-                        Collections.emptyList()),
+            of("Collections.emptyEnumeration()",
+               Collections::emptyEnumeration,
+               Collections.emptyList()),
 
-                of("Collections.emptyList()",
-                        Collections.emptyList(),
-                        Collections.emptyList()),
+            of("Collections.emptyList()",
+               Collections.emptyList(),
+               Collections.emptyList()),
 
-                of("Collections.singletonList()",
-                        Collections.singletonList("a"),
-                        Collections.singletonList("a")),
+            of("Collections.singletonList()",
+               Collections.singletonList("a"),
+               Collections.singletonList("a")),
 
-                of("Arrays.asList(...)",
-                        Arrays.asList("a", "b", "c"),
-                        Arrays.asList("a", "b", "c"))
+            of("Arrays.asList(...)",
+               Arrays.asList("a", "b", "c"),
+               Arrays.asList("a", "b", "c"))
         ).iterator();
     }
 
@@ -147,8 +147,8 @@ public class EnumerationAsIterator {
 
     @Test(dataProvider = "all")
     public void consumeByForEachRemaining(String description,
-            Supplier<Enumeration<?>> s,
-            Collection<?> exp) {
+                                          Supplier<Enumeration<?>> s,
+                                          Collection<?> exp) {
         Iterator<?> i = s.get().asIterator();
         AtomicInteger ai = new AtomicInteger();
         i.forEachRemaining(e -> ai.getAndIncrement());
@@ -167,8 +167,8 @@ public class EnumerationAsIterator {
 
     @Test(dataProvider = "all")
     public void consumeByNextThenForEachRemaining(String description,
-            Supplier<Enumeration<?>> s,
-            Collection<?> exp) {
+                                                  Supplier<Enumeration<?>> s,
+                                                  Collection<?> exp) {
         Iterator<?> i = s.get().asIterator();
         AtomicInteger ai = new AtomicInteger();
         if (i.hasNext()) {
@@ -201,20 +201,20 @@ public class EnumerationAsIterator {
     }
 
     @Test(dataProvider = "unmodifiable",
-            expectedExceptions=UnsupportedOperationException.class)
+          expectedExceptions=UnsupportedOperationException.class)
     public void removeThrowsAfterAdvancingE(String description,
-            Supplier<Enumeration<?>> s,
-            Collection<?> exp) {
+                                            Supplier<Enumeration<?>> s,
+                                            Collection<?> exp) {
         Enumeration<?> e = s.get();
         e.nextElement();
         e.asIterator().remove();
     }
 
     @Test(dataProvider = "unmodifiable",
-            expectedExceptions=UnsupportedOperationException.class)
+          expectedExceptions=UnsupportedOperationException.class)
     public void removeThrowsAfterAdvancingI(String description,
-            Supplier<Enumeration<?>> s,
-            Collection<?> exp) {
+                                            Supplier<Enumeration<?>> s,
+                                            Collection<?> exp) {
         Iterator<?> i = s.get().asIterator();
         i.next();
         i.remove();
