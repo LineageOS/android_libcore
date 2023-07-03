@@ -91,6 +91,33 @@ public class DatatypeFactoryTest extends TestCase {
         assertNull(duration);
     }
 
+    public void testNewDurationDayTime_nullString() {
+        try {
+            factory.newDurationDayTime(null);
+            fail("NullPointerException expected");
+        } catch (NullPointerException e) {
+            // expected
+        }
+    }
+
+    public void testNewDurationDayTime_lexicalRepresentationContainsY() {
+        try {
+            factory.newDurationDayTime("Y");
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    public void testNewDurationDayTime_lexicalRepresentationContainsM() {
+        try {
+            factory.newDurationDayTime("M");
+            fail("IllegalArgumentException expected");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
     public void testNewDurationDayTime_long() {
         Duration duration = factory.newDuration(1000L);
         assertEquals(0, duration.getYears());
@@ -107,6 +134,38 @@ public class DatatypeFactoryTest extends TestCase {
         assertEquals(0, duration.getHours());
         assertEquals(0, duration.getMinutes());
         assertEquals(1, duration.getSeconds());
+
+        duration = factory.newDurationDayTime(-1000L);
+        assertEquals(0, duration.getYears());
+        assertEquals(0, duration.getMonths());
+        assertEquals(0, duration.getDays());
+        assertEquals(0, duration.getHours());
+        assertEquals(0, duration.getMinutes());
+        assertEquals(1, duration.getSeconds());
+
+        duration = factory.newDurationDayTime(0);
+        assertEquals(0, duration.getYears());
+        assertEquals(0, duration.getMonths());
+        assertEquals(0, duration.getDays());
+        assertEquals(0, duration.getHours());
+        assertEquals(0, duration.getMinutes());
+        assertEquals(0, duration.getSeconds());
+
+        duration = factory.newDurationDayTime(Long.MIN_VALUE);
+        assertEquals(0, duration.getYears());
+        assertEquals(0, duration.getMonths());
+        assertEquals(0, duration.getDays());
+        assertEquals(7, duration.getHours());
+        assertEquals(12, duration.getMinutes());
+        assertEquals(55, duration.getSeconds());
+
+        duration = factory.newDurationDayTime(12345L);
+        assertEquals(0, duration.getYears());
+        assertEquals(0, duration.getMonths());
+        assertEquals(0, duration.getDays());
+        assertEquals(0, duration.getHours());
+        assertEquals(0, duration.getMinutes());
+        assertEquals(12, duration.getSeconds());
     }
 
     public void testNewDurationYearMonth_bii() {
@@ -132,6 +191,33 @@ public class DatatypeFactoryTest extends TestCase {
     public void testNewDurationYearMonth_String() {
         Duration duration = factory.newDurationYearMonth("");
         assertNull(duration);
+    }
+
+    public void testNewDurationYearMonth_nullString() {
+        try {
+            factory.newDurationYearMonth(null);
+            fail("Expected NullPointerException");
+        } catch (NullPointerException e) {
+            // expected
+        }
+    }
+
+    public void testNewDurationYearMonth_lexicalRepresentationContainsD() {
+        try {
+            factory.newDurationYearMonth("D");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
+    }
+
+    public void testNewDurationYearMonth_lexicalRepresentationContainsT() {
+        try {
+            factory.newDurationYearMonth("T");
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // expected
+        }
     }
 
     public void testNewDurationYearMonth_long() {
@@ -162,10 +248,33 @@ public class DatatypeFactoryTest extends TestCase {
         }
     }
 
+    public void testNewInstance_nullClassLoader() {
+        try {
+            DatatypeFactory.newInstance("factoryClassName", null);
+            fail("Unexpectedly created new instance");
+        } catch (DatatypeConfigurationException expected) {
+            // class loading disabled
+        }
+    }
+
     public void testNewXMLGregorianCalendar_iiiiiii() {
         XMLGregorianCalendar calendar = factory.newXMLGregorianCalendar(
                 1, 2, 3, 4, 5, 6, 7, 0);
         assertNull(calendar);
+
+        try {
+            factory.newXMLGregorianCalendar(1, 2, 3, 4, 5, 6, -1, 0);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            factory.newXMLGregorianCalendar(1, 2, 3, 4, 5, 6, 1001, 0);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
     }
 
     public void testNewXMLGregorianCalendarDate_iiii() {
@@ -181,6 +290,20 @@ public class DatatypeFactoryTest extends TestCase {
     public void testNewXMLGregorianCalendarTime_iiiii() {
         XMLGregorianCalendar calendar = factory.newXMLGregorianCalendarTime(4, 5, 6, 7, 0);
         assertNull(calendar);
+
+        try {
+            factory.newXMLGregorianCalendarTime(4, 5, 6, -1, 0);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        try {
+            factory.newXMLGregorianCalendarTime(4, 5, 6, 1001, 0);
+            fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
     }
 
     public void testNewXMLGregorianCalendarTime_BigDecimal() {
@@ -238,6 +361,5 @@ public class DatatypeFactoryTest extends TestCase {
                 BigDecimal fractionalSecond, int timezone) {
             return null;
         }
-
     }
 }
