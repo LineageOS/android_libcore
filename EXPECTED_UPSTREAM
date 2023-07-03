@@ -2066,15 +2066,12 @@ ojluni/src/test/java/text/BreakIterator/ExceptionTest.java,jdk17u/jdk-17.0.6-ga,
 ojluni/src/test/java/text/BreakIterator/MirroredBreakIterator.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/BreakIterator/MirroredBreakIterator.java
 ojluni/src/test/java/text/CharacterIterator/CharacterIteratorTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/CharacterIterator/CharacterIteratorTest.java
 ojluni/src/test/java/text/Collator/Bug5047314.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Collator/Bug5047314.java
-ojluni/src/test/java/text/Collator/Bug6970930.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Collator/Bug6970930.java
 ojluni/src/test/java/text/Collator/Bug7200119.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Collator/Bug7200119.java
 ojluni/src/test/java/text/Collator/CollatorTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Collator/CollatorTest.java
 ojluni/src/test/java/text/Collator/MonkeyTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Collator/MonkeyTest.java
 ojluni/src/test/java/text/Format/ChoiceFormat/Bug4387255.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/ChoiceFormat/Bug4387255.java
 ojluni/src/test/java/text/Format/ChoiceFormat/Bug8001209.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/ChoiceFormat/Bug8001209.java
 ojluni/src/test/java/text/Format/DateFormat/SimpleDateFormatPatternTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DateFormat/SimpleDateFormatPatternTest.java
-ojluni/src/test/java/text/Format/DecimalFormat/Bug6609740.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DecimalFormat/Bug6609740.java
-ojluni/src/test/java/text/Format/DecimalFormat/Bug7196316.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DecimalFormat/Bug7196316.java
 ojluni/src/test/java/text/Format/DecimalFormat/Bug8165466.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DecimalFormat/Bug8165466.java
 ojluni/src/test/java/text/Format/DecimalFormat/GoldenFormattedValues.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DecimalFormat/GoldenFormattedValues.java
 ojluni/src/test/java/text/Format/DecimalFormat/SetGroupingSizeTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/text/Format/DecimalFormat/SetGroupingSizeTest.java
