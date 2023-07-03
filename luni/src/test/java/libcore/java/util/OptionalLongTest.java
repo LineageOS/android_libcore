@@ -16,9 +16,14 @@
 
 package libcore.java.util;
 
+import static org.junit.Assert.assertThrows;
+
 import junit.framework.TestCase;
 
+import org.junit.Assert;
+
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.OptionalLong;
 import java.util.concurrent.atomic.AtomicLong;
@@ -88,6 +93,46 @@ public class OptionalLongTest extends TestCase {
         assertEquals(OptionalLong.of(56), OptionalLong.of(56));
         assertFalse(OptionalLong.empty().equals(OptionalLong.of(56)));
         assertFalse(OptionalLong.of(57).equals(OptionalLong.of(56)));
+    }
+
+    public void test_isPresentOrElse_whenEmpty() {
+        var heldValueHolder = new AtomicLong(-1);
+        var whenEmptyHolder = new AtomicLong(-1);
+
+        OptionalLong.empty().ifPresentOrElse(heldValueHolder::set, () -> whenEmptyHolder.set(42));
+
+        assertEquals(42, whenEmptyHolder.get());
+        assertEquals(-1, heldValueHolder.get());
+    }
+
+    public void test_isPresentOrElse_whenNonEmpty() {
+        var heldValueHolder = new AtomicLong(-1);
+        var whenEmptyHolder = new AtomicLong(-1);
+
+        OptionalLong.of(1001L).ifPresentOrElse(heldValueHolder::set, () -> whenEmptyHolder.set(42));
+
+        assertEquals(-1, whenEmptyHolder.get());
+        assertEquals(1001L, heldValueHolder.get());
+    }
+
+    public void test_orElseThrow_nonEmpty() {
+        assertEquals(43, OptionalLong.of(43).orElseThrow());
+    }
+
+    public void test_orElseThrow_empty() {
+        assertThrows(NoSuchElementException.class, () -> OptionalLong.empty().orElseThrow());
+    }
+
+    public void test_stream_nonEmpty() {
+        var elements = OptionalLong.of(42).stream().boxed().toList();
+
+        assertEquals(List.of(42L), elements);
+    }
+
+    public void test_stream_empty() {
+        var elements = OptionalLong.empty().stream().boxed().toList();
+
+        assertEquals(List.of(), elements);
     }
 
     public void testHashCode() {
