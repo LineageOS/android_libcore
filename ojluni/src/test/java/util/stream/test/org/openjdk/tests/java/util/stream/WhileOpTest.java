@@ -50,9 +50,6 @@ import java.util.stream.Stream;
  * @run main/timeout=240
  */
 @Test
-// Android-changed: this test checks while/drop ops on reference and primitive streams.
-// But in Android U only reference streams have those APIs, hence primitive streams part
-// are commented out.
 public class WhileOpTest extends OpTestCase {
 
     @Test(dataProvider = "StreamTestData<Integer>", dataProviderClass = StreamTestDataProvider.class,
@@ -63,26 +60,18 @@ public class WhileOpTest extends OpTestCase {
 
             testWhileMulti(data,
                            whileResultAsserter(data, WhileOp.Take, e -> e < size),
-                           s -> s.takeWhile(e -> e < size));
-            // BEGIN Android-removed: Drop primitive stream test.
-            /*
+                           s -> s.takeWhile(e -> e < size),
                            s -> s.takeWhile(e -> e < size),
                            s -> s.takeWhile(e -> e < size),
                            s -> s.takeWhile(e -> e < size));
-             */
-            // END Android-removed: Drop primitive stream test.
 
 
             testWhileMulti(data,
                            whileResultAsserter(data, WhileOp.Take, e -> e < size / 2),
-                           s -> s.takeWhile(e -> e < size).takeWhile(e -> e < size / 2));
-            // BEGIN Android-removed: Drop primitive stream test.
-            /*
+                           s -> s.takeWhile(e -> e < size).takeWhile(e -> e < size / 2),
                            s -> s.takeWhile(e -> e < size).takeWhile(e -> e < size / 2),
                            s -> s.takeWhile(e -> e < size).takeWhile(e -> e < size / 2),
                            s -> s.takeWhile(e -> e < size).takeWhile(e -> e < size / 2));
-            */
-            // END Android-removed: Drop primitive stream test.
         }
     }
 
@@ -94,25 +83,17 @@ public class WhileOpTest extends OpTestCase {
 
             testWhileMulti(data,
                            whileResultAsserter(data, WhileOp.Drop, e -> e < size),
-                           s -> s.dropWhile(e -> e < size));
-            // BEGIN Android-removed: Drop primitive stream test.
-            /*
+                           s -> s.dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size));
-             */
-            // END Android-removed: Drop primitive stream test.
 
             testWhileMulti(data,
                            whileResultAsserter(data, WhileOp.Drop, e -> e < size),
-                           s -> s.dropWhile(e -> e < size / 2).dropWhile(e -> e < size));
-            // BEGIN Android-removed: Drop primitive stream test.
-            /*
+                           s -> s.dropWhile(e -> e < size / 2).dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).dropWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).dropWhile(e -> e < size));
-            */
-            // END Android-removed: Drop primitive stream test.
         }
     }
 
@@ -124,14 +105,10 @@ public class WhileOpTest extends OpTestCase {
 
             testWhileMulti(data,
                            whileResultAsserter(data, WhileOp.Undefined, null),
-                           s -> s.dropWhile(e -> e < size / 2).takeWhile(e -> e < size));
-            // BEGIN Android-removed: Drop primitive stream test.
-            /*
+                           s -> s.dropWhile(e -> e < size / 2).takeWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).takeWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).takeWhile(e -> e < size),
                            s -> s.dropWhile(e -> e < size / 2).takeWhile(e -> e < size));
-            */
-            // END Android-removed: Drop primitive stream test.
         }
     }
 
@@ -316,25 +293,19 @@ public class WhileOpTest extends OpTestCase {
 
     private void testWhileMulti(TestData.OfRef<Integer> data,
                                 ResultAsserter<Iterable<Integer>> ra,
-                                Function<Stream<Integer>, Stream<Integer>> mRef) {
-        // BEGIN Android-removed: Drop primitive stream test.
-        /*
+                                Function<Stream<Integer>, Stream<Integer>> mRef,
                                 Function<IntStream, IntStream> mInt,
                                 Function<LongStream, LongStream> mLong,
                                 Function<DoubleStream, DoubleStream> mDouble) {
-        */
-        // BEGIN Android-removed: Drop primitive stream test.
         Map<String, Function<Stream<Integer>, Stream<Integer>>> ms = new HashMap<>();
         ms.put("Ref", mRef);
-        // Android-removed: Drop primitive stream test.
-        // ms.put("Int", s -> mInt.apply(s.mapToInt(e -> e)).mapToObj(e -> e));
-        // ms.put("Long", s -> mLong.apply(s.mapToLong(e -> e)).mapToObj(e -> (int) e));
-        // ms.put("Double", s -> mDouble.apply(s.mapToDouble(e -> e)).mapToObj(e -> (int) e));
+        ms.put("Int", s -> mInt.apply(s.mapToInt(e -> e)).mapToObj(e -> e));
+        ms.put("Long", s -> mLong.apply(s.mapToLong(e -> e)).mapToObj(e -> (int) e));
+        ms.put("Double", s -> mDouble.apply(s.mapToDouble(e -> e)).mapToObj(e -> (int) e));
         ms.put("Ref using defaults", s -> mRef.apply(DefaultMethodStreams.delegateTo(s)));
-        // Android-removed: Drop primitive stream test.
-        // ms.put("Int using defaults", s -> mInt.apply(DefaultMethodStreams.delegateTo(s.mapToInt(e -> e))).mapToObj(e -> e));
-        // ms.put("Long using defaults", s -> mLong.apply(DefaultMethodStreams.delegateTo(s.mapToLong(e -> e))).mapToObj(e -> (int) e));
-        // ms.put("Double using defaults", s -> mDouble.apply(DefaultMethodStreams.delegateTo(s.mapToDouble(e -> e))).mapToObj(e -> (int) e));
+        ms.put("Int using defaults", s -> mInt.apply(DefaultMethodStreams.delegateTo(s.mapToInt(e -> e))).mapToObj(e -> e));
+        ms.put("Long using defaults", s -> mLong.apply(DefaultMethodStreams.delegateTo(s.mapToLong(e -> e))).mapToObj(e -> (int) e));
+        ms.put("Double using defaults", s -> mDouble.apply(DefaultMethodStreams.delegateTo(s.mapToDouble(e -> e))).mapToObj(e -> (int) e));
 
         testWhileMulti(data, ra, ms);
     }
@@ -362,8 +333,6 @@ public class WhileOpTest extends OpTestCase {
         assertTrue(isClosed.get());
     }
 
-    // BEGIN Android-removed: Drop primitive stream test.
-    /*
     @Test(groups = { "serialization-hostile" })
     public void testIntDefaultClose() {
         AtomicBoolean isClosed = new AtomicBoolean();
@@ -393,8 +362,6 @@ public class WhileOpTest extends OpTestCase {
         }
         assertTrue(isClosed.get());
     }
-    */
-    // END Android-removed: Drop primitive stream test.
 
     @Test(groups = { "serialization-hostile" })
     public void testFlatMapThenTake() {
@@ -409,10 +376,7 @@ public class WhileOpTest extends OpTestCase {
                          // then flat map to stream the array elements
                          s -> Stream.<Integer[]>of(s.toArray(Integer[]::new)).
                                  flatMap(Stream::of).
-                                 takeWhile(e -> e != 50)
-                        );
-        // BEGIN Android-removed: Drop primitive stream test.
-        /*
+                                 takeWhile(e -> e != 50),
                          s -> Stream.of(s.mapToInt(e -> e).toArray()).
                                  flatMapToInt(IntStream::of).
                                  takeWhile(e -> e != 50).
@@ -426,7 +390,5 @@ public class WhileOpTest extends OpTestCase {
                                  takeWhile(e -> e != 50.0).
                                  mapToObj(e -> (int) e)
                          );
-        */
-        // END Android-removed: Drop primitive stream test.
     }
 }
