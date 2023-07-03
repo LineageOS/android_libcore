@@ -16,9 +16,14 @@
 
 package libcore.java.util;
 
+import static org.junit.Assert.assertNotEquals;
+
 import junit.framework.TestCase;
 
+import java.lang.reflect.Field;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 public class WeakHashMapTest extends TestCase {
@@ -66,6 +71,114 @@ public class WeakHashMapTest extends TestCase {
             assertNull(map.get(data[i]));
         }
         assertEquals(data.length, map.size());
+    }
+
+    public void testContainsNullValue() {
+        var map = new WeakHashMap<String, String>();
+
+        assertFalse(map.containsValue(null));
+
+        map.put("key", "value");
+
+        assertFalse(map.containsValue(null));
+
+        map.put("key", null);
+
+        assertTrue(map.containsValue(null));
+    }
+
+    public void testEntrySet_removeMapping() {
+        var map = new WeakHashMap<String, String>();
+        assertFalse(map.entrySet().remove(new Object()));
+
+        assertFalse(map.entrySet().remove(Map.entry("key", "value")));
+
+        map.put("key", "value");
+
+        assertTrue(map.entrySet().remove(Map.entry("key", "value")));
+        assertTrue(map.isEmpty());
+    }
+
+    public void testEntrySet_clear() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+
+        map.entrySet().clear();
+
+        assertTrue(map.isEmpty());
+    }
+
+    public void testEntrySet_entrySetValue() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+
+        var entry = map.entrySet().iterator().next();
+
+        entry.setValue("new value");
+
+        assertEquals("new value", map.get("key"));
+    }
+
+    public void testEntrySet_entryEquals() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+
+        var entry = map.entrySet().iterator().next();
+
+        assertNotEquals(entry, new Object());
+        assertNotEquals(entry, Map.entry("key", "another value"));
+    }
+
+    public void testKeySet_remove() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+        var keys = map.keySet();
+
+        assertFalse(keys.remove(new Object()));
+    }
+
+    public void testKeySet_clear() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+        map.keySet().clear();
+
+        assertTrue(map.isEmpty());
+    }
+
+    public void testValues_clear() {
+        var map = new WeakHashMap<String, String>();
+
+        map.put("key", "value");
+        map.values().clear();
+
+        assertTrue(map.isEmpty());
+    }
+
+    public void test_putAll() throws Throwable {
+        var map = new WeakHashMap<String, String>();
+
+        int threshold = threshold(map);
+        var anotherMap = new HashMap<String, String>();
+
+        for (int i = 0; i < 2 * threshold; ++i) {
+            anotherMap.put(String.valueOf(i), "value");
+        }
+
+        // This should trigger resize.
+        map.putAll(anotherMap);
+
+        assertEquals(anotherMap, map);
+    }
+
+    private int threshold(WeakHashMap map) throws Exception {
+        Field threshold = map.getClass().getDeclaredField("threshold");
+        threshold.setAccessible(true);
+        return (int) threshold.get(map);
     }
 
     private void initializeData() {
