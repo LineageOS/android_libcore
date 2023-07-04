@@ -2304,6 +2304,7 @@ ojluni/src/test/java/util/BitSet/MemoryLeak.java,jdk17u/jdk-17.0.6-ga,test/jdk/j
 ojluni/src/test/java/util/BitSet/PreviousBits.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/BitSet/PreviousBits.java
 ojluni/src/test/java/util/BitSet/StickySize.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/BitSet/StickySize.java
 ojluni/src/test/java/util/BitSet/stream/BitSetStreamTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/BitSet/stream/BitSetStreamTest.java
+ojluni/src/test/java/util/Collection/MOAT.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collection/MOAT.java
 ojluni/src/test/java/util/Collections/AddAll.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collections/AddAll.java
 ojluni/src/test/java/util/Collections/AsLifoQueue.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collections/AsLifoQueue.java
 ojluni/src/test/java/util/Collections/BigBinarySearch.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/Collections/BigBinarySearch.java
