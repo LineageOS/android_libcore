@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2017, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -60,8 +60,6 @@ import static java.util.Collections.*;
 import java.lang.reflect.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-// Android-added: run as TestNG test case.
-import org.testng.annotations.Test;
 
 public class MOAT {
     // Collections under test must not be initialized to contain this value,
@@ -79,10 +77,7 @@ public class MOAT {
         integerArray = ia;
     }
 
-    // Android-changed: run as TestNG test case and do not accept arguments.
-    // public static void realMain(String[] args) {
-    @Test
-    public void realMain() {
+    public static void realMain(String[] args) {
 
         testCollection(new NewAbstractCollection<Integer>());
         testCollection(new NewAbstractSet<Integer>());
@@ -235,7 +230,16 @@ public class MOAT {
                 List.of(1, 2, 3, 4, 5, 6, 7, 8),
                 List.of(1, 2, 3, 4, 5, 6, 7, 8, 9),
                 List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-                List.of(integerArray))) {
+                List.of(integerArray),
+                Stream.<Integer>empty().toList(),
+                Stream.of(1).toList(),
+                Stream.of(1, 2).toList(),
+                Stream.of(1, 2, 3).toList(),
+                Stream.of(1, 2, 3, 4).toList(),
+                Stream.of((Integer)null).toList(),
+                Stream.of(1, null).toList(),
+                Stream.of(1, null, 3).toList(),
+                Stream.of(1, null, 3, 4).toList())) {
             testCollection(list);
             testImmutableList(list);
             testListMutatorsAlwaysThrow(list);
@@ -1102,6 +1106,15 @@ public class MOAT {
             catch (UnsupportedOperationException ignored) {/* OK */}
             catch (Throwable t) { unexpected(t); }
         }
+
+        int hashCode = 1;
+        for (Integer i : l)
+            hashCode = 31 * hashCode + (i == null ? 0 : i.hashCode());
+        check(l.hashCode() == hashCode);
+
+        var t = new ArrayList<>(l);
+        check(t.equals(l));
+        check(l.equals(t));
     }
 
     private static void testCollection(Collection<Integer> c) {
@@ -1136,6 +1149,13 @@ public class MOAT {
 
         if (c instanceof List)
             testList((List<Integer>)c);
+
+        if (c instanceof Set) {
+            int hashCode = 0;
+            for (Integer i : c)
+                hashCode = hashCode + (i == null ? 0 : i.hashCode());
+            check(c.hashCode() == hashCode);
+        }
 
         check(supportsRemove(c));
 
@@ -1235,6 +1255,15 @@ public class MOAT {
 
     private static void testMap(Map<Integer,Integer> m) {
         System.out.println("\n==> " + m.getClass().getName());
+
+        int hashCode = 0;
+        for (var e : m.entrySet()) {
+            int entryHash = (e.getKey() == null ? 0 : e.getKey().hashCode()) ^
+                            (e.getValue() == null ? 0 : e.getValue().hashCode());
+            check(e.hashCode() == entryHash);
+            hashCode += entryHash;
+        }
+        check(m.hashCode() == hashCode);
 
         if (m instanceof ConcurrentMap)
             testConcurrentMap((ConcurrentMap<Integer,Integer>) m);
@@ -1730,16 +1759,12 @@ public class MOAT {
         if (x == null ? y == null : x.equals(y)) pass();
         else {System.out.println(x + " not equal to " + y + " : " + msg); fail();}}
     static void equal2(Object x, Object y) {equal(x, y); equal(y, x);}
-    // BEGIN Android-removed: we do not run tests via main.
-    /*
     public static void main(String[] args) throws Throwable {
         try { realMain(args); } catch (Throwable t) { unexpected(t); }
 
         System.out.printf("%nPassed = %d, failed = %d%n%n", passed, failed);
         if (failed > 0) throw new Exception("Some tests failed");
     }
-    */
-    // END Android-removed: we do not run tests via main.
     interface Fun {void f() throws Throwable;}
     private static void THROWS(Class<? extends Throwable> k, Fun... fs) {
         for (Fun f : fs)
