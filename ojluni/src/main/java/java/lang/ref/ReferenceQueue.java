@@ -169,9 +169,6 @@ public class ReferenceQueue<T> {
      */
     public Reference<? extends T> poll() {
         synchronized (lock) {
-            if (head == null)
-                return null;
-
             return reallyPollLocked();
         }
     }
