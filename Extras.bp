@@ -21,5 +21,8 @@
 java_library_host {
     name: "core-xml-for-host",
     srcs: ["xml/src/main/java/org/xmlpull/**/*.java"],
-    visibility: ["//packages/modules/Permission:__subpackages__"],
+    visibility: [
+        "//packages/modules/AdServices:__subpackages__",
+        "//packages/modules/Permission:__subpackages__",
+    ],
 }
