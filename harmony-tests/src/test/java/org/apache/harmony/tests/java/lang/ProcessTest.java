@@ -29,6 +29,7 @@ public class ProcessTest extends junit.framework.TestCase {
   // Test that failures to exec don't leave zombies lying around.
   public void test_55017() throws Exception {
     ArrayList<Process> children = new ArrayList<Process>();
+    long startTime = System.currentTimeMillis();
     for (int i = 0; i < 256; ++i) {
       try {
         children.add(Runtime.getRuntime().exec(new String[] { "/system/bin/does-not-exist" }, null, null));
@@ -36,7 +37,11 @@ public class ProcessTest extends junit.framework.TestCase {
       } catch (IOException expected) {
       }
     }
+    long elapsedTime = System.currentTimeMillis() - startTime;
     assertEquals(0, children.size());
+
+    // Allow the same amount of time for zombie processes to be reaped.
+    Thread.sleep(elapsedTime);
 
     String pid = Integer.toString(Libcore.os.getpid());
     boolean onDevice = new File("/system/bin").exists();
