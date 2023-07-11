@@ -409,6 +409,7 @@ package android.system {
     field public static final int O_SYNC;
     field public static final int O_TRUNC;
     field public static final int O_WRONLY;
+    field public static final int PACKET_IGNORE_OUTGOING;
     field public static final int POLLERR;
     field public static final int POLLHUP;
     field public static final int POLLIN;
@@ -482,6 +483,7 @@ package android.system {
     field public static final int SOCK_RAW;
     field public static final int SOCK_SEQPACKET;
     field public static final int SOCK_STREAM;
+    field public static final int SOL_PACKET;
     field public static final int SOL_SOCKET;
     field public static final int SOL_UDP;
     field public static final int SO_BINDTODEVICE;
