@@ -536,6 +536,7 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
 #if defined(SOL_UDP)
     initConstant(env, c, "SOL_UDP", SOL_UDP);
 #endif
+    initConstant(env, c, "SOL_PACKET", SOL_PACKET);
 #if defined(SO_BINDTODEVICE)
     initConstant(env, c, "SO_BINDTODEVICE", SO_BINDTODEVICE);
 #endif
@@ -566,6 +567,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "SO_SNDLOWAT", SO_SNDLOWAT);
     initConstant(env, c, "SO_SNDTIMEO", SO_SNDTIMEO);
     initConstant(env, c, "SO_TYPE", SO_TYPE);
+#if defined(PACKET_IGNORE_OUTGOING)
+    initConstant(env, c, "PACKET_IGNORE_OUTGOING", PACKET_IGNORE_OUTGOING);
+#endif
     initConstant(env, c, "SPLICE_F_MOVE", SPLICE_F_MOVE);
     initConstant(env, c, "SPLICE_F_NONBLOCK", SPLICE_F_NONBLOCK);
     initConstant(env, c, "SPLICE_F_MORE", SPLICE_F_MORE);
