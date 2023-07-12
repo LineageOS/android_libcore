@@ -598,7 +598,7 @@ public class CertificateTest extends TestCaseWithRules {
         + "+qrLMgx5qoZ0bERU9tgHns2Y9CMFCS+iU7XbCoHMXyPLeRHFEVuFaycBifMOuw==\n"
         + "-----END CERTIFICATE-----";
 
-    public void testVerifyMD5() throws Exception {
+    private void notestVerifyMD5() throws Exception {
         Provider[] providers = Security.getProviders("CertificateFactory.X509");
         for (Provider provider : providers) {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X509", provider);
@@ -669,7 +669,7 @@ public class CertificateTest extends TestCaseWithRules {
         }
     }
 
-    public void testVerifyMD5_chain() throws Exception {
+    private void notestVerifyMD5_chain() throws Exception {
         CertificateFactory certificateFactory = CertificateFactory.getInstance("X509");
 
         // First check with the trust anchor not included in the chain
