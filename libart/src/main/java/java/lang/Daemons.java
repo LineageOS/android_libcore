@@ -179,6 +179,9 @@ public final class Daemons {
          */
         @UnsupportedAppUsage
         public void stop() {
+            // This can be called on shutdown with the GC already disabled.
+            // Allocation either here or while handling the request in the
+            // daemon thread should be minimized.
             Thread threadToStop;
             synchronized (this) {
                 threadToStop = thread;
@@ -208,6 +211,17 @@ public final class Daemons {
         }
     }
 
+    // Allocate these strings on start-up.
+    // Don't declare them private, to minimize chances that the compiler can defer allocation.
+    /**
+     * @hide
+     */
+    public static final String FD_OOM_MESSAGE = "Ignoring unexpected OOME in FinalizerDaemon";
+    /**
+     * @hide
+     */
+    public static final String RQD_OOM_MESSAGE = "Ignoring unexpected OOME in ReferenceQueueDaemon";
+
     /**
      * This heap management thread moves elements from the garbage collector's
      * pending list to the managed reference queue.
@@ -225,6 +239,10 @@ public final class Daemons {
 
         @Override public void runInternal() {
             FinalizerWatchdogDaemon.INSTANCE.monitoringNeeded(FinalizerWatchdogDaemon.RQ_DAEMON);
+
+            // Call once early to reduce later allocation, and hence chance of OOMEs.
+            FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
+
             while (isRunning()) {
                 Reference<?> list;
                 try {
@@ -245,13 +263,16 @@ public final class Daemons {
                         list = ReferenceQueue.unenqueued;
                         ReferenceQueue.unenqueued = null;
                     }
+                    ReferenceQueue.enqueuePending(list, progressCounter);
+                    FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
                 } catch (InterruptedException e) {
-                    continue;
-                } catch (OutOfMemoryError e) {
-                    continue;
+                    // Happens when we are asked to stop.
+                } catch (OutOfMemoryError ignored) {
+                    // Very unlikely. Cleaner.clean OOMEs are caught elsewhere, and nothing else
+                    // should allocate regularly. Could result in enqueuePending dropping
+                    // references. Does occur in tests that run out of memory.
+                    System.logW(RQD_OOM_MESSAGE);
                 }
-                ReferenceQueue.enqueuePending(list, progressCounter);
-                FinalizerWatchdogDaemon.INSTANCE.resetTimeouts();
             }
         }
 
@@ -319,8 +340,11 @@ public final class Daemons {
                                 FinalizerWatchdogDaemon.FINALIZER_DAEMON);
                         processReference(nextReference);
                     }
-                } catch (InterruptedException ignored) {
+                } catch (InterruptedException e) {
+                    // Happens when we are asked to stop.
                 } catch (OutOfMemoryError ignored) {
+                    // An  OOME here is unlikely to be actionable. Bravely/foolishly continue.
+                    System.logW(FD_OOM_MESSAGE);
                 }
             }
         }
