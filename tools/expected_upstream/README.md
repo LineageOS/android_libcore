@@ -6,7 +6,7 @@ the right documentation.
 ```text
 ---------A----------C------------   expected_upstream
           \          \
------------B----------D----------   master
+-----------B----------D----------   main
 ```
 
 The general idea is to get a change from OpenJDK into libcore in AOSP by
@@ -35,16 +35,16 @@ For example, upgrade `java.lang.String` to 11.0.13-ga version:
 
 ```shell
 ojluni_modify_expectation modify java.lang.String jdk11u/jdk-11.0.13-ga
-ojluni_merge_to_master # -b <bug id> if it fixes any bug
+ojluni_merge_to_main # -b <bug id> if it fixes any bug
 ```
 
 or if `java.lang.String` is missing in the EXPECTED_UPSTREAM file:
 ```shell
 ojluni_modify_expectation add jdk11u/jdk-11.0.13-ga java.lang.String
-ojluni_merge_to_master # -b <bug id> if it fixes any bug
+ojluni_merge_to_main # -b <bug id> if it fixes any bug
 ```
 
-`ojluni_merge_to_master` will `git-merge` from the upstream branch.
+`ojluni_merge_to_main` will `git-merge` from the upstream branch.
 If you see any merge conflicts, please resolve the merge conflicts as usual,
 and then run `git commit` to finalize the commit.
 
@@ -53,7 +53,7 @@ You can build and test the change. If you need to import more files,
 ```shell
 ojluni_modify_expectation ...
 # -a imports more files into the last merge commit instead of a new commit
-ojluni_merge_to_master -a
+ojluni_merge_to_main -a
 ```
 
 ### Bash Autocompletion
@@ -74,7 +74,7 @@ For example, add a test for `String.isEmpty()` method:
 ```shell
 ojluni_modify_expectation add jdk8u/jdk8u121-b13 java.lang.String.IsEmpty
 # -a imports more files into the last merge commit instead of a new commit
-ojluni_merge_to_master -a
+ojluni_merge_to_main -a
 ```
 Note: `java.lang.String.IsEmpty` is a test class in the upstream repository.
 
@@ -86,14 +86,14 @@ the change with the following commands
 ```shell
 # Upload the original upstream files to the expected_upstream branch
 $ git push aosp HEAD^2:refs/for/expected_upstream
-# Upload the merge commit to the master branch
+# Upload the merge commit to the main branch
 $ repo upload --cbr .
 ```
 
 # Directory Layout
 in the `aosp/expected_upstream` branch.
 1. `ojluni/`
-    * It has the same layout as the ojluni/ files in `aosp/master`
+    * It has the same layout as the ojluni/ files in `aosp/main`
 2. `EXPECTED_UPSTREAM` file
     * The table has 3 columns, i.e.
         1. Destination path in `ojluni/`
@@ -109,12 +109,12 @@ in the `aosp/expected_upstream` branch.
 1. Add or upgrade a file from the upstream OpenJDK
     * You are reading the right document! This documentation tells you how to
       import the file from the upstream. Later, you can merge the file and
-      `expected_upstream` into `aosp/master` branch.
+      `expected_upstream` into `aosp/main` branch.
 2. Remove an `ojluni/` file that originally came from the OpenJDK
-    * Please remove the file on both `aosp/master` and `aosp/expected_upstream`
+    * Please remove the file on both `aosp/main` and `aosp/expected_upstream`
       branches. Don't forget to remove the entry in the `EXPECTED_UPSTREAM` too.
-3. Revert the merge commit on `aosp/master` from `expected_upstream`
-    * If you don't plan to re-land your change on `aosp/master`, you should
+3. Revert the merge commit on `aosp/main` from `expected_upstream`
+    * If you don't plan to re-land your change on `aosp/main`, you should
       probably revert the change `aosp/expected_upstream` as well.
     * If you plan to re-land your change, your re-landing commit won't be
       a merge commit, because `git` doesn't allow you to merge the same commit
@@ -125,21 +125,21 @@ in the `aosp/expected_upstream` branch.
 
 ## Changes that shouldn't happen in the `aosp/expected_upstream` branch
 In general, if you want to change an `ojluni/` file by a text editor / IDE
-manually, you should make the change on `aosp/master`.
+manually, you should make the change on `aosp/main`.
 
 1. Changes to non-OpenJDK files
     * Those files are usually under the `luni/` folder, you can make the change
-      directly on `aosp/master`
+      directly on `aosp/main`
 2. Adding / updating a patch to an existing `ojluni/` file
-    * You can make the change directly on `aosp/master`. Please follow this
+    * You can make the change directly on `aosp/main`. Please follow this
       [patch style guideline](https://goto.google.com/libcore-openjdk8-verify).
 3. Cherry-picking a commit from upstream
     * You should first try to update an `ojluni/` file to a particular upstream
       version. If you can't but still want to cherry-pick a upstream fix, you
-      should do so on the `aosp/master` branch.
+      should do so on the `aosp/main` branch.
 4. Changes to non-OpenJDK files in `ojluni/`
     * Files, e.g. Android.bp, don't come from the upstream. You can make the
-      change directly on `aosp/master`.
+      change directly on `aosp/main`.
 
 
 
@@ -151,7 +151,7 @@ manually, you should make the change on `aosp/master`.
            \
 ------------B-----C------------   expected_upstream
                    \
---------------------D---E------   master
+--------------------D---E------   main
 ```
 Here are the order of events / votes required to submit your CL on gerrit as of
 Nov 2021.
@@ -180,7 +180,7 @@ Commit graph of a typical change
            \
 ------------B-----C------------   expected_upstream
                    \
---------------------D---E------   master
+--------------------D---E------   main
 ```
 
 Typically, you will need 5 CLs
@@ -216,7 +216,7 @@ Typically, you will need 5 CLs
 * After `ojluni_modify_expectation add` and `ojluni_refresh_files`, a `git commit -a`
   would include more files than just EXPECTED_UPSTREAM, because `git`, e.g. `git status`,
   isn't aware of changes in the working tree / in the file system. This can lead to
-  an error when checking out the branch that is based on master.
+  an error when checking out the branch that is based on main.
     1. Do a `git checkout --hard <initial commit before the add>`
     2. Rerun the `ojluni_modify_expectation add` and `ojluni_refresh_files`
     3. `git stash && git stash pop`
