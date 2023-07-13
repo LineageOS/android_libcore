@@ -97,7 +97,7 @@ MSG_FIRST_COMMIT = ("Import {summary}\n"
                     "{change_id_str}")
 
 MSG_SECOND_COMMIT = ("Merge {summary} into the "
-                     "aosp/master branch\n"
+                     "aosp/main branch\n"
                      "\n"
                      "List of files:\n"
                      "  {files}\n"
@@ -332,8 +332,8 @@ def get_diff_entries(repo: Repo, base_expected_commit: Commit) -> Tuple[
     a list of entries
   """
   current_tracking_branch = repo.active_branch.tracking_branch()
-  if current_tracking_branch.name != "aosp/master":
-    print("This script should only run on aosp/master branch. "
+  if current_tracking_branch.name != "aosp/main":
+    print("This script should only run on aosp/main branch. "
           f"Currently, this is on branch {repo.active_branch} "
           f"tracking {current_tracking_branch}", file=sys.stderr)
     return INVALID_DIFF
