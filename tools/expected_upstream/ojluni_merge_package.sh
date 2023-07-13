@@ -161,11 +161,11 @@ function do-merge
 
   if [[ -n "${bug}" ]]
   then
-    echo ojluni_merge_to_master -b "${bug}"
-    ojluni_merge_to_master -b "${bug}" || die "Failed to merge ${package} to master"
+    echo ojluni_merge_to_main -b "${bug}"
+    ojluni_merge_to_main -b "${bug}" || die "Failed to merge ${package} to master"
   else
-    echo ojluni_merge_to_master
-    ojluni_merge_to_master || die "Failed to merge ${package} to master"
+    echo ojluni_merge_to_main
+    ojluni_merge_to_main || die "Failed to merge ${package} to master"
   fi
 }
 
