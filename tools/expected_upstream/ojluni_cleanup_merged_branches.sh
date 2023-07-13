@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Script that cleans up branches created by ojluni_merge_to_master. They are
+# Script that cleans up branches created by ojluni_merge_to_main. They are
 # usually name something like 'expected_upstream_e0bywxovb5'.
 
 if [[ -z "${ANDROID_BUILD_TOP}" ]]
