@@ -918,7 +918,7 @@ ojluni/src/main/java/java/util/EventObject.java,jdk17u/jdk-17.0.6-ga,src/java.ba
 ojluni/src/main/java/java/util/FormatFlagsConversionMismatchException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/FormatFlagsConversionMismatchException.java
 ojluni/src/main/java/java/util/Formattable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Formattable.java
 ojluni/src/main/java/java/util/FormattableFlags.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/FormattableFlags.java
-ojluni/src/main/java/java/util/Formatter.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Formatter.java
+ojluni/src/main/java/java/util/Formatter.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Formatter.java
 ojluni/src/main/java/java/util/FormatterClosedException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/FormatterClosedException.java
 ojluni/src/main/java/java/util/GregorianCalendar.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/GregorianCalendar.java
 ojluni/src/main/java/java/util/HashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/HashMap.java
@@ -926,6 +926,7 @@ ojluni/src/main/java/java/util/HashSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/s
 ojluni/src/main/java/java/util/Hashtable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Hashtable.java
 ojluni/src/main/java/java/util/HexFormat.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/HexFormat.java
 ojluni/src/main/java/java/util/IdentityHashMap.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IdentityHashMap.java
+ojluni/src/main/java/java/util/IllegalFormatArgumentIndexException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IllegalFormatArgumentIndexException.java
 ojluni/src/main/java/java/util/IllegalFormatCodePointException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IllegalFormatCodePointException.java
 ojluni/src/main/java/java/util/IllegalFormatConversionException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IllegalFormatConversionException.java
 ojluni/src/main/java/java/util/IllegalFormatException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/IllegalFormatException.java
