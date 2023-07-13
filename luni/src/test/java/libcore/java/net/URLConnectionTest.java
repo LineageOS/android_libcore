@@ -30,7 +30,6 @@ import java.lang.reflect.Field;
 import java.net.ContentHandler;
 import java.net.ContentHandlerFactory;
 import org.junit.After;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -3137,36 +3136,27 @@ public final class URLConnectionTest {
     }
 
     @Test public void noSslFallback_specifiedProtocols() throws Exception {
-        String[] platformProtocols = platformDefaultTlsProtocols();
-        Assume.assumeTrue(platformProtocols.length > 1);
-        // Leave out one protocol.  First in the array will be the oldest protocol with
-        // Conscrypt, but it shouldn't matter which we omit.
-        String[] expectedProtocols =
-            Arrays.copyOfRange(platformProtocols, 1, platformProtocols.length - 1);
-
+        String[] enabledProtocols = { "TLSv1.2", "TLSv1.1" };
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
         SSLSocketFactory serverSocketFactory =
                 new LimitedProtocolsSocketFactory(
                         testSSLContext.serverContext.getSocketFactory(),
-                    expectedProtocols);
+                        enabledProtocols);
         SSLSocketFactory clientSocketFactory = new LimitedProtocolsSocketFactory(
-                testSSLContext.clientContext.getSocketFactory(), expectedProtocols);
+                testSSLContext.clientContext.getSocketFactory(), enabledProtocols);
         checkNoFallbackOnFailedHandshake(clientSocketFactory, serverSocketFactory,
-            expectedProtocols);
+                enabledProtocols);
     }
 
     @Test public void noSslFallback_defaultProtocols() throws Exception {
-        String[] expectedEnabledProtocols = platformDefaultTlsProtocols();
+        // Will need to be updated if the enabled protocols in Android's SSLSocketFactory change
+        String[] expectedEnabledProtocols = { "TLSv1.2", "TLSv1.1", "TLSv1" };
 
         TestSSLContext testSSLContext = createDefaultTestSSLContext();
         SSLSocketFactory serverSocketFactory = testSSLContext.serverContext.getSocketFactory();
         SSLSocketFactory clientSocketFactory = testSSLContext.clientContext.getSocketFactory();
         checkNoFallbackOnFailedHandshake(clientSocketFactory, serverSocketFactory,
                 expectedEnabledProtocols);
-    }
-
-    private String[] platformDefaultTlsProtocols() throws Exception {
-        return SSLContext.getDefault().getSupportedSSLParameters().getProtocols();
     }
 
     private static void assertSslSocket(TlsFallbackDisabledScsvSSLSocket socket,
