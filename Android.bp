@@ -80,4 +80,5 @@ java_genrule {
         "cp -f $(in) $(genDir)/NOTICES && " +
         "$(location soong_zip) -o $(out) -C $(genDir) -D $(genDir)/NOTICES",
     out: ["notices-for-stubs.jar"],
+    write_if_changed: true,
 }
