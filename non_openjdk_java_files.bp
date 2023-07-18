@@ -373,7 +373,6 @@ filegroup {
         "luni/src/main/java/libcore/io/Linux.java",
         "luni/src/main/java/libcore/io/MemoryMappedFile.java",
         "luni/src/main/java/libcore/io/NioBufferIterator.java",
-        "luni/src/main/java/libcore/math/MathUtils.java",
         "luni/src/main/java/libcore/math/NativeBN.java",
         "luni/src/main/java/libcore/net/event/NetworkEventListener.java",
         "luni/src/main/java/libcore/net/http/HttpDate.java",
