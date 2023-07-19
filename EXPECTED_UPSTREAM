@@ -85,7 +85,7 @@ ojluni/src/main/java/java/io/ObjectOutputStream.java,jdk8u/jdk8u121-b13,jdk/src/
 ojluni/src/main/java/java/io/ObjectStreamClass.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/ObjectStreamClass.java
 ojluni/src/main/java/java/io/ObjectStreamConstants.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/ObjectStreamConstants.java
 ojluni/src/main/java/java/io/ObjectStreamException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/ObjectStreamException.java
-ojluni/src/main/java/java/io/ObjectStreamField.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/ObjectStreamField.java
+ojluni/src/main/java/java/io/ObjectStreamField.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/ObjectStreamField.java
 ojluni/src/main/java/java/io/OptionalDataException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/OptionalDataException.java
 ojluni/src/main/java/java/io/OutputStream.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/OutputStream.java
 ojluni/src/main/java/java/io/OutputStreamWriter.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/OutputStreamWriter.java
