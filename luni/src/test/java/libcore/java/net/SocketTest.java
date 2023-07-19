@@ -319,44 +319,44 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     public void testReadAfterClose() throws Exception {
-        MockServer server = new MockServer();
-        server.enqueue(new byte[]{5, 3}, 0);
-        Socket socket = new Socket("localhost", server.port);
-        InputStream in = socket.getInputStream();
-        assertEquals(5, in.read());
-        assertEquals(3, in.read());
-        assertEquals(-1, in.read());
-        assertEquals(-1, in.read());
-        socket.close();
-        in.close();
+        try (MockServer server = new MockServer()) {
+            server.enqueue(new byte[]{5, 3}, 0);
+            InputStream checkAfterCloseStream;
+            try (Socket socket = new Socket("localhost", server.port);
+                InputStream in = socket.getInputStream()) {
+                assertEquals(5, in.read());
+                assertEquals(3, in.read());
+                assertEquals(-1, in.read());
+                assertEquals(-1, in.read());
+                checkAfterCloseStream = in;
+            }
 
-        /*
-         * Rather astonishingly, read() doesn't throw even though the stream is
-         * closed. This is consistent with the RI's behavior.
-         */
-        assertEquals(-1, in.read());
-        assertEquals(-1, in.read());
-
-        server.shutdown();
+            /*
+             * Rather astonishingly, read() doesn't throw even though the stream is
+             * closed. This is consistent with the RI's behavior.
+             */
+            assertEquals(-1, checkAfterCloseStream.read());
+            assertEquals(-1, checkAfterCloseStream.read());
+        }
     }
 
     public void testWriteAfterClose() throws Exception {
-        MockServer server = new MockServer();
-        server.enqueue(new byte[0], 3);
-        Socket socket = new Socket("localhost", server.port);
-        OutputStream out = socket.getOutputStream();
-        out.write(5);
-        out.write(3);
-        socket.close();
-        out.close();
+        try (MockServer server = new MockServer()) {
+            server.enqueue(new byte[0], 3);
+            OutputStream checkAfterCloseStream;
+            try (Socket socket = new Socket("localhost", server.port);
+                    OutputStream out = socket.getOutputStream()) {
+                out.write(5);
+                out.write(3);
+                checkAfterCloseStream = out;
+            }
 
-        try {
-            out.write(9);
-            fail();
-        } catch (IOException expected) {
+            try {
+                checkAfterCloseStream.write(9);
+                fail();
+            } catch (IOException expected) {
+            }
         }
-
-        server.shutdown();
     }
 
     // http://b/5534202
@@ -369,37 +369,33 @@ public class SocketTest extends TestCaseWithRules {
 
     private void assertAvailableReturnsZeroAfterSocketReadsAllData() throws Exception {
         final byte[] data = "foo".getBytes();
-        final ServerSocket serverSocket = new ServerSocket(0);
+        try (ServerSocket serverSocket = new ServerSocket(0)) {
 
-        new Thread() {
-            @Override public void run() {
-                try {
-                    Socket socket = serverSocket.accept();
-                    socket.getOutputStream().write(data);
-                    socket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            new Thread() {
+                @Override public void run() {
+                    try (Socket socket = serverSocket.accept()) {
+                        socket.getOutputStream().write(data);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            }.start();
+
+            try (Socket socket = new Socket("localhost", serverSocket.getLocalPort())) {
+                byte[] readBuffer = new byte[128];
+                InputStream in = socket.getInputStream();
+                int total = 0;
+                // to prevent available() from cheating after EOF, stop reading before -1 is returned
+                while (total < data.length) {
+                    total += in.read(readBuffer);
+                }
+                assertEquals(0, in.available());
             }
-        }.start();
-
-        Socket socket = new Socket("localhost", serverSocket.getLocalPort());
-        byte[] readBuffer = new byte[128];
-        InputStream in = socket.getInputStream();
-        int total = 0;
-        // to prevent available() from cheating after EOF, stop reading before -1 is returned
-        while (total < data.length) {
-            total += in.read(readBuffer);
         }
-        assertEquals(0, in.available());
-
-        socket.close();
-        serverSocket.close();
     }
 
     public void testInitialState() throws Exception {
-        Socket s = new Socket();
-        try {
+        try (Socket s = new Socket()) {
             assertFalse(s.isBound());
             assertFalse(s.isClosed());
             assertFalse(s.isConnected());
@@ -411,8 +407,6 @@ public class SocketTest extends TestCaseWithRules {
             assertNull(s.getRemoteSocketAddress());
             assertFalse(s.getReuseAddress());
             assertNull(s.getChannel());
-        } finally {
-            s.close();
         }
     }
 
@@ -438,53 +432,54 @@ public class SocketTest extends TestCaseWithRules {
         // is expected to produce block behavior when attempting to connect().
         final InetSocketAddress unreachableIp = new InetSocketAddress("192.0.2.0", 80);
 
-        final Socket s = new Socket();
 
-        // A Callable that executes a connect() that should block and ultimately throw an exception.
-        // Inverts usual behavior for code: expected to *return* a throwable for analysis if one is
-        // thrown, but throws an Error if no exception is thrown.
-        Callable<Throwable> connectWorker = () -> {
-            try {
-                // This method should not return naturally.
-                s.connect(unreachableIp, 0 /* infinite */);
+        try (Socket s = new Socket()) {
+
+            // A Callable that executes a connect() that should block and ultimately throw an exception.
+            // Inverts usual behavior for code: expected to *return* a throwable for analysis if one is
+            // thrown, but throws an Error if no exception is thrown.
+            Callable<Throwable> connectWorker = () -> {
+                try {
+                    // This method should not return naturally.
+                    s.connect(unreachableIp, 0 /* infinite */);
+                    throw new AssertionError(
+                            "connect() to address(" + unreachableIp + ") did not block as required");
+                } catch (Exception exception) {
+                    // Return the exception so that it can be inspected.
+                    return exception;
+                }
+            };
+            Future<Throwable> connectResult = Executors.newSingleThreadScheduledExecutor().submit(connectWorker);
+
+            // Wait sufficient time for the connectWorker thread to run and start connect().
+            Thread.sleep(2000);
+
+            // Check for unexpected early termination. We require an environment where connect() will
+            // block forever with the specified IP and we can fail early if we detect the block hasn't
+            // happened.
+            if (connectResult.isDone()) {
+                // We expect an ExecutionError here. If not something has gone wrong with the test
+                // logic.
+                Throwable error = connectResult.get();
+                throw new AssertionError("Unexpected result from connectWorker", error);
+            }
+
+            // Close the socket that connectWorker should currently be blocked in connect().
+            s.close();
+
+            // connectWorker should unblock so get() should obtain the exception that we expect to be
+            // thrown.
+            Throwable result = connectResult.get(2000, TimeUnit.MILLISECONDS);
+            if (result instanceof SocketException) {
+                if (result.getMessage().contains("Socket closed")) {
+                    // This is the only case we accept.
+                    return;
+                }
                 throw new AssertionError(
-                        "connect() to address(" + unreachableIp + ") did not block as required");
-            } catch (Exception exception) {
-                // Return the exception so that it can be inspected.
-                return exception;
+                        "Unexpected SocketException message: " + result.getMessage(), result);
+            } else {
+                throw new AssertionError("Unexpected exception encountered", result);
             }
-        };
-        Future<Throwable> connectResult =
-                Executors.newSingleThreadScheduledExecutor().submit(connectWorker);
-
-        // Wait sufficient time for the connectWorker thread to run and start connect().
-        Thread.sleep(2000);
-
-        // Check for unexpected early termination. We require an environment where connect() will
-        // block forever with the specified IP and we can fail early if we detect the block hasn't
-        // happened.
-        if (connectResult.isDone()) {
-            // We expect an ExecutionError here. If not something has gone wrong with the test
-            // logic.
-            Throwable error = connectResult.get();
-            throw new AssertionError("Unexpected result from connectWorker", error);
-        }
-
-        // Close the socket that connectWorker should currently be blocked in connect().
-        s.close();
-
-        // connectWorker should unblock so get() should obtain the exception that we expect to be
-        // thrown.
-        Throwable result = connectResult.get(2000, TimeUnit.MILLISECONDS);
-        if (result instanceof SocketException) {
-            if (result.getMessage().contains("Socket closed")) {
-                // This is the only case we accept.
-                return;
-            }
-            throw new AssertionError(
-                    "Unexpected SocketException message: " + result.getMessage(), result);
-        } else {
-            throw new AssertionError("Unexpected exception encountered", result);
         }
     }
 
@@ -505,10 +500,9 @@ public class SocketTest extends TestCaseWithRules {
                 }
             });
 
-            ServerSocket server = new ServerSocket(0);
-            Socket client = new Socket(InetAddress.getLocalHost(), server.getLocalPort());
-            client.close();
-            server.close();
+            try (ServerSocket server = new ServerSocket(0);
+                    Socket client = new Socket(InetAddress.getLocalHost(), server.getLocalPort())) {
+            }
         } finally {
             ProxySelector.setDefault(ps);
         }
@@ -540,7 +534,7 @@ public class SocketTest extends TestCaseWithRules {
         assertFalse(fd3.valid());
     }
 
-    static class MockServer {
+    static class MockServer implements AutoCloseable {
         private ExecutorService executor;
         private ServerSocket serverSocket;
         private int port = -1;
@@ -556,23 +550,24 @@ public class SocketTest extends TestCaseWithRules {
                 throws IOException {
             return executor.submit(new Callable<byte[]>() {
                 @Override public byte[] call() throws Exception {
-                    Socket socket = serverSocket.accept();
-                    OutputStream out = socket.getOutputStream();
-                    out.write(sendBytes);
-
-                    InputStream in = socket.getInputStream();
                     byte[] result = new byte[receiveByteCount];
-                    int total = 0;
-                    while (total < receiveByteCount) {
-                        total += in.read(result, total, result.length - total);
+                    try (Socket socket = serverSocket.accept()) {
+                        OutputStream out = socket.getOutputStream();
+                        out.write(sendBytes);
+
+                        InputStream in = socket.getInputStream();
+                        int total = 0;
+                        while (total < receiveByteCount) {
+                            total += in.read(result, total, result.length - total);
+                        }
                     }
-                    socket.close();
                     return result;
                 }
             });
         }
 
-        public void shutdown() throws IOException {
+        @Override
+        public void close() throws Exception {
             serverSocket.close();
             executor.shutdown();
         }
@@ -655,8 +650,7 @@ public class SocketTest extends TestCaseWithRules {
         for (InetAddress addr : ALL_LOOPBACK_ADDRESSES) {
             try (ServerSocket ss = new ServerSocket(port, 0, addr)) {
                 new Thread(() -> {
-                    try {
-                        ss.accept();
+                    try (Socket socket = ss.accept()) {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
