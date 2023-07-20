@@ -30,8 +30,8 @@ public class RSAPrivateKeyTest extends TestCase {
      */
     public void test_getPrivateExponent() throws Exception {
         KeyFactory gen = KeyFactory.getInstance("RSA");
-        final BigInteger n = BigInteger.valueOf(3233);
-        final BigInteger d = BigInteger.valueOf(2753);
+        final BigInteger n = Util.rsaCrtParam.getModulus();
+        final BigInteger d = Util.rsaCrtParam.getPrivateExponent();
         RSAPrivateKey key = (RSAPrivateKey) gen.generatePrivate(new RSAPrivateKeySpec(
                 n, d));
         assertEquals("invalid private exponent", d, key.getPrivateExponent());
