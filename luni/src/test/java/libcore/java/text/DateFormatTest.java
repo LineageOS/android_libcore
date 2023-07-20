@@ -16,6 +16,8 @@
 
 package libcore.java.text;
 
+import libcore.test.annotation.NonCts;
+
 import java.util.TimeZone;
 import junit.framework.TestCase;
 
@@ -25,6 +27,10 @@ import java.util.Date;
 import java.util.Locale;
 
 public class DateFormatTest extends TestCase {
+
+    private static final String NON_BREAKING_BEHAVIOUR_FIX = "The test asserts buggy "
+              + "or non-breaking behaviors, but the behavior has been fixed in the future "
+              + "ART module version.";
 
     // Regression test for http://b/31762542. If this test fails it implies that changes to
     // DateFormat.is24Hour will not be effective.
@@ -58,6 +64,7 @@ public class DateFormatTest extends TestCase {
         assertEquals(expectedDateString, actualDateString);
     }
 
+    @NonCts(bug = 286993265, reason = NON_BREAKING_BEHAVIOUR_FIX)
     public void testGetTimeInstance_withLocaleExtension() {
         Locale locale = Locale.forLanguageTag("en-u-tz-usden");
         DateFormat df = DateFormat.getTimeInstance(DateFormat.SHORT, locale);
