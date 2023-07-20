@@ -34,9 +34,9 @@ public class RSAKeyTest extends TestCase {
      */
     public void test_getModulus() throws Exception {
         KeyFactory gen = KeyFactory.getInstance("RSA");
-        final BigInteger n = BigInteger.valueOf(3233);
-        final BigInteger d = BigInteger.valueOf(2753);
-        final BigInteger e = BigInteger.valueOf(17);
+        final BigInteger n = Util.rsaCrtParam.getModulus();
+        final BigInteger d = Util.rsaCrtParam.getPrivateExponent();
+        final BigInteger e = Util.rsaCrtParam.getPublicExponent();
         RSAKey key = null;
 
         // Case 1: check private key
