@@ -45,11 +45,6 @@ import java.util.Queue;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import android.compat.Compatibility;
-
-import dalvik.annotation.compat.VersionCodes;
-import dalvik.system.VMRuntime;
-
 public class PriorityQueueTest extends JSR166TestCase {
     public static void main(String[] args) {
         main(suite(), args);
@@ -231,16 +226,10 @@ public class PriorityQueueTest extends JSR166TestCase {
      */
     public void testOfferNonComparable() {
         PriorityQueue q = new PriorityQueue(1);
-        // Android-added: test old behavior in < U.
-        boolean preAndroidUBehavior = VMRuntime.getSdkVersion() < VersionCodes.UPSIDE_DOWN_CAKE
-            || !Compatibility.isChangeEnabled(PriorityQueue.PRIORITY_QUEUE_OFFER_NON_COMPARABLE_ONE_ELEMENT);
         try {
             q.offer(new Object());
-            if (!preAndroidUBehavior) {
-              shouldThrow();
-            }
+            shouldThrow();
         } catch (ClassCastException success) {
-            assertFalse(preAndroidUBehavior);
             assertTrue(q.isEmpty());
             assertEquals(0, q.size());
             assertNull(q.poll());
