@@ -564,7 +564,7 @@ public final class URLConnectionTest {
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /foo HTTP/1.1", request.getRequestLine());
-        assertEquals("TLSv1.2", request.getSslProtocol());
+        assertEquals("TLSv1.3", request.getSslProtocol());
     }
 
     @Test public void connectViaHttpsReusingConnections() throws IOException, InterruptedException {
@@ -2285,7 +2285,7 @@ public final class URLConnectionTest {
                     + "CN=Local Host 3, "
                     + "CN=Test Intermediate Certificate Authority 2, "
                     + "CN=Test Root Certificate Authority 1"
-                    + "] ECDHE_RSA"),
+                    + "] GENERIC"),
                     trustManager.calls);
         } finally {
             HttpsURLConnection.setDefaultHostnameVerifier(defaultHostnameVerifier);
