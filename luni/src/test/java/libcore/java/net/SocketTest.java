@@ -22,6 +22,14 @@ import static android.system.OsConstants.SOCK_DGRAM;
 
 import static java.util.stream.Collectors.joining;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import android.system.ErrnoException;
 import android.system.Os;
 
@@ -64,10 +72,13 @@ import libcore.junit.util.ResourceLeakageDetector;
 
 import org.junit.Ignore;
 import org.junit.Rule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 import org.junit.rules.TestRule;
 
-
-public class SocketTest extends TestCaseWithRules {
+@RunWith(JUnit4.class)
+public class SocketTest {
     @Rule
     public TestRule resourceLeakageDetectorRule = ResourceLeakageDetector.getRule();
 
@@ -81,6 +92,7 @@ public class SocketTest extends TestCaseWithRules {
     private static final int INET_ECN_MASK = 0x3;
 
     // See http://b/2980559.
+    @Test
     public void test_close() throws Exception {
         Socket s = new Socket();
         s.close();
@@ -93,6 +105,7 @@ public class SocketTest extends TestCaseWithRules {
      * This means they give incorrect results on closed sockets (as well
      * as requiring an unnecessary call into native code).
      */
+    @Test
     public void test_getLocalAddress_after_close() throws Exception {
         Socket s = new Socket();
         try {
@@ -113,6 +126,7 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     // http://code.google.com/p/android/issues/detail?id=7935
+    @Test
     public void test_newSocket_connection_refused() throws Exception {
         try {
             new Socket("localhost", 80);
@@ -123,6 +137,7 @@ public class SocketTest extends TestCaseWithRules {
 
     // http://code.google.com/p/android/issues/detail?id=3123
     // http://code.google.com/p/android/issues/detail?id=1933
+    @Test
     public void test_socketLocalAndRemoteAddresses() throws Exception {
         checkSocketLocalAndRemoteAddresses(false);
         checkSocketLocalAndRemoteAddresses(true);
@@ -256,6 +271,7 @@ public class SocketTest extends TestCaseWithRules {
 
     // SocketOptions.setOption has weird behavior for setSoLinger/SO_LINGER.
     // This test ensures we do what the RI does.
+    @Test
     public void test_SocketOptions_setOption() throws Exception {
         MySocketImpl impl = new MySocketImpl();
         Socket s = new MySocket(impl);
@@ -304,6 +320,7 @@ public class SocketTest extends TestCaseWithRules {
         assertEquals(sockImpl.value, value);
     }
 
+    @Test
     public void test_setTrafficClass() throws Exception {
         try (Socket s = new Socket()) {
             for (int i = 0; i <= 255; ++i) {
@@ -319,6 +336,7 @@ public class SocketTest extends TestCaseWithRules {
         }
     }
 
+    @Test
     public void testReadAfterClose() throws Exception {
         try (MockServer server = new MockServer()) {
             server.enqueue(new byte[]{5, 3}, 0);
@@ -341,6 +359,7 @@ public class SocketTest extends TestCaseWithRules {
         }
     }
 
+    @Test
     public void testWriteAfterClose() throws Exception {
         try (MockServer server = new MockServer()) {
             server.enqueue(new byte[0], 3);
@@ -361,6 +380,7 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     // http://b/5534202
+    @Test
     public void testAvailable() throws Exception {
         for (int i = 0; i < 100; i++) {
             assertAvailableReturnsZeroAfterSocketReadsAllData();
@@ -395,6 +415,7 @@ public class SocketTest extends TestCaseWithRules {
         }
     }
 
+    @Test
     public void testInitialState() throws Exception {
         try (Socket s = new Socket()) {
             assertFalse(s.isBound());
@@ -411,6 +432,7 @@ public class SocketTest extends TestCaseWithRules {
         }
     }
 
+    @Test
     public void testStateAfterClose() throws Exception {
         Socket s = new Socket();
         s.bind(new InetSocketAddress(Inet4Address.getLocalHost(), 0));
@@ -428,6 +450,7 @@ public class SocketTest extends TestCaseWithRules {
         assertEquals(boundAddress.getPort(), localAddressAfterClose.getPort());
     }
 
+    @Test
     public void testCloseDuringConnect() throws Exception {
         // This address is reserved for documentation: should never be reachable and therefore
         // is expected to produce block behavior when attempting to connect().
@@ -485,6 +508,7 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     // http://b/29092095
+    @Test
     public void testSocketWithProxySet() throws Exception {
         ProxySelector ps = ProxySelector.getDefault();
         try {
@@ -511,6 +535,7 @@ public class SocketTest extends TestCaseWithRules {
 
 
     // b/25805791 + b/26470377
+    @Test
     public void testFileDescriptorStaysSame() throws Exception {
         // SocketImplementation FileDescriptor object shouldn't change after calling
         // bind (and many other methods).
@@ -575,6 +600,7 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     // b/26354315
+    @Test
     public void testDoNotCallCloseFromSocketCtor() {
         // Original openJdk7 Socket implementation may call Socket#close() inside a constructor.
         // In this case, classes that extend Socket wont be fully constructed when they
@@ -640,6 +666,7 @@ public class SocketTest extends TestCaseWithRules {
 
     // b/30007735
     @Ignore("b/292238663")
+    @Test
     public void testSocketTestAllAddresses() throws Exception {
         checkLoopbackHost();
 
