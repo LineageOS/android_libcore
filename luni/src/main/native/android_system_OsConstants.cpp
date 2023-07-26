@@ -328,6 +328,9 @@ static void OsConstants_initConstants(JNIEnv* env, jclass c) {
     initConstant(env, c, "IPV6_MULTICAST_HOPS", IPV6_MULTICAST_HOPS);
     initConstant(env, c, "IPV6_MULTICAST_IF", IPV6_MULTICAST_IF);
     initConstant(env, c, "IPV6_MULTICAST_LOOP", IPV6_MULTICAST_LOOP);
+#if defined(IPV6_PKTINFO)
+    initConstant(env, c, "IPV6_PKTINFO", IPV6_PKTINFO);
+#endif
 #if defined(IPV6_RECVDSTOPTS)
     initConstant(env, c, "IPV6_RECVDSTOPTS", IPV6_RECVDSTOPTS);
 #endif

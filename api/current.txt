@@ -350,6 +350,7 @@ package android.system {
     field public static final int IPV6_MULTICAST_HOPS;
     field public static final int IPV6_MULTICAST_IF;
     field public static final int IPV6_MULTICAST_LOOP;
+    field public static final int IPV6_PKTINFO;
     field public static final int IPV6_RECVDSTOPTS;
     field public static final int IPV6_RECVHOPLIMIT;
     field public static final int IPV6_RECVHOPOPTS;
