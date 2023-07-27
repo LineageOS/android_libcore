@@ -18,6 +18,11 @@ package libcore.java.text;
 
 import android.icu.util.VersionInfo;
 
+import dalvik.annotation.compat.VersionCodes;
+
+import libcore.test.annotation.NonMts;
+import libcore.test.reasons.NonMtsReasons;
+
 import junit.framework.TestCase;
 
 import java.text.DateFormat;
@@ -70,6 +75,8 @@ public class DateFormatTest extends TestCase {
     }
 
     /** Regression test for http://b/266731719. */
+    @NonMts(bug = 289015017, disabledUntilSdk = VersionCodes.UPSIDE_DOWN_CAKE,
+            reason = NonMtsReasons.OEM_CUSTOMIZATION)
     public void testParse_lenient_en() throws ParseException {
         assertParse_lenient_en(Locale.ENGLISH);
         assertParse_lenient_en(Locale.US);
@@ -92,6 +99,8 @@ public class DateFormatTest extends TestCase {
     }
 
     /** Regression test for http://b/266731719. */
+    @NonMts(bug = 289015017, disabledUntilSdk = VersionCodes.UPSIDE_DOWN_CAKE,
+            reason = NonMtsReasons.OEM_CUSTOMIZATION)
     public void testFormat_forBug266731719() {
         assertFormat_forBug266731719(Locale.ENGLISH);
         assertFormat_forBug266731719(Locale.US);
