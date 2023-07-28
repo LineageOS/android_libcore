@@ -26,6 +26,8 @@
  * @bug 7200119
  * @summary verify that getAvailableLocales() contains Locale.US
  */
+package test.java.text.Collator;
+
 import java.text.*;
 import java.util.*;
 
