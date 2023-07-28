@@ -27,6 +27,8 @@
  * @summary test SimpleDateFormat, check its pattern in the constructor
  * @run testng/othervm SimpleDateFormatPatternTest
  */
+package test.java.text.Format.DateFormat;
+
 import java.lang.IllegalArgumentException;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
