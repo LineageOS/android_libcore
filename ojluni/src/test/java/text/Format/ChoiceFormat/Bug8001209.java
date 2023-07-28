@@ -26,6 +26,8 @@
  * @bug 8001209
  * @summary Confirm that the values set by setChoices() are not mutable.
  */
+package test.java.text.Format.ChoiceFormat;
+
 import java.text.*;
 
 public class Bug8001209 {
