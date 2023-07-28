@@ -16,9 +16,26 @@
 
 package libcore.java.util;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assume.assumeTrue;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+
+import dalvik.annotation.compat.VersionCodes;
+import dalvik.system.VMRuntime;
+
+import libcore.junit.util.compat.CoreCompatChangeRule.DisableCompatChanges;
+import libcore.junit.util.compat.CoreCompatChangeRule.EnableCompatChanges;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -33,20 +50,28 @@ import java.util.Calendar;
 import java.util.FormatFlagsConversionMismatchException;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
+import java.util.IllegalFormatException;
 import java.util.Locale;
+import java.util.MissingFormatArgumentException;
 import java.util.TimeZone;
 
 @SuppressWarnings("FormatString")
-public class FormatterTest extends junit.framework.TestCase {
+public class FormatterTest {
 
     private File aFile;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         aFile = File.createTempFile("libcore_java_util_FormatterTest-test-file", null);
         aFile.deleteOnExit();
     }
 
+    @After
+    public void cleanup() throws Exception {
+        aFile.delete();
+    }
+
+    @Test
     public void test_numberLocalization() throws Exception {
         Locale arabic = new Locale("ar");
 
@@ -79,6 +104,7 @@ public class FormatterTest extends junit.framework.TestCase {
     }
 
     // http://b/27566754
+    @Test
     public void test_internationalizedExponent() {
         assertEquals("1E+02", String.format(Locale.ENGLISH, "%.0E", 100.0));
         assertEquals("1e+02", String.format(Locale.ENGLISH, "%.0e", 100.0));
@@ -91,6 +117,7 @@ public class FormatterTest extends junit.framework.TestCase {
     }
 
     // http://b/2301938
+    @Test
     public void test_uppercaseConversions() throws Exception {
         // In most locales, the upper-case equivalent of "i" is "I".
         assertEquals("JAKOB ARJOUNI", String.format(Locale.US, "%S", "jakob arjouni"));
@@ -100,10 +127,12 @@ public class FormatterTest extends junit.framework.TestCase {
 
     // Creating a NumberFormat is expensive, so we like to reuse them, but we need to be careful
     // because they're mutable.
+    @Test
     public void test_NumberFormat_reuse() throws Exception {
         assertEquals("7.000000 7", String.format("%.6f %d", 7.0, 7));
     }
 
+    @Test
     public void test_grouping() throws Exception {
         // The interesting case is -123, where you might naively output "-,123" if you're just
         // inserting a separator every three characters. The cases where there are three digits
@@ -128,6 +157,7 @@ public class FormatterTest extends junit.framework.TestCase {
         assertEquals("123,456,789", String.format("%,d", 123456789));
     }
 
+    @Test
     public void test_formatNull() throws Exception {
         // We fast-path %s and %d (with no configuration) but need to make sure we handle the
         // special case of the null argument...
@@ -139,6 +169,7 @@ public class FormatterTest extends junit.framework.TestCase {
 
     // Alleged regression tests for historical bugs. (It's unclear whether the bugs were in
     // BigDecimal or Formatter.)
+    @Test
     public void test_BigDecimalFormatting() throws Exception {
         BigDecimal[] input = new BigDecimal[] {
             new BigDecimal("20.00000"),
@@ -166,11 +197,13 @@ public class FormatterTest extends junit.framework.TestCase {
     }
 
     // https://code.google.com/p/android/issues/detail?id=42936
+    @Test
     public void test42936() throws Exception {
         assertEquals("0.00000000000000", String.format("%.15g",0.0d));
     }
 
     // https://code.google.com/p/android/issues/detail?id=53983
+    @Test
     public void test53983() throws Exception {
       checkFormat("00", "H", 00);
       checkFormat( "0", "k", 00);
@@ -211,6 +244,7 @@ public class FormatterTest extends junit.framework.TestCase {
     // http://b/33245708: Some locales have a group separator != '\0' but a default decimal format
     // pattern without grouping (e.g. a group size of zero). This would throw divide by zero when
     // working out where to place the separator.
+    @Test
     public void testGroupingSizeZero() {
         Locale localeWithoutGrouping = new Locale("en", "US", "POSIX");
         DecimalFormat decimalFormat =
@@ -228,6 +262,7 @@ public class FormatterTest extends junit.framework.TestCase {
         // No exception expected
     }
 
+    @Test
     public void testConstructor_Ljava_io_OutputStreamLjava_nio_charset_CharsetLjava_util_Locale()
             throws Exception {
         try {
@@ -256,6 +291,7 @@ public class FormatterTest extends junit.framework.TestCase {
         }
     }
 
+    @Test
     public void testConstructor_Ljava_io_FileLjava_nio_charset_CharsetLjava_util_Locale()
             throws Exception {
         try {
@@ -280,6 +316,7 @@ public class FormatterTest extends junit.framework.TestCase {
         assertEquals(locale, formatter.locale());
     }
 
+    @Test
     public void testConstructor_Ljava_lang_StringLjava_nio_charset_CharsetLjava_util_Locale()
             throws Exception {
         try {
@@ -297,13 +334,74 @@ public class FormatterTest extends junit.framework.TestCase {
         }
     }
 
+    @Test
     public void test_floatWithAlternateForm() {
         // when # flag is set, decimal separator is always present.
         assertEquals("10.", new Formatter(Locale.US).format("%#.0f", 10.12).toString());
     }
 
+    @Test
     public void test_numberSignIsNotAllowed_inGeneralFormat() {
         assertThrows(FormatFlagsConversionMismatchException.class,
                 () -> new Formatter(Locale.US).format("%#.1g", 10.1).toString());
     }
+
+    @Test
+    @DisableCompatChanges({Formatter.ENABLE_STRICT_FORMATTER_VALIDATION})
+    public void zerothIndexIsTreatedAsOrdinaryIndex_whenChecksAreDisabled() {
+        assertEquals("x", new Formatter(Locale.US).format("%0$s", "x").toString());
+        assertEquals("a a b", new Formatter(Locale.US).format("%s %1$s %0$s", "a", "b").toString());
+        assertEquals(
+                "string string",
+                new Formatter(Locale.US).format("%s %2147483648$s", "string").toString());
+        assertThrows(
+                MissingFormatArgumentException.class,
+                () -> new Formatter(Locale.US).format("%0$s %0$s %0$s", "x").toString());
+    }
+
+    @Test
+    @DisableCompatChanges({Formatter.ENABLE_STRICT_FORMATTER_VALIDATION})
+    public void invalidIndexIsTreatedAsOrdinaryIndex_whenChecksAreDisabled() {
+        // In practice it makes no sense to use such a large index - there can't be that many
+        // elements in an array anyway. OpenJDK 11 (and older) implementation swallowed exception
+        // during these elements parsing and left default values. For index default value was -1,
+        // which effectively means relative index a.k.a. re-use argument used for previous format
+        // specifier.
+        assertEquals(
+                "string string",
+                new Formatter(Locale.US).format("%s %2147483648$s", "string").toString());
+        assertThrows(
+                MissingFormatArgumentException.class,
+                () -> new Formatter(Locale.US).format("%2147483648$s", "string").toString()
+        );
+    }
+
+    @Test
+    @EnableCompatChanges({Formatter.ENABLE_STRICT_FORMATTER_VALIDATION})
+    public void invalidIndicesThrowsException_afterU_whenChecksAreEnabled() {
+        var msg = "Checks are done only starting from V. Current SDK=" + VMRuntime.getSdkVersion();
+        assumeTrue(msg, VMRuntime.getSdkVersion() >= VersionCodes.VANILLA_ICE_CREAM);
+        var formatter = new Formatter(Locale.US);
+        var exception = assertThrows(
+                IllegalFormatException.class,
+                () -> formatter.format("%0$s", "x").toString());
+
+        assertEquals("IllegalFormatArgumentIndexException", exception.getClass().getSimpleName());
+
+        exception = assertThrows(
+                IllegalFormatException.class,
+                () -> new Formatter(Locale.US).format("%s %2147483648$s", "string").toString());
+        assertEquals("IllegalFormatArgumentIndexException", exception.getClass().getSimpleName());
+    }
+
+    @Test
+    @EnableCompatChanges({Formatter.ENABLE_STRICT_FORMATTER_VALIDATION})
+    public void invalidIndicesDontThrow_beforeV_whenChecksAreEnabled() {
+        var msg = "Checks are done only starting from V. Current SDK=" + VMRuntime.getSdkVersion();
+        assumeTrue(msg, VMRuntime.getSdkVersion() < VersionCodes.VANILLA_ICE_CREAM);
+
+        assertEquals("x", new Formatter(Locale.US).format("%0$s", "x").toString());
+        assertEquals("a a b", new Formatter(Locale.US).format("%s %1$s %0$s", "a", "b").toString());
+    }
+
 }
