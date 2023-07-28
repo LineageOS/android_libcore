@@ -27,6 +27,8 @@
  * @summary verify that compare() and getCollationKey() don't go into an infinite loop for unfinished Thai/Lao text.
  * @run main/timeout=60 Bug5047314
  */
+package test.java.text.Collator;
+
 import java.text.Collator;
 import java.util.Locale;
 
