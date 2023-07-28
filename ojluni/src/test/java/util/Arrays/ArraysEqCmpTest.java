@@ -27,7 +27,7 @@ package test.java.util.Arrays;
  * @bug 8033148 8141409
  * @summary tests for array equals and compare
  * @run testng ArraysEqCmpTest
- */
+*/
 
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -106,7 +106,7 @@ public class ArraysEqCmpTest {
 
                 if (componentType.isPrimitive()) {
                     cpy = l.findStatic(Arrays.class, "copyOfRange",
-                            MethodType.methodType(arrayType, arrayType, int.class, int.class));
+                                       MethodType.methodType(arrayType, arrayType, int.class, int.class));
 
                     MethodType eqt = MethodType.methodType(
                             boolean.class, arrayType, arrayType);
@@ -118,21 +118,21 @@ public class ArraysEqCmpTest {
 
                     String compareName = unsigned ? "compareUnsigned" : "compare";
                     cmp = l.findStatic(Arrays.class, compareName,
-                            eqt.changeReturnType(int.class));
+                                       eqt.changeReturnType(int.class));
                     cmpr = l.findStatic(Arrays.class, compareName,
-                            eqrt.changeReturnType(int.class));
+                                        eqrt.changeReturnType(int.class));
 
                     mm = l.findStatic(Arrays.class, "mismatch",
-                            eqt.changeReturnType(int.class));
+                                       eqt.changeReturnType(int.class));
                     mmr = l.findStatic(Arrays.class, "mismatch",
-                            eqrt.changeReturnType(int.class));
+                                       eqrt.changeReturnType(int.class));
 
                     toString = l.findStatic(Arrays.class, "toString",
-                            MethodType.methodType(String.class, arrayType));
+                                            MethodType.methodType(String.class, arrayType));
                 }
                 else {
                     cpy = l.findStatic(Arrays.class, "copyOfRange",
-                            MethodType.methodType(Object[].class, Object[].class, int.class, int.class));
+                                       MethodType.methodType(Object[].class, Object[].class, int.class, int.class));
 
                     MethodType eqt = MethodType.methodType(
                             boolean.class, Object[].class, Object[].class);
@@ -151,12 +151,12 @@ public class ArraysEqCmpTest {
                     cmpr = l.findStatic(Arrays.class, "compare", cmprt);
 
                     mm = l.findStatic(Arrays.class, "mismatch",
-                            eqt.changeReturnType(int.class));
+                                      eqt.changeReturnType(int.class));
                     mmr = l.findStatic(Arrays.class, "mismatch",
-                            eqrt.changeReturnType(int.class));
+                                       eqrt.changeReturnType(int.class));
 
                     toString = l.findStatic(Arrays.class, "toString",
-                            MethodType.methodType(String.class, Object[].class));
+                                            MethodType.methodType(String.class, Object[].class));
                 }
 
             }
@@ -218,7 +218,7 @@ public class ArraysEqCmpTest {
         }
 
         boolean equals(Object a, int aFromIndex, int aToIndex,
-                Object b, int bFromIndex, int bToIndex) {
+                       Object b, int bFromIndex, int bToIndex) {
             try {
                 return (boolean) eqr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex);
             }
@@ -243,7 +243,7 @@ public class ArraysEqCmpTest {
         }
 
         int compare(Object a, int aFromIndex, int aToIndex,
-                Object b, int bFromIndex, int bToIndex) {
+                    Object b, int bFromIndex, int bToIndex) {
             try {
                 return (int) cmpr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex);
             }
@@ -268,7 +268,7 @@ public class ArraysEqCmpTest {
         }
 
         int mismatch(Object a, int aFromIndex, int aToIndex,
-                Object b, int bFromIndex, int bToIndex) {
+                     Object b, int bFromIndex, int bToIndex) {
             try {
                 return (int) mmr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex);
             }
@@ -357,7 +357,7 @@ public class ArraysEqCmpTest {
 
             @Override
             boolean equals(Object a, int aFromIndex, int aToIndex,
-                    Object b, int bFromIndex, int bToIndex) {
+                           Object b, int bFromIndex, int bToIndex) {
                 try {
                     return (boolean) eqcr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex, c);
                 }
@@ -384,7 +384,7 @@ public class ArraysEqCmpTest {
 
             @Override
             int compare(Object a, int aFromIndex, int aToIndex,
-                    Object b, int bFromIndex, int bToIndex) {
+                        Object b, int bFromIndex, int bToIndex) {
                 try {
                     return (int) cmpcr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex, c);
                 }
@@ -411,7 +411,7 @@ public class ArraysEqCmpTest {
 
             @Override
             int mismatch(Object a, int aFromIndex, int aToIndex,
-                    Object b, int bFromIndex, int bToIndex) {
+                         Object b, int bFromIndex, int bToIndex) {
                 try {
                     return (int) mismatchcr.invoke(a, aFromIndex, aToIndex, b, bFromIndex, bToIndex, c);
                 }
@@ -729,27 +729,27 @@ public class ArraysEqCmpTest {
 
         // All nulls
         testArrayType(arrayType,
-                (at, s) -> {
-                    Object a = at.construct(s);
-                    for (int x = 0; x < s; x++) {
-                        at.set(a, x, null);
-                    }
-                    return a;
-                },
-                cloner);
+                      (at, s) -> {
+                          Object a = at.construct(s);
+                          for (int x = 0; x < s; x++) {
+                              at.set(a, x, null);
+                          }
+                          return a;
+                      },
+                      cloner);
 
 
         // Some nulls
         testArrayType(arrayType,
-                (at, s) -> {
-                    Object a = at.construct(s);
-                    for (int x = 0; x < s; x++) {
-                        int v = x % 8;
-                        at.set(a, x, v == 0 ? null : v);
-                    }
-                    return a;
-                },
-                cloner);
+                      (at, s) -> {
+                          Object a = at.construct(s);
+                          for (int x = 0; x < s; x++) {
+                              int v = x % 8;
+                              at.set(a, x, v == 0 ? null : v);
+                          }
+                          return a;
+                      },
+                      cloner);
 
         Integer[] a = new Integer[]{null, 0};
         Integer[] b = new Integer[]{0, 0};
@@ -764,37 +764,37 @@ public class ArraysEqCmpTest {
         // One ref
         Integer one = 1;
         testArrayType(arrayType,
-                (at, s) -> {
-                    Integer[] a = (Integer[]) at.construct(s);
-                    for (int x = 0; x < s; x++) {
-                        a[x] = one;
-                    }
-                    return a;
-                },
-                cloner);
+                      (at, s) -> {
+                          Integer[] a = (Integer[]) at.construct(s);
+                          for (int x = 0; x < s; x++) {
+                              a[x] = one;
+                          }
+                          return a;
+                      },
+                      cloner);
 
         // All ref
         testArrayType(arrayType,
-                (at, s) -> {
-                    Integer[] a = (Integer[]) at.construct(s);
-                    for (int x = 0; x < s; x++) {
-                        a[x] = Integer.valueOf(s);
-                    }
-                    return a;
-                },
-                cloner);
+                      (at, s) -> {
+                          Integer[] a = (Integer[]) at.construct(s);
+                          for (int x = 0; x < s; x++) {
+                              a[x] = Integer.valueOf(s);
+                          }
+                          return a;
+                      },
+                      cloner);
 
         // Some same ref
         testArrayType(arrayType,
-                (at, s) -> {
-                    Integer[] a = (Integer[]) at.construct(s);
-                    for (int x = 0; x < s; x++) {
-                        int v = x % 8;
-                        a[x] = v == 1 ? one : new Integer(v);
-                    }
-                    return a;
-                },
-                cloner);
+                      (at, s) -> {
+                          Integer[] a = (Integer[]) at.construct(s);
+                          for (int x = 0; x < s; x++) {
+                              int v = x % 8;
+                              a[x] = v == 1 ? one : new Integer(v);
+                          }
+                          return a;
+                      },
+                      cloner);
     }
 
     @Test(dataProvider = "signedUnsignedArrayTypes")
@@ -835,8 +835,8 @@ public class ArraysEqCmpTest {
     }
 
     void testArrayType(ArrayType<?> at,
-            BiFunction<ArrayType<?>, Integer, Object> constructor,
-            BiFunction<ArrayType<?>, Object, Object> cloner) {
+                       BiFunction<ArrayType<?>, Integer, Object> constructor,
+                       BiFunction<ArrayType<?>, Object, Object> cloner) {
         int n = arraySizeFor(at.componentType);
 
         for (int s : ranges(0, n)) {
@@ -944,7 +944,7 @@ public class ArraysEqCmpTest {
     }
 
     static boolean isEqual(ArrayType<?> at, Object a, int aFromIndex, int aToIndex,
-            Object b, int bFromIndex, int bToIndex) {
+                           Object b, int bFromIndex, int bToIndex) {
         int aLength = aToIndex - aFromIndex;
         int bLength = bToIndex - bFromIndex;
         if (aLength != bLength)
@@ -1079,7 +1079,7 @@ public class ArraysEqCmpTest {
                     for (int bFrom : froms) {
                         for (int bTo : tos) {
                             if (aFrom >= 0 && aTo <= s &&
-                                    bFrom >= 0 && bTo <= s) continue;
+                                bFrom >= 0 && bTo <= s) continue;
 
                             testAIOBE(() -> arrayType.equals(a, aFrom, aTo, a, bFrom, bTo));
                             testAIOBE(() -> arrayType.compare(a, aFrom, aTo, a, bFrom, bTo));

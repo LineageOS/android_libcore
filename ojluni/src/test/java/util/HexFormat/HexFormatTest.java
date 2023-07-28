@@ -48,6 +48,8 @@ import static org.testng.Assert.expectThrows;
  */
 
 @Test
+// Android-changed: test methods are changed to public. static package private methods
+// are not picked by the test runner.
 public class HexFormatTest {
     static final Class<NullPointerException> NPE = NullPointerException.class;
 
@@ -140,7 +142,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testToHex() {
+    public void testToHex() {
         HexFormat hex = HexFormat.of();
         for (int i = 0; i < 32; i++) {
             char c = hex.toLowHexDigit((byte)i);
@@ -150,7 +152,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testToHexDigits() {
+    public void testToHexDigits() {
         HexFormat hex = HexFormat.of();
         for (int i = 0; i < 256; i++) {
             String actual = hex.toHexDigits((byte)i);
@@ -164,7 +166,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testIsHexDigit() {
+    public void testIsHexDigit() {
         for (int i = 0; i < 0x3ff; i++) {
             boolean actual = HexFormat.isHexDigit(i);
             boolean expected = Character.digit(i, 16) >= 0;
@@ -173,7 +175,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testFromHexDigit() {
+    public void testFromHexDigit() {
         String chars = "0123456789ABCDEF0123456789abcdef";
         for (int i = 0; i < chars.length(); i++) {
             int v = HexFormat.fromHexDigit(chars.charAt(i));
@@ -182,7 +184,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testFromHexInvalid() {
+    public void testFromHexInvalid() {
         for (int i = 0; i < 65536; i++) {
             char ch = (char)i;
             if (ch > 0xff || Character.digit(ch, 16) < 0) {
@@ -195,7 +197,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testAppendHexByteWithStringBuilder() {
+    public void testAppendHexByteWithStringBuilder() {
         HexFormat hex = HexFormat.of();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 256; i++) {
@@ -223,7 +225,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testAppendHexByteWithCharArrayWriter() {
+    public void testAppendHexByteWithCharArrayWriter() {
         HexFormat hex = HexFormat.of();
         CharArrayWriter caw = new CharArrayWriter();
         for (int i = 1; i <= 128; i++) {
@@ -234,7 +236,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testFromHexPairInvalid() {
+    public void testFromHexPairInvalid() {
         HexFormat hex = HexFormat.of();
 
         // An assortment of invalid characters
@@ -248,7 +250,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider = "HexStringsThrowing")
-    static void testToBytesThrowing(String value, String sep, String prefix, String suffix) {
+    public void testToBytesThrowing(String value, String sep, String prefix, String suffix) {
         HexFormat hex = HexFormat.ofDelimiter(sep).withPrefix(prefix).withSuffix(suffix);
         Throwable ex = expectThrows(IllegalArgumentException.class,
                 () -> {
@@ -260,7 +262,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testFactoryNPE() {
+    public void testFactoryNPE() {
         assertThrows(NPE, () -> HexFormat.ofDelimiter(null));
         assertThrows(NPE, () -> HexFormat.of().withDelimiter(null));
         assertThrows(NPE, () -> HexFormat.of().withPrefix(null));
@@ -268,7 +270,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testFormatHexNPE() {
+    public void testFormatHexNPE() {
         assertThrows(NPE, () -> HexFormat.of().formatHex(null));
         assertThrows(NPE, () -> HexFormat.of().formatHex(null, 0, 1));
         assertThrows(NPE, () -> HexFormat.of().formatHex(null, null));
@@ -279,14 +281,14 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testParseHexNPE() {
+    public void testParseHexNPE() {
         assertThrows(NPE, () -> HexFormat.of().parseHex(null));
         assertThrows(NPE, () -> HexFormat.of().parseHex((String)null, 0, 0));
         assertThrows(NPE, () -> HexFormat.of().parseHex((char[])null, 0, 0));
     }
 
     @Test
-    static void testFromHexNPE() {
+    public void testFromHexNPE() {
         assertThrows(NPE, () -> HexFormat.fromHexDigits(null));
         assertThrows(NPE, () -> HexFormat.fromHexDigits(null, 0, 0));
         assertThrows(NPE, () -> HexFormat.fromHexDigitsToLong(null));
@@ -294,12 +296,12 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testToHexDigitsNPE() {
+    public void testToHexDigitsNPE() {
         assertThrows(NPE, () -> HexFormat.of().toHexDigits(null, (byte)0));
     }
 
     @Test(dataProvider = "BadParseHexThrowing")
-    static void badParseHex(String string, int offset, int length,
+    public void badParseHex(String string, int offset, int length,
                             Class<? extends Throwable> exClass) {
         assertThrows(exClass,
                 () -> HexFormat.of().parseHex(string, offset, length));
@@ -309,7 +311,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider = "BadFromHexDigitsThrowing")
-    static void badFromHexDigits(String string, int fromIndex, int toIndex,
+    public void badFromHexDigits(String string, int fromIndex, int toIndex,
                            Class<? extends Throwable> exClass) {
         assertThrows(exClass,
                 () -> HexFormat.fromHexDigits(string, fromIndex, toIndex));
@@ -320,7 +322,7 @@ public class HexFormatTest {
     // Verify IAE for strings that are too long for the target primitive type
     // or the number of requested digits is too large.
     @Test
-    static void wrongNumberDigits() {
+    public void wrongNumberDigits() {
         assertThrows(IllegalArgumentException.class,
                 () -> HexFormat.fromHexDigits("9876543210"));
         assertThrows(IllegalArgumentException.class,
@@ -332,7 +334,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatter(String delimiter, String prefix, String suffix,
+    public void testFormatter(String delimiter, String prefix, String suffix,
                                    boolean uppercase,
                                    HexFormat hex) {
         byte[] expected = genBytes('A', 15);
@@ -367,7 +369,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexString(String unused1, String unused2, String unused3,
+    public void testFormatHexString(String unused1, String unused2, String unused3,
                                    boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         String s = hex.formatHex(expected);
@@ -380,7 +382,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testParseHexStringRange(String delimiter, String prefix, String suffix,
+    public void testParseHexStringRange(String delimiter, String prefix, String suffix,
                                    boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         String s = hex.formatHex(expected);
@@ -401,7 +403,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testParseHexEmptyString(String delimiter, String prefix, String suffix,
+    public void testParseHexEmptyString(String delimiter, String prefix, String suffix,
                                         boolean unused4, HexFormat hex) {
         byte[] actual = hex.parseHex("");
         assertEquals(actual.length, 0, "empty string parse");
@@ -412,7 +414,7 @@ public class HexFormatTest {
     }
 
         @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexRangeString(String unused1, String unused2, String unused3,
+    public void testFormatHexRangeString(String unused1, String unused2, String unused3,
                                    boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         int low = 1;
@@ -427,7 +429,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexAppendable(String unused1, String unused2, String unused3,
+    public void testFormatHexAppendable(String unused1, String unused2, String unused3,
                                      boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         StringBuilder sb = new StringBuilder();
@@ -442,7 +444,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexRangeAppendable(String unused1, String unused2, String unused3,
+    public void testFormatHexRangeAppendable(String unused1, String unused2, String unused3,
                                      boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         int low = 1;
@@ -464,7 +466,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexCharArray(String unused1, String unused2, String unused3,
+    public void testFormatHexCharArray(String unused1, String unused2, String unused3,
                                      boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         String s = hex.formatHex(expected);
@@ -478,7 +480,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatHexCharArrayIndexed(String delimiter, String prefix, String suffix,
+    public void testFormatHexCharArrayIndexed(String delimiter, String prefix, String suffix,
                                               boolean unused4, HexFormat hex) {
         byte[] expected = genBytes('A', 15);
         String s = hex.formatHex(expected);
@@ -502,7 +504,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatterToString(String delimiter, String prefix, String suffix,
+    public void testFormatterToString(String delimiter, String prefix, String suffix,
                                     boolean uppercase,
                                     HexFormat hex) {
         String actual = String.format(
@@ -513,7 +515,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatterParameterMethods(String delimiter, String prefix, String suffix,
+    public void testFormatterParameterMethods(String delimiter, String prefix, String suffix,
                                     boolean uppercase,
                                     HexFormat hex) {
         assertEquals(hex.delimiter(), delimiter);
@@ -523,7 +525,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testFormatterTestEquals(String delimiter, String prefix, String suffix,
+    public void testFormatterTestEquals(String delimiter, String prefix, String suffix,
                                     boolean uppercase,
                                     HexFormat expected) {
         HexFormat actual = HexFormat.of()
@@ -544,7 +546,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testZeroLength(String delimiter, String prefix, String suffix, boolean uppercase,
+    public void testZeroLength(String delimiter, String prefix, String suffix, boolean uppercase,
                                 HexFormat hex) {
         // Test formatting of zero length byte arrays, should produce no output
         StringBuilder sb = new StringBuilder();
@@ -563,7 +565,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testfromHexDigitsToInt() {
+    public void testfromHexDigitsToInt() {
         HexFormat hex = HexFormat.of();
 
         String allHex = "76543210";
@@ -580,7 +582,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testfromHexDigitsToLong() {
+    public void testfromHexDigitsToLong() {
         HexFormat hex = HexFormat.of();
 
         String allHex = "fedcba9876543210";
@@ -597,7 +599,7 @@ public class HexFormatTest {
     }
 
     @Test
-    static void testToHexDigitsLong() {
+    public void testToHexDigitsLong() {
         HexFormat hex = HexFormat.of();
 
         String allHex = "fedcba9876543210";
@@ -610,7 +612,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testIOException(String delimiter, String prefix, String suffix, boolean uppercase,
+    public void testIOException(String delimiter, String prefix, String suffix, boolean uppercase,
                                HexFormat hex) {
         Appendable throwingAppendable = new ThrowingAppendable();
         assertThrows(UncheckedIOException.class,
@@ -622,7 +624,7 @@ public class HexFormatTest {
     }
 
     @Test(dataProvider="HexFormattersParsers")
-    static void testOOME(String delimiter, String prefix, String suffix, boolean uppercase,
+    public void testOOME(String delimiter, String prefix, String suffix, boolean uppercase,
                          HexFormat hex) {
         // compute the size of byte array that will exceed the buffer
         long valueChars = prefix.length() + 2 + suffix.length();
@@ -656,7 +658,7 @@ public class HexFormatTest {
      * The additional TestNG asserts verify the correctness of the same code.
      */
     @Test
-    private static void samples() {
+    public void samples() {
         {
             // Primitive formatting and parsing.
             HexFormat hex = HexFormat.of();
