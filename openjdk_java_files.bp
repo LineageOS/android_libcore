@@ -938,6 +938,7 @@ filegroup {
         "ojluni/src/main/java/java/util/Hashtable.java",
         "ojluni/src/main/java/java/util/HexFormat.java",
         "ojluni/src/main/java/java/util/IdentityHashMap.java",
+        "ojluni/src/main/java/java/util/IllegalFormatArgumentIndexException.java",
         "ojluni/src/main/java/java/util/IllegalFormatCodePointException.java",
         "ojluni/src/main/java/java/util/IllegalFormatConversionException.java",
         "ojluni/src/main/java/java/util/IllegalFormatException.java",
