@@ -566,6 +566,28 @@ public class ArraysTest {
         }
     }
 
+    /**
+     * java.util.Array#parallelPrefix(T[], int, int, java.util.function.BinaryOperator<T>)
+     */
+    @Test
+    public void parallelPrefix$TII_biggerArray() {
+        String[] strings = new String[1_000];
+        int begin = 0, end = strings.length;
+
+        for (int i = 0; i < strings.length; ++i) {
+            strings[i] = String.valueOf(i);
+        }
+
+        Arrays.parallelPrefix(strings, begin, end, (x, y) -> x + y);
+
+        String currentPrefix = "";
+        for (int i = 0; i < strings.length; ++i) {
+            currentPrefix += String.valueOf(i);
+
+            assertEquals(currentPrefix, strings[i]);
+        }
+    }
+
     // http://b/74236526
     @Test
     public void deepEquals_nestedArraysOfDifferentTypesButEqualValues() {

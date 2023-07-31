@@ -533,6 +533,7 @@ java_library_static {
         "//frameworks/base/location/tests/locationtests",
         "//frameworks/base/core/tests/coretests",
         "//frameworks/base/wifi/tests",
+        "//libcore/ojluni/src/test",
         "//libcore/luni/src/test/java9compatibility",
         "//packages/modules/Wifi/framework/tests",
     ],
@@ -541,8 +542,10 @@ java_library_static {
         "dalvik/test-rules/src/main/**/*.java",
         "test-rules/src/main/**/*.java",
     ],
-    static_libs: ["junit"],
-
+    static_libs: [
+        "junit",
+        "platform-test-annotations",
+    ],
     sdk_version: "none",
     system_modules: "core-all-system-modules",
 }
