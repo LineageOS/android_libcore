@@ -127,7 +127,6 @@ package libcore.io {
 package libcore.net {
 
   @libcore.api.IntraCoreApi public abstract class NetworkSecurityPolicy {
-    ctor @libcore.api.IntraCoreApi public NetworkSecurityPolicy();
     method @libcore.api.IntraCoreApi public static libcore.net.NetworkSecurityPolicy getInstance();
     method @libcore.api.IntraCoreApi public abstract boolean isCertificateTransparencyVerificationRequired(String);
   }
