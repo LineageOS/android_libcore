@@ -25,12 +25,18 @@ import static org.mockito.Mockito.verify;
 import android.compat.Compatibility;
 import android.compat.Compatibility.BehaviorChangeDelegate;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
 public class CompatibilityTest {
+
+    @After
+    public void reset() {
+        Compatibility.clearBehaviorChangeDelegate();
+    }
 
     @Test
     public void testBehaviorChangeDelegate() {
