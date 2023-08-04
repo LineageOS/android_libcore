@@ -43,6 +43,11 @@ public class ZipPathValidatorTest extends TestCase {
         ZipPathValidator.setCallback(mockZipCallback);
     }
 
+    @Override
+    protected void tearDown() throws Exception {
+        ZipPathValidator.clearCallback();
+    }
+
     public void testClearCallback() {
         ZipPathValidator.clearCallback();
         ZipPathValidator.Callback callbackFromGet = ZipPathValidator.getInstance();
