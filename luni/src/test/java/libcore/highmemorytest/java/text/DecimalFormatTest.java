@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import org.junit.runners.JUnit4;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -32,16 +32,8 @@ import java.util.Locale;
  * permanent heap growth in ICU4J and causes gcstress test failing in ART test environment.
  * See http://b/161420453.
  */
-@RunWith(Parameterized.class)
+@RunWith(JUnit4.class)
 public class DecimalFormatTest {
-
-    @Parameterized.Parameters(name = "{0}")
-    public static Locale[] getAllLocales() {
-        return Locale.getAvailableLocales();
-    }
-
-    @Parameterized.Parameter(0)
-    public Locale locale;
 
     /**
      * Test no extra spacing between currency symbol and the numeric amount
