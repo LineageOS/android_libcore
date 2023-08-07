@@ -15,6 +15,7 @@
  */
 package libcore.highmemorytest.java.time.format;
 
+import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Additional tests for {@link DateTimeFormatter}. Runs in a separate java package because
@@ -109,5 +111,15 @@ public class DateTimeFormatterTest {
                 }
             }
         }
+    }
+
+    @AfterClass
+    public static void clearCaches() throws Exception {
+        var printerParserClass =
+                Class.forName("java.time.format.DateTimeFormatterBuilder$LocalizedPrinterParser");
+        var cacheField = printerParserClass.getDeclaredField("FORMATTER_CACHE");
+        cacheField.setAccessible(true);
+        var cache = (Map) cacheField.get(null);
+        cache.clear();
     }
 }
