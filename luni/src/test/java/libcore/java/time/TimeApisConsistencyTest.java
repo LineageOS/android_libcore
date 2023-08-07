@@ -83,7 +83,7 @@ public class TimeApisConsistencyTest {
     // dates on certain time zones, while bionic takes abbreviation from TZif file.
     // So time zone is not included here because we know it can differ. Equality of numeric local
     // date/time components implies that used offsets were the same in libcore and bionic.
-    private static final DateTimeFormatter FORMATTER =
+    private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd MM yyyy HH:mm:ss").withLocale(Locale.US);
 
     private static final Set<Duration> INTERESTING_OFFSETS =
@@ -150,13 +150,12 @@ public class TimeApisConsistencyTest {
         for (Duration interestingOffset : INTERESTING_OFFSETS) {
             Instant instantToCheck = timestamp.plus(interestingOffset);
             String bionicResult = formatWithBionic(instantToCheck, timeZoneId);
-            String javaResult = instantToCheck.atZone(ZoneId.of(timeZoneId)).format(FORMATTER);
+            String javaResult = instantToCheck.atZone(ZoneId.of(timeZoneId)).format(formatter);
 
             String errorMessage = "Failed to format " + timestamp + " at " + timeZoneId
                     + " with offset=" + interestingOffset;
             assertEquals(errorMessage, javaResult, bionicResult);
         }
-
     }
 
     private static String formatWithBionic(Instant instant, String timeZoneId) {
