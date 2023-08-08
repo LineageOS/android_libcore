@@ -2880,7 +2880,7 @@ package java.lang {
   }
 
   public enum Character.UnicodeScript {
-    method @NonNull public static java.lang.Character.UnicodeScript forName(@NonNull String);
+    method @NonNull public static final java.lang.Character.UnicodeScript forName(@NonNull String);
     method @NonNull public static java.lang.Character.UnicodeScript of(int);
     enum_constant public static final java.lang.Character.UnicodeScript ADLAM;
     enum_constant public static final java.lang.Character.UnicodeScript AHOM;
@@ -12099,6 +12099,7 @@ package java.time.chrono {
     method public static java.time.chrono.HijrahDate of(int, int, int);
     method public java.time.chrono.HijrahDate plus(java.time.temporal.TemporalAmount);
     method public java.time.chrono.HijrahDate plus(long, java.time.temporal.TemporalUnit);
+    method public String toString();
     method public java.time.chrono.ChronoPeriod until(java.time.chrono.ChronoLocalDate);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
     method public java.time.chrono.HijrahDate with(java.time.temporal.TemporalField, long);
@@ -12184,6 +12185,7 @@ package java.time.chrono {
     method public static java.time.chrono.JapaneseDate of(int, int, int);
     method public java.time.chrono.JapaneseDate plus(java.time.temporal.TemporalAmount);
     method public java.time.chrono.JapaneseDate plus(long, java.time.temporal.TemporalUnit);
+    method public String toString();
     method public java.time.chrono.ChronoPeriod until(java.time.chrono.ChronoLocalDate);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
     method public java.time.chrono.JapaneseDate with(java.time.temporal.TemporalField, long);
@@ -12241,6 +12243,7 @@ package java.time.chrono {
     method public static java.time.chrono.MinguoDate of(int, int, int);
     method public java.time.chrono.MinguoDate plus(java.time.temporal.TemporalAmount);
     method public java.time.chrono.MinguoDate plus(long, java.time.temporal.TemporalUnit);
+    method public String toString();
     method public java.time.chrono.ChronoPeriod until(java.time.chrono.ChronoLocalDate);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
     method public java.time.chrono.MinguoDate with(java.time.temporal.TemporalField, long);
@@ -12293,6 +12296,7 @@ package java.time.chrono {
     method public static java.time.chrono.ThaiBuddhistDate of(int, int, int);
     method public java.time.chrono.ThaiBuddhistDate plus(java.time.temporal.TemporalAmount);
     method public java.time.chrono.ThaiBuddhistDate plus(long, java.time.temporal.TemporalUnit);
+    method public String toString();
     method public java.time.chrono.ChronoPeriod until(java.time.chrono.ChronoLocalDate);
     method public long until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit);
     method public java.time.chrono.ThaiBuddhistDate with(java.time.temporal.TemporalField, long);
