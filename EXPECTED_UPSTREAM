@@ -948,7 +948,7 @@ ojluni/src/main/java/java/util/LinkedList.java,jdk17u/jdk-17.0.6-ga,src/java.bas
 ojluni/src/main/java/java/util/List.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/List.java
 ojluni/src/main/java/java/util/ListIterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ListIterator.java
 ojluni/src/main/java/java/util/ListResourceBundle.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ListResourceBundle.java
-ojluni/src/main/java/java/util/Locale.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/Locale.java
+ojluni/src/main/java/java/util/Locale.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Locale.java
 ojluni/src/main/java/java/util/LocaleISOData.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LocaleISOData.java
 ojluni/src/main/java/java/util/LongSummaryStatistics.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/LongSummaryStatistics.java
 ojluni/src/main/java/java/util/Map.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Map.java
@@ -1773,13 +1773,13 @@ ojluni/src/main/java/sun/util/calendar/Gregorian.java,jdk17u/jdk-17.0.6-ga,src/j
 ojluni/src/main/java/sun/util/calendar/ImmutableGregorianDate.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/calendar/ImmutableGregorianDate.java
 ojluni/src/main/java/sun/util/calendar/JulianCalendar.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/calendar/JulianCalendar.java
 ojluni/src/main/java/sun/util/calendar/LocalGregorianCalendar.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/util/calendar/LocalGregorianCalendar.java
-ojluni/src/main/java/sun/util/locale/BaseLocale.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/util/locale/BaseLocale.java
+ojluni/src/main/java/sun/util/locale/BaseLocale.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/BaseLocale.java
 ojluni/src/main/java/sun/util/locale/Extension.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/Extension.java
 ojluni/src/main/java/sun/util/locale/InternalLocaleBuilder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/InternalLocaleBuilder.java
 ojluni/src/main/java/sun/util/locale/LanguageTag.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LanguageTag.java
 ojluni/src/main/java/sun/util/locale/LocaleEquivalentMaps.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/sun/util/locale/LocaleEquivalentMaps.java
 ojluni/src/main/java/sun/util/locale/LocaleExtensions.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LocaleExtensions.java
-ojluni/src/main/java/sun/util/locale/LocaleMatcher.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/sun/util/locale/LocaleMatcher.java
+ojluni/src/main/java/sun/util/locale/LocaleMatcher.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LocaleMatcher.java
 ojluni/src/main/java/sun/util/locale/LocaleObjectCache.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LocaleObjectCache.java
 ojluni/src/main/java/sun/util/locale/LocaleSyntaxException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LocaleSyntaxException.java
 ojluni/src/main/java/sun/util/locale/LocaleUtils.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/sun/util/locale/LocaleUtils.java
