@@ -47,12 +47,12 @@ public final class ICU {
   private static final BasicLruCache<String, String> CACHED_PATTERNS =
       new BasicLruCache<String, String>(8);
 
-  private static Locale[] availableLocalesCache;
+  private static volatile Locale[] availableLocalesCache;
 
-  private static String[] isoCountries;
-  private static Set<String> isoCountriesSet;
+  private static volatile String[] isoCountries;
+  private static volatile Set<String> isoCountriesSet;
 
-  private static String[] isoLanguages;
+  private static volatile String[] isoLanguages;
 
   /**
    * Avoid initialization with many dependencies here, because when this is called,
@@ -85,7 +85,11 @@ public final class ICU {
    */
   public static String[] getISOLanguages() {
     if (isoLanguages == null) {
-      isoLanguages = getISOLanguagesNative();
+      synchronized (ICU.class) {
+        if (isoLanguages == null) {
+          isoLanguages = getISOLanguagesNative();
+        }
+      }
     }
     return isoLanguages.clone();
   }
@@ -102,19 +106,27 @@ public final class ICU {
    */
   public static boolean isIsoCountry(String country) {
     if (isoCountriesSet == null) {
-      String[] isoCountries = getISOCountriesInternal();
-      Set<String> newSet = new HashSet<>(isoCountries.length);
-      for (String isoCountry : isoCountries) {
-        newSet.add(isoCountry);
+      synchronized (ICU.class) {
+        if (isoCountriesSet == null) {
+          String[] isoCountries = getISOCountriesInternal();
+          Set<String> newSet = new HashSet<>(isoCountries.length);
+          for (String isoCountry : isoCountries) {
+            newSet.add(isoCountry);
+          }
+          isoCountriesSet = newSet;
+        }
       }
-      isoCountriesSet = newSet;
     }
     return country != null && isoCountriesSet.contains(country);
   }
 
   private static String[] getISOCountriesInternal() {
     if (isoCountries == null) {
-      isoCountries = getISOCountriesNative();
+      synchronized (ICU.class) {
+        if (isoCountries == null) {
+          isoCountries = getISOCountriesNative();
+        }
+      }
     }
     return isoCountries;
   }
@@ -315,7 +327,11 @@ public final class ICU {
 
   public static Locale[] getAvailableLocales() {
     if (availableLocalesCache == null) {
-      availableLocalesCache = localesFromStrings(getAvailableLocalesNative());
+      synchronized (ICU.class) {
+        if (availableLocalesCache == null) {
+          availableLocalesCache = localesFromStrings(getAvailableLocalesNative());
+        }
+      }
     }
     return availableLocalesCache.clone();
   }
