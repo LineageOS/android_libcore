@@ -791,6 +791,7 @@ java_test {
 
     static_libs: [
         "apache-xml-tests",
+        "bouncycastle-test-lib",
         "core-compat-test-rules",
         "core-java-9-compatibility-tests",
         "core-java-9-language-tests",
