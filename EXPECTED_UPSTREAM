@@ -1982,11 +1982,14 @@ ojluni/src/test/java/lang/reflect/records/RecordReflectionTest.java,jdk17u/jdk-1
 ojluni/src/test/java/math/BigDecimal/AddTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/AddTests.java
 ojluni/src/test/java/math/BigDecimal/CompareToTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/CompareToTests.java
 ojluni/src/test/java/math/BigDecimal/Constructor.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/Constructor.java
+ojluni/src/test/java/math/BigDecimal/ConstructorUnscaledValue.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/ConstructorUnscaledValue.java
 ojluni/src/test/java/math/BigDecimal/DivideMcTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/DivideMcTests.java
 ojluni/src/test/java/math/BigDecimal/DivideTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/DivideTests.java
 ojluni/src/test/java/math/BigDecimal/EqualsTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/EqualsTests.java
 ojluni/src/test/java/math/BigDecimal/FloatDoubleValueTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/FloatDoubleValueTests.java
+ojluni/src/test/java/math/BigDecimal/IntValueExactTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/IntValueExactTests.java
 ojluni/src/test/java/math/BigDecimal/IntegralDivisionTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/IntegralDivisionTests.java
+ojluni/src/test/java/math/BigDecimal/IntegralValueTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/IntegralValueTests.java
 ojluni/src/test/java/math/BigDecimal/LongValueExactTests.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/math/BigDecimal/LongValueExactTests.java
 ojluni/src/test/java/math/BigDecimal/MultiplyTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/MultiplyTests.java
 ojluni/src/test/java/math/BigDecimal/NegateTests.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/math/BigDecimal/NegateTests.java
