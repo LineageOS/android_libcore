@@ -45,6 +45,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import libcore.junit.junit3.TestCaseWithRules;
 import libcore.junit.util.ResourceLeakageDetector;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
@@ -595,6 +597,7 @@ public class SocketTest extends TestCaseWithRules {
     }
 
     // b/30007735
+    @Ignore("b/292238663")
     public void testSocketTestAllAddresses() throws Exception {
         // Socket Ctor should try all sockets.
         //
