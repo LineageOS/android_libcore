@@ -92,6 +92,16 @@
       ]
     }
   ],
+  "postsubmit": [
+    {
+      "name": "CtsLibcoreOjTestCases",
+      "options": [
+        {
+          "instrumentation-arg": "core-test-mode:=presubmit"
+        }
+      ]
+    }
+  ],
   "kernel-presubmit": [
     {
       "name": "CtsLibcoreTestCases",
