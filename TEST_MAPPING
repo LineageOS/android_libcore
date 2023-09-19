@@ -90,9 +90,7 @@
           "exclude-filter": "org.apache.harmony.tests.javax.net.ssl.SSLSessionTest"
         }
       ]
-    }
-  ],
-  "postsubmit": [
+    },
     {
       "name": "CtsLibcoreOjTestCases",
       "options": [
