@@ -11355,6 +11355,8 @@ package java.time {
     method public int getMonthValue();
     method public int getYear();
     method public int hashCode();
+    method public boolean isSupported(java.time.temporal.TemporalField);
+    method public boolean isSupported(java.time.temporal.TemporalUnit);
     method public int lengthOfMonth();
     method public java.time.LocalDate minus(java.time.temporal.TemporalAmount);
     method public java.time.LocalDate minus(long, java.time.temporal.TemporalUnit);
@@ -11411,6 +11413,7 @@ package java.time {
     method public int getYear();
     method public int hashCode();
     method public boolean isSupported(java.time.temporal.TemporalField);
+    method public boolean isSupported(java.time.temporal.TemporalUnit);
     method public java.time.LocalDateTime minus(java.time.temporal.TemporalAmount);
     method public java.time.LocalDateTime minus(long, java.time.temporal.TemporalUnit);
     method public java.time.LocalDateTime minusDays(long);
@@ -11864,6 +11867,7 @@ package java.time {
     method public java.time.DayOfWeek getDayOfWeek();
     method public int getDayOfYear();
     method public int getHour();
+    method public long getLong(java.time.temporal.TemporalField);
     method public int getMinute();
     method public java.time.Month getMonth();
     method public int getMonthValue();
@@ -11874,6 +11878,7 @@ package java.time {
     method public java.time.ZoneId getZone();
     method public int hashCode();
     method public boolean isSupported(java.time.temporal.TemporalField);
+    method public boolean isSupported(java.time.temporal.TemporalUnit);
     method public java.time.ZonedDateTime minus(java.time.temporal.TemporalAmount);
     method public java.time.ZonedDateTime minus(long, java.time.temporal.TemporalUnit);
     method public java.time.ZonedDateTime minusDays(long);
@@ -15148,6 +15153,7 @@ package java.util.concurrent {
     method public long mappingCount();
     method @NonNull public static <K> java.util.concurrent.ConcurrentHashMap.KeySetView<K,java.lang.Boolean> newKeySet();
     method @NonNull public static <K> java.util.concurrent.ConcurrentHashMap.KeySetView<K,java.lang.Boolean> newKeySet(int);
+    method @Nullable public V putIfAbsent(@NonNull K, @NonNull V);
     method @Nullable public <U> U reduce(long, @NonNull java.util.function.BiFunction<? super K,? super V,? extends U>, @NonNull java.util.function.BiFunction<? super U,? super U,? extends U>);
     method @Nullable public java.util.Map.Entry<K,V> reduceEntries(long, @NonNull java.util.function.BiFunction<java.util.Map.Entry<K,V>,java.util.Map.Entry<K,V>,? extends java.util.Map.Entry<K,V>>);
     method @Nullable public <U> U reduceEntries(long, @NonNull java.util.function.Function<java.util.Map.Entry<K,V>,? extends U>, @NonNull java.util.function.BiFunction<? super U,? super U,? extends U>);
@@ -15167,6 +15173,9 @@ package java.util.concurrent {
     method public double reduceValuesToDouble(long, @NonNull java.util.function.ToDoubleFunction<? super V>, double, @NonNull java.util.function.DoubleBinaryOperator);
     method public int reduceValuesToInt(long, @NonNull java.util.function.ToIntFunction<? super V>, int, @NonNull java.util.function.IntBinaryOperator);
     method public long reduceValuesToLong(long, @NonNull java.util.function.ToLongFunction<? super V>, long, @NonNull java.util.function.LongBinaryOperator);
+    method public boolean remove(@NonNull Object, @Nullable Object);
+    method public boolean replace(@NonNull K, @NonNull V, @NonNull V);
+    method @Nullable public V replace(@NonNull K, @NonNull V);
     method @Nullable public <U> U search(long, @NonNull java.util.function.BiFunction<? super K,? super V,? extends U>);
     method @Nullable public <U> U searchEntries(long, @NonNull java.util.function.Function<java.util.Map.Entry<K,V>,? extends U>);
     method @Nullable public <U> U searchKeys(long, @NonNull java.util.function.Function<? super K,? extends U>);
@@ -15283,6 +15292,10 @@ package java.util.concurrent {
     method public java.util.NavigableSet<K> navigableKeySet();
     method public java.util.Map.Entry<K,V> pollFirstEntry();
     method public java.util.Map.Entry<K,V> pollLastEntry();
+    method public V putIfAbsent(K, V);
+    method public boolean remove(Object, Object);
+    method public boolean replace(K, V, V);
+    method public V replace(K, V);
     method public java.util.concurrent.ConcurrentNavigableMap<K,V> subMap(K, boolean, K, boolean);
     method public java.util.concurrent.ConcurrentNavigableMap<K,V> subMap(K, K);
     method public java.util.concurrent.ConcurrentNavigableMap<K,V> tailMap(K, boolean);
