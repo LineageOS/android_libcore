@@ -396,16 +396,16 @@ ojluni/src/main/java/java/net/UnknownHostException.java,jdk11u/jdk-11.0.13-ga,sr
 ojluni/src/main/java/java/net/UnknownServiceException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/UnknownServiceException.java
 ojluni/src/main/java/java/net/package-info.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/package-info.java
 # Some java.nio Buffer and Exception classes are generated from templates, and thus has no direct mapping to an upstream file.
-ojluni/src/main/java/java/nio/Bits.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/Bits.java
-ojluni/src/main/java/java/nio/Buffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/Buffer.java
+ojluni/src/main/java/java/nio/Bits.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/Bits.java
+ojluni/src/main/java/java/nio/Buffer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/Buffer.java
 ojluni/src/main/java/java/nio/ByteBufferAs-X-Buffer.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/ByteBufferAs-X-Buffer.java.template
-ojluni/src/main/java/java/nio/ByteOrder.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/ByteOrder.java
+ojluni/src/main/java/java/nio/ByteOrder.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/ByteOrder.java
 ojluni/src/main/java/java/nio/CharBufferSpliterator.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/CharBufferSpliterator.java
 ojluni/src/main/java/java/nio/Direct-X-Buffer-bin.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/Direct-X-Buffer-bin.java.template
 ojluni/src/main/java/java/nio/Direct-X-Buffer.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/Direct-X-Buffer.java.template
 ojluni/src/main/java/java/nio/Heap-X-Buffer.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/Heap-X-Buffer.java.template
-ojluni/src/main/java/java/nio/MappedByteBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/MappedByteBuffer.java
-ojluni/src/main/java/java/nio/StringCharBuffer.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/nio/StringCharBuffer.java
+ojluni/src/main/java/java/nio/MappedByteBuffer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/MappedByteBuffer.java
+ojluni/src/main/java/java/nio/StringCharBuffer.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/StringCharBuffer.java
 ojluni/src/main/java/java/nio/X-Buffer-bin.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/X-Buffer-bin.java.template
 ojluni/src/main/java/java/nio/X-Buffer.java.template,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/X-Buffer.java.template
 ojluni/src/main/java/java/nio/channels/AsynchronousByteChannel.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/nio/channels/AsynchronousByteChannel.java
