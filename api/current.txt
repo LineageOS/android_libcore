@@ -6436,9 +6436,16 @@ package java.nio {
   }
 
   public abstract class MappedByteBuffer extends java.nio.ByteBuffer {
+    method public final java.nio.Buffer clear();
+    method public final java.nio.Buffer flip();
     method public final java.nio.MappedByteBuffer force();
     method public final boolean isLoaded();
+    method public final java.nio.Buffer limit(int);
     method public final java.nio.MappedByteBuffer load();
+    method public final java.nio.Buffer mark();
+    method public final java.nio.Buffer position(int);
+    method public final java.nio.Buffer reset();
+    method public final java.nio.Buffer rewind();
     method public abstract java.nio.MappedByteBuffer slice(int, int);
   }
 
