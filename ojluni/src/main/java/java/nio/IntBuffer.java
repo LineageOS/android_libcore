@@ -1190,10 +1190,10 @@ public abstract class IntBuffer
         if (isDirect() && src.isDirect()) {
             // Both src and dst should be ByteBufferAsIntBuffer classes.
             // this.offset and src.offset should be zero, and can be ignored.
-            long dstStart = this.address + (pos << 2);
-            long srcStart = src.address + (srcPos << 2);
+            long dstStart = this.address + ((long) pos << 2);
+            long srcStart = src.address + ((long) srcPos << 2);
             // The second condition is optional, but the ascending order is the preferred behavior.
-            ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << 2) < dstStart);
+            ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 2) < dstStart);
             // We may just do memmove here if both buffer uses the same byte order.
         } else if (thisBase != null && thisBase == src.base()) { // Share the same int[] or byte[]
             if (thisBase == this.hb) { // Both this and src should be HeapIntBuffer
@@ -1203,9 +1203,9 @@ public abstract class IntBuffer
             } else if (this instanceof ByteBufferAsIntBuffer asDst &&
                 src instanceof ByteBufferAsIntBuffer asSrc && thisBase instanceof byte[]) {
                 // this.offset and src.offset should be zero, and can be ignored.
-                long dstStart = asDst.byteOffset + asDst.bb.offset + (pos << 2);
-                long srcStart = asSrc.byteOffset + asSrc.bb.offset + (srcPos << 2);
-                ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << 2) < dstStart);
+                long dstStart = asDst.byteOffset + asDst.bb.offset + ((long) pos << 2);
+                long srcStart = asSrc.byteOffset + asSrc.bb.offset + ((long) srcPos << 2);
+                ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 2) < dstStart);
             } else {
                 // There isn't a known case following into this condition. We should add a DCHECK here.
                 ascendingOrder = true;
