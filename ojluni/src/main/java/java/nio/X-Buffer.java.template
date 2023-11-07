@@ -1190,10 +1190,10 @@ public abstract class $Type$Buffer
         if (isDirect() && src.isDirect()) {
             // Both src and dst should be ByteBufferAs$Type$Buffer classes.
             // this.offset and src.offset should be zero, and can be ignored.
-            long dstStart = this.address + (pos << $LG_BYTES_PER_VALUE$);
-            long srcStart = src.address + (srcPos << $LG_BYTES_PER_VALUE$);
+            long dstStart = this.address + ((long) pos << $LG_BYTES_PER_VALUE$);
+            long srcStart = src.address + ((long) srcPos << $LG_BYTES_PER_VALUE$);
             // The second condition is optional, but the ascending order is the preferred behavior.
-            ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << $LG_BYTES_PER_VALUE$) < dstStart);
+            ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << $LG_BYTES_PER_VALUE$) < dstStart);
             // We may just do memmove here if both buffer uses the same byte order.
         } else if (thisBase != null && thisBase == src.base()) { // Share the same $type$[] or byte[]
             if (thisBase == this.hb) { // Both this and src should be Heap$Type$Buffer
@@ -1203,9 +1203,9 @@ public abstract class $Type$Buffer
             } else if (this instanceof ByteBufferAs$Type$Buffer asDst &&
                 src instanceof ByteBufferAs$Type$Buffer asSrc && thisBase instanceof byte[]) {
                 // this.offset and src.offset should be zero, and can be ignored.
-                long dstStart = asDst.byteOffset + asDst.bb.offset + (pos << $LG_BYTES_PER_VALUE$);
-                long srcStart = asSrc.byteOffset + asSrc.bb.offset + (srcPos << $LG_BYTES_PER_VALUE$);
-                ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << $LG_BYTES_PER_VALUE$) < dstStart);
+                long dstStart = asDst.byteOffset + asDst.bb.offset + ((long) pos << $LG_BYTES_PER_VALUE$);
+                long srcStart = asSrc.byteOffset + asSrc.bb.offset + ((long) srcPos << $LG_BYTES_PER_VALUE$);
+                ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << $LG_BYTES_PER_VALUE$) < dstStart);
             } else {
                 // There isn't a known case following into this condition. We should add a DCHECK here.
                 ascendingOrder = true;

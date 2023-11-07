@@ -1190,10 +1190,10 @@ public abstract class DoubleBuffer
         if (isDirect() && src.isDirect()) {
             // Both src and dst should be ByteBufferAsDoubleBuffer classes.
             // this.offset and src.offset should be zero, and can be ignored.
-            long dstStart = this.address + (pos << 3);
-            long srcStart = src.address + (srcPos << 3);
+            long dstStart = this.address + ((long) pos << 3);
+            long srcStart = src.address + ((long) srcPos << 3);
             // The second condition is optional, but the ascending order is the preferred behavior.
-            ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << 3) < dstStart);
+            ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 3) < dstStart);
             // We may just do memmove here if both buffer uses the same byte order.
         } else if (thisBase != null && thisBase == src.base()) { // Share the same double[] or byte[]
             if (thisBase == this.hb) { // Both this and src should be HeapDoubleBuffer
@@ -1203,9 +1203,9 @@ public abstract class DoubleBuffer
             } else if (this instanceof ByteBufferAsDoubleBuffer asDst &&
                 src instanceof ByteBufferAsDoubleBuffer asSrc && thisBase instanceof byte[]) {
                 // this.offset and src.offset should be zero, and can be ignored.
-                long dstStart = asDst.byteOffset + asDst.bb.offset + (pos << 3);
-                long srcStart = asSrc.byteOffset + asSrc.bb.offset + (srcPos << 3);
-                ascendingOrder = (dstStart <= srcStart) || (srcStart + (n << 3) < dstStart);
+                long dstStart = asDst.byteOffset + asDst.bb.offset + ((long) pos << 3);
+                long srcStart = asSrc.byteOffset + asSrc.bb.offset + ((long) srcPos << 3);
+                ascendingOrder = (dstStart <= srcStart) || (srcStart + ((long) n << 3) < dstStart);
             } else {
                 // There isn't a known case following into this condition. We should add a DCHECK here.
                 ascendingOrder = true;
