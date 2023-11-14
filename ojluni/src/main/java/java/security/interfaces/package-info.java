@@ -23,7 +23,7 @@
  * questions.
  */
 
-/**
+/*
  * Provides interfaces for generating RSA (Rivest, Shamir and
  * Adleman AsymmetricCipher algorithm)
  * keys as defined in the RSA Laboratory Technical Note
