@@ -8399,17 +8399,28 @@ package java.security {
     method public static java.security.SecureRandom getInstance(String) throws java.security.NoSuchAlgorithmException;
     method public static java.security.SecureRandom getInstance(String, String) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
     method public static java.security.SecureRandom getInstance(String, java.security.Provider) throws java.security.NoSuchAlgorithmException;
+    method public static java.security.SecureRandom getInstance(String, java.security.SecureRandomParameters) throws java.security.NoSuchAlgorithmException;
+    method public static java.security.SecureRandom getInstance(String, java.security.SecureRandomParameters, String) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException;
+    method public static java.security.SecureRandom getInstance(String, java.security.SecureRandomParameters, java.security.Provider) throws java.security.NoSuchAlgorithmException;
     method public static java.security.SecureRandom getInstanceStrong() throws java.security.NoSuchAlgorithmException;
+    method public java.security.SecureRandomParameters getParameters();
     method public final java.security.Provider getProvider();
     method public static byte[] getSeed(int);
     method protected final int next(int);
+    method public void nextBytes(byte[], java.security.SecureRandomParameters);
+    method public void reseed();
+    method public void reseed(java.security.SecureRandomParameters);
     method public void setSeed(byte[]);
   }
 
   public abstract class SecureRandomSpi implements java.io.Serializable {
     ctor public SecureRandomSpi();
+    ctor protected SecureRandomSpi(java.security.SecureRandomParameters);
     method protected abstract byte[] engineGenerateSeed(int);
+    method protected java.security.SecureRandomParameters engineGetParameters();
     method protected abstract void engineNextBytes(byte[]);
+    method protected void engineNextBytes(byte[], java.security.SecureRandomParameters);
+    method protected void engineReseed(java.security.SecureRandomParameters);
     method protected abstract void engineSetSeed(byte[]);
   }
 
