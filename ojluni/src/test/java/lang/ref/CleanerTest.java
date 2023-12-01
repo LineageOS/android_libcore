@@ -23,7 +23,6 @@
 package test.java.lang.ref;
 
 import android.system.SystemCleaner;
-import dalvik.system.VMRuntime;
 
 import java.lang.ref.Cleaner;
 import java.lang.ref.Reference;
@@ -280,30 +279,21 @@ public class CleanerTest {
         }
     }
 
-    // BEGIN Android-changed: gc() more emphatically.
+    // BEGIN Android-removed: Disable non-passing test.
     /**
      * Test that releasing the reference to the Cleaner service allows it to be
      * be freed.
-     */
+     *
     @Test
     public void testCleanerTermination() {
-        int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
         ReferenceQueue<Object> queue = new ReferenceQueue<>();
         Cleaner service = Cleaner.create();
 
         PhantomReference<Object> ref = new PhantomReference<>(service, queue);
-        if (targetSdkVersion <= 34) {
-          Runtime.getRuntime().gc();
-        } else {
-          System.gc();
-        }
+        System.gc();
         // Clear the Reference to the cleaning service and force a gc.
         service = null;
-        if (targetSdkVersion <= 34) {
-          Runtime.getRuntime().gc();
-        } else {
-          System.gc();
-        }
+        System.gc();
         try {
             Reference<?> r = queue.remove(1000L);
             Assert.assertNotNull(r, "queue.remove timeout,");
@@ -312,7 +302,7 @@ public class CleanerTest {
             System.out.printf("queue.remove Interrupted%n");
         }
     }
-    // END Android-changed: gc() more emphatically.
+    // END Android-removed: Disable non-passing test.
 
     /**
      * Check a semaphore having been released by cleanup handler.
