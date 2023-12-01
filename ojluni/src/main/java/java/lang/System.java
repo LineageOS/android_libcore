@@ -1591,32 +1591,21 @@ public final class System {
      * <blockquote><pre>
      * Runtime.getRuntime().gc()
      * </pre></blockquote>
-     * At API level 34 and lower, this does nothing unless it is preceded or
-     * followed by a runFinalization call.  Runtime.getRuntime().gc() always
-     * attempts to reclaim space.
-     * <p>
-     * Calling this indiscriminately is likely to severely degrade performance.
-     * Intended primarily for testing.
      *
      * @see     java.lang.Runtime#gc()
      */
     public static void gc() {
-        int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
-        if (targetSdkVersion > 34) {
-            Runtime.getRuntime().gc();
-        } else {
-            boolean shouldRunGC;
-            synchronized (LOCK) {
-                shouldRunGC = targetSdkVersion <= 34 ? justRanFinalization : true;
-                if (shouldRunGC) {
-                    justRanFinalization = false;
-                } else {
-                    runGC = true;
-                }
-            }
+        boolean shouldRunGC;
+        synchronized (LOCK) {
+            shouldRunGC = justRanFinalization;
             if (shouldRunGC) {
-                Runtime.getRuntime().gc();
+                justRanFinalization = false;
+            } else {
+                runGC = true;
             }
+        }
+        if (shouldRunGC) {
+            Runtime.getRuntime().gc();
         }
     }
 
@@ -1639,22 +1628,17 @@ public final class System {
      * @see     java.lang.Runtime#runFinalization()
      */
     public static void runFinalization() {
-        int targetSdkVersion = VMRuntime.getRuntime().getTargetSdkVersion();
-        if (targetSdkVersion <= 34) {
-            boolean shouldRunGC;
-            synchronized (LOCK) {
-                shouldRunGC = runGC;
-                runGC = false;
-            }
-            if (shouldRunGC) {
-                Runtime.getRuntime().gc();
-            }
+        boolean shouldRunGC;
+        synchronized (LOCK) {
+            shouldRunGC = runGC;
+            runGC = false;
+        }
+        if (shouldRunGC) {
+            Runtime.getRuntime().gc();
         }
         Runtime.getRuntime().runFinalization();
-        if (targetSdkVersion <= 34) {
-            synchronized (LOCK) {
-                justRanFinalization = true;
-            }
+        synchronized (LOCK) {
+            justRanFinalization = true;
         }
     }
 
