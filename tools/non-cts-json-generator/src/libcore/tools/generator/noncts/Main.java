@@ -110,7 +110,7 @@ public class Main {
 
             @Override
             public void warn(String message, List<String> list) {
-                System.err.printf(message, list.toArray());
+                System.err.printf(message + '\n', list.toArray());
             }
 
             @Override
