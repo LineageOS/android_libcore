@@ -976,6 +976,28 @@ java_library {
     ],
 }
 
+aconfig_declarations {
+    name: "libcore_aconfig_flags",
+    package: "com.android.libcore",
+    srcs: ["libcore.aconfig"],
+}
+
+java_aconfig_library {
+    name: "libcore_aconfig_flags_lib",
+    aconfig_declarations: "libcore_aconfig_flags",
+    sdk_version: "none",
+    patch_module: "java.base",
+    system_modules: "core-all-system-modules",
+    apex_available: [
+        "com.android.art",
+        // Remove :platform until we allow platform codes to use libcore's @FlaggedApi APIs
+        // "//apex_available:platform",
+    ],
+    visibility: [
+        "//visibility:private",
+    ],
+}
+
 // Define the public SDK API provided by the ART module.
 java_sdk_library {
     name: "art.module.public.api",
@@ -1012,6 +1034,7 @@ java_sdk_library {
         // java.text.CollectionElementIterator.NULLORDER to be initialized from
         // android.icu.text.CollationElementIterator.NULLORDER.
         "i18n.module.intra.core.api.stubs",
+        "libcore_aconfig_flags_lib",
     ],
     stub_only_static_libs: ["notices-for-stubs-jar"],
 
