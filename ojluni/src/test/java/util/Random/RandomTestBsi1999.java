@@ -51,7 +51,6 @@ import static java.util.stream.Collectors.toSet;
  * @key randomness
  */
 
-@android.platform.test.annotations.LargeTest
 public class RandomTestBsi1999 {
 
     /* A set of tests for pseudorandom number generators inspired by this report:
@@ -438,6 +437,9 @@ public class RandomTestBsi1999 {
                          failureTolerance));
     }
 
+    // Android-added: do not run this test as it takes too much time and it's test cases
+    // are run in RandomTestBsi1999Split.
+    @org.testng.annotations.Test(enabled = false)
     public static void main(String[] args) {
         RandomGeneratorFactory.all().forEach(factory -> {
             setRNG(factory.name());
