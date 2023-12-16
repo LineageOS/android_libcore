@@ -692,9 +692,9 @@ filegroup {
 genrule {
     name: "core-tests-smali-dex",
     srcs: ["luni/src/test/java/**/*.smali"],
-    cmd: "$(location smali) ass --api 28 -o $(out) $(in)",
+    cmd: "$(location android-smali) ass --api 28 -o $(out) $(in)",
     out: ["core-tests-smali.dex"],
-    tools: ["smali"],
+    tools: ["android-smali"],
 }
 
 filegroup {
@@ -827,6 +827,7 @@ java_test {
     ],
     exclude_srcs: [
         "luni/src/test/java/libcore/javax/crypto/CipherTest.java",
+        "luni/src/test/java/libcore/javax/crypto/spec/ChaCha20ParameterSpecTest.java",
     ],
     srcs: [
         "harmony-tests/src/test/java/org/apache/harmony/tests/javax/net/ssl/*.java",
@@ -865,18 +866,14 @@ java_genrule {
     name: "libcore-non-cts-tests-txt",
     host_supported: true,
     srcs: [
-        ":apache-harmony-tests",
-        ":conscrypt-tests",
-        ":core-tests",
-        ":core-ojtests",
+        ":apache-harmony-tests{.jar}",
+        ":conscrypt-tests{.jar}",
+        ":core-tests{.jar}",
+        ":core-ojtests{.jar}",
     ],
     tools: ["non-cts-json-generator"],
     out: ["libcore-non-cts-tests.txt"],
-    // note: it's a hack to read the .class files in combined directory, but $(in) only returns
-    // the path to the .dexjar files, not jar files containing the .class file.
-    cmd: "LIST=; " +
-        "for src in $(in); do LIST=\"$${LIST} $$(dirname $${src})/../combined/$$(basename $${src})\"; done; " +
-        "$(location non-cts-json-generator) $${LIST} > $(out)",
+    cmd: "$(location non-cts-json-generator) $(in) > $(out)",
 }
 
 // Exports annotated stubs source files in ojluni/annotations/sdk to make them
@@ -903,6 +900,12 @@ droiddoc_exported_dir {
         "//libcore/mmodules/intracoreapi",
     ],
     path: "ojluni/annotations/mmodule",
+}
+
+droiddoc_exported_dir {
+    name: "ojluni-annotated-flagged-stubs",
+    path: "ojluni/annotations/flagged_api",
+    visibility: ["//visibility:private"],
 }
 
 // A file containing the list of tags that are "known" to us from the OpenJdk
@@ -1031,7 +1034,10 @@ java_sdk_library {
         "--hide-annotation libcore.api.Hide",
     ],
 
-    merge_inclusion_annotations_dirs: ["ojluni-annotated-mmodule-stubs"],
+    merge_inclusion_annotations_dirs: [
+        "ojluni-annotated-flagged-stubs",
+        "ojluni-annotated-mmodule-stubs",
+    ],
     // Emit nullability annotations from the source to the stub files.
     annotations_enabled: true,
 
