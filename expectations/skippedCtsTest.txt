@@ -30,6 +30,13 @@
     ]
   },
   {
+    "bug": 260847206,
+    "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
+    "names": [
+      "org.apache.harmony.tests.javax.security.OldSHA1PRNGSecureRandomTest#testGenerateSeedint01"
+    ]
+  },
+  {
     "bug": 286802267,
     "description": "Test for internal APIs.",
     "names": [
@@ -105,6 +112,20 @@
       "com.android.org.conscrypt.javax.crypto.CipherTest#test_PBKDF2WITHHMACSHA1_SKFactory_and_PBEAESCBC_Cipher_noIV",
       "libcore.java.util.zip.GZIPOutputStreamTest#testShortMessage",
       "org.apache.harmony.tests.java.util.zip.ZipOutputStreamTest#test_exttSupport"
+    ]
+  },
+  {
+    "bug": 316502724,
+    "description": "SharedSecrets class is at different location in newer ART versions",
+    "names": [
+      "libcore.sun.misc.SharedSecretsTest#testGetJavaIOFileDescriptorAccess_notNull"
+    ]
+  },
+  {
+    "bug": 316502724,
+    "description": "The test was removed and its no longer throws CME",
+    "names": [
+      "org.apache.harmony.tests.java.util.PriorityQueueTest#test_spliterator_CME"
     ]
   }
 ]
