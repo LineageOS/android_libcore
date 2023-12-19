@@ -16,5 +16,15 @@
     "bug": 310050493,
     "description": "The test asserts buggy or non-breaking behaviors, but the behavior has been fixed in a new mainline module version.",
     "name": "com.android.org.conscrypt.NativeCryptoArgTest#evpMethods"
+  },
+  {
+    "bug": 316502724,
+    "description": "The test was removed and its no longer throws CME",
+    "name": "org.apache.harmony.tests.java.util.PriorityQueueTest#test_spliterator_CME"
+  },
+  {
+    "bug": 316502724,
+    "description": "SharedSecrets class is at different location in newer ART versions",
+    "name": "libcore.sun.misc.SharedSecretsTest#testGetJavaIOFileDescriptorAccess_notNull"
   }
 ]
