@@ -21,7 +21,7 @@ flag {
     namespace: "core_libraries"
     name: "v_apis"
     description: "This flag controls whether exposing Android V APIs"
-    bug: "312171264"
+    bug: "306360493"
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
