@@ -46,7 +46,7 @@ public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
 public static java.lang.String toString(char c) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.lang.String toString(int codePoint) { throw new RuntimeException("Stub!"); }
 
 public static boolean isValidCodePoint(int codePoint) { throw new RuntimeException("Stub!"); }
@@ -210,7 +210,7 @@ public static char reverseBytes(char ch) { throw new RuntimeException("Stub!"); 
 
 public static java.lang.String getName(int codePoint) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static int codePointOf(java.lang.String name) { throw new RuntimeException("Stub!"); }
 
 public static final int BYTES = 2; // 0x2

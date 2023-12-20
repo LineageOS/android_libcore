@@ -40,7 +40,7 @@ public java.util.stream.LongStream mapToLong(java.util.function.DoubleToLongFunc
 
 public java.util.stream.DoubleStream flatMap(java.util.function.DoubleFunction<? extends java.util.stream.DoubleStream> mapper);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.DoubleStream mapMulti(java.util.stream.DoubleStream.DoubleMapMultiConsumer mapper) { throw new RuntimeException("Stub!"); }
 
 public java.util.stream.DoubleStream distinct();
@@ -53,10 +53,10 @@ public java.util.stream.DoubleStream limit(long maxSize);
 
 public java.util.stream.DoubleStream skip(long n);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.DoubleStream takeWhile(java.util.function.DoublePredicate predicate) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.DoubleStream dropWhile(java.util.function.DoublePredicate predicate) { throw new RuntimeException("Stub!"); }
 
 public void forEach(java.util.function.DoubleConsumer action);
@@ -113,7 +113,7 @@ public static java.util.stream.DoubleStream of(double... values) { throw new Run
 
 public static java.util.stream.DoubleStream iterate(double seed, java.util.function.DoubleUnaryOperator f) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.util.stream.DoubleStream iterate(double seed, java.util.function.DoublePredicate hasNext, java.util.function.DoubleUnaryOperator next) { throw new RuntimeException("Stub!"); }
 
 public static java.util.stream.DoubleStream generate(java.util.function.DoubleSupplier s) { throw new RuntimeException("Stub!"); }
@@ -129,7 +129,7 @@ public default java.util.stream.DoubleStream.Builder add(double t) { throw new R
 public java.util.stream.DoubleStream build();
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 @java.lang.FunctionalInterface
 public static interface DoubleMapMultiConsumer {

@@ -34,7 +34,7 @@ ServiceLoader() { throw new RuntimeException("Stub!"); }
 
 public java.util.Iterator<S> iterator() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.stream.Stream<java.util.ServiceLoader.Provider<S>> stream() { throw new RuntimeException("Stub!"); }
 
 public static <S> java.util.ServiceLoader<S> load(java.lang.Class<S> service, java.lang.ClassLoader loader) { throw new RuntimeException("Stub!"); }
@@ -49,7 +49,7 @@ public void reload() { throw new RuntimeException("Stub!"); }
 
 public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public static interface Provider<S> extends java.util.function.Supplier<S> {
 

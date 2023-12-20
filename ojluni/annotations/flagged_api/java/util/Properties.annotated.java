@@ -32,7 +32,7 @@ public class Properties extends java.util.Hashtable<java.lang.Object,java.lang.O
 
 public Properties() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public Properties(int initialCapacity) { throw new RuntimeException("Stub!"); }
 
 public Properties(java.util.Properties defaults) { throw new RuntimeException("Stub!"); }
@@ -56,7 +56,7 @@ public void storeToXML(java.io.OutputStream os, java.lang.String comment) throws
 
 public void storeToXML(java.io.OutputStream os, java.lang.String comment, java.lang.String encoding) throws java.io.IOException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public void storeToXML(java.io.OutputStream os, java.lang.String comment, java.nio.charset.Charset charset) throws java.io.IOException { throw new RuntimeException("Stub!"); }
 
 public java.lang.String getProperty(java.lang.String key) { throw new RuntimeException("Stub!"); }
