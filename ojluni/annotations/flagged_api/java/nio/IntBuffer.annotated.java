@@ -61,25 +61,25 @@ public java.nio.IntBuffer get(int[] dst, int offset, int length) { throw new Run
 
 public java.nio.IntBuffer get(int[] dst) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.IntBuffer get(int index, int[] dst, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.IntBuffer get(int index, int[] dst) { throw new RuntimeException("Stub!"); }
 
 public java.nio.IntBuffer put(java.nio.IntBuffer src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.IntBuffer put(int index, java.nio.IntBuffer src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public java.nio.IntBuffer put(int[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public final java.nio.IntBuffer put(int[] src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.IntBuffer put(int index, int[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.IntBuffer put(int index, int[] src) { throw new RuntimeException("Stub!"); }
 
 public final boolean hasArray() { throw new RuntimeException("Stub!"); }

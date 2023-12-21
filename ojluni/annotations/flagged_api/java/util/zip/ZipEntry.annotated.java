@@ -43,10 +43,10 @@ public void setTime(long time) { throw new RuntimeException("Stub!"); }
 
 public long getTime() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public void setTimeLocal(java.time.LocalDateTime time) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.time.LocalDateTime getTimeLocal() { throw new RuntimeException("Stub!"); }
 
 public java.util.zip.ZipEntry setLastModifiedTime(java.nio.file.attribute.FileTime time) { throw new RuntimeException("Stub!"); }

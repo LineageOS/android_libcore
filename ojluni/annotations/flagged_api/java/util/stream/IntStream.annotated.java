@@ -40,7 +40,7 @@ public java.util.stream.DoubleStream mapToDouble(java.util.function.IntToDoubleF
 
 public java.util.stream.IntStream flatMap(java.util.function.IntFunction<? extends java.util.stream.IntStream> mapper);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.IntStream mapMulti(java.util.stream.IntStream.IntMapMultiConsumer mapper) { throw new RuntimeException("Stub!"); }
 
 public java.util.stream.IntStream distinct();
@@ -53,10 +53,10 @@ public java.util.stream.IntStream limit(long maxSize);
 
 public java.util.stream.IntStream skip(long n);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.IntStream takeWhile(java.util.function.IntPredicate predicate) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.IntStream dropWhile(java.util.function.IntPredicate predicate) { throw new RuntimeException("Stub!"); }
 
 public void forEach(java.util.function.IntConsumer action);
@@ -117,7 +117,7 @@ public static java.util.stream.IntStream of(int... values) { throw new RuntimeEx
 
 public static java.util.stream.IntStream iterate(int seed, java.util.function.IntUnaryOperator f) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.util.stream.IntStream iterate(int seed, java.util.function.IntPredicate hasNext, java.util.function.IntUnaryOperator next) { throw new RuntimeException("Stub!"); }
 
 public static java.util.stream.IntStream generate(java.util.function.IntSupplier s) { throw new RuntimeException("Stub!"); }
@@ -137,7 +137,7 @@ public default java.util.stream.IntStream.Builder add(int t) { throw new Runtime
 public java.util.stream.IntStream build();
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 @java.lang.FunctionalInterface
 public static interface IntMapMultiConsumer {
