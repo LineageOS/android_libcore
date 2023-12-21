@@ -31,22 +31,22 @@ public abstract class SecureRandomSpi implements java.io.Serializable {
 
 public SecureRandomSpi() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 protected SecureRandomSpi(java.security.SecureRandomParameters params) { throw new RuntimeException("Stub!"); }
 
 protected abstract void engineSetSeed(byte[] seed);
 
 protected abstract void engineNextBytes(byte[] bytes);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 protected void engineNextBytes(byte[] bytes, java.security.SecureRandomParameters params) { throw new RuntimeException("Stub!"); }
 
 protected abstract byte[] engineGenerateSeed(int numBytes);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 protected void engineReseed(java.security.SecureRandomParameters params) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 protected java.security.SecureRandomParameters engineGetParameters() { throw new RuntimeException("Stub!"); }
 
 public java.lang.String toString() { throw new RuntimeException("Stub!"); }

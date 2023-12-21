@@ -26,7 +26,7 @@
 
 package java.security.spec;
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class EdDSAParameterSpec implements java.security.spec.AlgorithmParameterSpec {
 

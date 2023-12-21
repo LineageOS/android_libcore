@@ -31,7 +31,7 @@ public interface RSAKey {
 
 public java.math.BigInteger getModulus();
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.security.spec.AlgorithmParameterSpec getParams() { throw new RuntimeException("Stub!"); }
 }
 
