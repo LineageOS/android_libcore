@@ -67,25 +67,25 @@ public java.nio.CharBuffer get(char[] dst, int offset, int length) { throw new R
 
 public java.nio.CharBuffer get(char[] dst) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.CharBuffer get(int index, char[] dst, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.CharBuffer get(int index, char[] dst) { throw new RuntimeException("Stub!"); }
 
 public java.nio.CharBuffer put(java.nio.CharBuffer src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.CharBuffer put(int index, java.nio.CharBuffer src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public java.nio.CharBuffer put(char[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public final java.nio.CharBuffer put(char[] src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.CharBuffer put(int index, char[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.CharBuffer put(int index, char[] src) { throw new RuntimeException("Stub!"); }
 
 public java.nio.CharBuffer put(java.lang.String src, int start, int end) { throw new RuntimeException("Stub!"); }
