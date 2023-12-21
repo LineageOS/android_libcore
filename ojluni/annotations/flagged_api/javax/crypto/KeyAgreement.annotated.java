@@ -58,7 +58,7 @@ public final int generateSecret(byte[] sharedSecret, int offset) throws java.lan
 
 public final javax.crypto.SecretKey generateSecret(java.lang.String algorithm) throws java.lang.IllegalStateException, java.security.InvalidKeyException, java.security.NoSuchAlgorithmException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public javax.crypto.KeyAgreementSpi getCurrentSpi() { throw new RuntimeException("Stub!"); }
 }
 

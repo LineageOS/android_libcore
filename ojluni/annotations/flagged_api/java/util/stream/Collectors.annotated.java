@@ -116,7 +116,7 @@ public static <T> java.util.stream.Collector<T,?,java.util.LongSummaryStatistics
 
 public static <T> java.util.stream.Collector<T,?,java.util.DoubleSummaryStatistics> summarizingDouble(java.util.function.ToDoubleFunction<? super T> mapper) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static <T, R1, R2, R> java.util.stream.Collector<T,?,R> teeing(java.util.stream.Collector<? super T,?,R1> downstream1, java.util.stream.Collector<? super T,?,R2> downstream2, java.util.function.BiFunction<? super R1,? super R2,R> merger) { throw new RuntimeException("Stub!"); }
 }
 
