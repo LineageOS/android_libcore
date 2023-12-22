@@ -40,7 +40,7 @@ public java.util.stream.DoubleStream mapToDouble(java.util.function.LongToDouble
 
 public java.util.stream.LongStream flatMap(java.util.function.LongFunction<? extends java.util.stream.LongStream> mapper);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.LongStream mapMulti(java.util.stream.LongStream.LongMapMultiConsumer mapper) { throw new RuntimeException("Stub!"); }
 
 public java.util.stream.LongStream distinct();
@@ -53,10 +53,10 @@ public java.util.stream.LongStream limit(long maxSize);
 
 public java.util.stream.LongStream skip(long n);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.LongStream takeWhile(java.util.function.LongPredicate predicate) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default java.util.stream.LongStream dropWhile(java.util.function.LongPredicate predicate) { throw new RuntimeException("Stub!"); }
 
 public void forEach(java.util.function.LongConsumer action);
@@ -115,7 +115,7 @@ public static java.util.stream.LongStream of(long... values) { throw new Runtime
 
 public static java.util.stream.LongStream iterate(long seed, java.util.function.LongUnaryOperator f) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.util.stream.LongStream iterate(long seed, java.util.function.LongPredicate hasNext, java.util.function.LongUnaryOperator next) { throw new RuntimeException("Stub!"); }
 
 public static java.util.stream.LongStream generate(java.util.function.LongSupplier s) { throw new RuntimeException("Stub!"); }
@@ -135,7 +135,7 @@ public default java.util.stream.LongStream.Builder add(long t) { throw new Runti
 public java.util.stream.LongStream build();
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 @java.lang.FunctionalInterface
 public static interface LongMapMultiConsumer {

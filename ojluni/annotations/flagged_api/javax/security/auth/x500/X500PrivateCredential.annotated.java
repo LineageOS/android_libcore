@@ -26,7 +26,7 @@
 
 package javax.security.auth.x500;
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public final class X500PrivateCredential implements javax.security.auth.Destroyable {
 

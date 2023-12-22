@@ -41,13 +41,13 @@ public static java.security.SecureRandom getInstance(java.lang.String algorithm,
 
 public static java.security.SecureRandom getInstance(java.lang.String algorithm, java.security.Provider provider) throws java.security.NoSuchAlgorithmException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.security.SecureRandom getInstance(java.lang.String algorithm, java.security.SecureRandomParameters params) throws java.security.NoSuchAlgorithmException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.security.SecureRandom getInstance(java.lang.String algorithm, java.security.SecureRandomParameters params, java.lang.String provider) throws java.security.NoSuchAlgorithmException, java.security.NoSuchProviderException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static java.security.SecureRandom getInstance(java.lang.String algorithm, java.security.SecureRandomParameters params, java.security.Provider provider) throws java.security.NoSuchAlgorithmException { throw new RuntimeException("Stub!"); }
 
 public final java.security.Provider getProvider() { throw new RuntimeException("Stub!"); }
@@ -56,7 +56,7 @@ public java.lang.String getAlgorithm() { throw new RuntimeException("Stub!"); }
 
 public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.security.SecureRandomParameters getParameters() { throw new RuntimeException("Stub!"); }
 
 public void setSeed(byte[] seed) { throw new RuntimeException("Stub!"); }
@@ -65,7 +65,7 @@ public void setSeed(long seed) { throw new RuntimeException("Stub!"); }
 
 public void nextBytes(byte[] bytes) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public void nextBytes(byte[] bytes, java.security.SecureRandomParameters params) { throw new RuntimeException("Stub!"); }
 
 protected final int next(int numBits) { throw new RuntimeException("Stub!"); }
@@ -76,10 +76,10 @@ public byte[] generateSeed(int numBytes) { throw new RuntimeException("Stub!"); 
 
 public static java.security.SecureRandom getInstanceStrong() throws java.security.NoSuchAlgorithmException { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public void reseed() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public void reseed(java.security.SecureRandomParameters params) { throw new RuntimeException("Stub!"); }
 }
 

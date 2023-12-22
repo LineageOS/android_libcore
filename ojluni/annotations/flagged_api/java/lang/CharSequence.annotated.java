@@ -33,7 +33,7 @@ public int length();
 
 public char charAt(int index);
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public default boolean isEmpty() { throw new RuntimeException("Stub!"); }
 
 public java.lang.CharSequence subSequence(int start, int end);

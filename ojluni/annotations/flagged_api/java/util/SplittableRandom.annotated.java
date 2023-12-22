@@ -34,7 +34,7 @@ public SplittableRandom() { throw new RuntimeException("Stub!"); }
 
 public java.util.SplittableRandom split() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.SplittableRandom split(java.util.random.RandomGenerator.SplittableGenerator source) { throw new RuntimeException("Stub!"); }
 
 public int nextInt() { throw new RuntimeException("Stub!"); }
@@ -43,16 +43,16 @@ public long nextLong() { throw new RuntimeException("Stub!"); }
 
 public void nextBytes(byte[] bytes) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.stream.Stream<java.util.random.RandomGenerator.SplittableGenerator> splits() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.stream.Stream<java.util.random.RandomGenerator.SplittableGenerator> splits(long streamSize) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.stream.Stream<java.util.random.RandomGenerator.SplittableGenerator> splits(java.util.random.RandomGenerator.SplittableGenerator source) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.util.stream.Stream<java.util.random.RandomGenerator.SplittableGenerator> splits(long streamSize, java.util.random.RandomGenerator.SplittableGenerator source) { throw new RuntimeException("Stub!"); }
 
 public java.util.stream.IntStream ints(long streamSize) { throw new RuntimeException("Stub!"); }

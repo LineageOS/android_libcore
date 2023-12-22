@@ -26,7 +26,7 @@
 
 package java.security;
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class DrbgParameters {
 
@@ -38,7 +38,7 @@ public static java.security.DrbgParameters.NextBytes nextBytes(int strength, boo
 
 public static java.security.DrbgParameters.Reseed reseed(boolean predictionResistance, byte[] additionalInput) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public enum Capability {
 PR_AND_RESEED,
@@ -52,7 +52,7 @@ public boolean supportsReseeding() { throw new RuntimeException("Stub!"); }
 public boolean supportsPredictionResistance() { throw new RuntimeException("Stub!"); }
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public static final class Instantiation implements java.security.SecureRandomParameters {
 
@@ -67,7 +67,7 @@ public byte[] getPersonalizationString() { throw new RuntimeException("Stub!"); 
 public java.lang.String toString() { throw new RuntimeException("Stub!"); }
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public static final class NextBytes implements java.security.SecureRandomParameters {
 
@@ -80,7 +80,7 @@ public boolean getPredictionResistance() { throw new RuntimeException("Stub!"); 
 public byte[] getAdditionalInput() { throw new RuntimeException("Stub!"); }
 }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public static final class Reseed implements java.security.SecureRandomParameters {
 

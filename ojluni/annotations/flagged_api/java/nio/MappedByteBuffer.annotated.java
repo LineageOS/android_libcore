@@ -38,7 +38,7 @@ public final java.nio.MappedByteBuffer load() { throw new RuntimeException("Stub
 
 public final java.nio.MappedByteBuffer force() { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public final java.nio.MappedByteBuffer force(int index, int length) { throw new RuntimeException("Stub!"); }
 
 public final java.nio.Buffer position(int newPosition) { throw new RuntimeException("Stub!"); }

@@ -61,25 +61,25 @@ public java.nio.DoubleBuffer get(double[] dst, int offset, int length) { throw n
 
 public java.nio.DoubleBuffer get(double[] dst) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.DoubleBuffer get(int index, double[] dst, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.DoubleBuffer get(int index, double[] dst) { throw new RuntimeException("Stub!"); }
 
 public java.nio.DoubleBuffer put(java.nio.DoubleBuffer src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.DoubleBuffer put(int index, java.nio.DoubleBuffer src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public java.nio.DoubleBuffer put(double[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
 public final java.nio.DoubleBuffer put(double[] src) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.DoubleBuffer put(int index, double[] src, int offset, int length) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public java.nio.DoubleBuffer put(int index, double[] src) { throw new RuntimeException("Stub!"); }
 
 public final boolean hasArray() { throw new RuntimeException("Stub!"); }

@@ -128,7 +128,7 @@ public static <K, V> java.util.Comparator<java.util.Map.Entry<K,V>> comparingByK
 
 public static <K, V> java.util.Comparator<java.util.Map.Entry<K,V>> comparingByValue(java.util.Comparator<? super V> cmp) { throw new RuntimeException("Stub!"); }
 
-@android.annotation.FlaggedApi("com.android.libcore.v_apis")
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
 public static <K, V> java.util.Map.Entry<K,V> copyOf(java.util.Map.Entry<? extends K,? extends V> e) { throw new RuntimeException("Stub!"); }
 }
 
