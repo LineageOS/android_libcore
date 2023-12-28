@@ -2176,7 +2176,15 @@ public final class Math {
      */
     @IntrinsicCandidate
     public static double signum(double d) {
-        return (d == 0.0 || Double.isNaN(d))?d:copySign(1.0, d);
+        // Android-changed: Optimize the compiled code by inlining 1.0d value. http://b/316160813
+        // return (d == 0.0 || Double.isNaN(d))?d:copySign(1.0, d);
+        if (d == 0.0 || Double.isNaN(d)) {
+            return d;
+        } else {
+            return Double.longBitsToDouble((Double.doubleToRawLongBits(d) &
+                    DoubleConsts.SIGN_BIT_MASK) |
+                    0x3FF0000000000000L); // 1.0d
+        }
     }
 
     /**
@@ -2198,7 +2206,14 @@ public final class Math {
      */
     @IntrinsicCandidate
     public static float signum(float f) {
-        return (f == 0.0f || Float.isNaN(f))?f:copySign(1.0f, f);
+        // Android-changed: Optimize the compiled code by inlining 1.0f value. http://b/316160813
+        // return (f == 0.0f || Float.isNaN(f))?f:copySign(1.0f, f);
+        if (f == 0.0f || Float.isNaN(f)) {
+            return f;
+        } else {
+            return Float.intBitsToFloat((Float.floatToRawIntBits(f) & FloatConsts.SIGN_BIT_MASK) |
+                    0x3F800000); // 1.0f
+        }
     }
 
     /**
