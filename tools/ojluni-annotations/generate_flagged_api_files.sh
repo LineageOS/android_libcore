@@ -17,12 +17,20 @@
 # Exit this shell script when a command fails.
 set -e
 
-cd ${ANDROID_BUILD_TOP}
-build/soong/soong_ui.bash --make-mode openjdk-sdk-stubs-no-javadoc
-for CLASS in $@;
+cd "${ANDROID_BUILD_TOP}"
+build/soong/soong_ui.bash --make-mode openjdk-sdk-stubs-no-javadoc libart-sdk-stubs-no-javadoc
+for CLASS in "$@";
 do
   FILE=${CLASS//./\/}
-  unzip out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/metalava/openjdk-sdk-stubs-no-javadoc-stubs.srcjar \
-    ${FILE}.java -d libcore/ojluni/annotations/flagged_api/
-  mv libcore/ojluni/annotations/flagged_api/$FILE.java libcore/ojluni/annotations/flagged_api/$FILE.annotated.java
+  if [[ "${CLASS:0:5}" == "java." || "${CLASS:0:6}" == "javax." || "${CLASS:0:4}" == "sun." \
+      || "${CLASS:0:4}" == "jdk." || "${CLASS:0:8}" == "com.sun." ]];
+  then
+    unzip out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/metalava/openjdk-sdk-stubs-no-javadoc-stubs.srcjar \
+      "${FILE}".java -d libcore/ojluni/annotations/flagged_api/
+    mv libcore/ojluni/annotations/flagged_api/"$FILE".java libcore/ojluni/annotations/flagged_api/"$FILE".annotated.java
+  else
+    unzip out/soong/.intermediates/libcore/libart-sdk-stubs-no-javadoc/android_common/metalava/libart-sdk-stubs-no-javadoc-stubs.srcjar \
+      "${FILE}".java -d libcore/luni/annotations/flagged_api/
+    mv libcore/luni/annotations/flagged_api/"$FILE".java libcore/luni/annotations/flagged_api/"$FILE".annotated.java
+  fi
 done
