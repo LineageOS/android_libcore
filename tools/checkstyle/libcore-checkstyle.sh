@@ -24,6 +24,7 @@ declare -A PATH_TO_CONFIG=(
     [json]=tools/checkstyle/aosp-copyright.xml
     [jsr166-tests]=tools/checkstyle/jsr166-public-domain.xml
     [libart]=tools/checkstyle/aosp-copyright.xml
+    [luni/annotations]=tools/checkstyle/not-gpl.xml
     [luni/src/main/java]=tools/checkstyle/not-gpl.xml
     [luni/src/module]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/annotations/src/libcore/tests]=tools/checkstyle/aosp-copyright.xml
