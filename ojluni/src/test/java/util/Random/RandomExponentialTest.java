@@ -38,7 +38,10 @@ import jdk.test.lib.RandomFactory;
 
 public class RandomExponentialTest {
 
-    private static final int SAMPLES = 1_000_000_000;
+    // Android-changed: reduce number of iterations as it takes too much time to finish
+    // on certain devices / targets.
+    // private static final int SAMPLES = 1_000_000_000;
+    private static final int SAMPLES = 50_000_000;
 
     public static void main(String[] args) throws Exception {
         var errCount = 0;
