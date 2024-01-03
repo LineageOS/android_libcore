@@ -63,7 +63,9 @@ public class RandomTest {
     static final long MAX_LONG_BOUND = (1L << 42);
 
     // Number of replications for other checks
-    static final int REPS = 20;
+    // Android-changed: takes too much time to run on certain targets.
+    // static final int REPS = 20;
+    static final int REPS = 5;
 
     /**
      * Repeated calls to nextInt produce at least two distinct results
