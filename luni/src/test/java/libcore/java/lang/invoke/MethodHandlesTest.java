@@ -488,6 +488,41 @@ public class MethodHandlesTest extends TestCase {
         }
     }
 
+    public void test_filterArgument_returnsTargetWhenAllFiltersAreNulls() throws Throwable {
+        MethodHandle handle = MethodHandles.lookup().findVirtual(String.class, "concat",
+                MethodType.methodType(String.class, String.class));
+
+        {
+            MethodHandle filtered = MethodHandles.filterArguments(handle, 0, (MethodHandle) null);
+            assertSame(handle, filtered);
+        }
+        {
+            MethodHandle filtered = MethodHandles.filterArguments(handle, 1, (MethodHandle) null);
+            assertSame(handle, filtered);
+        }
+        {
+            MethodHandle filtered = MethodHandles.filterArguments(handle, 0, null, null);
+            assertSame(handle, filtered);
+        }
+    }
+
+    public void test_filterArguments_nullFiltersAreTreatedAsIdentity() throws Throwable {
+        MethodHandle handle = MethodHandles.lookup().findVirtual(String.class, "concat",
+                MethodType.methodType(String.class, String.class));
+
+        MethodHandle upper = MethodHandles.lookup().findVirtual(String.class, "toUpperCase",
+                MethodType.methodType(String.class));
+
+        {
+            MethodHandle filtered = MethodHandles.filterArguments(handle, 0, upper, null);
+            assertEquals("Xy", (String) filtered.invokeExact("x", "y"));
+        }
+        {
+            MethodHandle filtered = MethodHandles.filterArguments(handle, 0, null, upper);
+            assertEquals("xY", (String) filtered.invokeExact("x", "Y"));
+        }
+    }
+
     public interface Foo {
         public String foo();
     }
