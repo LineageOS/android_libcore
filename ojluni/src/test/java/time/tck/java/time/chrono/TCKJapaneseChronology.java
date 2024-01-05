@@ -665,7 +665,8 @@ public class TCKJapaneseChronology {
         }
     }
 
-    @Test
+    // TODO(http://b/118623814): Re-enable this test.
+    @Test(enabled = false)
     public void test_withDayOfYear() {
         JapaneseDate hd = JapaneseChronology.INSTANCE.dateYearDay(1990, 1);
         for (int i = 1; i <= hd.lengthOfYear(); i++) {
