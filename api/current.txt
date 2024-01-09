@@ -4789,6 +4789,7 @@ package java.lang.invoke {
     method public final native void setVolatile(java.lang.Object...);
     method public static void storeStoreFence();
     method public final java.lang.invoke.MethodHandle toMethodHandle(java.lang.invoke.VarHandle.AccessMode);
+    method @FlaggedApi("com.android.libcore.v_apis") public final String toString();
     method public final Class<?> varType();
     method public final native boolean weakCompareAndSet(java.lang.Object...);
     method public final native boolean weakCompareAndSetAcquire(java.lang.Object...);
