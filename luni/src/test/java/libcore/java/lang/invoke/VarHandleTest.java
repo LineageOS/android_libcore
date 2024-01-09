@@ -16,14 +16,21 @@
 
 package libcore.java.lang.invoke;
 
-import java.lang.invoke.VarHandle;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+
 @RunWith(JUnit4.class)
 public class VarHandleTest {
+
+    private int field = 0;
+
     @Test
     public void fences() {
         // In theory, these should log coverage for these fences, but they are implemented
@@ -33,5 +40,19 @@ public class VarHandleTest {
         VarHandle.fullFence();
         VarHandle.loadLoadFence();
         VarHandle.storeStoreFence();
+    }
+
+    @Test
+    public void toString_describes_variable_and_its_coordinates_plain_field() throws Throwable {
+        VarHandle vh = MethodHandles.lookup().findVarHandle(
+                VarHandleTest.class, "field", int.class);
+
+        String str = vh.toString();
+
+        // Type of field is int.
+        assertTrue(str + " does not mention int", str.contains("int"));
+        assertTrue(str + " does not mention VarHandleTest", str.contains("VarHandleTest"));
+        // Just to make errorprone happy.
+        assertEquals(0, field);
     }
 }
