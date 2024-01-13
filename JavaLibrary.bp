@@ -401,6 +401,7 @@ java_library {
         "//art/build/sdk",
         "//external/robolectric",
         "//external/robolectric-shadows",
+        "//frameworks/base",
         "//frameworks/layoutlib",
     ],
     static_libs: [
