@@ -986,6 +986,9 @@ ojluni/src/main/java/java/util/RandomAccess.java,jdk17u/jdk-17.0.6-ga,src/java.b
 ojluni/src/main/java/java/util/RegularEnumSet.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/RegularEnumSet.java
 ojluni/src/main/java/java/util/ResourceBundle.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/util/ResourceBundle.java
 ojluni/src/main/java/java/util/Scanner.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Scanner.java
+ojluni/src/main/java/java/util/SequencedCollection.java,jdk21u/jdk-21.0.1-ga,src/java.base/share/classes/java/util/SequencedCollection.java
+ojluni/src/main/java/java/util/SequencedMap.java,jdk21u/jdk-21.0.1-ga,src/java.base/share/classes/java/util/SequencedMap.java
+ojluni/src/main/java/java/util/SequencedSet.java,jdk21u/jdk-21.0.1-ga,src/java.base/share/classes/java/util/SequencedSet.java
 ojluni/src/main/java/java/util/ServiceConfigurationError.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ServiceConfigurationError.java
 ojluni/src/main/java/java/util/ServiceLoader.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/ServiceLoader.java
 ojluni/src/main/java/java/util/Set.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/util/Set.java
@@ -1422,6 +1425,7 @@ ojluni/src/main/java/jdk/internal/ref/PhantomCleanable.java,jdk11u/jdk-11.0.13-g
 ojluni/src/main/java/jdk/internal/reflect/CallerSensitive.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/reflect/CallerSensitive.java
 ojluni/src/main/java/jdk/internal/reflect/Reflection.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/jdk/internal/reflect/Reflection.java
 ojluni/src/main/java/jdk/internal/util/ArraysSupport.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/util/ArraysSupport.java
+ojluni/src/main/java/jdk/internal/util/NullableKeyValueHolder.java,jdk21u/jdk-21.0.1-ga,src/java.base/share/classes/jdk/internal/util/NullableKeyValueHolder.java
 ojluni/src/main/java/jdk/internal/util/Preconditions.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/util/Preconditions.java
 ojluni/src/main/java/jdk/internal/util/StaticProperty.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/jdk/internal/util/StaticProperty.java
 ojluni/src/main/java/jdk/internal/util/jar/JarIndex.java,jdk17u/jdk-17.0.5-ga,src/java.base/share/classes/jdk/internal/util/jar/JarIndex.java
