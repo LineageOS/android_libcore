@@ -47,4 +47,11 @@ public interface SortedMap<K, V> extends java.util.Map<K,V> {
 @libcore.util.NonNull public java.util.Collection<@libcore.util.NullFromTypeParam V> values();
 
 @libcore.util.NonNull public java.util.Set<java.util.Map.@libcore.util.NonNull Entry<@libcore.util.NullFromTypeParam K, @libcore.util.NullFromTypeParam V>> entrySet();
+
+@libcore.util.Nullable public default V putFirst(@libcore.util.NullFromTypeParam K k, @libcore.util.NullFromTypeParam V v) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.Nullable public default V putLast(@libcore.util.NullFromTypeParam K k, @libcore.util.NullFromTypeParam V v) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public default java.util.SortedMap<K,V> reversed() { throw new RuntimeException("Stub!"); }
+
 }

@@ -530,7 +530,7 @@ package java.text {
 
 package java.util {
 
-  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> {
+  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> java.util.SequencedMap<K,V> {
     method public java.util.Map.Entry<K,V> eldest();
   }
 

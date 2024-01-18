@@ -81,4 +81,7 @@ public interface NavigableMap<K, V> extends java.util.SortedMap<K,V> {
 @libcore.util.NonNull public java.util.SortedMap<@libcore.util.NullFromTypeParam K, @libcore.util.NullFromTypeParam V> headMap(@libcore.util.NullFromTypeParam K toKey);
 
 @libcore.util.NonNull public java.util.SortedMap<@libcore.util.NullFromTypeParam K, @libcore.util.NullFromTypeParam V> tailMap(@libcore.util.NullFromTypeParam K fromKey);
+
+@libcore.util.NonNull public default java.util.NavigableMap<K, V> reversed() { throw new RuntimeException("Stub!"); }
+
 }

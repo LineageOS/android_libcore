@@ -248,4 +248,10 @@ public class HashMapTest extends junit.framework.TestCase {
             fail();
         } catch(NullPointerException expected) {}
     }
+
+    public void test_newHashMap() {
+        HashMap<String, Object> h1 = HashMap.newHashMap(5);
+        assertTrue(h1.isEmpty());
+        assertEquals(HashMap.class, h1.getClass());
+    }
 }
