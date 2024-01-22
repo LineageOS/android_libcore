@@ -249,6 +249,9 @@ public class LinkedList<E> extends java.util.AbstractSequentialList<E>
     public <T> T[] toArray(T[] a) {
         throw new RuntimeException("Stub!");
     }
+    public LinkedList<E> reversed() {
+        throw new RuntimeException("Stub!");
+    }
 
     private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
         throw new RuntimeException("Stub!");

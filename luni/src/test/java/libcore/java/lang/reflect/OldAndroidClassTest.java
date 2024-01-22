@@ -146,8 +146,9 @@ public final class OldAndroidClassTest extends TestCase {
 
             int par = signature.indexOf('(');
             int dot = signature.lastIndexOf('.', par);
-
-            signature = signature.substring(dot + 1);
+            // Remove the declaring class and modifiers.
+            // TODO: Thrown Exception types are kept in the signature. Consider removing it.
+            signature = method.getReturnType().getTypeName() + ' ' + signature.substring(dot + 1);
 
             assertFalse("Duplicate " + signature, set.contains(signature));
             set.add(signature);
