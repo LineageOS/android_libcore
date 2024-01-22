@@ -380,7 +380,7 @@ ojluni/src/main/java/java/net/SocketPermission.java,jdk11u/jdk-11.0.13-ga,src/ja
 ojluni/src/main/java/java/net/SocketSecrets.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/SocketSecrets.java
 ojluni/src/main/java/java/net/SocketTimeoutException.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/SocketTimeoutException.java
 ojluni/src/main/java/java/net/SocksConsts.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/net/SocksConsts.java
-ojluni/src/main/java/java/net/SocksSocketImpl.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/SocksSocketImpl.java
+ojluni/src/main/java/java/net/SocksSocketImpl.java,jdk8u/jdk8u222-b03,jdk/src/share/classes/java/net/SocksSocketImpl.java
 ojluni/src/main/java/java/net/StandardProtocolFamily.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/net/StandardProtocolFamily.java
 ojluni/src/main/java/java/net/StandardSocketOptions.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/net/StandardSocketOptions.java
 ojluni/src/main/java/java/net/URI.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/net/URI.java
@@ -2071,6 +2071,8 @@ ojluni/src/test/java/net/InetSocketAddress/B4849451.java,jdk17u/jdk-17.0.6-ga,te
 ojluni/src/test/java/net/InetSocketAddress/B6469803.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/InetSocketAddress/B6469803.java
 ojluni/src/test/java/net/InetSocketAddress/CreateUnresolved.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/InetSocketAddress/CreateUnresolved.java
 ojluni/src/test/java/net/InetSocketAddress/ToString.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/InetSocketAddress/ToString.java
+ojluni/src/test/java/net/Socks/SocksIPv6Test.java,jdk8u/jdk8u222-b03,jdk/test/java/net/Socks/SocksIPv6Test.java
+ojluni/src/test/java/net/Socks/SocksServer.java,jdk8u/jdk8u222-b03,jdk/test/java/net/Socks/SocksServer.java
 ojluni/src/test/java/net/UnixDomainSocketAddress/LengthTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/UnixDomainSocketAddress/LengthTest.java
 ojluni/src/test/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/net/UnixDomainSocketAddress/UnixDomainSocketAddressSerializationTest.java
 ojluni/src/test/java/nio/Buffer/AllocateDirectInit.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/nio/Buffer/AllocateDirectInit.java

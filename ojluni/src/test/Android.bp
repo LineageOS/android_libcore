@@ -59,6 +59,7 @@ java_test {
     static_libs: [
         "core-test-rules",
         "junit",
+        "mockwebserver",
         "testng",
     ],
 
@@ -149,6 +150,8 @@ java_test {
         "okhttp",
         "testng",
     ],
+
+    static_libs: ["mockwebserver"],
 
     errorprone: {
         javacflags: [
