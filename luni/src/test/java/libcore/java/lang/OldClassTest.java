@@ -439,9 +439,9 @@ public class OldClassTest extends junit.framework.TestCase {
         types = TestInterface.class.getGenericInterfaces();
         assertEquals(0, types.length);
 
-        types = List.class.getGenericInterfaces();
+        types = Collection.class.getGenericInterfaces();
         assertEquals(1, types.length);
-        assertEquals(Collection.class, ((ParameterizedType)types[0]).getRawType());
+        assertEquals(Iterable.class, ((ParameterizedType)types[0]).getRawType());
 
         assertEquals(0, int.class.getGenericInterfaces().length);
         assertEquals(0, void.class.getGenericInterfaces().length);
