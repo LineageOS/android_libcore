@@ -397,33 +397,6 @@ public class LinkedHashMapTest extends junit.framework.TestCase {
         }
     }
 
-    /**
-     * Check that {@code LinkedHashMap.Entry} compiles and refers to
-     * {@link java.util.Map.Entry}, which is required for source
-     * compatibility with earlier versions of Android.
-     */
-    public void test_entryCompatibility_compiletime() {
-        // TODO: Move this test to where is compiled with the public Android SDK.
-        // assertEquals(Map.Entry.class, LinkedHashMap.Entry.class);
-    }
-
-    /**
-     * Checks that there is no nested class named 'Entry' in LinkedHashMap.
-     * If {@link #test_entryCompatibility_compiletime()} passes but
-     * this test fails, then the test was probably compiled against a
-     * version of LinkedHashMap that does not have a nested Entry class,
-     * but run against a version that does.
-     */
-    public void test_entryCompatibility_runtime() {
-        String forbiddenClassName = "java.util.LinkedHashMap$Entry";
-        try {
-            Class.forName(forbiddenClassName);
-            // TODO: Move this test to where has no access to hidden APIs
-            // fail("Class " + forbiddenClassName + " should not exist");
-        } catch (ClassNotFoundException expected) {
-        }
-    }
-
     public void test_spliterator_keySet() {
         Map<String, Integer> m = new LinkedHashMap<>();
         m.put("a", 1);
