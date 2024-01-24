@@ -28,6 +28,7 @@ declare -A PATH_TO_CONFIG=(
     [luni/src/main/java]=tools/checkstyle/not-gpl.xml
     [luni/src/module]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/androidsdk34]=tools/checkstyle/aosp-copyright.xml
+    [luni/src/test/androidsdkcurrent]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/annotations/src/libcore/tests]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/dex_src/libcore]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/etc]=tools/checkstyle/aosp-copyright.xml
