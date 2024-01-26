@@ -120,12 +120,3 @@ java_library {
     // with old JDKs.
     java_version: "1.8",
 }
-
-java_api_contribution {
-    name: "art-module-intra-core-api-intra-core-stubs",
-    api_surface: "intra-core",
-    api_file: "api/intra/current.txt",
-    visibility: [
-        "//build/orchestrator/apis",
-    ],
-}
