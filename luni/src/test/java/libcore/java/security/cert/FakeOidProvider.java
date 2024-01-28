@@ -13,8 +13,12 @@ public class FakeOidProvider extends Provider {
      * Used for testing some effects of algorithm OID mapping. We have to be
      * slightly careful of the OID we pick here: the first number has to be 0,
      * 1, or 2, and the second number has to be less than 39.
+     *
+     * X509CertificateTest depends on this value as it assumes it can
+     * OR the middle 3 bytes of the RSA signature OID with 0xff to get this
+     * value.
      */
-    public static final String SIGALG_OID = "1.2.34359737229.1.1.5";
+    public static final String SIGALG_OID = "1.2.34359737229.1.1.11";
 
     /**
      * Used for testing some effects of algorithm OID mapping.
