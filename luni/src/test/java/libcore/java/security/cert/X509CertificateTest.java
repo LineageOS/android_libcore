@@ -621,41 +621,41 @@ public class X509CertificateTest extends TestCaseWithRules {
 
     private void getSigAlgName(CertificateFactory f) throws Exception {
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithRSAEncryption */
             X509Certificate c = getCertificate(f, CERT_RSA);
-            assertEquals("SHA1WITHRSA", c.getSigAlgName().toUpperCase(Locale.US));
+            assertEquals("SHA256WITHRSA", c.getSigAlgName().toUpperCase(Locale.US));
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_DSA);
-            assertEquals("SHA1WITHDSA", c.getSigAlgName().toUpperCase(Locale.US));
+            assertEquals("SHA256WITHDSA", c.getSigAlgName().toUpperCase(Locale.US));
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithECDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_EC);
-            assertEquals("SHA1WITHECDSA", c.getSigAlgName().toUpperCase(Locale.US));
+            assertEquals("SHA256WITHECDSA", c.getSigAlgName().toUpperCase(Locale.US));
         }
     }
 
     private void getSigAlgOID(CertificateFactory f) throws Exception {
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithRSAEncryption */
             X509Certificate c = getCertificate(f, CERT_RSA);
-            assertEquals("1.2.840.113549.1.1.5", c.getSigAlgOID());
+            assertEquals("1.2.840.113549.1.1.11", c.getSigAlgOID());
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_DSA);
-            assertEquals("1.2.840.10040.4.3", c.getSigAlgOID());
+            assertEquals("2.16.840.1.101.3.4.3.2", c.getSigAlgOID());
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithECDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_EC);
-            assertEquals("1.2.840.10045.4.1", c.getSigAlgOID());
+            assertEquals("1.2.840.10045.4.3.2", c.getSigAlgOID());
         }
     }
 
@@ -701,7 +701,7 @@ public class X509CertificateTest extends TestCaseWithRules {
 
     private void getKeyUsage(CertificateFactory f) throws Exception {
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithRSAEncryption */
             X509Certificate c = getCertificate(f, CERT_RSA);
             boolean[] expected = new boolean[] {
                     true,  /* digitalSignature (0) */
@@ -718,7 +718,7 @@ public class X509CertificateTest extends TestCaseWithRules {
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_DSA);
             boolean[] expected = new boolean[] {
                     false, /* digitalSignature (0) */
@@ -737,7 +737,7 @@ public class X509CertificateTest extends TestCaseWithRules {
         }
 
         {
-            /* The test certificate is sha1WithRSAEncryption */
+            /* The test certificate is sha256WithECDSAEncryption */
             X509Certificate c = getCertificate(f, CERT_EC);
             boolean[] expected = new boolean[] {
                     false, /* digitalSignature (0) */
