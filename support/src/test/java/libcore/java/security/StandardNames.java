@@ -610,6 +610,8 @@ public final class StandardNames {
             // Android's KeyStore provider
             if (Security.getProvider("AndroidKeyStore") != null) {
                 provide("KeyStore", "AndroidKeyStore");
+                provideOptional("KeyFactory", "ED25519");
+                provideOptional("KeyPairGenerator", "ED25519");
             }
 
             // TimaKeyStore provider

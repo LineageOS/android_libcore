@@ -1673,7 +1673,9 @@ static jobjectArray Linux_getifaddrs(JNIEnv* env, jobject) {
     // Traverse the list and populate the output array.
     int index = 0;
     for (ifaddrs* ifa = ifaddr; ifa != NULL; ifa = ifa->ifa_next, ++index) {
-        TO_JAVA_STRING(name, ifa->ifa_name);
+        char* ifa_name = ifa->ifa_name;
+        DCHECK(ifa_name != NULL);
+        TO_JAVA_STRING(name, ifa_name);
         jint flags = ifa->ifa_flags;
         jobject addr, netmask, broad;
         jbyteArray hwaddr = NULL;
