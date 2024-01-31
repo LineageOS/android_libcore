@@ -30,6 +30,7 @@ import java.security.cert.CertStoreException;
 import java.security.cert.CertStoreParameters;
 import java.security.cert.CertStoreSpi;
 import java.security.cert.Certificate;
+import java.security.cert.CollectionCertStoreParameters;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -170,6 +171,16 @@ public class ProviderTest extends TestCaseWithRules {
                         missing.add(className);
                     }
                 }
+
+                // Try to create an instance. Some algorithms require a parameter,
+                // so we need to feed them something they'll be happy with.
+                Object param = null;
+                if (algorithm.equals("COLLECTION")) {
+                    param = new CollectionCertStoreParameters();
+                }
+                assertNotNull("Failed to instantiate " + providerName + " " + type + " " + algorithm
+                        + " " + className,
+                    service.newInstance(param));
             }
 
             // last chance: some algorithms might only be provided by their alias
