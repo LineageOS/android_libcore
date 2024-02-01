@@ -14,6 +14,7 @@
 // limitations under the License.
 
 package {
+    default_team: "trendy_team_java_core_libraries",
     default_applicable_licenses: ["libcore_luni_license"],
 }
 
