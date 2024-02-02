@@ -47,4 +47,11 @@ public class RandomGeneratorTest {
             .forEach(RandomGenerator::of);;
     }
 
+    @Test
+    public void isDeprecated_doesNotThrow() {
+        RandomGeneratorFactory.all()
+            .map(RandomGeneratorFactory::create)
+            .forEach(RandomGenerator::isDeprecated);
+    }
+
 }
