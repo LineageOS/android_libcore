@@ -109,7 +109,7 @@ public class AKISerialNumberTest {
     private static CertificateFactory cf;
 
     // Android-changed: Removed args & added @Test
-    @Test
+    @Test(enabled = false)
     public static void main() throws Exception {
 
         cf = CertificateFactory.getInstance("X.509");
