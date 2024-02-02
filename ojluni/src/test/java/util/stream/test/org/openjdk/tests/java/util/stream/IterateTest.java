@@ -57,9 +57,7 @@ public class IterateTest extends OpTestCase {
             {List.of(1, 2, 4, 8, 16, 32, 64, 128, 256, 512),
                 Factory.ofSupplier("ref.ten", () -> Stream.iterate(1, x -> x < 1000, x -> x * 2))},
             {List.of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0),
-                Factory.ofSupplier("ref.nullCheck", () -> Stream.iterate(10, Objects::nonNull, x -> x > 0 ? x - 1 : null))}
-            // Android-changed: these APIs are not yet imported.
-            /*
+                Factory.ofSupplier("ref.nullCheck", () -> Stream.iterate(10, Objects::nonNull, x -> x > 0 ? x - 1 : null))},
             {List.of(),
                 Factory.ofIntSupplier("int.empty", () -> IntStream.iterate(1, x -> x < 0, x -> x + 1))},
             {List.of(1),
@@ -80,7 +78,6 @@ public class IterateTest extends OpTestCase {
                 Factory.ofDoubleSupplier("double.one", () -> DoubleStream.iterate(1.0, x -> x < 2, x -> x + 1))},
             {List.of(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0),
                 Factory.ofDoubleSupplier("double.ten", () -> DoubleStream.iterate(1.0, x -> x <= 10, x -> x + 1))}
-            */
         };
         return data;
     }
@@ -94,14 +91,11 @@ public class IterateTest extends OpTestCase {
     public void testNPE() {
         checkNPE(() -> Stream.iterate("", null, x -> x + "a"));
         checkNPE(() -> Stream.iterate("", String::isEmpty, null));
-        // Android-changed: these APIs are not yet imported.
-        /*
         checkNPE(() -> IntStream.iterate(0, null, x -> x + 1));
         checkNPE(() -> IntStream.iterate(0, x -> x < 10, null));
         checkNPE(() -> LongStream.iterate(0, null, x -> x + 1));
         checkNPE(() -> LongStream.iterate(0, x -> x < 10, null));
         checkNPE(() -> DoubleStream.iterate(0, null, x -> x + 1));
         checkNPE(() -> DoubleStream.iterate(0, x -> x < 10, null));
-        */
     }
 }
