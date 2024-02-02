@@ -54,4 +54,16 @@ public class RandomGeneratorTest {
             .forEach(RandomGenerator::isDeprecated);
     }
 
+    @Test
+    public void of_factoryMethod_throwsNPE() {
+        assertThrows(NullPointerException.class,
+            () -> RandomGenerator.ArbitrarilyJumpableGenerator.of(null));
+
+        assertThrows(NullPointerException.class,
+            () -> RandomGenerator.JumpableGenerator.of(null));
+
+        assertThrows(NullPointerException.class,
+            () -> RandomGenerator.StreamableGenerator.of(null));
+    }
+
 }
