@@ -2539,6 +2539,7 @@ ojluni/src/test/java/util/WeakHashMap/GCDuringIteration.java,jdk17u/jdk-17.0.6-g
 ojluni/src/test/java/util/WeakHashMap/Iteration.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/WeakHashMap/Iteration.java
 ojluni/src/test/java/util/WeakHashMap/ZeroInitCap.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/WeakHashMap/ZeroInitCap.java
 ojluni/src/test/java/util/concurrent/tck/CompletableFutureTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/concurrent/tck/CompletableFutureTest.java
+ojluni/src/test/java/util/concurrent/tck/SplittableRandomTest.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/concurrent/tck/SplittableRandomTest.java
 ojluni/src/test/java/util/regex/BMPTestCases.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/regex/BMPTestCases.txt
 ojluni/src/test/java/util/regex/GraphemeTestCases.txt,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/regex/GraphemeTestCases.txt
 ojluni/src/test/java/util/regex/POSIX_ASCII.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/regex/POSIX_ASCII.java
