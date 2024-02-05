@@ -42,10 +42,6 @@ public class DeflaterTest extends TestCaseWithRules {
             super(lvl);
         }
 
-        void myFinalize() {
-            finalize();
-        }
-
         int getDefCompression() {
             return DEFAULT_COMPRESSION;
         }
@@ -185,16 +181,6 @@ public class DeflaterTest extends TestCaseWithRules {
         }
         defl.end();
         helper_end_test(defl, "end");
-    }
-
-    /**
-     * java.util.zip.Deflater#finalize()
-     */
-    public void test_finalize() {
-        MyDeflater mdefl = new MyDeflater();
-        mdefl.myFinalize();
-        System.gc();
-        helper_end_test(mdefl, "finalize");
     }
 
     /**
