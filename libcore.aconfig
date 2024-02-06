@@ -16,6 +16,7 @@
 # com.android is chosen as the java_aconfig_library is normally exposed to the platform,
 # but not public apps.
 package: "com.android.libcore"
+container: "system"
 
 flag {
     namespace: "core_libraries"
