@@ -1000,6 +1000,7 @@ java_library {
 aconfig_declarations {
     name: "libcore_aconfig_flags",
     package: "com.android.libcore",
+    container: "system",
     srcs: ["libcore.aconfig"],
 }
 
