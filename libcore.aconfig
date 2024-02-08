@@ -26,3 +26,12 @@ flag {
     # APIs provided by a mainline module can only use a frozen flag.
     is_fixed_read_only: true
 }
+
+flag {
+    namespace: "core_libraries"
+    name: "hpke_v_apis"
+    description: "This flag controls whether exposing HPKE APIs on Android V"
+    bug: "323357598"
+    # APIs provided by a mainline module can only use a frozen flag.
+    is_fixed_read_only: true
+}
