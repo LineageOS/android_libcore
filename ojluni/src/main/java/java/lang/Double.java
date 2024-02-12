@@ -233,6 +233,15 @@ public final class Double extends Number
     public static final int SIZE = 64;
 
     /**
+     * The number of bits in the significand of a {@code double} value.
+     * This is the parameter N in section {@jls 4.2.3} of
+     * <cite>The Java Language Specification</cite>.
+     *
+     * @since 19
+     */
+    public static final int PRECISION = 53;
+
+    /**
      * The number of bytes used to represent a {@code double} value.
      *
      * @since 1.8
