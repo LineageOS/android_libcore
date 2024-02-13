@@ -477,6 +477,9 @@ public class DependencyAnalyzer {
                 case "jdk17u":
                     classpath = AndroidHostEnvUtil.parseInputClasspath("17");
                     break;
+                case "jdk21u":
+                    classpath = AndroidHostEnvUtil.parseInputClasspath("21");
+                    break;
                 default:
                     // unrecognized java version. Not supported until we obtain a specific
                     // java.base.jmod file from the specific git revision.
