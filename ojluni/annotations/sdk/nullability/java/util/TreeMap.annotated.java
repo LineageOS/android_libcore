@@ -118,4 +118,9 @@ public boolean replace(@libcore.util.NullFromTypeParam K key, @libcore.util.Null
 public void forEach(@libcore.util.NonNull java.util.function.BiConsumer<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NullFromTypeParam V> action) { throw new RuntimeException("Stub!"); }
 
 public void replaceAll(@libcore.util.NonNull java.util.function.BiFunction<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NullFromTypeParam V,? extends @libcore.util.NullFromTypeParam V> function) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.Nullable public V putFirst(@libcore.util.NullFromTypeParam K k, @libcore.util.NullFromTypeParam V v) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.Nullable public V putLast(@libcore.util.NullFromTypeParam K k, @libcore.util.NullFromTypeParam V v) { throw new RuntimeException("Stub!"); }
+
 }

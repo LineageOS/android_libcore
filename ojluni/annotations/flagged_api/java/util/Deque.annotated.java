@@ -36,63 +36,67 @@
 
 package java.util;
 
-
 @SuppressWarnings({"unchecked", "deprecation", "all"})
-public interface Deque<E> extends java.util.Queue<E> {
+public interface Deque<E> extends java.util.Queue<E>, java.util.SequencedCollection<E> {
 
-public void addFirst(@libcore.util.NullFromTypeParam E e);
+public void addFirst(E e);
 
-public void addLast(@libcore.util.NullFromTypeParam E e);
+public void addLast(E e);
 
-public boolean offerFirst(@libcore.util.NullFromTypeParam E e);
+public boolean offerFirst(E e);
 
-public boolean offerLast(@libcore.util.NullFromTypeParam E e);
+public boolean offerLast(E e);
 
-@libcore.util.NullFromTypeParam public E removeFirst();
+public E removeFirst();
 
-@libcore.util.NullFromTypeParam public E removeLast();
+public E removeLast();
 
-@libcore.util.Nullable public E pollFirst();
+public E pollFirst();
 
-@libcore.util.Nullable public E pollLast();
+public E pollLast();
 
-@libcore.util.NullFromTypeParam public E getFirst();
+public E getFirst();
 
-@libcore.util.NullFromTypeParam public E getLast();
+public E getLast();
 
-@libcore.util.Nullable public E peekFirst();
+public E peekFirst();
 
-@libcore.util.Nullable public E peekLast();
+public E peekLast();
 
-public boolean removeFirstOccurrence(@libcore.util.Nullable java.lang.Object o);
+public boolean removeFirstOccurrence(java.lang.Object o);
 
-public boolean removeLastOccurrence(@libcore.util.Nullable java.lang.Object o);
+public boolean removeLastOccurrence(java.lang.Object o);
 
-public boolean add(@libcore.util.NullFromTypeParam E e);
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+public boolean add(E e);
 
-public boolean offer(@libcore.util.NullFromTypeParam E e);
+public boolean offer(E e);
 
-@libcore.util.NullFromTypeParam public E remove();
+public E remove();
 
-@libcore.util.Nullable public E poll();
+public E poll();
 
-@libcore.util.NullFromTypeParam public E element();
+public E element();
 
-@libcore.util.Nullable public E peek();
+public E peek();
 
-public void push(@libcore.util.NullFromTypeParam E e);
+public boolean addAll(java.util.Collection<? extends E> c);
 
-@libcore.util.NullFromTypeParam public E pop();
+public void push(E e);
 
-public boolean remove(@libcore.util.Nullable java.lang.Object o);
+public E pop();
 
-public boolean contains(@libcore.util.Nullable java.lang.Object o);
+public boolean remove(java.lang.Object o);
+
+public boolean contains(java.lang.Object o);
 
 public int size();
 
-@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> iterator();
+public java.util.Iterator<E> iterator();
 
-@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> descendingIterator();
+public java.util.Iterator<E> descendingIterator();
 
-@libcore.util.NonNull public default java.util.Deque<E> reversed() { throw new RuntimeException("Stub!"); }
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+public default java.util.Deque<E> reversed() { throw new RuntimeException("Stub!"); }
 }
+

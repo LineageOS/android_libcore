@@ -2574,7 +2574,6 @@ public class HashMap<K,V> extends AbstractMap<K,V>
      * @return the newly created map
      * @throws IllegalArgumentException if numMappings is negative
      * @since 19
-     * @hide
      */
     public static <K, V> HashMap<K, V> newHashMap(int numMappings) {
         if (numMappings < 0) {

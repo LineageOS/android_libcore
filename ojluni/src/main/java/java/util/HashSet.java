@@ -392,7 +392,6 @@ public class HashSet<E>
      * @return the newly created set
      * @throws IllegalArgumentException if numElements is negative
      * @since 19
-     * @hide
      */
     public static <T> HashSet<T> newHashSet(int numElements) {
         if (numElements < 0) {

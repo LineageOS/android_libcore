@@ -113,4 +113,19 @@ public int lastIndexOf(@libcore.util.Nullable java.lang.Object o);
 @libcore.util.NonNull public static <E> java.util.List<@libcore.util.NonNull E> of(E @libcore.util.NonNull ... elements) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public static <E> java.util.List<@libcore.util.NonNull E> copyOf(@libcore.util.NonNull java.util.Collection<? extends E> coll) { throw new RuntimeException("Stub!"); }
+
+public default void addFirst(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
+
+public default void addLast(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public default E getFirst() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public default E getLast() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public default E removeFirst() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public default E removeLast() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public default java.util.List<E> reversed() { throw new RuntimeException("Stub!"); }
+
 }

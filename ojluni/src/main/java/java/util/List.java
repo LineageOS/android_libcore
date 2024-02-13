@@ -810,7 +810,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      * @throws NullPointerException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default void addFirst(E e) {
         this.add(0, e);
@@ -825,7 +824,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      * @throws NullPointerException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default void addLast(E e) {
         this.add(e);
@@ -840,7 +838,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E getFirst() {
         if (this.isEmpty()) {
@@ -859,7 +856,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E getLast() {
         if (this.isEmpty()) {
@@ -879,7 +875,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeFirst() {
         if (this.isEmpty()) {
@@ -899,7 +894,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeLast() {
         if (this.isEmpty()) {
@@ -924,7 +918,6 @@ public interface List<E> extends SequencedCollection<E>, Collection<E> {
      *
      * @return a reverse-ordered view of this collection, as a {@code List}
      * @since 21
-     * @hide
      */
     default List<E> reversed() {
         return ReverseOrderListView.of(this, true); // we must assume it's modifiable

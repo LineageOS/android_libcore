@@ -49,6 +49,8 @@ public static void shuffle(@libcore.util.NonNull java.util.List<?> list) { throw
 
 public static void shuffle(@libcore.util.NonNull java.util.List<?> list, @libcore.util.NonNull java.util.Random rnd) { throw new RuntimeException("Stub!"); }
 
+public static void shuffle(@libcore.util.NonNull java.util.List<?> list, @libcore.util.NonNull java.util.random.RandomGenerator rnd) { throw new RuntimeException("Stub!"); }
+
 public static void swap(@libcore.util.NonNull java.util.List<?> list, int i, int j) { throw new RuntimeException("Stub!"); }
 
 public static <T> void fill(@libcore.util.NonNull java.util.List<? super @libcore.util.NullFromTypeParam T> list, @libcore.util.NullFromTypeParam T obj) { throw new RuntimeException("Stub!"); }

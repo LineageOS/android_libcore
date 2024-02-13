@@ -113,4 +113,6 @@ public java.lang.@libcore.util.Nullable Object @libcore.util.NonNull [] toArray(
 public <T> T @libcore.util.NonNull [] toArray(T @libcore.util.NonNull [] a) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.util.Spliterator<@libcore.util.NullFromTypeParam E> spliterator() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public default java.util.LinkedList<E> reversed() { throw new RuntimeException("Stub!"); }
 }
