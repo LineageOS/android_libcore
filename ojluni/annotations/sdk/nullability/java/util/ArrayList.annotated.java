@@ -64,6 +64,18 @@ public <T> T @libcore.util.NonNull [] toArray(T @libcore.util.NonNull [] a) { th
 
 public boolean add(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
 
+public void addFirst(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
+
+public void addLast(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public E getFirst() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public E getLast() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public E removeFirst() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NullFromTypeParam public E removeLast() { throw new RuntimeException("Stub!"); }
+
 public void add(int index, @libcore.util.NullFromTypeParam E element) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NullFromTypeParam public E remove(int index) { throw new RuntimeException("Stub!"); }

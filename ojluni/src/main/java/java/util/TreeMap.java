@@ -317,7 +317,6 @@ public class TreeMap<K,V>
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
      public V putFirst(K k, V v) {
         throw new UnsupportedOperationException();
@@ -330,7 +329,6 @@ public class TreeMap<K,V>
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     public V putLast(K k, V v) {
         throw new UnsupportedOperationException();

@@ -331,7 +331,6 @@ public interface NavigableSet<E> extends SortedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeFirst() {
         if (this.isEmpty()) {
@@ -351,7 +350,6 @@ public interface NavigableSet<E> extends SortedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeLast() {
         if (this.isEmpty()) {
@@ -372,7 +370,6 @@ public interface NavigableSet<E> extends SortedSet<E> {
      *
      * @return a reverse-ordered view of this collection, as a {@code NavigableSet}
      * @since 21
-     * @hide
      */
     default NavigableSet<E> reversed() {
         return this.descendingSet();

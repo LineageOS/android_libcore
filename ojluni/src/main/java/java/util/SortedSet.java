@@ -274,7 +274,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     default void addFirst(E e) {
         throw new UnsupportedOperationException();
@@ -290,7 +289,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     default void addLast(E e) {
         throw new UnsupportedOperationException();
@@ -304,7 +302,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E getFirst() {
         return this.first();
@@ -318,7 +315,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E getLast() {
         return this.last();
@@ -335,7 +331,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeFirst() {
         E e = this.first();
@@ -354,7 +349,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      * @throws NoSuchElementException {@inheritDoc}
      * @throws UnsupportedOperationException {@inheritDoc}
      * @since 21
-     * @hide
      */
     default E removeLast() {
         E e = this.last();
@@ -377,7 +371,6 @@ public interface SortedSet<E> extends Set<E>, SequencedSet<E> {
      *
      * @return a reverse-ordered view of this collection, as a {@code SortedSet}
      * @since 21
-     * @hide
      */
     default SortedSet<E> reversed() {
         return ReverseOrderSortedSetView.of(this);

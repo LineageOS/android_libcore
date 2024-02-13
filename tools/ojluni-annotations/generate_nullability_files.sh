@@ -22,15 +22,7 @@ build/soong/soong_ui.bash --make-mode openjdk-sdk-stubs-no-javadoc libart-sdk-st
 for CLASS in "$@";
 do
   FILE=${CLASS//./\/}
-  if [[ "${CLASS:0:5}" == "java." || "${CLASS:0:6}" == "javax." || "${CLASS:0:4}" == "sun." \
-      || "${CLASS:0:4}" == "jdk." || "${CLASS:0:8}" == "com.sun." ]];
-  then
-    unzip out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/exportable/openjdk-sdk-stubs-no-javadoc-stubs.srcjar \
-      "${FILE}".java -d libcore/ojluni/annotations/flagged_api/
-    mv libcore/ojluni/annotations/flagged_api/"$FILE".java libcore/ojluni/annotations/flagged_api/"$FILE".annotated.java
-  else
-    unzip out/soong/.intermediates/libcore/libart-sdk-stubs-no-javadoc/android_common/exportable/libart-sdk-stubs-no-javadoc-stubs.srcjar \
-      "${FILE}".java -d libcore/luni/annotations/flagged_api/
-    mv libcore/luni/annotations/flagged_api/"$FILE".java libcore/luni/annotations/flagged_api/"$FILE".annotated.java
-  fi
+  unzip out/soong/.intermediates/libcore/openjdk-sdk-stubs-no-javadoc/android_common/exportable/openjdk-sdk-stubs-no-javadoc-stubs.srcjar \
+    "${FILE}".java -d libcore/ojluni/annotations/sdk/nullability/
+  mv libcore/ojluni/annotations/sdk/nullability/"$FILE".java libcore/ojluni/annotations/sdk/nullability/"$FILE".annotated.java
 done

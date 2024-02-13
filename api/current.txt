@@ -13118,11 +13118,17 @@ package java.util {
     ctor public ArrayList(int);
     ctor public ArrayList();
     ctor public ArrayList(@NonNull java.util.Collection<? extends E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addFirst(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addLast(E);
     method @NonNull public Object clone();
     method public void ensureCapacity(int);
     method public void forEach(@NonNull java.util.function.Consumer<? super E>);
     method public E get(int);
+    method @FlaggedApi("com.android.libcore.v_apis") public E getFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public E getLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeFirst();
     method public boolean removeIf(@NonNull java.util.function.Predicate<? super E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeLast();
     method public void replaceAll(@NonNull java.util.function.UnaryOperator<E>);
     method public int size();
     method public void sort(@Nullable java.util.Comparator<? super E>);
@@ -13608,6 +13614,7 @@ package java.util {
     method public static void rotate(@NonNull java.util.List<?>, int);
     method public static void shuffle(@NonNull java.util.List<?>);
     method public static void shuffle(@NonNull java.util.List<?>, @NonNull java.util.Random);
+    method @FlaggedApi("com.android.libcore.v_apis") public static void shuffle(@NonNull java.util.List<?>, @NonNull java.util.random.RandomGenerator);
     method @NonNull public static <T> java.util.Set<T> singleton(T);
     method @NonNull public static <T> java.util.List<T> singletonList(T);
     method @NonNull public static <K, V> java.util.Map<K,V> singletonMap(K, V);
@@ -13712,7 +13719,8 @@ package java.util {
     method @Deprecated public String toLocaleString();
   }
 
-  public interface Deque<E> extends java.util.Queue<E> {
+  public interface Deque<E> extends java.util.Queue<E> java.util.SequencedCollection<E> {
+    method @FlaggedApi("com.android.libcore.v_apis") public boolean add(E);
     method public void addFirst(E);
     method public void addLast(E);
     method @NonNull public java.util.Iterator<E> descendingIterator();
@@ -13730,6 +13738,7 @@ package java.util {
     method public boolean removeFirstOccurrence(@Nullable Object);
     method public E removeLast();
     method public boolean removeLastOccurrence(@Nullable Object);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public default java.util.Deque<E> reversed();
   }
 
   public abstract class Dictionary<K, V> {
@@ -13900,6 +13909,7 @@ package java.util {
     method public void forEach(@NonNull java.util.function.BiConsumer<? super K,? super V>);
     method @Nullable public V getOrDefault(@Nullable Object, @Nullable V);
     method @Nullable public V merge(K, @NonNull V, @NonNull java.util.function.BiFunction<? super V,? super V,? extends V>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <K, V> java.util.HashMap<K,V> newHashMap(int);
     method @Nullable public V putIfAbsent(K, V);
     method public boolean remove(@Nullable Object, @Nullable Object);
     method public boolean replace(K, @Nullable V, V);
@@ -13914,6 +13924,7 @@ package java.util {
     ctor public HashSet(int);
     method @NonNull public Object clone();
     method @NonNull public java.util.Iterator<E> iterator();
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <T> java.util.HashSet<T> newHashSet(int);
     method public int size();
     method @NonNull public java.util.Spliterator<E> spliterator();
   }
@@ -14066,20 +14077,35 @@ package java.util {
     method public default void remove();
   }
 
-  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> {
+  public class LinkedHashMap<K, V> extends java.util.HashMap<K,V> implements java.util.Map<K,V> java.util.SequencedMap<K,V> {
     ctor public LinkedHashMap(int, float);
     ctor public LinkedHashMap(int);
     ctor public LinkedHashMap();
     ctor public LinkedHashMap(java.util.Map<? extends K,? extends V>);
     ctor public LinkedHashMap(int, float, boolean);
+    method @FlaggedApi("com.android.libcore.v_apis") public static <K, V> java.util.LinkedHashMap<K,V> newLinkedHashMap(int);
+    method @FlaggedApi("com.android.libcore.v_apis") public V putFirst(K, V);
+    method @FlaggedApi("com.android.libcore.v_apis") public V putLast(K, V);
     method protected boolean removeEldestEntry(java.util.Map.Entry<K,V>);
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedMap<K,V> reversed();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedSet<java.util.Map.Entry<K,V>> sequencedEntrySet();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedSet<K> sequencedKeySet();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedCollection<V> sequencedValues();
   }
 
-  public class LinkedHashSet<E> extends java.util.HashSet<E> implements java.lang.Cloneable java.io.Serializable java.util.Set<E> {
+  public class LinkedHashSet<E> extends java.util.HashSet<E> implements java.lang.Cloneable java.util.SequencedSet<E> java.io.Serializable java.util.Set<E> {
     ctor public LinkedHashSet(int, float);
     ctor public LinkedHashSet(int);
     ctor public LinkedHashSet();
     ctor public LinkedHashSet(java.util.Collection<? extends E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addFirst(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addLast(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public E getFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public E getLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public static <T> java.util.LinkedHashSet<T> newLinkedHashSet(int);
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedSet<E> reversed();
   }
 
   public class LinkedList<E> extends java.util.AbstractSequentialList<E> implements java.lang.Cloneable java.util.Deque<E> java.util.List<E> java.io.Serializable {
@@ -14109,11 +14135,12 @@ package java.util {
     method public boolean removeFirstOccurrence(@Nullable Object);
     method public E removeLast();
     method public boolean removeLastOccurrence(@Nullable Object);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public java.util.LinkedList<E> reversed();
     method public int size();
     method @NonNull public java.util.Spliterator<E> spliterator();
   }
 
-  public interface List<E> extends java.util.Collection<E> {
+  public interface List<E> extends java.util.SequencedCollection<E> java.util.Collection<E> {
     method public void add(int, E);
     method public boolean addAll(int, @NonNull java.util.Collection<? extends E>);
     method @NonNull public static <E> java.util.List<E> copyOf(@NonNull java.util.Collection<? extends E>);
@@ -14136,6 +14163,7 @@ package java.util {
     method @NonNull @java.lang.SafeVarargs public static <E> java.util.List<E> of(@NonNull E...);
     method public E remove(int);
     method public default void replaceAll(@NonNull java.util.function.UnaryOperator<E>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public default java.util.List<E> reversed();
     method public E set(int, E);
     method public default void sort(@Nullable java.util.Comparator<? super E>);
     method @NonNull public java.util.List<E> subList(int, int);
@@ -14377,6 +14405,7 @@ package java.util {
     method @NonNull public java.util.NavigableSet<K> navigableKeySet();
     method @Nullable public java.util.Map.Entry<K,V> pollFirstEntry();
     method @Nullable public java.util.Map.Entry<K,V> pollLastEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public default java.util.NavigableMap<K,V> reversed();
     method @NonNull public java.util.NavigableMap<K,V> subMap(K, boolean, K, boolean);
     method @NonNull public java.util.NavigableMap<K,V> tailMap(K, boolean);
   }
@@ -14388,9 +14417,11 @@ package java.util {
     method public E floor(E);
     method public java.util.NavigableSet<E> headSet(E, boolean);
     method public E higher(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.Iterator<E> iterator();
     method public E lower(E);
     method public E pollFirst();
     method public E pollLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.NavigableSet<E> reversed();
     method public java.util.NavigableSet<E> subSet(E, boolean, E, boolean);
     method public java.util.NavigableSet<E> tailSet(E, boolean);
   }
@@ -14759,6 +14790,33 @@ package java.util {
     method public java.util.Scanner useRadix(int);
   }
 
+  @FlaggedApi("com.android.libcore.v_apis") public interface SequencedCollection<E> extends java.util.Collection<E> {
+    method @FlaggedApi("com.android.libcore.v_apis") public default void addFirst(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public default void addLast(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public default E getFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public default E getLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public default E removeFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public default E removeLast();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedCollection<E> reversed();
+  }
+
+  @FlaggedApi("com.android.libcore.v_apis") public interface SequencedMap<K, V> extends java.util.Map<K,V> {
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.Map.Entry<K,V> firstEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.Map.Entry<K,V> lastEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.Map.Entry<K,V> pollFirstEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.Map.Entry<K,V> pollLastEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") public default V putFirst(K, V);
+    method @FlaggedApi("com.android.libcore.v_apis") public default V putLast(K, V);
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedMap<K,V> reversed();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.SequencedSet<java.util.Map.Entry<K,V>> sequencedEntrySet();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.SequencedSet<K> sequencedKeySet();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.SequencedCollection<V> sequencedValues();
+  }
+
+  @FlaggedApi("com.android.libcore.v_apis") public interface SequencedSet<E> extends java.util.SequencedCollection<E> java.util.Set<E> {
+    method @FlaggedApi("com.android.libcore.v_apis") public java.util.SequencedSet<E> reversed();
+  }
+
   public class ServiceConfigurationError extends java.lang.Error {
     ctor public ServiceConfigurationError(String);
     ctor public ServiceConfigurationError(String, Throwable);
@@ -14818,20 +14876,23 @@ package java.util {
     field public static final int WALL_TIME = 0; // 0x0
   }
 
-  public interface SortedMap<K, V> extends java.util.Map<K,V> {
+  public interface SortedMap<K, V> extends java.util.SequencedMap<K,V> java.util.Map<K,V> {
     method @Nullable public java.util.Comparator<? super K> comparator();
     method public K firstKey();
     method @NonNull public java.util.SortedMap<K,V> headMap(K);
     method public K lastKey();
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public default java.util.SortedMap<K,V> reversed();
     method @NonNull public java.util.SortedMap<K,V> subMap(K, K);
     method @NonNull public java.util.SortedMap<K,V> tailMap(K);
   }
 
-  public interface SortedSet<E> extends java.util.Set<E> {
+  public interface SortedSet<E> extends java.util.Set<E> java.util.SequencedSet<E> {
     method public java.util.Comparator<? super E> comparator();
     method public E first();
     method public java.util.SortedSet<E> headSet(E);
     method public E last();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.SortedSet<E> reversed();
+    method @FlaggedApi("com.android.libcore.v_apis") public default java.util.Spliterator<E> spliterator();
     method public java.util.SortedSet<E> subSet(E, E);
     method public java.util.SortedSet<E> tailSet(E);
   }
@@ -15084,7 +15145,9 @@ package java.util {
     method @NonNull public java.util.NavigableSet<K> navigableKeySet();
     method @Nullable public java.util.Map.Entry<K,V> pollFirstEntry();
     method @Nullable public java.util.Map.Entry<K,V> pollLastEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") @Nullable public V putFirst(K, V);
     method @Nullable public V putIfAbsent(K, V);
+    method @FlaggedApi("com.android.libcore.v_apis") @Nullable public V putLast(K, V);
     method public boolean replace(K, @Nullable V, V);
     method public V replace(K, V);
     method public void replaceAll(@NonNull java.util.function.BiFunction<? super K,? super V,? extends V>);
@@ -15099,6 +15162,8 @@ package java.util {
     ctor public TreeSet(java.util.Comparator<? super E>);
     ctor public TreeSet(java.util.Collection<? extends E>);
     ctor public TreeSet(java.util.SortedSet<E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addFirst(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addLast(E);
     method public E ceiling(E);
     method public Object clone();
     method public java.util.Comparator<? super E> comparator();
@@ -15597,7 +15662,9 @@ package java.util.concurrent {
     method public java.util.NavigableSet<K> navigableKeySet();
     method public java.util.Map.Entry<K,V> pollFirstEntry();
     method public java.util.Map.Entry<K,V> pollLastEntry();
+    method @FlaggedApi("com.android.libcore.v_apis") public V putFirst(K, V);
     method public V putIfAbsent(K, V);
+    method @FlaggedApi("com.android.libcore.v_apis") public V putLast(K, V);
     method public boolean remove(Object, Object);
     method public boolean replace(K, V, V);
     method public V replace(K, V);
@@ -15613,6 +15680,8 @@ package java.util.concurrent {
     ctor public ConcurrentSkipListSet(java.util.Comparator<? super E>);
     ctor public ConcurrentSkipListSet(java.util.Collection<? extends E>);
     ctor public ConcurrentSkipListSet(java.util.SortedSet<E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addFirst(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addLast(E);
     method public E ceiling(E);
     method public java.util.concurrent.ConcurrentSkipListSet<E> clone();
     method public java.util.Comparator<? super E> comparator();
@@ -15645,7 +15714,9 @@ package java.util.concurrent {
     method public boolean addAll(@NonNull java.util.Collection<? extends E>);
     method public boolean addAll(int, @NonNull java.util.Collection<? extends E>);
     method public int addAllAbsent(@NonNull java.util.Collection<? extends E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addFirst(E);
     method public boolean addIfAbsent(E);
+    method @FlaggedApi("com.android.libcore.v_apis") public void addLast(E);
     method public void clear();
     method @NonNull public Object clone();
     method public boolean contains(@Nullable Object);
@@ -15653,6 +15724,8 @@ package java.util.concurrent {
     method public boolean equals(@Nullable Object);
     method public void forEach(@NonNull java.util.function.Consumer<? super E>);
     method public E get(int);
+    method @FlaggedApi("com.android.libcore.v_apis") public E getFirst();
+    method @FlaggedApi("com.android.libcore.v_apis") public E getLast();
     method public int hashCode();
     method public int indexOf(@Nullable Object);
     method public int indexOf(@Nullable E, int);
@@ -15665,9 +15738,12 @@ package java.util.concurrent {
     method public E remove(int);
     method public boolean remove(@Nullable Object);
     method public boolean removeAll(@NonNull java.util.Collection<?>);
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeFirst();
     method public boolean removeIf(@NonNull java.util.function.Predicate<? super E>);
+    method @FlaggedApi("com.android.libcore.v_apis") public E removeLast();
     method public void replaceAll(@NonNull java.util.function.UnaryOperator<E>);
     method public boolean retainAll(@NonNull java.util.Collection<?>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public java.util.List<E> reversed();
     method public E set(int, E);
     method public int size();
     method public void sort(@Nullable java.util.Comparator<? super E>);

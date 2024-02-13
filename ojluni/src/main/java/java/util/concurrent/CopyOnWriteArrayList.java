@@ -412,7 +412,6 @@ public class CopyOnWriteArrayList<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E getFirst() {
         Object[] es = getArray();
@@ -427,7 +426,6 @@ public class CopyOnWriteArrayList<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E getLast() {
         Object[] es = getArray();
@@ -507,7 +505,6 @@ public class CopyOnWriteArrayList<E>
      * {@inheritDoc}
      *
      * @since 21
-     * @hide
      */
     public void addFirst(E e) {
         add(0, e);
@@ -517,7 +514,6 @@ public class CopyOnWriteArrayList<E>
      * {@inheritDoc}
      *
      * @since 21
-     * @hide
      */
     public void addLast(E e) {
         synchronized (lock) {
@@ -557,7 +553,6 @@ public class CopyOnWriteArrayList<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E removeFirst() {
         synchronized (lock) {
@@ -573,7 +568,6 @@ public class CopyOnWriteArrayList<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E removeLast() {
         synchronized (lock) {
@@ -1741,7 +1735,6 @@ public class CopyOnWriteArrayList<E>
      * the same restrictions as those of this list.
      *
      * @since 21
-     * @hide
      */
     public List<E> reversed() {
         return new Reversed<>(this, lock);

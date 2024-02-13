@@ -53,6 +53,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.random.RandomGenerator;
 
 public class CollectionsTest extends junit.framework.TestCase {
 
@@ -603,6 +604,10 @@ public class CollectionsTest extends junit.framework.TestCase {
     public void testShuffleRandomAccessWithSeededRandom() {
         List<String> list = Arrays.asList("A", "B", "C", "D", "E", "F", "G");
         Collections.shuffle(list, new Random(0));
+        assertEquals(Arrays.asList("B", "A", "D", "C", "G", "E", "F"), list);
+
+        list = Arrays.asList("A", "B", "C", "D", "E", "F", "G");
+        Collections.shuffle(list, (RandomGenerator) new Random(0));
         assertEquals(Arrays.asList("B", "A", "D", "C", "G", "E", "F"), list);
     }
 

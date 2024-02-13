@@ -406,7 +406,6 @@ public class LinkedHashMap<K,V>
      * so that it is first in encounter order.
      *
      * @since 21
-     * @hide
      */
     public V putFirst(K k, V v) {
         try {
@@ -424,7 +423,6 @@ public class LinkedHashMap<K,V>
      * so that it is last in encounter order.
      *
      * @since 21
-     * @hide
      */
     public V putLast(K k, V v) {
         try {
@@ -1113,7 +1111,6 @@ public class LinkedHashMap<K,V>
      * @return the newly created map
      * @throws IllegalArgumentException if numMappings is negative
      * @since 19
-     * @hide
      */
     public static <K, V> LinkedHashMap<K, V> newLinkedHashMap(int numMappings) {
         if (numMappings < 0) {
