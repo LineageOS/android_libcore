@@ -3248,6 +3248,7 @@ package java.lang {
     field public static final double NEGATIVE_INFINITY = (-1.0/0.0);
     field public static final double NaN = (0.0/0.0);
     field public static final double POSITIVE_INFINITY = (1.0/0.0);
+    field @FlaggedApi("com.android.libcore.v_apis") public static final int PRECISION = 53; // 0x35
     field public static final int SIZE = 64; // 0x40
     field public static final Class<java.lang.Double> TYPE;
   }
@@ -3330,6 +3331,7 @@ package java.lang {
     field public static final float NEGATIVE_INFINITY = (-1.0f/0.0f);
     field public static final float NaN = (0.0f/0.0f);
     field public static final float POSITIVE_INFINITY = (1.0f/0.0f);
+    field @FlaggedApi("com.android.libcore.v_apis") public static final int PRECISION = 24; // 0x18
     field public static final int SIZE = 32; // 0x20
     field public static final Class<java.lang.Float> TYPE;
   }
@@ -3545,18 +3547,34 @@ package java.lang {
     method public static double atan2(double, double);
     method public static double cbrt(double);
     method public static double ceil(double);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilDiv(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDiv(long, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDiv(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilDivExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDivExact(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilMod(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilMod(long, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilMod(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int clamp(long, int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long clamp(long, long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static double clamp(double, double, double);
+    method @FlaggedApi("com.android.libcore.v_apis") public static float clamp(float, float, float);
     method public static double copySign(double, double);
     method public static float copySign(float, float);
     method public static double cos(double);
     method public static double cosh(double);
     method public static int decrementExact(int);
     method public static long decrementExact(long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int divideExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long divideExact(long, long);
     method public static double exp(double);
     method public static double expm1(double);
     method public static double floor(double);
     method public static int floorDiv(int, int);
     method public static long floorDiv(long, int);
     method public static long floorDiv(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int floorDivExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long floorDivExact(long, long);
     method public static int floorMod(int, int);
     method public static int floorMod(long, int);
     method public static long floorMod(long, long);
@@ -3612,8 +3630,10 @@ package java.lang {
     method public static double toRadians(double);
     method public static double ulp(double);
     method public static float ulp(float);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long unsignedMultiplyHigh(long, long);
     field public static final double E = 2.718281828459045;
     field public static final double PI = 3.141592653589793;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final double TAU = 6.283185307179586;
   }
 
   public class NegativeArraySizeException extends java.lang.RuntimeException {
@@ -3969,18 +3989,34 @@ package java.lang {
     method public static double atan2(double, double);
     method public static double cbrt(double);
     method public static double ceil(double);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilDiv(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDiv(long, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDiv(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilDivExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilDivExact(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilMod(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int ceilMod(long, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long ceilMod(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int clamp(long, int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long clamp(long, long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static double clamp(double, double, double);
+    method @FlaggedApi("com.android.libcore.v_apis") public static float clamp(float, float, float);
     method public static double copySign(double, double);
     method public static float copySign(float, float);
     method public static double cos(double);
     method public static double cosh(double);
     method public static int decrementExact(int);
     method public static long decrementExact(long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int divideExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long divideExact(long, long);
     method public static double exp(double);
     method public static double expm1(double);
     method public static double floor(double);
     method public static int floorDiv(int, int);
     method public static long floorDiv(long, int);
     method public static long floorDiv(long, long);
+    method @FlaggedApi("com.android.libcore.v_apis") public static int floorDivExact(int, int);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long floorDivExact(long, long);
     method public static int floorMod(int, int);
     method public static int floorMod(long, int);
     method public static long floorMod(long, long);
@@ -4036,8 +4072,10 @@ package java.lang {
     method public static double toRadians(double);
     method public static double ulp(double);
     method public static float ulp(float);
+    method @FlaggedApi("com.android.libcore.v_apis") public static long unsignedMultiplyHigh(long, long);
     field public static final double E = 2.718281828459045;
     field public static final double PI = 3.141592653589793;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final double TAU = 6.283185307179586;
   }
 
   public final class String implements java.lang.CharSequence java.lang.Comparable<java.lang.String> java.io.Serializable {
