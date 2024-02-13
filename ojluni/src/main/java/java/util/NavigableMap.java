@@ -441,7 +441,6 @@ public interface NavigableMap<K,V> extends SortedMap<K,V> {
      *
      * @return a reverse-ordered view of this map, as a {@code NavigableMap}
      * @since 21
-     * @hide
      */
     default NavigableMap<K, V> reversed() {
         return this.descendingMap();

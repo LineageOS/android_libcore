@@ -85,4 +85,7 @@ public void forEach(@libcore.util.NonNull java.util.function.BiConsumer<? super 
 public void replaceAll(@libcore.util.NonNull java.util.function.BiFunction<? super @libcore.util.NullFromTypeParam K,? super @libcore.util.NullFromTypeParam V,? extends @libcore.util.NullFromTypeParam V> function) { throw new RuntimeException("Stub!"); }
 
 @libcore.util.NonNull public java.lang.Object clone() { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public static <K, V> java.util.HashMap<K, V> newHashMap(int numMappings) { throw new RuntimeException("Stub!"); }
+
 }

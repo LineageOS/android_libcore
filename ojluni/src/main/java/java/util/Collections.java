@@ -522,7 +522,6 @@ public class Collections {
      * @throws UnsupportedOperationException if the specified list or its
      *         list-iterator does not support the {@code set} operation.
      * @since 21
-     * @hide
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void shuffle(List<?> list, RandomGenerator rnd) {

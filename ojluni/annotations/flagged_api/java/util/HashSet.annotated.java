@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,36 +26,40 @@
 
 package java.util;
 
-
 @SuppressWarnings({"unchecked", "deprecation", "all"})
 public class HashSet<E> extends java.util.AbstractSet<E> implements java.util.Set<E>, java.lang.Cloneable, java.io.Serializable {
 
 public HashSet() { throw new RuntimeException("Stub!"); }
 
-public HashSet(@libcore.util.NonNull java.util.Collection<? extends @libcore.util.NullFromTypeParam E> c) { throw new RuntimeException("Stub!"); }
+public HashSet(java.util.Collection<? extends E> c) { throw new RuntimeException("Stub!"); }
 
 public HashSet(int initialCapacity, float loadFactor) { throw new RuntimeException("Stub!"); }
 
 public HashSet(int initialCapacity) { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Iterator<@libcore.util.NullFromTypeParam E> iterator() { throw new RuntimeException("Stub!"); }
+public java.util.Iterator<E> iterator() { throw new RuntimeException("Stub!"); }
 
 public int size() { throw new RuntimeException("Stub!"); }
 
 public boolean isEmpty() { throw new RuntimeException("Stub!"); }
 
-public boolean contains(@libcore.util.Nullable java.lang.Object o) { throw new RuntimeException("Stub!"); }
+public boolean contains(java.lang.Object o) { throw new RuntimeException("Stub!"); }
 
-public boolean add(@libcore.util.NullFromTypeParam E e) { throw new RuntimeException("Stub!"); }
+public boolean add(E e) { throw new RuntimeException("Stub!"); }
 
-public boolean remove(@libcore.util.Nullable java.lang.Object o) { throw new RuntimeException("Stub!"); }
+public boolean remove(java.lang.Object o) { throw new RuntimeException("Stub!"); }
 
 public void clear() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.lang.Object clone() { throw new RuntimeException("Stub!"); }
+public java.lang.Object clone() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public java.util.Spliterator<@libcore.util.NullFromTypeParam E> spliterator() { throw new RuntimeException("Stub!"); }
+public java.util.Spliterator<E> spliterator() { throw new RuntimeException("Stub!"); }
 
-@libcore.util.NonNull public static <T> java.util.HashSet<T> newHashSet(int numElements) { throw new RuntimeException("Stub!"); }
+public java.lang.Object[] toArray() { throw new RuntimeException("Stub!"); }
 
+public <T> T[] toArray(T[] a) { throw new RuntimeException("Stub!"); }
+
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+public static <T> java.util.HashSet<T> newHashSet(int numElements) { throw new RuntimeException("Stub!"); }
 }
+

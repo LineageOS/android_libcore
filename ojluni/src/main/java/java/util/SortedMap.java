@@ -292,7 +292,6 @@ public interface SortedMap<K,V> extends SequencedMap<K,V>, Map<K,V> {
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
      default V putFirst(K k, V v) {
         throw new UnsupportedOperationException();
@@ -308,7 +307,6 @@ public interface SortedMap<K,V> extends SequencedMap<K,V>, Map<K,V> {
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     default V putLast(K k, V v) {
         throw new UnsupportedOperationException();
@@ -329,7 +327,6 @@ public interface SortedMap<K,V> extends SequencedMap<K,V>, Map<K,V> {
      *
      * @return a reverse-ordered view of this map, as a {@code SortedMap}
      * @since 21
-     * @hide
      */
     default SortedMap<K, V> reversed() {
         return ReverseOrderSortedMapView.of(this);
