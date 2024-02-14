@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 
 import java.math.BigInteger;
 import java.security.spec.AlgorithmParameterSpec;
+import java.security.spec.PSSParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 /**
@@ -63,6 +64,13 @@ public class RSAKeyGenParameterSpecTest extends TestCase {
         RSAKeyGenParameterSpec rkgps =
             new RSAKeyGenParameterSpec(512, BigInteger.valueOf(0L));
         assertEquals(0, rkgps.getPublicExponent().intValue());
+    }
+
+    public final void testGetKeyParams() {
+        AlgorithmParameterSpec aps = new PSSParameterSpec(20);
+        RSAKeyGenParameterSpec rkgps =
+                new RSAKeyGenParameterSpec(512, BigInteger.valueOf(0L), aps);
+        assertSame(aps, rkgps.getKeyParams());
     }
 
     /**
