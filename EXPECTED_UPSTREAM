@@ -40,7 +40,7 @@ ojluni/src/main/java/java/io/CharArrayReader.java,jdk11u/jdk-11.0.13-ga,src/java
 ojluni/src/main/java/java/io/CharArrayWriter.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/CharArrayWriter.java
 ojluni/src/main/java/java/io/CharConversionException.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/CharConversionException.java
 ojluni/src/main/java/java/io/Closeable.java,jdk17u/jdk-17.0.6-ga,src/java.base/share/classes/java/io/Closeable.java
-ojluni/src/main/java/java/io/Console.java,jdk8u/jdk8u121-b13,jdk/src/share/classes/java/io/Console.java
+ojluni/src/main/java/java/io/Console.java,jdk17u/jdk-17.0.10-ga,src/java.base/share/classes/java/io/Console.java
 ojluni/src/main/java/java/io/DataInput.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/DataInput.java
 ojluni/src/main/java/java/io/DataInputStream.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/DataInputStream.java
 ojluni/src/main/java/java/io/DataOutput.java,jdk11u/jdk-11.0.13-ga,src/java.base/share/classes/java/io/DataOutput.java
