@@ -666,7 +666,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedSet<K> sequencedKeySet() {
         Set<K> ks = keySet;
@@ -818,7 +817,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedCollection<V> sequencedValues() {
         Collection<V> vs = values;
@@ -926,7 +924,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedSet<Map.Entry<K, V>> sequencedEntrySet() {
         Set<Map.Entry<K, V>> es = entrySet;
@@ -1130,7 +1127,6 @@ public class LinkedHashMap<K,V>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedMap<K, V> reversed() {
         return new ReversedLinkedHashMapView<>(this);

@@ -170,6 +170,13 @@ public static <T> boolean addAll(@libcore.util.NonNull java.util.Collection<? su
 
 @libcore.util.NonNull public static <T> java.util.Queue<@libcore.util.NullFromTypeParam T> asLifoQueue(@libcore.util.NonNull java.util.Deque<@libcore.util.NullFromTypeParam T> deque) { throw new RuntimeException("Stub!"); }
 
+@libcore.util.NonNull public static <T> java.util.SequencedCollection<T> unmodifiableSequencedCollection(@libcore.util.NonNull java.util.SequencedCollection<? extends T> c) { throw new RuntimeException("Stub!"); }
+@libcore.util.NonNull public static <T> java.util.SequencedSet<T> unmodifiableSequencedSet(@libcore.util.NonNull java.util.SequencedSet<? extends T> s) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public static <K, V> java.util.SequencedMap<K,V> unmodifiableSequencedMap(@libcore.util.NonNull java.util.SequencedMap<? extends K,? extends V> m) { throw new RuntimeException("Stub!"); }
+
+@libcore.util.NonNull public static <E> java.util.SequencedSet<E> newSequencedSetFromMap(@libcore.util.NonNull java.util.SequencedMap<E,java.lang.Boolean> map) { throw new RuntimeException("Stub!"); }
+
 @libcore.util.NonNull public static final java.util.List EMPTY_LIST;
 static { EMPTY_LIST = null; }
 
