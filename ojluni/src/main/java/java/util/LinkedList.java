@@ -1281,7 +1281,6 @@ public class LinkedList<E>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public LinkedList<E> reversed() {
         return new ReverseOrderLinkedListView<>(this, super.reversed(), Deque.super.reversed());

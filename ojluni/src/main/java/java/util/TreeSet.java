@@ -471,7 +471,6 @@ public class TreeSet<E> extends AbstractSet<E>
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     public void addFirst(E e) {
         throw new UnsupportedOperationException();
@@ -484,7 +483,6 @@ public class TreeSet<E> extends AbstractSet<E>
      *
      * @throws UnsupportedOperationException always
      * @since 21
-     * @hide
      */
     public void addLast(E e) {
         throw new UnsupportedOperationException();

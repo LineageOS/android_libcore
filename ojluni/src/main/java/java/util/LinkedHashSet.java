@@ -217,7 +217,6 @@ public class LinkedHashSet<E>
      * @return the newly created set
      * @throws IllegalArgumentException if numElements is negative
      * @since 19
-     * @hide
      */
     public static <T> LinkedHashSet<T> newLinkedHashSet(int numElements) {
         if (numElements < 0) {
@@ -238,7 +237,6 @@ public class LinkedHashSet<E>
      * first in encounter order.
      *
      * @since 21
-     * @hide
      */
     public void addFirst(E e) {
         map().putFirst(e, PRESENT);
@@ -251,7 +249,6 @@ public class LinkedHashSet<E>
      * last in encounter order.
      *
      * @since 21
-     * @hide
      */
     public void addLast(E e) {
         map().putLast(e, PRESENT);
@@ -262,7 +259,6 @@ public class LinkedHashSet<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E getFirst() {
         return map().sequencedKeySet().getFirst();
@@ -273,7 +269,6 @@ public class LinkedHashSet<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E getLast() {
         return map().sequencedKeySet().getLast();
@@ -284,7 +279,6 @@ public class LinkedHashSet<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E removeFirst() {
         return map().sequencedKeySet().removeFirst();
@@ -295,7 +289,6 @@ public class LinkedHashSet<E>
      *
      * @throws NoSuchElementException {@inheritDoc}
      * @since 21
-     * @hide
      */
     public E removeLast() {
         return map().sequencedKeySet().removeLast();
