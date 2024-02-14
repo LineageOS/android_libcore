@@ -9478,7 +9478,13 @@ package java.security.spec {
     field public static final java.security.spec.MGF1ParameterSpec SHA224;
     field public static final java.security.spec.MGF1ParameterSpec SHA256;
     field public static final java.security.spec.MGF1ParameterSpec SHA384;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_224;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_256;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_384;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_512;
     field public static final java.security.spec.MGF1ParameterSpec SHA512;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA512_224;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA512_256;
   }
 
   public class NamedParameterSpec implements java.security.spec.AlgorithmParameterSpec {
