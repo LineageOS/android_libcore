@@ -302,7 +302,6 @@ public class LinkedHashSet<E>
      *
      * @return {@inheritDoc}
      * @since 21
-     * @hide
      */
     public SequencedSet<E> reversed() {
         class ReverseLinkedHashSetView extends AbstractSet<E> implements SequencedSet<E> {
