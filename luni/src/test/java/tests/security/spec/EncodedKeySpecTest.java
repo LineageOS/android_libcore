@@ -118,4 +118,21 @@ public class EncodedKeySpecTest extends TestCase {
         assertTrue(ek1[3] == (byte) 4);
     }
 
+    public final void testGetAlgorithm() {
+        byte[] encodedKey = new byte[] { (byte) 1, (byte) 2, (byte) 3, (byte) 4 };
+        String algo = "MyAlgorithm";
+        EncodedKeySpec spec = new MyEncodedKeySpec2(encodedKey, algo);
+        assertEquals(algo, spec.getAlgorithm());
+    }
+
+    private static class MyEncodedKeySpec2 extends EncodedKeySpec {
+        MyEncodedKeySpec2(byte[] encodedKey, String algorithm) {
+            super(encodedKey, algorithm);
+        }
+
+        @Override
+        public String getFormat() {
+            return "MyEncodedKeySpec2";
+        }
+    }
 }

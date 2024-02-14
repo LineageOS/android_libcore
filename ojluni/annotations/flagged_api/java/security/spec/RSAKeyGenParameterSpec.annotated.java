@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,45 +23,28 @@
  * questions.
  */
 
+
 package java.security.spec;
 
-import java.security.GeneralSecurityException;
+@SuppressWarnings({"unchecked", "deprecation", "all"})
+public class RSAKeyGenParameterSpec implements java.security.spec.AlgorithmParameterSpec {
 
-/**
- * This is the exception for invalid parameter specifications.
- *
- * @author Jan Luehe
- *
- *
- * @see java.security.AlgorithmParameters
- * @see AlgorithmParameterSpec
- * @see DSAParameterSpec
- *
- * @since 1.2
- */
+public RSAKeyGenParameterSpec(int keysize, java.math.BigInteger publicExponent) { throw new RuntimeException("Stub!"); }
 
-public class InvalidParameterSpecException extends GeneralSecurityException {
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+public RSAKeyGenParameterSpec(int keysize, java.math.BigInteger publicExponent, java.security.spec.AlgorithmParameterSpec keyParams) { throw new RuntimeException("Stub!"); }
 
-    @java.io.Serial
-    private static final long serialVersionUID = -970468769593399342L;
+public int getKeysize() { throw new RuntimeException("Stub!"); }
 
-    /**
-     * Constructs an InvalidParameterSpecException with no detail message. A
-     * detail message is a String that describes this particular
-     * exception.
-     */
-    public InvalidParameterSpecException() {
-        super();
-    }
+public java.math.BigInteger getPublicExponent() { throw new RuntimeException("Stub!"); }
 
-    /**
-     * Constructs an InvalidParameterSpecException with the specified detail
-     * message. A detail message is a String that describes this
-     * particular exception.
-     *
-     * @param msg the detail message.
-     */
-    public InvalidParameterSpecException(String msg) {
-        super(msg);
-    }
+@android.annotation.FlaggedApi(com.android.libcore.Flags.FLAG_V_APIS)
+public java.security.spec.AlgorithmParameterSpec getKeyParams() { throw new RuntimeException("Stub!"); }
+
+public static final java.math.BigInteger F0;
+static { F0 = null; }
+
+public static final java.math.BigInteger F4;
+static { F4 = null; }
 }
+

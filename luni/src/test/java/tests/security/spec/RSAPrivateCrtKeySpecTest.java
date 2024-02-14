@@ -25,7 +25,9 @@ package tests.security.spec;
 import junit.framework.TestCase;
 
 import java.math.BigInteger;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
+import java.security.spec.PSSParameterSpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.security.spec.RSAPrivateKeySpec;
 
@@ -226,6 +228,21 @@ public class RSAPrivateCrtKeySpecTest extends TestCase {
                 BigInteger.ONE,
                 BigInteger.ONE);
         assertTrue(BigInteger.valueOf(5L).equals(ks.getPrivateExponent()));
+    }
+
+    public final void testGetParams() {
+        AlgorithmParameterSpec aps = new PSSParameterSpec(20);
+        RSAPrivateCrtKeySpec ks = new RSAPrivateCrtKeySpec(
+                BigInteger.ONE,
+                BigInteger.ONE,
+                BigInteger.valueOf(5L),
+                BigInteger.ONE,
+                BigInteger.ONE,
+                BigInteger.ONE,
+                BigInteger.ONE,
+                BigInteger.ONE,
+                aps);
+        assertSame(aps, ks.getParams());
     }
 
 }

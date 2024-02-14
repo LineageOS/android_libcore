@@ -25,7 +25,9 @@ package tests.security.spec;
 import junit.framework.TestCase;
 
 import java.math.BigInteger;
+import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.KeySpec;
+import java.security.spec.PSSParameterSpec;
 import java.security.spec.RSAMultiPrimePrivateCrtKeySpec;
 import java.security.spec.RSAOtherPrimeInfo;
 import java.security.spec.RSAPrivateKeySpec;
@@ -674,6 +676,23 @@ public class RSAMultiPrimePrivateCrtKeySpecTest extends TestCase {
                     BigInteger.ONE,
                     opi);
         assertTrue(BigInteger.ONE.equals(ks.getPrivateExponent()));
+    }
+
+    public final void testGetParams() {
+        AlgorithmParameterSpec aps = new PSSParameterSpec(20);
+        RSAMultiPrimePrivateCrtKeySpec ks =
+                new RSAMultiPrimePrivateCrtKeySpec(
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        BigInteger.ONE,
+                        opi,
+                        aps);
+        assertSame(aps, ks.getParams());
     }
 
 // private stuff
