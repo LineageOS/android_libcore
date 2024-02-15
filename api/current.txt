@@ -1420,6 +1420,7 @@ package java.io {
   }
 
   public final class Console implements java.io.Flushable {
+    method @FlaggedApi("com.android.libcore.v_apis") public java.nio.charset.Charset charset();
     method public void flush();
     method public java.io.Console format(String, java.lang.Object...);
     method public java.io.Console printf(String, java.lang.Object...);
