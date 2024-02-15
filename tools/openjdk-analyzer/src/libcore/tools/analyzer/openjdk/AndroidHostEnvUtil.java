@@ -56,6 +56,7 @@ public class AndroidHostEnvUtil {
             case "9":
             case "11":
             case "17":
+            case "21":
                 return getAndroidBuildTop().resolve(
                         "prebuilts/jdk/jdk" + classpath + "/linux-x86/jmods/java.base.jmod");
             default:

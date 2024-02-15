@@ -9450,6 +9450,8 @@ package java.security.spec {
 
   public abstract class EncodedKeySpec implements java.security.spec.KeySpec {
     ctor public EncodedKeySpec(byte[]);
+    ctor @FlaggedApi("com.android.libcore.v_apis") protected EncodedKeySpec(byte[], String);
+    method @FlaggedApi("com.android.libcore.v_apis") public String getAlgorithm();
     method public byte[] getEncoded();
     method public abstract String getFormat();
   }
@@ -9476,7 +9478,13 @@ package java.security.spec {
     field public static final java.security.spec.MGF1ParameterSpec SHA224;
     field public static final java.security.spec.MGF1ParameterSpec SHA256;
     field public static final java.security.spec.MGF1ParameterSpec SHA384;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_224;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_256;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_384;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA3_512;
     field public static final java.security.spec.MGF1ParameterSpec SHA512;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA512_224;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final java.security.spec.MGF1ParameterSpec SHA512_256;
   }
 
   public class NamedParameterSpec implements java.security.spec.AlgorithmParameterSpec {
@@ -9490,6 +9498,7 @@ package java.security.spec {
 
   public class PKCS8EncodedKeySpec extends java.security.spec.EncodedKeySpec {
     ctor public PKCS8EncodedKeySpec(byte[]);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public PKCS8EncodedKeySpec(byte[], String);
     method public final String getFormat();
   }
 
@@ -9502,10 +9511,13 @@ package java.security.spec {
     method public int getSaltLength();
     method public int getTrailerField();
     field public static final java.security.spec.PSSParameterSpec DEFAULT;
+    field @FlaggedApi("com.android.libcore.v_apis") public static final int TRAILER_FIELD_BC = 1; // 0x1
   }
 
   public class RSAKeyGenParameterSpec implements java.security.spec.AlgorithmParameterSpec {
     ctor public RSAKeyGenParameterSpec(int, java.math.BigInteger);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public RSAKeyGenParameterSpec(int, java.math.BigInteger, java.security.spec.AlgorithmParameterSpec);
+    method @FlaggedApi("com.android.libcore.v_apis") public java.security.spec.AlgorithmParameterSpec getKeyParams();
     method public int getKeysize();
     method public java.math.BigInteger getPublicExponent();
     field public static final java.math.BigInteger F0;
@@ -9514,6 +9526,7 @@ package java.security.spec {
 
   public class RSAMultiPrimePrivateCrtKeySpec extends java.security.spec.RSAPrivateKeySpec {
     ctor public RSAMultiPrimePrivateCrtKeySpec(java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.security.spec.RSAOtherPrimeInfo[]);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public RSAMultiPrimePrivateCrtKeySpec(java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.security.spec.RSAOtherPrimeInfo[], java.security.spec.AlgorithmParameterSpec);
     method public java.math.BigInteger getCrtCoefficient();
     method public java.security.spec.RSAOtherPrimeInfo[] getOtherPrimeInfo();
     method public java.math.BigInteger getPrimeExponentP();
@@ -9532,6 +9545,7 @@ package java.security.spec {
 
   public class RSAPrivateCrtKeySpec extends java.security.spec.RSAPrivateKeySpec {
     ctor public RSAPrivateCrtKeySpec(java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public RSAPrivateCrtKeySpec(java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.math.BigInteger, java.security.spec.AlgorithmParameterSpec);
     method public java.math.BigInteger getCrtCoefficient();
     method public java.math.BigInteger getPrimeExponentP();
     method public java.math.BigInteger getPrimeExponentQ();
@@ -9542,18 +9556,23 @@ package java.security.spec {
 
   public class RSAPrivateKeySpec implements java.security.spec.KeySpec {
     ctor public RSAPrivateKeySpec(java.math.BigInteger, java.math.BigInteger);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public RSAPrivateKeySpec(java.math.BigInteger, java.math.BigInteger, java.security.spec.AlgorithmParameterSpec);
     method public java.math.BigInteger getModulus();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.security.spec.AlgorithmParameterSpec getParams();
     method public java.math.BigInteger getPrivateExponent();
   }
 
   public class RSAPublicKeySpec implements java.security.spec.KeySpec {
     ctor public RSAPublicKeySpec(java.math.BigInteger, java.math.BigInteger);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public RSAPublicKeySpec(java.math.BigInteger, java.math.BigInteger, java.security.spec.AlgorithmParameterSpec);
     method public java.math.BigInteger getModulus();
+    method @FlaggedApi("com.android.libcore.v_apis") public java.security.spec.AlgorithmParameterSpec getParams();
     method public java.math.BigInteger getPublicExponent();
   }
 
   public class X509EncodedKeySpec extends java.security.spec.EncodedKeySpec {
     ctor public X509EncodedKeySpec(byte[]);
+    ctor @FlaggedApi("com.android.libcore.v_apis") public X509EncodedKeySpec(byte[], String);
     method public final String getFormat();
   }
 
