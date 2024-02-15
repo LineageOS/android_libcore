@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2007, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2021, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,6 +23,9 @@
  * questions.
  */
 
+#include <fcntl.h>
+#include <limits.h>
+
 #include "jni.h"
 #include "jni_util.h"
 #include "jlong.h"
@@ -31,9 +34,6 @@
 #include "jvm.h"
 
 #include "java_io_FileInputStream.h"
-
-#include <fcntl.h>
-#include <limits.h>
 
 #include "io_util_md.h"
 
@@ -57,7 +57,7 @@ Java_java_io_FileInputStream_initIDs(JNIEnv *env, jclass fdClass) {
  */
 
 JNIEXPORT void JNICALL
-Java_java_io_FileInputStream_open(JNIEnv *env, jobject this, jstring path) {
+Java_java_io_FileInputStream_open0(JNIEnv *env, jobject this, jstring path) {
     fileOpen(env, this, path, fis_fd, O_RDONLY);
 }
 
@@ -73,10 +73,43 @@ Java_java_io_FileInputStream_readBytes(JNIEnv *env, jobject this,
 }
 
 JNIEXPORT jlong JNICALL
-Java_java_io_FileInputStream_skip(JNIEnv *env, jobject this, jlong toSkip) {
+Java_java_io_FileInputStream_length0(JNIEnv *env, jobject this) {
+
+    FD fd;
+    jlong length = jlong_zero;
+
+    fd = getFD(env, this, fis_fd);
+    if (fd == -1) {
+        JNU_ThrowIOException(env, "Stream Closed");
+        return -1;
+    }
+    if ((length = IO_GetLength(fd)) == -1) {
+        JNU_ThrowIOExceptionWithLastError(env, "GetLength failed");
+    }
+    return length;
+}
+
+JNIEXPORT jlong JNICALL
+Java_java_io_FileInputStream_position0(JNIEnv *env, jobject this) {
+    FD fd;
+    jlong ret;
+
+    fd = getFD(env, this, fis_fd);
+    if (fd == -1) {
+        JNU_ThrowIOException(env, "Stream Closed");
+        return -1;
+    }
+    if ((ret = IO_Lseek(fd, 0L, SEEK_CUR)) == -1) {
+        JNU_ThrowIOExceptionWithLastError(env, "Seek failed");
+    }
+    return ret;
+}
+
+JNIEXPORT jlong JNICALL
+Java_java_io_FileInputStream_skip0(JNIEnv *env, jobject this, jlong toSkip) {
     jlong cur = jlong_zero;
     jlong end = jlong_zero;
-    FD fd = GET_FD(this, fis_fd);
+    FD fd = getFD(env, this, fis_fd);
     if (fd == -1) {
         JNU_ThrowIOException (env, "Stream Closed");
         return 0;
@@ -90,9 +123,9 @@ Java_java_io_FileInputStream_skip(JNIEnv *env, jobject this, jlong toSkip) {
 }
 
 JNIEXPORT jint JNICALL
-Java_java_io_FileInputStream_available(JNIEnv *env, jobject this) {
+Java_java_io_FileInputStream_available0(JNIEnv *env, jobject this) {
     jlong ret;
-    FD fd = GET_FD(this, fis_fd);
+    FD fd = getFD(env, this, fis_fd);
     if (fd == -1) {
         JNU_ThrowIOException (env, "Stream Closed");
         return 0;
@@ -100,6 +133,8 @@ Java_java_io_FileInputStream_available(JNIEnv *env, jobject this) {
     if (IO_Available(fd, &ret)) {
         if (ret > INT_MAX) {
             ret = (jlong) INT_MAX;
+        } else if (ret < 0) {
+            ret = 0;
         }
         return jlong_to_jint(ret);
     }
