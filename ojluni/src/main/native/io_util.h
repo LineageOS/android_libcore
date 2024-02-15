@@ -52,7 +52,8 @@ jint readBytes(JNIEnv *env, jobject this, jbyteArray bytes, jint off,
 void writeSingle(JNIEnv *env, jobject this, jint byte, jboolean append, jfieldID fid);
 void writeBytes(JNIEnv *env, jobject this, jbyteArray bytes, jint off,
                 jint len, jboolean append, jfieldID fid);
-void fileOpen(JNIEnv *env, jobject this, jstring path, jfieldID fid, int flags);
+// Android-removed: Open files using IoBridge to share BlockGuard & StrictMode logic. http://b/112107427
+// void fileOpen(JNIEnv *env, jobject this, jstring path, jfieldID fid, int flags);
 void throwFileNotFoundException(JNIEnv *env, jstring path);
 
 
