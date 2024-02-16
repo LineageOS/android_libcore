@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -68,6 +69,11 @@ public class SocketTimeoutTest {
                 assertTrue(
                         Math.abs(((float) timeElapsed / TIMEOUT_MILLIS) - 1)
                                 < 0.2f); // Allow some error.
+            } catch (ConnectException connectException) {
+                throw new ConnectException(
+                    "Connection failed while expecting a timeout for an unreachable address. " +
+                    "This could be due to unavailable connectivity in the test environment.",
+                    connectException);
             }
         }
     }
