@@ -28,6 +28,7 @@ import java.io.IOError;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,6 +94,16 @@ public final class ConsoleTest {
             assertTrue("readPassword exception not as expected",
                     e.getMessage().contains("Inappropriate ioctl for device"));
         }
+    }
+
+    @Test
+    public void testCharset() throws Exception {
+        final byte[] bytes = "secret password\n".getBytes();
+        ByteArrayInputStream inStream = new ByteArrayInputStream(bytes);
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        Console console = createConsole(inStream, outStream);
+        // Android uses UTF-8 as the default charset.
+        assertEquals(StandardCharsets.UTF_8, console.charset());
     }
 
 }
