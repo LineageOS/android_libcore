@@ -1420,6 +1420,7 @@ package java.io {
   }
 
   public final class Console implements java.io.Flushable {
+    method @FlaggedApi("com.android.libcore.v_apis") public java.nio.charset.Charset charset();
     method public void flush();
     method public java.io.Console format(String, java.lang.Object...);
     method public java.io.Console printf(String, java.lang.Object...);
@@ -13625,6 +13626,7 @@ package java.util {
     method @NonNull public static <T extends java.lang.Object & java.lang.Comparable<? super T>> T min(@NonNull java.util.Collection<? extends T>);
     method public static <T> T min(@NonNull java.util.Collection<? extends T>, @Nullable java.util.Comparator<? super T>);
     method @NonNull public static <T> java.util.List<T> nCopies(int, T);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <E> java.util.SequencedSet<E> newSequencedSetFromMap(@NonNull java.util.SequencedMap<E,java.lang.Boolean>);
     method @NonNull public static <E> java.util.Set<E> newSetFromMap(@NonNull java.util.Map<E,java.lang.Boolean>);
     method public static <T> boolean replaceAll(@NonNull java.util.List<T>, T, T);
     method public static void reverse(@NonNull java.util.List<?>);
@@ -13653,6 +13655,9 @@ package java.util {
     method @NonNull public static <K, V> java.util.Map<K,V> unmodifiableMap(@NonNull java.util.Map<? extends K,? extends V>);
     method @NonNull public static <K, V> java.util.NavigableMap<K,V> unmodifiableNavigableMap(@NonNull java.util.NavigableMap<K,? extends V>);
     method @NonNull public static <T> java.util.NavigableSet<T> unmodifiableNavigableSet(@NonNull java.util.NavigableSet<T>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <T> java.util.SequencedCollection<T> unmodifiableSequencedCollection(@NonNull java.util.SequencedCollection<? extends T>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <K, V> java.util.SequencedMap<K,V> unmodifiableSequencedMap(@NonNull java.util.SequencedMap<? extends K,? extends V>);
+    method @FlaggedApi("com.android.libcore.v_apis") @NonNull public static <T> java.util.SequencedSet<T> unmodifiableSequencedSet(@NonNull java.util.SequencedSet<? extends T>);
     method @NonNull public static <T> java.util.Set<T> unmodifiableSet(@NonNull java.util.Set<? extends T>);
     method @NonNull public static <K, V> java.util.SortedMap<K,V> unmodifiableSortedMap(@NonNull java.util.SortedMap<K,? extends V>);
     method @NonNull public static <T> java.util.SortedSet<T> unmodifiableSortedSet(@NonNull java.util.SortedSet<T>);

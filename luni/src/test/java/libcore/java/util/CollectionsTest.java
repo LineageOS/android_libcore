@@ -38,6 +38,8 @@ import java.util.NavigableSet;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.SequencedMap;
+import java.util.SequencedSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -1653,5 +1655,23 @@ public final class CollectionsTest extends TestCaseWithRules {
             result.add(0, element);
         }
         return result;
+    }
+
+    public void testNewSequencedSetFromMap() {
+        SequencedMap<String, Boolean> map = LinkedHashMap.newLinkedHashMap(5);
+        SequencedSet<String> set = Collections.newSequencedSetFromMap(map);
+        set.add("a");
+        assertEquals("a", set.getFirst());
+        assertEquals(1, map.size());
+        set.add("b");
+        assertEquals("b", set.getLast());
+        assertEquals(2, map.size());
+
+        LinkedHashMap<String, Boolean> map2 = LinkedHashMap.newLinkedHashMap(5);
+        map2.put("a", true);
+        try {
+            Collections.newSequencedSetFromMap(map2);
+            fail("Expect IllegalArgumentException");
+        } catch (IllegalArgumentException e) {}
     }
 }
