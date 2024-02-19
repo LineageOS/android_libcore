@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -36,23 +36,20 @@
  * FileDescriptor.c, FileInputStream.c, FileOutputStream.c,
  * UnixFileSystem_md.c
  */
+ssize_t handleWrite(FD fd, const void *buf, jint len);
+ssize_t handleRead(FD fd, void *buf, jint len);
+jint handleAvailable(FD fd, jlong *pbytes);
+jint handleSetLength(FD fd, jlong length);
+jlong handleGetLength(FD fd);
 FD handleOpen(const char *path, int oflag, int mode);
 
 /*
- * Macros to set/get fd from the java.io.FileDescriptor.  These
- * macros rely on having an appropriately defined 'this' object
- * within the scope in which they're used.
- * If GetObjectField returns null, SET_FD will stop and GET_FD
- * will simply return -1 to avoid crashing VM.
+ * Functions to get fd from the java.io.FileDescriptor field
+ * of an object.  These functions rely on having an appropriately
+ * defined object with a FileDescriptor object at the fid offset.
+ * If the FD object is null, return -1 to avoid crashing VM.
  */
-
-#define SET_FD(this, fd, fid) \
-    if ((*env)->GetObjectField(env, (this), (fid)) != NULL) \
-        (*env)->SetIntField(env, (*env)->GetObjectField(env, (this), (fid)),IO_fd_fdID, (fd))
-
-#define GET_FD(this, fid) \
-    (*env)->GetObjectField(env, (this), (fid)) == NULL ? \
-        -1 : (*env)->GetIntField(env, (*env)->GetObjectField(env, (this), (fid)), IO_fd_fdID)
+FD getFD(JNIEnv *env, jobject cur, jfieldID fid);
 
 /*
  * Macros to set/get fd when inside java.io.FileDescriptor
@@ -60,14 +57,26 @@ FD handleOpen(const char *path, int oflag, int mode);
 #define THIS_FD(obj) (*env)->GetIntField(env, obj, IO_fd_fdID)
 
 /*
- * Route the routines through VM
+ * Route the routines
  */
-#define IO_Append JVM_Write
-#define IO_Write JVM_Write
-#define IO_Sync JVM_Sync
-#define IO_Read JVM_Read
-#define IO_Lseek JVM_Lseek
-#define IO_SetLength JVM_SetLength
+#define IO_Sync fsync
+#define IO_Read handleRead
+#define IO_Write handleWrite
+#define IO_Append handleWrite
+#define IO_Available handleAvailable
+#define IO_SetLength handleSetLength
+#define IO_GetLength handleGetLength
+
+#ifdef _ALLBSD_SOURCE
+#define open64 open
+#define fstat64 fstat
+#define stat64 stat
+#define lseek64 lseek
+#define ftruncate64 ftruncate
+#define IO_Lseek lseek
+#else
+#define IO_Lseek lseek64
+#endif
 
 /*
  * On Solaris, the handle field is unused
@@ -77,16 +86,12 @@ FD handleOpen(const char *path, int oflag, int mode);
 /*
  * Retry the operation if it is interrupted
  */
-#define RESTARTABLE(_cmd, _result) do { \
-    do { \
-        _result = _cmd; \
-    } while((_result == -1) && (errno == EINTR)); \
-} while(0)
+#define RESTARTABLE(_cmd, _result)                \
+    do {                                          \
+        _result = _cmd;                           \
+    } while ((_result == -1) && (errno == EINTR))
 
-/*
- * IO helper function(s)
- */
-void fileClose(JNIEnv *env, jobject this, jfieldID fid);
+void fileDescriptorClose(JNIEnv *env, jobject this);
 
 #ifdef MACOSX
 jstring newStringPlatform(JNIEnv *env, const char* str);

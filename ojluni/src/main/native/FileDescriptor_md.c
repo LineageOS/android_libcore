@@ -30,9 +30,7 @@
 #include "jvm.h"
 
 #include <nativehelper/JNIHelp.h>
-
-#define NATIVE_METHOD(className, functionName, signature) \
-{ #functionName, signature, (void*)(className ## _ ## functionName) }
+#include <nativehelper/jni_macros.h>
 
 /*******************************************************************/
 /*  BEGIN JNI ********* BEGIN JNI *********** BEGIN JNI ************/
@@ -62,7 +60,7 @@ FileDescriptor_sync(JNIEnv *env, jobject this) {
     }
 }
 
-JNIEXPORT jboolean JNICALL FileDescriptor_isSocket(JNIEnv *env, jclass ignored, jint fd) {
+JNIEXPORT jboolean JNICALL FileDescriptor_isSocket(jint fd) {
     // BEGIN Android-changed: isSocket - do not clear socket error code
     int domain;
     socklen_t domain_length = sizeof(domain);
@@ -70,9 +68,17 @@ JNIEXPORT jboolean JNICALL FileDescriptor_isSocket(JNIEnv *env, jclass ignored, 
     // END Android-changed: isSocket - do not clear socket error code
 }
 
+JNIEXPORT jboolean JNICALL
+FileDescriptor_getAppend(jint fd) {
+    int flags = TEMP_FAILURE_RETRY(fcntl(fd, F_GETFL));
+    return ((flags & O_APPEND) == 0) ? JNI_FALSE : JNI_TRUE;
+}
+
+
 static JNINativeMethod gMethods[] = {
   NATIVE_METHOD(FileDescriptor, sync, "()V"),
-  NATIVE_METHOD(FileDescriptor, isSocket, "(I)Z"),
+  CRITICAL_NATIVE_METHOD(FileDescriptor, isSocket, "(I)Z"),
+  CRITICAL_NATIVE_METHOD(FileDescriptor, getAppend, "(I)Z"),
 };
 
 void register_java_io_FileDescriptor(JNIEnv* env) {
