@@ -30,6 +30,9 @@ import libcore.junit.util.ResourceLeakageDetector;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 
+import jdk.internal.access.JavaIOFileDescriptorAccess;
+import jdk.internal.access.SharedSecrets;
+
 public class FileOutputStreamTest extends TestCaseWithRules {
     @Rule
     public TestRule guardRule = ResourceLeakageDetector.getRule();
@@ -382,6 +385,9 @@ public class FileOutputStreamTest extends TestCaseWithRules {
         assertEquals(0, fos.getChannel().position());
         fos.close();
     }
+    // Access to FileDescriptor internals
+    private static final JavaIOFileDescriptorAccess fdAccess =
+            SharedSecrets.getJavaIOFileDescriptorAccess();
 
     public void test_getChanne_Append_Append() throws IOException {
         File tmpfile = File.createTempFile("FileOutputStream", "tmp");
@@ -394,6 +400,7 @@ public class FileOutputStreamTest extends TestCaseWithRules {
 
         fos = new FileOutputStream(tmpfile, true);
         FileChannel fc = fos.getChannel();
+        assertTrue(fdAccess.getAppend(fos.getFD()));
         assertEquals(10, fc.position());
         fc.write(ByteBuffer.wrap("hello".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
         assertEquals(15, fc.position());

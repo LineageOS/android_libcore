@@ -1882,6 +1882,23 @@ public class OsTest {
     }
 
     @Test
+    public void test_oappend() throws Exception {
+        File testFile = createTempFile("test_oappend", "");
+        try {
+            FileDescriptor fd =
+                    Os.open(testFile.toString(), O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+            assertNotNull(fd);
+            assertTrue(fd.valid());
+            int flags = Os.fcntlVoid(fd, F_GETFL);
+            assertTrue("Expected file flags to include " + O_APPEND + ", actual value: " + flags,
+                    0 != (flags & O_APPEND));
+            Os.close(fd);
+        } finally {
+            testFile.delete();
+        }
+    }
+
+    @Test
     public void test_splice() throws Exception {
         FileDescriptor[] pipe = Os.pipe2(0);
         File in = createTempFile("splice1", "foobar");
