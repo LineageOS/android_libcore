@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package libcore.javax.crypto.spec;
+package tests.javax.crypto.spec;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
