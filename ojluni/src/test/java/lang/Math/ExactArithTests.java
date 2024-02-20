@@ -168,6 +168,12 @@ public class ExactArithTests {
                 fail("FAIL: int Math.divideExact(" + x + " / " + y + ") = " +
                     z + "; expected: " + quotient);
             }
+            // Android-added: Test functionally-equivalent StrictMath version.
+            z = StrictMath.divideExact(x, y);
+            if (z != quotient) {
+                fail("FAIL: int StrictMath.divideExact(" + x + " / " + y + ") = " +
+                        z + "; expected: " + q);
+            }
         } catch (ArithmeticException ex) {
             if (!exceptionExpected) {
                 fail("FAIL: int Math.divideExact(" + x + " / " + y + ")" +
@@ -196,6 +202,12 @@ public class ExactArithTests {
                 fail("FAIL: int Math.floorDivExact(" + x + " / " + y + ") = " +
                     z + "; expected: " + q);
             }
+            // Android-added: Test functionally-equivalent StrictMath version.
+            z = StrictMath.floorDivExact(x, y);
+            if (z != q) {
+                fail("FAIL: int StrictMath.floorDivExact(" + x + " / " + y + ") = " +
+                        z + "; expected: " + q);
+            }
         } catch (ArithmeticException ex) {
             if (!exceptionExpected) {
                 fail("FAIL: int Math.floorDivExact(" + x + " / " + y + ")" +
@@ -222,6 +234,11 @@ public class ExactArithTests {
             }
             if (z != q) {
                 fail("FAIL: int Math.ceilDivExact(" + x + " / " + y + ") = " +
+                        z + "; expected: " + q);
+            }
+            // Android-added: Test functionally-equivalent StrictMath version.
+            if (z != StrictMath.ceilDivExact(x, y)) {
+                fail("FAIL: int StrictMath.ceilDivExact(" + x + " / " + y + ") = " +
                         z + "; expected: " + q);
             }
         } catch (ArithmeticException ex) {
@@ -411,6 +428,12 @@ public class ExactArithTests {
                 fail("FAIL: long Math.floorDivExact(" + x + " / " + y + ") = " +
                     z + "; expected: " + q);
             }
+            // Android-added: Test functionally-equivalent StrictMath version.
+            z = StrictMath.floorDivExact(x, y);
+            if (z != q) {
+                fail("FAIL: long StrictMath.floorDivExact(" + x + " / " + y + ") = " +
+                        z + "; expected: " + q);
+            }
         } catch (ArithmeticException ex) {
             if (!exceptionExpected) {
                 fail("FAIL: long Math.floorDivExact(" + x + " / " + y + ")" +
@@ -437,6 +460,12 @@ public class ExactArithTests {
             }
             if (z != q) {
                 fail("FAIL: long Math.ceilDivExact(" + x + " / " + y + ") = " +
+                        z + "; expected: " + q);
+            }
+            // Android-added: Test functionally-equivalent StrictMath version.
+            z = StrictMath.ceilDivExact(x, y);
+            if (z != q) {
+                fail("FAIL: long StrictMath.ceilDivExact(" + x + " / " + y + ") = " +
                         z + "; expected: " + q);
             }
         } catch (ArithmeticException ex) {
