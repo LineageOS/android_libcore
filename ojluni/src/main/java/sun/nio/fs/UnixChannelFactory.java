@@ -134,7 +134,10 @@ class UnixChannelFactory {
             throw new IllegalArgumentException("APPEND + TRUNCATE_EXISTING not allowed");
 
         FileDescriptor fdObj = open(dfd, path, pathForPermissionCheck, flags, mode);
-        return FileChannelImpl.open(fdObj, path.toString(), flags.read, flags.write, flags.append, null);
+        return FileChannelImpl.open(fdObj, path.toString(), flags.read,
+                // Android-changed: TODO: Remove this patch when the direct flag is supported.
+                // flags.write, flags.direct, null);
+                flags.write, null);
     }
 
     /**
