@@ -133,4 +133,12 @@ public class PKCS8EncodedKeySpecTest extends TestCase {
         assertTrue(Arrays.equals(encodedKey, ek1));
     }
 
+    public final void testGetAlgorithm() {
+        byte[] encodedKey = new byte[] {(byte)1,(byte)2,(byte)3,(byte)4};
+        String algorithm = "MyAlgorithm";
+
+        PKCS8EncodedKeySpec meks = new PKCS8EncodedKeySpec(encodedKey, algorithm);
+        assertEquals(algorithm, meks.getAlgorithm());
+    }
+
 }
