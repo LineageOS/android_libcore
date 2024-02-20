@@ -353,6 +353,10 @@ public class FileInputStream extends InputStream
         return IoBridge.read(fd, b, off, len);
     }
 
+    // BEGIN Android-changed: Disable overridden implementation of readAllBytes() and readNBytes().
+    // Use the parent's implementation and avoid perform seek on non-seekable fd.
+    // http://b/325950521
+    /*
     public byte[] readAllBytes() throws IOException {
         long length = length();
         long position = position();
@@ -430,6 +434,8 @@ public class FileInputStream extends InputStream
         } while (n >= 0 && remaining > 0);
         return (capacity == nread) ? buf : Arrays.copyOf(buf, nread);
     }
+    */
+    // END Android-changed: Disable overridden implementation of readAllBytes() and readNBytes().
 
     private long length() throws IOException {
         return length0();
