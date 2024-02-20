@@ -54,6 +54,7 @@ declare -A PATH_TO_CONFIG=(
     [luni/src/test/java/tests/java/nio]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/java/tests/java/security]=tools/checkstyle/asf-copyright.xml
     [luni/src/test/java/tests/java/sql]=tools/checkstyle/aosp-copyright.xml
+    [luni/src/test/java/tests/javax/crypto]=tools/checkstyle/aosp-copyright.xml
     [luni/src/test/java/tests/org/w3c]=tools/checkstyle/w3c-copyright.xml
     [luni/src/test/java/tests/security]=tools/checkstyle/not-gpl.xml
     [luni/src/test/java/tests/support]=tools/checkstyle/aosp-copyright.xml

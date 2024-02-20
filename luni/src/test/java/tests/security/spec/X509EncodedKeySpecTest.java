@@ -134,4 +134,11 @@ public class X509EncodedKeySpecTest extends TestCase {
         assertTrue(Arrays.equals(encodedKey, ek1));
     }
 
+    public void testGetAlgorithm() {
+        byte[] encodedKey = new byte[] {(byte)1,(byte)2,(byte)3,(byte)4};
+        String algorithm = "MyAlgorithm";
+        X509EncodedKeySpec meks = new X509EncodedKeySpec(encodedKey, algorithm);
+        assertEquals(algorithm, meks.getAlgorithm());
+    }
+
 }
