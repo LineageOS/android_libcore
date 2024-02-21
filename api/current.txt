@@ -1,4 +1,24 @@
 // Signature format: 2.0
+package android.crypto.hpke {
+
+  @FlaggedApi("com.android.libcore.hpke_v_apis") public interface HpkeSpi {
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public byte[] engineExport(int, @Nullable byte[]);
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") public void engineInitRecipient(@NonNull byte[], @NonNull java.security.PrivateKey, @Nullable byte[], @Nullable java.security.PublicKey, @Nullable byte[], @Nullable byte[]) throws java.security.InvalidKeyException;
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") public void engineInitSender(@NonNull java.security.PublicKey, @Nullable byte[], @Nullable java.security.PrivateKey, @Nullable byte[], @Nullable byte[]) throws java.security.InvalidKeyException;
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") public void engineInitSenderWithSeed(@NonNull java.security.PublicKey, @Nullable byte[], @Nullable java.security.PrivateKey, @Nullable byte[], @Nullable byte[], @NonNull byte[]) throws java.security.InvalidKeyException;
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public byte[] engineOpen(@NonNull byte[], @Nullable byte[]) throws java.security.GeneralSecurityException;
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public byte[] engineSeal(@NonNull byte[], @Nullable byte[]);
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public byte[] getEncapsulated();
+  }
+
+  @FlaggedApi("com.android.libcore.hpke_v_apis") public final class XdhKeySpec extends java.security.spec.EncodedKeySpec {
+    ctor @FlaggedApi("com.android.libcore.hpke_v_apis") public XdhKeySpec(@NonNull byte[]);
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public String getFormat();
+    method @FlaggedApi("com.android.libcore.hpke_v_apis") @NonNull public byte[] getKey();
+  }
+
+}
+
 package android.system {
 
   public final class ErrnoException extends java.lang.Exception {
