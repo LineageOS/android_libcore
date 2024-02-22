@@ -79,4 +79,16 @@ public class DrbgParametersTest {
         assertEquals(null, reseed.getAdditionalInput());
     }
 
+    @Test
+    public void testCapability() {
+        Capability capability = Capability.PR_AND_RESEED;
+        assertTrue(capability.supportsReseeding());
+        assertTrue(capability.supportsPredictionResistance());
+
+        capability = Capability.RESEED_ONLY;
+        assertTrue(capability.supportsReseeding());
+        assertFalse(capability.supportsPredictionResistance());
+
+    }
+
 }

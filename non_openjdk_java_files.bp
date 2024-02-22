@@ -137,6 +137,8 @@ filegroup {
     name: "non_openjdk_javadoc_luni_files",
     srcs: [
         "luni/src/main/java/android/compat/Compatibility.java",
+        "luni/src/main/java/android/crypto/hpke/HpkeSpi.java",
+        "luni/src/main/java/android/crypto/hpke/XdhKeySpec.java",
         "luni/src/main/java/android/system/ErrnoException.java",
         "luni/src/main/java/android/system/GaiException.java",
         "luni/src/main/java/android/system/IcmpHeaders.java",
