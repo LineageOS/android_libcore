@@ -75,7 +75,7 @@ public class DateFormatTest extends TestCase {
     }
 
     /** Regression test for http://b/266731719. */
-    @NonMts(bug = 289015017, disabledUntilSdk = VersionCodes.UPSIDE_DOWN_CAKE,
+    @NonMts(bug = 320622741, disabledUntilSdk = VersionCodes.VANILLA_ICE_CREAM,
             reason = NonMtsReasons.OEM_CUSTOMIZATION)
     public void testParse_lenient_en() throws ParseException {
         assertParse_lenient_en(Locale.ENGLISH);
@@ -99,7 +99,7 @@ public class DateFormatTest extends TestCase {
     }
 
     /** Regression test for http://b/266731719. */
-    @NonMts(bug = 289015017, disabledUntilSdk = VersionCodes.UPSIDE_DOWN_CAKE,
+    @NonMts(bug = 320622741, disabledUntilSdk = VersionCodes.VANILLA_ICE_CREAM,
             reason = NonMtsReasons.OEM_CUSTOMIZATION)
     public void testFormat_forBug266731719() {
         assertFormat_forBug266731719(Locale.ENGLISH);
