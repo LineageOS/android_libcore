@@ -2909,7 +2909,7 @@ package java.lang {
   }
 
   public enum Character.UnicodeScript {
-    method @NonNull public static final java.lang.Character.UnicodeScript forName(@NonNull String);
+    method @NonNull public static java.lang.Character.UnicodeScript forName(@NonNull String);
     method @NonNull public static java.lang.Character.UnicodeScript of(int);
     enum_constant public static final java.lang.Character.UnicodeScript ADLAM;
     enum_constant public static final java.lang.Character.UnicodeScript AHOM;
