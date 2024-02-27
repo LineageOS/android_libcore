@@ -18,6 +18,7 @@ package libcore.java.util.random;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -114,6 +115,15 @@ public class RandomGeneratorFactoryTest {
     public void checkConsistency_initializeWithBytesSeed() {
         RandomGeneratorFactory.all()
             .forEach(RandomGeneratorFactoryTest::checkConsistencyWithBytesSeed);
+    }
+
+    @Test
+    public void isDeprecated_consistency() {
+        RandomGeneratorFactory.all().forEach(factory -> {
+            var rng = factory.create();
+            var msg = factory.name() + " created deprecated RandomGenerator";
+            assertFalse(msg, rng.isDeprecated());
+        });
     }
 
     private static void checkConsistencyWithLongSeed(RandomGeneratorFactory rngFactory) {
