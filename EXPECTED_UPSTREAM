@@ -2612,11 +2612,15 @@ ojluni/src/test/java/util/stream/testlib/org/openjdk/testlib/java/util/Spliterat
 ojluni/src/test/java/util/stream/testlib/org/openjdk/testlib/java/util/stream/DefaultMethodStreams.java,jdk17u/jdk-17.0.6-ga,test/jdk/lib/testlibrary/bootlib/java.base/java/util/stream/DefaultMethodStreams.java
 ojluni/src/test/java/util/stream/testlib/org/openjdk/testlib/java/util/stream/ThrowableHelper.java,jdk17u/jdk-17.0.6-ga,test/jdk/lib/testlibrary/bootlib/java.base/java/util/stream/ThrowableHelper.java
 ojluni/src/test/java/util/zip/ChecksumBase.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/ChecksumBase.java
+ojluni/src/test/java/util/zip/CloseInflaterDeflaterTest.java,jdk17u/jdk-17.0.10-ga,test/jdk/java/util/zip/CloseInflaterDeflaterTest.java
+ojluni/src/test/java/util/zip/DeInflate.java,jdk17u/jdk-17.0.10-ga,test/jdk/java/util/zip/DeInflate.java
+ojluni/src/test/java/util/zip/DeflaterDictionaryTests.java,jdk17u/jdk-17.0.10-ga,test/jdk/java/util/zip/DeflaterDictionaryTests.java
 ojluni/src/test/java/util/zip/TestCRC32.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/TestCRC32.java
 ojluni/src/test/java/util/zip/TestCRC32C.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/TestCRC32C.java
 ojluni/src/test/java/util/zip/TestChecksum.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/TestChecksum.java
 ojluni/src/test/java/util/zip/TestExtraTime.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/TestExtraTime.java
 ojluni/src/test/java/util/zip/TestLocalTime.java,jdk17u/jdk-17.0.6-ga,test/jdk/java/util/zip/TestLocalTime.java
+ojluni/src/test/java/util/zip/ZipFile/TestCleaner.java,jdk17u/jdk-17.0.10-ga,test/jdk/java/util/zip/ZipFile/TestCleaner.java
 ojluni/src/test/java/util/zip/ZipFile/Zip64SizeTest.java,jdk11u/jdk-11.0.13-ga,test/jdk/java/util/zip/ZipFile/Zip64SizeTest.java
 ojluni/src/tools/make/gensrc/GensrcBuffer.gmk,jdk17u/jdk-17.0.6-ga,make/modules/java.base/gensrc/GensrcBuffer.gmk
 ojluni/src/tools/make/gensrc/GensrcCharsetCoder.gmk,jdk17u/jdk-17.0.6-ga,make/modules/java.base/gensrc/GensrcCharsetCoder.gmk
