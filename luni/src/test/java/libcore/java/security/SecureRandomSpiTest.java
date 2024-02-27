@@ -116,6 +116,15 @@ public class SecureRandomSpiTest {
     }
 
     @Test
+    public void testGetParameters() throws NoSuchAlgorithmException {
+        SecureRandom secureRandom = SecureRandom.getInstance(MySecureRandomProvider.ALGORITHM,
+                MY_PARAMS);
+        // It's testing the default implementation of engineGetParameters()
+        // in java.security.SecureRandom, and MY_PARAMS is not used.
+        Assert.assertNull(secureRandom.getParameters());
+    }
+
+    @Test
     public void testConstructor() {
         SecureRandomParameters myParams = new SecureRandomParameters() {};
         MySecureRandomSpi mySpi = new MySecureRandomSpi(myParams);
