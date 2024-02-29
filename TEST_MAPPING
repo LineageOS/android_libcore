@@ -2,9 +2,7 @@
   "presubmit": [
     {
       "name": "luni-host-tests"
-    }
-  ],
-  "postsubmit": [
+    },
     {
       "name": "libcore-sdk34-test"
     },
