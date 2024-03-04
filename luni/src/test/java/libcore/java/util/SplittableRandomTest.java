@@ -16,9 +16,11 @@
 
 package libcore.java.util;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 
 import java.util.SplittableRandom;
+import java.util.random.RandomGenerator.SplittableGenerator;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,18 +36,36 @@ public class SplittableRandomTest {
         SplittableRandom random1 = new SplittableRandom(seed);
         SplittableRandom random2 = new SplittableRandom(seed);
 
-        assertEquals(random1, random2);
+        assertGeneratorsAreEquals(random1, random2);
     }
 
     @Test
-    public void split_throwsNullWhenSourceIsNull() {
+    public void split_throwsNPE_whenSourceIsNull() {
         SplittableRandom random = new SplittableRandom(42);
 
         assertThrows(NullPointerException.class, () -> random.split(/* source= */ null));
+        assertThrows(NullPointerException.class, () -> random.splits(1, /* source= */ null));
+        assertThrows(NullPointerException.class, () -> random.splits(/* source= */ null));
     }
 
     @Test
-    public void splitInstances_areTheSameWhenTheyAreSplitWithIdenticalSource() {
+    public void split_throwsIAE_whenSizeIsNonPositive() {
+        SplittableRandom random = new SplittableRandom(42);
+
+        assertThrows(IllegalArgumentException.class, () -> random.splits(-1, random));
+        assertThrows(IllegalArgumentException.class, () -> random.splits(-1));
+    }
+
+    @Test
+    public void splits_streamOfSizeZero_areEmpty() {
+        var random = new SplittableRandom();
+
+        assertEquals(0L, random.splits(0).count());
+        assertEquals(0L, random.splits(0, random).count());
+    }
+
+    @Test
+    public void splitInstances_areTheSame_whenTheyAreSplitWithIdenticalSource() {
         var seed = 1001;
         var random1 = new SplittableRandom(seed);
         var random2 = new SplittableRandom(seed);
@@ -55,12 +75,76 @@ public class SplittableRandomTest {
         var splitRandom1 = random1.split(new SplittableRandom(sourceSeed));
         var splitRandom2 = random2.split(new SplittableRandom(sourceSeed));
 
-        assertEquals(splitRandom1, splitRandom2);
+        assertGeneratorsAreEquals(splitRandom1, splitRandom2);
     }
 
-    private static void assertEquals(SplittableRandom random1, SplittableRandom random2) {
+    @Test
+    public void splitsInstances_areTheSame_whenTheyAreSplitWithIdenticalSource_boundedStream() {
+        var seed = 1001;
+
+        var random1 = new SplittableRandom(seed);
+        var random2 = new SplittableRandom(seed);
+
+        var sourceSeed = 9999;
+        var size = 10;
+
+        var splitRandom1 = random1.splits(size, new SplittableRandom(sourceSeed)).toList();
+        var splitRandom2 = random2.splits(size, new SplittableRandom(sourceSeed)).toList();
+
+        assertEquals(size, splitRandom1.size());
+        assertEquals(size, splitRandom2.size());
+
+        for (int i = 0; i < size; ++i) {
+            assertGeneratorsAreEquals(splitRandom1.get(i), splitRandom2.get(i));
+        }
+    }
+
+
+    @Test
+    public void splitsInstances_areTheSame_whenTheyAreSplitWithIdenticalSource_unboundedStream() {
+        var seed = 1001;
+
+        var random1 = new SplittableRandom(seed);
+        var random2 = new SplittableRandom(seed);
+
+        var sourceSeed = 9999;
+        var size = 10;
+
+        var splitRandom1 = random1.splits(new SplittableRandom(sourceSeed)).limit(size).toList();
+        var splitRandom2 = random2.splits(new SplittableRandom(sourceSeed)).limit(size).toList();
+
+        assertEquals(size, splitRandom1.size());
+        assertEquals(size, splitRandom2.size());
+
+        for (int i = 0; i < size; ++i) {
+            assertGeneratorsAreEquals(splitRandom1.get(i), splitRandom2.get(i));
+        }
+    }
+
+    @Test
+    public void splitsInstances_areTheSame_whenSourceIsIdentical() {
+        var seed = 1001;
+
+        var random1 = new SplittableRandom(seed);
+        var random2 = new SplittableRandom(seed);
+
+        var size = 10;
+
+        var splitRandom1 = random1.splits(size).toList();
+        var splitRandom2 = random2.splits(size).toList();
+
+        assertEquals(size, splitRandom1.size());
+        assertEquals(size, splitRandom2.size());
+
+        for (int i = 0; i < size; ++i) {
+            assertGeneratorsAreEquals(splitRandom1.get(i), splitRandom2.get(i));
+        }
+    }
+
+    private static void assertGeneratorsAreEquals(SplittableGenerator random1,
+                                                  SplittableGenerator random2) {
         for (int i = 0; i < 1_000; ++i) {
-            Assert.assertEquals(random1.nextLong(), random2.nextLong());
+            assertEquals(random1.nextLong(), random2.nextLong());
         }
     }
 
