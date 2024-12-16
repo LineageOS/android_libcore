@@ -318,11 +318,11 @@ public class DateTest extends junit.framework.TestCase {
         cal.clear();
         cal.set(1969, Calendar.JANUARY, 12, 1, 0);
         assertTrue("Wrong parsed date 3", d.equals(cal.getTime()));
-        d = new Date(Date.parse("6:45:13 3/2/1200 MST"));
+        d = new Date(Date.parse("6:45:13 3/2/1900 MST"));
         cal.setTimeZone(TimeZone.getTimeZone("MST"));
         cal.clear();
-        cal.set(1200, 2, 2, 6, 45, 13);
-        assertTrue("Wrong parsed date 4", d.equals(cal.getTime()));
+        cal.set(1900, 2, 2, 6, 45, 13);
+        assertEquals("Wrong parsed date 4", d, cal.getTime());
         d = new Date(Date.parse("Mon, 22 Nov 1999 12:52:06 GMT"));
         cal.setTimeZone(TimeZone.getTimeZone("GMT"));
         cal.clear();

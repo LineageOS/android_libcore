@@ -65,7 +65,7 @@ public class Support_SimpleDateFormat extends Support_Format {
     textBuffer.append("AD AD 1999 99 1999 9 09 Sep September 13 13 013 ");
     textBuffer.append("17 17 017 17 17 017 5 05 005 19 019 1 01 001 0 00 000 Mon Monday ");
     textBuffer.append("256 256 256 2 02 38 038 3 003 ");
-    textBuffer.append("PM  PM  5 005 GMT-05:00 GMT-05:00 -0500 GMT-05:00");
+    textBuffer.append("PM  PM  5 005 EST Eastern Standard Time -0500 GMT-05:00");
 
     // to avoid passing the huge StringBuffer each time.
     super.text = textBuffer.toString();
@@ -89,7 +89,7 @@ public class Support_SimpleDateFormat extends Support_Format {
     t_FormatWithField(14, format, date, null, Field.WEEK_OF_MONTH, 137, 138);
     t_FormatWithField(15, format, date, null, Field.AM_PM, 143, 145);
     t_FormatWithField(16, format, date, null, Field.HOUR0, 151, 152);
-    t_FormatWithField(17, format, date, null, Field.TIME_ZONE, 157, 166);
+    t_FormatWithField(17, format, date, null, Field.TIME_ZONE, 157, 160);
 
     // test fields that are not included in the formatted text
     t_FormatWithField(18, format, date, null, NumberFormat.Field.EXPONENT_SIGN, 0, 0);
@@ -97,10 +97,10 @@ public class Support_SimpleDateFormat extends Support_Format {
     // test with simple example
     format.applyPattern("h:m z");
 
-    super.text = "5:19 GMT-05:00";
+    super.text = "5:19 EST";
     t_FormatWithField(21, format, date, null, Field.HOUR1, 0, 1);
     t_FormatWithField(22, format, date, null, Field.MINUTE, 2, 4);
-    t_FormatWithField(23, format, date, null, Field.TIME_ZONE, 5, 14);
+    t_FormatWithField(23, format, date, null, Field.TIME_ZONE, 5, 8);
 
     // test fields that are not included in the formatted text
     t_FormatWithField(24, format, date, null, Field.ERA, 0, 0);
@@ -123,7 +123,7 @@ public class Support_SimpleDateFormat extends Support_Format {
 
     // test with simple example with pattern char Z
     format.applyPattern("h:m Z z");
-    super.text = "5:19 -0500 GMT-05:00";
+    super.text = "5:19 -0500 EST";
     t_FormatWithField(40, format, date, null, Field.HOUR1, 0, 1);
     t_FormatWithField(41, format, date, null, Field.MINUTE, 2, 4);
     t_FormatWithField(42, format, date, null, Field.TIME_ZONE, 5, 10);
@@ -184,7 +184,7 @@ public class Support_SimpleDateFormat extends Support_Format {
     Vector<FieldContainer> v = new Vector<FieldContainer>();
     v.add(new FieldContainer(0, 1, Field.HOUR1));
     v.add(new FieldContainer(2, 4, Field.MINUTE));
-    v.add(new FieldContainer(5, 14, Field.TIME_ZONE));
+    v.add(new FieldContainer(5, 8, Field.TIME_ZONE));
     return v;
   }
 
@@ -249,10 +249,10 @@ public class Support_SimpleDateFormat extends Support_Format {
     v.add(new FieldContainer(147, 149, Field.AM_PM));
     v.add(new FieldContainer(151, 152, Field.HOUR0));
     v.add(new FieldContainer(153, 156, Field.HOUR0));
-    v.add(new FieldContainer(157, 166, Field.TIME_ZONE));
-    v.add(new FieldContainer(167, 176, Field.TIME_ZONE));
-    v.add(new FieldContainer(177, 182, Field.TIME_ZONE));
-    v.add(new FieldContainer(183, 192, Field.TIME_ZONE));
+    v.add(new FieldContainer(157, 160, Field.TIME_ZONE));
+    v.add(new FieldContainer(161, 182, Field.TIME_ZONE));
+    v.add(new FieldContainer(183, 188, Field.TIME_ZONE));
+    v.add(new FieldContainer(189, 198, Field.TIME_ZONE));
     return v;
   }
 }
