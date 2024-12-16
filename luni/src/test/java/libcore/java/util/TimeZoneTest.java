@@ -72,7 +72,7 @@ public class TimeZoneTest extends TestCaseWithRules {
         // explicit transition at Integer.MIN_VALUE with zic 2019a and 2019a data.
         TimeZone tz = TimeZone.getTimeZone("CET");
 
-        long firstTransitionTimeMillis = -1693706400000L; // Apr 30, 1916 22:00:00 GMT
+        long firstTransitionTimeMillis = -1693702800000L; // Apr 30, 1916 23:00:00 GMT
         assertEquals(7200000L, tz.getOffset(firstTransitionTimeMillis));
         assertTrue(tz.inDaylightTime(new Date(firstTransitionTimeMillis)));
 
