@@ -411,14 +411,14 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
 
         SimpleDateFormat format = new SimpleDateFormat("", Locale.ENGLISH);
         format.setTimeZone(TimeZone.getTimeZone("EST"));
-        assertFormat(format, " z", cal, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " z", cal, " EST", DateFormat.TIMEZONE_FIELD);
         Calendar temp2 = new GregorianCalendar(1999, Calendar.JANUARY, 12);
-        assertFormat(format, " z", temp2, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
-        assertFormat(format, " zz", cal, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
-        assertFormat(format, " zzz", cal, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
-        assertFormat(format, " zzzz", cal, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
-        assertFormat(format, " zzzz", temp2, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
-        assertFormat(format, " zzzzz", cal, " GMT-05:00", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " z", temp2, " EST", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " zz", cal, " EST", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " zzz", cal, " EST", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " zzzz", cal, " Eastern Standard Time", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " zzzz", temp2, " Eastern Standard Time", DateFormat.TIMEZONE_FIELD);
+        assertFormat(format, " zzzzz", cal, " Eastern Standard Time", DateFormat.TIMEZONE_FIELD);
 
         format.setTimeZone(TimeZone.getTimeZone("America/New_York"));
         assertFormat(format, " z", cal, " EDT", DateFormat.TIMEZONE_FIELD);
@@ -483,8 +483,8 @@ public class SimpleDateFormatTest extends junit.framework.TestCase {
                 "Pacific/Kiritimati", "GMT+14:00, Line Islands Time", "+1400, GMT+14:00",
                 winterDate);
 
-        verifyFormatTimezone("EST", "GMT-05:00, GMT-05:00", "-0500, GMT-05:00", summerDate);
-        verifyFormatTimezone("EST", "GMT-05:00, GMT-05:00", "-0500, GMT-05:00", winterDate);
+        verifyFormatTimezone("EST", "EST, Eastern Standard Time", "-0500, GMT-05:00", summerDate);
+        verifyFormatTimezone("EST", "EST, Eastern Standard Time", "-0500, GMT-05:00", winterDate);
 
         verifyFormatTimezone("GMT+14", "GMT+14:00, GMT+14:00", "+1400, GMT+14:00", summerDate);
         verifyFormatTimezone("GMT+14", "GMT+14:00, GMT+14:00", "+1400, GMT+14:00", winterDate);
